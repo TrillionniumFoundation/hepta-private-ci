@@ -102,6 +102,23 @@ def summary(hard: bool) -> dict:
             "arms": arms}
 
 
+
+def fake_frozen_report(seed: int) -> dict:
+    panel, _ = fake_report(seed, hard=False)
+    preds = {name: [{"id": r["id"], "probability": .5}
+                    for r in panel["partitions"][name]]
+             for name in ("future_1", "future_2")}
+    return {
+        "schema": "hepta.cell-meta-true-frozen-stage1.v1",
+        "source_panel_sha256": subject.canonical_digest(panel),
+        "authority_posture": "DENY_ALL", "production_admission": "BLOCKED",
+        "prediction_sha256": subject.canonical_digest(preds),
+        "predictions": preds,
+        "retrospective_evaluation": {name: {"accuracy": .5, "brier": .25, "nll": .69}
+                                    for name in ("future_1", "future_2")},
+    }
+
+
 def staged_directory(path: Path) -> None:
     for name in subject.EXPECTED:
         payload = (SENTINEL + "_" + name + "\n").encode()
@@ -117,8 +134,72 @@ def staged_directory(path: Path) -> None:
         elif name == "os-meter-joined.json":
             payload = json.dumps(os_summary()).encode()
         elif name.endswith("-fivearm-report.json"):
-            payload = json.dumps(fivearm_summary(int(name.split("-", 1)[0]))).encode()
+            seed = int(name.split("-", 1)[0])
+            entry = fivearm_summary(seed)
+            entry["panel_sha256"] = subject.canonical_digest(fake_report(seed, hard=False)[0])
+            entry["hard_train_sha256"] = subject.canonical_digest(fake_report(seed, hard=True)[1])
+            entry["frozen_sha256"] = subject.canonical_digest(fake_frozen_report(seed))
+            payload = json.dumps(entry).encode()
+        elif name.endswith("-frozen-report.json"):
+            payload = json.dumps(fake_frozen_report(int(name.split("-", 1)[0]))).encode()
+        elif name.endswith("-trial-panel.json"):
+            payload = json.dumps(fake_report(int(name.split("-", 1)[0]), hard=False)[0]).encode()
+        elif name.endswith("-trial-report.json"):
+            payload = json.dumps(fake_report(int(name.split("-", 1)[0]), hard=False)[1]).encode()
+        elif name.endswith("-hard-train-report.json"):
+            payload = json.dumps(fake_report(int(name.split("-", 1)[0]), hard=True)[1]).encode()
         (path / name).write_bytes(payload)
+
+
+
+def fake_report(seed: int, *, hard: bool) -> dict:
+    base = summary(hard=hard)
+    results = []
+    cohort = {"source": {"seed": seed, "kind": "external_unverified",
+                         "stem_sha256": "a" * 64, "rule": "external"},
+              "partitions": {name: [{"id": f"{seed}-{name}-{i}", "label": i % 2}
+                                    for i in range(16)]
+                             for name in ("future_1", "future_2")}}
+    for arm in subject.ARMS:
+        spec = next(row for row in base["arms"] if row["seed"] == seed and row["arm"] == arm)
+        predictions = {}
+        for name in ("future_1", "future_2"):
+            predictions[name] = [
+                {"id": r["id"], "probability": .5}
+                for r in cohort["partitions"][name]
+            ]
+        record = {
+            "arm": arm, "split_proposed": spec["split_proposed"],
+            "predictions": predictions,
+            "prediction_sha256": subject.canonical_digest(predictions),
+        }
+        scores = {name: {"accuracy": .5, "brier": .25, "nll": .69}
+                  for name in ("future_1", "future_2")}
+        if hard:
+            record["retrospective_evaluation"] = scores
+            record["meters"] = {
+                "train_head_0_rows": 100, "train_head_1_rows": 92,
+                "eval_head_0_rows": 156, "eval_head_1_rows": 100,
+                "diagnostic_head_rows": 8, "train_router_rows": 32,
+                "sampled_routes": 32,
+            }
+        else:
+            record["evaluation"] = scores
+            record["meters"] = {"head_forward_rows": 512}
+        results.append(record)
+    report = {
+        "schema": ("hepta.cell-meta-hard-trained-top1.v1" if hard
+                   else "hepta.cell-meta-physical-router-trial.v1"),
+        "source_panel_sha256": subject.canonical_digest(cohort),
+        "authority_posture": "DENY_ALL", "production_admission": "BLOCKED",
+        "results": results,
+    }
+    if hard:
+        report["prospective_future_windows_verified"] = False
+    else:
+        report["seed"] = seed
+        report["future_window_prospective"] = False
+    return cohort, report
 
 
 class SafeGraniteArtifactTests(unittest.TestCase):
@@ -245,6 +326,69 @@ class SafeGraniteArtifactTests(unittest.TestCase):
 
     def test_changed_model_inventory_pointer_only_block(self):
         (self.root / "model-files-source-hash.txt").write_bytes(("b" * 64 + "\n").encode())
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_valid_looking_brier_improvement_not_in_original_predictions_blocks(self):
+        self.modify_summary(False, lambda obj: obj["arms"][0]["retrospective_test_1"].__setitem__("brier", 0.05))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_valid_looking_hard_work_savings_not_in_raw_meters_blocks(self):
+        self.modify_summary(True, lambda obj: obj["arms"][0].__setitem__("train_head_rows", 1))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_original_report_brier_forgery_even_with_matching_summary_blocks(self):
+        path = self.root / "41-hard-train-report.json"
+        obj = json.loads(path.read_text())
+        obj["results"][0]["retrospective_evaluation"]["future_1"]["brier"] = .05
+        path.write_text(json.dumps(obj))
+        self.modify_summary(True, lambda x: x["arms"][0]["retrospective_test_1"].__setitem__("brier", .05))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_altered_original_prediction_seal_blocks(self):
+        path = self.root / "41-trial-report.json"
+        obj = json.loads(path.read_text())
+        obj["results"][0]["predictions"]["future_1"][0]["probability"] = .999
+        path.write_text(json.dumps(obj))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_raw_source_panel_case_drift_blocks(self):
+        path = self.root / "47-trial-panel.json"
+        obj = json.loads(path.read_text())
+        obj["partitions"]["future_2"][0]["label"] = 1
+        path.write_text(json.dumps(obj))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_untrusted_raw_work_counter_changes_block(self):
+        path = self.root / "53-trial-report.json"
+        obj = json.loads(path.read_text())
+        obj["results"][2]["meters"]["head_forward_rows"] = 300
+        path.write_text(json.dumps(obj))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_fivearm_scores_changed_while_hard_training_same_blocks(self):
+        path = self.root / "41-fivearm-report.json"
+        obj = json.loads(path.read_text())
+        obj["arms"][2]["retrospective_scores"]["future_1"]["brier"] = .05
+        path.write_text(json.dumps(obj))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_frozen_score_and_fivearm_score_altered_together_blocks(self):
+        path = self.root / "41-frozen-report.json"
+        frozen = json.loads(path.read_text())
+        frozen["retrospective_evaluation"]["future_2"]["brier"] = .05
+        path.write_text(json.dumps(frozen))
+        five_path = self.root / "41-fivearm-report.json"
+        five = json.loads(five_path.read_text())
+        five["arms"][0]["retrospective_scores"]["future_2"]["brier"] = .05
+        five["frozen_sha256"] = subject.canonical_digest(frozen)
+        five_path.write_text(json.dumps(five))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_fivearm_original_training_lineage_swap_blocks(self):
+        path = self.root / "53-fivearm-report.json"
+        five = json.loads(path.read_text())
+        five["hard_train_sha256"] = "f" * 64
+        path.write_text(json.dumps(five))
         self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
 
     def test_wrong_model_name_blocks(self):
