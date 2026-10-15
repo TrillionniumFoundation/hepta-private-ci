@@ -2,16 +2,24 @@ name: MemoryCell actual Git cross-file static integrity (no model)
 on:
   push:
     branches:
-      - codex/memory-crossfile-source-trace-20261015
+      - codex/memory-original-crossfile-trace-20261015
     paths:
       - scripts/memory_cell/memory_original_crossfile_trace.py
       - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/memory_original_http_runtime.py
+      - scripts/memory_cell/memory_original_http_worker.py
+      - scripts/memory_cell/test_memory_original_http_runtime.py
+      - scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
       - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
       - .github/workflows/hepta-memory-original-crossfile-static.yml
   pull_request:
     paths:
       - scripts/memory_cell/memory_original_crossfile_trace.py
       - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/memory_original_http_runtime.py
+      - scripts/memory_cell/memory_original_http_worker.py
+      - scripts/memory_cell/test_memory_original_http_runtime.py
+      - scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
       - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
       - .github/workflows/hepta-memory-original-crossfile-static.yml
 permissions:
@@ -58,6 +66,19 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/memory_cell/memory_original_crossfile_trace.py scripts/memory_cell/test_memory_original_crossfile_trace.py
           python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_crossfile_trace.py -v
+      - name: Execute exact pinned CPython original module in a bounded offline child
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_http_runtime.py scripts/memory_cell/memory_original_http_worker.py scripts/memory_cell/test_memory_original_http_runtime.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_http_runtime.py -v
+          mkdir -p /tmp/crossfile-static/review
+          python3 scripts/memory_cell/memory_original_http_runtime.py \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --output /tmp/crossfile-static/review/verified-original-http-runtime.json
+          echo 'b847f79630c02e48aa174021a6c668f7882e90ee8d383302cef8b14374152f4b  /tmp/crossfile-static/review/verified-original-http-runtime.json' | sha256sum --check
+          cmp /tmp/crossfile-static/review/verified-original-http-runtime.json \
+            scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
       - name: Independently regenerate exact, unsigned mechanical evidence
         run: |
           set -euo pipefail

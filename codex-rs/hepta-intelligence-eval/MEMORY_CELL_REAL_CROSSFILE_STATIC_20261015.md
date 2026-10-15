@@ -87,3 +87,22 @@ parameter-learning advantage, revocation/recovery or production admission has
 passed. `production_qualified=false`, `independent_semantic_judgement=false`,
 `full_lifecycle_tco=null`; do not merge to stable/production without existing
 `blocking-ci`, Architecture and independent acceptance.
+
+## Offline execution extension — exact original CPython HTTP implementation
+
+The separate, SHA-pinned original CPython \`Lib/http/client.py\` source is
+re-executed in an isolated Python 3 subprocess with CPU and memory bounds,
+in-memory fake sockets and outbound network calls disabled. The original
+\`HTTPConnection\` implementation passed three specified byte-level behaviors:
+request (111 bytes), putheader (92 bytes), and send (14 bytes). Before loading
+the original source, the verifier independently reopens the same six-repository
+Git ZIPs and validates all 12 prior static call/import/definition chains.
+
+The fixed worker source is independently hashed, all three captured byte
+streams must match expected HTTP protocol bytes, and the report explicitly
+marks full upstream CPython tests, third-party project tests, authenticated
+independent hosting, other languages, model calls and production qualification
+as **not performed**. Local 12/12 runtime negative tests and pre-existing
+18/18 original-static tests passed. Immutable output SHA-256:
+\`b847f79630c02e48aa174021a6c668f7882e90ee8d383302cef8b14374152f4b\`.
+The exact-head hosted CI result and mandatory standard gates remain required.
