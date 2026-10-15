@@ -13,6 +13,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronEffectIntentV1;
 use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::JournalScope;
 use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
@@ -242,7 +243,9 @@ where
             &self.metrics_flushed,
             self.original_evidence_bound,
         )?;
-        let scope_digest = Digest32::of_bytes(input.subject_id.as_str().as_bytes());
+        // Evidence must use the independently recovered Neuron Journal's
+        // domain-separated scope, never a caller-supplied bare subject hash.
+        let journal_scope = self.runtime.journal_scope();
         let started = Instant::now();
         let result = self.tick_bound_inner(input, signed_read, signed_grant);
         if !observe_and_commit_neuron_phase_v1(
@@ -250,7 +253,7 @@ where
             &self.failed_metrics,
             &self.metrics_flushed,
             self.original_evidence_bound,
-            scope_digest,
+            journal_scope,
             operation_digest,
             started.elapsed(),
             result.is_ok(),
@@ -418,7 +421,7 @@ fn observe_and_commit_neuron_phase_v1(
     failed_metrics: &AtomicU64,
     metrics_flushed: &AtomicBool,
     original_evidence_bound: bool,
-    scope_digest: Digest32,
+    journal_scope: JournalScope,
     operation_digest: Digest32,
     elapsed: Duration,
     succeeded: bool,
@@ -434,7 +437,7 @@ fn observe_and_commit_neuron_phase_v1(
     observe_phase_v1(
         Some(sink),
         failed_metrics,
-        scope_digest,
+        journal_scope.scope_digest,
         operation_digest,
         PhaseMetricKindV1::NeuronFeature,
         elapsed,
