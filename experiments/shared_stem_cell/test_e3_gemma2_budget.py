@@ -107,6 +107,7 @@ class NativeBudgetContract(unittest.TestCase):
             b.check_batch(self.model, [{"image": str(alias / self.path.name)}])
 
     def test_parent_dotdot_rejected(self):
+        (self.path.parent / "subdir").mkdir()
         parent = str(self.path.parent / "subdir" / ".." / self.path.name)
         with self.assertRaises(b.NativeBudgetError):
             b.check_batch(self.model, [{"image": parent}])
