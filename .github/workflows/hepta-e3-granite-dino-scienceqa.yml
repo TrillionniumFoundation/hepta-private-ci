@@ -44,10 +44,10 @@ jobs:
           /tmp/e3-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/e3-venv/bin/pip install numpy==1.26.4 transformers==4.57.1 \
             safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 \
-            datasets==3.6.0 Pillow==11.3.0 psutil==7.0.0 packaging==25.0
+            datasets==3.6.0 pyarrow==19.0.1 Pillow==11.3.0 psutil==7.0.0 packaging==25.0
           /tmp/e3-venv/bin/pip check
           /tmp/e3-venv/bin/pip freeze > /tmp/e3-environment.txt
-          /tmp/e3-venv/bin/python -c 'from transformers import AutoImageProcessor, Dinov2Model, AutoModel; from huggingface_hub import HfApi; from datasets import load_dataset; print("STOCK_PRETRAINED_API_PREFLIGHT_OK")'
+          /tmp/e3-venv/bin/python -c 'import numpy, pyarrow; assert numpy.__version__ == "1.26.4" and pyarrow.__version__ == "19.0.1"; from transformers import AutoImageProcessor, Dinov2Model, AutoModel; from huggingface_hub import HfApi; from datasets import load_dataset; print("STOCK_PRETRAINED_API_PREFLIGHT_OK")'
       - name: Execute original mechanistic and negative-contract tests
         run: |
           set -euo pipefail
