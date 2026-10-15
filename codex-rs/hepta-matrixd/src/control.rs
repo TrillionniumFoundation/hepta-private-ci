@@ -908,8 +908,7 @@ mod tests {
     #[tokio::test]
     async fn windows_control_socket_refuses_unverified_peer_identity() -> TestResult {
         let temp = TempDir::new()?;
-        let (state, connections) =
-            state(&temp, Arc::new(FakeTransport::default())).await?;
+        let (state, connections) = state(&temp, Arc::new(FakeTransport::default())).await?;
         let socket = temp.path().join("unverified-matrixd-peer");
         let mut listener = UnixListener::bind(&socket).await?;
 
