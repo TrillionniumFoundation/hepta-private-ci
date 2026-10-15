@@ -174,6 +174,16 @@ class ReceiptCustodyTests(unittest.TestCase):
                 score_sealed(self.root)
         self.assertFalse(list(self.root.glob('score-*.json')))
 
+    def test_mutating_joint_stop_or_shared_batch_count_denies_scoring(self):
+        victim=self.root/'seed-41'/'joint-training.json'
+        record=read(victim)
+        record['shared_input_batch_materializations'] += 1
+        victim.write_text(json.dumps(record))
+        with protocol_patch():
+            with self.assertRaisesRegex(ValueError,'invalid matched joint-training lifecycle'):
+                score_sealed(self.root)
+        self.assertFalse(list(self.root.glob('score-*.json')))
+
     def test_mutating_old_task_retention_stops_future_score(self):
         victim=self.root/'seed-41'/'cross_fact-natural-internal.json'
         victim.write_text(json.dumps(dict(source='different')))
