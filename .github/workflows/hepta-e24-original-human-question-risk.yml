@@ -1,0 +1,270 @@
+name: Hepta E24 independent whole-question training loss vs Brier (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e24_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e24_*.py'
+      - 'qualification/shared-stem-system2-architecture/E24_*.md'
+      - '.github/workflows/hepta-e24-original-human-question-risk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  frozen-original-label-blind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
+      OUTPUT: /tmp/hepta-e24-original-blind-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze actual checkout identity, source hashes and policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/original-source-head.txt"
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e24_*.py "$ROOT"/test_e24_*.py > "$OUTPUT/complete-source.sha256"
+      - name: Reopen ONLY exact original label-blind pretrained prediction archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E24_ORIGINAL"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' \
+            "$HEPTA_E24_ORIGINAL" | sha256sum -c -
+          test ! -e /tmp/hepta-e24-original-validation.parquet
+          test ! -e /tmp/hepta-e24-train-human
+      - name: Execute actual-archive blind and SYNTHETIC-target source mechanism tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e24_blind.py' -v \
+            > "$OUTPUT/test-blind-normal.txt" 2>&1 || { cat "$OUTPUT/test-blind-normal.txt"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e24_blind.py' -v \
+            > "$OUTPUT/test-blind-optimized.txt" 2>&1 || { cat "$OUTPUT/test-blind-optimized.txt"; exit 1; }
+          grep -F 'Ran 12 tests' "$OUTPUT/test-blind-normal.txt"
+          grep -F 'Ran 12 tests' "$OUTPUT/test-blind-optimized.txt"
+      - name: Seal unlabelled source geometry before downloading any human train labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e24_question_risk.py" blind \
+            --archive "$HEPTA_E24_ORIGINAL" --output "$OUTPUT/frozen-label-blind-geometry.json" \
+            | tee "$OUTPUT/blind-source-seal.txt"
+          sha256sum "$OUTPUT/frozen-label-blind-geometry.json" \
+            > "$OUTPUT/frozen-label-blind-geometry.sha256"
+          test ! -e /tmp/hepta-e24-original-validation.parquet
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e24-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e24-original-blind-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  train-isolated-passage-question-heads:
+    needs: frozen-original-label-blind
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+        fold: [0, 1, 2, 3]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
+      OUTPUT: /tmp/hepta-e24-trained-${{ matrix.profile }}-${{ matrix.fold }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e24-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e24-source-seal
+      - name: Require original source seal and acquire only selected fold original labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT" /tmp/hepta-e24-train-human
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          FOLD='${{ matrix.fold }}'
+          test "$FOLD" -ge 0 && test "$FOLD" -le 3
+          expected="$(cut -d ' ' -f1 /tmp/hepta-e24-source-seal/frozen-label-blind-geometry.sha256)"
+          printf '%s  %s\n' "$expected" /tmp/hepta-e24-source-seal/frozen-label-blind-geometry.json | sha256sum -c -
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E24_ORIGINAL"
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $HEPTA_E24_ORIGINAL" | sha256sum -c -
+          ids=(11949081037 11948881417 11948806536 11948681555)
+          digests=(cc1c13323cb8377cbd5cdfa5c806796cb85505746e8509f21432d83a1ac4fb2d \
+            8aa9f4b82a4478e9329cba5468adbea4a5a75bd9707b57358eb78a981cf0fd5e \
+            e097d3a3bd210c1b8a84736cc6c219ea2605763c5b83b2c823dd136c00dedec5 \
+            8565aa2c841ad067d58e9ca04222247277de509bb4bdac38eb42e7662d13c6b2)
+          id="${ids[$FOLD]}"; sha="${digests[$FOLD]}"
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${id}/zip" \
+            --output "/tmp/hepta-e24-train-human/owner-${FOLD}.zip"
+          printf '%s  %s\n' "$sha" "/tmp/hepta-e24-train-human/owner-${FOLD}.zip" | sha256sum -c -
+          unzip -p "/tmp/hepta-e24-train-human/owner-${FOLD}.zip" "training-fold-${FOLD}.json" \
+            > "/tmp/hepta-e24-train-human/train-only-${FOLD}.json"
+          test "$(find /tmp/hepta-e24-train-human -name 'train-only-*.json' | wc -l)" -eq 1
+          test ! -e /tmp/hepta-e24-original-validation.parquet
+      - name: Physically perform equal-five-param 48-step Brier and group-risk SGD on three original human groups only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e24_question_risk.py" train \
+            --archive "$HEPTA_E24_ORIGINAL" \
+            --train-only "/tmp/hepta-e24-train-human/train-only-${{ matrix.fold }}.json" \
+            --output "$OUTPUT/held-predictions.json" | tee "$OUTPUT/real-three-source-training.txt"
+          sha256sum "$OUTPUT/held-predictions.json" > "$OUTPUT/held-predictions.sha256"
+          test ! -e /tmp/hepta-e24-original-validation.parquet
+          # Never upload train labels with the held-only prediction archive.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e24-original-trained-${{ matrix.profile }}-${{ matrix.fold }}
+          path: /tmp/hepta-e24-trained-${{ matrix.profile }}-${{ matrix.fold }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  independently-review-original-human-questions:
+    needs: train-isolated-passage-question-heads
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
+      OUTPUT: /tmp/hepta-e24-independent-human-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e24-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e24-source-seal
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: hepta-e24-original-trained-${{ matrix.profile }}-*
+          path: /tmp/hepta-e24-held-sealed
+          merge-multiple: false
+      - name: Freeze original score job source; assert sealed four folds before original truth download
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          for i in 0 1 2 3; do
+            root="/tmp/hepta-e24-held-sealed/hepta-e24-original-trained-${{ matrix.profile }}-$i"
+            test -s "$root/held-predictions.json" && test -s "$root/held-predictions.sha256"
+            expected="$(cut -d ' ' -f1 "$root/held-predictions.sha256")"
+            printf '%s  %s\n' "$expected" "$root/held-predictions.json" | sha256sum -c -
+          done
+          expected="$(cut -d ' ' -f1 /tmp/hepta-e24-source-seal/frozen-label-blind-geometry.sha256)"
+          printf '%s  %s\n' "$expected" /tmp/hepta-e24-source-seal/frozen-label-blind-geometry.json | sha256sum -c -
+      - name: Acquire and separately seal exact human source, original owner receipts and physical logits POST heldseal
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E24_ORIGINAL"
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $HEPTA_E24_ORIGINAL" | sha256sum -c -
+          python "$ROOT/e23_historical_owner_fetch.py" \
+            --out /tmp/hepta-e24-original-label-owners --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/sha-pinned-historical-owner-download.txt"
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import shutil
+          p=Path(hf_hub_download(repo_id='aps/super_glue', repo_type='dataset',
+            revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+            filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(p.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('original HUMAN validation Parquet exact SHA changed')
+          shutil.copyfile(p,'/tmp/hepta-e24-original-validation.parquet')
+          PY
+          sha256sum /tmp/hepta-e24-original-validation.parquet > "$OUTPUT/real-human-source-sha256.txt"
+      - name: Independently re-fit four real source-held Students and verify original whole-question outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_E23_ORIGINAL="$HEPTA_E24_ORIGINAL"
+          # Preserve E23 named source scope for its original owner tests.
+          python -m unittest discover -s "$ROOT" -p 'test_e24_human.py' -v \
+            > "$OUTPUT/postseal-human-tests-normal.txt" 2>&1 \
+            || { cat "$OUTPUT/postseal-human-tests-normal.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e24_human.py' -v \
+            > "$OUTPUT/postseal-human-tests-optimized.txt" 2>&1 \
+            || { cat "$OUTPUT/postseal-human-tests-optimized.txt"; exit 1; }
+          grep -F 'Ran 20 tests' "$OUTPUT/postseal-human-tests-normal.txt"
+          grep -F 'Ran 20 tests' "$OUTPUT/postseal-human-tests-optimized.txt"
+          args=(--archive "$HEPTA_E24_ORIGINAL" \
+            --blind /tmp/hepta-e24-source-seal/frozen-label-blind-geometry.json \
+            --validation-parquet /tmp/hepta-e24-original-validation.parquet)
+          for i in 0 1 2 3; do
+            root="/tmp/hepta-e24-held-sealed/hepta-e24-original-trained-${{ matrix.profile }}-$i"
+            a="HEPTA_E23_E15_OWNER_${i}"; b="HEPTA_E23_E16_OWNER_${i}"
+            args+=("--held-$i" "$root/held-predictions.json"
+                   "--held-sha-$i" "$(cut -d' ' -f1 "$root/held-predictions.sha256")"
+                   "--e15-owner-$i" "${!a}" "--e16-owner-$i" "${!b}")
+          done
+          python "$ROOT/e24_independent_review.py" "${args[@]}" \
+            --output "$OUTPUT/independent-original-human-question-risk.json" \
+            | tee "$OUTPUT/independent-score-seal.txt"
+          sha256sum "$OUTPUT/independent-original-human-question-risk.json" \
+            > "$OUTPUT/independent-score.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e24-real-whole-question-${{ matrix.profile }}
+          path: /tmp/hepta-e24-independent-human-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
