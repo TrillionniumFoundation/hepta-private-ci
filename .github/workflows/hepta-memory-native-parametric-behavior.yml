@@ -76,6 +76,16 @@ jobs:
           # Compare a separately committed, model-free research result. No answer regeneration.
           cmp /tmp/parametric-effect/review/independent-answer-delta.json \
             scripts/memory_cell/data/memory-native-parametric-answer-delta-38675845950.json
+          # Verify actual trained tensor bytes/config/lineage against original
+          # learning receipts, retaining unknown TCO instead of setting it to zero.
+          python3 -m py_compile scripts/memory_cell/memory_native_adapter_cost.py scripts/memory_cell/test_memory_native_adapter_cost.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_native_adapter_cost.py -v
+          python3 scripts/memory_cell/memory_native_adapter_cost.py \
+            --locomo "$MEMORY_NATIVE_LOCOMO_ZIP" \
+            --longmemeval "$MEMORY_NATIVE_LONGMEMEVAL_ZIP" \
+            --output /tmp/parametric-effect/review/adapter-resource.json
+          cmp /tmp/parametric-effect/review/adapter-resource.json \
+            scripts/memory_cell/data/memory-native-adapter-resource-38675845950.json
           git rev-parse HEAD > /tmp/parametric-effect/review/tested-head.txt
           (cd /tmp/parametric-effect/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
