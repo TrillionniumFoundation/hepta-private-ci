@@ -94,3 +94,36 @@ missing terms are null, not zero. This audit sets `amortized_tco=null`,
 Existing `blocking-ci`, Rust/architecture owners, evidence admission,
 real-model source pins and production policies are unchanged. Exact current
 HEAD checks must complete successfully before anyone proposes merge.
+
+
+## Continuation: original-answer exact scorer and unknown-cost receipts
+
+`memory_trial_independent_score.py` is an opt-in **model-free** strict scorer.
+It validates separately externally pinned original journal and protected labels,
+checks every original model-call identity before reading gold, and requires each
+exact gold identifier to match the preregistered answer SHA. It recomputes
+success from the untouched generated answer and, for program tasks, additionally
+requires the recorded test execution to exit successfully with every test passed.
+Raw original journals containing leaked labels, self-scored success flags, or
+incomplete attempts fail closed. Emitted citation tags never repair an incorrect
+identifier. These structural tests are not human semantics, independently
+replayed program execution, new model calls, or production evidence.
+
+Cost entries, diagnostic counts and recovery flags must now match the
+original generation receipts; `null` for unmeasured extraction, storage,
+maintenance or revocation remains `null` in affected cost aggregates, not
+zero. Aggregate per-arm observations must not be added as duplicated lifetime
+expenses; full amortized TCO remains unknown without real shared-work receipts.
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/memory_trial_independent_score.py \
+  --plan PRECOMMITTED_PLAN.json --plan-sha256 EXTERNAL_PLAN_SHA256 \
+  --original ORIGINAL_GENERATIONS.json --original-sha256 EXTERNAL_ORIGINAL_SHA256 \
+  --labels PROTECTED_GOLD.json --labels-sha256 EXTERNAL_LABEL_SHA256 \
+  --scored NEW_DERIVED_RESULTS.json --report NEW_UNPROMOTED_AUDIT.json
+python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_independent_score.py' -v
+```
+
+No independent human source sufficiency review or prospective reference Reader
+result is created by these changes; `production_qualified=false` and
+`blocking-ci` remain unchanged.

@@ -6,6 +6,8 @@ on:
       - "scripts/memory_cell/factorial_evidence_gate.py"
       - "scripts/memory_cell/memory_trial_admission.py"
       - "scripts/memory_cell/test_memory_trial_admission.py"
+      - "scripts/memory_cell/memory_trial_independent_score.py"
+      - "scripts/memory_cell/test_memory_trial_independent_score.py"
       - "scripts/memory_cell/test_factorial_evidence_gate.py"
   push:
     branches:
@@ -14,6 +16,8 @@ on:
       - ".github/workflows/hepta-memory-factorial-admission.yml"
       - "scripts/memory_cell/memory_trial_admission.py"
       - "scripts/memory_cell/test_memory_trial_admission.py"
+      - "scripts/memory_cell/memory_trial_independent_score.py"
+      - "scripts/memory_cell/test_memory_trial_independent_score.py"
 permissions:
   contents: read
 jobs:
@@ -28,9 +32,11 @@ jobs:
         run: |
           python3 -m py_compile scripts/memory_cell/memory_trial_admission.py
           python3 -m py_compile scripts/memory_cell/factorial_evidence_gate.py
+          python3 -m py_compile scripts/memory_cell/memory_trial_independent_score.py
       - name: Run deterministic fail-closed regressions (no model calls)
         run: |
           set -euo pipefail
           export PYTHONPATH=scripts/memory_cell
           python3 -m unittest discover -s scripts/memory_cell -p 'test_factorial_evidence_gate.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_admission.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_independent_score.py' -v

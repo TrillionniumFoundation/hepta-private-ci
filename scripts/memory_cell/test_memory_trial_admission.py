@@ -67,7 +67,7 @@ def fixture():
                         observation.update(tool_trace_sha256=original["tool_trace_sha256"],
                                            program_exit_code=0, program_test_count=3,
                                            program_tests_passed=3)
-                    original.update(cost=observation["cost"],
+                    original.update(cost=dict(observation["cost"]),
                                     diagnostic_count=observation["diagnostic_count"],
                                     recovery_success=observation["recovery_success"])
                     raw.append(original)
