@@ -26,6 +26,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/test_p0_multirc_semantic.py'
       - 'experiments/shared_stem_cell/P0_MULTIRC_HUMAN_SEMANTIC.md'
       - 'experiments/shared_stem_cell/P0_MATCHED_QUESTION_ONLY_CONTROL.md'
+      - 'experiments/shared_stem_cell/p0_parallel_model_collector_v10.py'
+      - 'experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py'
+      - 'experiments/shared_stem_cell/P0_PARALLEL_PHYSICAL_MODEL_V10.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
   workflow_dispatch:
 permissions:
@@ -67,6 +70,8 @@ jobs:
             experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
             experiments/shared_stem_cell/test_p0_real_preflight_v9.py \
+            experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
+            experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py \
@@ -111,6 +116,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_real_preflight_v9.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_real_preflight_v9.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_parallel_model_collector_v10.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_parallel_model_collector_v10.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -196,10 +205,20 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-  physical-four-models:
+  physical-single-model:
+    # Four independent physical CPU Runners. Failure in one source/model must
+    # not erase valid results produced by a different model. A successful
+    # ATTEMPT job is never equal to four-model scientific success.
     needs: original-human-materials
     runs-on: ubuntu-24.04
-    timeout-minutes: 240
+    timeout-minutes: 140
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [granite_97m_r2, mmbert_small, embeddinggemma_2_text, laya421_nochange]
+    permissions:
+      contents: read
+      actions: read
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
@@ -211,23 +230,30 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Checkout reviewed compact Encoder implementation
+      - name: Checkout pinned compact source for Encoder arms only
+        if: ${{ matrix.model != 'laya421_nochange' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           path: pinned-compact
           ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
-      - name: Checkout reviewed Gemma model implementation
+      - name: Checkout pinned Gemma implementation for Gemma only
+        if: ${{ matrix.model == 'embeddinggemma_2_text' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
           path: pinned-gemma
           ref: f8d168a7689eb3624d97c44751791badd069e521
-      - name: Exact reviewed source identity
+      - name: Verify immutable original research implementation identities
         run: |
           set -euo pipefail
-          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
-          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          MODEL='${{ matrix.model }}'
+          if [ "$MODEL" != 'laya421_nochange' ]; then
+            test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          fi
+          if [ "$MODEL" = embeddinggemma_2_text ]; then
+            test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          fi
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -239,9 +265,12 @@ jobs:
         with:
           name: hepta-human-original-blind-${{ github.run_id }}
           path: ${{ runner.temp }}/blind-model
-      - name: Build genuine pinned CPU runtime
+      - name: Pin original CPU runtime without shared mutable model state
         run: |
           set -euo pipefail
+          MODEL='${{ matrix.model }}'
+          ROOT="$RUNNER_TEMP/physical"
+          mkdir -p "$ROOT"
           python -m venv "$RUNNER_TEMP/human-p0-venv"
           PY="$RUNNER_TEMP/human-p0-venv/bin/python"
           "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
@@ -251,99 +280,161 @@ jobs:
             'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
             'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
             'pyarrow==21.0.0' 'pillow==11.3.0'
+          if [ "$MODEL" = laya421_nochange ]; then
+            "$PY" -m pip install --only-binary=:all: 'laya==0.3.20'
+          fi
           "$PY" -m pip check
-          "$PY" -m pip freeze > "$RUNNER_TEMP/human-p0-freeze.txt"
-      - name: Preflight separately pinned Granite and mmBERT snapshots without cross-arm cancellation
+          "$PY" -m pip freeze > "$ROOT/$MODEL.runtime.txt"
+      - name: Source-preflight ONLY this pinned model, never other arms
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/physical"
-          "$RUNNER_TEMP/human-p0-venv/bin/python" \
-            experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
-            --output-root "$RUNNER_TEMP/physical"
-      - name: Prepare Gemma text checkpoint; preserve failure without cancelling Granite/mmBERT
-        run: |
-          set -euo pipefail
+          MODEL='${{ matrix.model }}'
           ROOT="$RUNNER_TEMP/physical"
+          PY="$RUNNER_TEMP/human-p0-venv/bin/python"
           mkdir -p "$ROOT"
-          if timeout --signal=TERM --kill-after=30s 1200s \
-              "$RUNNER_TEMP/human-p0-venv/bin/python" \
+          if [ "$MODEL" = granite_97m_r2 ] || [ "$MODEL" = mmbert_small ]; then
+            "$PY" experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+              --model "$MODEL" --output-root "$ROOT"
+          fi
+          if [ "$MODEL" = embeddinggemma_2_text ]; then
+            if timeout --signal=TERM --kill-after=30s 1200s "$PY" \
               pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
               --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
               --destination "$ROOT/gemma-snapshot" \
               --profile text --dimension 256 --precision float32 \
               > "$ROOT/gemma-source-receipt.json"; then
-            test -s "$ROOT/gemma-snapshot/manifest.json" || {
-              printf '%s\n' 'Gemma pinned model preparation lacked a complete manifest' > "$ROOT/embeddinggemma_2_text.failed.txt"
-            }
-          else
-            printf '%s\n' 'Gemma pinned model preparation failed or timed out' > "$ROOT/embeddinggemma_2_text.failed.txt"
+              test -s "$ROOT/gemma-snapshot/manifest.json" || \
+                printf '%s\n' 'Gemma original pinned source manifest missing' > "$ROOT/$MODEL.failed.txt"
+            else
+              printf '%s\n' 'Gemma pinned checkpoint preparation failed' > "$ROOT/$MODEL.failed.txt"
+            fi
           fi
-      - name: Four pinned original pretrained calls or preserved failures
+      - name: Attempt ONE actual pretrained model; preserve its negative outcome
         run: |
           set -euo pipefail
-          PY="$RUNNER_TEMP/human-p0-venv/bin/python"
+          MODEL='${{ matrix.model }}'
           ROOT="$RUNNER_TEMP/physical"
-          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
-            if [ -s "$ROOT/$model.failed.txt" ]; then
-              echo "$model pinned preflight failed; retain unavailable slot and continue independent arms"
-              continue
-            fi
-            if [ "$model" = laya421_nochange ]; then
-              if "$PY" -m pip install --only-binary=:all: 'laya==0.3.20' && "$PY" -m pip check; then
-                echo 'Laya pinned dependency prepared after separate compact-model execution'
-              else
-                printf '%s\n' 'Laya pinned native dependency installation failed' > "$ROOT/laya421_nochange.failed.txt"
-                continue
-              fi
-            fi
+          PY="$RUNNER_TEMP/human-p0-venv/bin/python"
+          mkdir -p "$ROOT"
+          if [ -s "$ROOT/$MODEL.failed.txt" ]; then
+            echo "Pinned $MODEL source failed; no synthetic or alternate checkpoint"
+          else
             REPLAY_ARGS=()
-            if [ "$model" != laya421_nochange ]; then
-              REPLAY_ARGS=(--replay-dir "$ROOT/$model.replay")
+            if [ "$MODEL" != laya421_nochange ]; then
+              REPLAY_ARGS=(--replay-dir "$ROOT/$MODEL.replay")
             fi
             if timeout --signal=TERM --kill-after=30s 3200s "$PY" \
               experiments/shared_stem_cell/p0_multirc_semantic_execute.py \
               --fit "$RUNNER_TEMP/blind-model/fit.json" \
               --blind "$RUNNER_TEMP/blind-model/blind.json" \
-              --model "$model" \
+              --model "$MODEL" \
               --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
               --gemma-manifest "$ROOT/gemma-snapshot/manifest.json" \
-              --output "$ROOT/$model.json" "${REPLAY_ARGS[@]}"; then
-              echo "$model original pretrained task completed"
+              --output "$ROOT/$MODEL.json" "${REPLAY_ARGS[@]}"; then
+              echo "Original pretrained $MODEL candidate physically completed"
             else
-              echo "$model failed or timed out; do not score as completed" > "$ROOT/$model.failed.txt"
+              printf '%s\n' "$MODEL original pinned pretrained inference failed or timed out" \
+                > "$ROOT/$MODEL.failed.txt"
             fi
-          done
-          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
-            test -s "$ROOT/$model.json" || { echo "Missing real pretrained $model" >&2; exit 1; }
-          done
-      - name: Stage exact public research outputs, never pretrained checkpoint material
+          fi
+      - name: Retain model-only original material and sanitized failure slots
         if: always()
         run: |
           set -euo pipefail
+          MODEL='${{ matrix.model }}'
           ROOT="$RUNNER_TEMP/physical"
           OUT="$RUNNER_TEMP/physical-public"
-          mkdir -p "$OUT"
-          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
-            if [ -f "$ROOT/$model.json" ]; then cp "$ROOT/$model.json" "$OUT/$model.json"; fi
-            if [ -f "$ROOT/$model.failed.txt" ]; then cp "$ROOT/$model.failed.txt" "$OUT/$model.failed.txt"; fi
-            if [ -d "$ROOT/$model.replay" ]; then cp -R "$ROOT/$model.replay" "$OUT/$model.replay"; fi
-          done
-          if [ -f "$ROOT/compact-preflight-v9.json" ]; then
-            cp "$ROOT/compact-preflight-v9.json" "$OUT/compact-preflight-v9.json"
+          mkdir -p "$ROOT" "$OUT"
+          # Failed setup, checkout, venv, source or physical execution must all
+          # yield an explicit failed slot, never an unobserved success.
+          if [ ! -f "$ROOT/$MODEL.json" ] && [ ! -f "$ROOT/$MODEL.failed.txt" ]; then
+            printf '%s\n' "$MODEL runner bootstrap or model attempt incomplete" \
+              > "$ROOT/$MODEL.failed.txt"
           fi
-          if [ -f "$ROOT/gemma-source-receipt.json" ]; then
+          for f in "$MODEL.json" "$MODEL.failed.txt" "$MODEL.runtime.txt"; do
+            if [ -f "$ROOT/$f" ]; then cp "$ROOT/$f" "$OUT/$f"; fi
+          done
+          if [ -d "$ROOT/$MODEL.replay" ]; then
+            cp -R "$ROOT/$MODEL.replay" "$OUT/$MODEL.replay"
+          fi
+          if [ -f "$ROOT/compact-preflight-v9.json" ]; then
+            cp "$ROOT/compact-preflight-v9.json" "$OUT/$MODEL.preflight-v9.json"
+          fi
+          if [ "$MODEL" = embeddinggemma_2_text ] && \
+             [ -f "$ROOT/gemma-source-receipt.json" ]; then
             cp "$ROOT/gemma-source-receipt.json" "$OUT/gemma-source-receipt.json"
           fi
-          if [ -f "$RUNNER_TEMP/human-p0-freeze.txt" ]; then
-            cp "$RUNNER_TEMP/human-p0-freeze.txt" "$OUT/human-p0-freeze.txt"
-          fi
-          test ! -e "$OUT/gemma-snapshot"  # Never export original giant model weights.
+          test ! -e "$OUT/gemma-snapshot"
+          MODEL="$MODEL" OUT="$OUT" python - <<'PYCODE'
+          import json,os
+          from pathlib import Path
+          model=os.environ['MODEL'];out=Path(os.environ['OUT'])
+          passed=(out/f'{model}.json').is_file() and not (out/f'{model}.failed.txt').exists()
+          result={'schema':'hepta.p0.single-original-model-attempt.v10',
+                  'model':model,'outcome':'model_report_written' if passed else 'failed_or_incomplete',
+                  'authority':'DENY_ALL','production_promotion_permitted':False,
+                  'held_test_labels_accessed':False}
+          with (out/f'attempt-{model}.json').open('x',encoding='utf8') as h:
+              json.dump(result,h,sort_keys=True,allow_nan=False);h.write('\n')
+          PYCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-original-arm-${{ matrix.model }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/physical-public/
+          if-no-files-found: error
+          retention-days: 7
+
+  physical-four-models:
+    # IMPORTANT: only THIS collector is an all-four gate. Four matrix attempt
+    # jobs are separate, never allowed to present partial source as accepted.
+    if: ${{ always() && needs['original-human-materials'].result == 'success' }}
+    needs: [original-human-materials, physical-single-model]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent bounded NumPy and safetensors, no pretrained weights
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: hepta-human-original-arm-*-${{ github.run_id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/physical-collected
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/physical-collected
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/physical-collected
+      - name: Join all original attempted outcomes, DENY missing source and labels
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/physical-collected"
+          python experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --artifacts-root "$ROOT" --output "$ROOT/all-four-original-census-v10.json"
+          python -m json.tool "$ROOT/all-four-original-census-v10.json" >/dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: hepta-human-four-original-predictions-${{ github.run_id }}
-          path: ${{ runner.temp }}/physical-public/
-          if-no-files-found: warn
+          path: ${{ runner.temp }}/physical-collected/
+          if-no-files-found: error
           retention-days: 7
 
   partial-original-model-diagnostic:
