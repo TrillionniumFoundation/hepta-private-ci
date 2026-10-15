@@ -136,6 +136,19 @@ def score_sealed(root):
     # The whole training and exact-seal set must qualify first. Only then may
     # the separate phase load the frozen outcome protocol at all.
     check_prelabel_seals(root)
+    # The coordinator's fit-summary and opening flags are NOT evidence of real
+    # training. Reconstruct original TRAIN truth, all six optimizer receipts,
+    # weight file digests, old-task retention and bounded work independently
+    # before the scoring process is allowed to import fresh-domain labels.
+    from cross_fact_granite_review import review
+    audited = review(root)
+    require(audited['receipt_consistency_passed'] is True
+            and audited['all_training_gates_passed'] is True
+            and audited['matched_training_budget_observed'] is True
+            and audited['separate_scoring_completed'] is False
+            and audited['fresh_scoring_permitted_under_existing_rule'] is True
+            and audited['production_authorized'] is False,
+            'independent original training/model audit rejected fresh scoring')
     from binding_protocol import build_binding_protocol, score_binding_probabilities
 
     # Only the fixed original protocol supplies case ordering and truth. The
