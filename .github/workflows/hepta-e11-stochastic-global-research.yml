@@ -1,0 +1,81 @@
+name: Hepta E11 exact stochastic global and independent controls (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e11_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e11_*.py'
+      - 'qualification/shared-stem-system2-architecture/E11_EXACT_STOCHASTIC_GLOBAL_20261015.md'
+      - '.github/workflows/hepta-e11-stochastic-global-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-stochastic-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ROOT: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e11-stochastic
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze original HEAD and E10 source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/original-head.txt"
+          python --version | tee "$OUTPUT/python.txt"
+          sha256sum "$ROOT"/e11_*.py "$ROOT"/test_e11_*.py | tee "$OUTPUT/research-code.sha256"
+          sha256sum "$ROOT"/observations/E10_EXACT_PAIRED_PARETO_LOCAL_20261015.json \
+            | tee "$OUTPUT/original-negative-e10.sha256"
+      - name: Original P4 covariance parity and global stochastic adversarial tests (normal)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover \
+            -s "$ROOT" -p 'test_e11_*.py' -v > "$OUTPUT/normal-tests.log" 2>&1 \
+            || { cat "$OUTPUT/normal-tests.log"; exit 1; }
+          tail -12 "$OUTPUT/normal-tests.log"
+      - name: Repeat full controls under Python optimized interpreter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -W error::ResourceWarning -m unittest discover \
+            -s "$ROOT" -p 'test_e11_*.py' -v > "$OUTPUT/optimized-tests.log" 2>&1 \
+            || { cat "$OUTPUT/optimized-tests.log"; exit 1; }
+          tail -12 "$OUTPUT/optimized-tests.log"
+      - name: Execute full source-bound stochastic exact arithmetic on six predeclared laws
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e11_study.py" execute \
+            --output "$OUTPUT/create-only-stochastic-execution.json" \
+            | tee "$OUTPUT/executor-stdout.json"
+          sha256sum "$OUTPUT/create-only-stochastic-execution.json" \
+            | tee "$OUTPUT/pre-review-execution-sha256.txt"
+      - name: Independent process rescores whole trees and preserves E10 negative
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_SHA="$(cut -d ' ' -f1 "$OUTPUT/pre-review-execution-sha256.txt")"
+          python "$ROOT/e11_study.py" audit \
+            --input "$OUTPUT/create-only-stochastic-execution.json" \
+            --input-sha256 "$EXPECTED_SHA" \
+            --e10 "$ROOT/observations/E10_EXACT_PAIRED_PARETO_LOCAL_20261015.json" \
+            --output "$OUTPUT/independent-stochastic-review.json" \
+            | tee "$OUTPUT/reviewer-stdout.json"
+          sha256sum "$OUTPUT/independent-stochastic-review.json" \
+            | tee "$OUTPUT/independent-review-sha256.txt"
+      - name: Preserve original raw evidence and failed source-head attempts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e11-exact-stochastic-negative
+          path: /tmp/hepta-e11-stochastic/
+          retention-days: 14
+          if-no-files-found: warn
