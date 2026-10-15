@@ -44,7 +44,14 @@ fn corpus() -> Corpus {
     assert_eq!(corpus.schema, 1);
     assert_eq!(corpus.authority, "DENY_ALL");
     assert_eq!(corpus.cases.len(), 50);
-    assert_eq!(corpus.cases.iter().filter(|case| case.hepta_accepts).count(), EXPECTED_ACCEPTED);
+    assert_eq!(
+        corpus
+            .cases
+            .iter()
+            .filter(|case| case.hepta_accepts)
+            .count(),
+        EXPECTED_ACCEPTED
+    );
     corpus
 }
 
@@ -85,12 +92,17 @@ async fn every_admitted_wire_survives_original_sqlite_cold_recovery_but_is_denie
         assert_eq!(observation.original_wire_sha256, intent.payload_sha256);
         let temp = TempDir::new().expect("test directory");
         let cfg = config(&temp);
-        let writer = HeptaEvidenceStore::open(&cfg).await.expect("original writer");
+        let writer = HeptaEvidenceStore::open(&cfg)
+            .await
+            .expect("original writer");
         let prepared = writer
             .prepare_execution_intent_v1(&intent, raw)
             .await
             .expect("original Evidence atomic preparation");
-        assert_eq!(prepared.readback.status, ExecutionPreparationReadbackStatusV1::RecordedOnly);
+        assert_eq!(
+            prepared.readback.status,
+            ExecutionPreparationReadbackStatusV1::RecordedOnly
+        );
         writer.close().await;
 
         let reader = HeptaEvidenceStore::open_existing_read_only(&cfg)
@@ -102,8 +114,14 @@ async fn every_admitted_wire_survives_original_sqlite_cold_recovery_but_is_denie
             .expect("source-free original lookup")
             .expect("complete original envelope");
         assert_eq!(recovered.intent, intent, "{}", case.id);
-        assert_eq!(recovered.readback.request_sha256, observation.request_sha256);
-        assert_eq!(recovered.readback.status, ExecutionPreparationReadbackStatusV1::RecordedOnly);
+        assert_eq!(
+            recovered.readback.request_sha256,
+            observation.request_sha256
+        );
+        assert_eq!(
+            recovered.readback.status,
+            ExecutionPreparationReadbackStatusV1::RecordedOnly
+        );
         let decision = reader
             .audit_execution_effect_entry_denied_v1(&recovered.intent, raw)
             .await
@@ -130,7 +148,9 @@ async fn every_admitted_wire_survives_original_sqlite_cold_recovery_but_is_denie
             ..intent
         };
         assert!(matches!(
-            reader.audit_execution_effect_entry_denied_v1(&stale, raw).await,
+            reader
+                .audit_execution_effect_entry_denied_v1(&stale, raw)
+                .await,
             Err(EvidenceError::IdempotencyConflict { .. })
         ));
         reader.close().await;
@@ -153,7 +173,9 @@ async fn indeterminate_original_after_cold_reopen_remains_denied_without_retry()
 
     let temp = TempDir::new().expect("test directory");
     let cfg = config(&temp);
-    let writer = HeptaEvidenceStore::open(&cfg).await.expect("original writer");
+    let writer = HeptaEvidenceStore::open(&cfg)
+        .await
+        .expect("original writer");
     let prepared = writer
         .prepare_execution_intent_v1(&intent, raw)
         .await
