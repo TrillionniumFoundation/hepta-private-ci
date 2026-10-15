@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.e24.original-archive-blind-scientific-observation.v1",
+  "authority": "DENY_ALL",
+  "production_accepted": false,
+  "model_selected": false,
+  "ndu_system2_reader_sufficiency_admitted": false,
+  "source_archive_sha256": "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17",
+  "e16_source_head": "09d0528d95ca2cab997d4e17f499b098dc1fdb29",
+  "original_fold_zip_sha256": [
+    "1ad37a6ce022e8d051467db52a59a9ea2a683aa57f04c9b51867f4c7db136ab9",
+    "67dff7033303ddef4fedd06b8b4e7af105b24d154eb4069072c69525bca2991e",
+    "990ba455578abe57ac8cb031633d3a73cc1dd488f5a418f20045334f845b9eaa",
+    "ff172d1c44f31c134c5793520127a9fd166d9ad26138f88f86ce95191550f934"
+  ],
+  "original_candidates": 33,
+  "original_questions": 8,
+  "original_passages": 4,
+  "original_full_blind_report_sha256": "15a4859029af1a97e18042c6f930c63fe2a6ea8eb330246d5acf14cb55ceb4d0",
+  "true_e16_archived_original_folds_reopened": true,
+  "independent_e22_blind_replay_in_this_local_observation": false,
+  "human_labels_accessed_in_this_observation": false,
+  "new_pretrained_forward_calls": 0,
+  "new_training_updates": 0,
+  "arms": {
+    "centered_raw_5": {
+      "original_parameters": 5,
+      "trained_steps_sum": 192,
+      "train_cpu_ns": 6559875,
+      "held_cpu_ns": 102439,
+      "constant_hard_questions": 8,
+      "two_class_questions": 0,
+      "constant_float_questions": 0,
+      "score_span_le_0p001_questions": 6,
+      "max_probability_span": 0.002560829981118
+    },
+    "centered_scaled_5": {
+      "original_parameters": 5,
+      "trained_steps_sum": 192,
+      "train_cpu_ns": 6503049,
+      "held_cpu_ns": 113458,
+      "constant_hard_questions": 2,
+      "two_class_questions": 6,
+      "constant_float_questions": 0,
+      "score_span_le_0p001_questions": 0,
+      "max_probability_span": 0.311313788721542
+    }
+  },
+  "original_human_label_scores_not_newly_recomputed": {
+    "centered_raw_5": "13/33 historical E16 independent human source score",
+    "centered_scaled_5": "20/33 historical E16 independent human source score",
+    "evidence_generalization": false,
+    "task_quality_winner_selected": false
+  }
+}
