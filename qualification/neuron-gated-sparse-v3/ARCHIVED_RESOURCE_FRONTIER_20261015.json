@@ -1,0 +1,252 @@
+{
+  "authority": "DENY_ALL",
+  "candidate_task_quality_and_future_utility_verified": false,
+  "complete_lifecycle_quality_cost_pareto_admissible": false,
+  "decision": "NO_QUALIFIED_LEARNING_COST_PARETO",
+  "descriptive_resource_only_dominators_by_scale": {
+    "1024": {
+      "min_gru": [
+        "v1",
+        "v2"
+      ],
+      "ssm": [
+        "v1",
+        "v2"
+      ],
+      "v1": [],
+      "v2": [],
+      "v3": [
+        "v1",
+        "v2",
+        "ssm"
+      ]
+    },
+    "256": {
+      "min_gru": [
+        "v1",
+        "v2"
+      ],
+      "ssm": [
+        "v1",
+        "v2"
+      ],
+      "v1": [],
+      "v2": [],
+      "v3": [
+        "v1",
+        "v2",
+        "ssm"
+      ]
+    },
+    "4096": {
+      "min_gru": [
+        "v1",
+        "v2"
+      ],
+      "ssm": [
+        "v1",
+        "v2"
+      ],
+      "v1": [],
+      "v2": [
+        "v1"
+      ],
+      "v3": [
+        "v1",
+        "v2",
+        "ssm"
+      ]
+    },
+    "64": {
+      "min_gru": [
+        "v2"
+      ],
+      "ssm": [],
+      "v1": [],
+      "v2": [],
+      "v3": [
+        "v1",
+        "v2"
+      ]
+    }
+  },
+  "frozen_no_change_task_utility_verified": false,
+  "independent_signed_a0_owner_verified": false,
+  "mechanism_only_cost_observations": [
+    {
+      "arm": "v1",
+      "cells": 64,
+      "mechanism_tick_throughput_per_second_milli": 5534997,
+      "p99_tick_nanos": 195015,
+      "process_peak_rss_bytes": 3371008
+    },
+    {
+      "arm": "v2",
+      "cells": 64,
+      "mechanism_tick_throughput_per_second_milli": 4560455,
+      "p99_tick_nanos": 207213,
+      "process_peak_rss_bytes": 3342336
+    },
+    {
+      "arm": "v3",
+      "cells": 64,
+      "mechanism_tick_throughput_per_second_milli": 2771188,
+      "p99_tick_nanos": 428938,
+      "process_peak_rss_bytes": 3399680
+    },
+    {
+      "arm": "ssm",
+      "cells": 64,
+      "mechanism_tick_throughput_per_second_milli": 2658579,
+      "p99_tick_nanos": 691717,
+      "process_peak_rss_bytes": 3321856
+    },
+    {
+      "arm": "min_gru",
+      "cells": 64,
+      "mechanism_tick_throughput_per_second_milli": 2669131,
+      "p99_tick_nanos": 382538,
+      "process_peak_rss_bytes": 3342336
+    },
+    {
+      "arm": "v1",
+      "cells": 256,
+      "mechanism_tick_throughput_per_second_milli": 5559427,
+      "p99_tick_nanos": 209688,
+      "process_peak_rss_bytes": 3715072
+    },
+    {
+      "arm": "v2",
+      "cells": 256,
+      "mechanism_tick_throughput_per_second_milli": 4586498,
+      "p99_tick_nanos": 208525,
+      "process_peak_rss_bytes": 3682304
+    },
+    {
+      "arm": "v3",
+      "cells": 256,
+      "mechanism_tick_throughput_per_second_milli": 2800940,
+      "p99_tick_nanos": 352559,
+      "process_peak_rss_bytes": 3821568
+    },
+    {
+      "arm": "ssm",
+      "cells": 256,
+      "mechanism_tick_throughput_per_second_milli": 2960795,
+      "p99_tick_nanos": 337145,
+      "process_peak_rss_bytes": 3792896
+    },
+    {
+      "arm": "min_gru",
+      "cells": 256,
+      "mechanism_tick_throughput_per_second_milli": 2676405,
+      "p99_tick_nanos": 383996,
+      "process_peak_rss_bytes": 3784704
+    },
+    {
+      "arm": "v1",
+      "cells": 1024,
+      "mechanism_tick_throughput_per_second_milli": 5586401,
+      "p99_tick_nanos": 167786,
+      "process_peak_rss_bytes": 5165056
+    },
+    {
+      "arm": "v2",
+      "cells": 1024,
+      "mechanism_tick_throughput_per_second_milli": 4588244,
+      "p99_tick_nanos": 206713,
+      "process_peak_rss_bytes": 5115904
+    },
+    {
+      "arm": "v3",
+      "cells": 1024,
+      "mechanism_tick_throughput_per_second_milli": 2802428,
+      "p99_tick_nanos": 352383,
+      "process_peak_rss_bytes": 5574656
+    },
+    {
+      "arm": "ssm",
+      "cells": 1024,
+      "mechanism_tick_throughput_per_second_milli": 2950281,
+      "p99_tick_nanos": 332547,
+      "process_peak_rss_bytes": 5287936
+    },
+    {
+      "arm": "min_gru",
+      "cells": 1024,
+      "mechanism_tick_throughput_per_second_milli": 2684687,
+      "p99_tick_nanos": 368582,
+      "process_peak_rss_bytes": 5251072
+    },
+    {
+      "arm": "v1",
+      "cells": 4096,
+      "mechanism_tick_throughput_per_second_milli": 5619724,
+      "p99_tick_nanos": 164744,
+      "process_peak_rss_bytes": 10883072
+    },
+    {
+      "arm": "v2",
+      "cells": 4096,
+      "mechanism_tick_throughput_per_second_milli": 4585135,
+      "p99_tick_nanos": 205812,
+      "process_peak_rss_bytes": 10907648
+    },
+    {
+      "arm": "v3",
+      "cells": 4096,
+      "mechanism_tick_throughput_per_second_milli": 2802407,
+      "p99_tick_nanos": 352065,
+      "process_peak_rss_bytes": 12566528
+    },
+    {
+      "arm": "ssm",
+      "cells": 4096,
+      "mechanism_tick_throughput_per_second_milli": 2975378,
+      "p99_tick_nanos": 326355,
+      "process_peak_rss_bytes": 11505664
+    },
+    {
+      "arm": "min_gru",
+      "cells": 4096,
+      "mechanism_tick_throughput_per_second_milli": 2685029,
+      "p99_tick_nanos": 363622,
+      "process_peak_rss_bytes": 11362304
+    }
+  ],
+  "ndu_eligible": false,
+  "old_task_retention_and_negative_transfer_verified": false,
+  "original_zip_receipts": {
+    "mechanism": {
+      "zip_sha256": "f65886ca41941de185dd2af8bb9f05221933e9208e078889179dc5671650834b",
+      "zip_size_bytes": 5767
+    },
+    "trained": {
+      "zip_sha256": "9c871918e306f6f0fa0c6f3864bd75ff9271df3829ce8b58108618fc99e93995",
+      "zip_size_bytes": 10867
+    }
+  },
+  "physical_native_shadow_census": {
+    "distinct_weight_digests": 5,
+    "distinct_weight_digests_by_arm": {
+      "min_gru": 2,
+      "ssm": 1,
+      "v2": 1,
+      "v3": 1
+    },
+    "f32_vs_native_head_policy_parity_verified": false,
+    "fresh_native_process_calls": 40,
+    "nominal_file_slots": 20,
+    "selected_production_a0_verified": false
+  },
+  "production_model_promotion_permitted": false,
+  "real_encoder_worker_wal_cas_included": false,
+  "resource_only_4096_undominated": [
+    "v1"
+  ],
+  "same_budget_trained_model_cost_verified": false,
+  "schema": "hepta.neuron.archived-resource-only-frontier.v1",
+  "source_is_only_hosted_archived_synthetic_research": true,
+  "statistical_model_winner_selected": false,
+  "target_host_full_stack_and_4096_cells_verified": false
+}
