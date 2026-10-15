@@ -23,7 +23,9 @@ SOURCE_SHA = "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4"
 REOPEN_SHA = "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36"
 INVENTORY_SHA = "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0"
 FROZEN_PLAN_SHA256 = "6f5efd713be88097cdc5ed3b93786df61e5dbc1709e512884952770dc9377608"
-RETIRED_V2_PLAN_SHA256 = "b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412"
+RETIRED_V2_PLAN_SHA256 = (
+    "b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412"
+)
 RETIRED_V1_PLAN_SHA256 = (
     "005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b"
 )
@@ -334,9 +336,12 @@ def build_plan(files, blobs):
                 if ablate and symbol in source:
                     # Omit query-symbol lines from every delivered excerpt.
                     # Excerpts without such mentions remain byte-identical.
-                    source = "\n".join(
-                        line for line in source.splitlines() if symbol not in line
-                    ).strip() or "[REDACTED SOURCE EXCERPT]"
+                    source = (
+                        "\n".join(
+                            line for line in source.splitlines() if symbol not in line
+                        ).strip()
+                        or "[REDACTED SOURCE EXCERPT]"
+                    )
                     require(
                         symbol not in source,
                         "query symbol survived full evidence lesion",
@@ -380,8 +385,7 @@ def build_plan(files, blobs):
                         # One-source lesion leaked the target marker after deleting
                         # the declaration; compare source-use with matched distractors.
                         "removed_declaration": [
-                            entry(row, ablate=True)
-                            for row in selected
+                            entry(row, ablate=True) for row in selected
                         ],
                     },
                     original_sources=len(docs),

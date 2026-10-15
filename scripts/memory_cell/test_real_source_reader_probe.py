@@ -153,12 +153,8 @@ class RealSourceProbeTests(unittest.TestCase):
                 [row["marker"] for row in original],
                 [row["marker"] for row in ablated],
             )
-            self.assertTrue(
-                any(case["symbol"] in row["text"] for row in original)
-            )
-            self.assertFalse(
-                any(case["symbol"] in row["text"] for row in ablated)
-            )
+            self.assertTrue(any(case["symbol"] in row["text"] for row in original))
+            self.assertFalse(any(case["symbol"] in row["text"] for row in ablated))
 
     def test_machine_score_does_not_become_human_review(self):
         report = score_outputs(self.plan, self.sources, fake_journals(self.plan))
