@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 
-from group_tasks import GroupTask, supported_answer
+from group_tasks import GroupTask, _render, supported_answer
 
 
 @dataclass(frozen=True)
@@ -28,6 +28,15 @@ def training_trace(task):
         raise ValueError("unregistered training family")
     if not task.source_group or len(task.evidence) > 64:
         raise ValueError("unbound or excessive source evidence")
+    # Reconstruct the exact public source, not just an internally consistent
+    # evidence tuple or a caller-provided "train" flag.
+    raw = json.dumps([task.family, task.query, sorted(task.evidence)],
+                     separators=(",", ":")).encode()
+    source = hashlib.sha256(raw).hexdigest()
+    if (task.source_group != source
+            or task.task_id != "train/" + source[:20]
+            or task.text != _render(task.family, task.query, task.evidence, 8)):
+        raise ValueError("TRAIN source/text/evidence identity mismatch")
     steps = []
     if task.family == "dependency":
         node = task.query[1]
