@@ -324,7 +324,7 @@ mod tests {
         assert!(!config_owner_matches_euid(foreign, foreign));
         assert_eq!(
             read_private_config(&path).expect("same-UID original inode is readable"),
-            b"{}",
+            b"{}".to_vec(),
         );
     }
 
