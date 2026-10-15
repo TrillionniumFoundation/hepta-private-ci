@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from group_attention_campaign_review import ARMS, COHORTS, REQUIRED_SOURCES, MODES, MODELS, _digest, review
+from group_attention_campaign_review import ARMS, COHORTS, DIRECT, REQUIRED_SOURCES, MODES, MODELS, _digest, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
 
 
@@ -77,7 +77,7 @@ def fixture(directory):
             parameters_sha256=hashlib.sha256(model_owner.encode()).hexdigest(),
             fit_rows=3, calibration_rows=3)
     training = {}
-    for arm in ARMS:
+    for arm in DIRECT:
         training[arm] = dict(status="completed", completed_steps=3, seed=17,
             cpu_ns=100, wall_ns=100, parameter_count=112,
             sample_and_depth_sha256="b" * 64,
@@ -168,6 +168,16 @@ class PairedReviewTests(unittest.TestCase):
                 (root / "observations.json").write_text(json.dumps(rows))
                 with self.subTest(mutation=repr(mutation)), self.assertRaises(ValueError):
                     review(root)
+
+    def test_reject_fake_training_of_system2_alias_arm(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            bad = copy.deepcopy(files["report"])
+            bad["training"]["core_ndu"] = copy.deepcopy(bad["training"]["core"])
+            (root / "report.json").write_text(json.dumps(bad))
+            with self.assertRaisesRegex(ValueError, "training schedule"):
+                review(root)
 
     def test_reject_impossible_verifier_success_and_unpaid_callbacks(self):
         with tempfile.TemporaryDirectory() as tmp:
