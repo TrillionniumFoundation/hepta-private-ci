@@ -1,0 +1,44 @@
+name: hepta-stem-v11-retention-audit
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v11_retention_gate.py"
+      - "qualification/stem-cell-v1/test_v11_retention_gate.py"
+      - "qualification/stem-cell-v1/bridge-v6-result.json"
+      - ".github/workflows/hepta-stem-v11-retention-audit.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests and immutable real-source recount
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest -v qualification/stem-cell-v1/test_v11_retention_gate.py
+          python -O -m unittest -v qualification/stem-cell-v1/test_v11_retention_gate.py
+          python qualification/stem-cell-v1/v11_retention_gate.py --original qualification/stem-cell-v1/bridge-v6-result.json --out "$RUNNER_TEMP/v11-result.json"
+          python - "$RUNNER_TEMP/v11-result.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          if not (x["status"]=="NO_GO" and x["seed41_paired_correct"]==60 and x["primary_retention_3seed_pass"] is False and x["production_authorized"] is False):
+              raise SystemExit("original V6 historical retention result changed")
+          PY
+      - name: Preserve independent negative audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v11-original-retention-no-go
+          path: ${{ runner.temp }}/v11-result.json
+          if-no-files-found: ignore
