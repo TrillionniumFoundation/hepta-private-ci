@@ -127,13 +127,18 @@ def fixture(directory):
         optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",
         critic_fit_splits=["validation_fit", "validation_calibration"],
         live_system2_modes=["fixed", "ndu"])
+    assignments = [dict(case_id=train["case_id"], source_group=train["source_group"],
+                        family="dependency",
+                        operations=["follow_edge", "read_terminal_label"],
+                        evidence_indices=[0, 1], slots=[0, 1])]
     teacher = dict(schema="hepta.group.train-attention-binding.v2",
         source_groups_sha256=_digest([train["source_group"]]),
         authority="DENY_ALL", train_only=True, supervised_steps=2,
         total_teacher_steps=2, truncated_teacher_steps=0,
         coalesced_teacher_steps=0, supervised_slots=2,
         terminal_evidence_supervised_cases=1,
-        slot_assignment_sha256="b" * 64,
+        slot_assignment_sha256=_digest(assignments),
+        slot_assignments=assignments,
         tokenizer_calls=1, teacher_tensor_sha256="a" * 64)
     encoder = dict(actual_forward_calls=8)
     critic = dict(cpu_ns=200, wall_ns=250, separate_fits_charged=True,

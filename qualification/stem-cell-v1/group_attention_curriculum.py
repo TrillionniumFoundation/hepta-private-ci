@@ -119,8 +119,11 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
         if not targets[i, slots[-1]].any():
             raise ValueError("terminal public evidence was not retained")
         terminal_cases += 1
-        slot_assignments.append((task.source_group, list(slots),
-                                 [step["evidence_index"] for step in steps]))
+        slot_assignments.append(dict(
+            case_id=task.task_id, source_group=task.source_group, family=task.family,
+            operations=[step["operation"] for step in steps],
+            evidence_indices=[step["evidence_index"] for step in steps],
+            slots=list(slots)))
         trace_hashes.append(teacher["trace_sha256"])
         feature_hashes.append(snapshot.digest)
     if not supervised:
@@ -138,6 +141,7 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
         "supervised_slots": supervised_slots,
         "terminal_evidence_supervised_cases": terminal_cases,
         "slot_assignment_sha256": digest(slot_assignments),
+        "slot_assignments": slot_assignments,
         "total_teacher_steps": total, "tokenizer_calls": len(tasks),
         "teacher_does_not_run_at_inference": True,
     }

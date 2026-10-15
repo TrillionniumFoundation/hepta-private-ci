@@ -163,3 +163,17 @@ Both individual and cross-optimizer reviewers deny truncated evidence or
 divergent attention slot identities. Packing operations does **not** prove
 that the learned recurrent Core can execute each logical operation; downstream
 heldout accuracy and work must still demonstrate that ability.
+
+## Independent public-source operation/slot replay
+
+The compact V2 teacher manifest now archives the actual TRAIN-only
+operation type, public fact row, source group, and compressed attention slot
+for every operation. A separate **standard-library-only** reviewer
+reconstructs dependency reachability, constraint row sequence, and temporal
+latest-event updates from the publicly persisted source text (not imported
+training labels or the original `group_step_supervision.py`). It independently
+checks every recorded slot, original source digest, required terminal
+evidence, total operation count and coalescing count; even a forged
+`slot_assignment_sha256` that was recomputed after dropping or shifting
+the terminal record is rejected. This is semantic evidence continuity only,
+not an independent physical tokenization or model-execution attestation.

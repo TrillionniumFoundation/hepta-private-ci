@@ -15,6 +15,7 @@ from pathlib import Path
 from group_campaign_review import _parse
 from group_checkpoint_audit import verify_checkpoint_file, strict_json_file
 from group_trace_semantic_audit import verify_trace_semantics
+from group_attention_slot_review import review_train_slots
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -42,6 +43,7 @@ REQUIRED_SOURCES = (
     "system2_execution.py", "ndu_continuation.py",
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
+    "group_attention_slot_review.py",
 )
 
 
@@ -254,6 +256,8 @@ def review(root):
             or type(encoder["actual_forward_calls"]) is not int
             or encoder["actual_forward_calls"] <= 0):
         raise ValueError("teacher or physical Encoder receipt mismatch")
+    independent_training_slots = review_train_slots(
+        public["train"], teacher, protocol["max_depth"])
     training = report["training"]
     if (set(training) != set(DIRECT)
             or training["core"]["sample_and_depth_sha256"] !=
@@ -465,6 +469,7 @@ def review(root):
                 public_evidence_labels_independently_recomputed=True,
                 teacher_bound_to_train_sources=True,
                 exact_archived_model_bytes_replayed=True,
+                independent_training_operations=independent_training_slots,
                 same_initial_core_claim_still_unattested=True,
                 equal_compute_claim_allowed=False,
                 real_host_execution_independently_attested=False,

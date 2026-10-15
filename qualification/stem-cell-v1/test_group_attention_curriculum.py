@@ -99,6 +99,9 @@ class AttentionCurriculumTests(unittest.TestCase):
         self.assertEqual(manifest["supervised_steps"], 5)
         self.assertEqual(manifest["terminal_evidence_supervised_cases"], 1)
         self.assertEqual(manifest["schema"], "hepta.group.train-attention-binding.v2")
+        self.assertEqual(manifest["slot_assignments"][0]["operations"][-1],
+                         "read_terminal_label")
+        self.assertEqual(manifest["slot_assignments"][0]["slots"][-1], 3)
 
     def test_test_selection_and_validation_never_supervise(self):
         for split in ("test", "selection", "validation"):
