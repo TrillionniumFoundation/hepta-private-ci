@@ -1,0 +1,197 @@
+name: Hepta E2 pinned natural Beans original archive replay (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-beans-pinned-artifact-ridge-replay-20261015
+  workflow_dispatch:
+    inputs:
+      origin_run_id:
+        required: true
+        type: string
+        description: Completed successful original Beans run ID (exact source SHA)
+      source_id:
+        required: true
+        type: string
+        description: Original source-only ZIP artifact numeric ID
+      source_sha256:
+        required: true
+        type: string
+      producer_id:
+        required: true
+        type: string
+      producer_sha256:
+        required: true
+        type: string
+      withheld_id:
+        required: true
+        type: string
+      withheld_sha256:
+        required: true
+        type: string
+      independent_id:
+        required: true
+        type: string
+      independent_sha256:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-e2-pinned-beans-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  contract-tests:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Pin research matrix numerics
+        run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Verify independent SVD, source seals, original ZIP metadata, and optimized mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OPENBLAS_NUM_THREADS=1
+          export PYTHONPATH=experiments/shared_stem_cell
+          for mode in normal optimized; do
+            if test "$mode" = normal; then FLAGS=(); else FLAGS=(-O); fi
+            python "${FLAGS[@]}" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_beans_original_archival_replay.py' -q
+            python "${FLAGS[@]}" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_beans_frozen_vision_linear_probe.py' -q
+            python "${FLAGS[@]}" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_beans_original_zip_review.py' -q
+          done
+          python -m compileall -q \
+            experiments/shared_stem_cell/e2_beans_independent_svd_oracle.py \
+            experiments/shared_stem_cell/e2_beans_original_replay.py \
+            experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py
+
+  original-label-blind-fit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'workflow_dispatch'
+    needs: contract-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ inputs.origin_run_id }}
+      SOURCE_ID: ${{ inputs.source_id }}
+      SOURCE_SHA: ${{ inputs.source_sha256 }}
+      PRODUCER_ID: ${{ inputs.producer_id }}
+      PRODUCER_SHA: ${{ inputs.producer_sha256 }}
+      WITHHELD_ID: ${{ inputs.withheld_id }}
+      WITHHELD_SHA: ${{ inputs.withheld_sha256 }}
+      INDEPENDENT_ID: ${{ inputs.independent_id }}
+      INDEPENDENT_SHA: ${{ inputs.independent_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Verify original exact run and download ONLY source/producers
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OPENBLAS_NUM_THREADS=1
+          export PYTHONPATH=experiments/shared_stem_cell
+          args=(--run-id "$RUN_ID" --source-id "$SOURCE_ID" --source-sha256 "$SOURCE_SHA"
+            --producer-id "$PRODUCER_ID" --producer-sha256 "$PRODUCER_SHA"
+            --withheld-id "$WITHHELD_ID" --withheld-sha256 "$WITHHELD_SHA"
+            --independent-id "$INDEPENDENT_ID" --independent-sha256 "$INDEPENDENT_SHA")
+          python experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py \
+            "${args[@]}" --roles source,producer --output-dir /tmp/hepta-e2-fit-inputs
+          test "$(find /tmp/hepta-e2-fit-inputs -maxdepth 1 -name '*.zip' -type f | wc -l)" -eq 2
+          test ! -e /tmp/hepta-e2-fit-inputs/withheld.zip
+          test ! -e /tmp/hepta-e2-fit-inputs/independent.zip
+      - name: Seal fit-only original frozen vision Ridge (no future targets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OPENBLAS_NUM_THREADS=1
+          export PYTHONPATH=experiments/shared_stem_cell
+          mkdir -p /tmp/hepta-e2-public-seal
+          python experiments/shared_stem_cell/e2_beans_original_replay.py seal \
+            --source-zip /tmp/hepta-e2-fit-inputs/source.zip --source-sha256 "$SOURCE_SHA" \
+            --producer-zip /tmp/hepta-e2-fit-inputs/producer.zip --producer-sha256 "$PRODUCER_SHA" \
+            --output-dir /tmp/hepta-e2-public-seal/seal | tee /tmp/hepta-e2-public-seal/seal-receipt.json
+          test ! -e /tmp/hepta-e2-public-seal/withheld.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-original-beans-frozen-ridge-sealed-no-raw-source
+          path: /tmp/hepta-e2-public-seal/
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-original-retrospective-readout:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'workflow_dispatch'
+    needs: original-label-blind-fit
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ inputs.origin_run_id }}
+      SOURCE_ID: ${{ inputs.source_id }}
+      SOURCE_SHA: ${{ inputs.source_sha256 }}
+      PRODUCER_ID: ${{ inputs.producer_id }}
+      PRODUCER_SHA: ${{ inputs.producer_sha256 }}
+      WITHHELD_ID: ${{ inputs.withheld_id }}
+      WITHHELD_SHA: ${{ inputs.withheld_sha256 }}
+      INDEPENDENT_ID: ${{ inputs.independent_id }}
+      INDEPENDENT_SHA: ${{ inputs.independent_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-original-beans-frozen-ridge-sealed-no-raw-source
+          path: /tmp/hepta-e2-sealed
+      - name: Independently fetch all FOUR original, SHA-pinned ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          args=(--run-id "$RUN_ID" --source-id "$SOURCE_ID" --source-sha256 "$SOURCE_SHA"
+            --producer-id "$PRODUCER_ID" --producer-sha256 "$PRODUCER_SHA"
+            --withheld-id "$WITHHELD_ID" --withheld-sha256 "$WITHHELD_SHA"
+            --independent-id "$INDEPENDENT_ID" --independent-sha256 "$INDEPENDENT_SHA")
+          python experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py \
+            "${args[@]}" --output-dir /tmp/hepta-e2-original-four
+      - name: Score only after sealed model identity and independently replay via SVD
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OPENBLAS_NUM_THREADS=1
+          export PYTHONPATH=experiments/shared_stem_cell
+          mkdir -p /tmp/hepta-e2-independent-result
+          MODEL_SHA=$(python -c 'import json;print(json.load(open("/tmp/hepta-e2-sealed/seal-receipt.json"))["seal"]["model_sha256"])')
+          PRED_SHA=$(python -c 'import json;print(json.load(open("/tmp/hepta-e2-sealed/seal-receipt.json"))["seal"]["predictions_sha256"])')
+          python experiments/shared_stem_cell/e2_beans_original_replay.py score \
+            --source-zip /tmp/hepta-e2-original-four/source.zip --source-sha256 "$SOURCE_SHA" \
+            --producer-zip /tmp/hepta-e2-original-four/producer.zip --producer-sha256 "$PRODUCER_SHA" \
+            --withheld-zip /tmp/hepta-e2-original-four/withheld.zip --withheld-sha256 "$WITHHELD_SHA" \
+            --independent-zip /tmp/hepta-e2-original-four/independent.zip --independent-sha256 "$INDEPENDENT_SHA" \
+            --model /tmp/hepta-e2-sealed/seal/probe_model.json --model-sha256 "$MODEL_SHA" \
+            --predictions /tmp/hepta-e2-sealed/seal/probe_predictions.json --predictions-sha256 "$PRED_SHA" \
+            --output /tmp/hepta-e2-independent-result/readout.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hepta-e2-natural-beans-independent-frozen-ridge-readout-no-raw-weights
+          path: /tmp/hepta-e2-independent-result/readout.json
+          if-no-files-found: error
+          retention-days: 7
