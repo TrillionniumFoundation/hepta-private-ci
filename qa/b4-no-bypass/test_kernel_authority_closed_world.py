@@ -912,6 +912,37 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             body,
             "marker read must use a fixed bounded stack buffer",
         )
+        self.assertIn(
+            "encode_control_owner_marker_v1(device, inode)",
+            body,
+            "live original marker grammar must be encoded without allocation",
+        )
+        encoder_start = code.find("fn encode_control_owner_marker_v1(")
+        encoder_end = code.find("fn control_parent_dir_identity(", encoder_start)
+        self.assertGreaterEqual(encoder_start, 0, "stack marker encoder missing")
+        self.assertGreater(encoder_end, encoder_start, "bounded encoder owner missing")
+        encoder = code[encoder_start:encoder_end]
+        for required in (
+            "let mut marker = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES]",
+            "let mut decimal = [0_u8; 20]",
+            ".checked_add(digits.len() + 1)",
+            "if end > marker.len()",
+        ):
+            self.assertIn(required, encoder, f"marker encoding lost bound: {required}")
+        for forbidden in ("format!(", "String::", "Vec::", "vec![", ".to_owned()"):
+            self.assertNotIn(
+                forbidden, encoder,
+                f"original marker encoder must remain allocation-free: {forbidden}",
+            )
+        self.assertNotIn(
+            "format!(", body,
+            "live owner marker checks may not allocate a new String per tick",
+        )
+        self.assertIn(
+            "recorded[..expected_len] != expected[..expected_len]",
+            body,
+            "the positional original marker must be matched byte-for-byte",
+        )
         recheck = body.rfind(
             "control_owner_file_identity(&self.owner_lock, &self.lock_path)?;"
         )
@@ -927,6 +958,11 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check()",
             native,
             "same-byte different-inode owner marker fault regression is mandatory",
+        )
+        self.assertIn(
+            "fn fixed_stack_control_owner_marker_matches_original_decimal_grammar()",
+            native,
+            "original marker must match the full signed-inode decimal range",
         )
 
     def test_original_control_wal_uses_pinned_dirfd_for_both_children(self) -> None:

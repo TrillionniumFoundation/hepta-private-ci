@@ -1375,6 +1375,37 @@ fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory() {
 
 #[cfg(unix)]
 #[test]
+fn fixed_stack_control_owner_marker_matches_original_decimal_grammar() {
+    // An original marker is persisted by the bootstrap using format! but
+    // checked on every Neuron CAS/Observer read with a bounded stack buffer.
+    // Assert byte-for-byte equality across decimal carry and full u64 range.
+    for (device, inode) in [
+        (0_u64, 0_u64),
+        (1, 9),
+        (9, 10),
+        (10, 99),
+        (99, 100),
+        (u32::MAX as u64, u64::MAX),
+        (u64::MAX, u32::MAX as u64),
+        (u64::MAX, u64::MAX),
+    ] {
+        let (marker, length) =
+            encode_control_owner_marker_v1(device, inode).expect("bounded stack marker");
+        let original = format!("NDUW1|{device}|{inode}\n");
+        assert_eq!(&marker[..length], original.as_bytes());
+        assert!(
+            length <= MAX_CONTROL_OWNER_MARKER_BYTES,
+            "no original marker may exceed fixed bounded storage"
+        );
+        assert!(
+            marker[length..].iter().all(|byte| *byte == 0),
+            "unused stack bytes must not be exposed as a marker"
+        );
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check() {
     use std::io::Seek as _;
     use std::os::unix::fs::MetadataExt;
