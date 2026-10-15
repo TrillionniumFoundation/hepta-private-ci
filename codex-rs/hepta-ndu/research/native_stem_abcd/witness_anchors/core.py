@@ -85,3 +85,13 @@ def candidate_vector(width,kind,witnesses):
     raise ValueError('unknown candidate')
 
 def interval(box):return tuple((x,x) for x in box)
+
+def cert_candidates(witnesses):
+    rows=[]
+    for key,n,kind,mode in TRIALS:
+        params=candidate_vector(n,kind,witnesses)
+        lo,hi=old.cost_bounds(interval(params))
+        if not hi<F(9,4):raise ValueError('outside-root exclusion violated')
+        rows.append(dict(key=key,n=n,candidate=tuple(str(v) for v in params),
+                         kind=kind,mode=mode,lower=str(lo),upper=str(hi)))
+    return rows
