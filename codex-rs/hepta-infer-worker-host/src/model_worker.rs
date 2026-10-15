@@ -1131,6 +1131,33 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     }
 }
 
+
+/// Reuse the ORIGINAL registered FinalUse guarded-effect boundary for every
+/// member of one proposed Stem batch. This stays in the original Worker
+/// source path listed by CALLERS.toml; no alternate authority method exists.
+///
+/// Each independently claimed, uncloneable token must pass the original
+/// signer-instance, binding, revocation, deadline and epoch checks. Existing
+/// active-effect guards nest synchronously and deny concurrent revocation
+/// changes until the innermost callback returns. Failure at any member means
+/// the callback has never started; claimed nonce journal entries are retained.
+fn with_verified_stem_batch_tokens_v1<'a, T>(
+    authority: &'a FinalUseAuthority,
+    signed_members: Vec<(VerifiedUseToken, FinalUseBinding)>,
+    effect: Box<dyn FnOnce() -> Result<T, Error> + 'a>,
+) -> Result<T, Error> {
+    let mut fenced = effect;
+    for (token, binding) in signed_members.into_iter().rev() {
+        let next = fenced;
+        fenced = Box::new(move || {
+            authority
+                .with_verified_effect(token, &binding, next)
+                .map_err(|_| Error::FinalUseDenied)?
+        });
+    }
+    fenced()
+}
+
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
     Digest32::from_str(value).map_err(|_| Error::FeatureContract)
 }
