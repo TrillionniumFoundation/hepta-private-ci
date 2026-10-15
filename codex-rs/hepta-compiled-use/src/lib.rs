@@ -200,12 +200,18 @@ impl SharedMemoryQueueV1 {
         Ok(())
     }
 
-    /// Pop a frame only after rechecking its ABI, digest, capability and
-    /// generation against this queue's verifier.
+    /// Revalidate the front frame before consuming it. A malformed or stale
+    /// frame must not silently advance the queue: retaining the head lets the
+    /// separate owner quarantine or reconcile the exact offending bytes.
+    ///
+    /// This check is not a substitute for a fresh authority/revocation check
+    /// at the independent sandbox immediately before each external effect.
     pub fn pop(&mut self) -> Result<VerifiedActionV1, ActionErrorV1> {
-        let frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
-        let action = ActionFrameV1::decode(&frame)?;
-        self.verifier.verify_and_bind(&action)
+        let frame = self.frames.front().ok_or(ActionErrorV1::QueueEmpty)?;
+        let action = ActionFrameV1::decode(frame)?;
+        let verified = self.verifier.verify_and_bind(&action)?;
+        self.frames.pop_front();
+        Ok(verified)
     }
 
     pub fn len(&self) -> usize {
