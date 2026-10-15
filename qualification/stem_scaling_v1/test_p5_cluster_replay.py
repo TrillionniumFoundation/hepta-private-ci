@@ -69,7 +69,7 @@ class TestP5ClusterReplay(unittest.TestCase):
         side=copy.deepcopy(self.group);side['rows'].append(copy.deepcopy(side['rows'][0]))
         with self.assertRaises(c.ClusterDenied):c.replay(self.source,self.raw,side)
 
-    def test_wrong_group_score_even_with_same_total_denied(self):
+    def test_reallocated_group_scores_are_not_independent_issuer_attestation(self):
         side=copy.deepcopy(self.group)
         side['rows'][0]['correct']-=1;side['rows'][1]['correct']+=1
         # Same aggregate correct but moved between groups; arithmetic alone
