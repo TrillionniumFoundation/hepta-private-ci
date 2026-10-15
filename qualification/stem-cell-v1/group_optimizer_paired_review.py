@@ -67,6 +67,8 @@ def review_pair(sgd_root, adam_root):
                 raise ValueError("optimizer fitting inventory drift: " + field)
     teachers = [strict_json_file(root / "teacher.json") for root in roots]
     for field in ("schema", "teacher_tensor_sha256", "trace_hashes_sha256",
+                  "token_id_binding_complete", "token_id_forward_witness_sha256",
+                  "token_id_retokenized_sha256",
                   "feature_hashes_sha256", "slot_assignment_sha256",
                   "supervised_steps", "total_teacher_steps",
                   "coalesced_teacher_steps",
@@ -74,7 +76,8 @@ def review_pair(sgd_root, adam_root):
         if teachers[0].get(field) != teachers[1].get(field):
             raise ValueError("paired optimizer teacher operation alignment drift: " + field)
     encoders = [strict_json_file(root / "encoder.json") for root in roots]
-    for field in ("model_material", "actual_forward_calls"):
+    for field in ("model_material", "actual_forward_calls",
+                  "token_id_witness_schema", "train_forward_token_id_witnesses"):
         if encoders[0].get(field) != encoders[1].get(field):
             raise ValueError("same-Encoder identity/physical forwards required")
     by_key = []

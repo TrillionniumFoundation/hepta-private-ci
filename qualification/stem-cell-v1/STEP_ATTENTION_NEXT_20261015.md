@@ -177,3 +177,7 @@ evidence, total operation count and coalescing count; even a forged
 `slot_assignment_sha256` that was recomputed after dropping or shifting
 the terminal record is rejected. This is semantic evidence continuity only,
 not an independent physical tokenization or model-execution attestation.
+
+## Exact frozen-forward Token-ID binding
+
+Research teacher retokenization now checks original integer input IDs, not merely aligned length and attention masks. The frozen Encoder records a source/scope/generation-bound SHA-256 for each successful actual forward; the TRAIN teacher must reproduce the same digest using the offset-aware tokenizer. The campaign keeps an ordered TRAIN token witness inventory and the independent and cross-optimizer auditors deny missing or changed same-shape Token IDs. Legacy independent teacher callsites without a witness are explicitly marked unbound and cannot pass the full campaign review. This is consistency of real input bytes within one study, **not independently attested remote execution**.

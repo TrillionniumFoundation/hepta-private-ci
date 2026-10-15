@@ -140,7 +140,13 @@ def fixture(directory):
         slot_assignment_sha256=_digest(assignments),
         slot_assignments=assignments,
         tokenizer_calls=1, teacher_tensor_sha256="a" * 64)
-    encoder = dict(actual_forward_calls=8)
+    forward_ids = ["f" * 64]
+    teacher.update(token_id_binding_complete=True,
+                   token_id_forward_witness_sha256=_digest(forward_ids),
+                   token_id_retokenized_sha256=_digest(forward_ids))
+    encoder = dict(actual_forward_calls=8,
+                   token_id_witness_schema="hepta.group.encoder-token-ids.v1",
+                   train_forward_token_id_witnesses=forward_ids)
     critic = dict(cpu_ns=200, wall_ns=250, separate_fits_charged=True,
                   source_group_independence_claimed=False, receipts={})
     for model_owner in ("core", "attention"):
@@ -343,6 +349,19 @@ class PairedReviewTests(unittest.TestCase):
                 with self.subTest(attr=attr), self.assertRaisesRegex(
                         ValueError, "lossless bounded"):
                     review(root)
+
+    def test_reject_different_forward_ids_with_same_length(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            files = fixture(root)
+            encoder = copy.deepcopy(files["encoder"])
+            report = copy.deepcopy(files["report"])
+            encoder["train_forward_token_id_witnesses"][0] = "a" * 64
+            report["encoder_cost"] = encoder
+            (root / "encoder.json").write_text(json.dumps(encoder))
+            (root / "report.json").write_text(json.dumps(report))
+            with self.assertRaisesRegex(ValueError, "forward Token ID"):
+                review(root)
 
     def test_reject_teacher_and_unequal_schedule_forgery(self):
         with tempfile.TemporaryDirectory() as tmp:

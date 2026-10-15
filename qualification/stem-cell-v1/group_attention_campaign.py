@@ -98,7 +98,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "system2_execution.py", "ndu_continuation.py",
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
                     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
-                    "group_attention_slot_review.py")
+                    "group_attention_slot_review.py", "group_token_id_binding.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
@@ -139,7 +139,12 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             with meter.scope("inference", "encoder"):
                 features[cohort].append(cache.get_or_encode(
                     identity, lambda t=task, i=identity: encoder.encode(t.text, i)))
+    train_forward_token_witnesses = [
+        encoder.token_id_witnesses[snapshot.identity]
+        for snapshot in features["train"]]
     encoder_cost = dict(actual_forward_calls=encoder.calls,
+        token_id_witness_schema="hepta.group.encoder-token-ids.v1",
+        train_forward_token_id_witnesses=train_forward_token_witnesses,
         logical_requests=sum(map(len, tasks.values())),
         wall_ns=time.perf_counter_ns() - encoder_wall,
         cpu_ns=time.process_time_ns() - encoder_cpu,
@@ -149,7 +154,8 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
     (root / "encoder.json").write_text(json.dumps(encoder_cost, sort_keys=True))
     teacher_wall, teacher_cpu = time.perf_counter_ns(), time.process_time_ns()
     teacher, teacher_receipt = build_train_attention(
-        tasks["train"], features["train"], encoder.tokenizer, max_depth=4)
+        tasks["train"], features["train"], encoder.tokenizer, max_depth=4,
+        token_id_witnesses=train_forward_token_witnesses)
     teacher_receipt["cpu_ns"] = time.process_time_ns() - teacher_cpu
     teacher_receipt["wall_ns"] = time.perf_counter_ns() - teacher_wall
     (root / "teacher.json").write_text(json.dumps(teacher_receipt, sort_keys=True))

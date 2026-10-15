@@ -43,7 +43,7 @@ REQUIRED_SOURCES = (
     "system2_execution.py", "ndu_continuation.py",
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
-    "group_attention_slot_review.py",
+    "group_attention_slot_review.py", "group_token_id_binding.py",
 )
 
 
@@ -256,6 +256,16 @@ def review(root):
             or type(encoder["actual_forward_calls"]) is not int
             or encoder["actual_forward_calls"] <= 0):
         raise ValueError("teacher or physical Encoder receipt mismatch")
+    witnesses = encoder.get("train_forward_token_id_witnesses")
+    if (encoder.get("token_id_witness_schema") != "hepta.group.encoder-token-ids.v1"
+            or type(witnesses) is not list or len(witnesses) != len(public["train"])
+            or any(type(w) is not str or len(w) != 64
+                   or any(ch not in "0123456789abcdef" for ch in w)
+                   for w in witnesses)
+            or teacher.get("token_id_binding_complete") is not True
+            or teacher.get("token_id_forward_witness_sha256") != _digest(witnesses)
+            or teacher.get("token_id_retokenized_sha256") != _digest(witnesses)):
+        raise ValueError("frozen forward Token ID witness differs from TRAIN retokenization")
     independent_training_slots = review_train_slots(
         public["train"], teacher, protocol["max_depth"])
     training = report["training"]

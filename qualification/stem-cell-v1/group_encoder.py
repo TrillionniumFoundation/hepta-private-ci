@@ -7,6 +7,7 @@ from pathlib import Path
 
 from group_features import FeatureIdentity, FeatureSnapshotV2, content_digest
 from hf_encoder_kernel import validate_encoder_loading_info, verify_loaded_safetensors
+from group_token_id_binding import token_ids_sha256
 
 MODEL_ID = "ibm-granite/granite-embedding-97m-multilingual-r2"
 REVISION = "835ad14087e140460703cf0fae09f97d469d65c2"
@@ -59,6 +60,7 @@ class FrozenTokenEncoder:
                 or not 1 <= max_tokens <= 256):
             raise ValueError("pinned Transformers and bounded tokens required")
         self.root, self.max_tokens, self.calls = Path(root), max_tokens, 0
+        self.token_id_witnesses = {}
         self.material = json.loads((self.root / "material.json").read_text())
         if (self.material["model_id"], self.material["revision"]) != (MODEL_ID, REVISION):
             raise ValueError("unregistered public checkpoint")
@@ -114,6 +116,12 @@ class FrozenTokenEncoder:
             result = self.model(**tokens).last_hidden_state
         if result.shape != (1, count, 384):
             raise ValueError("unexpected token output geometry")
+        snapshot = FeatureSnapshotV2(identity, result[0], tokens["attention_mask"][0],
+                                     positions=[(i,) for i in range(count)])
+        witness = token_ids_sha256(tokens["input_ids"][0].tolist())
+        old = self.token_id_witnesses.get(identity)
+        if old is not None and old != witness:
+            raise ValueError("same Encoder identity produced changed Token IDs")
+        self.token_id_witnesses[identity] = witness
         self.calls += 1
-        return FeatureSnapshotV2(identity, result[0], tokens["attention_mask"][0],
-                                 positions=[(i,) for i in range(count)])
+        return snapshot

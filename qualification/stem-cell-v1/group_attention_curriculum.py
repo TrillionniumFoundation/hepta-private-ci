@@ -11,6 +11,7 @@ import hashlib
 import json
 
 from group_step_supervision import training_trace
+from group_token_id_binding import token_ids_sha256
 
 
 def digest(value):
@@ -49,7 +50,8 @@ def _fact_spans(text, expected):
     return lines[1:]
 
 
-def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
+def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
+                          token_id_witnesses=None):
     """Return float32 [examples, depth, padded tokens] binary evidence masks.
 
     A 1 denotes a tokenizer position wholly inside the teacher-selected fact.
@@ -62,11 +64,18 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
             or not tasks or len(tasks) != len(snapshots)
             or not callable(tokenizer)):
         raise ValueError("bounded aligned training cohort and tokenizer required")
+    if token_id_witnesses is not None and (
+            type(token_id_witnesses) not in (list, tuple)
+            or len(token_id_witnesses) != len(tasks)
+            or any(type(w) is not str or len(w) != 64
+                   or any(ch not in "0123456789abcdef" for ch in w)
+                   for w in token_id_witnesses)):
+        raise ValueError("complete TRAIN forward Token ID witnesses required")
     widths = [len(s.mask) for s in snapshots]
     if any(n < 1 or n > 256 for n in widths):
         raise ValueError("invalid frozen token snapshot length")
     targets = torch.zeros((len(tasks), max_depth, max(widths)), dtype=torch.float32)
-    trace_hashes, feature_hashes = [], []
+    trace_hashes, feature_hashes, reencoded_ids = [], [], []
     coalesced, supervised, total, supervised_slots, terminal_cases = 0, 0, 0, 0, 0
     slot_assignments = []
     unique_groups = set()
@@ -91,6 +100,10 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
                 mask.shape != (1, n) or offsets.shape != (1, n, 2)
                 or mask[0].tolist() != [int(v) for v in snapshot.mask]):
             raise ValueError("tokenizer/snapshot row mismatch")
+        ids_digest = token_ids_sha256(ids[0].tolist())
+        if token_id_witnesses is not None and ids_digest != token_id_witnesses[i]:
+            raise ValueError("frozen Encoder forward Token IDs differ from teacher retokenization")
+        reencoded_ids.append(ids_digest)
         spans = _fact_spans(task.text, len(task.evidence))
         offsets = offsets[0].tolist()
         for j, (start, end) in enumerate(offsets):
@@ -136,6 +149,10 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
         "feature_hashes_sha256": digest(feature_hashes),
         "teacher_tensor_sha256": hashlib.sha256(targets.numpy().tobytes()).hexdigest(),
         "tokenizer_identity_attested_independently": False,
+        "token_id_binding_complete": token_id_witnesses is not None,
+        "token_id_forward_witness_sha256": (
+            digest(list(token_id_witnesses)) if token_id_witnesses is not None else None),
+        "token_id_retokenized_sha256": digest(reencoded_ids),
         "supervised_steps": supervised, "truncated_teacher_steps": 0,
         "coalesced_teacher_steps": coalesced,
         "supervised_slots": supervised_slots,

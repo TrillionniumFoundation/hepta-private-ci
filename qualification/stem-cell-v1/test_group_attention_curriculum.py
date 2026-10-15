@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import torch
 
 from group_attention_curriculum import build_train_attention, grouped_slots
+from group_token_id_binding import token_ids_sha256
 from group_tasks import make_tasks
 from group_step_supervision import training_trace
 
@@ -57,6 +58,27 @@ class AttentionCurriculumTests(unittest.TestCase):
         for i, task in enumerate(self.tasks):
             self.assertEqual(targets[i].shape[1] >= len(self.tokens[i].mask), True)
 
+
+    def test_same_shape_mask_different_input_ids_rejected(self):
+        task = self.tasks[0]
+        original = self.tokenizer(task.text, return_tensors="pt",
+                                  return_offsets_mapping=True, truncation=False)
+        witness = token_ids_sha256(original["input_ids"][0].tolist())
+        _, receipt = build_train_attention(
+            [task], [self.tokens[0]], self.tokenizer,
+            token_id_witnesses=[witness])
+        self.assertTrue(receipt["token_id_binding_complete"])
+        self.assertEqual(receipt["token_id_retokenized_sha256"],
+                         receipt["token_id_forward_witness_sha256"])
+        class SameSizeDifferentIDs(WordOffsets):
+            def __call__(self, *args, **kwargs):
+                data = super().__call__(*args, **kwargs)
+                data["input_ids"][0, 1] += 1
+                return data
+        with self.assertRaisesRegex(ValueError, "forward Token IDs"):
+            build_train_attention(
+                [task], [self.tokens[0]], SameSizeDifferentIDs(),
+                token_id_witnesses=[witness])
 
     def test_bounded_mapping_retains_all_operations_and_terminal(self):
         for depth in range(1, 9):
