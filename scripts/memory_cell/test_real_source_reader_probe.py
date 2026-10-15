@@ -10,6 +10,7 @@ import unittest
 from real_source_reader_probe import (
     CONDITIONS,
     EVALUATION,
+    FROZEN_PLAN_SHA256,
     TIERS,
     build_plan,
     canonical,
@@ -150,6 +151,7 @@ class RealSourceProbeTests(unittest.TestCase):
         if not (source and reopen):
             self.skipTest("exact historical archives not present in standalone unit job")
         actual = plan_from_archives(Path(source), Path(reopen))
+        self.assertEqual(digest(canonical(actual) + b"\n"), FROZEN_PLAN_SHA256)
         self.assertEqual(len(actual["cases"]), 9)
         self.assertEqual(sum(len(c["conditions"]["hybrid_k4"]) for c in actual["cases"]), 27)
         self.assertEqual(actual["source_inventory_sha256"], "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0")

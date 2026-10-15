@@ -10,6 +10,8 @@ This opt-in research workflow adds **new real pretrained inference on already SH
 
 The frozen 2026-10-12 16:05 UTC extension contains 32 unmodified original Git blobs across six public repositories. Source acquisition completed in [Actions #38320847158](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38320847158), source commit `6ac55532cd3f65d02438cda7f642dc22afb107fe`. The original ZIP SHA-256 is `a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4` (artifact `11778273351`), with original inventory SHA-256 `5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0`. The **separately hosted** binary reopen ZIP is `59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36` (artifact `11779107585`). Both original whole ZIPs and every in-ZIP manifest member, Git blob SHA-1 and byte SHA-256 must verify before a new plan is written.
 
+Externally preregistered, source-derived nine-case plan byte SHA-256: `005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b`. The same pin is checked by both the source-preparation workflow and each actual model/scoring CLI before access to any pretrained Reader weights or scored outputs.
+
 `real_source_reader_probe.py prepare` deterministically registers exactly nine lookup cases, three from each held-out repository-name proxy: CPython, scikit-learn, Deno. It selects unique function declarations from the original code, never from an answer label. Queries name the declaration; evidence contains the original code, file identifier and path. The target file identifier is **mechanically derivable** from public source and the mechanical-support arm; this is not protected human gold or a newly independent blinded population.
 
 ## Matched controls and measurements

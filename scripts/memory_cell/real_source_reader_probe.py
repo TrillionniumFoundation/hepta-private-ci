@@ -22,6 +22,7 @@ import zipfile
 SOURCE_SHA = "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4"
 REOPEN_SHA = "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36"
 INVENTORY_SHA = "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0"
+FROZEN_PLAN_SHA256 = "005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b"
 SOURCE_CUT = "2026-10-12T16:05:00Z"
 EVALUATION = ("python/cpython", "scikit-learn/scikit-learn", "denoland/deno")
 CONDITIONS = ("none", "hybrid_k4", "mechanical_support", "removed_declaration")
@@ -310,7 +311,10 @@ def build_plan(files, blobs):
 
 def plan_from_archives(source_zip: Path, reopen_zip: Path):
     files, blobs = real_source(source_zip, reopen_zip)
-    return build_plan(files, blobs)
+    plan = build_plan(files, blobs)
+    require(digest(canonical(plan) + b"\n") == FROZEN_PLAN_SHA256,
+            "externally precommitted nine-case plan changed")
+    return plan
 
 
 def locked_plan(path: Path, pinned: str):
@@ -583,11 +587,15 @@ def cli():
                               independent_semantic_review=False), sort_keys=True))
     if args.command == "run":
         plan = locked_plan(args.plan, args.plan_sha256)
+        require(args.plan_sha256 == FROZEN_PLAN_SHA256,
+                "source-derived preregistered plan SHA differs")
         result = reader_execute(plan, args.tier, args.model, args.stage_sha256, args.output)
         write_once(args.output / "generation-report.json", canonical(result) + b"\n")
         print(json.dumps(result, sort_keys=True))
     if args.command == "score":
         plan = locked_plan(args.plan, args.plan_sha256)
+        require(args.plan_sha256 == FROZEN_PLAN_SHA256,
+                "source-derived preregistered plan SHA differs")
         sources = real_source(args.source_zip, args.reopen_zip)
         journals = {}
         for tier in TIERS:
