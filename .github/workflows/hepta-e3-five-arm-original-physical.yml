@@ -9,6 +9,10 @@ on:
       - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
       - "experiments/shared_stem_cell/e3_gemma2_budget.py"
       - "experiments/shared_stem_cell/test_e3_gemma2_budget.py"
+      - "experiments/shared_stem_cell/e3_native_capacity_match.py"
+      - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
+      - "experiments/shared_stem_cell/e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
   pull_request:
@@ -19,6 +23,10 @@ on:
       - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
       - "experiments/shared_stem_cell/e3_gemma2_budget.py"
       - "experiments/shared_stem_cell/test_e3_gemma2_budget.py"
+      - "experiments/shared_stem_cell/e3_native_capacity_match.py"
+      - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
+      - "experiments/shared_stem_cell/e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 permissions:
@@ -52,7 +60,16 @@ jobs:
           python3 -m py_compile experiments/shared_stem_cell/e3_five_arm_historical.py \
             experiments/shared_stem_cell/e3_ocr_granite_physical.py \
             experiments/shared_stem_cell/e3_gemma2_native_physical.py \
-            experiments/shared_stem_cell/e3_gemma2_budget.py
+            experiments/shared_stem_cell/e3_gemma2_budget.py \
+            experiments/shared_stem_cell/e3_native_capacity_match.py \
+            experiments/shared_stem_cell/e3_native_capacity_review.py
+      - name: Separate independent two-Head readout tests before model work
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
       - name: Normal original-style 28 fault controls
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
@@ -164,6 +181,14 @@ jobs:
           "$P" -m pip check
           "$P" -m pip freeze > "$RUNNER_TEMP/e3-gemma-packages.txt"
           "$P" -c 'from torchcodec.decoders import AudioDecoder; print("Native media runtime imported")'
+      - name: Prove two genuinely trained same-architecture 769-Head controls
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          "$P" -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_native_capacity_match.py -v
+          "$P" -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_native_capacity_match.py -v
       - name: Stage the SAME original ScienceQA sources and fit-only labels
         run: |
           set -euo pipefail
@@ -201,6 +226,7 @@ jobs:
             --snapshot-manifest "$RUNNER_TEMP/e3-native-pinned/manifest.json" \
             --out "$RUNNER_TEMP/e3-native-observed"
           test -s "$RUNNER_TEMP/e3-native-observed/sealed-native-predictions.json"
+          test -s "$RUNNER_TEMP/e3-native-observed/sealed-native-matched-controls.json"
       - name: Save numeric native predictions, no raw weights/media/heldout targets
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -208,6 +234,7 @@ jobs:
           name: hepta-e3-same-original-native
           path: |
             ${{ runner.temp }}/e3-native-observed/sealed-native-predictions.json
+            ${{ runner.temp }}/e3-native-observed/sealed-native-matched-controls.json
             ${{ runner.temp }}/e3-native-packages.txt
             ${{ runner.temp }}/e3-native-snapshot-receipt.json
           if-no-files-found: warn
@@ -293,6 +320,32 @@ jobs:
           assert s['cost_matched'] is False
           print('REAL HISTORICAL FIVE ARMS SCORED; NO PRODUCTION OR SCIENTIFIC WINNER')
           PY
+      - name: Independently score matched Gemma2 text-only vs native joint Heads
+        run: |
+          set -euo pipefail
+          PRED="$RUNNER_TEMP/e3-complete-five-arm-predictions.json"
+          MAT="$RUNNER_TEMP/e3-native/sealed-native-matched-controls.json"
+          HELD="$RUNNER_TEMP/e3-review-source/private_labels/test_labels.jsonl"
+          test -s "$MAT"
+          python3 experiments/shared_stem_cell/e3_native_capacity_review.py \
+            --combined "$PRED" \
+            --combined-sha256 "$(sha256sum "$PRED" | cut -d' ' -f1)" \
+            --matched "$MAT" \
+            --matched-sha256 "$(sha256sum "$MAT" | cut -d' ' -f1)" \
+            --held "$HELD" --held-sha256 "$HELD_SHA" \
+            --output "$RUNNER_TEMP/e3-native-matched-head-independent-score.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'e3-native-matched-head-independent-score.json'
+          s=json.loads(p.read_text())
+          assert s['original_test_cases']==64
+          assert s['complete_trainable_parameters_per_head']==769
+          assert s['train_steps_each']==80
+          assert s['is_exploratory_posthoc_control'] is True
+          assert s['stem_winner'] is None and s['authority']=='DENY_ALL'
+          print('EXPLORATORY SAME HEAD RESULTS ONLY; NOT A PRODUCTION MODEL SELECTION')
+          PY
       - name: Upload only original-source-bound numerical research result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -302,4 +355,5 @@ jobs:
             ${{ runner.temp }}/e3-complete-five-arm-predictions.json
             ${{ runner.temp }}/e3-prediction-sealed-before-labels.sha256
             ${{ runner.temp }}/e3-five-arm-independent-historical-scores.json
+            ${{ runner.temp }}/e3-native-matched-head-independent-score.json
           if-no-files-found: warn
