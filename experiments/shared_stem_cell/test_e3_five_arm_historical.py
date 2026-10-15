@@ -121,6 +121,15 @@ class FiveArmContract(unittest.TestCase):
         q=panel();q[2]["train_only_private_head_parameters"]=2048
         with self.assertRaises(m.FiveArmError):compose(q)
 
+    def test_native_pinned_gemma_identity_cannot_be_replaced_by_granite(self):
+        q = panel()
+        result = compose(q)
+        self.assertEqual(len(result["cases"]), 64)
+        q = panel()
+        q[2]["model"]["repo"], q[2]["model"]["revision"] = m.GRANITE
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
     def test_missing_real_native_forward(self):
         q=panel();q[2]["physical_joint_encode_batches"]=0
         with self.assertRaises(m.FiveArmError):compose(q)
