@@ -131,14 +131,12 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: pinned-compact
           ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
       - name: Checkout exact reviewed Gemma source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: pinned-gemma
           ref: f8d168a7689eb3624d97c44751791badd069e521
       - name: Enforce immutable backend source revisions

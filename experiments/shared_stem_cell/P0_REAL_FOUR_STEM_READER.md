@@ -50,3 +50,7 @@ Then allow the existing Actions job to retrieve pinned source weights; physicall
 ## Acceptance and key open blockers
 
 This one English natural QA source is a first **real physical P0 investigation**, not accepted Stem choice. Before any scientific go decision: demand independent human reviewed four-condition sufficient/removed premises; stronger nonlexical difficult examples including answer-preserving paraphrases, adversarial distractors and no-cue controls; consistent official Laya typed policy vs equal-training comparisons; complete Chinese/English/code, source-disjoint and **three prospective chronological future** windows; Reader negative-transfer/old-task OOD, target-host lifecycle cost; multiple seeds and matched exposure/parameters; native signed artifact/Worker/Evidence/CNS/FinalUse, source-head plus base-merge CI, security and risk review. All acceptance flags remain **DENY_ALL**.
+
+## Physical-workflow source pin cleanup (2026-10-15)
+
+The two external reviewed Git checkouts each require exactly one `with.ref` containing the reviewed immutable SHA. A duplicate mutable PR-HEAD `ref` alongside the immutable `ref` was caught before hosted physical acceptance and removed without changing dataset, models, labels, experiment arms, or runtime authorization. A new standard-library source regression refuses mutable or duplicate external checkout refs. This repair alone does not show that the hosted job has started or produced any pretrained efficacy result.

@@ -323,4 +323,21 @@ class ReviewTest(unittest.TestCase):
         self.assertTrue(r['four_model_equal_training_budget'] is False)
 
 
+
+class WorkflowContractTest(unittest.TestCase):
+    def test_reviewed_checkout_ref_is_single_exact_pin(self):
+        workflow=(Path(__file__).resolve().parents[2] / '.github/workflows/hepta-p0-real-four-reader.yml').read_text()
+        for title, expected in (
+            ('Checkout exact reviewed original compact Stem source', 'e05f939f65fb76f6bdbf7470eef7e63b77284dcd'),
+            ('Checkout exact reviewed Gemma source', 'f8d168a7689eb3624d97c44751791badd069e521'),
+        ):
+            marker='      - name: '+title+'\n'
+            self.assertEqual(workflow.count(marker), 1)
+            begin=workflow.index(marker)
+            end=workflow.find('\n      - ', begin+len(marker))
+            section=workflow[begin:None if end<0 else end]
+            refs=[line.split(':',1)[1].strip() for line in section.splitlines()
+                  if line.startswith('          ref:')]
+            self.assertEqual(refs,[expected], 'duplicate or mutable checkout source ref')
+
 if __name__=='__main__':unittest.main()
