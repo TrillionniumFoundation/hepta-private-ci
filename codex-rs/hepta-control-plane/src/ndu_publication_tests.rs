@@ -1,4 +1,6 @@
 use super::*;
+#[cfg(unix)]
+use std::fs::OpenOptions;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -1229,6 +1231,63 @@ fn symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner() {
     let reopened = NduPublicationOwnerV1::open_production(&canonical_path, frozen, Digest32::ZERO)
         .expect("real owner stays readable under the canonical path");
     assert!(reopened.current().is_ok());
+}
+
+#[cfg(unix)]
+#[test]
+fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = private_control_dir();
+    let parent = dir.path().join("original");
+    let moved = dir.path().join("detached-original");
+    std::fs::create_dir(&parent).expect("private original parent");
+    std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700))
+        .expect("private parent permissions");
+    let journal = parent.join("ndu.wal");
+    let marker = parent.join("ndu.wal.owner-lock");
+
+    // Deterministic rebind AFTER the private canonical directory FD is
+    // verified but BEFORE either journal or owner-lock is opened. An old
+    // path-based OpenOptions would create both files in the substitute.
+    let result = NduPublicationOwnerV1::open_production_with_directory_hook(
+        &journal,
+        snapshot(3),
+        Digest32::ZERO,
+        || {
+            std::fs::rename(&parent, &moved).expect("detach original dir");
+            std::fs::create_dir(&parent).expect("install empty substitute");
+            std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700))
+                .expect("private substitute");
+        },
+    );
+    assert!(
+        matches!(
+            result,
+            Err(NduPublicationErrorV1::Indeterminate)
+                | Err(NduPublicationErrorV1::UnsafePath)
+        ),
+        "path rebind must never be interpreted as a committed Control owner"
+    );
+    assert!(!journal.exists(), "substitute must not receive a WAL");
+    assert!(!marker.exists(), "substitute must not receive an owner marker");
+    assert!(
+        moved.join("ndu.wal.owner-lock").exists(),
+        "new reservation, if created, must remain in the pinned original directory"
+    );
+    assert!(
+        !moved.join("ndu.wal").exists(),
+        "bootstrap must fail before the original WAL is created"
+    );
+
+    // An interrupted reservation remains a durable ambiguity after the
+    // original directory is put back. No automatic fresh genesis or reuse.
+    std::fs::remove_dir(&parent).expect("empty substitute");
+    std::fs::rename(&moved, &parent).expect("restore original name");
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&journal, snapshot(3), Digest32::ZERO),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
 }
 
 #[cfg(not(unix))]
