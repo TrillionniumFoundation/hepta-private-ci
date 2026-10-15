@@ -256,13 +256,13 @@ fn byte_verified_cas_and_shared_q24_views_preserve_legacy_v1_without_granting_ex
     assert_eq!(owned, baseline);
 
     // Cached bytes and a historical CAS proof never override a current denial.
-    let mut stale = access.clone();
+    let mut stale = access;
     stale.authority_epoch += 1;
     assert_eq!(
         shared.borrow_for_head(&stale, &head),
         Err(StemFeatureBindingError::AuthorityEpochMismatch)
     );
-    stale = access;
+    stale.authority_epoch = source.authority_epoch;
     stale.revocation_observed = true;
     assert_eq!(
         shared.materialize_owned_for_head(&stale, &head),
