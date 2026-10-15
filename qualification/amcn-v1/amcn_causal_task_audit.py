@@ -81,7 +81,9 @@ def require_string(value, description):
 
 
 
-CITATION_MARKER = re.compile(r"\[E([0-9]{1,4})\]")
+# Match every bracketed citation-like span, including malformed tokens.
+# Deliberately surface invalid numbers instead of silently deleting evidence.
+CITATION_MARKER = re.compile(r"\[[Ee]([^\]\r\n]*)\]")
 
 
 def original_emitted_sources(answer, source_ids):
@@ -94,9 +96,14 @@ def original_emitted_sources(answer, source_ids):
         return []
     sources = []
     for match in CITATION_MARKER.finditer(answer):
-        number = int(match.group(1))
-        sources.append(source_ids[number - 1] if 1 <= number <= len(source_ids)
-                       else "UNDELIVERED:" + match.group())
+        digits = match.group(1)
+        if (match.group().startswith("[E")
+                and re.fullmatch(r"[1-9][0-9]{0,3}", digits)):
+            number = int(digits)
+            if number <= len(source_ids):
+                sources.append(source_ids[number - 1])
+                continue
+        sources.append("UNDELIVERED:" + match.group())
     return sources
 
 

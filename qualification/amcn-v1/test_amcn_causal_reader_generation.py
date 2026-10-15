@@ -64,6 +64,15 @@ class ReaderGenerationMechanics(unittest.TestCase):
             rows = self.trial(Path(d) / "first", reader=Fake(self.plan, "[E44]"))
             self.assertTrue(all(x["emitted_source_ids"] == ["UNDELIVERED:[E44]"] for x in rows))
 
+    def test_malformed_citation_shared_parser_is_exact(self):
+        original = "text [E1] [E99999] [E0001] [e1] [Ebad]"
+        expected = ["source-one", "UNDELIVERED:[E99999]",
+                    "UNDELIVERED:[E0001]", "UNDELIVERED:[e1]",
+                    "UNDELIVERED:[Ebad]"]
+        self.assertEqual(r.decoded_citations(original, ["source-one"]), expected)
+        self.assertEqual(a.original_emitted_sources(original, ["source-one"]),
+                         expected)
+
     def test_original_failed_call_preserved_not_inferred_as_answer(self):
         with tempfile.TemporaryDirectory() as d:
             folder = Path(d) / "first"

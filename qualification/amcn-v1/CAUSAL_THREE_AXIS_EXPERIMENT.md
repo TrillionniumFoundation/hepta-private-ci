@@ -218,3 +218,24 @@ PYTHONPATH=.:qualification/amcn-v1 python3 -m unittest discover -s qualification
 
 All resulting artifacts remain SHADOW / DENY_ALL and must pass intact
 Architecture + blocking-ci before further consideration.
+
+
+## Unified strict original citation parsing (2026-10-15)
+
+Original Reader production and task audit now use **one identical citation
+parser** in `amcn_causal_task_audit.original_emitted_sources`. This removes a
+false-clean-citation problem: the former `[E([0-9]{1,4})]` scanner silently
+ignored `[E99999]`, `[E1x]`, `[E]`, lowercase `[e1]`, negative indices
+and leading-zero noncanonical labels. All bracketed `[E...]` and `[e...]`
+spans are now emitted as source IDs only for canonical in-window `[E1]`,
+`[E2]`, etc.; **every malformed/out-of-window citation is retained as an
+`UNDELIVERED:...` observation**. If the raw answer contains a reference that
+is omitted from the submitted citation inventory, the task audit refuses the
+original answer rather than reporting clean citations.
+
+This remains a syntax/availability check, **not evidence entailment**.
+Citation precision remains `null` until independent semantic review.
+The signed blind review intake refuses a semantic-positive citation judgment
+when the raw answer contains no citations or any undelivered citation.
+Tests are synthetic fault regressions; no genuine pretrained Reader result,
+human review, reviewer independence or production capability is created.

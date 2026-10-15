@@ -275,6 +275,30 @@ class CausalTaskAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(a.Refused, "disagree with raw"):
             self.score()
 
+    def test_malformed_citations_are_counted_not_invisibly_ignored(self):
+        for bad in ("[E0001]", "[E99999]", "[E1x]", "[e1]", "[E]", "[E-1]"):
+            with self.subTest(citation=bad):
+                plan, answers, judgments = fixture()
+                raw = "original invalid model citation " + bad
+                answers[0]["raw_answer"] = raw
+                answers[0]["raw_answer_sha256"] = sha(raw)
+                judgments[0]["raw_answer_sha256"] = sha(raw)
+                answers[0]["emitted_source_ids"] = ["UNDELIVERED:" + bad]
+                report = a.audit(plan, answers, judgments)
+                self.assertEqual(report["matched_resource_observations"]
+                                 ["strong_hybrid_rag"]["undelivered_citation_ids"], 1)
+                self.assertIsNone(report["citation_precision"])
+
+    def test_unreported_malformed_reference_refused(self):
+        plan, answers, judgments = fixture()
+        raw = "original unregistered [E99999]"
+        answers[0]["raw_answer"] = raw
+        answers[0]["raw_answer_sha256"] = sha(raw)
+        judgments[0]["raw_answer_sha256"] = sha(raw)
+        answers[0]["emitted_source_ids"] = []
+        with self.assertRaisesRegex(a.Refused, "disagree with raw"):
+            a.audit(plan, answers, judgments)
+
     def test_retention_isolated_from_future_source_family(self):
         self.plan["lineage_alias_edges"] = [["b", "c"]]
         with self.assertRaisesRegex(a.Refused, "retention"):
