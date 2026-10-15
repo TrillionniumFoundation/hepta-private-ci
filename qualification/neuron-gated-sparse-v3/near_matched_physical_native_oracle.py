@@ -53,7 +53,14 @@ def physically_load(root: Path, row: dict) -> dict:
             'physical bytes changed between read and hash')
     loaded = load(data)
     shapes = wanted['unmaterialized_tensor_shapes']
-    translate = lambda name: 'structure.projection' if name == 'native_identity_projection.weight_q24' else name
+    names = {
+        'private_input_adapter.weight': 'adapter.weight',
+        'private_input_adapter.bias': 'adapter.bias',
+        'private_binary_head.weight': 'head.weight',
+        'private_binary_head.bias': 'head.bias',
+        'native_identity_projection.weight_q24': 'structure.projection',
+    }
+    translate = lambda name: names.get(name, name)
     required = {translate(name) for name in shapes}
     require(set(loaded) == required, 'extra/missing physical Adapter or Head tensor')
     for name, dimensions in shapes.items():
