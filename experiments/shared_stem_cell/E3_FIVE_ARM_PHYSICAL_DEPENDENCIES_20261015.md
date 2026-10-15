@@ -90,7 +90,7 @@ The complete run must account for **1,344 preflighted individual inputs**
 and preserve the largest conservative input-token charge. The independent
 five-arm composer now refuses a native receipt with any missing/different
 preflight census, a changed context or a claim that actual image Token count
-was physically verified. Dedicated **18** source-negative unit tests and
+was physically verified. Dedicated **20** source-negative unit tests and
 **six** additional five-arm denial cases run in both ordinary and optimized
 Python; all remain fixture checks until the latest exact-commit Actions
 finishes.
@@ -101,6 +101,48 @@ are **not** independently witnessed. Passing a conservative envelope is a
 necessary precondition, not authorization or proof of zero truncation
 inside an uninspected model implementation. No inference is allowed if
 a modified source cannot fit the bounded conservative envelope.
+
+## Matched native-Head text-vs-vision diagnostic (nonpromoting)
+
+The original five-arm comparison changes the Encoder, learning method and
+input modality simultaneously, so it cannot by itself attribute gains to
+vision. New **within-EmbeddingGemma2** negative/positive controls address
+part of that confounding:
+
+- Reuse the **same actual frozen EmbeddingGemma2 checkpoint, tokenizer,
+  original 192 source inputs and complete original feature materialization**.
+  Construct 768-dimensional *per-candidate* feature inputs of
+  \`[query, choice, query*choice]\` for text-only and for text+image.
+- Train **two distinct complete 769-parameter Linear Heads** from
+  **byte-identical initialization**, using the identical 96 original TRAIN
+  labels, AdamW with learning rate 0.01 and **80 updates each**. Every
+  underlying pretrained feature is explicitly detached; no Encoder weights
+  can receive a gradient. Original CAL and TEST labels never enter fitting.
+- Preserve sealed TEST probabilities for **both** 64-case Head predictions
+  in a separate sidecar, without passing the outcomes or Head weights to
+  the original five-arm Predictor. The original native gate and five-arm
+  definitions remain unchanged. Do **not** apply softmax twice: the matched
+  module already returns normalized probabilities; the producer only checks
+  and stores them.
+- The original-label reviewer is a **separate stdlib-only module**, not an
+  Encoder or Head import. It matches every Test ID/group/source SHA against
+  the sealed five-arm prediction and independently opened original held
+  labels, then reports Accuracy/Brier, rescued/harmed and exact McNemar.
+  This extra result is post-hoc exploratory, not an additional preregistered
+  fifth-arm p-value and **does not authorize a Stem winner**.
+- Local CPU-Torch **12/12 actual numeric training and negative tests**
+  and **11/11 independent stdlib readout tests** passed in normal and
+  Python \`-O\` modes on explicitly **synthetic features and labels**.
+  The four pushed Git blobs have been checked against those locally tested
+  originals. This is **not** pretrained Head efficacy or latest hosted CI.
+
+Even these same-architecture Heads do not imply **equal inference cost**:
+the text+image inputs incur a vision Encoder; the original study does not
+supply matched hardware/energy or independently adjudicated visual
+necessity. The extra control is a within-model *capacity-matched* contrast,
+not a production or equal-total-TCO qualification. Any missing original
+matched-Head source, model, case, label, probability or live owner receipt
+blocks the extra independent result rather than creating a false advantage.
 
 ## Cost and evidence caveats
 
