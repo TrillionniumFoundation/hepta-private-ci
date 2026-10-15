@@ -172,6 +172,20 @@ fn original_native_group_rejects_duplicate_cohort_or_changed_q24_without_nonce()
         prepare(&key, &key, &first, &double_source, &feature),
         Err(BatchWorkerErrorV1::InvalidBinding),
     );
+
+    let mut wrong_reservation_model = second.clone();
+    wrong_reservation_model.authorization.reservation_model_digest =
+        digest(b"foreign reservation model").to_string();
+    assert_eq!(
+        prepare(&key, &key, &first, &wrong_reservation_model, &feature),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+    );
+    let mut malformed_head = second.clone();
+    malformed_head.head_digest = "not-a-canonical-digest".to_string();
+    assert_eq!(
+        prepare(&key, &key, &first, &malformed_head, &feature),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+    );
 }
 
 #[test]
