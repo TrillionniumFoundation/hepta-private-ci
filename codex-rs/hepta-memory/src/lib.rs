@@ -158,6 +158,7 @@ pub use compact_persistence::CompactPersistenceState;
 pub use compact_persistence::CompactReconcileOutcome;
 pub use compact_persistence::CompactRehydrationRecord;
 pub use compact_persistence::checkpoint_digest;
+pub use framing::canonical_workspace_binding;
 pub use framing::workspace_binding_digest;
 pub use h7_feedback::H7_FEEDBACK_BPS_SCALE;
 pub use h7_feedback::H7_FEEDBACK_DEFAULT_WEIGHT_CAP_SCALED;
