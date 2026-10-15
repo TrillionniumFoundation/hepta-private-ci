@@ -799,9 +799,6 @@ fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     );
     assert_eq!(worker.pending(), 0);
-    // Denied Admission is still recorded in the original Evidence journal.
-    // Three completed-effect samples plus one negative Admission; never
-    // record under the rejected replacement writer or replay the model.
     let recorded = original.0.lock().unwrap();
     assert_eq!(recorded.len(), 4);
     assert_eq!(recorded[3].phase, PhaseMetricKindV1::Admission);
@@ -1603,6 +1600,157 @@ fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
     // The effect and nonce are consumed; no automatic model replay occurred.
     assert!(worker.poll_and_execute(107).unwrap().outcomes.is_empty());
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_native_batch_success_is_fsynced_in_original_evidence_wal_before_publication() {
+    let dir = tempfile::tempdir().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    }
+    let final_use_dir = dir.path().join("final-use");
+    std::fs::create_dir(&final_use_dir).unwrap();
+    let wal = dir.path().join("native-batch-evidence.wal");
+    let sink = Arc::new(
+        codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1::open(
+            &wal, 32, 32, 60_000,
+        )
+        .unwrap(),
+    );
+    let signer = SigningKey::from_bytes(&[115; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    {
+        let mut worker = runner_with_driver(&signer, &final_use_dir, model, backend, 2)
+            .with_metric_sink(sink.clone());
+        assert!(!worker.production_metrics_ready());
+        assert!(worker.flush_production_metrics());
+        for (i, request) in [first, second].into_iter().enumerate() {
+            let binding =
+                neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+            worker
+                .enqueue(
+                    100,
+                    "model".into(),
+                    request,
+                    key.clone(),
+                    signed_member(
+                        &signer,
+                        binding,
+                        &format!("physical-evidence-{i}"),
+                        u8::try_from(i).unwrap() + 116,
+                    ),
+                )
+                .unwrap();
+        }
+        let result = worker.poll_and_execute(101).unwrap();
+        assert_eq!(result.outcomes.len(), 2);
+        assert!(result.outcomes.iter().all(|item| matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )));
+        assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+        assert_eq!(worker.pending(), 0);
+        // Signed publication waits for the real WAL fsync ACK.
+        assert!(worker.production_metrics_ready());
+        assert_eq!(sink.status().persisted_rows, 6);
+        let frontier = sink.read_local_frontier().unwrap();
+        assert_eq!(frontier.committed_rows, 6);
+        assert_eq!(frontier.sequence, 1);
+        assert_ne!(frontier.head_digest, Digest32::ZERO);
+    }
+    drop(sink);
+    let reopened =
+        codex_hepta_evidence::metrics_group_commit::MetricsGroupCommitV1::open(&wal)
+            .unwrap();
+    assert_eq!(reopened.committed_rows(), 6);
+    assert_eq!(reopened.committed_groups(), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn real_wal_truncation_after_signed_scalar_effect_withholds_followup_success() {
+    let dir = tempfile::tempdir().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    }
+    let final_use_dir = dir.path().join("final-use");
+    std::fs::create_dir(&final_use_dir).unwrap();
+    let wal = dir.path().join("scalar-evidence.wal");
+    let sink = Arc::new(
+        codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1::open(
+            &wal, 32, 32, 60_000,
+        )
+        .unwrap(),
+    );
+    let signer = SigningKey::from_bytes(&[118; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut worker = runner_with_driver(
+        &signer,
+        &final_use_dir,
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    )
+    .with_metric_sink(sink.clone());
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_binding, "original-first", 119),
+        )
+        .unwrap();
+    let first_result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(first_result.outcomes.len(), 1);
+    assert!(first_result.outcomes[0].result.is_ok());
+    assert_eq!(sink.read_local_frontier().unwrap().committed_rows, 3);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+
+    // Deliberate test-only same-inode truncation after the first fsync.
+    // Queue acceptance must never certify the later signed physical effect.
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&wal)
+        .unwrap()
+        .set_len(0)
+        .unwrap();
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker
+        .enqueue(
+            107,
+            "model".into(),
+            second,
+            key,
+            signed_member(&signer, second_binding, "original-second", 120),
+        )
+        .unwrap();
+    let second_result = worker.poll_and_execute(112).unwrap();
+    assert_eq!(second_result.outcomes.len(), 1);
+    assert!(matches!(
+        &second_result.outcomes[0].result,
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 2);
+    assert_eq!(worker.pending(), 0);
+    assert!(!sink.healthy());
+    assert!(!worker.production_metrics_ready());
 }
 
 #[test]
