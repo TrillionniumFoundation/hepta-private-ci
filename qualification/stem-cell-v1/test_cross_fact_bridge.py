@@ -89,6 +89,15 @@ class CrossFactMechanismTests(unittest.TestCase):
                                 for name, value in model.state_dict().items()
                                 if not name.startswith('fact_block.')))
 
+    def test_quadratic_fact_budget_and_nonfinite_input_rejected(self):
+        block = FactInteractionBlock(8, 'cross_fact')
+        with self.assertRaisesRegex(ValueError, 'bounded fact attention work'):
+            block(torch.zeros(16, 512, 8), torch.ones(16, 512, dtype=torch.bool))
+        values = torch.zeros(1, 2, 8)
+        values[0, 1, 0] = float('nan')
+        with self.assertRaisesRegex(ValueError, 'nonempty masks'):
+            block(values, torch.ones(1, 2, dtype=torch.bool))
+
     def test_missing_all_facts_is_rejected(self):
         block = FactInteractionBlock(8, 'cross_fact')
         with self.assertRaisesRegex(ValueError, 'nonempty masks'):
