@@ -1,0 +1,60 @@
+name: Hepta E2 Token Matrix matched-capacity research contracts
+
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e2_token_query_ablation.py"
+      - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
+      - "experiments/shared_stem_cell/e2_token_query_review.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_ablation.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_real_cpu.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_review.py"
+      - "experiments/shared_stem_cell/E2_TOKEN_QUERY_PHYSICAL.md"
+      - ".github/workflows/hepta-e2-token-query-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2-strict-physical-algorithm-mechanism:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact research source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU Torch independent of pretrained model weights
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-e2-contract-venv"
+          PY="$RUNNER_TEMP/hepta-e2-contract-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --only-binary=:all: 'numpy==2.2.6'
+          "$PY" -m pip check
+          "$PY" -c 'import torch; assert torch.__version__.startswith("2.10.0")'
+          "$PY" -m pip freeze > "$RUNNER_TEMP/hepta-e2-contract-runtime.txt"
+      - name: Genuine numerical SGD and source/failure contract tests on synthetic Q24 matrices
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-e2-contract-venv/bin/python"
+          "$PY" -m py_compile \
+            experiments/shared_stem_cell/e2_token_query_ablation.py \
+            experiments/shared_stem_cell/e2_token_query_real_cpu.py \
+            experiments/shared_stem_cell/e2_token_query_review.py
+          "$PY" -m unittest discover -s experiments/shared_stem_cell \
+            -p 'test_e2_token_query_*.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hepta-e2-contract-tests.txt"
+          git diff --check
+      - name: Preserve test source and errors without any weight artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-token-contract-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-e2-contract-runtime.txt
+            ${{ runner.temp }}/hepta-e2-contract-tests.txt
+          retention-days: 7
