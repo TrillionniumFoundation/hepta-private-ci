@@ -97,9 +97,54 @@ PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest discover \
   -s qualification/stem-cell-v1 -p 'test_cross_fact*.py' -q
 ```
 
-Observed results: **42/42 passed per mode**, no skips. This is only a
+Observed results: **48/48 passed per mode in the current branch**, no skips. This is only a
 focused local suite; the hosted exact-source `hepta-neuron-next-round-matrix`
 CI and the complete Cargo/Bazel workspace qualification are separate.
 This reviewer still cannot prove physical execution of original pretrained
 weights, accurate hardware clocks, independent signer identity, or the truth
 of external observations. No synthetic fixture score may be promoted.
+
+## Synchronized Head training and physical input reuse
+
+The original V5 `binding_training.py` remains byte-identical so its historical
+source/CAS design identity and negative observations are not reinterpreted.
+This child adds `cross_fact_joint_fit.py`, a separate actual trainable
+two-Head executor bound to the same V5 TokenBank and original four-row TRAIN
+groups. Cross-Fact and Local start with exactly equal initial parameter bytes
+and parameter count. Every physical optimizer update consumes the **same
+preconstructed detached TokenBatch** in both models (one `data.take` per
+paired update rather than one per Head); both Heads pay their own backward and
+optimizer compute. The research receipts distinguish the two Head costs from
+the **one** complete joint owner CPU/wall lifecycle, so shared work is not
+counted twice.
+
+At each registered training-only 250-update diagnostic, the two Heads are
+measured separately with original candidate labels. The whole *pair* stops
+early only when **both** have all-original-128 candidate accuracy 1.0,
+paired-world success 1.0 and train logit CE <= .10 at that same checkpoint.
+If only one passes, **both continue on the next identical TRAIN minibatch**
+until the budget (up to 8,000 steps) expires. No synthetic, official validation,
+fresh vocabulary, natural internal tune or external test data participates in
+the synchronized stopping rule. Stop-on-TRAIN is a biased estimator of
+generalization and never itself warrants a model winner.
+
+`joint-training.json` retains exact paired stop reason, all initial/effective
+model identities, one shared batch materialization per completed step,
+the shared deterministic sample schedule, partial/failed second-arm effects,
+and one complete process CPU/wall receipt. The independent stdlib reviewer
+requires that file and each arm's original-compatible physical optimizer
+receipt to bind the same completed step, initial state, exact minibatches,
+parameter and optimizer storage, frozen artifact, and nonadditive cost.
+A second-arm failure cannot return a selected model.
+
+**Actual executed local CPU checks:** normal Python **48/48 tests passed**;
+`python -O` **48/48 passed**, without skips. Includes five new real
+autograd/paired-optimizer/synchronous-termination tests, including measurement
+of actual `data.take` invocation count: 4 synchronized optimization steps
+cause exactly 4 TRAIN materializations, not 8. These tests use controlled
+synthetic token tensors with the real inherited TokenReader code. No new
+Granite97 Encoder weights were downloaded or executed in this local container.
+
+The number of physical Encoder forward calls, fused GPU kernel throughput,
+actual V5 pretrained six-arm learning and total lifetime p99 remain unknown
+until their exact pinned native observations finish. Keep DRAFT/DENY_ALL.
