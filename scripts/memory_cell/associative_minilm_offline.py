@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 
@@ -78,6 +79,59 @@ def inventory(folder, *, expected=None):
         raise ValueError("pretrained file inventory mismatch")
     return info, _digest_json(info)
 
+
+
+def stage_native_view(publisher_directory, native_directory):
+    """Create a byte-pinned six-file native view of an already-verified publisher.
+
+    The publisher is allowed to contain ancillary model-card/config files, but
+    only the six registered bytes are copied into a *new* closed-world directory.
+    The original publisher remains available for the Transformers reference.
+    No changed weights, unknown tokenizer files, symlinks or partial source
+    copies may acquire the registered encoder identity.
+    """
+    publisher, native = Path(publisher_directory), Path(native_directory)
+    if not publisher.is_dir() or publisher.is_symlink():
+        raise ValueError("regular publisher directory required")
+    info = {}
+    for name in sorted(MODEL_FILES):
+        path = publisher / name
+        if not path.is_file() or path.is_symlink():
+            raise ValueError("missing or symlinked registered pretrained file")
+        size = path.stat().st_size
+        if not 0 < size <= 120_000_000:
+            raise ValueError("unbounded registered pretrained file")
+        h = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                h.update(chunk)
+        info[name] = {"sha256": h.hexdigest(), "bytes": size}
+    if _digest_json(info) != REGISTERED_ENCODER_IDENTITY:
+        raise ValueError("unregistered pretrained encoder bytes")
+    native.mkdir(exist_ok=False)
+    for name in sorted(MODEL_FILES):
+        source = publisher / name
+        if source.is_symlink() or not source.is_file():
+            raise ValueError("registered source changed during staging")
+        copied = hashlib.sha256()
+        length = 0
+        with source.open("rb") as reader, (native / name).open("xb") as writer:
+            for chunk in iter(lambda: reader.read(1024 * 1024), b""):
+                length += len(chunk)
+                if length > info[name]["bytes"]:
+                    raise ValueError("registered source grew during staging")
+                copied.update(chunk)
+                writer.write(chunk)
+            writer.flush()
+            os.fsync(writer.fileno())
+        if length != info[name]["bytes"] or copied.hexdigest() != info[name]["sha256"]:
+            raise ValueError("registered source mutated during staging")
+    staged, identity = inventory(native, expected=info)
+    if identity != REGISTERED_ENCODER_IDENTITY:
+        raise ValueError("native view lost registered model identity")
+    return {"encoder_identity": identity, "files": len(staged),
+            "source_files_allowed_to_exceed_native_view": True,
+            "publisher_model_unchanged": True, "production_accepted": False}
 
 def _printable_ascii(text):
     return isinstance(text, str) and 0 < len(text.encode("utf-8")) <= MAX_TEXT_BYTES and all(

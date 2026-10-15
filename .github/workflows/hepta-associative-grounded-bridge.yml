@@ -7,6 +7,7 @@ on:
       - 'scripts/memory_cell/associative_event_bridge.py'
       - 'scripts/memory_cell/associative_minilm_offline.py'
       - 'scripts/memory_cell/test_associative_minilm_offline.py'
+      - 'scripts/memory_cell/test_associative_native_stage.py'
       - 'scripts/memory_cell/associative_minilm_probe.py'
       - 'scripts/memory_cell/associative_minilm_split_trial.py'
       - 'scripts/memory_cell/test_associative_minilm_split_trial.py'
@@ -60,11 +61,25 @@ jobs:
             > /tmp/assoc-receipts/original-input-sha256.txt
           mkdir -p /tmp/assoc-public
           cp /tmp/assoc-real-observations/{collection,sources,questions}.json /tmp/assoc-public/
+      - name: Verify publisher and stage six-file native read-only view
+        run: |
+          set -euo pipefail
+          /tmp/assoc-python/bin/python - <<'PYVIEW' \
+            | tee /tmp/assoc-receipts/native-view-receipt.json
+          import json
+          from associative_minilm_offline import stage_native_view
+          result = stage_native_view('/tmp/assoc-encoder/encoder',
+                                     '/tmp/assoc-encoder/native')
+          print(json.dumps(result, sort_keys=True))
+          PYVIEW
+          /tmp/assoc-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_native_stage.py' -v 2>&1 \
+            | tee /tmp/assoc-receipts/native-view-tests.log
       - name: Native pinned weight inference, source-only probe and mandatory HF parity
         env:
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
-          HEPTA_ASSOC_ENCODER_DIR: /tmp/assoc-encoder/encoder
+          HEPTA_ASSOC_ENCODER_DIR: /tmp/assoc-encoder/native
         run: |
           set -euo pipefail
           /tmp/assoc-python/bin/python -m unittest discover -s scripts/memory_cell \
@@ -77,16 +92,16 @@ jobs:
           import json
           from pathlib import Path
           from associative_minilm_offline import PARITY_TEXTS, compare_with_transformers
-          report = compare_with_transformers('/tmp/assoc-encoder/encoder', PARITY_TEXTS)
+          report = compare_with_transformers('/tmp/assoc-encoder/native', PARITY_TEXTS)
           Path('/tmp/assoc-receipts/native-minilm-hf-parity.json').write_text(
               json.dumps(report, sort_keys=True, indent=2) + '\n')
           PYREF
           /tmp/assoc-python/bin/python scripts/memory_cell/associative_minilm_probe.py \
-            /tmp/assoc-encoder/encoder /tmp/assoc-minilm-fixture \
+            /tmp/assoc-encoder/native /tmp/assoc-minilm-fixture \
             2>&1 | tee /tmp/assoc-receipts/native-minilm-probe.log
           cp /tmp/assoc-minilm-fixture/report.json /tmp/assoc-receipts/native-minilm-probe-report.json
           /tmp/assoc-python/bin/python scripts/memory_cell/associative_minilm_split_trial.py \
-            /tmp/assoc-encoder/encoder /tmp/assoc-minilm-split \
+            /tmp/assoc-encoder/native /tmp/assoc-minilm-split \
             2>&1 | tee /tmp/assoc-receipts/native-minilm-split.log
           cp /tmp/assoc-minilm-split/split-report.json \
             /tmp/assoc-receipts/native-minilm-split-report.json

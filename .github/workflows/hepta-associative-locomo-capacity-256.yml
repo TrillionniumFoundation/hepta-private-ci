@@ -1,0 +1,117 @@
+name: Hepta associative LoCoMo 256-source capacity (research only)
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_locomo_shadow.py'
+      - 'scripts/memory_cell/associative_minilm_offline.py'
+      - 'scripts/memory_cell/test_associative_locomo_capacity.py'
+      - 'scripts/memory_cell/test_associative_native_stage.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_NATIVE_CAPACITY_256.md'
+      - '.github/workflows/hepta-associative-locomo-capacity-256.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-assoc-locomo-capacity-256-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  shadow-256:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU tensor/reference environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/cap256-python
+          /tmp/cap256-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/cap256-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/cap256-receipts
+          /tmp/cap256-python/bin/pip freeze > /tmp/cap256-receipts/python-lock.txt
+      - name: Validate prospective 256-source cohort and failed-bridge staging regression
+        run: |
+          set -euo pipefail
+          /tmp/cap256-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_locomo_capacity.py' -v 2>&1 \
+            | tee /tmp/cap256-receipts/capacity-tests.log
+          /tmp/cap256-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_native_stage.py' -v 2>&1 \
+            | tee /tmp/cap256-receipts/native-view-tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/cap256-staged
+      - name: Extract only exact six-file pretrained encoder and pinned LoCoMo dataset
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cap256-source
+          tar -C /tmp/cap256-source -xzf /tmp/cap256-staged/memory-inputs.tar.gz \
+            memory-inputs/locomo.json \
+            memory-inputs/encoder/config.json \
+            memory-inputs/encoder/model.safetensors \
+            memory-inputs/encoder/tokenizer.json \
+            memory-inputs/encoder/tokenizer_config.json \
+            memory-inputs/encoder/special_tokens_map.json \
+            memory-inputs/encoder/vocab.txt
+          test "$(sha256sum /tmp/cap256-source/memory-inputs/locomo.json | cut -d ' ' -f 1)" = \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+      - name: Mandatory actual Hugging Face token-and-vector parity
+        run: |
+          set -euo pipefail
+          /tmp/cap256-python/bin/python - <<'PY' | tee /tmp/cap256-receipts/hf-parity.json
+          import json
+          from associative_minilm_offline import PARITY_TEXTS, compare_with_transformers
+          result = compare_with_transformers('/tmp/cap256-source/memory-inputs/encoder', PARITY_TEXTS)
+          if result['parity_verified'] is not True:
+              raise RuntimeError('reference parity not established')
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Materialize new 256-source public view without hidden answers
+        run: |
+          set -euo pipefail
+          /tmp/cap256-python/bin/python scripts/memory_cell/associative_locomo_shadow.py prepare256 \
+            /tmp/cap256-source/memory-inputs/locomo.json /tmp/cap256-prepared \
+            > /tmp/cap256-receipts/ingress.json
+          mkdir -p /tmp/cap256-public
+          cp /tmp/cap256-prepared/public.json /tmp/cap256-prepared/manifest.json /tmp/cap256-public/
+          test ! -e /tmp/cap256-public/private.json
+      - name: Execute eight-arm candidate-matched 256-source shadow and separately review
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/cap256-receipts/resources.txt \
+            /tmp/cap256-python/bin/python scripts/memory_cell/associative_locomo_shadow.py run \
+              /tmp/cap256-public /tmp/cap256-source/memory-inputs/encoder /tmp/cap256-run \
+              > /tmp/cap256-receipts/inference.json
+          /tmp/cap256-python/bin/python scripts/memory_cell/associative_locomo_shadow.py review \
+            /tmp/cap256-prepared /tmp/cap256-run /tmp/cap256-receipts/review.json \
+            > /tmp/cap256-receipts/review-summary.json
+          cp /tmp/cap256-run/journal.json /tmp/cap256-run/seal.json /tmp/cap256-receipts/
+      - name: Exact tested head and SHA256 receipts, even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cap256-receipts
+          git rev-parse HEAD > /tmp/cap256-receipts/exact-head.txt
+          (cd /tmp/cap256-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: associative-locomo-256-capacity-not-acceptance
+          path: /tmp/cap256-receipts
+          if-no-files-found: error

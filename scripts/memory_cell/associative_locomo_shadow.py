@@ -106,7 +106,7 @@ def prepare(dataset_file, folder, *, expected_sha=DATASET_SHA256,
     sample is a fixed hash of question text/index. Neither selection accesses
     category, evidence, answer or adversarial_answer.
     """
-    if (type(source_limit) is not int or not 16 <= source_limit <= 128
+    if (type(source_limit) is not int or not 16 <= source_limit <= 256
         or type(question_limit) is not int or not 1 <= question_limit <= 64):
         raise ValueError("bounded preregistered sample sizes required")
     raw = read_regular(dataset_file, maximum=8 * 1024 * 1024)
@@ -206,7 +206,7 @@ def validate_public(public):
                                                     "question_limit_per_dialogue"}
         or type(policy["source_limit_per_dialogue"]) is not int
         or type(policy["question_limit_per_dialogue"]) is not int
-        or not 16 <= policy["source_limit_per_dialogue"] <= 128
+        or not 16 <= policy["source_limit_per_dialogue"] <= 256
         or not 1 <= policy["question_limit_per_dialogue"] <= 64):
         raise ValueError("invalid frozen cohort selection policy")
     if not isinstance(public["families"], list) or len(public["families"]) != 10:
@@ -319,8 +319,11 @@ def run(public_dir, encoder_dir, output_dir, *, pre_steps=128, continuation_step
         raise ValueError("unpinned or malformed public source")
     public = strict_json(raw_pub)
     validate_public(public)
-    if public["policy"]["source_limit_per_dialogue"] != pre_steps:
-        raise ValueError("registered pretraining steps must match source count")
+    # Research budgets are kept independent of source-index capacity: 128
+    # source-write SGD updates may be compared with a 256-source retrieval pool.
+    # The two runs have the same update count, not the same encoder/index cost.
+    if any(pre_steps > len(section["sources"]) for section in public["families"]):
+        raise ValueError("more training steps than sampled source capacity")
     out = Path(output_dir)
     out.mkdir(exist_ok=False)
     started = time.perf_counter()
@@ -653,6 +656,10 @@ def main(argv):
         raise SystemExit("usage: associative_locomo_shadow.py prepare|run|review ...")
     if argv[1] == "prepare" and len(argv) == 4:
         print(json.dumps(prepare(argv[2], argv[3]), indent=2))
+    elif argv[1] == "prepare256" and len(argv) == 4:
+        # Follow-on diagnostic cohort frozen separately from the earlier 128-run.
+        # 256 was considered after a post-seal frontier; no superiority claim.
+        print(json.dumps(prepare(argv[2], argv[3], source_limit=256), indent=2))
     elif argv[1] == "run" and len(argv) == 5:
         v = run(argv[2], argv[3], argv[4])
         print(json.dumps({"complete": v["complete_count"], "encoder": v["encoder_identity"],
