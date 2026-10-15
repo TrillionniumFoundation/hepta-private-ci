@@ -15,7 +15,8 @@ CHILD = "research/e3-five-arm-merged-admission-decongestion-20261015"
 BYTE_CHILD = "research/e3-byte-bound-model-ledger-20261015"
 ARITY_CHILD = "fix/e3-advanced-byte-ledger-native-gemma-physical-arity-20261015"
 TOKEN_CHILD = "research/e3-byte-ledger-gemma2-no-truncation-convergence-20261015"
-APPROVED = (CHILD, BYTE_CHILD, ARITY_CHILD, TOKEN_CHILD)
+SYNTAX_CHILD = "fix/e3-advanced-converged-ci-python-syntax-20261015"
+APPROVED = (CHILD, BYTE_CHILD, ARITY_CHILD, TOKEN_CHILD, SYNTAX_CHILD)
 
 def sections(text):
     starts=list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]*):\n",text))
@@ -27,55 +28,12 @@ class Converged(unittest.TestCase):
         for file in (PHYSICAL,CONTRACT):
             with self.subTest(file=file):
                 raw=file.read_text()
-                matches = re.findall(r'(?m)^    branches:\\s*(\\[[^\\n]+\\])
-                self.assertIn('cancel-in-progress: true',raw)
-                self.assertIn('test_e3_runner_budget.py',raw)
-                self.assertIn('test_e3_model_entry_ledger.py',raw)
-                self.assertIn('test_e3_converged_ci_gates.py',raw)
-
-    def test_physical_jobs_push_only_and_prepost_receipts(self):
-        raw=PHYSICAL.read_text()
-        jobs=sections(raw.split("\njobs:\n",1)[1])
-        for name in ('physical-ocr-granite','physical-native-gemma2','independent-five-arm-review'):
-            self.assertTrue(jobs[name].startswith("    if: github.event_name == 'push'\n"),name)
-        for job,mod in (('physical-ocr-granite','ocr'),('physical-native-gemma2','native')):
-            section=jobs[job]
-            self.assertIn(f'e3-{mod}-pre-view.json',section)
-            self.assertIn(f'e3-{mod}-post-view.json',section)
-            self.assertIn('e3_model_entry_ledger.py',section)
-            self.assertIn('--predictor-source-only',section)
-            self.assertIn('rm -rf -- "$RUNNER_TEMP/e3-source-cache"',section)
-
-    def test_model_target_digest_never_global_or_in_producer_job(self):
-        raw=PHYSICAL.read_text()
-        h,j=raw.split("\njobs:\n",1)
-        self.assertNotIn('HELD_SHA:',h)
-        jobs=sections(j)
-        for name in ('schema-and-security-contract','physical-ocr-granite','physical-native-gemma2'):
-            self.assertNotIn('HELD_SHA:',jobs[name])
-        self.assertIn('HELD_SHA:',jobs['independent-five-arm-review'])
-        self.assertEqual(raw.count('--predictor-source-only'),2)
-
-    def test_original_source_receipts_are_checked_before_sealing(self):
-        raw=PHYSICAL.read_text()
-        jobs=sections(raw.split("\njobs:\n",1)[1])
-        reviewer=jobs['independent-five-arm-review']
-        self.assertIn('independently verify both physical model jobs'.lower(),
-                      reviewer.lower())
-        self.assertIn('test_label_count',reviewer)
-        self.assertIn('tree_fingerprint',reviewer)
-        self.assertIn('tree_fingerprint_profile',reviewer)
-        self.assertIn('hepta.e3-path-byte-sha256.v2',reviewer)
-        self.assertIn('tree_fingerprint_file_count',reviewer)
-        self.assertIn('original_source_receipt_sha256',reviewer)
-        self.assertIn('sha256sum',reviewer)
-
-if __name__ == '__main__':
-    unittest.main()
-, raw)
-                self.assertEqual(len(matches), 1, "only one explicit push branch allowlist")
-                self.assertEqual(json.loads(matches[0]), list(APPROVED),
-                                 "reject unrecognized branch or missing exact approved child")
+                # An exact, explicit allowlist; do not accept a glob/main.
+                branches = [line.partition(":")[2].strip() for line in raw.splitlines()
+                            if line.startswith("    branches: ")]
+                self.assertEqual(len(branches), 1, "one push branch list required")
+                self.assertEqual(json.loads(branches[0]), list(APPROVED),
+                                 "unexpected branch or incomplete research ancestry")
                 self.assertIn('cancel-in-progress: true',raw)
                 self.assertIn('test_e3_runner_budget.py',raw)
                 self.assertIn('test_e3_model_entry_ledger.py',raw)
