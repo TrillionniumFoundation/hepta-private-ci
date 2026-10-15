@@ -112,6 +112,7 @@ def review(root):
     if (protocol.get("critic_fit_splits") != ["validation_fit", "validation_calibration"]
             or protocol.get("live_system2_modes") != ["fixed", "ndu"]
             or not report.get("real_system2_callbacks_executed")
+            or not report.get("heldout_target_stripped_before_system2_callbacks")
             or not report.get("same_model_critic_frozen_on_validation_only")):
         raise ValueError("live System2 and disjoint frozen-critic protocol required")
     critic = report.get("critic_cost")
