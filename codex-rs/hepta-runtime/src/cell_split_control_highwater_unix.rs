@@ -256,6 +256,12 @@ impl CellSplitControlHighwaterUnixPortV1 {
                         || proof.route_fence < previous.route_fence
                         || proof.revocation_epoch < previous.revocation_epoch
                         || proof.ndu_owner_id != previous.ndu_owner_id
+                        // A Control C record is durable, and subsequent
+                        // P/C appends never erase its original CNS binding.
+                        // A signed disappearance is a rollback/fork, not
+                        // permission to forget a previously witnessed effect.
+                        || (previous.original_cns_receipt_binding.is_some()
+                            && proof.original_cns_receipt_binding.is_none())
                         || (proof.split_id == previous.split_id
                             && (proof.plan_digest != previous.plan_digest
                                 || proof.ndu_snapshot_digest != previous.ndu_snapshot_digest))))
