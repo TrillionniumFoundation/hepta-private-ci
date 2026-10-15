@@ -81,8 +81,8 @@ def estimate(uses: Sequence[CellUse], profile: Profile = Profile(), *,
              graph_nodes: int = 0, system2_solved_nodes: int = 0) -> dict:
     """Three-way weight comparison separates weight-sharing from Stem shrinkage.
 
-    'unique_feature_forwards' is an *upper* achievable reuse count assuming
-    all same-identity calls are bundled while valid. It is NOT a measurement:
+    The reported unique-input count is an *optimistic lower bound* on stem
+    invocations if same-identity calls can be bundled. It is NOT measured:
     source authorization, cache lifetime and real scheduling can prevent reuse.
     A Cell with a different scope/generation cannot share a FeatureSnapshot.
     """
@@ -154,7 +154,8 @@ def example(n: int = 4096, distinct_inputs: bool = False) -> dict:
         raise ValueError("invalid example Cell count")
     uses = []
     for i in range(n):
-        hx = lambda v: format(v, "064x")  # noqa: E731
+        def hx(v):
+            return format(v, "064x")
         identity = FeatureIdentity("example_scope", 7, hx(1), hx(2), hx(3),
                                    hx(i + 100 if distinct_inputs else 100), hx(4))
         uses.append(CellUse(f"cell_{i}", identity))
