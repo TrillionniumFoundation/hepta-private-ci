@@ -693,7 +693,8 @@ mod tests {
             None,
             "unflushed original WAL sample is not independent Evidence"
         );
-        sink.flush().expect("real original WAL and F1 fsync barriers");
+        sink.flush()
+            .expect("real original WAL and F1 fsync barriers");
         let binding = read_original_cell_split_metric_candidate_v1(&sink, &transcript, 0)
             .expect("original readback")
             .expect("one committed CAS metric");
@@ -709,13 +710,17 @@ mod tests {
             None,
             "one CAS metric cannot justify an unrelated CNS effect"
         );
-        sink.record(event).expect("duplicated telemetry is not a second CAS");
+        sink.record(event)
+            .expect("duplicated telemetry is not a second CAS");
         sink.flush().expect("second original durable metric group");
         assert!(
             read_original_cell_split_metric_candidate_v1(&sink, &transcript, 0).is_err(),
             "duplicate successful CAS samples must never qualify one original effect"
         );
-        assert!(sink.healthy(), "a well-formed duplicate is not WAL corruption");
+        assert!(
+            sink.healthy(),
+            "a well-formed duplicate is not WAL corruption"
+        );
     }
 
     #[test]
@@ -725,13 +730,9 @@ mod tests {
         let dir = tempfile::tempdir().expect("private original Evidence owner");
         std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
             .expect("owner-only journal directory");
-        let sink = DurablePhaseMetricSinkV1::open(
-            dir.path().join("frozen-metrics.wal"),
-            8,
-            2,
-            60_000,
-        )
-        .expect("original Evidence Writer");
+        let sink =
+            DurablePhaseMetricSinkV1::open(dir.path().join("frozen-metrics.wal"), 8, 2, 60_000)
+                .expect("original Evidence Writer");
         let mut forged = evidence_transcript_fixture();
         forged.receipts[0].intent.idempotency_key = "00".repeat(32);
         assert!(read_original_cell_split_metric_candidate_v1(&sink, &forged, 0).is_err());
@@ -742,14 +743,12 @@ mod tests {
         missing.receipts.pop();
         assert!(read_original_cell_split_metric_candidate_v1(&sink, &missing, 0).is_err());
         assert!(
-            read_original_cell_split_metric_candidate_v1(
-                &sink,
-                &evidence_transcript_fixture(),
-                4,
-            )
-            .is_err()
+            read_original_cell_split_metric_candidate_v1(&sink, &evidence_transcript_fixture(), 4,)
+                .is_err()
         );
-        assert!(sink.healthy(), "rejected read-only callers do not poison Evidence");
+        assert!(
+            sink.healthy(),
+            "rejected read-only callers do not poison Evidence"
+        );
     }
-
 }
