@@ -83,6 +83,40 @@ class RealFileTreeContract(unittest.TestCase):
     def test_repeated_prepost_audits_identical_without_media_export(self):
         self.assertEqual(self.check(),self.check())
         self.assertFalse(self.check()['raw_model_media_uploaded'])
+    def test_cosmetic_source_seal_rewrite_changes_byte_fingerprint(self):
+        before=self.check()
+        self.assertEqual(before['tree_fingerprint_profile'],handoff.FINGERPRINT_PROFILE)
+        self.assertEqual(before['tree_fingerprint_file_count'],196)
+        path=self.root/'source-seals.json'
+        original=json.loads(path.read_bytes())
+        pretty=(json.dumps(original,indent=2,sort_keys=True)+'\n').encode()
+        self.assertNotEqual(pretty,path.read_bytes())
+        path.write_bytes(pretty)
+        after=self.check()
+        self.assertNotEqual(before['tree_fingerprint'],after['tree_fingerprint'])
+        self.assertNotEqual(before['original_source_receipt_sha256'],
+                            after['original_source_receipt_sha256'])
+        self.assertEqual(before['source_sha256'],after['source_sha256'])
+        self.assertEqual(before['fit_sha256'],after['fit_sha256'])
+
+    def test_cosmetic_cohort_rewrite_changes_byte_fingerprint(self):
+        before=self.check()
+        cohort=self.root/'inputs/cohort-before-labels.json'
+        original=json.loads(cohort.read_bytes())
+        pretty=(json.dumps(original,indent=2,sort_keys=True)+'\n').encode()
+        self.assertNotEqual(pretty,cohort.read_bytes())
+        cohort.write_bytes(pretty)
+        seal=self.root/'source-seals.json'
+        receipt=json.loads(seal.read_bytes())
+        receipt['cohort_sha256']=handoff.digest(pretty)
+        seal.write_bytes(handoff.canonical(receipt))
+        after=self.check()
+        self.assertNotEqual(before['tree_fingerprint'],after['tree_fingerprint'])
+        self.assertNotEqual(before['original_source_receipt_sha256'],
+                            after['original_source_receipt_sha256'])
+        self.assertEqual(before['source_sha256'],after['source_sha256'])
+        self.assertEqual(before['fit_sha256'],after['fit_sha256'])
+
     def test_test_label_file_or_original_parquet_rejected(self):
         for relative in ('private_labels/test_labels.jsonl','inputs/test_labels.jsonl',
                          'inputs/validation-0000.parquet', 'images/debug.arrow'):

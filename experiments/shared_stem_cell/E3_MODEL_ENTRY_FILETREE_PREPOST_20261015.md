@@ -27,7 +27,14 @@ The existing `.github/workflows/hepta-e3-five-arm-original-physical.yml`:
 1. Executes `test_e3_model_entry_ledger.py` in normal and `python -O` alongside inherited E3 withheld-target tests.
 2. After **cache deletion and before** each original OCR/Granite or Gemma2 model entry, executes `e3_model_entry_ledger.py` and writes a sanitized, bounded `e3-{ocr,native}-pre-view.json`.
 3. Replays the original identical file view after model output and requires `cmp` equal to a separately generated `e3-{ocr,native}-post-view.json`. Raw labels/media/model bytes are not uploaded.
-4. Adds **only the four sanitized source-view receipts** to the previously existing *numerical prediction* output artifacts. The independent five-arm scoring job reopens both pairs **before** sealing combined prediction metadata, checks local before/after parity, same original source/fit hashes, same image/file-tree fingerprint and no TEST label or authority flags. It downloads original withheld TEST labels on its own independent job **only after** the seal.
+4. Binds `tree_fingerprint` to SHA-256 of canonical sorted
+   `[relative_path, SHA-256(file bytes)]` pairs for the 196 admitted files
+   (four metadata and 192 source images), not just path names. The
+   postseal independent reviewer requires profile
+   `hepta.e3-path-byte-sha256.v2`, the 196-file count and pre/post
+   plus cross-producer exact parity. Metadata whitespace rewrites now
+   change the fingerprint; original source/fit pins stay unchanged.
+5. Adds **only the four sanitized source-view receipts** to the previously existing *numerical prediction* output artifacts. The independent five-arm scoring job reopens both pairs **before** sealing combined prediction metadata, checks local before/after parity, same original source/fit hashes, same image/file-tree fingerprint and no TEST label or authority flags. It downloads original withheld TEST labels on its own independent job **only after** the seal.
 
 The existing separate small source-contract workflow also runs the twelve new tests in both modes. All pre-existing OCR/Granite/Gemma2 model loaders, 769 Head train-only updates, original E3 five-arm scorer, checksums and postseal original-human outcome gates remain unmodified. No new model efficacy can be inferred from a passing input tree.
 
@@ -38,6 +45,9 @@ The existing separate small source-contract workflow also runs the twelve new te
 - Source and workflow must be independently executed on the **latest GitHub Actions SHA**, including physically loading original OCR, Granite97, Gemma2 and independent five-arm label owner, before any claim that this extra barrier actually protected an original pretrained run.
 
 ### Explicit remaining limitations
+
+A byte-bound filetree SHA is not a signed publisher receipt, operating-system
+isolation, a secure-deletion certificate, or evidence of neural task benefit.
 
 The same GitHub-hosted runner's earlier acquisition process did download original TEST-bearing Parquet to a temporary cache. That cache is removed before model entry, and this independent gate checks the *model input tree*, but this is not a mount-namespace sandbox or proof that all kernel caches, arbitrary network calls, third-party dependency side effects and human source publishers were isolated. It cannot authenticate original dataset rights, human visual necessity, true independent source families, future generalization, total energy/p99, a 421M baseline, a production FinalUse token, NDU System 2 gain or any 10T/100T equivalence. Model input integrity and scientific held-label validity remain distinct.
 

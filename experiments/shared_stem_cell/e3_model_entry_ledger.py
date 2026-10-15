@@ -18,6 +18,7 @@ import re
 import stat
 
 SCHEMA = 'hepta.e3-model-input-filetree-audit.v1'
+FINGERPRINT_PROFILE = 'hepta.e3-path-byte-sha256.v2'
 SOURCE_DATASET = 'lmms-lab/ScienceQA-IMG'
 REVISION = 'b9984af01798586705cee1fbdfa80a6dcbef04f1'
 SIZES = {'train':96,'validation':32,'test':64}
@@ -101,6 +102,7 @@ def audit(root: Path, source_sha256: str, fit_sha256: str) -> dict:
     # Independent recursive inventory: reject every unlisted path, hard link,
     # symlink or public source archive even when it has a plausible checksum.
     registered=[]
+    file_byte_hashes=[]
     image_names=set()
     total_bytes=0
     for base, dirs, files in os.walk(root,topdown=True,followlinks=False):
@@ -123,10 +125,15 @@ def audit(root: Path, source_sha256: str, fit_sha256: str) -> dict:
             require(stat.S_ISREG(st.st_mode) and st.st_nlink == 1 and
                     0 < st.st_size <= maximum, 'unsafe input file storage')
             total_bytes+=st.st_size
+            # The model-entry fingerprint binds each admitted path AND bytes.
+            # Path-only hashes could miss valid-schema metadata reserialization.
+            raw=p.read_bytes()
+            file_digest=digest(raw)
+            require(len(raw)==st.st_size, 'file changed during audit')
             registered.append(rel)
+            file_byte_hashes.append([rel,file_digest])
             if rel.startswith('images/'):
-                raw=p.read_bytes()
-                require(digest(raw)==rel[7:], 'raw image hash differs from manifest')
+                require(file_digest==rel[7:], 'raw image hash differs from manifest')
                 require(raw.startswith(b'\x89PNG\r\n\x1a\n') or raw.startswith(b'\xff\xd8\xff'),
                         'not an original PNG/JPEG signature')
                 image_names.add(rel[7:])
@@ -208,7 +215,9 @@ def audit(root: Path, source_sha256: str, fit_sha256: str) -> dict:
             'test_target_bytes_or_digest_admitted':False,
             'independent_publisher_attested':False,'model_quality_certified':False,
             'scope':'prepost_physical_model_entry_source_tree',
-            'tree_fingerprint':digest(canonical(sorted(registered))),
+            'tree_fingerprint_profile':FINGERPRINT_PROFILE,
+            'tree_fingerprint_file_count':len(file_byte_hashes),
+            'tree_fingerprint':digest(canonical(sorted(file_byte_hashes))),
             'original_source_receipt_sha256':digest(seal_raw)}
 
 
