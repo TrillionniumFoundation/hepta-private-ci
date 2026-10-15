@@ -4,7 +4,7 @@ Does not call the training sampler or trainer. Reconstructs deterministic TRAIN
 membership and every sampled update from original public case identifiers.
 It checks file/receipt integrity but cannot attest that GPU/CPU model ops ran.
 """
-from collections import Counter, defaultdict
+from collections import Counter
 import hashlib
 import json
 import random
@@ -77,6 +77,7 @@ def verify_observed_training(cases, seed, receipt, *, steps=8000, batch_size=16)
             or type(updates) is not list or len(updates) != completed):
         raise ValueError('missing or extra completed physical optimizer update receipts')
     exposure_counter = Counter()
+    summed_cpu, summed_wall = 0, 0
     for i, (receipt_step, expected_indices) in enumerate(zip(updates, schedule), 1):
         if i > completed:
             break
@@ -96,9 +97,16 @@ def verify_observed_training(cases, seed, receipt, *, steps=8000, batch_size=16)
             if type(receipt_step.get(clock)) is not int or receipt_step[clock] <= 0:
                 raise ValueError('missing actual training cost field')
         exposure_counter.update(case_ids)
+        summed_cpu += receipt_step['cpu_ns']
+        summed_wall += receipt_step['wall_ns']
+    for clock, lower_bound in (('cpu_ns', summed_cpu), ('wall_ns', summed_wall)):
+        total = receipt.get(clock)
+        if type(total) is not int or total < lower_bound:
+            raise ValueError('training lifecycle cost is smaller than completed physical work')
     if (receipt.get('case_exposures') != dict(exposure_counter)
             or receipt.get('actual_training_exposures') != completed * batch_size):
         raise ValueError('completed source exposures do not reconcile to physical receipts')
     return dict(completed_steps=completed, source_exposures=dict(exposure_counter),
+                nested_update_cpu_ns=summed_cpu, nested_update_wall_ns=summed_wall,
                 training_schedule_sha256=_hash(schedule),
                 labels_entered_sampling=False, independently_attested_execution=False)
