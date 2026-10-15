@@ -173,7 +173,7 @@ where
 
     /// Existing real Evidence-owned group-commit writer, NOT a signer.
     /// The caller must separately authenticate NDU/Control/CNS/Final-use.
-    pub fn with_original_evidence_sink(
+    pub(crate) fn with_original_evidence_sink(
         mut self,
         sink: Arc<codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1>,
     ) -> Self {
