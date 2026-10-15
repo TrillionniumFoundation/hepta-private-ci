@@ -81,7 +81,7 @@ def _inventory_arm(folder: Path, model: str):
     files=[]
     replay=f'{model}.replay'
     allowed = {f'attempt-{model}.json',f'{model}.json',f'{model}.failed.txt',
-               f'{model}.runtime.txt'}
+               f'{model}.runtime.txt',f'{model}.stage-v12.json'}
     if model in ('granite_97m_r2','mmbert_small'):
         allowed.add(f'{model}.preflight-v9.json')
     if model=='embeddinggemma_2_text':
