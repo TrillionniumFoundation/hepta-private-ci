@@ -18,6 +18,7 @@ use codex_hepta_infer_core::StemAccessContextV1;
 use codex_hepta_infer_core::StemFeatureRefV1;
 use codex_hepta_infer_core::StemHeadBindingV1;
 use codex_hepta_infer_core::bind_stem_feature_request_v1;
+use codex_hepta_infer_core::borrow_stem_feature_request_v1;
 use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -761,11 +762,54 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 /// Cryptographic authentication of the source and principal remains the
 /// independent authority owner's responsibility.
 fn scoped_stem_worker_input_digest_v1(bound: &BoundStemNeuronRequestV1) -> Digest32 {
+    scoped_stem_worker_input_digest_parts_v1(
+        bound.request.input_digest,
+        bound.feature_ref_digest,
+    )
+}
+
+/// Canonical input Scope binding shared by the legacy owned and the borrowed
+/// non-authorizing Final-use preflight. It never grants dispatch authority.
+fn scoped_stem_worker_input_digest_parts_v1(
+    input_digest: Digest32,
+    feature_ref_digest: Digest32,
+) -> Digest32 {
     Digest32::of_parts(&[
         b"hepta.infer-worker.scoped-stem-input.v1",
-        bound.request.input_digest.as_array(),
-        bound.feature_ref_digest.as_array(),
+        input_digest.as_array(),
+        feature_ref_digest.as_array(),
     ])
+}
+
+/// Incremental exact-byte V1 payload hashing on an immutable borrowed Q24
+/// slice. This is the SAME wire hash as canonical_neuron_feature_payload_digest
+/// and is not a model-execution, signature or current-access proof.
+/// Unlike the legacy owned request it never clones the feature Vec.
+fn borrowed_stem_worker_payload_digest_v1(
+    authorization: &WorkerRequest,
+    encoder_digest: Digest32,
+    head_digest: Digest32,
+    weights_digest: Digest32,
+    scoped_input_digest: Digest32,
+    features: &[i64],
+    expected_output_width: usize,
+) -> Digest32 {
+    use sha2::Digest as _;
+    use sha2::Sha256;
+
+    let mut sha = Sha256::new();
+    sha.update(b"hepta.infer-worker.neuron-feature-request.v1");
+    sha.update(authorization.model_digest.as_bytes());
+    sha.update(encoder_digest.to_string().as_bytes());
+    sha.update(head_digest.to_string().as_bytes());
+    sha.update(weights_digest.to_string().as_bytes());
+    sha.update(scoped_input_digest.to_string().as_bytes());
+    sha.update((features.len() as u64).to_be_bytes());
+    for value in features {
+        sha.update(value.to_be_bytes());
+    }
+    sha.update((expected_output_width as u64).to_be_bytes());
+    Digest32::from_array(sha.finalize().into())
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
@@ -939,16 +983,24 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::InvalidGrant);
         }
-        let bound = bind_stem_feature_request_v1(source, access, selected_head, feature_vector_q24)
-            .map_err(|_| Error::FeatureContract)?;
-        if bound.authority.grants_any()
-            || authorization.request_id != bound.request.request_id.to_string()
+        // Borrow the exact same source/Head/lease-checked Q24 vector without
+        // allocating a per-Cell Vec. The pure Stem contract still rehashes
+        // arbitrary caller slices and rejects changed Q24 content.
+        let bound = borrow_stem_feature_request_v1(
+            source,
+            access,
+            &selected_head,
+            feature_vector_q24,
+        )
+        .map_err(|_| Error::FeatureContract)?;
+        if bound.authority().grants_any()
+            || authorization.request_id != selected_head.request_id.to_string()
         {
             return Err(Error::FeatureContract);
         }
-        let head_id = bound.request.model_id.to_string();
+        let head_id = selected_head.head_model_id.to_string();
         let loaded = self.models.get(&head_id).ok_or(Error::ModelNotLoaded)?;
-        if loaded.manifest.weights_digest != bound.request.weights_digest.to_string()
+        if loaded.manifest.weights_digest != selected_head.head_weights_digest.to_string()
             || authorization.model_digest != loaded.manifest.model_digest
             || authorization.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -959,22 +1011,30 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::TokenLimit);
         }
-        let request = NeuronFeatureRequest {
-            authorization: authorization.clone(),
-            encoder_digest: bound.request.encoder_digest.to_string(),
-            head_digest: bound.request.head_digest.to_string(),
-            weights_digest: bound.request.weights_digest.to_string(),
-            input_digest: scoped_stem_worker_input_digest_v1(&bound).to_string(),
-            feature_vector_q24: bound.request.feature_vector_q24,
-            expected_output_width: bound.request.expected_output_width,
-        };
-        validate_request(now_ms, &request.authorization)?;
-        validate_neuron_feature_request(&request)?;
+        validate_request(now_ms, authorization)?;
         if authorization.cancelled {
             return Err(Error::FinalUseDenied);
         }
-        let payload = canonical_neuron_feature_payload_digest(&request);
-        if authorization.payload_digest != payload || authorization.lease_payload_digest != payload
+        // The Stem borrow contract checked 1..=512 Q24 values, the same
+        // +/-8Q24 limit, selected Head width and every frozen identity. Only
+        // the legacy materialization is skipped; no approval is invented.
+        let feature_ref_digest = bound.feature_ref_digest();
+        let scoped_input_digest = scoped_stem_worker_input_digest_parts_v1(
+            source.input_digest,
+            feature_ref_digest,
+        );
+        let payload = borrowed_stem_worker_payload_digest_v1(
+            authorization,
+            selected_head.required_encoder_digest,
+            selected_head.head_digest,
+            selected_head.head_weights_digest,
+            scoped_input_digest,
+            bound.feature_vector_q24(),
+            selected_head.expected_output_width,
+        );
+        let payload_hex = payload.to_string();
+        if authorization.payload_digest != payload_hex
+            || authorization.lease_payload_digest != payload_hex
         {
             return Err(Error::PayloadMismatch);
         }
@@ -984,11 +1044,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request_sha256: stem_final_use_request_digest_v1(
                 authorization,
                 &self.grant,
-                bound.feature_ref_digest,
+                feature_ref_digest,
             )
             .into_array(),
-            scope_sha256: bound.feature_ref_digest.into_array(),
-            payload_sha256: parse_digest32(&payload)?.into_array(),
+            scope_sha256: feature_ref_digest.into_array(),
+            payload_sha256: payload.into_array(),
         })
     }
 
