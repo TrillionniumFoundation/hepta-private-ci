@@ -14,6 +14,7 @@ import resource
 import time
 
 from e3_gemma2_budget import check_batch
+from e3_native_capacity_match import train_pair
 from e3_scienceqa_contract import (E3Error, canonical, read_jsonl, read_pinned,
                                    sha, unit_probabilities, validate_labels,
                                    validate_source, write_new)
@@ -116,6 +117,42 @@ def compute(sources,labels,images,runner):
     demand(len(result)==64 and sum(x.numel() for x in gate.parameters())==769,
            "incomplete original 769-param native Cell")
     weights={name:param.detach().tolist() for name,param in gate.state_dict().items()}
+    paired_start=time.perf_counter_ns()
+    matched=train_pair(text,mix,opts,tr,y.tolist(),held,steps=STEPS,seed=SEED+1)
+    paired_work_ns=time.perf_counter_ns()-paired_start
+    demand(matched["heads_complete_trainable_params_each"]==769 and
+           matched["train_steps_each"]==STEPS and
+           matched["train_examples"]==96 and matched["test_examples"]==64 and
+           matched["same_initialization"] is True and
+           matched["held_labels_visible_during_fit"] is False,
+           "matched native two-Head control incomplete")
+    matched_rows=[]
+    for pos,i in enumerate(held):
+        original=sources[i]
+        matched_rows.append({
+            "id":original["id"],"group":original["group"],
+            "source_input_sha256":sha(canonical(original)),
+            "text_only_probabilities":unit_probabilities(
+                matched["text_only_probabilities"][pos]),
+            "joint_text_image_probabilities":unit_probabilities(
+                matched["joint_text_image_probabilities"][pos]),
+        })
+    matched_sidecar={
+        "schema":matched["schema"],
+        "heads_complete_trainable_params_each":769,
+        "train_steps_each":STEPS,
+        "train_examples":96,"test_examples":64,
+        "same_initialization":True,
+        "identical_optimizer_schedule":True,
+        "held_labels_visible_during_fit":False,
+        "initial_same_head_digest":matched["initial_same_head_digest"],
+        "text_trained_head_digest":matched["text_trained_head_digest"],
+        "joint_trained_head_digest":matched["joint_trained_head_digest"],
+        "paired_control_train_wall_ns":paired_work_ns,
+        "matched_head_architecture":"per-choice concatenated [query, choice, query*choice]",
+        "cost_matched":False,"production_accepted":False,
+        "authority":"DENY_ALL","rows":matched_rows,
+    }
     return result, {
         "train_only_private_head_parameters":769,
         "train_only_head_updates":STEPS,
@@ -134,7 +171,8 @@ def compute(sources,labels,images,runner):
         "full_embedding_and_head_training_wall_ns":time.perf_counter_ns()-started,
         "calibration_targets_never_used_for_training":True,
         "original_test_targets_visible":False,
-    }
+        "extra_matched_control_train_wall_ns":paired_work_ns,
+    }, matched_sidecar
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -160,7 +198,7 @@ def main():
     demand(model.profile_digest==pipeline_digest and
            getattr(model,"_verified_local_weights",False) is True,
            "original publisher model was not loaded")
-    results, stats=compute(source,label,args.images,model)
+    results, stats, paired=compute(source,label,args.images,model)
     # Check the original safetensors inventory again after all model calls.
     load_manifest(args.snapshot_manifest)
     del model
@@ -191,6 +229,10 @@ def main():
         "rows":results,"stem_selected":False,"production_accepted":False,
         "signed_model_origin_authenticated":False,"authority":"DENY_ALL"}
     write_new(args.out/"sealed-native-predictions.json",evidence)
+    paired["source_sha256"]=args.source_sha256
+    paired["model"]={"repo":MODEL[0],"revision":MODEL[1],
+                     "pipeline_digest":pipeline_digest}
+    write_new(args.out/"sealed-native-matched-controls.json",paired)
     print(json.dumps({"cases":len(results),"joint_api_batches":stats["physical_joint_encode_batches"],
                       "head_steps":STEPS,"authority":"DENY_ALL"},sort_keys=True))
 
