@@ -8,6 +8,8 @@ on:
       - 'scripts/memory_cell/associative_minilm_offline.py'
       - 'scripts/memory_cell/test_associative_minilm_offline.py'
       - 'scripts/memory_cell/associative_minilm_probe.py'
+      - 'scripts/memory_cell/associative_minilm_split_trial.py'
+      - 'scripts/memory_cell/test_associative_minilm_split_trial.py'
       - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_MINILM_OFFLINE.md'
       - 'scripts/memory_cell/test_associative_text_bridge.py'
       - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_GROUNDED_BRIDGE.md'
@@ -68,10 +70,9 @@ jobs:
           /tmp/assoc-python/bin/python -m unittest discover -s scripts/memory_cell \
             -p 'test_associative_minilm_offline.py' -v 2>&1 \
             | tee /tmp/assoc-receipts/native-minilm-tests.log
-          /tmp/assoc-python/bin/python scripts/memory_cell/associative_minilm_probe.py \
-            /tmp/assoc-encoder/encoder /tmp/assoc-minilm-fixture \
-            2>&1 | tee /tmp/assoc-receipts/native-minilm-probe.log
-          cp /tmp/assoc-minilm-fixture/report.json /tmp/assoc-receipts/native-minilm-probe-report.json
+          /tmp/assoc-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_minilm_split_trial.py' -v 2>&1 \
+            | tee /tmp/assoc-receipts/native-minilm-split-tests.log
           /tmp/assoc-python/bin/python - <<'PYREF'
           import json
           from pathlib import Path
@@ -80,6 +81,15 @@ jobs:
           Path('/tmp/assoc-receipts/native-minilm-hf-parity.json').write_text(
               json.dumps(report, sort_keys=True, indent=2) + '\n')
           PYREF
+          /tmp/assoc-python/bin/python scripts/memory_cell/associative_minilm_probe.py \
+            /tmp/assoc-encoder/encoder /tmp/assoc-minilm-fixture \
+            2>&1 | tee /tmp/assoc-receipts/native-minilm-probe.log
+          cp /tmp/assoc-minilm-fixture/report.json /tmp/assoc-receipts/native-minilm-probe-report.json
+          /tmp/assoc-python/bin/python scripts/memory_cell/associative_minilm_split_trial.py \
+            /tmp/assoc-encoder/encoder /tmp/assoc-minilm-split \
+            2>&1 | tee /tmp/assoc-receipts/native-minilm-split.log
+          cp /tmp/assoc-minilm-split/split-report.json \
+            /tmp/assoc-receipts/native-minilm-split-report.json
       - name: Execute pretrained source-only write, bounded read and cached hybrid
         env:
           HF_HUB_OFFLINE: '1'

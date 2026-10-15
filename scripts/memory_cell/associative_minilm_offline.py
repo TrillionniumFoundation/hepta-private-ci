@@ -19,6 +19,8 @@ import torch.nn.functional as F
 from safetensors.torch import load_file
 
 
+REGISTERED_ENCODER_IDENTITY = "5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a"
+
 MODEL_FILES = frozenset({
     "config.json", "model.safetensors", "tokenizer.json",
     "tokenizer_config.json", "special_tokens_map.json", "vocab.txt",
@@ -160,6 +162,8 @@ class MiniLMOfflineEncoder:
     def __init__(self, directory, *, expected_inventory=None, threads=2):
         folder = Path(directory)
         self.files, self.identity = inventory(folder, expected=expected_inventory)
+        if self.identity != REGISTERED_ENCODER_IDENTITY:
+            raise ValueError("unregistered pretrained encoder inventory")
         cfg = _json_bytes((folder / "config.json").read_bytes())
         if (cfg.get("architectures") != ["BertModel"]
             or cfg.get("model_type") != "bert"

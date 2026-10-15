@@ -19,7 +19,7 @@ execution until the independent Transformers parity test completes.
 
 The native port:
 
-- Validates exact six-file model inventory, hashes, symlinks and closed-world
+- Fails closed unless the computed exact six-file inventory digest matches the registered snapshot `5afecdd...`; validates hashes, symlinks and closed-world
   architecture/tensor shapes. `inventory()` can additionally take a trusted
   exact file hash inventory. The resulting encoder identity is compatible with
   the existing `pretrained.file_inventory` and `native.digest` formulation.
@@ -95,3 +95,49 @@ Next: require hosted exact token/latent parity; then train and evaluate on
 externally admitted independent source families with fixed Reader and cached
 BM25+dense/hybrid retrieval at equal lifecycle cost. If the strong source-retaining
 controls win, retain them rather than promoting the parameter Cell.
+
+## Experimental type-split lesion on actual staged weights (same authored family)
+
+`associative_minilm_split_trial.py` now executes the same pinned MiniLM weights
+and freezes the same projected cue/value interface. After a fixed 64-update
+mixed rank-4 parent, it continues the rank-4 mixed model for 64 steps versus
+two rank-2 semantic/procedural descendants at 64 steps *per child*. Both
+candidate paths have **512 trainable float32 parameters in total**, and the
+same estimated 32,768 post-training scalar parameter touches; the split path
+has twice the optimizer-step count. These estimates are not FLOPs or complete
+host cost. The parent and child training-root lineage remain intact; an
+ancestor-root revocation blocks both descendants. Exact-source stored-vector
+nearest neighbor is retained as a source-holding comparator, and wrong-kind
+routing is explicitly measured. The six same-source question paraphrases were
+not independently authored or temporally held out.
+
+With dimension 64 and actual pinned CPU weights, observed mean latent MSE:
+
+| Arm | MSE, lower is better |
+| --- | ---: |
+| Same parent before continuation | 0.01705195 |
+| Continued shared rank-4 parent | 0.01673861 |
+| Split children, correct typed route | 0.01579638 |
+| Split children, swapped route lesion | 0.01642341 |
+| Source-retaining exact vector nearest neighbor | **0.00000000** |
+
+The type split has a lower observed MSE than the continued shared model on
+this **six-example controlled fixture**, but this is not an independent or
+statistically validated generalization advantage. The source-held vector
+control remains strictly better in this fixture. No valid claim of learned
+universal memory, natural-language Reader benefit, graph emergence, cost
+superiority, accepted citations or production admission follows.
+
+Reproduce (the output directory must not exist):
+
+```sh
+PYTHONPATH=scripts/memory_cell python scripts/memory_cell/associative_minilm_split_trial.py \
+    /path/to/pinned/encoder /tmp/new-associative-split-receipt
+PYTHONPATH=scripts/memory_cell python -m unittest discover -s scripts/memory_cell \
+    -p 'test_associative_minilm_split_trial.py' -v
+```
+
+**Source-family gap:** the `source_family_count_effective: 1` field is mandatory
+and must not be replaced with a count of per-event roots. A future research
+run should use outside-authenticated source families, independently authored
+queries, real future windows and source-lineage-safe per-family evaluation.

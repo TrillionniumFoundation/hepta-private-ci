@@ -12,7 +12,7 @@ import torch
 
 from associative_minilm_offline import (
     AsciiWordPiece, MiniLMOfflineEncoder, PARITY_TEXTS,
-    MODEL_FILES, inventory, compare_with_transformers,
+    MODEL_FILES, REGISTERED_ENCODER_IDENTITY, inventory, compare_with_transformers,
 )
 
 ENCODER = os.environ.get("HEPTA_ASSOC_ENCODER_DIR")
@@ -38,6 +38,15 @@ class AdmissionTests(unittest.TestCase):
             (root / "vocab.txt").symlink_to(root / "config.json")
             with self.assertRaisesRegex(ValueError, "unsafe"):
                 inventory(root)
+
+    def test_reject_same_filename_model_with_unregistered_weight_identity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for filename in MODEL_FILES:
+                (root / filename).write_bytes(b"unregistered")
+            with self.assertRaisesRegex(ValueError, "unregistered pretrained"):
+                MiniLMOfflineEncoder(root)
+        self.assertEqual(REGISTERED_ENCODER_IDENTITY, KNOWN_PIN)
 
     def test_wrong_inventory_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
