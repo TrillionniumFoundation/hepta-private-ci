@@ -155,9 +155,13 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         if training[name]["status"] != "completed" or training[name]["completed_steps"] != steps:
             raise ValueError("partial training cannot be scored as completed")
     if (training["core"]["parameter_count"] != training["attention"]["parameter_count"]
+            or training["core"]["initial_model_sha256"] != initial_core_digest
+            or training["attention"]["initial_model_sha256"] != initial_core_digest
+            or any(training[name]["trained_model_sha256"] != parameter_digest(models[name])
+                   for name in training)
             or training["core"]["sample_and_depth_sha256"] !=
                training["attention"]["sample_and_depth_sha256"]):
-        raise ValueError("paired parameter/sampling controls drifted")
+        raise ValueError("paired initial weights, terminal weights or sampling controls drifted")
     # Fit model-specific frozen critics ONLY on the separate validation group.
     # This pays the complete existing propose/verify/value/revise executor.
     critic_start_wall, critic_start_cpu = time.perf_counter_ns(), time.process_time_ns()
