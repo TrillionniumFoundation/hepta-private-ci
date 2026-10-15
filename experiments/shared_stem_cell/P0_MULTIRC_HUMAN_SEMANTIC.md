@@ -144,3 +144,35 @@ rescored or re-labeled without the source data and original receipts.
 Source-only normal/optimized tests and hosted exact-head CI are separately
 required; none of these mechanisms claim verified weights or independent
 model-origin signatures. `DENY_ALL`, no model winner, no release.
+
+## Original Parquet off-panel raw-length failure and V13 admission correction
+
+Hosted original V12 physical run `38686023757` completed its fixed-revision
+Parquet download, but source construction failed at `candidates()` with
+`Invalid: empty/oversized actual source material`. No FIT, blind or held human
+label artifacts were produced. This is a **source-validation failure**, not a
+physical pretrained model failure. Downstream jobs skipped and are NOT green.
+
+V13 removes only the unintended **minimum raw-file field-length rejection**.
+The whole pinned raw Parquet can contain empty/short off-panel paragraphs,
+questions or answers; the original, much **stricter unchanged eligibility**
+(passages 100–950 chars, questions 10–240, answers 1–130 and complete candidate
+sets) still excludes them, deterministically without accessing label values.
+The existing raw upper bounds (paragraph ≤65536, question ≤8192, answer ≤4096),
+strict types, authentic binary labels, unique answer identities, source conflict
+checks, immutable source SHA and human split/case validation all remain.
+No malformed or source-inconsistent row becomes a valid training example.
+The original selected source panel and PROTOCOL must be recomputed at the
+exact hosted SHA; if the valid selected cohort changes, no older model or
+quality/cost claim is inherited.
+
+Add a separate strictly read-only raw-length **aggregate count only** (no text,
+labels, answer ID or model details) before construction. Its sha-pinned
+train/validation input and per-split short/overlong tallies are included in
+original source-lock diagnostic artifacts, even if a later qualification
+stage fails. Three new synthetic cases prove out-of-panel short values cannot
+abort an otherwise unchanged 12/4/8 selection, all-too-short data still fails,
+and oversized cells/nonbinary label changes remain strict denial.
+
+**DRAFT / DENY_ALL; the exact new HEAD must complete original source/model
+and independent human CI before any dependent E1/E2/E3/E4 run is rebased.**

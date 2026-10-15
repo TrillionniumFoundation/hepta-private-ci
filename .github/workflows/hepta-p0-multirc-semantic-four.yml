@@ -181,6 +181,31 @@ jobs:
           (Path(os.environ['RUNNER_TEMP'])/'human-source/source-lock.json').write_text(
               json.dumps(out,sort_keys=True),encoding='utf-8')
           PY
+      - name: Record pinned original raw-text length census, never held labels
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_multirc_semantic_material import original_rows
+          root=Path(os.environ['RUNNER_TEMP'])/'human-source'
+          lock=json.loads((root/'source-lock.json').read_text())
+          summary={'schema':'hepta.p0.raw-source-length-census.v13',
+                   'source_revision':lock['revision'],'splits':{}}
+          for split in ('train','validation'):
+              rows=original_rows(root/(split+'.parquet'),lock['original_file_sha256'][split])
+              summary['splits'][split]={
+                'original_rows':len(rows),
+                'paragraph_short_lt30':sum(len(r['paragraph'])<30 for r in rows),
+                'question_short_lt2':sum(len(r['question'])<2 for r in rows),
+                'answer_empty':sum(len(r['answer'])==0 for r in rows),
+                'paragraph_over65536':sum(len(r['paragraph'])>65536 for r in rows),
+                'question_over8192':sum(len(r['question'])>8192 for r in rows),
+                'answer_over4096':sum(len(r['answer'])>4096 for r in rows)}
+          (root/'raw-length-census-v13.json').write_text(json.dumps(summary,sort_keys=True)+'\n')
+          print(json.dumps(summary,sort_keys=True))
+          PY
       - name: Construct real human labels separately from model blind material
         run: |
           set -euo pipefail
@@ -220,6 +245,7 @@ jobs:
           path: |
             ${{ runner.temp }}/human-source/source-lock.json
             ${{ runner.temp }}/human-source/preparation-summary.json
+            ${{ runner.temp }}/human-source/raw-length-census-v13.json
           if-no-files-found: warn
           retention-days: 7
 

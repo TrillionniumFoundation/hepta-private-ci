@@ -88,10 +88,16 @@ def candidates(rows):
         if (any(type(r[k]) is not str for k in ('paragraph', 'question', 'answer')) or
                 type(r['label']) is not int or r['label'] not in (0, 1)):
             raise Invalid('untyped authentic labels or source text')
-        if (not 30 <= len(r['paragraph']) <= 65536 or
-                not 2 <= len(r['question']) <= 8192 or
-                not 1 <= len(r['answer']) <= 4096):
-            raise Invalid('empty/oversized actual source material')
+        # An original full-Parquet source can contain short/blank rows that
+        # will NEVER qualify for the smaller semantic panel below (passage
+        # 100..950, question 10..240, answer 1..130). Refusing the entire
+        # immutable file over an off-panel short row is not an eligibility
+        # requirement. Retain the row for deterministic grouping; keep strict
+        # upper bounds and reject malformed labels/IDs/source conflicts.
+        if (len(r['paragraph']) > 65536 or
+                len(r['question']) > 8192 or
+                len(r['answer']) > 4096):
+            raise Invalid('oversized original raw source cell')
         p = groups.setdefault(idx['paragraph'], {'paragraph': r['paragraph'], 'questions': {}})
         if p['paragraph'] != r['paragraph']:
             raise Invalid('one paragraph ID maps to different source bytes')
