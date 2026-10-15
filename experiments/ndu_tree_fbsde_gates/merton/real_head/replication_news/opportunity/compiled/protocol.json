@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.merton.shared-policy-protocol.v1",
+  "parent_sha": "8a262fdc9c59f8b45821c0a98989879da3986193",
+  "arms": ["no_update", "fixed8", "fixed32", "solve_neutral", "shared_neutral", "solve_ndu", "shared_ndu"],
+  "repeats": 3,
+  "scope": "same immutable original feature packet, empirical prior, tariffs and control source; NOT transfer to new sources",
+  "compile": "all supported histories reachable under each frozen optimal policy; reject missing and unregistered states",
+  "numerics": "inherited float64 Planner with TOL1e-12; independent Fraction audit; no learned approximation",
+  "costs": "one actual512-update prior per formal run; one compilation and load per run; per-method attribution shown separately; all physical work counted once",
+  "break_even": "descriptive constant-marginal-cost extrapolation only; null when measured marginal saving is nonpositive",
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "new_sources": 0,
+  "production_accepted": false
+}

@@ -146,6 +146,37 @@ jobs:
                   raise ValueError('missing trained prior or completed lifecycle')
           PYCODE
           git diff --exit-code
+      - name: Compile one shared decision asset and verify physical control parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/compiled
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_compiled.py -v 2>&1 | tee "$E/compiled-tests-$mode.log"
+            grep -F 'Ran 36 tests' "$E/compiled-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/benchmark.py" --material "$RUNNER_TEMP/news-material" --output "$E/compiled-$mode"
+            python "${FLAGS[@]}" "$D/audit_compiled.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --run "$E/compiled-$mode" --output "$E/compiled-audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          seals=[json.loads((e/f'compiled-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def semantic(s):
+              if len(s['rows'])!=84:raise ValueError('incomplete shared-policy run')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns')} for r in s['rows']]
+          if semantic(seals[0])!=semantic(seals[1]):raise ValueError('shared policy changed model behavior')
+          tables=[json.loads((e/f'compiled-{m}/policy.json').read_text()) for m in ('normal','optimized')]
+          if tables[0]['tables']!=tables[1]['tables']:raise ValueError('compiled decision drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'compiled-audit-{m}.json').read_text())
+              if a['verified_lifecycles']!=84 or a['paired_shared_vs_solve']!=24 or a['rational_policy_nodes']!=66:
+                  raise ValueError('missing physical or exact-math comparison')
+          PYCODE
+          git diff --exit-code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
