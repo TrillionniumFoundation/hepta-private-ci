@@ -10,11 +10,14 @@ import argparse
 import hashlib
 import json
 import math
+import os
+import stat
 from pathlib import Path
 
 import torch
 from torch.nn import functional as F
-from safetensors.torch import load_file, save_file
+from safetensors import SafetensorError
+from safetensors.torch import load as safe_load, save_file
 
 from e2_token_query_ablation import (
     Head, _digest_module, _materialize, frozen_bank, Invalid as FeatureInvalid,
@@ -43,12 +46,34 @@ def _sha(data):
 
 
 def _checked(path: Path, max_bytes: int):
-    if path.is_symlink() or not path.is_file():
-        raise Invalid('missing or linked evidence file')
-    size = path.stat().st_size
-    if not 0 < size <= max_bytes:
-        raise Invalid('empty or excessive replay bytes')
-    return path.read_bytes()
+    """Bounded single-descriptor read: do not hash one inode then use another.
+
+    The verified byte snapshot, not its mutable path, is the deserialization
+    source. O_NOFOLLOW is required for this POSIX research qualification.
+    """
+    if (type(max_bytes) is not int or max_bytes < 1 or
+            not hasattr(os, 'O_NOFOLLOW')):
+        raise Invalid('unsupported bounded no-follow evidence reader')
+    flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, 'O_CLOEXEC', 0)
+    fd = None
+    try:
+        fd = os.open(path, flags)
+        metadata = os.fstat(fd)
+        if not stat.S_ISREG(metadata.st_mode) or not 0 < metadata.st_size <= max_bytes:
+            raise Invalid('missing, nonregular or excessive replay file')
+        with os.fdopen(fd, 'rb') as handle:
+            fd = None  # fdopen owns the same verified inode until close
+            raw = handle.read(max_bytes + 1)
+        if len(raw) != metadata.st_size:
+            raise Invalid('replay file changed or grew during bounded read')
+        return raw
+    except Invalid:
+        raise
+    except (OSError, OverflowError, ValueError) as exc:
+        raise Invalid('missing, linked or unreadable evidence file') from exc
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def _load_json(raw):
@@ -174,14 +199,22 @@ def review(root: Path, cases: list[dict], report: dict, report_sha256: str):
     files=manifest['files_sha256']
     if type(files) is not dict or set(files)!=set(('features.safetensors','heads.safetensors','case-identity.json')):
         raise Invalid('incomplete replay evidence')
+    verified={}
     for name,limit in [('features.safetensors',MAX_FEATURE_FILE),('heads.safetensors',MAX_HEAD_FILE),('case-identity.json',MAX_JSON)]:
-        if _sha(_checked(root/name,limit))!=files[name]:
+        original_bytes=_checked(root/name,limit)
+        if _sha(original_bytes)!=files[name]:
             raise Invalid('changed replay weight/feature/source file')
-    source=_load_json((root/'case-identity.json').read_bytes())
+        verified[name]=original_bytes
+    source=_load_json(verified['case-identity.json'])
     if source!={'rows':_source_rows(cases)}:
         raise Invalid('original case group/input identity drift')
-    tensors=load_file(str(root/'features.safetensors'),device='cpu')
-    heads=load_file(str(root/'heads.safetensors'),device='cpu')
+    try:
+        # Decode precisely the bytes that passed the hash/size/regular-file
+        # checks. Never reopen attacker-mutable file paths with load_file.
+        tensors=safe_load(verified['features.safetensors'])
+        heads=safe_load(verified['heads.safetensors'])
+    except (ValueError, RuntimeError, OSError, SafetensorError) as exc:
+        raise Invalid('invalid verified safe tensor payload') from exc
     if set(tensors)!=set(('tokens','pooled','offsets')):
         raise Invalid('wrong complete frozen feature tensor set')
     off=tensors['offsets'];tokens=tensors['tokens'];pooled=tensors['pooled']

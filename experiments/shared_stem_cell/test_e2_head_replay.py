@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import torch
 from safetensors.torch import load_file,save_file
@@ -125,6 +126,59 @@ class Tests(unittest.TestCase):
             out=replay.review(root,rows,report,self.report_sha)
             self.assertEqual(out['predictions_replayed'],576)
             self.assertEqual(out['heads_replayed'],6)
+
+    def test_symlinked_sidecar_rejected_without_following(self):
+        ctx,root=self.folder()
+        with ctx:
+            for name in ('features.safetensors','heads.safetensors','case-identity.json'):
+                file=root/name
+                moved=root/(name+'.saved')
+                file.rename(moved)
+                file.symlink_to(moved)
+                with self.assertRaisesRegex(replay.Invalid,'linked or unreadable'):
+                    replay.review(root,self.rows,self.report,self.report_sha)
+                file.unlink()
+                moved.rename(file)
+
+    def test_path_replacement_after_read_uses_verified_original_bytes(self):
+        ctx,root=self.folder()
+        with ctx:
+            original=replay._checked
+            changed=[]
+            def replace_after_snapshot(path,limit):
+                raw=original(path,limit)
+                if path.name=='features.safetensors' and not changed:
+                    # After the exact inode's bytes were checked and copied,
+                    # replace the mutable on-disk name. The independent
+                    # computation must use the pinned original bytes.
+                    changed.append(True)
+                    path.write_bytes(b'corrupted after bounded verified read')
+                return raw
+            with patch.object(replay,'_checked',side_effect=replace_after_snapshot):
+                result=replay.review(root,self.rows,self.report,self.report_sha)
+            self.assertTrue(changed)
+            self.assertEqual(result['predictions_replayed'],576)
+            with self.assertRaisesRegex(replay.Invalid,'changed replay'):
+                replay.review(root,self.rows,self.report,self.report_sha)
+
+    def test_corrupted_but_rehashed_safetensors_rejected_as_invalid(self):
+        ctx,root=self.folder()
+        with ctx:
+            path=root/'heads.safetensors'
+            path.write_bytes(b'corrupted-but-rehashed-unsafe-blob')
+            manifest=json.loads((root/'manifest.json').read_text())
+            manifest['files_sha256']['heads.safetensors']=hashlib.sha256(path.read_bytes()).hexdigest()
+            (root/'manifest.json').write_bytes(replay._canonical(manifest))
+            with self.assertRaisesRegex(replay.Invalid,'invalid verified safe tensor payload'):
+                replay.review(root,self.rows,self.report,self.report_sha)
+
+    def test_nonregular_or_oversized_descriptor_rejected(self):
+        ctx,root=self.folder()
+        with ctx:
+            with self.assertRaisesRegex(replay.Invalid,'nonregular'):
+                replay._checked(root,512)
+            with self.assertRaisesRegex(replay.Invalid,'excessive'):
+                replay._checked(root/'features.safetensors',16)
 
     def test_create_only(self):
         ctx,root=self.folder()
