@@ -190,6 +190,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             bytes.extend_from_slice(&binding.scope_sha256);
             bytes.extend_from_slice(&binding.payload_sha256);
         }
+        // All signed members must refer to one exact Scope and Principal.
+        // This remains an explicit fail-closed invariant even if a future
+        // Head binder changes its internal digest construction.
+        let canonical_scope = bindings[0].scope_sha256;
+        if bindings.iter().any(|binding| {
+            binding.scope_sha256 != canonical_scope
+                || binding.subject_id != proposal.source.principal_id.to_string()
+        }) {
+            return Err(Error::FeatureContract);
+        }
         let batch_digest = Digest32::of_bytes(&bytes);
         let group_binding = FinalUseBinding {
             subject_id: proposal.source.principal_id.to_string(),
