@@ -1468,7 +1468,6 @@ fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories()
     }
 }
 
-
 #[cfg(unix)]
 #[test]
 fn fixed_stack_control_owner_marker_matches_original_decimal_grammar() {
@@ -1499,7 +1498,6 @@ fn fixed_stack_control_owner_marker_matches_original_decimal_grammar() {
         );
     }
 }
-
 
 #[cfg(unix)]
 #[test]
