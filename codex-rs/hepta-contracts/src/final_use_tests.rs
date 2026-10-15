@@ -305,28 +305,46 @@ fn revocation_capacity_snapshot_matches_the_enforced_final_use_limit() {
     assert!(empty.max_revocations < empty.max_claims);
     assert_eq!(empty.remaining_revocations(), MAX_REVOKED_GRANTS);
 
-    let mut at_limit = FinalUseRevocations {
+    // Use the original durable authority writer, not a manually manufactured
+    // capacity value: the operational alarm must track the enforced registry.
+    let mut head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 2,
         revoked_grant_ids: BTreeSet::new(),
     };
-    for index in 0..MAX_REVOKED_GRANTS {
-        assert!(at_limit.revoked_grant_ids.insert(format!("grant:{index}")));
+    for index in 0..(MAX_REVOKED_GRANTS - 1) {
+        assert!(head.revoked_grant_ids.insert(format!("grant:{index}")));
     }
-    assert!(valid_head(&at_limit));
-
-    let mut almost_full = empty;
-    almost_full.revoked_grants = MAX_REVOKED_GRANTS - 1;
+    assert!(valid_head(&head));
+    authority.update_revocations(head.clone()).unwrap();
+    let almost_full = authority.capacity().unwrap();
+    assert_eq!(almost_full.revoked_grants, MAX_REVOKED_GRANTS - 1);
     assert_eq!(almost_full.remaining_revocations(), 1);
     assert!(!almost_full.rollover_required_with_reserve(0));
     assert!(almost_full.rollover_required_with_reserve(1));
 
-    let mut full = empty;
-    full.revoked_grants = MAX_REVOKED_GRANTS;
+    head.revision = 3;
+    assert!(head.revoked_grant_ids.insert("grant:last".into()));
+    assert!(valid_head(&head));
+    authority.update_revocations(head.clone()).unwrap();
+    let full = authority.capacity().unwrap();
+    assert_eq!(full.revoked_grants, MAX_REVOKED_GRANTS);
+    assert_eq!(full.max_revocations, MAX_REVOKED_GRANTS);
     assert_eq!(full.remaining_revocations(), 0);
     assert!(full.rollover_required_with_reserve(0));
-    assert!(at_limit.revoked_grant_ids.insert("grant:overflow".into()));
-    assert!(!valid_head(&at_limit));
+
+    // A failed oversize signed-head application must not advance the durable
+    // owner revision or quietly clear any prior revocation.
+    let original_head = authority.revocation_head().unwrap();
+    head.revision = 4;
+    assert!(head.revoked_grant_ids.insert("grant:overflow".into()));
+    assert!(!valid_head(&head));
+    assert_eq!(
+        authority.update_revocations(head),
+        Err(FinalUseError::StaleRevocationHead)
+    );
+    assert_eq!(authority.revocation_head().unwrap(), original_head);
+    assert_eq!(authority.capacity().unwrap(), full);
 }
 
 #[test]
