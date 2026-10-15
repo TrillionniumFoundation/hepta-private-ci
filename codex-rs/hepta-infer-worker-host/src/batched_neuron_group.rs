@@ -61,8 +61,7 @@ pub fn prepare_original_native_batch_group_v1(
     if members.len() < 2 || members.len() > MAX_MICROBATCH_SIZE {
         return Err(BatchWorkerErrorV1::Capacity);
     }
-    if StableId::new(worker_id.to_string()).is_err()
-        || StableId::new(model_id.to_string()).is_err()
+    if StableId::new(worker_id.to_string()).is_err() || StableId::new(model_id.to_string()).is_err()
     {
         return Err(BatchWorkerErrorV1::InvalidRequest);
     }

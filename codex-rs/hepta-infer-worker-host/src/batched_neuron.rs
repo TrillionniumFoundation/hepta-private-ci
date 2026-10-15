@@ -860,9 +860,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 self.metrics_flushed.store(false, Ordering::Release);
                 if sink
                     .record(PhaseMetricEventV1 {
-                        scope_digest: Digest32::of_bytes(
-                            intent.key.scope_id.as_str().as_bytes(),
-                        ),
+                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                         operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
                         phase: PhaseMetricKindV1::NeuronFeature,
                         latency_micros: 0,

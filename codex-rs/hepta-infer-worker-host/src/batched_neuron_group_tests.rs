@@ -40,8 +40,8 @@ fn fixture() -> (
         route_fence: 71,
         authority_epoch: 9,
     };
-    let feature = SharedFeatureBufferV1::from_vec(vec![0, 1_i64 << 24])
-        .expect("one original Q24 Arc");
+    let feature =
+        SharedFeatureBufferV1::from_vec(vec![0, 1_i64 << 24]).expect("one original Q24 Arc");
     let mut first = NeuronFeatureRequest {
         authorization: WorkerRequest {
             request_id: "request.one".to_string(),
@@ -62,10 +62,7 @@ fn fixture() -> (
         feature_vector_q24: Vec::new(),
         expected_output_width: 3,
     };
-    let exact = canonical_neuron_feature_payload_digest_with_slice(
-        &first,
-        feature.as_slice(),
-    );
+    let exact = canonical_neuron_feature_payload_digest_with_slice(&first, feature.as_slice());
     first.authorization.payload_digest = exact.clone();
     first.authorization.lease_payload_digest = exact;
     let mut second = first.clone();
@@ -102,10 +99,10 @@ fn prepare<'a>(
 #[test]
 fn original_native_group_is_order_sensitive_and_binds_each_real_original_request() {
     let (key, first, second, feature) = fixture();
-    let cohort = prepare(&key, &key, &first, &second, &feature)
-        .expect("two valid original-member bindings");
-    let reversed = prepare(&key, &key, &second, &first, &feature)
-        .expect("second ordered signed group");
+    let cohort =
+        prepare(&key, &key, &first, &second, &feature).expect("two valid original-member bindings");
+    let reversed =
+        prepare(&key, &key, &second, &first, &feature).expect("second ordered signed group");
     assert_eq!(cohort.member_bindings.len(), 2);
     assert_eq!(
         cohort.group_binding.request_sha256,
@@ -117,18 +114,15 @@ fn original_native_group_is_order_sensitive_and_binds_each_real_original_request
         reversed.group_binding.request_sha256,
     );
     assert_eq!(
-        cohort.group_binding.scope_sha256,
-        reversed.group_binding.scope_sha256,
+        cohort.group_binding.scope_sha256, reversed.group_binding.scope_sha256,
         "the same exact Scope cohort is eligible but ORDERED requests differ",
     );
     assert_eq!(
-        cohort.member_bindings[0].payload_sha256,
-        cohort.member_bindings[1].payload_sha256,
+        cohort.member_bindings[0].payload_sha256, cohort.member_bindings[1].payload_sha256,
         "numeric Q24 model payload is shared",
     );
     assert_ne!(
-        cohort.member_bindings[0].request_sha256,
-        cohort.member_bindings[1].request_sha256,
+        cohort.member_bindings[0].request_sha256, cohort.member_bindings[1].request_sha256,
         "the original member FinalUseBinding still includes each request and reservation",
     );
     assert!(!cohort.authority.grants_any());
@@ -141,15 +135,14 @@ fn original_native_group_rejects_duplicate_cohort_or_changed_q24_without_nonce()
     assert_eq!(same_request, Err(BatchWorkerErrorV1::InvalidBinding));
 
     let mut same_reservation = second.clone();
-    same_reservation.authorization.reservation_id =
-        first.authorization.reservation_id.clone();
+    same_reservation.authorization.reservation_id = first.authorization.reservation_id.clone();
     assert_eq!(
         prepare(&key, &key, &first, &same_reservation, &feature),
         Err(BatchWorkerErrorV1::InvalidBinding),
     );
 
-    let mutated = SharedFeatureBufferV1::from_vec(vec![0, (1_i64 << 24) + 1])
-        .expect("valid altered Q24 Arc");
+    let mutated =
+        SharedFeatureBufferV1::from_vec(vec![0, (1_i64 << 24) + 1]).expect("valid altered Q24 Arc");
     assert_eq!(
         prepare(&key, &key, &first, &second, &mutated),
         Err(BatchWorkerErrorV1::InvalidBinding),
@@ -174,8 +167,9 @@ fn original_native_group_rejects_duplicate_cohort_or_changed_q24_without_nonce()
     );
 
     let mut wrong_reservation_model = second.clone();
-    wrong_reservation_model.authorization.reservation_model_digest =
-        digest(b"foreign reservation model").to_string();
+    wrong_reservation_model
+        .authorization
+        .reservation_model_digest = digest(b"foreign reservation model").to_string();
     assert_eq!(
         prepare(&key, &key, &first, &wrong_reservation_model, &feature),
         Err(BatchWorkerErrorV1::InvalidBinding),
@@ -234,24 +228,22 @@ fn signed(
         expires_at_unix_ms: now + 30_000,
     };
     let signature = signer
-        .sign(&grant.signing_bytes().expect("exact canonical signature bytes"))
+        .sign(
+            &grant
+                .signing_bytes()
+                .expect("exact canonical signature bytes"),
+        )
         .to_bytes()
         .to_vec();
     SignedFinalUseGrant { grant, signature }
 }
 
-fn authority(
-    signer: &SigningKey,
-    directory: &tempfile::TempDir,
-) -> FinalUseAuthority {
+fn authority(signer: &SigningKey, directory: &tempfile::TempDir) -> FinalUseAuthority {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(
-            directory.path(),
-            std::fs::Permissions::from_mode(0o700),
-        )
-        .expect("private durable FinalUse nonce journal directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("private durable FinalUse nonce journal directory");
     }
     FinalUseAuthority::open_state_dir(
         directory.path(),
@@ -269,8 +261,8 @@ fn authority(
 #[test]
 fn original_native_group_real_signature_claims_entire_cohort_in_one_nonce_commit() {
     let (key, first, second, feature) = fixture();
-    let cohort = prepare(&key, &key, &first, &second, &feature)
-        .expect("exact frozen ordered cohort");
+    let cohort =
+        prepare(&key, &key, &first, &second, &feature).expect("exact frozen ordered cohort");
     let signer = SigningKey::from_bytes(&[83; 32]);
     let directory = tempfile::tempdir().expect("test nonce journal");
     let owner = authority(&signer, &directory);
@@ -280,18 +272,8 @@ fn original_native_group_real_signature_claims_entire_cohort_in_one_nonce_commit
         "original-ordered-group",
         95,
     );
-    let first_signed = signed(
-        &signer,
-        cohort.member_bindings[0].clone(),
-        "head-one",
-        96,
-    );
-    let second_signed = signed(
-        &signer,
-        cohort.member_bindings[1].clone(),
-        "head-two",
-        97,
-    );
+    let first_signed = signed(&signer, cohort.member_bindings[0].clone(), "head-one", 96);
+    let second_signed = signed(&signer, cohort.member_bindings[1].clone(), "head-two", 97);
     let all = [
         (&group, &cohort.group_binding),
         (&first_signed, &cohort.member_bindings[0]),
@@ -336,8 +318,7 @@ fn original_native_group_real_signature_claims_entire_cohort_in_one_nonce_commit
 #[test]
 fn original_native_group_rejects_valid_but_wrong_order_group_before_burning_any_nonce() {
     let (key, first, second, feature) = fixture();
-    let selected = prepare(&key, &key, &first, &second, &feature)
-        .expect("original ordered group");
+    let selected = prepare(&key, &key, &first, &second, &feature).expect("original ordered group");
     let reversed = prepare(&key, &key, &second, &first, &feature)
         .expect("other order requires another independent grant");
     let signer = SigningKey::from_bytes(&[84; 32]);
@@ -347,12 +328,7 @@ fn original_native_group_rejects_valid_but_wrong_order_group_before_burning_any_
     // The signature is REAL and correct for the reversed group, but cannot
     // authorize the originally selected cohort. None of its 3 nonces should
     // be consumed on binding disagreement.
-    let wrong_group = signed(
-        &signer,
-        reversed.group_binding,
-        "other-batch-order",
-        101,
-    );
+    let wrong_group = signed(&signer, reversed.group_binding, "other-batch-order", 101);
     let first_signed = signed(
         &signer,
         selected.member_bindings[0].clone(),
