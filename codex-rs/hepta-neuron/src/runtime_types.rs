@@ -404,6 +404,10 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    /// Original Control/CNS and Evidence owners have not independently
+    /// authorized this physical model effect; caller-selected callbacks
+    /// cannot establish product Final-use authority.
+    OriginalEffectOwnerUnverified,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
