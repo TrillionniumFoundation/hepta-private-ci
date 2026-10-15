@@ -143,6 +143,47 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     panic!("Git wrapper child process {child_pid} survived timeout cleanup");
 }
 
+#[cfg(windows)]
+#[test]
+fn unavailable_windows_job_owner_rejects_launch_before_child_executes() {
+    use std::cell::Cell;
+    use std::io;
+    use std::rc::Rc;
+
+    let root = tempfile::tempdir().expect("create private test fixture");
+    let marker = root.path().join("must-not-be-created.txt");
+    let command_body = format!(
+        "Set-Content -LiteralPath '{}' -Value unsafe",
+        marker.display()
+    );
+    let mut command = Command::new("powershell.exe");
+    command.args(["-NoProfile", "-NonInteractive", "-Command", &command_body]);
+    let factory_calls = Rc::new(Cell::new(0));
+    let observed_calls = Rc::clone(&factory_calls);
+    let spawned = super::spawn_contained_git_command(&mut command, move || {
+        observed_calls.set(observed_calls.get() + 1);
+        Err(io::Error::other("injected unowned job refusal"))
+    });
+    assert!(spawned.is_none(), "unowned Git command must fail closed");
+    assert_eq!(factory_calls.get(), 1, "attempted one contained launch");
+    assert!(!marker.exists(), "no uncontained command was started");
+}
+
+#[cfg(windows)]
+#[test]
+fn contained_launch_failure_never_retries_as_an_unowned_child() {
+    let root = tempfile::tempdir().expect("create private test fixture");
+    let marker = root.path().join("must-not-be-created.txt");
+    let mut command = Command::new(root.path().join("missing-git-wrapper.exe"));
+    command.arg(&marker);
+    let spawned = super::spawn_contained_git_command(&mut command, super::JobObject::create);
+    assert!(
+        spawned.is_none(),
+        "failed contained spawn must not fall back"
+    );
+    assert!(!marker.exists());
+}
+
 #[tokio::test]
 async fn timed_out_git_wrapper_does_not_leave_child_process_running() {
     assert_timed_out_git_wrapper_does_not_leave_child_process_running(
