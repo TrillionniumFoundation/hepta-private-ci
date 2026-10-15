@@ -454,10 +454,8 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
             let next = second.expect("a genuine post-Commit or unchanged P frontier is permitted");
             assert_eq!(next.sequence, if new_split { 12 } else { 11 });
             assert_eq!(next.wal_bytes, 2_048);
-            assert_eq!(
-                next.original_cns_receipt_binding,
-                Some(if new_split { "ee" } else { "dd" }.repeat(32))
-            );
+            let expected_binding = if new_split { "ee" } else { "dd" };
+            assert_eq!(next.original_cns_receipt_binding, Some(expected_binding.repeat(32)));
         }
         server.join().expect("signed original high-water RPC server");
     }
@@ -489,9 +487,8 @@ fn changed_original_cns_binding_requires_begin_commit_and_new_route_fence() {
                     12
                 };
                 let mut claim = signed_proof(&request, &test_signer(), sequence);
-                claim.original_cns_receipt_binding = Some(
-                    if observation == 0 { "dd" } else { "ee" }.repeat(32),
-                );
+                let receipt_digest = if observation == 0 { "dd" } else { "ee" };
+                claim.original_cns_receipt_binding = Some(receipt_digest.repeat(32));
                 if observation == 1 {
                     claim.wal_bytes = 2_048;
                     claim.generation = 4;
