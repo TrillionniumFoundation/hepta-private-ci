@@ -394,5 +394,73 @@ class DocumentInputTests(unittest.TestCase):
         self.assertTrue(json.loads(result.stdout)["scope"]["native"])
 
 
+
+class ImpactShardTests(unittest.TestCase):
+    def test_complete_impact_inventory_is_covered_once(self):
+        packages = [f"pkg-{i:03d}" for i in range(135)]
+        selected = {"packages": packages, "full_workspace": False}
+        parts = [ci.deterministic_shard(selected, i, 4) for i in range(4)]
+        flat = [p for part in parts for p in part["packages"]]
+        self.assertEqual(sorted(flat), packages)
+        self.assertEqual(len(set(flat)), 135)
+        self.assertLessEqual(max(len(p["packages"]) for p in parts), 34)
+        self.assertEqual(len({p["coverage_digest"] for p in parts}), 1)
+        self.assertTrue(all(p["full_selected_packages"] == 135 for p in parts))
+
+    def test_sharded_native_commands_execute_every_selected_package(self):
+        packages = [f"pkg-{i:03d}" for i in range(134)]
+        selected = {"packages": packages, "full_workspace": False}
+        covered = []
+        for index in range(4):
+            part = ci.deterministic_shard(selected, index, 4)
+            argv = ci.execution_command(selected, "test", shard=part)
+            self.assertEqual(argv[:3], ["just", "test", "--locked"])
+            self.assertEqual(argv[3::2], ["-p"] * len(part["packages"]))
+            self.assertEqual(argv[4::2], part["packages"])
+            covered.extend(part["packages"])
+        self.assertEqual(sorted(covered), packages)
+
+    def test_invalid_and_noncanonical_shards_fail_closed(self):
+        chosen = {"packages": ["a", "b"], "full_workspace": False}
+        for index, count in ((-1, 4), (4, 4), (0, 0), (0, 5), (1, 1)):
+            with self.subTest(index=index, count=count):
+                with self.assertRaisesRegex(ValueError, "invalid bounded"):
+                    ci.deterministic_shard(chosen, index, count)
+        for packages in (["b", "a"], ["a", "a"]):
+            with self.assertRaisesRegex(ValueError, "noncanonical"):
+                ci.deterministic_shard(
+                    {"packages": packages, "full_workspace": False}, 0, 2
+                )
+
+    def test_full_workspace_fallback_not_silently_marked_partial_success(self):
+        chosen = {"packages": ["a", "b"], "full_workspace": True}
+        with self.assertRaisesRegex(ValueError, "cannot be silently sharded"):
+            ci.deterministic_shard(chosen, 0, 4)
+        part = ci.deterministic_shard(chosen, 0, 1)
+        self.assertEqual(
+            ci.execution_command(chosen, "test", shard=part),
+            ["just", "test", "--locked", "--workspace"],
+        )
+
+    def test_empty_extra_shards_do_not_lose_the_selected_package(self):
+        chosen = {"packages": ["only"], "full_workspace": False}
+        parts = [ci.deterministic_shard(chosen, i, 4) for i in range(4)]
+        self.assertEqual([p["packages"] for p in parts], [["only"], [], [], []])
+        self.assertIsNone(ci.execution_command(chosen, "test", shard=parts[1]))
+
+    def test_workflow_executes_all_four_shards_and_retains_unique_artifacts(self):
+        yaml = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/blocking-ci.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("shard: [0, 1, 2, 3]", yaml)
+        self.assertIn("fail-fast: false", yaml)
+        self.assertIn('--shard-count 4 --shard-index "$SHARD_INDEX"', yaml)
+        self.assertIn("-shard-" + chr(36) + "{{ matrix.shard }}", yaml)
+        self.assertIn('CARGO_PROFILE_TEST_DEBUG: "0"', yaml)
+        self.assertIn('CARGO_INCREMENTAL: "0"', yaml)
+        self.assertIn('CARGO_BUILD_JOBS: "2"', yaml)
+
 if __name__ == "__main__":
     unittest.main()
+
