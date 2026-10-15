@@ -1,7 +1,7 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015"]
+    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
@@ -21,7 +21,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-e3-five-real-\${{ github.sha }}
+  group: hepta-e3-five-real-${{ github.sha }}
   cancel-in-progress: true
 env:
   SOURCE_SHA: a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Compile all original research-only producers and independent scorer
         run: |
@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Install actual English OCR and original E3 frozen pretrained runtime
         run: |
@@ -112,8 +112,8 @@ jobs:
         with:
           name: hepta-e3-same-original-ocr
           path: |
-            \${{ runner.temp }}/e3-ocr-observed/sealed-ocr-predictions.json
-            \${{ runner.temp }}/e3-ocr-packages.txt
+            ${{ runner.temp }}/e3-ocr-observed/sealed-ocr-predictions.json
+            ${{ runner.temp }}/e3-ocr-packages.txt
           if-no-files-found: warn
   physical-native-gemma2:
     needs: schema-and-security-contract
@@ -124,7 +124,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Independent exact SHA reviewed EmbeddingGemma2 owner (no merge)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -195,9 +195,9 @@ jobs:
         with:
           name: hepta-e3-same-original-native
           path: |
-            \${{ runner.temp }}/e3-native-observed/sealed-native-predictions.json
-            \${{ runner.temp }}/e3-native-packages.txt
-            \${{ runner.temp }}/e3-native-snapshot-receipt.json
+            ${{ runner.temp }}/e3-native-observed/sealed-native-predictions.json
+            ${{ runner.temp }}/e3-native-packages.txt
+            ${{ runner.temp }}/e3-native-snapshot-receipt.json
           if-no-files-found: warn
   independent-five-arm-review:
     needs: [physical-ocr-granite, physical-native-gemma2]
@@ -205,11 +205,11 @@ jobs:
     timeout-minutes: 45
     env:
       PYTHONPATH: experiments/shared_stem_cell
-      GH_TOKEN: \${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Obtain three original source-matched REAL prediction artifacts
         run: |
@@ -287,7 +287,7 @@ jobs:
         with:
           name: hepta-e3-five-arm-source-sealed-historical
           path: |
-            \${{ runner.temp }}/e3-complete-five-arm-predictions.json
-            \${{ runner.temp }}/e3-prediction-sealed-before-labels.sha256
-            \${{ runner.temp }}/e3-five-arm-independent-historical-scores.json
+            ${{ runner.temp }}/e3-complete-five-arm-predictions.json
+            ${{ runner.temp }}/e3-prediction-sealed-before-labels.sha256
+            ${{ runner.temp }}/e3-five-arm-independent-historical-scores.json
           if-no-files-found: warn
