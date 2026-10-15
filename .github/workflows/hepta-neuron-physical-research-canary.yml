@@ -3,27 +3,27 @@ name: Hepta Neuron physical research canary
 on:
   pull_request:
     paths:
-      - 'qualification/neuron-gated-sparse-v3/matched_train.py'
-      - 'qualification/neuron-gated-sparse-v3/precommit_future.py'
-      - 'qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py'
-      - 'qualification/neuron-gated-sparse-v3/candidate_inventory.py'
-      - 'qualification/neuron-gated-sparse-v3/test_candidate_inventory.py'
-      - 'qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py'
-      - 'qualification/neuron-gated-sparse-v3/native_physical_canary.py'
-      - 'qualification/neuron-gated-sparse-v3/native_float_gap.py'
-      - 'qualification/neuron-gated-sparse-v3/head_q24_oracle.py'
-      - 'qualification/neuron-gated-sparse-v3/test_head_q24_oracle.py'
-      - 'qualification/neuron-gated-sparse-v3/test_native_matrix_admission.py'
-      - 'qualification/neuron-gated-sparse-v3/realized_budget_audit.py'
-      - 'qualification/neuron-gated-sparse-v3/test_realized_budget_audit.py'
-      - 'qualification/neuron-gated-sparse-v3/dedup_prospective_gate.py'
-      - 'qualification/neuron-gated-sparse-v3/test_dedup_prospective_gate.py'
-      - 'qualification/neuron-gated-sparse-v3/physical_tensor_identity.py'
-      - 'qualification/neuron-gated-sparse-v3/test_physical_forecast_cache_gate.py'
-      - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
-      - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
-      - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
-      - '.github/workflows/hepta-neuron-physical-research-canary.yml'
+      - "qualification/neuron-gated-sparse-v3/matched_train.py"
+      - "qualification/neuron-gated-sparse-v3/precommit_future.py"
+      - "qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py"
+      - "qualification/neuron-gated-sparse-v3/candidate_inventory.py"
+      - "qualification/neuron-gated-sparse-v3/test_candidate_inventory.py"
+      - "qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py"
+      - "qualification/neuron-gated-sparse-v3/native_physical_canary.py"
+      - "qualification/neuron-gated-sparse-v3/native_float_gap.py"
+      - "qualification/neuron-gated-sparse-v3/head_q24_oracle.py"
+      - "qualification/neuron-gated-sparse-v3/test_head_q24_oracle.py"
+      - "qualification/neuron-gated-sparse-v3/test_native_matrix_admission.py"
+      - "qualification/neuron-gated-sparse-v3/realized_budget_audit.py"
+      - "qualification/neuron-gated-sparse-v3/test_realized_budget_audit.py"
+      - "qualification/neuron-gated-sparse-v3/dedup_prospective_gate.py"
+      - "qualification/neuron-gated-sparse-v3/test_dedup_prospective_gate.py"
+      - "qualification/neuron-gated-sparse-v3/physical_tensor_identity.py"
+      - "qualification/neuron-gated-sparse-v3/test_physical_forecast_cache_gate.py"
+      - "codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs"
+      - "qualification/neuron-gated-sparse-v3/test_real_pipeline.py"
+      - "qualification/neuron-gated-sparse-v3/test_a4_host_gate.py"
+      - ".github/workflows/hepta-neuron-physical-research-canary.yml"
   workflow_dispatch:
 
 permissions:
@@ -45,7 +45,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install physically exercised pinned CPU training dependencies
         shell: bash
         run: |
@@ -117,7 +117,7 @@ jobs:
           components: rustfmt,clippy
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install Rust prerequisites and pinned CPU weight libraries
         shell: bash
         run: |
