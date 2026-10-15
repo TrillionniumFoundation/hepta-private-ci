@@ -108,14 +108,8 @@ impl VerifiedActionV1 {
 }
 
 impl ActionVerifierV1 {
+    /// Validate without materializing an owned clone on a data-plane hot path.
     pub fn verify(&self, action: &ActionFrameV1) -> Result<(), ActionErrorV1> {
-        self.verify_and_bind(action).map(|_| ())
-    }
-
-    pub fn verify_and_bind(
-        &self,
-        action: &ActionFrameV1,
-    ) -> Result<VerifiedActionV1, ActionErrorV1> {
         if self.generation == 0 || !self.grant.is_well_formed() {
             return Err(ActionErrorV1::InvalidCapabilityGrant);
         }
@@ -127,7 +121,15 @@ impl ActionVerifierV1 {
         {
             return Err(ActionErrorV1::CapabilityDenied);
         }
-        action.encode().map(|_| VerifiedActionV1(action.clone()))
+        action.encode().map(|_| ())
+    }
+
+    pub fn verify_and_bind(
+        &self,
+        action: &ActionFrameV1,
+    ) -> Result<VerifiedActionV1, ActionErrorV1> {
+        self.verify(action)?;
+        Ok(VerifiedActionV1(action.clone()))
     }
 }
 
@@ -160,19 +162,41 @@ impl SharedMemoryQueueV1 {
     }
 
     pub fn push(&mut self, action: ActionFrameV1) -> Result<(), ActionErrorV1> {
-        let _verified = self.verifier.verify_and_bind(&action)?;
-        if action.sequence != self.next_sequence {
-            return Err(ActionErrorV1::SequenceMismatch);
+        self.push_batch(std::slice::from_ref(&action))
+    }
+
+    /// Prevalidate the entire consecutive, bounded batch before the first
+    /// queue mutation. Invalid grants, stale generations, sequence gaps,
+    /// capacity pressure and sequence overflow never cause partial enqueue.
+    ///
+    /// This is local transport only, NOT compilation, a syscall, or permission
+    /// to perform an external action. Production effect execution still needs
+    /// a separately authorized sandbox with per-effect revocation fences.
+    pub fn push_batch(&mut self, actions: &[ActionFrameV1]) -> Result<(), ActionErrorV1> {
+        if actions.is_empty() || actions.len() > MAX_PROPOSAL_ACTIONS {
+            return Err(ActionErrorV1::ProposalLimit);
         }
-        if self.frames.len() >= self.capacity {
+        let mut encoded = Vec::with_capacity(actions.len());
+        for (offset, action) in actions.iter().enumerate() {
+            self.verifier.verify(action)?;
+            let sequence = u64::try_from(offset)
+                .ok()
+                .and_then(|offset| self.next_sequence.checked_add(offset))
+                .ok_or(ActionErrorV1::SequenceMismatch)?;
+            if action.sequence != sequence {
+                return Err(ActionErrorV1::SequenceMismatch);
+            }
+            encoded.push(action.encode()?);
+        }
+        let last_exclusive = self
+            .next_sequence
+            .checked_add(u64::try_from(actions.len()).map_err(|_| ActionErrorV1::SequenceMismatch)?)
+            .ok_or(ActionErrorV1::SequenceMismatch)?;
+        if self.frames.len().checked_add(actions.len()).is_none_or(|length| length > self.capacity) {
             return Err(ActionErrorV1::QueueFull);
         }
-        let next_sequence = self
-            .next_sequence
-            .checked_add(1)
-            .ok_or(ActionErrorV1::SequenceMismatch)?;
-        self.frames.push_back(action.encode()?);
-        self.next_sequence = next_sequence;
+        self.frames.extend(encoded);
+        self.next_sequence = last_exclusive;
         Ok(())
     }
 
