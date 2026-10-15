@@ -1,0 +1,293 @@
+name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-five-arm-same-source-receipts-20261015"]
+    paths:
+      - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/e3_ocr_granite_physical.py"
+      - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
+      - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/e3_ocr_granite_physical.py"
+      - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
+      - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-e3-five-real-\${{ github.sha }}
+  cancel-in-progress: true
+env:
+  SOURCE_SHA: a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202
+  FIT_SHA: e8506bc65f96501b6b2fa4e4ae04c094c2b6b17b353de528a051136569e2849e
+  HELD_SHA: b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+jobs:
+  schema-and-security-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == 'TrillionniumFoundation/hepta-private-ci'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: \${{ github.sha }}
+          persist-credentials: false
+      - name: Compile all original research-only producers and independent scorer
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_five_arm_historical.py \
+            experiments/shared_stem_cell/e3_ocr_granite_physical.py \
+            experiments/shared_stem_cell/e3_gemma2_native_physical.py
+      - name: Normal original-style 28 fault controls
+        run: |
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
+      - name: Optimized Python controls
+        run: |
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
+  physical-ocr-granite:
+    needs: schema-and-security-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: \${{ github.sha }}
+          persist-credentials: false
+      - name: Install actual English OCR and original E3 frozen pretrained runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng
+          tesseract --list-langs | grep -x eng
+          python3 -m venv "$RUNNER_TEMP/e3-ocr-env"
+          P="$RUNNER_TEMP/e3-ocr-env/bin/python"
+          "$P" -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P" -m pip install 'numpy==1.26.4' 'transformers==4.57.1' \
+            'safetensors==0.6.2' 'huggingface-hub==0.35.3' 'tokenizers==0.22.1' \
+            'datasets==3.6.0' 'pyarrow==19.0.1' 'Pillow==11.3.0' 'psutil==7.0.0'
+          "$P" -m pip check
+          "$P" -m pip freeze > "$RUNNER_TEMP/e3-ocr-packages.txt"
+      - name: Original pinned ScienceQA cohort, no prediction labels
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-ocr-env/bin/python"
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources"
+          "$P" - <<'PY'
+          import json, os
+          from pathlib import Path
+          q=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/source-seals.json').read_text())
+          assert q['source_sha256']==os.environ['SOURCE_SHA']
+          assert q['fit_labels_sha256']==os.environ['FIT_SHA']
+          assert q['private_test_labels_sha256']==os.environ['HELD_SHA']
+          assert q['raw_image_count']==192 and q['production_accepted'] is False
+          print('SAME ORIGINAL SCIENCEQA SOURCE IDENTITY — NOT A FUTURE WINDOW')
+          PY
+      - name: Physically OCR all 192 sources and encode with original Granite97
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-ocr-env/bin/python"
+          "$P" experiments/shared_stem_cell/e3_ocr_granite_physical.py \
+            --source "$RUNNER_TEMP/e3-original-sources/inputs/sources.jsonl" \
+            --source-sha256 "$SOURCE_SHA" \
+            --images "$RUNNER_TEMP/e3-original-sources/images" \
+            --out "$RUNNER_TEMP/e3-ocr-observed"
+          test -s "$RUNNER_TEMP/e3-ocr-observed/sealed-ocr-predictions.json"
+      - name: Save numeric OCR predictions, no media/model/labels
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-same-original-ocr
+          path: |
+            \${{ runner.temp }}/e3-ocr-observed/sealed-ocr-predictions.json
+            \${{ runner.temp }}/e3-ocr-packages.txt
+          if-no-files-found: warn
+  physical-native-gemma2:
+    needs: schema-and-security-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: experiments/shared_stem_cell:_gemma_owner/qualification/neuron-dynamic-learning
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: \${{ github.sha }}
+          persist-credentials: false
+      - name: Independent exact SHA reviewed EmbeddingGemma2 owner (no merge)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          path: _gemma_owner
+          sparse-checkout: |
+            qualification/neuron-dynamic-learning
+          persist-credentials: false
+      - name: Install pinned CPU native multimodal dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ldconfig -p | grep -F 'libavutil.so.58'
+          python3 -m venv "$RUNNER_TEMP/e3-gemma-env"
+          P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          "$P" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$P" -m pip install --only-binary=:all: \
+            'sentence-transformers==6.1.0' 'transformers==5.19.0' \
+            'Pillow==11.3.0' 'soundfile==0.13.1' 'numpy==2.2.6' \
+            'datasets==3.6.0' 'pyarrow==19.0.1'
+          "$P" -m pip check
+          "$P" -m pip freeze > "$RUNNER_TEMP/e3-gemma-packages.txt"
+          "$P" -c 'from torchcodec.decoders import AudioDecoder; print("Native media runtime imported")'
+      - name: Stage the SAME original ScienceQA sources and fit-only labels
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources"
+          "$P" - <<'PY'
+          import json, os
+          from pathlib import Path
+          q=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/source-seals.json').read_text())
+          assert q['source_sha256']==os.environ['SOURCE_SHA']
+          assert q['fit_labels_sha256']==os.environ['FIT_SHA']
+          assert q['private_test_labels_sha256']==os.environ['HELD_SHA']
+          print('NATIVE MODEL COHORT MATCHES ORIGINAL GRANITE/DINO')
+          PY
+      - name: Download and verify reviewed native Google model snapshot
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          "$P" _gemma_owner/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+            --destination "$RUNNER_TEMP/e3-native-pinned" \
+            --profile vision --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/e3-native-snapshot-receipt.json"
+          test -s "$RUNNER_TEMP/e3-native-pinned/manifest.json"
+      - name: Actually encode same natural images jointly with text and train 769 Head
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          "$P" experiments/shared_stem_cell/e3_gemma2_native_physical.py \
+            --sources "$RUNNER_TEMP/e3-original-sources/inputs/sources.jsonl" \
+            --source-sha256 "$SOURCE_SHA" \
+            --fit-labels "$RUNNER_TEMP/e3-original-sources/inputs/fit_labels.jsonl" \
+            --fit-labels-sha256 "$FIT_SHA" \
+            --images "$RUNNER_TEMP/e3-original-sources/images" \
+            --snapshot-manifest "$RUNNER_TEMP/e3-native-pinned/manifest.json" \
+            --out "$RUNNER_TEMP/e3-native-observed"
+          test -s "$RUNNER_TEMP/e3-native-observed/sealed-native-predictions.json"
+      - name: Save numeric native predictions, no raw weights/media/heldout targets
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-same-original-native
+          path: |
+            \${{ runner.temp }}/e3-native-observed/sealed-native-predictions.json
+            \${{ runner.temp }}/e3-native-packages.txt
+            \${{ runner.temp }}/e3-native-snapshot-receipt.json
+          if-no-files-found: warn
+  independent-five-arm-review:
+    needs: [physical-ocr-granite, physical-native-gemma2]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      GH_TOKEN: \${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: \${{ github.sha }}
+          persist-credentials: false
+      - name: Obtain three original source-matched REAL prediction artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e3-prior" "$RUNNER_TEMP/e3-ocr" "$RUNNER_TEMP/e3-native"
+          gh run download 38678847948 --repo TrillionniumFoundation/hepta-private-ci \
+            --name hepta-e3-granite-dino-actual-or-failure-no-weights-no-media \
+            --dir "$RUNNER_TEMP/e3-prior"
+          gh run download "$GITHUB_RUN_ID" --repo TrillionniumFoundation/hepta-private-ci \
+            --name hepta-e3-same-original-ocr --dir "$RUNNER_TEMP/e3-ocr"
+          gh run download "$GITHUB_RUN_ID" --repo TrillionniumFoundation/hepta-private-ci \
+            --name hepta-e3-same-original-native --dir "$RUNNER_TEMP/e3-native"
+          echo 'Original 64-case pretrained baseline + genuine OCR and Gemma2 receipts must ALL exist'
+          sha256sum "$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json" \
+            "$RUNNER_TEMP/e3-ocr/sealed-ocr-predictions.json" \
+            "$RUNNER_TEMP/e3-native/sealed-native-predictions.json"
+          test "$(sha256sum "$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json" | cut -d' ' -f1)" \
+            = e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7
+      - name: Seal exactly all five source-matched arms before opening heldout labels
+        run: |
+          set -euo pipefail
+          OLD="$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json"
+          OCR="$RUNNER_TEMP/e3-ocr/sealed-ocr-predictions.json"
+          GEM="$RUNNER_TEMP/e3-native/sealed-native-predictions.json"
+          python3 experiments/shared_stem_cell/e3_five_arm_historical.py compose \
+            --original "$OLD" --original-sha "$(sha256sum "$OLD" | cut -d' ' -f1)" \
+            --ocr "$OCR" --ocr-sha "$(sha256sum "$OCR" | cut -d' ' -f1)" \
+            --native "$GEM" --native-sha "$(sha256sum "$GEM" | cut -d' ' -f1)" \
+            --output "$RUNNER_TEMP/e3-complete-five-arm-predictions.json"
+          sha256sum "$RUNNER_TEMP/e3-complete-five-arm-predictions.json" \
+            > "$RUNNER_TEMP/e3-prediction-sealed-before-labels.sha256"
+      - name: Independently restage ORIGINAL 64 TEST labels after predictions are sealed
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/e3-review-env"
+          P="$RUNNER_TEMP/e3-review-env/bin/python"
+          "$P" -m pip install 'datasets==3.6.0' 'huggingface-hub==0.35.3' \
+            'pyarrow==19.0.1' 'Pillow==11.3.0'
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py \
+            --output "$RUNNER_TEMP/e3-review-source"
+          "$P" - <<'PY'
+          import json,os
+          from pathlib import Path
+          s=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-review-source/source-seals.json').read_text())
+          assert s['source_sha256']==os.environ['SOURCE_SHA']
+          assert s['fit_labels_sha256']==os.environ['FIT_SHA']
+          assert s['private_test_labels_sha256']==os.environ['HELD_SHA']
+          print('ORIGINAL HUMAN TEST LABEL SHA VERIFIED; HISTORICAL ONLY')
+          PY
+      - name: Independently score actual five-arm results; no selection
+        run: |
+          set -euo pipefail
+          PRED="$RUNNER_TEMP/e3-complete-five-arm-predictions.json"
+          python3 experiments/shared_stem_cell/e3_five_arm_historical.py score \
+            --combined "$PRED" \
+            --combined-sha "$(sha256sum "$PRED" | cut -d' ' -f1)" \
+            --held "$RUNNER_TEMP/e3-review-source/private_labels/test_labels.jsonl" \
+            --held-sha "$HELD_SHA" \
+            --output "$RUNNER_TEMP/e3-five-arm-independent-historical-scores.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'e3-five-arm-independent-historical-scores.json'
+          s=json.loads(p.read_text())
+          assert s['historical_test_cases']==64
+          assert len(s['accuracy'])==5
+          assert s['stem_winner'] is None and s['authority']=='DENY_ALL'
+          assert s['visual_necessity_adjudicated'] is False
+          assert s['cost_matched'] is False
+          print('REAL HISTORICAL FIVE ARMS SCORED; NO PRODUCTION OR SCIENTIFIC WINNER')
+          PY
+      - name: Upload only original-source-bound numerical research result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-five-arm-source-sealed-historical
+          path: |
+            \${{ runner.temp }}/e3-complete-five-arm-predictions.json
+            \${{ runner.temp }}/e3-prediction-sealed-before-labels.sha256
+            \${{ runner.temp }}/e3-five-arm-independent-historical-scores.json
+          if-no-files-found: warn
