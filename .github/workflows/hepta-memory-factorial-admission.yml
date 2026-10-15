@@ -1,0 +1,36 @@
+name: MemoryCell original-bound causal admission
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-factorial-admission.yml"
+      - "scripts/memory_cell/factorial_evidence_gate.py"
+      - "scripts/memory_cell/memory_trial_admission.py"
+      - "scripts/memory_cell/test_memory_trial_admission.py"
+      - "scripts/memory_cell/test_factorial_evidence_gate.py"
+  push:
+    branches:
+      - "codex/memory-four-stage-causal-admission-20261015"
+    paths:
+      - ".github/workflows/hepta-memory-factorial-admission.yml"
+      - "scripts/memory_cell/memory_trial_admission.py"
+      - "scripts/memory_cell/test_memory_trial_admission.py"
+permissions:
+  contents: read
+jobs:
+  original-bound-admission:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Compile original-bound audit
+        run: |
+          python3 -m py_compile scripts/memory_cell/memory_trial_admission.py
+          python3 -m py_compile scripts/memory_cell/factorial_evidence_gate.py
+      - name: Run deterministic fail-closed regressions (no model calls)
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=scripts/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_factorial_evidence_gate.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_admission.py' -v
