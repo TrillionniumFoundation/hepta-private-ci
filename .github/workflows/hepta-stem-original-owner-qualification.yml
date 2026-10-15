@@ -5,6 +5,9 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
+      - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
@@ -84,6 +87,16 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
+      - name: Verify Neuron external signed-NDU gate Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-neuron -- --check
+      - name: Compile original non-test Neuron runtime
+        run: cargo +1.95.0 check --locked -p codex-hepta-neuron --lib
+      - name: Run external production Neuron denial through non-test library
+        run: cargo +1.95.0 test --locked -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
+      - name: Preserve original Neuron reference mechanism regression
+        run: cargo +1.95.0 test --locked -p codex-hepta-neuron --lib runtime::tests::
+      - name: Strict Neuron all-target Clippy on external-denial change
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Check source integrity after compiler and formatter
         if: always()
         shell: bash

@@ -404,6 +404,9 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    /// Original Control/CNS and durable Evidence are not independently
+    /// composed; a caller-selected verifier cannot grant physical model use.
+    OriginalEffectOwnerUnverified,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
