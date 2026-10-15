@@ -142,6 +142,16 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["tracks"]["P0"]["granite_frozen"].update(
             train_steps=12), "frozen Head")
 
+    def test_other_frozen_head_cannot_mutate_even_if_unpaired(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["replicated_frozen"].update(
+            final_head_sha256=sha("changed-without-train")), "frozen Head changed weights")
+
+    def test_other_learned_head_cannot_fake_training_with_unchanged_bytes(self):
+        def unchanged(d):
+            a = d["tracks"]["P1"]["replicated_learned"]
+            a["final_head_sha256"] = a["initial_head_sha256"]
+        self.rejected(unchanged, "learned Head weights did not change")
+
     def test_learned_head_requires_real_update_steps(self):
         self.rejected(lambda d: d["tracks"]["P1"]["shared_learned"].update(
             train_steps=0), "learned Head has no optimizer")
