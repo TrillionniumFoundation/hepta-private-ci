@@ -8,7 +8,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from reader_support_causal import PLAN, digest, hex64, validate_plan, run_blind, review
+from reader_support_causal import (PLAN, OBS, REPLAY, digest, hex64, validate_plan,
+                                   run_blind, replay_physical, review)
 
 ANNOTATION = 'hepta.reader.external-source-spans.v1'
 
@@ -79,7 +80,7 @@ def main():
 
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_subparsers(dest='mode',required=True)
-    for name in ('prepare','run','score'):
+    for name in ('prepare','run','replay','score'):
         sub = modes.add_parser(name)
         sub.add_argument('--output', required=True)
         if name == 'prepare':
@@ -88,9 +89,15 @@ def main():
         elif name == 'run':
             for flag in ('plan','run-dir','expected-v1-seal-id','snapshot'):
                 sub.add_argument('--'+flag,required=True)
+        elif name == 'replay':
+            for flag in ('plan','observations-dir','expected-observation-id',
+                         'run-dir','expected-v1-seal-id','snapshot'):
+                sub.add_argument('--'+flag,required=True)
         else:
             for flag in ('plan','observations-dir','expected-observation-id',
-                         'owner-labels','expected-owner-label-file-sha256'):
+                         'owner-labels','expected-owner-label-file-sha256',
+                         'run-dir','expected-v1-seal-id',
+                         'replay-dir','expected-replay-id'):
                 sub.add_argument('--'+flag,required=True)
     args = parser.parse_args()
     dest=Path(args.output)
@@ -125,16 +132,64 @@ def main():
                 source_v1_seal=args.expected_v1_seal_id,
                 observation_file_sha256=file_sha256(dest/'observations.json'),
                 semantic_sufficiency_certified=False,production_authorized=False))
+        elif args.mode == 'replay':
+            plan=strict_json(args.plan)
+            validate_plan(plan)
+            current=Path(args.observations_dir)
+            commitment=strict_json(current/'COMMITTED.json')
+            if (commitment.get('schema')!=OBS
+                or commitment.get('observation_id')!=args.expected_observation_id
+                or commitment.get('source_v1_seal')!=args.expected_v1_seal_id
+                or (current/'FAILED.json').exists()
+                or file_sha256(current/'observations.json')!=commitment.get('observation_file_sha256')):
+                raise ValueError('immutable original observation required for independent physical replay')
+            obs=strict_json(current/'observations.json')
+            frozen=check_seal(args.run_dir,args.expected_v1_seal_id)
+            if (frozen['panel_id']!=plan['panel_sha256']
+                or frozen['model_snapshot_sha256']!=plan['model_sha256']):
+                raise ValueError('independent replay model/source identity drift')
+            encoder,question,verify,ckpt,_,_=safe_encoder(args.snapshot)
+            if ckpt!=plan['model_sha256']:
+                raise ValueError('independent replay model checkpoint drift')
+            reader=load_conditioned_bank(Path(args.run_dir)/'conditioned.safetensors',frozen)
+            receipt=replay_physical(plan,obs,encoder=encoder,question_encoder=question,
+                reader=reader,
+                expected_reader_weights_sha256=frozen['training']['conditioned']['weights_sha256'])
+            verify()
+            write_json_exclusive(dest/'replay.json',receipt)
+            write_json_exclusive(dest/'COMMITTED.json',dict(schema=REPLAY,
+                replay_id=receipt['replay_id'],observation_id=args.expected_observation_id,
+                source_v1_seal=args.expected_v1_seal_id,
+                replay_file_sha256=file_sha256(dest/'replay.json'),
+                independent_issuer_authentication=False,production_authorized=False))
         else:
             plan=strict_json(args.plan)
             current=Path(args.observations_dir)
             commitment=strict_json(current/'COMMITTED.json')
-            if (commitment.get('schema')!='hepta.reader.support-causal-observation.v1'
+            if (commitment.get('schema')!='hepta.reader.support-causal-observation.v2'
                 or commitment.get('observation_id')!=args.expected_observation_id
                 or file_sha256(current/'observations.json')!=commitment.get('observation_file_sha256')
-                or (current/'FAILED.json').exists()
-                or file_sha256(args.owner_labels)!=args.expected_owner_label_file_sha256):
+                or (current/'FAILED.json').exists()):
                 raise ValueError('immutable observation or label file identity mismatch')
+            frozen=check_seal(args.run_dir,args.expected_v1_seal_id)
+            if (commitment.get('source_v1_seal')!=args.expected_v1_seal_id
+                or frozen['panel_id'] != plan['panel_sha256']
+                or frozen['model_snapshot_sha256'] != plan['model_sha256']):
+                raise ValueError('original source V1 seal and model identity required at score')
+            replay_dir=Path(args.replay_dir)
+            replay_seal=strict_json(replay_dir/'COMMITTED.json')
+            if (replay_seal.get('schema')!=REPLAY
+                or replay_seal.get('replay_id')!=args.expected_replay_id
+                or replay_seal.get('observation_id')!=args.expected_observation_id
+                or replay_seal.get('source_v1_seal')!=args.expected_v1_seal_id
+                or replay_seal.get('production_authorized') is not False
+                or replay_seal.get('independent_issuer_authentication') is not False
+                or (replay_dir/'FAILED.json').exists()
+                or file_sha256(replay_dir/'replay.json')!=replay_seal.get('replay_file_sha256')):
+                raise ValueError('second physical replay seal required before labels')
+            verified_replay=strict_json(replay_dir/'replay.json')
+            if file_sha256(args.owner_labels)!=args.expected_owner_label_file_sha256:
+                raise ValueError('independent owner label bytes changed after physical replay')
             raw=strict_json(args.owner_labels)
             if (raw.get('schema')!='hepta.multirc.external-eval-labels.v1'
                 or raw.get('panel_id')!=plan['panel_sha256']):
@@ -143,12 +198,15 @@ def main():
                                plan_id=plan['plan_id'],labels=raw['labels'])
             scored=review(plan,strict_json(current/'observations.json'),label_receipt,
                 expected_observation_id=args.expected_observation_id,
-                expected_labels_sha256=digest(label_receipt))
+                expected_labels_sha256=digest(label_receipt),
+                original_reference_rows=_references(frozen),
+                expected_reader_weights_sha256=frozen['training']['conditioned']['weights_sha256'],
+                physical_replay_receipt=verified_replay)
             write_json_exclusive(dest/'scores.json',scored)
             write_json_exclusive(dest/'COMMITTED.json',dict(schema=scored['schema'],
                 observation_id=args.expected_observation_id,
                 score_file_sha256=file_sha256(dest/'scores.json'),
-                production_authorized=False))
+                source_replay_seal=args.expected_replay_id,production_authorized=False))
     except Exception as error:
         write_json_exclusive(dest/'FAILED.json',dict(
             schema='hepta.reader.support-causal-failure.v1',

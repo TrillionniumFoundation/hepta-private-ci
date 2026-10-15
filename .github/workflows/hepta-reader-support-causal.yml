@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Install pinned CPU torch for actual toy tensor forwards
+      - name: Install pinned CPU torch for actual small tensor replays
         run: |
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Source SHA and exact research file hashes
@@ -43,13 +43,13 @@ jobs:
             qualification/stem-cell-v1/test_reader_support_causal.py \
             qualification/stem-cell-v1/test_reader_support_native_adapter.py \
             > "$RUNNER_TEMP/reader-support-source-blobs.txt"
-      - name: Run both exact-source suites normally
+      - name: Run all numerical, adversarial and four-stage CLI integration cases
         shell: bash
         run: |
           set -euo pipefail
           python -m unittest discover -s qualification/stem-cell-v1 \
             -p "test_reader_support_*.py" -v 2>&1 | tee "$RUNNER_TEMP/reader-support-tests.log"
-      - name: Re-run fail-closed contracts with Python -O
+      - name: Run optimized Python mode and compile actual checked files
         shell: bash
         run: |
           set -euo pipefail
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: reader-support-causal-mechanics-source-only
+          name: reader-support-dual-physical-replay-source-only
           if-no-files-found: warn
           path: |
             ${{ runner.temp }}/reader-support-source-sha.txt

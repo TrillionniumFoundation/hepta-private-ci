@@ -16,8 +16,9 @@ from collections import defaultdict
 import torch
 
 PLAN = 'hepta.reader.support-causal-plan.v1'
-OBS = 'hepta.reader.support-causal-observation.v1'
-SCORE = 'hepta.reader.support-causal-score.v1'
+OBS = 'hepta.reader.support-causal-observation.v2'
+SCORE = 'hepta.reader.support-causal-score.v2'
+REPLAY = 'hepta.reader.support-causal-replay.v1'
 CONDITIONS = ('no_evidence', 'ordinary_retrieval', 'support_candidate', 'premise_removed')
 NEUTRAL = 'Evidence unavailable.'
 MAX_ROWS = 256
@@ -194,28 +195,204 @@ def run_blind(plan, *, encoder, question_encoder, reader, weight_sha256,
     return out
 
 
-def review(plan, observations, labels, *, expected_observation_id, expected_labels_sha256):
-    """Label-only separate scoring: never call the Encoder or mutate weights."""
+def replay_physical(plan, observations, *, encoder, question_encoder, reader,
+                    expected_reader_weights_sha256, tolerance=1e-5):
+    """Second read-only physical re-encode/re-Reader pass, with NO labels.
+
+    Intended for a fresh separate process and the exact immutable pretrained
+    snapshot. This is independent physical execution, NOT independent backend,
+    source signer, semantic sufficiency review, or end-to-end production latency.
+    """
     validate_plan(plan)
-    if (not isinstance(observations, dict) or observations.get('schema') != OBS
-        or observations.get('observation_id') != expected_observation_id
+    if (not isinstance(observations,dict) or observations.get('schema')!=OBS
+        or observations.get('observation_id')!=digest({k:v for k,v in observations.items()
+                                                   if k!='observation_id'})
+        or observations.get('plan_id')!=plan['plan_id']
+        or observations.get('panel_sha256')!=plan['panel_sha256']
+        or observations.get('model_sha256')!=plan['model_sha256']
+        or observations.get('reader_weights_sha256')!=expected_reader_weights_sha256
+        or not hex64(expected_reader_weights_sha256)
+        or observations.get('original_prediction_replay_verified') is not True
+        or not isinstance(observations.get('rows'),list)
+        or len(observations['rows'])!=len(plan['rows'])
+        or not callable(encoder) or not callable(question_encoder) or not callable(reader)
+        or type(tolerance) not in (float,int) or not math.isfinite(tolerance)
+        or not 0 <= tolerance <= 1e-4):
+        raise ValueError('independent source/model-bound physical re-execution required')
+    if isinstance(reader,torch.nn.Module):
+        if reader.training or any(p.device.type!='cpu' or p.dtype!=torch.float32
+                                 or not torch.isfinite(p).all().item() for p in reader.parameters()):
+            raise ValueError('second physical replay requires a frozen valid Reader')
+    calls=dict(encoder=0,question=0,reader=0)
+    worst=0.0;started=time.perf_counter_ns()
+    for source,old in zip(plan['rows'],observations['rows'],strict=True):
+        if (not isinstance(old,dict) or old.get('task_id')!=source['task_id']
+            or old.get('source_group')!=source['source_group']
+            or old.get('original_input_sha256')!=hashlib.sha256(source['evidence'].encode()).hexdigest()
+            or not isinstance(old.get('observations'),dict)
+            or set(old['observations'])!=set(CONDITIONS)):
+            raise ValueError('sealed physical replay task inventory changed')
+        question=source['question']+'\nCandidate answer: '+source['answer']+'\nIs this candidate correct?'
+        with torch.inference_mode():q=question_encoder(question)
+        calls['question']+=1
+        if not _good(q) or q.ndim!=1 or not 1<=len(q)<=4096:
+            raise ValueError('replayed question feature invalid')
+        for condition,text in condition_texts(source).items():
+            with torch.inference_mode():f=encoder(text)
+            calls['encoder']+=1
+            if (not _good(f) or f.ndim!=2 or not 1<=f.shape[0]<=512 or f.shape[1]!=len(q)):
+                raise ValueError('replayed encoder token stream invalid')
+            with torch.inference_mode():score=reader(f,q)
+            calls['reader']+=1
+            if not _good(score,(2,)):
+                raise ValueError('replayed Reader probability invalid')
+            measured=[float(x) for x in score]
+            prev=old['observations'][condition]
+            if (not isinstance(prev,dict)
+                or prev.get('evidence_sha256')!=hashlib.sha256(text.encode()).hexdigest()
+                or not isinstance(prev.get('logits'),list) or len(prev['logits'])!=2
+                or any(type(x) not in (int,float) or not math.isfinite(x) for x in prev['logits'])):
+                raise ValueError('sealed condition/feature identity is not replayable')
+            delta=max(abs(a-b) for a,b in zip(measured,prev['logits'],strict=True))
+            if delta>tolerance:
+                raise ValueError('independently re-executed Reader differs from sealed logits')
+            worst=max(worst,delta)
+    n=len(plan['rows'])
+    if calls!=dict(encoder=4*n,question=n,reader=4*n):
+        raise ValueError('independent physical replay did not execute all tasks')
+    out=dict(schema=REPLAY,observation_id=observations['observation_id'],
+        plan_id=plan['plan_id'],model_sha256=plan['model_sha256'],
+        reader_weights_sha256=expected_reader_weights_sha256,
+        physically_reexecuted_encoder_calls=calls['encoder'],
+        physically_reexecuted_reader_calls=calls['reader'],
+        physically_reexecuted_query_calls=calls['question'],
+        max_absolute_logit_difference=worst,
+        actual_reexecution_wall_ns=max(1,time.perf_counter_ns()-started),
+        exact_frozen_model_loader_used=False,
+        external_original_model_signer_verified=False,
+        independent_semantic_sufficiency_verified=False,
+        label_owner_material_opened=False,production_authorized=False,authority='DENY_ALL')
+    out['replay_id']=digest(out)
+    return out
+
+
+def _verify_original_reference(plan, observations, reference_rows, reader_sha256, *, tolerance):
+    """Re-read the original V1 frozen predictions at score time.
+
+    The observation producer's boolean and content hash are NOT provenance.
+    This function compares every ordinary-evidence numeric prediction to the
+    *separately fetched* V1 owner artifact. It cannot authenticate that owner.
+    """
+    if (not hex64(reader_sha256) or not isinstance(reference_rows, list)
+        or len(reference_rows) != len(plan['rows'])
+        or type(tolerance) not in (float, int) or not math.isfinite(tolerance)
+        or not 0 <= tolerance <= 1e-4):
+        raise ValueError('independent full original V1 reference required')
+    originals = []
+    for source, original, current in zip(plan['rows'], reference_rows,
+                                         observations['rows'], strict=True):
+        if (not isinstance(original, dict)
+            or set(original) != {'task_id', 'source_group', 'logits', 'weights_sha256'}
+            or original['task_id'] != source['task_id']
+            or original['source_group'] != source['source_group']
+            or original['weights_sha256'] != reader_sha256
+            or not isinstance(original['logits'], list)
+            or len(original['logits']) != 2
+            or any(type(x) not in (int, float) or not math.isfinite(x)
+                   for x in original['logits'])):
+            raise ValueError('original V1 source, Reader weights or task inventory differs')
+        actual = current['observations']['ordinary_retrieval']['logits']
+        if (not isinstance(actual, list) or len(actual) != 2
+            or any(type(x) not in (int, float) or not math.isfinite(x) for x in actual)
+            or any(abs(x-y) > tolerance for x,y in zip(actual, original['logits'], strict=True))):
+            raise ValueError('original V1 prediction differs during independent score replay')
+        originals.append(dict(task_id=original['task_id'],source_group=original['source_group'],
+                              logits=original['logits'],weights_sha256=reader_sha256))
+    return digest(originals)
+
+
+def review(plan, observations, labels, *, expected_observation_id, expected_labels_sha256,
+           original_reference_rows, expected_reader_weights_sha256,
+           physical_replay_receipt, replay_tolerance=1e-5):
+    """Independently rebind original V1 before label-only descriptive scoring."""
+    validate_plan(plan)
+    expected_keys = {'schema', 'plan_id', 'panel_sha256', 'model_sha256',
+        'reader_weights_sha256', 'condition_order', 'rows',
+        'physical_encoder_calls', 'physical_reader_calls', 'physical_query_calls',
+        'measured_whole_call_wall_ns', 'original_prediction_replay_verified',
+        'external_semantic_sufficiency_authenticated', 'independent_real_source_authenticated',
+        'reading_labels', 'measured_complete_model_lifecycle', 'production_authorized',
+        'authority', 'observation_id'}
+    n = len(plan['rows'])
+    if (not isinstance(observations, dict) or set(observations) != expected_keys
+        or observations['schema'] != OBS
+        or observations['observation_id'] != expected_observation_id
         or digest({k:v for k,v in observations.items() if k != 'observation_id'}) != expected_observation_id
-        or observations.get('plan_id') != plan['plan_id']
-        or observations.get('condition_order') != list(CONDITIONS)
-        or observations.get('authority') != 'DENY_ALL'
-        or observations.get('external_semantic_sufficiency_authenticated') is not False
-        or observations.get('production_authorized') is not False
+        or observations['plan_id'] != plan['plan_id']
+        or observations['panel_sha256'] != plan['panel_sha256']
+        or observations['model_sha256'] != plan['model_sha256']
+        or observations['reader_weights_sha256'] != expected_reader_weights_sha256
+        or observations['condition_order'] != list(CONDITIONS)
+        or observations['authority'] != 'DENY_ALL'
+        or observations['original_prediction_replay_verified'] is not True
+        or observations['external_semantic_sufficiency_authenticated'] is not False
+        or observations['independent_real_source_authenticated'] is not False
+        or observations['reading_labels'] is not False
+        or observations['measured_complete_model_lifecycle'] is not False
+        or observations['production_authorized'] is not False
+        or type(observations['physical_encoder_calls']) is not int
+        or observations['physical_encoder_calls'] != 4*n
+        or type(observations['physical_reader_calls']) is not int
+        or observations['physical_reader_calls'] != 4*n
+        or type(observations['physical_query_calls']) is not int
+        or observations['physical_query_calls'] != n
+        or type(observations['measured_whole_call_wall_ns']) is not int
+        or observations['measured_whole_call_wall_ns'] <= 0
         or not isinstance(labels, dict) or set(labels) != {'labels', 'schema', 'plan_id'}
         or labels['schema'] != 'hepta.reader.support-label-owner.v1'
         or labels['plan_id'] != plan['plan_id']
         or digest(labels) != expected_labels_sha256):
-        raise ValueError('sealed real observations and independent label-owner receipt required')
+        raise ValueError('untrusted observation provenance, accounting or label-owner receipt')
+    expected_replay_keys={'schema','observation_id','plan_id','model_sha256',
+        'reader_weights_sha256','physically_reexecuted_encoder_calls',
+        'physically_reexecuted_reader_calls','physically_reexecuted_query_calls',
+        'max_absolute_logit_difference','actual_reexecution_wall_ns',
+        'exact_frozen_model_loader_used','external_original_model_signer_verified',
+        'independent_semantic_sufficiency_verified','label_owner_material_opened',
+        'production_authorized','authority','replay_id'}
+    if (not isinstance(physical_replay_receipt,dict)
+        or set(physical_replay_receipt)!=expected_replay_keys
+        or physical_replay_receipt['schema']!=REPLAY
+        or physical_replay_receipt['replay_id'] != digest({k:v for k,v in physical_replay_receipt.items()
+                                                        if k!='replay_id'})
+        or physical_replay_receipt['observation_id']!=expected_observation_id
+        or physical_replay_receipt['plan_id']!=plan['plan_id']
+        or physical_replay_receipt['model_sha256']!=plan['model_sha256']
+        or physical_replay_receipt['reader_weights_sha256']!=expected_reader_weights_sha256
+        or type(physical_replay_receipt['physically_reexecuted_encoder_calls']) is not int
+        or physical_replay_receipt['physically_reexecuted_encoder_calls']!=4*n
+        or type(physical_replay_receipt['physically_reexecuted_reader_calls']) is not int
+        or physical_replay_receipt['physically_reexecuted_reader_calls']!=4*n
+        or type(physical_replay_receipt['physically_reexecuted_query_calls']) is not int
+        or physical_replay_receipt['physically_reexecuted_query_calls']!=n
+        or type(physical_replay_receipt['max_absolute_logit_difference']) not in (float,int)
+        or not 0<=physical_replay_receipt['max_absolute_logit_difference']<=replay_tolerance
+        or type(physical_replay_receipt['actual_reexecution_wall_ns']) is not int
+        or physical_replay_receipt['actual_reexecution_wall_ns']<=0
+        or physical_replay_receipt['exact_frozen_model_loader_used'] is not False
+        or physical_replay_receipt['external_original_model_signer_verified'] is not False
+        or physical_replay_receipt['independent_semantic_sufficiency_verified'] is not False
+        or physical_replay_receipt['label_owner_material_opened'] is not False
+        or physical_replay_receipt['production_authorized'] is not False
+        or physical_replay_receipt['authority']!='DENY_ALL'):
+        raise ValueError('separately sealed full physical replay evidence required')
     by_id = labels['labels']
     if (not isinstance(by_id, dict) or set(by_id) != {r['task_id'] for r in plan['rows']}
         or any(type(y) is not int or y not in (0,1) for y in by_id.values())
-        or not isinstance(observations.get('rows'), list)
-        or len(observations['rows']) != len(plan['rows'])):
+        or not isinstance(observations['rows'], list)
+        or len(observations['rows']) != n):
         raise ValueError('incomplete label owner denominator')
+    total_condition_ns = 0
     counts = {c:0 for c in ('no_evidence', 'ordinary_retrieval', 'support_candidate')}
     brier = dict.fromkeys(counts, 0.0)
     changes = dict.fromkeys(('no_evidence', 'support_candidate', 'premise_removed'), 0.0)
@@ -241,6 +418,7 @@ def review(plan, observations, labels, *, expected_observation_id, expected_labe
                 or type(predicted['condition_wall_ns'][c]) is not int
                 or predicted['condition_wall_ns'][c] <= 0):
                 raise ValueError('altered physical Reader prediction or timing record')
+            total_condition_ns += predicted['condition_wall_ns'][c]
             probabilities[c] = obs['probability']
         y = by_id[source['task_id']]
         for c in counts:
@@ -252,7 +430,19 @@ def review(plan, observations, labels, *, expected_observation_id, expected_labe
                           removed_premise_probability_change=abs(
                               probabilities['support_candidate']-probabilities['premise_removed'])))
     n = len(cases)
+    # Rebind original V1 after validating every proposed observation row.
+    original_v1_reference_sha256 = _verify_original_reference(
+        plan, observations, original_reference_rows, expected_reader_weights_sha256,
+        tolerance=replay_tolerance)
+    if total_condition_ns > observations['measured_whole_call_wall_ns']:
+        raise ValueError('entire physical call wall time undercounts constituent condition cost')
     return dict(schema=SCORE, original_observation_id=expected_observation_id,
+                original_v1_reference_sha256=original_v1_reference_sha256,
+                original_v1_replayed_at_scoring=True,
+                physical_replay_id=physical_replay_receipt['replay_id'],
+                physical_second_pass_reexecution_structurally_verified=True,
+                full_tensor_call_census_structurally_verified=True,
+                independent_model_origin_signatures_verified=False,
                 owner_labels_sha256=expected_labels_sha256, tasks=n,
                 source_groups=len({r['source_group'] for r in cases}),
                 original_label_descriptive_accuracy={c:counts[c]/n for c in counts},
