@@ -33,3 +33,17 @@ python experiments/shared_stem_cell/public_stem_material_v8.py run --plan /tmp/m
 ```
 
 **Unclosed gates:** actual hosted CI success; two exact-source genuine pretrained physical receipts; shared hardware and dataset same-budget training; independently sealed future labels and no-change baseline; multimodal image/audio features; Rust physical sharing and final-use; NDU selection, recovery and target-host 64/256/1024/4096 Cell measurements. `production_accepted=false` and `authority=DENY_ALL` remain enforced.
+
+## V16 follow-up: review every supplied run plan
+
+The preceding `prepare` command enforces the two immutable reviewed Hub
+revisions, but a caller may invoke `run --plan` directly with a crafted
+canonical research plan. V16 ensures this execution entrance independently
+rejects any model revision that differs from the registered immutable
+candidate source **before creating an output directory or downloading a
+single model file**. The subsequent Hub inventory, per-file length and
+SHA-256, safetensors loading, and post-forward rehash remain unchanged.
+Existing offline source-matrix tests can still use synthetic commits through
+`make_plan`; they are not trusted production execution entrances.
+This is a fail-closed source-identity fix, not learning or model-quality
+evidence. Authority stays `DENY_ALL`.

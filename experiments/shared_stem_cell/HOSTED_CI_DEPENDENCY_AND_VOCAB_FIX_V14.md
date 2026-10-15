@@ -37,3 +37,19 @@ relax the saved-weight verification. The next physical run must identify exact
 unmaterialized names before any possible targeted compatibility fix. Granite
 had successful frozen forwards in the same original run. Pair promotion stays
 blocked until both physical arms finish with authentic material.
+
+## V15 bounded dense CPU load experiment
+
+After pinning the approved mmBERT-small safetensors revision, hosted
+physical run 38664390199 reported exactly two unresolved Meta views:
+`model.embeddings.tok_embeddings.weight` and `decoder.weight`, with
+zero loader-reported missing keys. This is not a passing pretrained forward.
+The stock ModernBERT MLM CPU/eager loader now requests
+`low_cpu_mem_usage=False` under the already reviewed Transformers 4.57.1
+runtime. It is not a model downgrade, new checkpoint or a silent parameter
+initialization policy: the subsequent independent `require_materialized`,
+strict safetensors-to-loaded-tensor byte equality, only physically verified
+tied alias, and post-forward original-file hashes remain mandatory. If
+anything is still missing, randomly initialized or alias-mismatched,
+execution must fail closed. This experimental loader option may increase
+peak CPU memory and is NOT accepted as production memory evidence.

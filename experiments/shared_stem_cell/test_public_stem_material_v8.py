@@ -10,6 +10,7 @@ from public_stem_material_v8 import (
     AdmissionError, CATALOG, SCHEMA, acquire, canonical, make_plan,
     strict_json, validate_plan, verify_hub_against_plan,
     PROBE_TEXTS, probe_input_digest, PINNED_RELEASES, plan_from_reviewed_release,
+    require_reviewed_run_plan,
 )
 
 REV = "1"*40
@@ -70,6 +71,21 @@ class PublicStemMaterialTests(unittest.TestCase):
                                  if row.rfilename != "model.safetensors"]
                 with self.assertRaisesRegex(AdmissionError, "safe model weights"):
                     plan_from_reviewed_release(candidate, info)
+
+    def test_run_cannot_accept_a_preconstructed_unreviewed_revision(self):
+        # Preparation fixes sources, but direct "run --plan" must also
+        # refuse any alternate otherwise well-formed immutable commit.
+        for candidate, revision in PINNED_RELEASES.items():
+            with self.subTest(candidate=candidate):
+                info, _ = fixture(candidate)
+                info.sha = revision
+                plan = make_plan(candidate, info)
+                self.assertEqual(require_reviewed_run_plan(plan), plan)
+                tampered = dict(plan, revision=REV)
+                with self.assertRaisesRegex(AdmissionError, "reviewed immutable"):
+                    require_reviewed_run_plan(tampered)
+                with self.assertRaisesRegex(AdmissionError, "reviewed immutable"):
+                    require_reviewed_run_plan(dict(plan, revision="f" * 40))
 
     def test_never_accept_moving_tag_as_run_revision(self):
         info,_=fixture()
