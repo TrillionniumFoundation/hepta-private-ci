@@ -59,7 +59,6 @@ def gate(args):
     bank.restore_local(args.prepared / "features")
     natural = gate_cases(parts["train"], questions=8)
     synthetic = build_binding_cases("train", groups=32, seed=41)[:16]
-    selected = tuple(natural) + tuple(synthetic)
     protocol = dict(schema="hepta.token-reader.learnability-gate.v1", seed=41,
         natural_case_ids=[case.case_id for case in natural],
         synthetic_case_ids=[case.case_id for case in synthetic],
@@ -67,11 +66,13 @@ def gate(args):
         model_source_sha256={name: file_digest(Path(__file__).parent / name) for name in
                             ("token_reader.py", "token_reader_training.py", "token_features.py")},
         hidden_dim=32, learning_rate=.003, steps=args.steps, depth=3,
+        training_recipe="alternating_natural_and_synthetic_minibatches", intervention_probability=.25,
         official_validation_evaluated=False, gate_scope="tiny_train_fit_only")
     write_json(root, "protocol.json", protocol)
     torch.manual_seed(41)
-    model, training = fit_token_reader(TokenReader(384, 32), bank.dataset(selected),
+    model, training = fit_token_reader(TokenReader(384, 32), bank.dataset(natural),
         steps=args.steps, seed=41, batch_size=16, max_depth=3, learning_rate=.003,
+        counterfactual_train=bank.dataset(synthetic), counterfactual_fraction=.25,
         evidence_weight=.2, diagnostic_interval=args.steps, wall_time_ns=900_000_000_000)
     write_json(root, "training.json", training)
     natural_p, natural_cost = infer(model, natural, bank, depth=3, prefix="tiny-natural")
