@@ -141,10 +141,24 @@ class RealSourceProbeTests(unittest.TestCase):
             self.assertNotEqual([r["marker"] for r in removed], [gold])
             self.assertEqual(sum(r["marker"] == gold for r in removed), 1)
             for before, after in zip(original, removed, strict=True):
-                if before["marker"] != gold:
+                self.assertNotIn(case["symbol"], after["text"])
+                if case["symbol"] not in before["text"]:
                     self.assertEqual(before, after)
-                else:
-                    self.assertNotIn(case["symbol"], after["text"])
+
+    def test_full_lesion_removes_every_exact_query_symbol(self):
+        for case in self.plan["cases"]:
+            original = case["conditions"]["hybrid_k4"]
+            ablated = case["conditions"]["removed_declaration"]
+            self.assertEqual(
+                [row["marker"] for row in original],
+                [row["marker"] for row in ablated],
+            )
+            self.assertTrue(
+                any(case["symbol"] in row["text"] for row in original)
+            )
+            self.assertFalse(
+                any(case["symbol"] in row["text"] for row in ablated)
+            )
 
     def test_machine_score_does_not_become_human_review(self):
         report = score_outputs(self.plan, self.sources, fake_journals(self.plan))

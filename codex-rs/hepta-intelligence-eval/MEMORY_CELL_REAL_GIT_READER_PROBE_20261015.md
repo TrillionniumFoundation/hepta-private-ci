@@ -84,3 +84,22 @@ recall gain is **not** established. Reader/model evidence remains unqualified
 until completed source-head inference and independent review receipts exist.
 No source has been relabeled or edited; original Git ZIP identities remain
 unchanged and production qualification remains false.
+
+## Forward-only v3 source lesion
+
+Source-only inspection of the v2 frozen nine-question corpus showed two
+(`isclosed` and `get_metadata_routing`) with exact question-symbol
+mentions surviving in **non-target** delivered excerpts. This invalidates a
+strong necessity interpretation of the target-declaration-only intervention,
+even if later Reader text happens to be correct. Retain the immutable v1/v2
+plans and do not pool their trials.
+
+The v3 plan (`hepta.memory.real-git-reader-function-probe.v3`), SHA-256
+`6f5efd713be88097cdc5ed3b93786df61e5dbc1709e512884952770dc9377608`, preserves original source bytes, question IDs, lexical selection,
+2–4 source markers and evidence order. It removes any lines mentioning the
+queried symbol **across all delivered excerpts**; every unaffected excerpt
+stays byte-identical. All nine cases have zero remaining literal query-symbol
+mentions. This is still a mechanistic source-use screen, not independent human
+causal minimality, general program repair or prospective production evidence.
+Original v2 plan `b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412` remains retired and separately recorded.
+Full original-source-backed local protocol regression: 15/15 passed.
