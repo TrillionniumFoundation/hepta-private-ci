@@ -13,7 +13,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-SCHEMA = "hepta.six-track-paired-observation.v2"
+SCHEMA = "hepta.six-track-paired-observation.v3"
 SHA_KEYS = ("source_sha256", "plan_sha256", "dataset_sha256", "evaluator_sha256")
 SPLITS = ("train", "calibration", "test", "future1", "future2", "future3", "ood")
 EVAL_SPLITS = ("test", "future1", "future2", "future3", "ood")
@@ -133,6 +133,10 @@ def check_cases(raw):
     # A declared independent source family cannot recycle identical input bytes
     # under another family name to inflate paired bootstrap/source counts.
     source_owner_by_input = {}
+    # This is a task-INSTANCE identifier, not a reusable task type. Its
+    # presence in a second split leaks prior task identity across windows even
+    # if the surrounding context and source-group strings have changed.
+    task_split_owner = {}
     reader_by_task = defaultdict(dict)
     for r in raw:
         if type(r) is not dict:
@@ -141,6 +145,9 @@ def check_cases(raw):
         split, modality, reader = r.get("split"), r.get("modality"), r.get("reader_condition")
         if cid in cases or split not in SPLITS or modality not in MODALITY or reader not in READER:
             raise Invalid("duplicate case or unsupported split/modality/Reader")
+        previous_split = task_split_owner.setdefault(task, split)
+        if previous_split != split:
+            raise Invalid("task instance identity reused across temporal cohorts")
         group = ident(r.get("source_group"))
         src = digest(r.get("input_sha256"))
         original_owner = source_owner_by_input.setdefault(src, (split, group))
@@ -432,7 +439,9 @@ def audit(doc):
     # Even a complete locally supplied corpus does not authenticate independently
     # observed real labels, weights, exact CPU/GPU execution or FinalUse.
     return {
-        "schema": "hepta.six-track-descriptive-adjudication.v2",
+        "schema": "hepta.six-track-descriptive-adjudication.v3",
+        "task_instance_ids_cross_split_rejected": True,
+        "task_identity_provenance_independently_verified": False,
         "source_sha256": doc["source_sha256"],
         "cases": len(cases),
         "distinct_input_sha256_count": len({case["input_sha256"] for case in cases.values()}),
