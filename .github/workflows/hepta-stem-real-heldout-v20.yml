@@ -94,9 +94,10 @@ jobs:
           mkdir -p /tmp/stem-v20 /tmp/stem-v20-evidence
           python3 -m venv /tmp/stem-v20-env
           /tmp/stem-v20-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/stem-v20-env/bin/pip install numpy==1.26.4 transformers==4.57.1 \
-            safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 \
-            psutil==7.0.0 packaging==25.0 pyarrow==18.1.0
+          # Reuse the pinned stack that actually passed the public V18
+          # pretrained two-model canary; add bounded Parquet IO separately.
+          /tmp/stem-v20-env/bin/pip install -r scripts/memory_cell/requirements.txt \
+            psutil==7.0.0 packaging==25.0 tokenizers==0.22.1 pyarrow==18.1.0
           /tmp/stem-v20-env/bin/pip check
           /tmp/stem-v20-env/bin/pip freeze > /tmp/stem-v20-evidence/environment.txt
           /tmp/stem-v20-env/bin/python -c 'import pyarrow.parquet, torch, transformers, safetensors.torch, psutil; print("STOCK_RESEARCH_RUNTIME_OK")'
