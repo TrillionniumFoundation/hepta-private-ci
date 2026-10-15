@@ -42,7 +42,7 @@ jobs:
           # Exact original #2145 source blobs, not newly substituted owners.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "91a60eab41050bfdac69c4f710f0cc3ce57c1d9b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "9fe42424b3fd63a91705ddb42559f29c69bd1c89"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "00c4cf73636ef836a8edff9adc8fdb8554556f1e"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
@@ -56,6 +56,17 @@ jobs:
           grep -Fq 'fn execute_native_batch(' codex-rs/hepta-infer-worker-host/src/batched_neuron.rs
           grep -Fq 'result: Err(BatchWorkerErrorV1::BatchUnsupported)' codex-rs/hepta-infer-worker-host/src/batched_neuron.rs
           grep -Fq '#[cfg(test)]' codex-rs/hepta-infer-worker-host/src/batched_neuron.rs
+          # A non-test caller must not bypass the top-level denial by
+          # invoking InferenceWorker's old crate-local physical Batch method.
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          worker = Path("codex-rs/hepta-infer-worker-host/src/model_worker.rs").read_text()
+          for method in ("can_run_neuron_feature_batch", "run_neuron_features_batch_receipts"):
+              pattern = r"(?m)^\s*#\[cfg\(test\)\]\s*\n\s*pub\(crate\) fn " + method + r"\("
+              if re.search(pattern, worker) is None:
+                  raise SystemExit(f"missing test-only fence on original Worker: {method}")
+          PY
           git diff --check
           git diff --exit-code
 
@@ -101,6 +112,8 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_native_group_
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
+      - name: Run original Control/CNS denial in a NON-TEST linked Worker library
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --test original_control_non_test_gate
       - name: Check source integrity after compiler and formatter
         if: always()
         shell: bash
