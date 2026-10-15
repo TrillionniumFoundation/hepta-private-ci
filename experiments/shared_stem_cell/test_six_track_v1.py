@@ -75,6 +75,8 @@ def make_fixture():
                     arm["costs"]["training_ms"] = 0.0
                 if name == "ndu_solver":
                     arm["costs"]["ndu_ms"] = 3.0 * len(cases)
+                else:
+                    arm["costs"]["ndu_ms"] = 0.0
             for c in cases:
                 utility = 0.5
                 if stage == "P0" and not frozen:
@@ -97,7 +99,7 @@ def make_fixture():
                     "completed": True,
                 }
                 if stage == "P4":
-                    row["measured_solver_ms"] = 3.0
+                    row["measured_solver_ms"] = 0.0 if name == "no_search" else 3.0
                 if stage == "P3":
                     row["generated_artifact_sha256"] = sha("generated-" + c["case_id"] + name)
                 if stage == "P5":
@@ -437,6 +439,7 @@ class SixTrackValidation(unittest.TestCase):
         self.assertEqual(p4["reported_training_control_census"]["ndu_solver"]["train_steps"], 24)
         self.assertFalse(out["statistical_model_winner_selected"])
         self.assertEqual(out["authority"], "DENY_ALL")
+        self.assertIn("ndu_solver__vs__no_search", p4["paired_family_differences"])
 
     def test_p4_cheap_bellman_cannot_pretend_to_fit(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(
@@ -445,6 +448,14 @@ class SixTrackValidation(unittest.TestCase):
     def test_p4_zero_fit_control_cannot_hide_training_cost(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"]["costs"].update(
             training_ms=2.0), "P4 zero-step control claims training exposure or cost")
+
+    def test_p4_no_search_must_not_report_solver_execution(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["no_search"]["results"][0].update(
+            measured_solver_ms=1.0), "P4 no-search baseline cannot claim solver execution")
+
+    def test_p4_bellman_must_not_claim_ndu_cost(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"]["costs"].update(
+            ndu_ms=2.0), "P4 no-fit cheap control cannot claim NDU solver charges")
 
     def test_p4_trained_ndu_cannot_omit_training_charges(self):
         self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(
