@@ -149,9 +149,9 @@ class OriginalRouteBuilder(unittest.TestCase):
         ]
         weights = {name: 0.0 for name in route.RELATIONS}
         weights.update(associative=1.0, supports=1.0)
-        selected = route.graph_rank(candidates, scores, edges, weights, 3)
+        selected = route.graph_rank(candidates, scores, edges, weights, 3, seed_ids=["a"])
         self.assertIn("d", selected)
-        self.assertNotIn("d", route.graph_rank(candidates, scores, edges[:1], weights, 3))
+        self.assertNotIn("d", route.graph_rank(candidates, scores, edges[:1], weights, 3, seed_ids=["a"]))
 
     def test_negative_relation_suppresses_but_does_not_redistribute(self):
         ids = ["a", "b", "c", "d"]
@@ -162,7 +162,7 @@ class OriginalRouteBuilder(unittest.TestCase):
         ]
         weights = {key: 0.0 for key in route.RELATIONS}
         weights.update(contradicts=-1.0, supports=1.0)
-        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3), ["a", "b"])
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 2, seed_ids=["a"]), ["a", "b"])
 
     def test_graph_cycle_is_bounded_without_score_amplification(self):
         ids = ["a", "b", "c", "d"]
@@ -173,8 +173,8 @@ class OriginalRouteBuilder(unittest.TestCase):
             {"source_id": "c", "target_id": "d", "relation": "supports"},
         ]
         weights = {key: 1.0 for key in route.RELATIONS}
-        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3),
-                         route.graph_rank(ids, scores, edges[:1] + edges[2:], weights, 3))
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3, seed_ids=["a"]),
+                         route.graph_rank(ids, scores, edges[:1] + edges[2:], weights, 3, seed_ids=["a"]))
 
     def test_second_hop_lesion_changes_finite_graph_counterfactual(self):
         ids = ["a", "b", "c", "d"]
@@ -184,9 +184,107 @@ class OriginalRouteBuilder(unittest.TestCase):
             {"source_id": "c", "target_id": "d", "relation": "supports"},
         ]
         weights = {key: 1.0 for key in route.RELATIONS}
-        full = route.graph_rank(ids, scores, edges, weights, 3)
-        lesion = route.graph_rank(ids, scores, edges[:-1], weights, 3)
+        full = route.graph_rank(ids, scores, edges, weights, 3, seed_ids=["a"])
+        lesion = route.graph_rank(ids, scores, edges[:-1], weights, 3, seed_ids=["a"])
         self.assertNotEqual(full, lesion)
+
+    def test_registered_lexical_seed_drives_both_hops(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.45, "c": 0.12, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "associative"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {name: 1.0 for name in route.RELATIONS}
+        full = route.graph_rank(ids, scores, edges, weights, 3, seed_ids=["a"])
+        lesion = route.graph_rank(ids, scores, edges[:1], weights, 3, seed_ids=["a"])
+        self.assertIn("d", full)
+        self.assertNotIn("d", lesion)
+
+    def test_rag_selection_is_not_a_new_graph_seed(self):
+        ids = ["lex", "rag", "ordinary", "target"]
+        scores = {"lex": 0.8, "rag": 0.95, "ordinary": 0.3, "target": 0.1}
+        edges = [{"source_id": "rag", "target_id": "target", "relation": "supports"}]
+        weights = {name: 1.0 for name in route.RELATIONS}
+        lexical = route.graph_rank(ids, scores, edges, weights, 2, seed_ids=["lex"])
+        replaced = route.graph_rank(ids, scores, edges, weights, 2, seed_ids=["rag"])
+        self.assertNotIn("target", lexical)
+        self.assertIn("target", replaced)
+
+    def test_graph_suppression_never_expands_negative_message(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.45, "c": 0.12, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "contradicts"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {name: 1.0 for name in route.RELATIONS}
+        weights["contradicts"] = -1.0
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 2,
+                                          seed_ids=["a"]), ["a", "b"])
+
+    def test_cycles_cannot_amplify_source_activation(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.45, "c": 0.12, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "associative"},
+            {"source_id": "c", "target_id": "a", "relation": "supports"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {name: 1.0 for name in route.RELATIONS}
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3,
+                                          seed_ids=["a"]),
+                         route.graph_rank(ids, scores, [edges[0], edges[2]], weights, 3,
+                                          seed_ids=["a"]))
+
+    def test_unregistered_lexical_graph_seed_refused(self):
+        ids = ["a", "b", "c"]
+        scores = {"a": 0.7, "b": 0.5, "c": 0.2}
+        for seeds in (["a", "a"], ["injected"], [], ["a"] * 17):
+            with self.assertRaisesRegex(Refused, "lexical seeds"):
+                route.graph_rank(ids, scores, [], {}, 2, seed_ids=seeds)
+
+    def test_graph_physical_owner_checks_complete_future_roster(self):
+        from unittest.mock import patch
+        import amcn_causal_graph_training as original_graph
+
+        cases = self.packet["cases"]
+        future = sorted({case["family"] for case in cases
+                         if case["split"] in ("select", "future_a", "future_b")})
+        inputs = {case["question_id"]: {
+            "edges": [], "train_rows": [],
+            "expected_train_sha256": pin("source-TRAIN"),
+            "expected_graph_sha256": pin("original-graph"),
+            "forbidden_future_families": future,
+            "lesion_edge": [], "steps": 10, "seed": 17,
+        } for case in cases}
+        with patch.object(original_graph, "physical_relation_packet",
+                          side_effect=lambda case, *_, **__:
+                          self.graphs[case["question_id"]]) as training:
+            receipt = route.build_with_original_trained_graph(
+                self.packet, self.predictions, self.bank, self.rag,
+                inputs, self.reader, final_k=2)
+            self.assertEqual(receipt["query_count"], len(cases))
+            self.assertEqual(training.call_count, len(cases))
+        inputs[cases[0]["question_id"]]["forbidden_future_families"] = future[:-1]
+        with self.assertRaisesRegex(Refused, "omitted heldout"):
+            route.build_with_original_trained_graph(
+                self.packet, self.predictions, self.bank, self.rag,
+                inputs, self.reader, final_k=2)
+
+    def test_missing_actual_original_head_cannot_use_fake_graph(self):
+        from unittest.mock import patch
+        import amcn_causal_physical_bank_bridge as bridge
+
+        with patch.object(bridge, "replay_and_bind_original_bank",
+                          side_effect=ValueError("no actual six original Heads")):
+            with self.assertRaisesRegex(ValueError, "no actual six original Heads"):
+                route.build_with_original_physical_heads_and_graph(
+                    self.packet, None, {}, {}, self.predictions, "/missing",
+                    self.rag, {}, self.reader,
+                    expected_bank_manifest_sha256=pin("missing"),
+                    expected_source_binding_sha256=pin("source"),
+                    expected_predictions_sha256=pin("predictions"))
 
     def test_builds_original_whole_question_nine_arm_pairs(self):
         result = self.run_plan()

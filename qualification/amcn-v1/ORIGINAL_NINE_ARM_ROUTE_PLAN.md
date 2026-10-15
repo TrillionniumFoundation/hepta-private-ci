@@ -57,3 +57,40 @@ leaving original strong-RAG delivered evidence unchanged. Combined source-only
 test count **82/82 locally**; no additional pretrained model/Reader execution
 or measured task performance is claimed. This correction changes a research
 mechanism, not HNMF production graph ownership or the pending qualification.
+
+
+## Physical relation-graph integration and frozen seed correction
+
+The source-first BM25 seeds for each original question now remain the **only**
+graph propagation roots. The learned-Head ordering and the independently
+executed strong hybrid RAG may alter final selections but never silently
+become extra graph seeds. All graph arms use the same immutable Top-16 lexical
+seed IDs, original source frontier, maximum two hops, final evidence budget
+and Reader identity. Two-hop signed propagation uses one bounded visit per
+source/destination per seed, prevents cycle amplification, and preserves
+negative relation suppression. The earlier direct second-hop source discovery
+without second-hop scoring was incomplete; this change corrects both sides.
+
+`amcn_causal_graph_training.py` calls the **existing original**
+`amcn_learning.train_relation_router` (real PyTorch SGD), bound to exact
+original `FrozenGraph` source/edge SHA, authorized TRAIN-only relation
+examples, precommitted original source/future-family exclusions, optimizer
+steps and a registered lesion edge. `independent_sgd` recomputes the six
+original coefficient updates independently using scalar logistic gradients
+and checks numerical parity without claiming source truth.
+
+`build_with_original_trained_graph` will refuse missing per-question
+registered physical graph supervision; `build_with_original_physical_heads_and_graph`
+first reloads/re-forwards the actual #1968 six Head safetensors before it
+accepts original graph-owner observations. Neither wrapper creates a
+strong-RAG retrieval receipt, genuine Reader outputs, independent judgments,
+future windows or authority.
+
+The standalone graph workflow physically executes the original Torch owner
+on **synthetic TRAIN relation examples** as an original-code integration
+and fault test. The numeric suite lives at
+`test_amcn_physical_graph_training.py`, deliberately separate from the
+stdlib-only nine-arm source/provenance workflow. Source-only CI must not
+silently import Torch by discovering all test files under a broad glob.
+Until the exact GitHub runner successfully completes, local scalar tests
+must not be relabelled an exact-source hosted Torch/graph run.

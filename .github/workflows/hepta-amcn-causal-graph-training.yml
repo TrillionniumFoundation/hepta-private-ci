@@ -1,0 +1,106 @@
+name: Hepta AMCN original graph Torch SGD and independent scalar replay (SHADOW)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_graph_training.py"
+      - "qualification/amcn-v1/test_amcn_physical_graph_training.py"
+      - "qualification/amcn-v1/test_amcn_original_graph_owner.py"
+      - ".github/workflows/hepta-amcn-causal-graph-training.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_graph_training.py"
+      - "qualification/amcn-v1/test_amcn_physical_graph_training.py"
+      - "qualification/amcn-v1/test_amcn_original_graph_owner.py"
+      - ".github/workflows/hepta-amcn-causal-graph-training.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-amcn-physical-graph-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-original-torch-graph:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install existing original offline CPU Torch dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-graph-training
+          python3 -m venv /tmp/amcn-graph-venv
+          P=/tmp/amcn-graph-venv/bin
+          "$P/pip" install numpy==1.26.4
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install ruff==0.15.8
+          "$P/pip" check
+          "$P/pip" freeze > /tmp/amcn-graph-training/environment.txt
+      - name: Original Torch owner and independently recomputed SGD
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-graph-venv/bin
+          mkdir -p /tmp/amcn-graph-training
+          "$P/python" -m compileall -q qualification/amcn-v1/amcn_causal_graph_training.py qualification/amcn-v1/test_amcn_physical_graph_training.py qualification/amcn-v1/test_amcn_original_graph_owner.py
+          "$P/ruff" check --select E9,F63,F7,F82 qualification/amcn-v1/amcn_causal_graph_training.py qualification/amcn-v1/test_amcn_physical_graph_training.py qualification/amcn-v1/test_amcn_original_graph_owner.py
+          PYTHONPATH=.:qualification/amcn-v1 "$P/python" - <<'PY'
+          import amcn_learning, amcn_core
+          assert callable(amcn_learning.train_relation_router)
+          assert callable(amcn_core.FrozenGraph)
+          print('original compiled owner source import: OK')
+          PY
+          PYTHONPATH=.:qualification/amcn-v1 "$P/python" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_physical_graph_training.py' -v \
+            2>&1 | tee /tmp/amcn-graph-training/real-torch-scalar-tests.txt
+          PYTHONPATH=.:qualification/amcn-v1 "$P/python" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_original_graph_owner.py' -v \
+            2>&1 | tee /tmp/amcn-graph-training/original-owner-torch-tests.txt
+          test "$(grep -c '^test_.*\.\.\. ok$' /tmp/amcn-graph-training/original-owner-torch-tests.txt)" -ge 4
+          if grep -Eq 'skipped=|FAILED|ERROR' /tmp/amcn-graph-training/original-owner-torch-tests.txt; then
+            echo 'Original owner physical tests were not executed successfully' >&2
+            exit 1
+          fi
+      - name: Preserve tested source and nonpromotion posture
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-graph-training/source
+          git rev-parse HEAD > /tmp/amcn-graph-training/source/exact-head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-graph-training/source/exact-tree.txt
+          cp qualification/amcn-v1/amcn_causal_graph_training.py \
+             qualification/amcn-v1/test_amcn_physical_graph_training.py \
+             qualification/amcn-v1/test_amcn_original_graph_owner.py \
+             qualification/amcn-v1/amcn_learning.py \
+             qualification/amcn-v1/amcn_core.py \
+             .github/workflows/hepta-amcn-causal-graph-training.yml \
+             /tmp/amcn-graph-training/source/
+          printf '%s\n' 'actual_original_torch_sgd_test=true' \
+             'independent_scalar_math_replay=true' \
+             'source_features_synthetic_only=true' \
+             'authenticated_graph_training_sources=false' \
+             'real_reader_answers=0' \
+             'matched_strong_rag=false' \
+             'prospective_future_windows=0' \
+             'production_accepted=false' \
+             > /tmp/amcn-graph-training/negative-capability.txt
+          (cd /tmp/amcn-graph-training && find . -type f ! -name SHA256SUMS \
+             -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-original-graph-sgd-physical-replay-shadow
+          path: /tmp/amcn-graph-training
+          if-no-files-found: error

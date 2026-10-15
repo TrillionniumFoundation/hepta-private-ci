@@ -154,54 +154,55 @@ def _admit_graph(graph, case, candidates, full_snapshot_sha256):
     }
 
 
-def graph_rank(candidates, base_scores, edges, weights, k):
-    """Deterministic bounded two-hop association over immutable original edges.
+def graph_rank(candidates, base_scores, edges, weights, k, *, seed_ids):
+    """Bounded two-hop message passing using the ORIGINAL lexical HNMF seeds.
 
-    A source is activated once per seed at its shortest hop. Cycle back-edges
-    cannot repeatedly amplify a signal. Each seed's bounded signed coefficient
-    product is computed without inspecting gold labels. A negative relation
-    suppresses rather than silently becoming an excitatory traversal.
+    The original label-blind BM25 seeds are fixed before Head choice; neither
+    sorted learned logits nor original RAG-selected sources become new seeds.
+    One visit per source and destination per seed avoids cyclic inflation.
+    Negative paths inhibit targets and never start exploratory propagation.
+    This candidate is an association scorer, not evidence/factual authority.
     """
     require(len(candidates) == len(set(candidates)) and candidates,
-            "duplicate or empty graph candidate inventory")
+            "duplicate or empty admitted graph candidates")
+    require(isinstance(seed_ids, (tuple, list)) and 1 <= len(seed_ids) <= 16
+            and len(set(seed_ids)) == len(seed_ids)
+            and set(seed_ids) <= set(candidates),
+            "only registered source-first lexical seeds may start graph")
     require(set(base_scores) == set(candidates)
             and all(type(v) in (int, float) and isfinite(v) and 0 <= v <= 1
-                    for v in base_scores.values()), "graph base scores invalid")
+                    for v in base_scores.values()), "invalid original physical Head scores")
     scores = {sid: float(base_scores[sid]) for sid in candidates}
-    seeds = _stable_rank(candidates, scores, min(2, len(candidates)))
     adjacency = defaultdict(list)
     for edge in edges:
         a, b, relation = edge["source_id"], edge["target_id"], edge["relation"]
         require(a in scores and b in scores and a != b and relation in weights,
-                "graph edge leaves common admitted frontier")
+                "graph edge outside the original shared candidate frontier")
         weight = weights[relation]
         require(type(weight) in (float, int) and isfinite(weight) and -8 <= weight <= 8,
                 "unbounded graph coefficient")
         adjacency[a].append((b, relation))
-    for source in adjacency:
-        adjacency[source].sort()
+    for src in adjacency:
+        adjacency[src].sort()
     boost = defaultdict(float)
-    for seed in seeds:
-        # Branches cannot revisit the same node at a greater hop. A second
-        # hop is counted only when it represents a new discovered destination.
-        discovered = {seed}
+    for seed in seed_ids:
+        visited = {seed}
         queue = deque([(seed, 0, 1.0)])
         while queue:
-            source, depth, strength = queue.popleft()
+            src, depth, strength = queue.popleft()
             if depth == 2:
                 continue
-            for target, relation in adjacency[source]:
-                if target in discovered:
+            for dest, relation in adjacency[src]:
+                if dest in visited:
                     continue
-                discovered.add(target)
+                visited.add(dest)
                 signed = strength * max(-1.0, min(1.0, weights[relation]))
-                boost[target] += scores[seed] * signed / (depth + 1)
-                # Suppressive paths do not become exploratory seeds.
+                boost[dest] += scores[seed] * signed / (depth + 1)
                 if signed > 0:
-                    queue.append((target, depth + 1, signed))
-    final = {sid: scores[sid] + boost[sid] for sid in candidates}
+                    queue.append((dest, depth + 1, signed))
+    final = {sid: scores[sid] + boost[sid] / len(seed_ids)
+             for sid in candidates}
     return _stable_rank(candidates, final, k)
-
 
 def build_original_plan(source_packet, original_predictions, bank, rag_receipt,
                         graph_receipts, reader_binding, *, final_k=4):
@@ -429,10 +430,10 @@ def build_original_plan(source_packet, original_predictions, bank, rag_receipt,
             "learned_typed": _stable_rank(source_ids, typed_scores, final_count),
             "typed_swapped": _stable_rank(source_ids, {s: by_id[s]["typed_swapped_negative"]
                                                          for s in source_ids}, final_count),
-            "typed_fixed_graph": graph_rank(source_ids, typed_scores, edges, graph_fixed, final_count),
-            "typed_learned_graph": graph_rank(source_ids, typed_scores, edges, weights, final_count),
-            "typed_graph_lesion": graph_rank(source_ids, typed_scores, lesioned, weights, final_count),
-            "unsplit_equal_graph": graph_rank(source_ids, shared_scores, edges, weights, final_count),
+            "typed_fixed_graph": graph_rank(source_ids, typed_scores, edges, graph_fixed, final_count, seed_ids=lexical),
+            "typed_learned_graph": graph_rank(source_ids, typed_scores, edges, weights, final_count, seed_ids=lexical),
+            "typed_graph_lesion": graph_rank(source_ids, typed_scores, lesioned, weights, final_count, seed_ids=lexical),
+            "unsplit_equal_graph": graph_rank(source_ids, shared_scores, edges, weights, final_count, seed_ids=lexical),
         }
         selected["strong_hybrid_rag"] = rag_row["final_source_ids"]
         kind = item["memory_type"]
@@ -507,6 +508,73 @@ def build_from_original_physical_bank(source_packet, matrix, type_by_row,
     return build_original_plan(source_packet, original_predictions,
                                observed, rag_receipt, graph_receipts,
                                reader_binding, final_k=final_k)
+
+
+
+def build_with_original_trained_graph(source_packet, original_predictions,
+                                      verified_bank, original_rag_receipt,
+                                      graph_training_inputs, reader_binding,
+                                      *, final_k=4):
+    """Train original #1777 Torch relation owner before freezing Reader routes.
+
+    Owner training sources, genuine strong RAG and pretrained Head material
+    require independently verified external files; no simulated fallback.
+    """
+    from amcn_causal_graph_training import physical_relation_packet
+
+    require(isinstance(source_packet, dict) and
+            isinstance(source_packet.get("cases"), list)
+            and isinstance(graph_training_inputs, dict),
+            "original per-question graph TRAIN inputs unavailable")
+    cases = source_packet["cases"]
+    require(len({c["question_id"] for c in cases}) == len(cases)
+            and set(graph_training_inputs) == {c["question_id"] for c in cases},
+            "unregistered or incomplete original physical graph case census")
+    future = sorted({c["family"] for c in cases
+                     if c["split"] in ("select", "future_a", "future_b")})
+    actual = {}
+    for case in cases:
+        record = graph_training_inputs[case["question_id"]]
+        _keys(record, ("edges", "train_rows", "expected_train_sha256",
+                       "expected_graph_sha256", "forbidden_future_families",
+                       "lesion_edge", "steps", "seed"),
+              "unregistered original graph physical training fields")
+        require(record["forbidden_future_families"] == future,
+                "graph TRAIN protection omitted heldout question families")
+        actual[case["question_id"]] = physical_relation_packet(
+            case, record["edges"], record["train_rows"],
+            expected_train_sha256=record["expected_train_sha256"],
+            expected_graph_sha256=record["expected_graph_sha256"],
+            forbidden_future_families=future,
+            lesion_edge=record["lesion_edge"],
+            steps=record["steps"], seed=record["seed"])
+    return build_original_plan(source_packet, original_predictions, verified_bank,
+                               original_rag_receipt, actual, reader_binding,
+                               final_k=final_k)
+
+
+def build_with_original_physical_heads_and_graph(
+        source_packet, matrix, type_by_row, head_training_receipt,
+        original_predictions, bank_directory, original_rag_receipt,
+        graph_training_inputs, reader_binding, *,
+        expected_bank_manifest_sha256, expected_source_binding_sha256,
+        expected_predictions_sha256, final_k=4):
+    """Bind actually replayed original two-Head banks plus Torch graph owner.
+
+    No pretrained Reader, independent future result or production capability
+    is inferred from successfully composing these conditional inputs.
+    """
+    from amcn_causal_physical_bank_bridge import replay_and_bind_original_bank
+
+    bank = replay_and_bind_original_bank(
+        matrix, type_by_row, head_training_receipt,
+        original_predictions, bank_directory,
+        expected_manifest_sha256=expected_bank_manifest_sha256,
+        expected_source_binding_sha256=expected_source_binding_sha256,
+        expected_predictions_sha256=expected_predictions_sha256)
+    return build_with_original_trained_graph(
+        source_packet, original_predictions, bank, original_rag_receipt,
+        graph_training_inputs, reader_binding, final_k=final_k)
 
 
 def main(argv=None):
