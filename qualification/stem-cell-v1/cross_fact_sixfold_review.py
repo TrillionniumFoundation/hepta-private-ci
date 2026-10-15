@@ -6,6 +6,7 @@ source composition transfer. It is NOT independent pretrained evidence.
 """
 import argparse
 import json
+import math
 from pathlib import Path
 from itertools import permutations
 
@@ -44,11 +45,28 @@ def review(fold_files):
             optimizer_bytes=set()
             for arm in ARMS:
                 a=row['arms'][arm];m=a['heldout']
-                if (a['completed_updates']!=800 or a['exposures']!=51200
+                training = a.get('train')
+                if (not isinstance(training,dict) or training.get('total')!=270
+                        or training.get('questions')!=90
+                        or type(training.get('correct')) is not int
+                        or not 0<=training['correct']<=270
+                        or type(training.get('complete_questions')) is not int
+                        or not 0<=training['complete_questions']<=90
+                        or a['completed_updates']!=800 or a['exposures']!=51200
                         or m['total']!=54 or m['questions']!=18
+                        or type(m['correct']) is not int or type(m['complete_questions']) is not int
                         or not 0<=m['correct']<=54 or not 0<=m['complete_questions']<=18
-                        or a['cpu_ns']<=0 or a['optimizer_tensor_bytes']<=0):
-                    raise ValueError('incomplete physical experiment or heldout roster')
+                        or type(a['cpu_ns']) is not int or a['cpu_ns']<=0
+                        or type(a['optimizer_tensor_bytes']) is not int or a['optimizer_tensor_bytes']<=0
+                        or type(a.get('wall_ns')) is not int or a['wall_ns']<=0
+                        or any(type(panel.get(metric)) not in (int,float)
+                            or not math.isfinite(panel[metric])
+                            or not (0<=panel[metric]<=1)
+                            for panel in (training,m) for metric in ('positive_f1','brier'))
+                        or any(type(panel.get('cross_entropy')) not in (int,float)
+                            or not math.isfinite(panel['cross_entropy'])
+                            or panel['cross_entropy']<0 for panel in (training,m))):
+                    raise ValueError('incomplete or nonfinite physical experiment or heldout roster')
                 optimizer_bytes.add(a['optimizer_tensor_bytes'])
                 per['arms'][arm]=dict(heldout_correct=m['correct'],heldout_question_em=m['complete_questions'],
                                       positive_f1=m['positive_f1'],heldout_brier=m['brier'],
