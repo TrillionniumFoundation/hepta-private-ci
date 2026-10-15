@@ -282,6 +282,11 @@ class LocalEncoder:
                 config.reference_compile = False
                 config._attn_implementation = "eager"
                 config_kwargs["config"] = config
+                # The reviewed CPU/eager ModernBERT MLM path uses dense
+                # materialization before exact saved-tensor verification.
+                # Meta-tensor fallbacks and random unverified weights remain
+                # forbidden by require_materialized and the full inventory.
+                config_kwargs["low_cpu_mem_usage"] = False
         loaded, info = factories[kind].from_pretrained(
             root, local_files_only=True, trust_remote_code=False, use_safetensors=True,
             output_loading_info=True, attn_implementation="eager", **config_kwargs)
