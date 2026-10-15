@@ -151,7 +151,9 @@ fn require_recovered_effect_metrics_floor_v1(
     // This check is deliberately conservative and non-authorizing: even a
     // matching nonzero pair cannot prove complete identity membership,
     // independently signed custody or no coordinated rollback.
-    if (evidence.committed_rows > 0 && effect.durable_records == 0)
+    if effect.poisoned
+        || effect.unresolved_tick.is_some()
+        || (evidence.committed_rows > 0 && effect.durable_records == 0)
         || (effect.attempted_ticks > 0 && evidence.committed_rows == 0)
     {
         return Err(NeuronProductionBootstrapErrorV1::NotReady);

@@ -363,3 +363,26 @@ fn agentd_metrics_bind_domain_separated_owner_journal_scope() {
     assert_ne!(events[0].scope_digest, unscoped);
     assert_eq!(events[0].operation_digest, Digest32::of_bytes(b"operation"));
 }
+
+#[test]
+fn agentd_effect_intent_state_is_required_before_metrics_can_be_ready() {
+    use codex_hepta_neuron::NeuronEffectIntentStatusV1;
+    use codex_hepta_types::Digest32;
+
+    let clean = NeuronEffectIntentStatusV1 {
+        attempted_ticks: 1,
+        durable_records: 2,
+        unresolved_tick: None,
+        poisoned: false,
+    };
+    assert!(!super::effect_intent_ready_v1(None));
+    assert!(super::effect_intent_ready_v1(Some(clean)));
+    assert!(!super::effect_intent_ready_v1(Some(NeuronEffectIntentStatusV1 {
+        unresolved_tick: Some(Digest32::of_bytes(b"unresolved-effect")),
+        ..clean
+    })));
+    assert!(!super::effect_intent_ready_v1(Some(NeuronEffectIntentStatusV1 {
+        poisoned: true,
+        ..clean
+    })));
+}

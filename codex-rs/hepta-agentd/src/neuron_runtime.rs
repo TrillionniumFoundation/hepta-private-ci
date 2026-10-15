@@ -185,6 +185,9 @@ where
     }
 
     pub fn production_metrics_ready(&self) -> bool {
+        if !effect_intent_ready_v1(self.effect_intent_status()) {
+            return false;
+        }
         metrics_ready_v1(
             self.metric_sink.as_deref(),
             &self.failed_metrics,
@@ -195,6 +198,10 @@ where
 
     /// Wait for original Evidence's bounded real group-fsync ACK.
     pub fn flush_production_metrics(&self) -> bool {
+        if !effect_intent_ready_v1(self.effect_intent_status()) {
+            self.metrics_flushed.store(false, Ordering::Release);
+            return false;
+        }
         flush_metrics_v1(
             self.metric_sink.as_deref(),
             &self.failed_metrics,
@@ -327,6 +334,12 @@ where
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }
+}
+
+/// A durable unresolved original model effect must not be declared ready
+/// merely because the independent Evidence writer reports a healthy fsync.
+fn effect_intent_ready_v1(status: Option<NeuronEffectIntentStatusV1>) -> bool {
+    status.is_some_and(|intent| !intent.poisoned && intent.unresolved_tick.is_none())
 }
 
 /// Real elapsed-time observation only. Metrics cannot mint an authority,
