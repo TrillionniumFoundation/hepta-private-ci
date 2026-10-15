@@ -5,8 +5,12 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_multirc_semantic_material.py'
       - 'experiments/shared_stem_cell/p0_multirc_semantic_execute.py'
       - 'experiments/shared_stem_cell/p0_multirc_semantic_review.py'
+      - 'experiments/shared_stem_cell/p0_question_only_head.py'
+      - 'experiments/shared_stem_cell/p0_question_only_review.py'
+      - 'experiments/shared_stem_cell/test_p0_question_only_matched.py'
       - 'experiments/shared_stem_cell/test_p0_multirc_semantic.py'
       - 'experiments/shared_stem_cell/P0_MULTIRC_HUMAN_SEMANTIC.md'
+      - 'experiments/shared_stem_cell/P0_MATCHED_QUESTION_ONLY_CONTROL.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
   workflow_dispatch:
 permissions:
@@ -23,21 +27,39 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install pinned real CPU optimizer
+      - name: Install pinned real CPU optimizer and explicit NumPy dependency
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'packaging==25.0'
+          python -m pip check
+          python - <<'PY'
+          import torch,numpy
+          assert torch.tensor([1.0],dtype=torch.float32).numpy()[0]==1.0
+          PY
       - name: Complete original-source, artifact and genuine-SGD fault regression
         run: |
           set -euo pipefail
           python -m py_compile experiments/shared_stem_cell/p0_multirc_semantic_material.py \
             experiments/shared_stem_cell/p0_multirc_semantic_execute.py \
             experiments/shared_stem_cell/p0_multirc_semantic_review.py \
+            experiments/shared_stem_cell/p0_question_only_head.py \
+            experiments/shared_stem_cell/p0_question_only_review.py \
+            experiments/shared_stem_cell/test_p0_question_only_matched.py \
+            experiments/shared_stem_cell/test_p0_squad_causal.py \
             experiments/shared_stem_cell/test_p0_multirc_semantic.py
           PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_multirc_semantic.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_multirc_semantic.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_question_only_matched.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_question_only_matched.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -306,10 +328,27 @@ jobs:
             --output "$ROOT/independent-human-semantic-score.json"
           python -m json.tool "$ROOT/independent-human-semantic-score.json" >/dev/null
           echo 'No generated counterfactual truth, no Stem selection, no final-use.'
+      - name: Independent source-replayed TRAINED question-only Head comparison
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/score-only"
+          python experiments/shared_stem_cell/p0_question_only_review.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --labels "$ROOT/owner-only-human-labels.json" \
+            --train-parquet "$ROOT/train.parquet" --validation-parquet "$ROOT/validation.parquet" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --laya421-nochange "$ROOT/laya421_nochange.json" \
+            --output "$ROOT/matched-question-only-score.json"
+          python -m json.tool "$ROOT/matched-question-only-score.json" >/dev/null
+          echo 'Original human target only; eight independent source groups; DENY_ALL.'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: hepta-human-independent-semantic-score-${{ github.run_id }}
-          path: ${{ runner.temp }}/score-only/independent-human-semantic-score.json
+          path: |
+            ${{ runner.temp }}/score-only/independent-human-semantic-score.json
+            ${{ runner.temp }}/score-only/matched-question-only-score.json
           if-no-files-found: warn
           retention-days: 7

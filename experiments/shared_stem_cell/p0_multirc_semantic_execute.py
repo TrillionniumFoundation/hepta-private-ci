@@ -104,8 +104,14 @@ def run(fit_doc,blind_doc,model,args):
         if set(tokens)!={r['case_id'] for r in fit+blind} or any(type(v) is not int or not 1<=v<=512 for v in tokens.values()):
             raise Invalid('missing or silently truncated original pretrained tokens')
         trained=fit_head(fit,blind,vectors,width)
+        # Candidate-only matched prior: original human TRAIN labels, separately
+        # trained on question/answer with no passage. Reuse frozen Encoder bank.
+        # The control does NOT assign a human label to a modified passage.
+        from p0_question_only_head import fit_question_only
+        question_only=fit_question_only(fit_doc,blind_doc,vectors,width,trained)
         head=trained
         checked={'source_feature_sha256':sha(canonical(feature_digests)),
+                 'physical_encoder_ms_by_case':physical.get('encode_ms_by_case'),
                  'source_token_counts_sha256':sha(canonical(tokens)),
                  'physical_encoder_api_requests':physical.get('local_model_api_requests'),
                  'model_load_ms':physical.get('load_ms'),
@@ -115,7 +121,8 @@ def run(fit_doc,blind_doc,model,args):
                  'source_checkpoint_sha256':physical.get('mmbert_whole_pretrained_checkpoint_sha256')}
         observed={'model':model,'model_revision':revision,'feature_width':width,
                   'head_mode':'same-initialization-frozen-vs-genuine-human-supervised-sgd',
-                  'training':trained,'control':trained['controls']}
+                  'training':trained,'control':trained['controls'],
+                  'matched_question_only_control':question_only}
     observed.update({'schema':'hepta.p0.multirc-original-semantic-physical.v1',
                      'dataset_schema':SCHEMA,'panel_id':fit_doc['metadata']['panel_id'],
                      'fit_material_sha256':sha(canonical(fit_doc)),
