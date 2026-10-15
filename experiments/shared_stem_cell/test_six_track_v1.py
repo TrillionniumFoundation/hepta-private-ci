@@ -357,6 +357,20 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["tracks"]["P3"]["multimodal_generator"]["results"][0].pop(
             "generated_artifact_sha256"), "SHA256")
 
+    def test_extreme_scalar_must_not_overflow_or_poison_accounting(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["costs"].update(
+            training_ms=10**350), "physical measurement")
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["costs"].update(
+            training_ms=10**19), "physical measurement")
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][0].update(
+            end_to_end_ms=10**350), "physical measurement")
+
+    def test_extreme_negative_utility_must_not_overflow(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=-(10**350)), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=float("inf")), "signed utility")
+
     def test_bool_cannot_be_a_numeric_metric(self):
         self.rejected(lambda d: d["tracks"]["P5"]["typed"]["costs"].update(cpu_ms=True), "measurement")
 
