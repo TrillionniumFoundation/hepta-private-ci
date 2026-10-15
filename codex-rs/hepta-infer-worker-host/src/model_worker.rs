@@ -641,6 +641,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // Account for all other live models before borrowing the selected Head.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
@@ -695,21 +697,37 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        // Enforce the full reported resident + extra transient footprint.
-        // The driver must report disjoint categories; on overcounting we
-        // conservatively reject instead of relaxing the resource grant.
-        let total_reported_bytes = observed
+        let observed = match observed {
+            Ok(value) => value,
+            Err(_) => {
+                // The Head may have executed even though the driver failed.
+                // Never reuse this generation until independent reconciliation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
+        if !observed.terminal_observed {
+            self.poisoned = true;
+        }
+        // Resident memory is generation-wide, not only this Head. A driver
+        // cannot reduce the original load-time floor by underreporting.
+        let selected_resident = observed
             .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let total_reported_bytes = selected_resident
             .checked_add(observed.transient_allocation_bytes)
-            .ok_or(Error::ArithmeticOverflow)?;
-        if total_reported_bytes > self.grant.maximum_memory_bytes {
+            .and_then(|bytes| bytes.checked_add(other_model_resident_bytes));
+        if total_reported_bytes.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
