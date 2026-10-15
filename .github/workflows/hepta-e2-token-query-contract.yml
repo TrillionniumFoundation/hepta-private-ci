@@ -8,6 +8,8 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_review.py"
       - "experiments/shared_stem_cell/e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_optimizer_replay.py"
+      - "experiments/shared_stem_cell/e2_numpy_oracle.py"
+      - "experiments/shared_stem_cell/test_e2_numpy_oracle.py"
       - "experiments/shared_stem_cell/test_e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
       - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
@@ -50,12 +52,15 @@ jobs:
             experiments/shared_stem_cell/e2_token_query_real_cpu.py \
             experiments/shared_stem_cell/e2_token_query_review.py \
             experiments/shared_stem_cell/e2_head_replay.py \
-            experiments/shared_stem_cell/e2_optimizer_replay.py             experiments/shared_stem_cell/e2_pairwise_evidence.py
+            experiments/shared_stem_cell/e2_optimizer_replay.py \
+            experiments/shared_stem_cell/e2_numpy_oracle.py             experiments/shared_stem_cell/e2_pairwise_evidence.py
           "$PY" -m unittest discover -s experiments/shared_stem_cell \
             -p 'test_e2_token_query_*.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hepta-e2-contract-tests.txt"
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_head_replay.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hepta-e2-head-replay-tests.txt"
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_numpy_oracle.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hepta-e2-numpy-oracle-tests.txt"
           git diff --check
       - name: Preserve test source and errors without any weight artifacts
         if: always()
@@ -67,4 +72,5 @@ jobs:
             ${{ runner.temp }}/hepta-e2-contract-runtime.txt
             ${{ runner.temp }}/hepta-e2-contract-tests.txt
             ${{ runner.temp }}/hepta-e2-head-replay-tests.txt
+            ${{ runner.temp }}/hepta-e2-numpy-oracle-tests.txt
           retention-days: 7

@@ -14,6 +14,8 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_review.py"
       - "experiments/shared_stem_cell/e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_optimizer_replay.py"
+      - "experiments/shared_stem_cell/e2_numpy_oracle.py"
+      - "experiments/shared_stem_cell/test_e2_numpy_oracle.py"
       - "experiments/shared_stem_cell/test_e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
       - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
@@ -86,6 +88,7 @@ jobs:
           "$PY" -m py_compile experiments/shared_stem_cell/e2_token_query_ablation.py experiments/shared_stem_cell/e2_token_query_real_cpu.py experiments/shared_stem_cell/e2_token_query_review.py
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_token_query_*.py' -v
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_head_replay.py' -v
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_numpy_oracle.py' -v
       - name: Independently reconstruct SHA-bound original 224-case AG News panel
         run: |
           set -euo pipefail
@@ -189,6 +192,13 @@ jobs:
               o=r['independent_train_only_optimizer_replay']
               assert o['heads_retrained']==3 and o['steps_per_head']==40
               assert o['max_absolute_parameter_error']<=2e-6
+              n=r['independent_numpy_forward_oracle']
+              assert n['verified_head_states']==6
+              assert n['verified_original_probabilities']==576
+              assert n['max_probability_absolute_error']<=2e-5
+              assert n['independent_numpy_forward_not_producer_torch_head'] is True
+              assert n['pretrained_model_origin_authenticated'] is False
+              assert n['production_promotion_permitted'] is False
               assert o['source_independently_attested'] is False
               assert o['production_promotion_permitted'] is False
               assert r['max_probability_absolute_error'] < 1e-5

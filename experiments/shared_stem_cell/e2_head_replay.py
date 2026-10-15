@@ -23,6 +23,7 @@ from e2_token_query_ablation import (
     Head, _digest_module, _materialize, frozen_bank, Invalid as FeatureInvalid,
 )
 from e2_optimizer_replay import replay_sgd, Invalid as OptimizerReplayInvalid
+from e2_numpy_oracle import review as numpy_oracle_review, Invalid as NumpyOracleInvalid
 
 SCHEMA = 'hepta.stem.e2-head-replay-bundle.v1'
 REVIEW_SCHEMA = 'hepta.stem.e2-head-replay-readonly-audit.v1'
@@ -302,7 +303,13 @@ def review(root: Path, cases: list[dict], report: dict, report_sha256: str):
                                       report['head_study'], width)
     except OptimizerReplayInvalid as exc:
         raise Invalid('independent Head optimizer replay failed') from exc
+    try:
+        independent_numpy = numpy_oracle_review(cases, snapshots, heads,
+                                               report['head_study'], width)
+    except NumpyOracleInvalid as exc:
+        raise Invalid('independent NumPy forward oracle failed') from exc
     return {'schema':REVIEW_SCHEMA,'original_case_count':MAX_ROWS,
+            'independent_numpy_forward_oracle':independent_numpy,
             'heads_replayed':len(ARMS)*2,'predictions_replayed':complete,
             'independent_train_only_optimizer_replay':optimizer_replay,
             'max_probability_absolute_error':max_abs,
