@@ -99,7 +99,7 @@ def review(root):
     code = Path(__file__).parent
     require(set(plan['new_code_sha256']) == {
         'cross_fact_bridge.py', 'cross_fact_granite_campaign.py',
-        'cross_fact_granite_receipt_oracle.py'},
+        'cross_fact_granite_receipt_oracle.py', 'cross_fact_joint_fit.py'},
         'unexpected source inventory entries')
     require(all(_digest(code / name) == digest for name, digest in plan['new_code_sha256'].items()),
             'new source changed after run')
@@ -113,6 +113,16 @@ def review(root):
         actual = summary[str(seed)]
         require(set(actual) == set(ARMS), 'missing matched arm receipt')
         previous_init, previous_schedule, previous_count = None, None, None
+        joint_path = root / f'seed-{seed}' / 'joint-training.json'
+        joint = read(joint_path)
+        require(joint['schema'] == 'hepta.cross-fact.joint-fit.v1'
+                and joint['seed'] == seed and joint['requested_steps'] == 8000
+                and joint['arms'] == list(ARMS)
+                and joint['original_models_unchanged'] is True
+                and joint['nested_arm_costs_additive'] is False
+                and joint['production_authorized'] is False,
+                'invalid matched joint-training lifecycle source')
+        actual_joint_gates = []
         for arm in ARMS:
             row = actual[arm]
             folder = root / f'seed-{seed}'
@@ -138,6 +148,15 @@ def review(root):
                     and internal['metrics'] == row['natural_internal_tune']
                     and internal['model_execution_parameter_sha256'] == manifest['execution_parameter_sha256'],
                     'old-task retention was relabeled or linked to another model')
+            require(row['joint_training_file_sha256'] == _digest(joint_path)
+                    and row['joint_training_contract'] == joint['schema']
+                    and joint['matched_training_steps'][arm] == row['completed_steps']
+                    and joint['matched_parameter_count'] == row['parameter_count']
+                    and joint['matched_training_source_digest'] == row['schedule_sha256']
+                    and joint['initial_parameter_sha256'] == row['original_parameter_digest']
+                    and receipt['synchronized_early_stop'] is True
+                    and receipt['joint_cost_not_additive'] is True,
+                    'synchronized training receipt not bound to both matched arms')
             require(receipt['seed'] == seed and receipt['requested_steps'] == 8000
                     and receipt['initial_model_sha256'] == row['original_parameter_digest']
                     and receipt['model_sha256'] == row['trained_parameter_digest']
@@ -191,6 +210,18 @@ def review(root):
                         and previous_count == row['parameter_count'],
                         'same-seed initial weights, parameter parity and training stream required')
             gates[f'{seed}/{arm}'] = bool(verified_gate)
+            actual_joint_gates.append(bool(verified_gate))
+        require(joint['training_arms_both_fit'] is all(actual_joint_gates)
+                and joint['completed_steps'] == actual['cross_fact']['completed_steps']
+                == actual['local']['completed_steps']
+                and ((all(actual_joint_gates) and joint['status'] == 'train_gate_passed')
+                     or (not all(actual_joint_gates)
+                         and joint['status'] in ('max_updates_reached', 'budget_stopped')))
+                and type(joint['cpu_ns']) is int
+                and joint['cpu_ns'] >= sum(actual[arm]['training_cpu_ns'] for arm in ARMS)
+                and type(joint['wall_ns']) is int
+                and joint['wall_ns'] >= sum(actual[arm]['training_wall_ns'] for arm in ARMS),
+                'joint stopping decision or resource lifecycle inconsistent')
     fits = full_fit_gate(summary)
     budgets = matching_training_budgets(summary)
     permitted = matched_fresh_gate(summary)
