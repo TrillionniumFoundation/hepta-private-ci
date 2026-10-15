@@ -29,6 +29,7 @@ const MAX_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_ROW: usize = 2048;
 // An original "NDUW1|<u64 device>|<u64 inode>\n" marker fits within 48 bytes.
 // Fixed stack storage avoids heap allocation in the hot Neuron CAS lane.
+#[cfg(unix)]
 const MAX_CONTROL_OWNER_MARKER_BYTES: usize = 64;
 const DOMAIN: &[u8] = b"hepta.control.ndu-publication.v1";
 
