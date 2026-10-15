@@ -138,6 +138,9 @@ def check_cases(raw):
                 raise Invalid("missing Reader four-condition task intervention")
             if len({r["label"] for r in by_condition.values()}) != 1:
                 raise Invalid("Reader intervention changed original task answer")
+            for key in ("modality", "source_group", "expected_effect_sha256"):
+                if len({r[key] for r in by_condition.values()}) != 1:
+                    raise Invalid("Reader intervention changed original task media/source/effect")
     if not {r["modality"] for r in cases.values()} >= set(MODALITY):
         raise Invalid("not all real media modes declared")
     return cases, groups
@@ -158,6 +161,8 @@ def check_arm(stage, name, arm, cases):
         raise Invalid("missing data-exposure accounting")
     if type(arm.get("physical_forward_claimed")) is not bool:
         raise Invalid("unreported physical-forward status")
+    if type(arm.get("e2e_includes_one_time")) is not bool:
+        raise Invalid("unreported one-time/e2e accounting convention")
     costs = arm.get("costs")
     if type(costs) is not dict or set(costs) != set(COSTS):
         raise Invalid("incomplete lifecycle/resource cost breakdown")
@@ -194,6 +199,10 @@ def check_arm(stage, name, arm, cases):
             raise Invalid("failed task assigned positive utility")
         if stage == "P3":
             digest(row.get("generated_artifact_sha256"))
+        if stage == "P4":
+            solver_ms = number(row.get("measured_solver_ms"))
+            if solver_ms > arm["compute_budget_ms"]:
+                raise Invalid("actual P4 compute exceeded matched budget")
         if stage == "P5":
             effect = row.get("observed_effect_sha256")
             if row["completed"] and effect != case["expected_effect_sha256"]:
@@ -229,10 +238,11 @@ def check_arm(stage, name, arm, cases):
     # includes Encoder/Reader/Head/NDU/Tool. Only one-time training/load/compile/
     # evaluation/migration work is additionally amortized over actual completed rows.
     n = len(rows)
-    amortized = sum(costs[k] for k in ONE_TIME) / n
+    amortized = (0 if arm["e2e_includes_one_time"] else sum(costs[k] for k in ONE_TIME)) / n
     metrics["lifecycle"] = {
         "observed_evaluation_requests": n,
         "one_time_work_ms": sum(costs[k] for k in ONE_TIME),
+        "one_time_included_in_e2e": arm["e2e_includes_one_time"],
         "amortized_one_time_ms_per_request": amortized,
         "mean_e2e_plus_amortized_ms": sum(row["end_to_end_ms"] for row in rows) / n + amortized,
         "reported_peak_rss_bytes": costs["peak_rss_bytes"],

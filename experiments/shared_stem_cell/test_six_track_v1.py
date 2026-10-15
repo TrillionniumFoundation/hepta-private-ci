@@ -19,16 +19,19 @@ def sha(s):
 def make_fixture():
     cases = []
     for t, split in enumerate(target.SPLITS, start=1):
-        for j, condition in enumerate(target.READER):
-            cid = f"case-{split}-{j}"
-            cases.append({
-                "case_id": cid, "task_id": f"task-{split}", "split": split,
-                "source_group": f"family-{split}", "modality": target.MODALITY[j],
-                "reader_condition": condition, "label": t % 2,
-                "input_sha256": sha("input/" + cid),
-                "expected_effect_sha256": sha("effect/" + split),
-                "observed_at": t * 100 + j,
-            })
+        for m, modality in enumerate(target.MODALITY):
+            task = f"task-{split}-{modality}"
+            for j, condition in enumerate(target.READER):
+                cid = f"case-{split}-{modality}-{j}"
+                cases.append({
+                    "case_id": cid, "task_id": task, "split": split,
+                    "source_group": f"family-{split}-{modality}",
+                    "modality": modality, "reader_condition": condition,
+                    "label": (t + m) % 2,
+                    "input_sha256": sha("input/" + cid),
+                    "expected_effect_sha256": sha("effect/" + task),
+                    "observed_at": t * 100 + 4 * m + j,
+                })
     doc = {"schema": target.SCHEMA, "authority": "DENY_ALL",
            "production_promotion_permitted": False, "cases": cases,
            **{key: sha(key) for key in target.SHA_KEYS}, "tracks": {}}
@@ -58,6 +61,7 @@ def make_fixture():
                 "train_steps": 24,
                 "trainable_parameters": 9744,
                 "physical_forward_claimed": False,
+                "e2e_includes_one_time": False,
                 "costs": {k: (40000000 if k == "peak_rss_bytes" else 2.0)
                           for k in target.COSTS},
                 "results": [],
@@ -85,6 +89,8 @@ def make_fixture():
                     "observed_utility": utility, "end_to_end_ms": 10.0,
                     "completed": True,
                 }
+                if stage == "P4":
+                    row["measured_solver_ms"] = 3.0
                 if stage == "P3":
                     row["generated_artifact_sha256"] = sha("generated-" + c["case_id"] + name)
                 if stage == "P5":
@@ -110,7 +116,7 @@ class SixTrackValidation(unittest.TestCase):
     def test_complete_corpus_still_denies_authority(self):
         result = target.audit(self.doc)
         self.assertEqual(result["track_count"], 6)
-        self.assertEqual(result["cases"], 28)
+        self.assertEqual(result["cases"], 112)
         self.assertEqual(result["authority"], "DENY_ALL")
         for field in ("production_promotion_permitted", "statistical_model_winner_selected",
                       "physical_host_cost_authenticated", "future_ndu_superiority_established",
@@ -127,7 +133,7 @@ class SixTrackValidation(unittest.TestCase):
         out = target.audit(self.doc)["tracks"]["P5"]["arms"]["typed"]
         self.assertEqual(out["future1"]["p99_ms"], 10.0)
         # 5 one-time columns at 2ms, over 28 requests, not summed twice.
-        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 28)
+        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 112)
 
     def test_wrong_authority(self):
         self.rejected(lambda d: d.update(authority="GRANT"), "non-authorizing")
@@ -139,19 +145,43 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["cases"].append(copy.deepcopy(d["cases"][0])), "duplicate case")
 
     def test_cross_split_source(self):
-        self.rejected(lambda d: d["cases"][4].update(source_group=d["cases"][0]["source_group"]), "leakage")
+        self.rejected(lambda d: d["cases"][16].update(source_group=d["cases"][0]["source_group"]), "leakage")
 
     def test_chronology_violation(self):
-        self.rejected(lambda d: d["cases"][8].update(observed_at=2), "time boundary")
+        self.rejected(lambda d: d["cases"][32].update(observed_at=2), "time boundary")
 
     def test_reader_counterfactual_missing(self):
-        self.rejected(lambda d: d["cases"][9].update(reader_condition="none"), "repeated Reader")
+        self.rejected(lambda d: d["cases"][33].update(reader_condition="none"), "repeated Reader")
 
     def test_reader_answer_flip(self):
-        self.rejected(lambda d: d["cases"][8].update(label=1-d["cases"][8]["label"]), "Reader intervention changed")
+        self.rejected(lambda d: d["cases"][32].update(label=1-d["cases"][32]["label"]), "Reader intervention changed")
+
+    def test_reader_does_not_change_modality(self):
+        self.rejected(lambda d: d["cases"][33].update(modality="audio"), "Reader intervention changed original task media")
+
+    def test_reader_does_not_change_source(self):
+        self.rejected(lambda d: d["cases"][33].update(source_group="different-family"), "Reader intervention changed original task media")
+
+    def test_one_time_accounting_flag_required(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"].pop("e2e_includes_one_time"), "one-time/e2e")
+
+    def test_no_double_count_when_first_request_includes_load(self):
+        doc = copy.deepcopy(self.doc)
+        doc["tracks"]["P5"]["typed"]["e2e_includes_one_time"] = True
+        life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
+        self.assertEqual(life["amortized_one_time_ms_per_request"], 0)
+        self.assertEqual(life["mean_e2e_plus_amortized_ms"], 10)
+
+    def test_p4_per_case_solver_overrun(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["tree_search"]["results"][0].update(
+            measured_solver_ms=101), "actual P4 compute exceeded")
+
+    def test_p4_per_case_solver_is_not_omitted(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"]["results"][0].pop(
+            "measured_solver_ms"), "measurement")
 
     def test_cross_case_prediction_swap(self):
-        self.rejected(lambda d: d["tracks"]["P0"]["granite_learned"]["results"][4].update(
+        self.rejected(lambda d: d["tracks"]["P0"]["granite_learned"]["results"][16].update(
             input_sha256=d["cases"][0]["input_sha256"]), "swapped input")
 
     def test_no_result_deletion(self):
