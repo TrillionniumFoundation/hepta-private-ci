@@ -1,0 +1,180 @@
+name: MemoryCell original pretrained Reader program diagnostic (research)
+on:
+  push:
+    branches:
+      - codex/memory-original-crossfile-trace-20261015
+    paths:
+      - scripts/memory_cell/physical_original_reader.py
+      - scripts/memory_cell/study_program_capacity.py
+      - scripts/memory_cell/study_format_intervention_v2.py
+      - scripts/memory_cell/test_program_capacity.py
+      - scripts/memory_cell/data/memory-original-program-reader-capacity-20261015.json
+      - .github/workflows/hepta-memory-original-reader-program-capacity.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-program-reader-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-original-model-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '3'
+      MKL_NUM_THREADS: '3'
+      MEMORY_ORIGINAL_HTTP_MODULE: /tmp/cpython-program-reader/original-http-client.py
+      MEMORY_ORIGINAL_HTTP_TESTS: /tmp/cpython-program-reader/original-test-httplib.py
+      MEMORY_ORIGINAL_READER_STAGE: /tmp/cpython-program-reader/weights
+      MEMORY_READER_V1_JOURNAL: /tmp/cpython-program-reader/receipts/v1/original-generation.jsonl
+      MEMORY_READER_V2_JOURNAL: /tmp/cpython-program-reader/receipts/v2/original-generation.jsonl
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Exact source HEAD and fixed Python runtime
+        env:
+          PIN: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          python3 - <<'PY'
+          import sys
+          if sys.version_info[:2] != (3, 13):
+              raise ValueError('fixed Python 3.13 research protocol required')
+          PY
+          mkdir -p /tmp/cpython-program-reader/receipts /tmp/cpython-program-reader/weights
+          git rev-parse HEAD > /tmp/cpython-program-reader/receipts/tested-head.txt
+      - name: Acquire immutable original source and original pretrained model archive
+        run: |
+          set -euo pipefail
+          for pair in \
+            '11778273351 source.zip a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4' \
+            '11779107585 reopen.zip 59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36' \
+            '11586991191 original-weights.zip 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af'; do
+            read -r id name sha <<< "$pair"
+            curl --fail --silent --show-error --location --retry 3 --max-time 240 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${id}/zip" \
+              -o "/tmp/cpython-program-reader/${name}"
+            echo "${sha}  /tmp/cpython-program-reader/${name}" | sha256sum --check
+          done
+      - name: Safe-stream only pinned original Reader and original Git code bytes
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, json, shutil, tarfile, zipfile
+          from pathlib import Path
+          from real_source_reader_probe import real_source
+          root = Path('/tmp/cpython-program-reader')
+          original = real_source(root / 'source.zip', root / 'reopen.zip')
+          source = original[1]
+          (root / 'original-http-client.py').write_bytes(source['python/cpython', 'Lib/http/client.py'])
+          (root / 'original-test-httplib.py').write_bytes(source['python/cpython', 'Lib/test/test_httplib.py'])
+          wanted = {
+              'memory-inputs/reader/model.safetensors': ('model.safetensors', 269060552,
+                  '5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c'),
+              'memory-inputs/reader/tokenizer.json': ('tokenizer.json', 2104556,
+                  '9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c'),
+              'memory-inputs/reader/config.json': ('config.json', 861,
+                  '8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a'),
+          }
+          extracted = set()
+          with zipfile.ZipFile(root / 'original-weights.zip') as outer:
+              if outer.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected outer pretrained archive members')
+              with outer.open('memory-inputs.tar.gz') as stream:
+                  with tarfile.open(fileobj=stream, mode='r|gz') as archive:
+                      for member in archive:
+                          if member.name in wanted:
+                              name, size, sha = wanted[member.name]
+                              if not member.isfile() or member.size != size or name in extracted:
+                                  raise ValueError('unsafe or duplicate original model member')
+                              target = root / 'weights' / name
+                              with archive.extractfile(member) as source_stream, target.open('xb') as sink:
+                                  shutil.copyfileobj(source_stream, sink, 1024 * 1024)
+                              with target.open('rb') as fd:
+                                  observed = hashlib.file_digest(fd, 'sha256').hexdigest()
+                              if observed != sha:
+                                  raise ValueError('original model tensor/config bytes changed')
+                              extracted.add(name)
+          if extracted != {x[0] for x in wanted.values()}:
+              raise ValueError('original model/tokenizer not complete')
+          PY
+      - name: Stage fixed real original-weight CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install safetensors==0.7.0 regex==2026.5.9
+          python3 scripts/memory_cell/physical_original_reader.py \
+            --stage "$MEMORY_ORIGINAL_READER_STAGE" --fingerprint \
+            | tee /tmp/cpython-program-reader/receipts/numeric-fingerprint.json
+      - name: Freeze source-first v1 plan and v2 intervention identities
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/study_program_capacity.py prepare \
+            --source "$MEMORY_ORIGINAL_HTTP_MODULE" --tests "$MEMORY_ORIGINAL_HTTP_TESTS" \
+            --out /tmp/cpython-program-reader/plan.json
+          echo 'bb4a7ca16425f6a8072287f225893cf2d1ea5a13897206cf48b39e44db60ab74  /tmp/cpython-program-reader/plan.json' | sha256sum --check
+          python3 scripts/memory_cell/study_format_intervention_v2.py freeze \
+            --plan /tmp/cpython-program-reader/plan.json \
+            --out /tmp/cpython-program-reader/v2-profile.json
+          echo '8761735110a0bfb23dec7a7bd6acdf09c3bf5e3e38d1dcdc246bafe5a58aaf10  /tmp/cpython-program-reader/v2-profile.json' | sha256sum --check
+          cp /tmp/cpython-program-reader/plan.json /tmp/cpython-program-reader/receipts/plan.json
+          cp /tmp/cpython-program-reader/v2-profile.json /tmp/cpython-program-reader/receipts/v2-profile.json
+      - name: Execute 8 original-weight generation calls under v1
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/study_program_capacity.py generate \
+            --plan /tmp/cpython-program-reader/plan.json \
+            --source "$MEMORY_ORIGINAL_HTTP_MODULE" --tests "$MEMORY_ORIGINAL_HTTP_TESTS" \
+            --stage "$MEMORY_ORIGINAL_READER_STAGE" \
+            --out /tmp/cpython-program-reader/receipts/v1
+      - name: Execute 8 more original-weight generation calls under separately frozen v2
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/study_format_intervention_v2.py run \
+            --plan /tmp/cpython-program-reader/plan.json \
+            --protocol /tmp/cpython-program-reader/v2-profile.json \
+            --stage "$MEMORY_ORIGINAL_READER_STAGE" \
+            --out /tmp/cpython-program-reader/receipts/v2
+      - name: Independent source/Reader/token re-count and 26 adversarial tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_program_capacity.py' -v 2>&1 \
+            | tee /tmp/cpython-program-reader/receipts/test-normal.log
+          python3 -O -m unittest discover -s scripts/memory_cell \
+            -p 'test_program_capacity.py' -v 2>&1 \
+            | tee /tmp/cpython-program-reader/receipts/test-optimized.log
+          python3 scripts/memory_cell/study_program_capacity.py score \
+            --plan /tmp/cpython-program-reader/plan.json \
+            --source "$MEMORY_ORIGINAL_HTTP_MODULE" --tests "$MEMORY_ORIGINAL_HTTP_TESTS" \
+            --journal /tmp/cpython-program-reader/receipts/v1/original-generation.jsonl \
+            --journal-sha256 "$(sha256sum /tmp/cpython-program-reader/receipts/v1/original-generation.jsonl | cut -d' ' -f1)" \
+            --out /tmp/cpython-program-reader/receipts/v1-scored.json
+          python3 scripts/memory_cell/study_format_intervention_v2.py score \
+            --plan /tmp/cpython-program-reader/plan.json \
+            --protocol /tmp/cpython-program-reader/v2-profile.json \
+            --source "$MEMORY_ORIGINAL_HTTP_MODULE" --tests "$MEMORY_ORIGINAL_HTTP_TESTS" \
+            --stage "$MEMORY_ORIGINAL_READER_STAGE" \
+            --journal /tmp/cpython-program-reader/receipts/v2/original-generation.jsonl \
+            --journal-sha256 "$(sha256sum /tmp/cpython-program-reader/receipts/v2/original-generation.jsonl | cut -d' ' -f1)" \
+            --out /tmp/cpython-program-reader/receipts/v2-scored.json
+          (cd /tmp/cpython-program-reader/receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-reader-program-physical-raw-receipts
+          path: /tmp/cpython-program-reader/receipts
+          if-no-files-found: warn
+          retention-days: 30
