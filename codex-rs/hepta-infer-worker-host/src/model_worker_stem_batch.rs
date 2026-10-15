@@ -55,6 +55,10 @@ pub struct StemBatchProposalV1<'a> {
 #[derive(Debug)]
 pub struct NonAuthorizingStemBatchPlanV1 {
     pub batch_digest: Digest32,
+    /// An independently signed *aggregate* intent is required in addition to
+    /// every independently signed member. Otherwise valid standalone member
+    /// grants could be recombined into an unapproved multi-Head operation.
+    pub group_binding: FinalUseBinding,
     pub bindings: Vec<FinalUseBinding>,
     pub authority: AuthorityPosture,
 }
@@ -186,8 +190,34 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             bytes.extend_from_slice(&binding.scope_sha256);
             bytes.extend_from_slice(&binding.payload_sha256);
         }
+        // All signed members must refer to one exact Scope and Principal.
+        // This remains an explicit fail-closed invariant even if a future
+        // Head binder changes its internal digest construction.
+        let canonical_scope = bindings[0].scope_sha256;
+        if bindings.iter().any(|binding| {
+            binding.scope_sha256 != canonical_scope
+                || binding.subject_id.as_str() != proposal.source.principal_id.as_str()
+        }) {
+            return Err(Error::FeatureContract);
+        }
+        let batch_digest = Digest32::of_bytes(&bytes);
+        let group_binding = FinalUseBinding {
+            subject_id: proposal.source.principal_id.to_string(),
+            destination_id: format!("neuron.stem-batch:{}", proposal.source.stem_model_id),
+            request_sha256: Digest32::of_parts(&[
+                b"hepta.infer-worker.stem-batch-aggregate.v1",
+                batch_digest.as_array(),
+            ])
+            .into_array(),
+            // Every signed Head member already carries this exact source and
+            // Scope reference; the group must cover the SAME authenticated
+            // Scope, not an attacker-supplied batch grouping.
+            scope_sha256: bindings[0].scope_sha256,
+            payload_sha256: batch_digest.into_array(),
+        };
         Ok(NonAuthorizingStemBatchPlanV1 {
-            batch_digest: Digest32::of_bytes(&bytes),
+            batch_digest,
+            group_binding,
             bindings,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -215,6 +245,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         proposed: StemBatchProposalV1<'_>,
         frozen_plan: &NonAuthorizingStemBatchPlanV1,
         authority: &FinalUseAuthority,
+        group_token: VerifiedUseToken,
         tokens: Vec<VerifiedUseToken>,
         effect: impl FnOnce(&mut Self) -> Result<T, Error>,
     ) -> Result<T, Error> {
@@ -229,6 +260,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // resource budget, source, and CAS physical currentness *now*.
         let current = self.prepare_stem_final_use_batch_proposal_v1(now_ms, proposed)?;
         if current.batch_digest != frozen_plan.batch_digest
+            || current.group_binding != frozen_plan.group_binding
             || current.bindings != frozen_plan.bindings
         {
             return Err(Error::FeatureContract);
@@ -237,9 +269,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // Each token remains owned and non-cloneable; request order is fixed
         // by the preflight plan. A foreign-owner token, revoked token, expired
         // grant or incorrect signed binding rejects before the callback.
-        let signed_members: Vec<_> = tokens.into_iter()
-            .zip(current.bindings)
-            .collect();
+        let mut signed_members = Vec::with_capacity(tokens.len() + 1);
+        // First enter the group grant so no standalone member token can be
+        // interpreted as permission to combine unrelated approved effects.
+        signed_members.push((group_token, current.group_binding));
+        signed_members.extend(tokens.into_iter().zip(current.bindings));
 
         // The callback is invoked ONLY from inside all original effect
         // fences. Recheck immutable CAS/current grants after token validation
@@ -247,6 +281,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let run = move || -> Result<T, Error> {
             let fresh = self.prepare_stem_final_use_batch_proposal_v1(now_ms, proposed)?;
             if fresh.batch_digest != frozen_plan.batch_digest
+                || fresh.group_binding != frozen_plan.group_binding
                 || fresh.bindings != frozen_plan.bindings
             {
                 return Err(Error::FeatureContract);
