@@ -2209,3 +2209,120 @@ fn signed_batch_panicking_effect_poison_generation_and_release_original_fence() 
         Some(Error::IndeterminateLifecycle)
     );
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_member_approval_cannot_substitute_for_aggregate_approval() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.aggregate-only".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (head2, auth2) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 {
+            selected_head: &head,
+            authorization: &auth,
+        },
+        StemBatchMemberProposalV1 {
+            selected_head: &head2,
+            authorization: &auth2,
+        },
+    ];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker
+        .prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("frozen ordered group intent");
+    let (authority, mut group_token, mut tokens, _signed, _dir) =
+        signed_stem_batch_group_token_fixture(&plan);
+    // The signed group and the individual Head both have legitimate claims,
+    // but a Head token is not permission for a joined multi-Cell effect.
+    std::mem::swap(&mut group_token, &mut tokens[0]);
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100,
+            proposed,
+            &plan,
+            &authority,
+            group_token,
+            tokens,
+            |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FinalUseDenied)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_aggregate_approval_from_another_authority_instance_is_denied() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.foreign-aggregate".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker
+        .prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("frozen batch proposal");
+    let (authority, _group, tokens, _signed, _dir) =
+        signed_stem_batch_group_token_fixture(&plan);
+    let (_other_authority, mut foreign_tokens, _foreign_signed, _other_dir) =
+        signed_stem_batch_token_fixture(&[plan.group_binding.clone()]);
+    let foreign_group = foreign_tokens.remove(0);
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100,
+            proposed,
+            &plan,
+            &authority,
+            foreign_group,
+            tokens,
+            |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FinalUseDenied)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
