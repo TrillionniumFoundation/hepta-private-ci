@@ -1,0 +1,82 @@
+name: Hepta Evidence AuthBus bounded outbox regression
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-evidence/src/authbus_outbox_tests.rs'
+      - '.github/workflows/hepta-evidence-authbus-capacity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-evidence-authbus-capacity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-evidence:
+    name: Original Evidence capacity (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify original source or prospective exact base merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor 78fdb0cf8537e3a84fc6e0a849707559c80881e8 HEAD
+          if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Evidence capacity qualification only' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            test "$(git show -s --format=%P "$merge")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$merge"
+          fi
+          printf 'source=%s base=%s tested=%s tree=%s\n' "$SOURCE_SHA" "$BASE_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Verify original Cargo lock integrity
+        run: python3 scripts/verify_cargo_lock.py
+
+      - name: Original owner focused and complete native tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version --verbose
+          cargo fmt -p codex-hepta-evidence -- --check
+          cargo check --locked -p codex-hepta-evidence --all-targets
+          cargo test --locked -p codex-hepta-evidence --lib authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
+          cargo test --locked -p codex-hepta-evidence --lib
+          cargo clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
+
+      - name: Ensure no generated code, lock or fixture drift
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
