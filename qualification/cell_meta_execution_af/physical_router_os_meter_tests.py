@@ -225,6 +225,20 @@ class OsIsolatedMeterTests(unittest.TestCase):
             self.assertFalse(merged["independent_future_ndu_outcomes_observed"])
             self.assertEqual(merged["authority_posture"],"DENY_ALL")
 
+    def test_cross_architecture_shard_denied_even_with_valid_source_hashes(self):
+        # Every model tensor, source identity and measured process digest stays
+        # unchanged. Previously a mismatched hardware architecture could be
+        # silently pooled into one descriptive median.
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d);self.fake_source_bound_shards(path)
+            item=audit.load(path/"47-os-meter.json")
+            self.assertEqual(item["host_machine"],"x86_64")
+            item["host_machine"]="aarch64"
+            (path/"47-os-meter.json").write_bytes(audit.canonical(item)+b"\n")
+            with self.assertRaisesRegex(meter.ResourceDenied,
+                                        "mixed host architectures"):
+                meter.join_shards(self.root,path)
+
     def test_missing_one_physical_shard_denied(self):
         with tempfile.TemporaryDirectory() as d:
             path=Path(d);self.fake_source_bound_shards(path)
