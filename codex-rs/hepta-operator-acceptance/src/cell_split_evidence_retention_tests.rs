@@ -1,7 +1,6 @@
 //! Shadow-only verification of independently retained Evidence minimums.
 //! These keys are test fixtures, not independently administered deployment keys.
 use super::*;
-use base64::Engine as _;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
 
@@ -305,7 +304,9 @@ fn forensic_metrics_ack_binding_requires_all_four_original_commits() {
         match change {
             0 => altered.plan_digest = "11".repeat(32),
             1 => altered.transcript_digest = "22".repeat(32),
-            2 => altered.acknowledged_steps.pop(),
+            2 => {
+                altered.acknowledged_steps.pop();
+            }
             3 => altered.acknowledged_steps.swap(1, 2),
             4 => altered.acknowledged_steps[0].owner_id = "other.owner".into(),
             5 => altered.acknowledged_steps[1].idempotency_key = "be".repeat(32),
