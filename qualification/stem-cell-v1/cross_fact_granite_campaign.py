@@ -81,7 +81,7 @@ def campaign(args):
 
     # Never mutate source or prior V5 outputs. New artifacts belong outside git.
     output = args.output.resolve()
-    repository = Path(__file__).resolve().parents[1]
+    repository = Path(__file__).resolve().parents[2]
     if output == repository or repository in output.parents:
         raise ValueError("evidence/checkpoint output must remain outside the repository")
     if args.steps != TRAIN_STEPS or args.seed not in ("all", "41", "47", "53"):
@@ -96,7 +96,7 @@ def campaign(args):
         # The original complete input checks freeze earlier V4 and V5 decisions.
         original_args = argparse.Namespace(**vars(args))
         original_args.output = args.output_v5
-        original_design, parts, _natural = checked_design(original_args)
+        _original_design, parts, _natural = checked_design(original_args)
         source_inventory_bytes = source_inventory()
         bank = load_bank(original_args)
         cases = tuple(parts["reader_train"])
