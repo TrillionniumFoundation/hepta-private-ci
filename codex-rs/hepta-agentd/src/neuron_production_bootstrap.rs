@@ -15,6 +15,10 @@ use std::sync::Arc;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
 #[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+#[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+#[cfg(unix)]
 use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
@@ -161,6 +165,36 @@ fn require_recovered_effect_metrics_floor_v1(
     Ok(())
 }
 
+
+#[cfg(unix)]
+fn require_completed_effect_evidence_membership_v1(
+    sink: &DurablePhaseMetricSinkV1,
+    scope: JournalScope,
+    frontier: MetricsLocalFrontierV1,
+    completed_effects: &[codex_hepta_types::Digest32],
+) -> Result<(), NeuronProductionBootstrapErrorV1> {
+    // An unrelated healthy group-commit row is NOT evidence that this
+    // original business-effect tick was observed. Verify every resolved
+    // identity against a locally fsynced, fully replayed original group WAL.
+    // This is bounded cold-start readback, never authorization, a hot-path
+    // effect, a replacement Control signature or independent rollback proof.
+    for operation_digest in completed_effects {
+        let match_row = sink
+            .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                scope_digest: scope.scope_digest,
+                operation_digest: *operation_digest,
+                phase: MetricPhaseV1::NeuronFeature,
+                succeeded: true,
+            })
+            .map_err(|_| NeuronProductionBootstrapErrorV1::NotReady)?
+            .ok_or(NeuronProductionBootstrapErrorV1::NotReady)?;
+        if match_row.matching_rows != 1 || match_row.frontier != frontier {
+            return Err(NeuronProductionBootstrapErrorV1::NotReady);
+        }
+    }
+    Ok(())
+}
+
 /// Returns a Neuron owner only after independently recovering the exact
 /// scope/generation effect-intent WAL and durable Evidence telemetry sink.
 /// Callers must still independently initialize and verify both signed
@@ -214,6 +248,15 @@ where
         .effect_intent_status()
         .ok_or(NeuronProductionBootstrapErrorV1::NotReady)?;
     require_recovered_effect_metrics_floor_v1(effect_status, evidence_frontier)?;
+    let completed_effects = owner
+        .recovered_completed_effect_ids_v1()
+        .ok_or(NeuronProductionBootstrapErrorV1::NotReady)?;
+    require_completed_effect_evidence_membership_v1(
+        &sink,
+        scope,
+        evidence_frontier,
+        &completed_effects,
+    )?;
     // The parent fsync makes both journal names durable before effects.
     // A failed sync aborts construction; a model call cannot have occurred.
     let parent = effect_intent_path
