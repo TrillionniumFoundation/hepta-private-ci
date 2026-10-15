@@ -6,6 +6,11 @@ on:
       - "qualification/stem-cell-v1/p2_real_cell_split.py"
       - "qualification/stem-cell-v1/p2_real_cell_split_review.py"
       - "qualification/stem-cell-v1/test_p2_real_cell_split.py"
+      - "qualification/stem-cell-v1/p2_postfit_sparse_top1.py"
+      - "qualification/stem-cell-v1/p2_postfit_sparse_review.py"
+      - "qualification/stem-cell-v1/test_p2_postfit_sparse_top1.py"
+      - "qualification/stem-cell-v1/P2_POSTFIT_PHYSICAL_TOP1.md"
+      - "qualification/stem-cell-v1/P2_LOCAL_POSTFIT_SPARSE_TOY_20261015.json"
       - "qualification/stem-cell-v1/P2_EQUAL_HEAD_REAL_GRANITE.md"
       - "qualification/stem-cell-v1/P2_LOCAL_TOY_REPLAY_20261015.json"
       - ".github/workflows/hepta-p2-equal-head-real-granite.yml"
@@ -46,6 +51,13 @@ jobs:
             -p test_p2_real_cell_split.py -v 2>&1 | tee "$RUNNER_TEMP/p2/source-tests.log"
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p test_p2_real_cell_split.py -v 2>&1 | tee "$RUNNER_TEMP/p2/optimized-tests.log"
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_postfit_sparse_top1.py -v 2>&1 | tee "$RUNNER_TEMP/p2/postfit-source-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_postfit_sparse_top1.py -v 2>&1 | tee "$RUNNER_TEMP/p2/postfit-optimized-tests.log"
+          python -m compileall -q qualification/stem-cell-v1/p2_postfit_sparse_top1.py \
+            qualification/stem-cell-v1/p2_postfit_sparse_review.py \
+            qualification/stem-cell-v1/test_p2_postfit_sparse_top1.py
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
             qualification/stem-cell-v1/test_p2_real_cell_split.py
@@ -194,6 +206,15 @@ jobs:
             --compact-source pinned-compact \
             --output "$ROOT/predictions-unscored.json" \
             2>&1 | tee "$ROOT/physical-run.log"
+      - name: Physically run Top-1 selected original trained Head only before opening any test label
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_postfit_sparse_top1.py \
+            --p2-report "$ROOT/predictions-unscored.json" \
+            --output "$ROOT/postfit-sparse-unscored.json" --repetitions 100
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -207,6 +228,20 @@ jobs:
             --owner-labels "$ROOT/material/owner-labels.json" \
             --report "$ROOT/predictions-unscored.json" \
             --output "$ROOT/independent-review.json"
+      - name: Independently replay Top-1 expert routes and original five-Head score
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_postfit_sparse_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --p2-report "$ROOT/predictions-unscored.json" \
+            --sparse-report "$ROOT/postfit-sparse-unscored.json" \
+            --output "$ROOT/postfit-sparse-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -217,4 +252,7 @@ jobs:
             ${{ runner.temp }}/p2/real-job-source-head.txt
             ${{ runner.temp }}/p2/locked-dependencies.txt
             ${{ runner.temp }}/p2/physical-run.log
+            ${{ runner.temp }}/p2/postfit-source-tests.log
+            ${{ runner.temp }}/p2/postfit-optimized-tests.log
             ${{ runner.temp }}/p2/independent-review.json
+            ${{ runner.temp }}/p2/postfit-sparse-independent-review.json
