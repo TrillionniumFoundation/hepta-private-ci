@@ -119,7 +119,8 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
               route_targets=None, max_depth=4, learning_rate=.05, batch_size=32,
               feedback_fn=None, attention_targets=None, operation_targets=None,
               attention_weight=0.1,
-              optimizer_kind="sgd", terminal_guard=False):
+              optimizer_kind="sgd", terminal_guard=False,
+              training_feedback_policy="legacy_oracle_v1"):
     """Train only supplied fitting labels, then freeze an independent model.
 
     Route labels are optional, train-only family supervision. They never enter
@@ -169,6 +170,11 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
             raise ValueError("complete binary per-operation evidence masks required")
     if type(terminal_guard) is not bool or (terminal_guard and operation_targets is None):
         raise ValueError("terminal guard requires complete TRAIN per-operation evidence")
+    if training_feedback_policy not in ("legacy_oracle_v1", "no_verifier_v1"):
+        raise ValueError("registered TRAIN verifier feedback policy required")
+    if training_feedback_policy == "no_verifier_v1" and (
+            feedback_fn is not None or feedback is not None):
+        raise ValueError("no-verifier TRAIN policy forbids callbacks and injected feedback")
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
     completion = terminal_label_eligibility(operation_targets) if terminal_guard else None
     initial_model_sha256 = model_parameter_digest(model)
@@ -208,7 +214,12 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                 mask = masks[batch] if masks is not None else None
                 fb = feedback[batch] if feedback is not None else None
                 optimizer.zero_grad(set_to_none=True)
-                if (feedback_fn is not None or attention_targets is not None) and not isinstance(trained, StaticHead):
+                # No-verifier Core retains the same mean-of-steps objective as
+                # the oracle control. Only the verifier status signal changes.
+                stepwise = (feedback_fn is not None or attention_targets is not None
+                            or (training_feedback_policy == "no_verifier_v1"
+                                and isinstance(trained, Core)))
+                if stepwise and not isinstance(trained, StaticHead):
                     state, step_losses = None, []
                     for level in range(depth):
                         if attention_targets is not None:
@@ -289,6 +300,9 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "wall_ns": time.perf_counter_ns() - wall, "cpu_ns": time.process_time_ns() - cpu,
                "work_observation": meter.report(), "route_supervision": route_targets is not None,
                "training_feedback_callback": feedback_fn is not None,
+               "training_feedback_policy": training_feedback_policy,
+               "training_verifier_oracle_enabled": (training_feedback_policy == "legacy_oracle_v1"
+                                                    and feedback_fn is not None),
                "attention_supervision_enabled": attention_targets is not None,
                "attention_loss_weight": float(attention_weight) if attention_targets is not None else 0.,
                "attention_supervised_step_examples": attention_supervised_examples,
@@ -319,10 +333,14 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                                            if attention_targets is not None else None),
                "training_feedback_calls": feedback_calls,
                "nonzero_feedback_batches": nonzero_feedback_batches,
-               "feedback_interface": "fitting_batch_indices_and_detached_guesses_only",
+               "feedback_interface": ("fitting_batch_indices_and_detached_guesses_only"
+                                      if feedback_fn is not None
+                                      else "no_training_verifier_and_zero_initial_feedback"),
                "depth_supervision": ("terminal_ce_only_after_required_train_evidence"
                                       if terminal_guard else "mean_all_steps"
-                                      if (feedback_fn is not None or attention_targets is not None)
+                                      if (feedback_fn is not None or attention_targets is not None
+                                          or (training_feedback_policy == "no_verifier_v1"
+                                              and isinstance(trained, Core)))
                                       and not isinstance(trained, StaticHead) else "final_step"),
                "diagnostic_loss_profile": "fitting_labels_max_depth_without_dynamic_feedback",
                "budget_comparison": "actual_consumption_reported_unequal_budgets",
