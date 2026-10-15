@@ -74,7 +74,7 @@ jobs:
           export HEPTA_E24_SOURCE="$HEPTA_E22_ARCHIVE"
           for i in 0 1 2 3; do
             source_name="HEPTA_E22_E16_FOLD_$i"
-            export "HEPTA_E24_FOLD_$i=\${!source_name}"
+            export "HEPTA_E24_FOLD_$i=${!source_name}"
           done
           python -m py_compile "$ROOT/e24_e16_original_geometry.py" "$ROOT/test_e24_e16_original_geometry.py"
           python -m unittest discover -s "$ROOT" -p 'test_e24_e16_original_geometry.py' -v > "$OUTPUT/e24-real-original-normal.txt" 2>&1 || {
