@@ -268,6 +268,15 @@ jobs:
           # A generic governed Update must not dispatch a typed Split before
           # the original CNS/Control Begin/Commit and live Final-use can agree.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/generic-typed-split-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --lib topology_execution::split_control_fence_tests -- --nocapture
+      - name: Early original Deep Observer canonical terminal and signer regressions
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        run: |
+          set -euo pipefail
+          # These are real original-owner library tests, not a transcript-only
+          # fixture or a substitute for independently retained signer custody.
+          # Require both native cases before heavyweight Worker/Learning suites.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/deep-observer-early-negative.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib deep_observer_rejects_signed_nonterminal_supervisor_checkpoint -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/deep-observer-early-full.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib deep_observer -- --nocapture --test-threads=1
       - name: Signed serving owners and durable metrics regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
