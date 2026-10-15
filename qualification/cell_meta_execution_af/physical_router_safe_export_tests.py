@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from qualification.cell_meta_execution_af import physical_router_safe_export as subject
 
@@ -106,7 +108,8 @@ def staged_directory(path: Path) -> None:
         if name == "original-source-sha256.txt":
             payload = (subject.SOURCE_SHA + "\n").encode()
         elif name == "model-files-source-hash.txt":
-            payload = ("c" * 64 + "\n").encode()
+            model_bytes = (SENTINEL + "_model-files.json\n").encode()
+            payload = (hashlib.sha256(model_bytes).hexdigest() + "\n").encode()
         elif name == "descriptive-retrospective-summary.json":
             payload = json.dumps(summary(hard=False)).encode()
         elif name == "hardtop1-descriptive-retrospective-summary.json":
@@ -124,6 +127,20 @@ class SafeGraniteArtifactTests(unittest.TestCase):
         self.addCleanup(self.dir.cleanup)
         self.root = Path(self.dir.name) / "evidence"
         self.root.mkdir()
+        # Only synthetic test inputs: patch the expected exact digests to this
+        # fixture's bytes. Real CLI execution always uses immutable originals.
+        sample_bytes = lambda name: (SENTINEL + "_" + name + "\n").encode()
+        patchers = [
+            mock.patch.object(subject, "SOURCE_SHA",
+                hashlib.sha256(sample_bytes("source-panel.json")).hexdigest()),
+            mock.patch.object(subject, "SOURCE_PARQUET_SHA", {
+                name: hashlib.sha256(sample_bytes(name)).hexdigest()
+                for name in subject.SOURCE_PARQUET_SHA
+            }),
+        ]
+        for patch in patchers:
+            patch.start()
+            self.addCleanup(patch.stop)
         staged_directory(self.root)
 
     def modify_summary(self, hard: bool, mutate) -> None:
@@ -204,6 +221,30 @@ class SafeGraniteArtifactTests(unittest.TestCase):
 
     def test_false_hard_ndu_claims_block(self):
         self.modify_summary(True, lambda o: o.__setitem__("independent_NDU_verified", True))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_changed_public_panel_bytes_even_with_unchanged_claim_block(self):
+        (self.root / "source-panel.json").write_bytes(b"changed upstream source panel")
+        output = subject.produce(self.root)
+        self.assertEqual(output["status"], "BLOCKED")
+        self.assertEqual(output["aggregate"], {})
+
+    def test_changed_pinned_parquet_bytes_even_with_unchanged_claim_block(self):
+        for name in subject.SOURCE_PARQUET_SHA:
+            with self.subTest(name=name):
+                original = (self.root / name).read_bytes()
+                (self.root / name).write_bytes(original + b"tamper")
+                self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+                (self.root / name).write_bytes(original)
+
+    def test_changed_model_inventory_bytes_with_unchanged_pointer_block(self):
+        (self.root / "model-files.json").write_bytes(b"falsified pretrained file list")
+        output = subject.produce(self.root)
+        self.assertEqual(output["status"], "BLOCKED")
+        self.assertEqual(output["aggregate"], {})
+
+    def test_changed_model_inventory_pointer_only_block(self):
+        (self.root / "model-files-source-hash.txt").write_bytes(("b" * 64 + "\n").encode())
         self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
 
     def test_wrong_model_name_blocks(self):
