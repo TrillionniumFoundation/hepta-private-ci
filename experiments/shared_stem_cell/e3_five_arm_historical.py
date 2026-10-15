@@ -138,7 +138,7 @@ def compose(original, ocr, native, *, original_sha, ocr_sha, native_sha):
            native.get("source_sha256") == source_sha,
            "not the exact shared ScienceQA source set")
     ocr_rows = physical(ocr, OCR, GRANITE, "physical_granite_forward_batches")
-    native_rows = physical(native, NATIVE, "physical_joint_encode_batches")
+    native_rows = physical(native, NATIVE, GEMMA, "physical_joint_encode_batches")
     demand(ocr.get("ocr_engine") == "tesseract" and
            type(ocr.get("physical_ocr_calls")) is int and
            ocr["physical_ocr_calls"] == 192,
