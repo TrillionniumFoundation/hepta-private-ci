@@ -66,9 +66,7 @@ def review(candidate):
             candidate.get('natural_future_efficacy') is False and
             candidate.get('all_split_candidates_rejected') is True and
             candidate.get('native_scope') == 'offline_Q32_replay_not_production_owner' and
-            candidate.get('multimodal_scope') == 'versioned_interface_only' and
-            candidate.get('encoder_complete_formula_flops') is None if
-            'encoder_complete_formula_flops' in candidate else True,
+            candidate.get('multimodal_scope') == 'versioned_interface_only',
             'unqualified model/cost/authority claims')
     archive = candidate.get('archive',{})
     require(archive.get('sha256') == ORIGINAL_EVIDENCE_ZIP_SHA and
