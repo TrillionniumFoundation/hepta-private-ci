@@ -9,7 +9,8 @@ import json
 import math
 from pathlib import Path
 
-from cross_fact_granite_campaign import ARMS, SEEDS, _digest, full_fit_gate
+from cross_fact_granite_campaign import (ARMS, SEEDS, _digest, full_fit_gate,
+                                         matching_training_budgets, matched_fresh_gate)
 
 
 def require(condition, message):
@@ -180,20 +181,31 @@ def review(root):
                         and previous_count == row['parameter_count'],
                         'same-seed initial weights, parameter parity and training stream required')
             gates[f'{seed}/{arm}'] = bool(verified_gate)
-    permitted = full_fit_gate(summary)
-    require(decision['all_model_fit_gates_passed'] is permitted,
-            'opening decision not derived from complete matrix')
-    sealed = list(root.glob('sealed-*')) + list(root.glob('score-*'))
+    fits = full_fit_gate(summary)
+    budgets = matching_training_budgets(summary)
+    permitted = matched_fresh_gate(summary)
+    require(decision['all_model_fit_gates_passed'] is fits
+            and decision['all_actual_training_budgets_equal'] is budgets
+            and decision['matched_fresh_gate_passed'] is permitted,
+            'opening decision not derived from complete matched training matrix')
+    sealed = list(root.glob('sealed-*'))
+    scored = list(root.glob('score-*'))
     fresh_scores = {}
+    scoring_completed = (root/'scoring-completion.json').exists()
     if not permitted:
-        require(not sealed and not (root/'all-models-frozen.json').exists()
-                and terminal['status'] == 'train_gate_failed_no_fresh_scoring'
+        expected_status = ('train_gate_failed_no_fresh_scoring' if not fits
+                           else 'unequal_actual_budgets_no_fresh_scoring')
+        require(not sealed and not scored and not scoring_completed
+                and not (root/'all-models-frozen.json').exists()
+                and terminal['status'] == expected_status
                 and terminal['fresh_scoring_authorized'] is False,
-                'fresh evaluation was opened despite a failed training gate')
+                'fresh evaluation was opened despite failed fit or budget parity')
     else:
         require((root/'all-models-frozen.json').exists()
-                and terminal['status'] == 'all_frozen_scored_research_only',
-                'frozen model and successful research receipt required')
+                and terminal['status'] == 'all_frozen_predictions_sealed_pending_independent_scoring'
+                and terminal['fresh_prediction_seals_complete'] is True
+                and terminal['fresh_scoring_authorized'] is False,
+                'all models must freeze and seal independently of outcome scoring')
         from binding_protocol import build_binding_protocol
         all_fresh = build_binding_protocol(seed=41)
         frozen = read(root/'all-models-frozen.json')
@@ -203,7 +215,17 @@ def review(root):
             require(frozen[str(seed)] == {arm: summary[str(seed)][arm]['model_file_sha256']
                                           for arm in ARMS},
                     'frozen model digest changed after training')
-        expected_panels = set()
+        expected_seals, expected_scores = set(), set()
+        if scoring_completed:
+            completion = read(root / 'scoring-completion.json')
+            require(completion['schema'] == 'hepta.cross-fact.separate-score.v1'
+                    and completion['completed_roles'] == ['fresh_combinations', 'fresh_vocabulary']
+                    and completion['seeds'] == list(SEEDS) and completion['arms'] == list(ARMS)
+                    and completion['scored_count'] == 12
+                    and completion['score_from_frozen_prelabel_seals'] is True
+                    and completion['independent_host_attested'] is False
+                    and completion['production_authorized'] is False,
+                    'incomplete separate scoring completion manifest')
         for role in ('fresh_combinations', 'fresh_vocabulary'):
             cases = tuple(all_fresh[role])
             require(len(cases) == 128, 'fresh source role size drift')
@@ -212,17 +234,36 @@ def review(root):
                     stem = f'{role}-{seed}-{arm}.json'
                     sealed_path = root / ('sealed-' + stem)
                     score_path = root / ('score-' + stem)
-                    expected_panels.update((sealed_path.name, score_path.name))
-                    fresh_scores[f'{role}/{seed}/{arm}'] = independent_fresh_score(
-                        cases, read(sealed_path), read(score_path),
-                        frozen[str(seed)][arm], _digest(sealed_path))
-        require({p.name for p in sealed} == expected_panels,
-                'missing or unauthorized extra fresh scoring evidence')
+                    expected_seals.add(sealed_path.name)
+                    expected_scores.add(score_path.name)
+                    envelope = read(sealed_path)
+                    require(envelope['case_ids'] == [c.case_id for c in cases]
+                            and envelope['weights_sha256'] == frozen[str(seed)][arm]
+                            and envelope['labels_entered_model'] is False
+                            and envelope['scoring_started'] is False,
+                            'unaligned or altered independently presealed predictions')
+                    if scoring_completed:
+                        fresh_scores[f'{role}/{seed}/{arm}'] = independent_fresh_score(
+                            cases, envelope, read(score_path),
+                            frozen[str(seed)][arm], _digest(sealed_path))
+        require({p.name for p in sealed} == expected_seals,
+                'missing or unauthorized extra fresh prediction seals')
+        if scoring_completed:
+            completion = read(root / 'scoring-completion.json')
+            require({p.name for p in scored} == expected_scores
+                    and set(completion['score_files']) == expected_scores
+                    and all(_digest(root / name) == digest
+                            for name, digest in completion['score_files'].items()),
+                    'missing or changed separately scored fresh evidence')
+        else:
+            require(not scored, 'partial scoring without a completed independent phase')
     return dict(schema='hepta.cross-fact.independent-receipt-review.v1',
                 receipt_consistency_passed=True, training_gates=gates,
                 fresh_source_disjoint_scores=fresh_scores,
                 all_training_gates_passed=permitted,
                 fresh_scoring_permitted_under_existing_rule=permitted,
+                separate_scoring_completed=scoring_completed,
+                matched_training_budget_observed=budgets,
                 independently_verified_pretrained_forward=False,
                 model_ability_established=False, hardware_cost_attested=False,
                 production_authorized=False)
