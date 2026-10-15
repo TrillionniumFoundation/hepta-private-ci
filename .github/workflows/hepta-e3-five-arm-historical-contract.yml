@@ -1,9 +1,13 @@
 name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015"]
+    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
+      - "experiments/shared_stem_cell/e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_HELD_TARGET_BOUNDARY_20261015.md"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
@@ -41,6 +45,13 @@ jobs:
         run: |
           set -euo pipefail
           python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_five_arm_historical.py' -v
+      - name: Test TRAIN-only source partition and withheld labels in both Python modes
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
       - name: No real-model or five-arm benefit claims from fixtures
         run: |
           set -euo pipefail
