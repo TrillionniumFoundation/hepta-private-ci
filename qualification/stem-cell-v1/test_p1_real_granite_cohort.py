@@ -76,6 +76,54 @@ class RealGraniteP1Contracts(unittest.TestCase):
             return audit.review_public(panel or self.panel,train or self.train,blind or self.blind,
                                         labels or self.owner,list(reports))
 
+    def test_frozen_bfloat16_pretrained_storage_can_be_hashed_losslessly(self):
+        class TinyStem:
+            pass
+        stem=TinyStem()
+        stem.model=torch.nn.Linear(16,4).to(dtype=torch.bfloat16).eval()
+        for parameter in stem.model.parameters():
+            parameter.requires_grad_(False)
+        before={name:p.detach().clone() for name,p in stem.model.named_parameters()}
+        got,count=p1.backend_digest(stem)
+        self.assertEqual(count,68)
+        manual=hashlib.sha256()
+        for name,parameter in sorted(stem.model.named_parameters()):
+            raw=parameter.detach().contiguous()
+            data=raw.view(torch.uint8).numpy().tobytes()
+            self.assertEqual(len(data),raw.numel()*raw.element_size())
+            manual.update(name.encode()+b'\0')
+            manual.update(data)
+        self.assertEqual(got,manual.hexdigest())
+        for name,p in stem.model.named_parameters():
+            self.assertTrue(torch.equal(p,before[name]),name)
+
+    def test_native_float32_storage_hash_keeps_previous_bytes(self):
+        class TinyStem:
+            pass
+        stem=TinyStem()
+        stem.model=torch.nn.Linear(16,4).eval()
+        for parameter in stem.model.parameters():
+            parameter.requires_grad_(False)
+        got,_=p1.backend_digest(stem)
+        legacy=hashlib.sha256()
+        for name,parameter in sorted(stem.model.named_parameters()):
+            legacy.update(name.encode()+b'\0')
+            legacy.update(parameter.detach().contiguous().numpy().tobytes())
+        self.assertEqual(got,legacy.hexdigest())
+
+    def test_frozen_bfloat16_mutation_changes_physical_hash(self):
+        class TinyStem:
+            pass
+        stem=TinyStem()
+        stem.model=torch.nn.Linear(16,4).to(dtype=torch.bfloat16).eval()
+        for parameter in stem.model.parameters():
+            parameter.requires_grad_(False)
+        before,_=p1.backend_digest(stem)
+        with torch.no_grad():
+            stem.model.bias[0]+=1
+        after,_=p1.backend_digest(stem)
+        self.assertNotEqual(before,after)
+
     def test_complete_fourteen_slot_physical_mock_and_independent_audit(self):
         outcomes=[]
         with patch.object(p1,'PANEL_SHA',self.sha):
