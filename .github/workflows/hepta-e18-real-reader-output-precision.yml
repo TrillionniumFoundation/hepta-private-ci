@@ -1,0 +1,99 @@
+name: Hepta E18 original frozen Reader post-logit precision (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e18_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e18_*.py'
+      - 'qualification/shared-stem-system2-architecture/E18_POST_LOGIT_PRECISION_20261015.md'
+      - '.github/workflows/hepta-e18-real-reader-output-precision.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-post-logit-precision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e18-original-pretrained.zip
+      HEPTA_E18_ORIGINAL_ARCHIVE: /tmp/hepta-e18-original-pretrained.zip
+      OUTPUT: /tmp/hepta-e18-original-precision-${{ matrix.source_profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze exact source head, tested code and workflow identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/exact-checkout-sha.txt"
+          if [[ '${{ matrix.source_profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e18_*.py "$ROOT"/test_e18_*.py "$ROOT"/e17_*.py | tee "$OUTPUT/exact-source-code-sha256.txt"
+          python --version
+      - name: Retrieve exact original PRE-SCORE pretrained archive with checksum
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E18_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$HEPTA_E18_ORIGINAL_ARCHIVE" | sha256sum -c -
+      - name: Execute E18 original-archive numeric tests and inherited E17 regression under both modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e18_*.py' -v > "$OUTPUT/e18-tests-normal.log" 2>&1 \
+            || { cat "$OUTPUT/e18-tests-normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e18_*.py' -v > "$OUTPUT/e18-tests-optimized.log" 2>&1 \
+            || { cat "$OUTPUT/e18-tests-optimized.log"; exit 1; }
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e17_*.py' -v > "$OUTPUT/e17-regression-normal.log" 2>&1 \
+            || { cat "$OUTPUT/e17-regression-normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e17_*.py' -v > "$OUTPUT/e17-regression-optimized.log" 2>&1 \
+            || { cat "$OUTPUT/e17-regression-optimized.log"; exit 1; }
+          grep -F 'Ran 20 tests' "$OUTPUT/e18-tests-normal.log"
+          grep -F 'Ran 20 tests' "$OUTPUT/e18-tests-optimized.log"
+          grep -F 'Ran 19 tests' "$OUTPUT/e17-regression-normal.log"
+          grep -F 'Ran 19 tests' "$OUTPUT/e17-regression-optimized.log"
+          if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$OUTPUT"/*-tests-*.log "$OUTPUT"/e17-regression-*.log; then exit 1; fi
+      - name: Seal label-blind real original post-logit projection BEFORE human score
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e18_precision_boundary.py" --archive "$HEPTA_E18_ORIGINAL_ARCHIVE" \
+            --output "$OUTPUT/create-only-blind-original-precision.json" | tee "$OUTPUT/producer.stdout"
+          sha256sum "$OUTPUT/create-only-blind-original-precision.json" > "$OUTPUT/blind-before-human-review.sha256"
+      - name: Independent second-algorithm precision replay and historical-human negative control
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 "$OUTPUT/blind-before-human-review.sha256")"
+          python "$ROOT/e18_independent_precision_review.py" --archive "$HEPTA_E18_ORIGINAL_ARCHIVE" \
+            --blind "$OUTPUT/create-only-blind-original-precision.json" \
+            --blind-sha256 "$expected" \
+            --output "$OUTPUT/create-only-independent-post-human-negative.json" \
+            | tee "$OUTPUT/independent-review.stdout"
+          sha256sum "$OUTPUT/create-only-independent-post-human-negative.json" > "$OUTPUT/independent-review.sha256"
+      - name: Preserve exact original source, full failures and numeric receipts, not human text/weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e18-frozen-reader-output-precision-${{ matrix.source_profile }}
+          path: /tmp/hepta-e18-original-precision-${{ matrix.source_profile }}/
+          retention-days: 14
+          if-no-files-found: warn
