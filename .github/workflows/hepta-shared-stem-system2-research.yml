@@ -18,6 +18,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install pinned NumPy required by inherited E6 physical contract tests
+        shell: bash
+        run: python -m pip install --disable-pip-version-check numpy==2.3.5
       - name: Record exact source and tested code
         shell: bash
         run: |
