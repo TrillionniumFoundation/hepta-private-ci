@@ -1,0 +1,45 @@
+{
+  "comparison_is_not_equal_total_lifecycle_to_V11": true,
+  "factor_is_six_arm_research_cost_not_deployed_primary_cost": true,
+  "no_training": true,
+  "original_1986_question_roster": true,
+  "original_source_sha256": "9d707c297dc743cffe00d94ead04198b7039f72027743dc6d6e02c826a623a8c",
+  "production_authorized": false,
+  "profiles": {
+    "bm25_only": {
+      "bm25_output_digest": "f46f432863d4cd9db3bc27dd85b467e5efc6827c17cfc3d731690bb68449679b",
+      "repeat_cpu_seconds": [
+        1.977207352,
+        1.9239434699999998
+      ],
+      "repeat_peak_rss_kib": [
+        132704,
+        132740
+      ],
+      "repeat_wall_seconds": [
+        1.9800557929999059,
+        1.9253233609999825
+      ]
+    },
+    "six_arm": {
+      "bm25_output_digest": "f46f432863d4cd9db3bc27dd85b467e5efc6827c17cfc3d731690bb68449679b",
+      "repeat_cpu_seconds": [
+        13.031547925,
+        13.469923334999999
+      ],
+      "repeat_peak_rss_kib": [
+        139028,
+        139044
+      ],
+      "repeat_wall_seconds": [
+        13.046256801000027,
+        13.470334080000043
+      ]
+    }
+  },
+  "ratio_mean_cpu_six_arm_to_bm25_only": 6.793244473027964,
+  "runs_per_profile": 2,
+  "schema": "hepta.stem.v13.same-original-source-cpu-compute-comparison.v1",
+  "stable_p95_proven": false,
+  "zero_pretrained_encoder_and_reader_calls": true
+}
