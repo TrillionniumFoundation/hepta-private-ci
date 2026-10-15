@@ -7,6 +7,8 @@ on:
     paths:
       - qualification/stem-cell-v1/group_independent_utility_gate.py
       - qualification/stem-cell-v1/test_group_independent_utility_gate.py
+      - qualification/stem-cell-v1/group_step_supervision.py
+      - qualification/stem-cell-v1/test_group_step_supervision.py
       - .github/workflows/hepta-group-independent-utility-gate.yml
   workflow_dispatch:
 
@@ -24,6 +26,6 @@ jobs:
           python-version: '3.12'
       - name: Static syntax and bounded utility regressions
         run: |
-          python -m py_compile qualification/stem-cell-v1/group_independent_utility_gate.py qualification/stem-cell-v1/test_group_independent_utility_gate.py
-          PYTHONPATH=qualification/stem-cell-v1 python -m unittest test_group_independent_utility_gate -v
+          python -m py_compile qualification/stem-cell-v1/group_independent_utility_gate.py qualification/stem-cell-v1/test_group_independent_utility_gate.py qualification/stem-cell-v1/group_step_supervision.py qualification/stem-cell-v1/test_group_step_supervision.py
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest test_group_independent_utility_gate test_group_step_supervision -v
           PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest test_group_independent_utility_gate -v
