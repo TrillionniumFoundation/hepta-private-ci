@@ -1,0 +1,67 @@
+name: Hepta V12 source-bound public Stem profiles (research NO-GO)
+on:
+  push:
+    branches: [research/multimodal-stem-bridge-20261014]
+    paths:
+      - experiments/shared_stem_cell/multimodal_pinned_candidate.py
+      - experiments/shared_stem_cell/multimodal_public_identity_v12.py
+      - experiments/shared_stem_cell/test_multimodal_public_identity_v12.py
+      - experiments/shared_stem_cell/PUBLIC_STEM_IDENTITY_V12.md
+      - .github/workflows/hepta-stem-public-identity-v12.yml
+  pull_request:
+    paths:
+      - experiments/shared_stem_cell/multimodal_pinned_candidate.py
+      - experiments/shared_stem_cell/multimodal_public_identity_v12.py
+      - experiments/shared_stem_cell/test_multimodal_public_identity_v12.py
+      - .github/workflows/hepta-stem-public-identity-v12.yml
+permissions:
+  contents: read
+jobs:
+  source-native-family-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-v12
+          python3 -m venv /tmp/hepta-stem-v12-env
+          /tmp/hepta-stem-v12-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-stem-v12-env/bin/pip install numpy==1.26.4 safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0 packaging==25.0
+          /tmp/hepta-stem-v12-env/bin/python -c 'import packaging.version, safetensors.torch; print("V12_IMPORT_PREFLIGHT_OK")'
+          /tmp/hepta-stem-v12-env/bin/pip check
+          /tmp/hepta-stem-v12-env/bin/pip freeze > /tmp/hepta-stem-v12/environment.txt
+      - name: Require V10 profile compatibility and V5 caller identity checks
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          /tmp/hepta-stem-v12-env/bin/python -m unittest discover -s experiments/shared_stem_cell -p test_multimodal_public_identity_v12.py -v 2>&1 | tee /tmp/hepta-stem-v12/tests.log
+          grep -q 'Ran 7 tests' /tmp/hepta-stem-v12/tests.log
+          grep -q '^OK$' /tmp/hepta-stem-v12/tests.log
+          if grep -Ei 'skipped[=: ]' /tmp/hepta-stem-v12/tests.log; then exit 1; fi
+          /tmp/hepta-stem-v12-env/bin/python -m py_compile experiments/shared_stem_cell/multimodal_public_identity_v12.py experiments/shared_stem_cell/multimodal_pinned_candidate.py experiments/shared_stem_cell/test_multimodal_public_identity_v12.py
+      - name: Preserve identity and failures; never claim model efficacy
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-v12
+          git rev-parse HEAD > /tmp/hepta-stem-v12/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-stem-v12/tree.txt
+          sha256sum experiments/shared_stem_cell/multimodal_public_identity_v12.py experiments/shared_stem_cell/multimodal_pinned_candidate.py experiments/shared_stem_cell/test_multimodal_public_identity_v12.py experiments/shared_stem_cell/PUBLIC_STEM_IDENTITY_V12.md .github/workflows/hepta-stem-public-identity-v12.yml > /tmp/hepta-stem-v12/source-SHA256SUMS
+          echo 'Research identity mechanism only. Production DENY_ALL.' > /tmp/hepta-stem-v12/disposition.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-v12-native-identity-research-only
+          path: /tmp/hepta-stem-v12
+          if-no-files-found: error

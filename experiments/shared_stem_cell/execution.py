@@ -263,18 +263,51 @@ class LocalEncoder:
         self.root, self.manifest = root, manifest
         self.identity = verify_snapshot(root, manifest)
         self.maximum_tokens = integer(maximum_tokens, 8, 8192, "token ceiling")
-        from transformers import AutoModel, AutoModelForCausalLM, AutoModelForMaskedLM, AutoTokenizer
+        import transformers
+        from transformers import AutoConfig, AutoModel, AutoModelForCausalLM, AutoModelForMaskedLM, AutoTokenizer
         kind = manifest.get("kind")
         factories = {"encoder": AutoModel, "masked_lm": AutoModelForMaskedLM, "causal_lm": AutoModelForCausalLM}
         if kind not in self.permitted_kinds:
             raise InputError("unsupported model kind; no Laya/generator reinterpretation")
         self.tokenizer = AutoTokenizer.from_pretrained(
             root, local_files_only=True, trust_remote_code=False)
+        # ModernBERT's reference_compile must not silently JIT-compile a
+        # different runtime. It is explicitly disabled only for pinned stock MLM.
+        config_kwargs = {}
+        if kind == "masked_lm":
+            config = AutoConfig.from_pretrained(root, local_files_only=True, trust_remote_code=False)
+            if config.model_type == "modernbert":
+                if transformers.__version__ != "4.57.1":
+                    raise InputError("exact reviewed Transformers required for tied ModernBERT MLM")
+                config.reference_compile = False
+                config._attn_implementation = "eager"
+                config_kwargs["config"] = config
+                # The reviewed CPU/eager ModernBERT MLM path uses dense
+                # materialization before exact saved-tensor verification.
+                # Meta-tensor fallbacks and random unverified weights remain
+                # forbidden by require_materialized and the full inventory.
+                config_kwargs["low_cpu_mem_usage"] = False
         loaded, info = factories[kind].from_pretrained(
             root, local_files_only=True, trust_remote_code=False, use_safetensors=True,
-            output_loading_info=True, attn_implementation="eager")
-        if any(info.get(k) for k in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")):
+            output_loading_info=True, attn_implementation="eager", **config_kwargs)
+        if any(info.get(k) for k in ("unexpected_keys", "mismatched_keys", "error_msgs")):
             raise InputError("incomplete model load")
+        # Only the exact stock ModernBERT MLM's two physically tied Meta
+        # weights may be restored from SHA256-verified ORIGINAL saved bytes.
+        # All other missing/mismatched source tensors remain forbidden.
+        from multimodal_saved_tie_recovery_v18 import (
+            OriginalTieRecoveryError, recover_saved_tie,
+        )
+        try:
+            self.original_tied_source_recovery = recover_saved_tie(
+                loaded, info, root, manifest)
+        except OriginalTieRecoveryError as exc:
+            raise InputError("unproven original tied Embedding: " + str(exc)) from exc
+        from multimodal_meta_integrity_v14 import UnmaterializedCheckpoint, require_materialized
+        try:
+            require_materialized(loaded, info)
+        except UnmaterializedCheckpoint as error:
+            raise InputError("unmaterialized frozen checkpoint: " + str(error)) from error
         self.loaded = loaded.cpu().float().eval()
         self.loaded.requires_grad_(False)
         # A clean loading report is not enough: compare every materialized tensor.
@@ -300,23 +333,53 @@ class LocalEncoder:
                             raise InputError("snapshot tensor materialization mismatch: " + key)
                         pointers.add((state[key].data_ptr(), tuple(state[key].shape)))
                     covered.add(key)
+        # A complete stock tied ModernBERT MLM can omit decoder.weight on
+        # disk. Reconcile this ONE alias only after all saved bytes have been
+        # compared and its source embedding is known to be serialized.
+        from multimodal_exact_tied_alias_v11 import MissingTensorError, reconcile_loading_report
+        try:
+            self.reconciled_tied_aliases = reconcile_loading_report(self.loaded, info, covered)
+        except MissingTensorError as exc:
+            raise InputError("unproven saved-tensor omission: " + str(exc)) from exc
         if any(k not in covered and (v.data_ptr(), tuple(v.shape)) not in pointers for k, v in state.items()):
             raise InputError("unverified loaded tensor")
         verify_snapshot(root, manifest)
         self.model = self.loaded.base_model
+        # A correctly hashed tokenizer can still exceed the hashed embedding
+        # matrix. Fail before training/prediction rather than torch.embedding.
+        embedding = self.model.get_input_embeddings()
+        if embedding is None or not hasattr(embedding, "num_embeddings"):
+            raise InputError("verified encoder has no bounded input embedding")
+        vocabulary = self.tokenizer.get_vocab()
+        if (not vocabulary or len(self.tokenizer) > embedding.num_embeddings
+                or any(type(index) is not int or index < 0
+                       or index >= embedding.num_embeddings
+                       for index in vocabulary.values())):
+            raise InputError("tokenizer vocabulary exceeds verified embedding capacity")
         self.forward_calls = 0
 
     @torch.no_grad()
-    def encode(self, texts: list[str]):
+    def encode(self, texts: list[str], *, pooling="attention-mask-mean"):
+        if pooling not in ("attention-mask-mean", "cls-first-token"):
+            raise InputError("unsupported pinned pooling profile")
         if not 1 <= len(texts) <= 32:
             raise InputError("batch cardinality")
-        encoded = self.tokenizer(texts, padding=True, truncation=False, return_tensors="pt")
+        # Stock ModernBERT accepts input_ids and attention_mask, not
+        # token_type_ids. Ask for native inputs without silently filtering
+        # any unexpected feature fields after tokenization.
+        native_modernbert = getattr(self.loaded.config, "model_type", None) == "modernbert"
+        token_kwargs = {"padding": True, "truncation": False, "return_tensors": "pt"}
+        if native_modernbert:
+            token_kwargs["return_token_type_ids"] = False
+        encoded = self.tokenizer(texts, **token_kwargs)
+        if native_modernbert and set(encoded) != {"input_ids", "attention_mask"}:
+            raise InputError("ModernBERT tokenizer returned unsupported or missing inputs")
         length = encoded["input_ids"].shape[1]
         if length > self.maximum_tokens or length * len(texts) > 32768:
             raise InputError("token budget; no silent truncation")
         value = self.model(**encoded).last_hidden_state
-        mask = encoded["attention_mask"].unsqueeze(-1).to(value.dtype)
-        pooled = (value * mask).sum(1) / mask.sum(1).clamp_min(1)
+        from multimodal_native_pool_v7 import pool_hidden_state
+        pooled = pool_hidden_state(value, encoded["attention_mask"], pooling)
         self.forward_calls += 1
         return pooled.detach().cpu().float().contiguous()
 

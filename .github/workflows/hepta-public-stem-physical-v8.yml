@@ -1,0 +1,177 @@
+name: Hepta V8-V9 public frozen Stem physical and verified handoff (NO-GO)
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
+      - "experiments/shared_stem_cell/multimodal_saved_tie_recovery_v18.py"
+      - "experiments/shared_stem_cell/test_multimodal_saved_tie_recovery_v18.py"
+      - "experiments/shared_stem_cell/test_multimodal_saved_tie_material_v18.py"
+      - "experiments/shared_stem_cell/ORIGINAL_TIED_MATERIAL_V18.md"
+      - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md"
+      - "experiments/shared_stem_cell/public_stem_handoff_v9.py"
+      - "experiments/shared_stem_cell/test_public_stem_handoff_v9.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_HANDOFF_V9.md"
+      - "experiments/shared_stem_cell/public_stem_pair_handoff_v10.py"
+      - "experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_PAIRED_HANDOFF_V10.md"
+      - ".github/workflows/hepta-public-stem-physical-v8.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
+      - "experiments/shared_stem_cell/multimodal_saved_tie_recovery_v18.py"
+      - "experiments/shared_stem_cell/test_multimodal_saved_tie_recovery_v18.py"
+      - "experiments/shared_stem_cell/test_multimodal_saved_tie_material_v18.py"
+      - "experiments/shared_stem_cell/ORIGINAL_TIED_MATERIAL_V18.md"
+      - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md"
+      - "experiments/shared_stem_cell/public_stem_handoff_v9.py"
+      - "experiments/shared_stem_cell/test_public_stem_handoff_v9.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_HANDOFF_V9.md"
+      - "experiments/shared_stem_cell/public_stem_pair_handoff_v10.py"
+      - "experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py"
+      - "experiments/shared_stem_cell/PUBLIC_STEM_PAIRED_HANDOFF_V10.md"
+      - ".github/workflows/hepta-public-stem-physical-v8.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-public-stem-v8-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-inventory-contracts:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run offline strict pin/source/transfer contract tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_material_v8.py -v
+          python3 -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_handoff_v9.py -v
+          python3 -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_pair_handoff_v10.py -v
+          python3 -m py_compile experiments/shared_stem_cell/public_stem_material_v8.py experiments/shared_stem_cell/test_public_stem_material_v8.py experiments/shared_stem_cell/public_stem_handoff_v9.py experiments/shared_stem_cell/test_public_stem_handoff_v9.py experiments/shared_stem_cell/public_stem_pair_handoff_v10.py experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py
+  physical-pretrained-public-canary:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push'
+    needs: source-inventory-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU-only inference dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-public-v8-env
+          P=/tmp/hepta-public-v8-env/bin/python
+          /tmp/hepta-public-v8-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-public-v8-env/bin/pip install -r scripts/memory_cell/requirements.txt psutil==7.0.0 packaging==25.0 regex==2024.11.6 Jinja2==3.1.6
+          /tmp/hepta-public-v8-env/bin/pip check
+          /tmp/hepta-public-v8-env/bin/pip freeze > /tmp/hepta-public-v8-versions.txt
+          "$P" -c 'from transformers import AutoModel, AutoModelForMaskedLM; from huggingface_hub import HfApi; print("installed pinned physical stack")'
+      - name: Require read-only pinned safetensors header census contracts
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-public-v8-env/bin/python
+          PYTHONPATH=experiments/shared_stem_cell "$P" -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_tensor_audit_v17.py -v
+          "$P" -m py_compile experiments/shared_stem_cell/public_stem_tensor_audit_v17.py experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py
+      - name: Require original saved tied-weight rejection contracts
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-public-v8-env/bin/python
+          PYTHONPATH=experiments/shared_stem_cell "$P" -m unittest discover -s experiments/shared_stem_cell -p test_multimodal_saved_tie_recovery_v18.py -v 2>&1 | tee /tmp/hepta-public-v18-tie-tests.log
+          grep -q 'Ran 6 tests' /tmp/hepta-public-v18-tie-tests.log
+          grep -q '^OK$' /tmp/hepta-public-v18-tie-tests.log
+      - name: Acquire exactly pinned public weights and execute real frozen CPU forwards
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-public-v8-env/bin/python
+          mkdir -p /tmp/hepta-public-v8 /tmp/hepta-public-v8-evidence
+          code=0
+          for candidate in mmbert-small granite-97m-r2; do
+            echo "PREPARE ${candidate} -- immutable revision recorded before transfer" > "/tmp/hepta-public-v8-evidence/${candidate}.log"
+            if "$P" experiments/shared_stem_cell/public_stem_material_v8.py prepare --candidate "$candidate" --out "/tmp/hepta-public-v8/${candidate}.plan.json" >> "/tmp/hepta-public-v8-evidence/${candidate}.log" 2>&1; then
+              if "$P" experiments/shared_stem_cell/public_stem_material_v8.py run --plan "/tmp/hepta-public-v8/${candidate}.plan.json" --output "/tmp/hepta-public-v8/${candidate}" >> "/tmp/hepta-public-v8-evidence/${candidate}.log" 2>&1; then
+                # V9 rehashes the exact same pinned material before exporting a
+                # non-authoritative V5 profile. No separate model load is claimed.
+                if "$P" experiments/shared_stem_cell/public_stem_handoff_v9.py \
+                    --plan "/tmp/hepta-public-v8/${candidate}.plan.json" \
+                    --material "/tmp/hepta-public-v8/${candidate}/material-receipt.json" \
+                    --physical "/tmp/hepta-public-v8/${candidate}/physical-receipt.json" \
+                    --model-root "/tmp/hepta-public-v8/${candidate}/model" \
+                    --output "/tmp/hepta-public-v8/${candidate}/v9-handoff" >> "/tmp/hepta-public-v8-evidence/${candidate}.log" 2>&1; then
+                  echo "${candidate} PASS: PHYSICAL FORWARD + REHASHED RESEARCH PROFILE, NO EFFICACY" | tee -a "/tmp/hepta-public-v8-evidence/status.txt"
+                else
+                  code=1
+                  echo "${candidate} FAIL: MATERIAL-TO-PROFILE HANDOFF REJECTED" | tee -a "/tmp/hepta-public-v8-evidence/status.txt"
+                fi
+              else
+                code=1
+                echo "${candidate} FAIL: PHYSICAL FORWARD NOT VERIFIED" | tee -a "/tmp/hepta-public-v8-evidence/status.txt"
+              fi
+            else
+              code=1
+              echo "${candidate} FAIL: PINNED SOURCE METADATA NOT AVAILABLE" | tee -a "/tmp/hepta-public-v8-evidence/status.txt"
+            fi
+          done
+          if test "$code" -eq 0; then
+            # Both physical executions and the per-model V9 rehash must succeed.
+            if "$P" experiments/shared_stem_cell/public_stem_pair_handoff_v10.py \
+                --mmbert-root /tmp/hepta-public-v8/mmbert-small \
+                --granite-root /tmp/hepta-public-v8/granite-97m-r2 \
+                --output /tmp/hepta-public-v8/paired-handoff \
+                >> /tmp/hepta-public-v8-evidence/pair-handoff.log 2>&1; then
+              echo "PAIR PASS: SAME PROBE, BOTH MODEL DIRS REHASHED; NO EFFICACY" | tee -a /tmp/hepta-public-v8-evidence/status.txt
+            else
+              code=1
+              echo "PAIR FAIL: MATCHED HANDOFF NOT VERIFIED" | tee -a /tmp/hepta-public-v8-evidence/status.txt
+            fi
+          else
+            echo "PAIR BLOCKED: ONE OR BOTH PHYSICAL CANDIDATES FAILED" | tee -a /tmp/hepta-public-v8-evidence/status.txt
+          fi
+          exit "$code"
+      - name: Preserve identity, provenance and failure, but exclude all model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          D=/tmp/hepta-public-v8-evidence
+          mkdir -p "$D/source"
+          git rev-parse HEAD > "$D/source/commit.txt"
+          git rev-parse HEAD^{tree} > "$D/source/tree.txt"
+          cp /tmp/hepta-public-v8-versions.txt "$D/source/packages.txt" || true
+          cp experiments/shared_stem_cell/multimodal_saved_tie_recovery_v18.py experiments/shared_stem_cell/test_multimodal_saved_tie_recovery_v18.py experiments/shared_stem_cell/test_multimodal_saved_tie_material_v18.py experiments/shared_stem_cell/ORIGINAL_TIED_MATERIAL_V18.md experiments/shared_stem_cell/public_stem_material_v8.py experiments/shared_stem_cell/test_public_stem_material_v8.py experiments/shared_stem_cell/public_stem_tensor_audit_v17.py experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md experiments/shared_stem_cell/public_stem_handoff_v9.py experiments/shared_stem_cell/test_public_stem_handoff_v9.py experiments/shared_stem_cell/PUBLIC_STEM_HANDOFF_V9.md experiments/shared_stem_cell/public_stem_pair_handoff_v10.py experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py experiments/shared_stem_cell/PUBLIC_STEM_PAIRED_HANDOFF_V10.md .github/workflows/hepta-public-stem-physical-v8.yml "$D/source/"
+          if test -d /tmp/hepta-public-v8; then
+            find /tmp/hepta-public-v8 -name '*.json' -type f ! -path '*/model/*' -print0 | while IFS= read -r -d '' src; do
+              rel=${src#/tmp/hepta-public-v8/}
+              mkdir -p "$D/results/$(dirname "$rel")"
+              cp "$src" "$D/results/$rel"
+            done
+          fi
+          (cd "$D" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-public-stem-v8-physical-evidence-no-weights-no-efficacy
+          path: /tmp/hepta-public-v8-evidence
+          if-no-files-found: error

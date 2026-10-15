@@ -1,0 +1,67 @@
+name: Hepta independent stem candidate readout V4 (research contract only)
+
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/multimodal_candidate_gate.py"
+      - "experiments/shared_stem_cell/test_multimodal_candidate_gate.py"
+      - "experiments/shared_stem_cell/STEM_CANDIDATE_GATE_V4.md"
+      - ".github/workflows/hepta-stem-candidate-gate.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/multimodal_candidate_gate.py"
+      - "experiments/shared_stem_cell/test_multimodal_candidate_gate.py"
+      - "experiments/shared_stem_cell/STEM_CANDIDATE_GATE_V4.md"
+      - ".github/workflows/hepta-stem-candidate-gate.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-stem-candidate-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  evidence-protocol-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run independent evaluation and tamper regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-candidate-v4
+          python3 --version | tee /tmp/hepta-stem-candidate-v4/python.txt
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell \
+            -p 'test_multimodal_candidate_gate.py' -v \
+            2>&1 | tee /tmp/hepta-stem-candidate-v4/tests.log
+          python3 -m py_compile \
+            experiments/shared_stem_cell/multimodal_candidate_gate.py \
+            experiments/shared_stem_cell/test_multimodal_candidate_gate.py
+          PYTHONPATH=experiments/shared_stem_cell python3 \
+            experiments/shared_stem_cell/multimodal_candidate_gate.py --help \
+            > /tmp/hepta-stem-candidate-v4/readout-help.txt
+      - name: Preserve exact source and no-promotion declaration
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-candidate-v4
+          git rev-parse HEAD > /tmp/hepta-stem-candidate-v4/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-stem-candidate-v4/tree.txt
+          sha256sum \
+            experiments/shared_stem_cell/multimodal_candidate_gate.py \
+            experiments/shared_stem_cell/test_multimodal_candidate_gate.py \
+            experiments/shared_stem_cell/STEM_CANDIDATE_GATE_V4.md \
+            .github/workflows/hepta-stem-candidate-gate.yml \
+            > /tmp/hepta-stem-candidate-v4/source-SHA256SUMS
+          printf '%s\n' '{"schema":"hepta.stem-candidate-v4-disposition.v1","real_model_efficacy_qualified":false,"independent_ndu_verified":false,"production_accepted":false}' \
+            > /tmp/hepta-stem-candidate-v4/disposition.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-candidate-v4-contract-not-model-efficacy
+          path: /tmp/hepta-stem-candidate-v4
+          if-no-files-found: error
