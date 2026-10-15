@@ -961,6 +961,9 @@ mod tests {
     async fn windows_control_socket_refuses_unverified_peer_identity() -> TestResult {
         let temp = TempDir::new()?;
         let (state, connections) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        connections.set_agentd_connected(false);
+        connections.set_matrix_sync_connected(false);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Degraded);
         let socket = temp.path().join("unverified-matrixd-peer");
         let mut listener = UnixListener::bind(&socket).await?;
 
