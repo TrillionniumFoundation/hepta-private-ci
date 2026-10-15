@@ -795,6 +795,69 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
     ));
 }
 
+#[cfg(unix)]
+#[test]
+fn symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner() {
+    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
+
+    let dir = private_control_dir();
+    let actual_ancestor = dir.path().join("actual");
+    let actual_parent = actual_ancestor.join("private");
+    std::fs::create_dir_all(&actual_parent).expect("real private Control directory");
+    std::fs::set_permissions(&actual_ancestor, std::fs::Permissions::from_mode(0o700))
+        .expect("private ancestor");
+    std::fs::set_permissions(&actual_parent, std::fs::Permissions::from_mode(0o700))
+        .expect("private original owner directory");
+
+    let canonical_path = actual_parent.join("control.wal");
+    let canonical_lock = actual_parent.join("control.wal.owner-lock");
+    let frozen = snapshot(3);
+    {
+        let owner = NduPublicationOwnerV1::open_production(
+            &canonical_path,
+            frozen.clone(),
+            Digest32::ZERO,
+        )
+        .expect("canonical owner must open");
+        assert!(owner.current().is_ok());
+    }
+    let journal_before = std::fs::read(&canonical_path).expect("canonical WAL");
+    let marker_before = std::fs::read(&canonical_lock).expect("original owner lock marker");
+
+    // Only the ancestor is a symlink. The immediate parent itself is a
+    // genuine private directory, so checking symlink_metadata(parent) alone
+    // would have incorrectly accepted this second spelling of the SAME WAL.
+    let alias_ancestor = dir.path().join("alias");
+    symlink(&actual_ancestor, &alias_ancestor).expect("private alias");
+    let alias_path = alias_ancestor.join("private").join("control.wal");
+    assert!(
+        std::fs::symlink_metadata(alias_path.parent().expect("parent"))
+            .expect("actual final parent")
+            .is_dir()
+    );
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&alias_path, frozen.clone(), Digest32::ZERO),
+        Err(NduPublicationErrorV1::UnsafePath)
+    ));
+
+    // An alias cannot initialize a different durable transaction either.
+    let new_alias = alias_ancestor.join("private").join("new.wal");
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&new_alias, frozen.clone(), Digest32::ZERO),
+        Err(NduPublicationErrorV1::UnsafePath)
+    ));
+    assert!(!actual_parent.join("new.wal").exists());
+    assert!(!actual_parent.join("new.wal.owner-lock").exists());
+    assert_eq!(std::fs::read(&canonical_path).unwrap(), journal_before);
+    assert_eq!(std::fs::read(&canonical_lock).unwrap(), marker_before);
+
+    let reopened =
+        NduPublicationOwnerV1::open_production(&canonical_path, frozen, Digest32::ZERO)
+            .expect("real owner stays readable under the canonical path");
+    assert!(reopened.current().is_ok());
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
