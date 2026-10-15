@@ -100,7 +100,16 @@ def encode_pretrained(cases,model,compact_dir,gemma_dir,manifest):
        backend.pretrained_weight_receipt['actual_local_full_tied_embedding_checkpoint_verified']
        if model=='mmbert_small' else None),
      'mmbert_local_complete_table_sha256':(
-       backend.pretrained_weight_receipt['complete_table_sha256'] if model=='mmbert_small' else None)}
+       backend.pretrained_weight_receipt['complete_table_sha256'] if model=='mmbert_small' else None),
+     'mmbert_all_serialized_weights_byte_verified':(
+       backend.complete_weight_receipt['all_serialized_pretrained_tensor_bytes_verified']
+       if model=='mmbert_small' else None),
+     'mmbert_whole_pretrained_checkpoint_sha256':(
+       backend.complete_weight_receipt['whole_pretrained_state_sha256']
+       if model=='mmbert_small' else None),
+     'mmbert_verified_source_tensor_count':(
+       backend.complete_weight_receipt['source_tensor_count']
+       if model=='mmbert_small' else None)}
 def fit_heads(panel,model,vectors,*,seed=20261014,steps=40,lr=.15):
  import torch
  import torch.nn.functional as F
