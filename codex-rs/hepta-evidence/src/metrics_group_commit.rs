@@ -5,6 +5,7 @@
 //! authority. The caller must not retry an external effect after a telemetry
 //! failure without independently reconciling that effect.
 
+#[cfg(unix)]
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -15,6 +16,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::str::FromStr;
 use std::time::Instant;
 
