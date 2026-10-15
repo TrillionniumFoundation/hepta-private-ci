@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 2b8d3c4999a8903d170524b6931d3b35934ab0bd
+      CHAIN_SOURCE_SHA: 60b46119f07c8c84e44a7486d2967f0c253922b9
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '2b8d3c4999a8903d170524b6931d3b35934ab0bd' || '4d8ea82d13dacd8c556743f85f19ee188dd54870' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '60b46119f07c8c84e44a7486d2967f0c253922b9' || '90fc1eb95493c13d2d5230a9e6130503f14ae15f' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -297,6 +297,10 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-node-domain.json" --minimum-tests 9 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib ingress::public_v3::intake_domain_tests -- --nocapture --test-threads=2
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-continuous-domain.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib mode4_receiver_uses_exact_owner_cpu_domain_and_epoch_cancel_stays_installed -- --nocapture --test-threads=2
+      - name: Verify the fixed native Linux systemd slice path and original V3 CLI
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-host-cgroup-layout.json" --minimum-tests 14 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node -- --nocapture --test-threads=2
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
