@@ -354,6 +354,70 @@ class OriginalRouteMaterialization(unittest.TestCase):
         self.assertIn(extra["source_id"], case["arm_plans"]["strong_hybrid_rag"]["source_ids"])
         self.assertEqual(len(validate_plan(plan)), 54)
 
+    def _material_two_hops(self, *, include_second):
+        # Preserve the original full-source BM25 inventory and avoid making
+        # the RAG control depend on this graph-only second-hop discovery.
+        self._add_original_sources_outside_lexical_top16()
+        case = self.packet["cases"][0]
+        qid = case["question_id"]
+        original_lexical = route.source_first(case["question"], case["eligible_sources"])
+        self.rag["routes"][qid]["final_source_ids"] = original_lexical[:2]
+        for name in ("zz-first-hop", "zz-second-hop"):
+            raw = "unrelated indigo permafrost cedar " + name
+            source = {"source_id": name, "source_root": case["source_root"],
+                      "scope": case["scope"], "generation": case["generation"],
+                      "revoked": False, "revision": 1,
+                      "content_sha256": bytes_sha(raw.encode()), "text": raw,
+                      "row_id": name + "-row"}
+            source["input_sha256"] = route.feature_input_digest(
+                case["scope"], case["question"], source)
+            case["eligible_sources"].append(source)
+            if name == "zz-first-hop" or include_second:
+                # Synthetic original-feature prediction stands in only for
+                # this protocol test. No HF model forward is claimed.
+                self.predictions.append({"row_id": source["row_id"],
+                    "family": case["family"], "split": case["split"],
+                    "input_sha256": source["input_sha256"],
+                    "memory_type": case["memory_type"],
+                    "probabilities": {k: 0.4 for k in (
+                        "frozen", "single_shared", "untyped_equal_budget",
+                        "typed_equal_budget", "typed_swapped_negative")}})
+        self.assertTrue(all(name not in route.source_first(
+            case["question"], case["eligible_sources"])
+            for name in ("zz-first-hop", "zz-second-hop")))
+        graph = self.graphs[qid]
+        graph["edges"].extend([
+            {"source_id": original_lexical[0], "target_id": "zz-first-hop",
+             "relation": "supports", "support_sha256": pin("first hop evidence")},
+            {"source_id": "zz-first-hop", "target_id": "zz-second-hop",
+             "relation": "temporal", "support_sha256": pin("second hop evidence")},
+        ])
+        full_sha = digest(sorted((r["source_id"], r["source_root"],
+                                  r["revision"], r["content_sha256"])
+                                 for r in case["eligible_sources"]))
+        self.rag["routes"][qid]["full_source_inventory_sha256"] = full_sha
+        graph["original_source_frontier_sha256"] = full_sha
+        edges = sorted(graph["edges"], key=lambda e: (
+            e["source_id"], e["target_id"], e["relation"]))
+        graph["training_receipt"]["graph_sha256"] = digest({
+            "source": full_sha, "edges": edges})
+        self._refresh_bank()
+
+    def test_second_hop_missing_original_encoder_forward_denied(self):
+        self._material_two_hops(include_second=False)
+        with self.assertRaisesRegex(Refused, "re-encode RAG/graph union"):
+            self.build()
+
+    def test_two_hops_enter_common_frontier_without_hiding_rag(self):
+        self._material_two_hops(include_second=True)
+        result = self.build()
+        original = result["plan"]["cases"][0]
+        self.assertIn("zz-first-hop", {s["source_id"] for s in original["sources"]})
+        self.assertIn("zz-second-hop", {s["source_id"] for s in original["sources"]})
+        self.assertNotIn("zz-second-hop", original["arm_plans"][
+            "strong_hybrid_rag"]["source_ids"])
+        self.assertEqual(len(validate_plan(result["plan"])), 54)
+
     def test_shared_evidence_root_auto_clusters_future_families(self):
         left = self.packet["cases"][2]
         right = self.packet["cases"][3]

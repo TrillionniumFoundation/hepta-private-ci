@@ -37,3 +37,23 @@ For physical re-execution rather than consuming a bank JSON, use the `build_from
 The new source-only unit tests exercise real BM25 numerical ranking, typed/pooled score sorting, common original source union, graph intervention and lesion reconstruction, stronger RAG sources absent from lexical Top-16, source revocations, exact Reader binding, transitive evidence-root clustering and byte-exact CLI pins. These use **synthetic input packets and predictions**, not pretrained Encoder/Reader weights, original hybrid-RAG executions or independently judged natural tasks.
 
 The **current original 44-question historical LoCoMo source-first labels** had a negative result (original uniform Head weak-support Hit@1 typed 4/44; lexical 14/44). Separate post-hoc balanced-sampling outputs must never be mixed into that frozen census. Authentic complete nine-arm source/graph/Reader material is not available in this experiment branch, therefore this increment cannot assert actual nine-arm model calls or wins. Production remains **DENY_ALL**, Draft, no main merge, no `blocking-ci` waiver and no independent future-calendar observation.
+
+## Exact two-hop candidate-frontier correction
+
+The original HNMF `FrozenGraph` candidate traversal is bounded to **two
+outgoing steps**. A prior route-plan implementation included only the first
+neighbor of BM25 seeds, incorrectly disadvantaging the registered graph.
+`amcn_causal_route_plan` now traverses registered source-bound directed
+non-`contradicts` graph edges for at most two hops, with deterministic source
+order and a strict common 512-source cap. The independent strong-RAG selection
+is retained unchanged and never used as an unregistered graph expansion seed.
+Graph nodes discovered only at hop 2 must still have original source-bound
+physical Encoder/Head feature predictions; absence causes explicit refusal.
+A graph frontier larger than the cap is rejected, never silently truncated.
+
+Two additional hermetic adversarial regressions verify the missing-second-hop
+forward refusal and complete-second-hop common candidate inclusion while
+leaving original strong-RAG delivered evidence unchanged. Combined source-only
+test count **82/82 locally**; no additional pretrained model/Reader execution
+or measured task performance is claimed. This correction changes a research
+mechanism, not HNMF production graph ownership or the pending qualification.

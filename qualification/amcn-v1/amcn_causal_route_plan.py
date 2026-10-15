@@ -7,7 +7,7 @@ arrive from separately pinned external artifacts. No publisher labels permitted.
 from __future__ import annotations
 
 import argparse
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from hashlib import sha256
 import json
 import os
@@ -313,10 +313,13 @@ def build_original_plan(source_packet, original_predictions, bank, rag_receipt,
         require(graph["profile"] == GRAPH_PROFILE
                 and graph["original_source_frontier_sha256"] == original_inventory_sha,
                 "graph must bind the FULL original inventory, not a selected shortlist")
-        # Build a common final candidate frontier from BM25, original strong
-        # hybrid RAG and graph-admitted neighbors. Neither RAG nor graph may
-        # be handicapped to lexical Top-16; no gold influences this union.
+        # Match the existing FrozenGraph MAX_HOPS=2 semantics. Expand the
+        # immutable graph from label-blind BM25 seeds; do NOT use heldout gold
+        # or the strong-RAG choices as extra graph seeds. A graph's two-hop
+        # discovery must NOT disappear merely because no original Head forward
+        # happened for the intermediate/new source.
         frontier = set(lexical) | set(rag_row["final_source_ids"])
+        adjacency = defaultdict(set)
         for edge in graph["edges"]:
             require(isinstance(edge, dict) and set(edge) == {
                 "source_id", "target_id", "relation", "support_sha256"},
@@ -324,8 +327,22 @@ def build_original_plan(source_packet, original_predictions, bank, rag_receipt,
             require(edge["source_id"] in ordered_sources
                     and edge["target_id"] in ordered_sources,
                     "graph expansion targets source absent from original inventory")
-            if edge["source_id"] in lexical:
-                frontier.add(edge["target_id"])
+            if edge["relation"] != "contradicts":
+                adjacency[edge["source_id"]].add(edge["target_id"])
+        graph_visited = set(lexical)
+        queue = deque((sid, 0) for sid in lexical)
+        while queue:
+            current, depth = queue.popleft()
+            if depth == 2:
+                continue
+            for neighbor in sorted(adjacency[current]):
+                if neighbor in graph_visited:
+                    continue
+                graph_visited.add(neighbor)
+                require(len(graph_visited | frontier) <= MAX_SOURCES,
+                        "bounded graph expansion exceeded common Head frontier")
+                frontier.add(neighbor)
+                queue.append((neighbor, depth + 1))
         require(len(frontier) <= MAX_SOURCES,
                 "expanded common candidate frontier exceeds Reader/Head source budget")
         source_ids = [sid for sid in lexical if sid in frontier]
