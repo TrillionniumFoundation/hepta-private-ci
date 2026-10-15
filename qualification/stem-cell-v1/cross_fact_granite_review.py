@@ -18,7 +18,27 @@ def require(condition, message):
 
 
 def read(path):
-    return json.loads(Path(path).read_text(encoding='utf-8'))
+    path = Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 64 * 1024 * 1024:
+        raise ValueError('regular bounded receipt file required')
+
+    def unique_pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError('duplicate receipt JSON key')
+            result[key] = value
+        return result
+
+    def finite_float(raw):
+        number = float(raw)
+        if not math.isfinite(number):
+            raise ValueError('nonfinite receipt number')
+        return number
+
+    return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique_pairs,
+                      parse_float=finite_float,
+                      parse_constant=lambda raw: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
 
 
 def independent_training_score(cases, probabilities):
@@ -56,6 +76,8 @@ def review(root):
             and plan['external_result_was_used_for_selection'] is False,
             'research and no-heldout-selection commitments required')
     code = Path(__file__).parent
+    require(set(plan['new_code_sha256']) == {'cross_fact_bridge.py', 'cross_fact_granite_campaign.py'},
+            'unexpected source inventory entries')
     require(all(_digest(code / name) == digest for name, digest in plan['new_code_sha256'].items()),
             'new source changed after run')
     cases = build_binding_cases('train', groups=32, seed=41)
@@ -71,8 +93,13 @@ def review(root):
         for arm in ARMS:
             row = actual[arm]
             folder = root / f'seed-{seed}'
+            require(not folder.is_symlink(), 'symlinked seed directory forbidden')
             receipt = read(folder / f'{arm}-training.json')
             manifest = read(folder / f'{arm}-model.json')
+            require(manifest['file'] == f'{arm}.pt'
+                    and manifest['training_receipt_file'] == f'{arm}-training.json'
+                    and not (folder / manifest['file']).is_symlink(),
+                    'unexpected weight/receipt path')
             require(_digest(folder / manifest['file']) == manifest['file_sha256'] == row['model_file_sha256'],
                     'model file digest disagrees')
             require(_digest(folder / manifest['training_receipt_file']) == manifest['training_receipt_sha256'],
