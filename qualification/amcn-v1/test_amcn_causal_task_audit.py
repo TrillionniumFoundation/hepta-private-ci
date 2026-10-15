@@ -35,12 +35,12 @@ def fixture():
         "future_calendar_verified": False, "production_accepted": False,
     }
     specs = [
-        ("select", "semantic_concept", "a"),
-        ("retention", "procedural_skill", "b"),
-        ("future_a", "semantic_concept", "c"),
-        ("future_a", "procedural_skill", "d"),
-        ("future_b", "semantic_concept", "e"),
-        ("future_b", "procedural_skill", "f"),
+        ("select", "episodic", "a"),
+        ("retention", "semantic", "b"),
+        ("future_a", "episodic", "c"),
+        ("future_a", "semantic", "d"),
+        ("future_b", "episodic", "e"),
+        ("future_b", "semantic", "f"),
     ]
     for i, (split, kind, root) in enumerate(specs):
         sources = [{"source_id": f"{root}-s{j}", "revision": 1,
@@ -57,13 +57,13 @@ def fixture():
             head = (None if arm == "strong_hybrid_rag" else
                     sha("frozen") if arm == "frozen_shared" else
                     sha("shared-" + kind) if arm in ("learned_shared", "unsplit_equal_graph") else
-                    sha("typed-" + ("procedural_skill" if kind == "semantic_concept"
-                                    else "semantic_concept")) if arm == "typed_swapped"
+                    sha("typed-" + ("semantic" if kind == "episodic"
+                                    else "episodic")) if arm == "typed_swapped"
                     else sha("typed-" + kind))
             route = (None if arm in ("strong_hybrid_rag", "frozen_shared",
                                           "learned_shared", "unsplit_equal_graph")
-                     else ("procedural_skill" if kind == "semantic_concept"
-                           else "semantic_concept") if arm == "typed_swapped" else kind)
+                     else ("semantic" if kind == "episodic"
+                           else "episodic") if arm == "typed_swapped" else kind)
             choices[arm] = {"source_ids": [sources[0]["source_id"]] if not graph
                             else [sources[1]["source_id"]],
                             "head_sha256": head, "graph_sha256": graph,
@@ -127,8 +127,8 @@ class CausalTaskAuditTests(unittest.TestCase):
 
     def test_missing_second_unspecialized_head_denied(self):
         shared = self.plan["capacity"]["shared"]
-        shared["head_sha256_by_type"]["procedural_skill"] = shared[
-            "head_sha256_by_type"]["semantic_concept"]
+        shared["head_sha256_by_type"]["semantic"] = shared[
+            "head_sha256_by_type"]["episodic"]
         with self.assertRaisesRegex(a.Refused, "two independent physical Heads"):
             self.score()
 
@@ -221,11 +221,40 @@ class CausalTaskAuditTests(unittest.TestCase):
             self.score()
 
     def test_orphan_citation_is_not_100pct_precision(self):
-        self.answers[0]["emitted_source_ids"] = ["invented"]
+        raw = "synthetic original [E41]"
+        self.answers[0]["raw_answer"] = raw
+        self.answers[0]["raw_answer_sha256"] = sha(raw)
+        self.judgments[0]["raw_answer_sha256"] = sha(raw)
+        self.answers[0]["emitted_source_ids"] = ["UNDELIVERED:[E41]"]
         result = self.score()
         self.assertEqual(result["matched_resource_observations"]["strong_hybrid_rag"]
                          ["undelivered_citation_ids"], 1)
         self.assertIsNone(result["citation_precision"])
+
+    def test_manufactured_citation_label_denied(self):
+        self.answers[0]["emitted_source_ids"] = ["invented"]
+        with self.assertRaisesRegex(a.Refused, "disagree with raw"):
+            self.score()
+
+    def test_omitted_raw_orphan_citation_denied(self):
+        raw = "original text [E5]"
+        self.answers[0]["raw_answer"] = raw
+        self.answers[0]["raw_answer_sha256"] = sha(raw)
+        self.judgments[0]["raw_answer_sha256"] = sha(raw)
+        self.answers[0]["emitted_source_ids"] = []
+        with self.assertRaisesRegex(a.Refused, "disagree with raw"):
+            self.score()
+
+    def test_retention_isolated_from_future_source_family(self):
+        self.plan["lineage_alias_edges"] = [["b", "c"]]
+        with self.assertRaisesRegex(a.Refused, "retention"):
+            self.score()
+
+    def test_exact_original_pilot_type_inventory(self):
+        self.assertEqual(a.TYPES, ("episodic", "semantic"))
+        self.assertEqual({c["memory_type"] for c in self.plan["cases"]},
+                         {"episodic", "semantic"})
+        self.assertEqual(self.score()["question_count"], 6)
 
     def test_no_admissible_future_without_both_windows(self):
         self.plan["cases"][4]["split"] = "future_a"

@@ -12,6 +12,7 @@ from hashlib import sha256
 import json
 from math import isfinite, log, sqrt
 import os
+import re
 from pathlib import Path
 
 PROFILE = "hepta.amcn.causal-three-axis.task.v1"
@@ -35,7 +36,7 @@ MAX_CASES = 8192
 MAX_SOURCES = 512
 MAX_SOURCE_BYTES = 8192
 MAX_FILE_BYTES = 32 * 1024 * 1024
-TYPES = ("semantic_concept", "procedural_skill")
+TYPES = ("episodic", "semantic")
 
 
 class Refused(ValueError):
@@ -72,6 +73,26 @@ def exact(record, names, context):
 def require_string(value, description):
     require(isinstance(value, str) and bool(value.strip())
             and len(value.encode("utf-8")) <= MAX_SOURCE_BYTES, description)
+
+
+
+CITATION_MARKER = re.compile(r"\[E([0-9]{1,4})\]")
+
+
+def original_emitted_sources(answer, source_ids):
+    """Reconstruct citations from unchanged answer bytes, not producer metadata.
+
+    This verifies citation *structure*, never semantic entailment or truth.
+    Keep out-of-range labels visible as unmatched references.
+    """
+    if answer is None:
+        return []
+    sources = []
+    for match in CITATION_MARKER.finditer(answer):
+        number = int(match.group(1))
+        sources.append(source_ids[number - 1] if 1 <= number <= len(source_ids)
+                       else "UNDELIVERED:" + match.group())
+    return sources
 
 
 def request_digest(plan, case, arm, source_by_id):
@@ -151,7 +172,7 @@ def validate_plan(plan):
         require(case["question_id"] not in seen and case["split"] in HELDOUT,
                 "duplicate question or TRAIN truth in Reader trial")
         seen.add(case["question_id"])
-        require(case["memory_type"] in ("semantic_concept", "procedural_skill"),
+        require(case["memory_type"] in TYPES,
                 "types are predeclared HNMF kinds, not inferred from gold")
         types.add(case["memory_type"])
         roots.add(case["source_root"])
@@ -195,8 +216,7 @@ def validate_plan(plan):
                     "graph/non-graph intervention not bound")
             if arm == "typed_swapped":
                 require(choice["route_type"] != case["memory_type"]
-                        and choice["route_type"] in (
-                            "semantic_concept", "procedural_skill"),
+                        and choice["route_type"] in TYPES,
                         "swapped-type must really route to the other type")
             elif arm in ("strong_hybrid_rag", "frozen_shared", "learned_shared",
                          "unsplit_equal_graph"):
@@ -230,7 +250,7 @@ def validate_plan(plan):
         require(len({get(arm)["graph_sha256"] for arm in (
             "typed_fixed_graph", "typed_learned_graph", "typed_graph_lesion")}) == 3,
             "fixed, learned, and lesioned graph must be distinct interventions")
-    require(types == {"semantic_concept", "procedural_skill"},
+    require(types == set(TYPES),
             "both functional types required for specialization contrast")
     alias = plan["lineage_alias_edges"]
     require(isinstance(alias, list) and len(alias) <= MAX_CASES * 2,
@@ -269,8 +289,10 @@ def paired_components(plan):
         components[find("r:" + case["source_root"])].append(case)
     for cases in components.values():
         partitions = {c["split"] for c in cases}
-        require(len(partitions & {"select", "future_a", "future_b"}) <= 1,
-                "transitive leakage across heldout prospective partitions")
+        require(len(partitions & {"select", "future_a", "future_b"}) <= 1
+                and not ("retention" in partitions
+                         and partitions & {"select", "future_a", "future_b"}),
+                "transitive leakage across heldout prospective partitions or retention")
     return list(components.values())
 
 
@@ -317,6 +339,10 @@ def audit(plan, answers, judgments):
         require(isinstance(cite, list) and len(cite) <= 64
                 and all(isinstance(v, str) and len(v) < 256 for v in cite),
                 "unbounded citation output")
+        actual_citations = original_emitted_sources(row["raw_answer"],
+                                                     choice["source_ids"])
+        require(cite == actual_citations,
+                "submitted citation labels disagree with raw model output")
         resource[row["arm"]]["input_tokens"] += row["input_tokens"]
         resource[row["arm"]]["output_tokens"] += row["output_tokens"]
         resource[row["arm"]]["wall_ms"] += row["wall_ms"]
