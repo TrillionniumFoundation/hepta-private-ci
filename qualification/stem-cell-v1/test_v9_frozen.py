@@ -102,6 +102,12 @@ class FrozenScorer(unittest.TestCase):
         x['probs_sha256']=digest(x['probabilities'])
         self._run(x,accept=False)
 
+    def test_modified_historical_weight_hash_denied(self):
+        x=copy.deepcopy(self.record)
+        k=next(iter(x['weight_files']))
+        x['weight_files'][k]['sha256']='0'*64
+        self._run(x,accept=False)
+
     def test_resealed_fabricated_pretrained_call_denied(self):
         x=copy.deepcopy(self.record)
         x['actual_pretrained_encoder_forwards']=1
