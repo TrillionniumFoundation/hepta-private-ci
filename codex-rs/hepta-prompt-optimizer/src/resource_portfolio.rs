@@ -351,6 +351,9 @@ pub fn select_resource_portfolio_shadow_v1(
     if input.model_tuple_digest != input.profile.model_tuple_digest {
         return Err(ResourcePortfolioError::ScopeMismatch("model tuple"));
     }
+    if input.priced_candidates.authority.grants_any() {
+        return Err(ResourcePortfolioError::UnsupportedProfile);
+    }
     if input.candidate_set_digest != input.profile.candidate_set_digest
         || input.pricing_batch_digest != input.profile.pricing_batch_digest
         || input.priced_candidates.pricing_set_digest != input.profile.pricing_batch_digest
