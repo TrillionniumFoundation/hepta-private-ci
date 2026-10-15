@@ -25,3 +25,19 @@ The existing `.github/workflows/hepta-e21-original-human-question-complete.yml` 
 E22 *does not* solve Reader insufficiency; it makes the bottleneck harder to bypass. Genuine P0 GO still requires independently collected additional passages, candidate-specific evidence sensitivity, removed/perturbed premise controls, source-group uncertainty, lower and upper resource profiles, and held-out answer/classification improvements over frozen/professional baselines. An observed positive logit span alone is NOT proof of correctness, and 33 dependent candidates are NOT 33 independent problems.
 
 All E22 outputs retain `reader_sufficiency_certified=false`, `answer_information_support_for_full_ndu_system2=false`, `ndu_system2_admitted=false`, `model_selected=false`, `production_accepted=false`, `DENY_ALL`. No production promotion, main merge, new authorization, active Cell Split or large-model equivalence claim.
+
+
+## Retained real-original pretrained **blind** execution, not synthetic evidence
+
+Downloaded the exact original successful GitHub Actions pretrained ZIP artifact `11946621518` (outer SHA-256 `1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17`) and the actual **four** E15 held-fold prediction ZIPs, verified each original external ZIP, original held-prediction member SHA, original E15 training source HEAD, E21 original prelabel COMMITTED observation and exact case/group/answer identity. Physically rejoined 33 original candidate probabilities from the four frozen ModernBERT Reader controls and two **actually trained historical E15** Heads; **zero new pretrained forwards or Head updates**. The true original human label ZIP members and parquet were *not* read in this blind computation. The complete original-model E22 prelabel observation is retained as `E22_REAL_ORIGINAL_BLIND_OBSERVATION_20261015.json` (no raw candidate probabilities, media or labels) and independently re-counted using a second algorithm over the actual source output.
+
+| Actual archived Reader arm | Questions with exactly identical scores | Questions predicting one hard class | Questions with score span <=0.001 (diagnostic) |
+| --- | ---: | ---: | ---: |
+| conditioned | 4 / 8 | **8 / 8** | 8 / 8 |
+| mean_pool_query_fused | 0 / 8 | **8 / 8** | 0 / 8 |
+| no_evidence | 0 / 8 | **7 / 8** | 0 / 8 |
+| no_query | **8 / 8** | **8 / 8** | 8 / 8 |
+| learned_linear_5 | 0 / 8 | **8 / 8** | 2 / 8 |
+| learned_gated_3 | 0 / 8 | **8 / 8** | 0 / 8 |
+
+This is a **real pretrained archived numerical replay with label-blind outputs**, not an original-human E22 scored result, not three future datasets, and not an independent new model-training experiment. Exact held human-label rankings and complete-question results still require the hosted E22 scorer after the original E21 two-artifact reconciliation, and ordinary candidate correctness should never be mistaken for complete mixed-label question success. The new E21/E22 blind workflow independently checks the frozen six-arm numeric *counts* against the sanitized actual original ZIP observation, without assuming identical floating-point serialized SHA across Python/OS versions. The numerical observation is a **negative bottleneck finding**, not a new benchmark winner or model-selection authority.
