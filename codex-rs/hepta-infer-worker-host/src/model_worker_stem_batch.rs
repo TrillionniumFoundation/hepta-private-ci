@@ -7,6 +7,8 @@
 
 use std::collections::BTreeSet;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_infer_core::StemAccessContextV1;
 use codex_hepta_infer_core::StemFeatureRefV1;
@@ -34,6 +36,7 @@ pub struct StemBatchMemberProposalV1<'a> {
 /// One source, Scope, Principal, Generation, epoch and numerical feature
 /// across multiple independent Head decisions. All caller claims still need
 /// authentication from the original owners at actual physical dispatch.
+#[derive(Clone, Copy)]
 pub struct StemBatchProposalV1<'a> {
     pub source: &'a StemFeatureRefV1,
     pub access: &'a StemAccessContextV1,
@@ -184,6 +187,97 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             bindings,
             authority: AuthorityPosture::DENY_ALL,
         })
+    }
+}
+
+
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    /// Testable owner-local building block for an eventual ONE-call native
+    /// batch. Not exported to outside crates. No signer or model effect is
+    /// created here, and no physical batch backend is installed.
+    ///
+    /// All original single-use signed tokens are validated before the effect
+    /// starts. The outermost authority fence stays active until the whole
+    /// synchronous callback finishes, so revocation updates cannot race
+    /// with any inner token entry or the effect. A denied member means ZERO
+    /// callback invocations. Claimed nonces are never refunded.
+    ///
+    /// The caller must later wire the effect only to the original Evidence-
+    /// journalled batch driver with complete post-effect observations.
+    #[allow(dead_code)]
+    pub(crate) fn with_verified_stem_batch_effect_v1<T>(
+        &mut self,
+        now_ms: u64,
+        proposed: StemBatchProposalV1<'_>,
+        frozen_plan: &NonAuthorizingStemBatchPlanV1,
+        authority: &FinalUseAuthority,
+        tokens: Vec<VerifiedUseToken>,
+        effect: impl FnOnce(&mut Self) -> Result<T, Error>,
+    ) -> Result<T, Error> {
+        if frozen_plan.authority.grants_any()
+            || tokens.is_empty()
+            || tokens.len() != frozen_plan.bindings.len()
+            || tokens.len() > MAX_BATCH_MEMBERS
+        {
+            return Err(Error::FinalUseDenied);
+        }
+        // The stale proposal is not admission: revalidate every member,
+        // resource budget, source, and CAS physical currentness *now*.
+        let current = self.prepare_stem_final_use_batch_proposal_v1(now_ms, proposed)?;
+        if current.batch_digest != frozen_plan.batch_digest
+            || current.bindings != frozen_plan.bindings
+        {
+            return Err(Error::FeatureContract);
+        }
+
+        // Each token remains owned and non-cloneable; request order is fixed
+        // by the preflight plan. A foreign-owner token, revoked token, expired
+        // grant or incorrect signed binding rejects before the callback.
+        let signed_members: Vec<_> = tokens.into_iter()
+            .zip(current.bindings)
+            .collect();
+
+        // The callback is invoked ONLY from inside all original effect
+        // fences. Recheck immutable CAS/current grants after token validation
+        // and immediately before a future driver dispatch.
+        let run = move || -> Result<T, Error> {
+            let fresh = self.prepare_stem_final_use_batch_proposal_v1(now_ms, proposed)?;
+            if fresh.batch_digest != frozen_plan.batch_digest
+                || fresh.bindings != frozen_plan.bindings
+            {
+                return Err(Error::FeatureContract);
+            }
+            // If the physical driver returns an unknown result or panics,
+            // fence the whole worker generation. A fully rejected admission
+            // (above) does not poison a generation that performed no effect.
+            let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| effect(self)));
+            match outcome {
+                Ok(Ok(value)) => Ok(value),
+                Ok(Err(error)) => {
+                    self.poisoned = true;
+                    Err(error)
+                }
+                Err(panic) => {
+                    self.poisoned = true;
+                    std::panic::resume_unwind(panic)
+                }
+            }
+        };
+
+        // The nested original authority calls are deliberate. Each entry
+        // validates one independently signed token; their active-effect guards
+        // remain alive together until the innermost callback completes.
+        // This uses ONE existing authority owner, not a new batch signer.
+        let mut all_fenced: Box<dyn FnOnce() -> Result<T, Error> + '_> = Box::new(run);
+        for (token, binding) in signed_members.into_iter().rev() {
+            let next = all_fenced;
+            all_fenced = Box::new(move || {
+                authority
+                    .with_verified_effect(token, &binding, next)
+                    .map_err(|_| Error::FinalUseDenied)?
+            });
+        }
+        all_fenced()
     }
 }
 
