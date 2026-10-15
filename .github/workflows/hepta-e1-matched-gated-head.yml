@@ -6,6 +6,10 @@ name: Hepta E1 matched gated Head on original P0 snapshots (DENY_ALL)
       - 'experiments/shared_stem_cell/e1_matched_gated_review.py'
       - 'experiments/shared_stem_cell/test_e1_matched_gated_head.py'
       - '.github/workflows/hepta-e1-matched-gated-head.yml'
+      - 'experiments/shared_stem_cell/e2_seal_blind_predictions.py'
+      - 'experiments/shared_stem_cell/e2_original_human_score.py'
+      - 'experiments/shared_stem_cell/test_e2_original_human_score.py'
+      - 'experiments/shared_stem_cell/E2_ORIGINAL_HUMAN_SCORER.md'
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,6 +35,9 @@ jobs:
           export PYTHONPATH=experiments/shared_stem_cell
           python -m unittest discover -s "$PYTHONPATH" -p test_e1_matched_gated_head.py -v
           python -O -m unittest discover -s "$PYTHONPATH" -p test_e1_matched_gated_head.py -v
+          python -m py_compile experiments/shared_stem_cell/e2_seal_blind_predictions.py experiments/shared_stem_cell/e2_original_human_score.py
+          python -m unittest discover -s "$PYTHONPATH" -p test_e2_original_human_score.py -v
+          python -O -m unittest discover -s "$PYTHONPATH" -p test_e2_original_human_score.py -v
   original-feature-probe:
     needs: source
     runs-on: ubuntu-24.04
@@ -97,9 +104,143 @@ jobs:
                   --original-report "$ROOT/arm/$MODEL.json" --replay-dir "$ROOT/arm/$MODEL.replay")
           python experiments/shared_stem_cell/e1_matched_gated_head.py "${COMMON[@]}" --output-dir "$ROOT/probe"
           python experiments/shared_stem_cell/e1_matched_gated_review.py "${COMMON[@]}" --probe-dir "$ROOT/probe" --output "$ROOT/numeric-review.json"
+      - name: Seal original blind predictions WITHOUT human held labels
+        env:
+          MODEL: ${{ matrix.model }}
+          CURRENT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1"
+          python experiments/shared_stem_cell/e2_seal_blind_predictions.py \
+            --blind "$ROOT/blind/blind.json" --probe-report "$ROOT/probe/COMMITTED.json" \
+            --numeric-review "$ROOT/numeric-review.json" \
+            --model "$MODEL" --candidate-head-sha "$CURRENT_HEAD" \
+            --candidate-run-id "$CURRENT_RUN" --output "$ROOT/prelabel-seal.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2-${{ matrix.model }}-prelabel-${{ github.run_id }}
+          path: ${{ runner.temp }}/e1/prelabel-seal.json
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
           name: e1-${{ matrix.model }}-numeric-only-${{ github.run_id }}
           path: ${{ runner.temp }}/e1/numeric-review.json
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-original-human-e2-score:
+    # The human-label owner runs AFTER every original-feature Head arm and
+    # separate NumPy-only review. It must never feed held labels to producer.
+    needs: [source, original-feature-probe]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire original sealed source and candidate forecast artifacts separately
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-fit-38686023757
+          path: ${{ runner.temp }}/e2/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-blind-38686023757
+          path: ${{ runner.temp }}/e2/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-owner-labels-38686023757
+          path: ${{ runner.temp }}/e2/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          pattern: hepta-human-original-arm-*-38686023757
+          merge-multiple: false
+          path: ${{ runner.temp }}/e2/p0-arms
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: e2-*-prelabel-${{ github.run_id }}
+          merge-multiple: false
+          path: ${{ runner.temp }}/e2/e1-seals
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: e1-*-numeric-only-${{ github.run_id }}
+          merge-multiple: false
+          path: ${{ runner.temp }}/e2/e1-numeric
+      - name: Reacquire pinned original human parquet and re-score independently
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'huggingface-hub==1.33.0' 'pyarrow==21.0.0'
+          python -m pip check
+          ROOT="$RUNNER_TEMP/e2"
+          export ROOT
+          python - <<'PY'
+          import hashlib,os,shutil
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          root=Path(os.environ['ROOT']); score=root/'score'
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_multirc_semantic_material import read
+          meta=read(score/'fit.json')['metadata']
+          rev='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          for split,name in (('train','multirc/train-00000-of-00001.parquet'),
+                             ('validation','multirc/validation-00000-of-00001.parquet')):
+              src=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',revision=rev,filename=name))
+              if hashlib.sha256(src.read_bytes()).hexdigest()!=meta[split+'_sha256']:
+                  raise SystemExit('DENY: changed genuine original human source')
+              shutil.copyfile(src,score/(split+'.parquet'))
+          PY
+          COMMON=(--fit "$ROOT/score/fit.json" --blind "$ROOT/score/blind.json" \
+                  --labels "$ROOT/score/owner-only-human-labels.json" \
+                  --train-parquet "$ROOT/score/train.parquet" \
+                  --validation-parquet "$ROOT/score/validation.parquet")
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            test -s "$ROOT/p0-arms/hepta-human-original-arm-$MODEL-38686023757/$MODEL.json"
+          done
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            test -s "$ROOT/e1-seals/e2-$MODEL-prelabel-${{ github.run_id }}/prelabel-seal.json"
+          done
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            test -s "$ROOT/e1-numeric/e1-$MODEL-numeric-only-${{ github.run_id }}/numeric-review.json"
+          done
+          python experiments/shared_stem_cell/e2_original_human_score.py "${COMMON[@]}" \
+            --p0-granite-97m-r2 "$ROOT/p0-arms/hepta-human-original-arm-granite_97m_r2-38686023757/granite_97m_r2.json" \
+            --p0-mmbert-small "$ROOT/p0-arms/hepta-human-original-arm-mmbert_small-38686023757/mmbert_small.json" \
+            --p0-embeddinggemma-2-text "$ROOT/p0-arms/hepta-human-original-arm-embeddinggemma_2_text-38686023757/embeddinggemma_2_text.json" \
+            --p0-laya421-nochange "$ROOT/p0-arms/hepta-human-original-arm-laya421_nochange-38686023757/laya421_nochange.json" \
+            --seal-granite-97m-r2 "$ROOT/e1-seals/e2-granite_97m_r2-prelabel-${{ github.run_id }}/prelabel-seal.json" \
+            --seal-mmbert-small "$ROOT/e1-seals/e2-mmbert_small-prelabel-${{ github.run_id }}/prelabel-seal.json" \
+            --seal-embeddinggemma-2-text "$ROOT/e1-seals/e2-embeddinggemma_2_text-prelabel-${{ github.run_id }}/prelabel-seal.json" \
+            --numeric-granite-97m-r2 "$ROOT/e1-numeric/e1-granite_97m_r2-numeric-only-${{ github.run_id }}/numeric-review.json" \
+            --numeric-mmbert-small "$ROOT/e1-numeric/e1-mmbert_small-numeric-only-${{ github.run_id }}/numeric-review.json" \
+            --numeric-embeddinggemma-2-text "$ROOT/e1-numeric/e1-embeddinggemma_2_text-numeric-only-${{ github.run_id }}/numeric-review.json" \
+            --candidate-head-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --candidate-run-id '${{ github.run_id }}' \
+            --output "$ROOT/score/e2-original-human-summary.json"
+          python -m json.tool "$ROOT/score/e2-original-human-summary.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2-original-human-description-${{ github.run_id }}
+          path: ${{ runner.temp }}/e2/score/e2-original-human-summary.json
           if-no-files-found: error
           retention-days: 7
