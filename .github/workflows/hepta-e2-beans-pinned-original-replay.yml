@@ -3,37 +3,6 @@ on:
   push:
     branches:
       - research/e2-beans-pinned-artifact-ridge-replay-20261015
-  workflow_dispatch:
-    inputs:
-      origin_run_id:
-        required: true
-        type: string
-        description: Completed successful original Beans run ID (exact source SHA)
-      source_id:
-        required: true
-        type: string
-        description: Original source-only ZIP artifact numeric ID
-      source_sha256:
-        required: true
-        type: string
-      producer_id:
-        required: true
-        type: string
-      producer_sha256:
-        required: true
-        type: string
-      withheld_id:
-        required: true
-        type: string
-      withheld_sha256:
-        required: true
-        type: string
-      independent_id:
-        required: true
-        type: string
-      independent_sha256:
-        required: true
-        type: string
 permissions:
   contents: read
   actions: read
@@ -72,22 +41,40 @@ jobs:
             experiments/shared_stem_cell/e2_beans_original_replay.py \
             experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py
 
-  original-label-blind-fit:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'workflow_dispatch'
+
+  pinned-original-intake:
     needs: contract-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.detect.outputs.ready }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Detect explicitly committed four-ZIP pins, reject invalid pins
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest=qualification/e2-original-beans/PINNED_ORIGINAL_ARCHIVES.json
+          if test -f "$manifest"; then
+            python experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py \
+              --operator-manifest "$manifest" --github-env "$GITHUB_ENV"
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'Original natural Beans ZIPs not yet pinned. No physical replay claim.'
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+          fi
+
+  original-label-blind-fit:
+    if: needs.pinned-original-intake.outputs.ready == 'true'
+    needs: pinned-original-intake
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
       GH_TOKEN: ${{ github.token }}
-      RUN_ID: ${{ inputs.origin_run_id }}
-      SOURCE_ID: ${{ inputs.source_id }}
-      SOURCE_SHA: ${{ inputs.source_sha256 }}
-      PRODUCER_ID: ${{ inputs.producer_id }}
-      PRODUCER_SHA: ${{ inputs.producer_sha256 }}
-      WITHHELD_ID: ${{ inputs.withheld_id }}
-      WITHHELD_SHA: ${{ inputs.withheld_sha256 }}
-      INDEPENDENT_ID: ${{ inputs.independent_id }}
-      INDEPENDENT_SHA: ${{ inputs.independent_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -97,6 +84,13 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Export operator-pinned source and artifact digests (safe env values)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py \
+            --operator-manifest qualification/e2-original-beans/PINNED_ORIGINAL_ARCHIVES.json \
+            --github-env "$GITHUB_ENV"
       - name: Verify original exact run and download ONLY source/producers
         shell: bash
         run: |
@@ -132,21 +126,12 @@ jobs:
           retention-days: 7
 
   independent-original-retrospective-readout:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'workflow_dispatch'
+    if: needs.original-label-blind-fit.result == 'success'
     needs: original-label-blind-fit
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
       GH_TOKEN: ${{ github.token }}
-      RUN_ID: ${{ inputs.origin_run_id }}
-      SOURCE_ID: ${{ inputs.source_id }}
-      SOURCE_SHA: ${{ inputs.source_sha256 }}
-      PRODUCER_ID: ${{ inputs.producer_id }}
-      PRODUCER_SHA: ${{ inputs.producer_sha256 }}
-      WITHHELD_ID: ${{ inputs.withheld_id }}
-      WITHHELD_SHA: ${{ inputs.withheld_sha256 }}
-      INDEPENDENT_ID: ${{ inputs.independent_id }}
-      INDEPENDENT_SHA: ${{ inputs.independent_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -160,6 +145,13 @@ jobs:
         with:
           name: hepta-e2-original-beans-frozen-ridge-sealed-no-raw-source
           path: /tmp/hepta-e2-sealed
+      - name: Export operator-pinned source and artifact digests (safe env values)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_beans_original_artifact_fetch.py \
+            --operator-manifest qualification/e2-original-beans/PINNED_ORIGINAL_ARCHIVES.json \
+            --github-env "$GITHUB_ENV"
       - name: Independently fetch all FOUR original, SHA-pinned ZIPs
         shell: bash
         run: |

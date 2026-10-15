@@ -246,4 +246,55 @@ class FetcherTests(unittest.TestCase):
             with self.assertRaises(FetchError):
                 _download_exact_artifact(17,'secret',digest(b'real-data'))
 
+
+    def test_real_pins_canonical_manifest_only(self):
+        from e2_beans_original_artifact_fetch import (read_operator_manifest,
+                                                       PINNED_MANIFEST_SCHEMA)
+        ids={r:i+100 for i,r in enumerate(ORIGINAL)}
+        artifacts={r:{'id':ids[r],'sha256':digest(r.encode())} for r in ORIGINAL}
+        doc={'schema':PINNED_MANIFEST_SCHEMA,'original_run_id':38680856403,
+             'original_source_sha':SOURCE_HEAD,'artifacts':artifacts,
+             'stem_selected':False,'production_accepted':False,'authority':'DENY_ALL'}
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'pins.json';p.write_bytes(canon(doc))
+            actual,got,pins,d=read_operator_manifest(p)
+            self.assertEqual(got,ids)
+            self.assertEqual(set(pins),set(ORIGINAL))
+            self.assertEqual(d,digest(p.read_bytes()))
+
+    def test_pinned_manifest_rejects_duplicate_json_and_fake_model_selection(self):
+        from e2_beans_original_artifact_fetch import (read_operator_manifest,
+                                                       PINNED_MANIFEST_SCHEMA)
+        artifacts={r:{'id':i+100,'sha256':digest(r.encode())}
+                   for i,r in enumerate(ORIGINAL)}
+        doc={'schema':PINNED_MANIFEST_SCHEMA,'original_run_id':38680856403,
+             'original_source_sha':SOURCE_HEAD,'artifacts':artifacts,
+             'stem_selected':False,'production_accepted':False,'authority':'DENY_ALL'}
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'bad.json';p.write_bytes(canon(doc).replace(b'"stem_selected":false',
+                                                       b'"stem_selected":false,"stem_selected":true'))
+            with self.assertRaises(FetchError):read_operator_manifest(p)
+            doc['stem_selected']=True;p.write_bytes(canon(doc))
+            with self.assertRaises(FetchError):read_operator_manifest(p)
+
+    def test_safe_gh_env_cannot_emit_unvalidated_newlines(self):
+        from e2_beans_original_artifact_fetch import (PINNED_MANIFEST_SCHEMA,safe_gh_env)
+        artifacts={r:{'id':i+100,'sha256':digest(r.encode())}
+                   for i,r in enumerate(ORIGINAL)}
+        doc={'schema':PINNED_MANIFEST_SCHEMA,'original_run_id':38680856403,
+             'original_source_sha':SOURCE_HEAD,'artifacts':artifacts,
+             'stem_selected':False,'production_accepted':False,'authority':'DENY_ALL'}
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'pins.json';p.write_bytes(canon(doc))
+            env=Path(folder)/'github-env';env.write_text('')
+            status=safe_gh_env(p,env)
+            lines=env.read_text().splitlines()
+            self.assertEqual(len(lines),10)
+            self.assertEqual(lines[0],'RUN_ID=38680856403')
+            self.assertTrue(lines[-1].startswith('PIN_MANIFEST_SHA256='))
+            self.assertFalse(status['production_accepted'])
+            doc['artifacts']['source']['id']='1\nEVIL=1';p.write_bytes(canon(doc))
+            with self.assertRaises(FetchError):safe_gh_env(p,env)
+            self.assertEqual(lines,env.read_text().splitlines())
+
 if __name__=='__main__':unittest.main()

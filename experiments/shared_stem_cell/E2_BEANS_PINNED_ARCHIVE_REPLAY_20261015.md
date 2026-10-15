@@ -42,18 +42,47 @@ pretrained inference has already produced outputs.
 1. Original Beans physical run must complete, with all four original artifact
    SHA-256s and IDs independently recorded. The archive run was queued at the
    time of this implementation; no natural-image score is inferred here.
-2. Dispatch `hepta-e2-beans-pinned-original-replay.yml` with original run ID and
-   **all four immutable ID/SHA pairs**. The first, label-blind job downloads
-   only `source.zip` and `producer.zip` and uploads an approved *small sealed
-   model/probability research artifact, not raw images/weights*.
-3. The scoring job downloads all four ZIPs, verifies source identity and
-   SHA-256 independently, rereads the immutable Ridge seal and produces the
-   independent `readout.json` only upon complete success. Secrets are never
-   printed or uploaded; `GITHUB_TOKEN` needs `actions:read` and `contents:read`.
-4. The workflow also runs mechanism/negative tests on ordinary branch pushes,
-   but **those tests never count as a real natural-image execution**. For local
-   direct CLI reproduction, use the two scripts `e2_beans_original_artifact_fetch.py`
-   and `e2_beans_original_replay.py` with their `--help` arguments.
+2. **The workflow remains on a research branch**, so GitHub cannot activate
+   branch-only `workflow_dispatch` (GitHub requires default-branch registration).
+   Instead, the operator commits the create-only literal file
+   `qualification/e2-original-beans/PINNED_ORIGINAL_ARCHIVES.json` on this
+   research branch **after** checking the completed origin run and pinning
+   each numeric artifact ID and ZIP byte SHA. Its canonical JSON schema is:
+
+   ```json
+   {
+     "schema":"hepta.e2.operator-pinned-natural-beans-archives.v1",
+     "original_run_id":38680856403,
+     "original_source_sha":"927bf53b184c3947db17a129834046c5f03add04",
+     "artifacts":{
+       "source":{"id":123,"sha256":"<exact 64 lowercase hex>"},
+       "producer":{"id":456,"sha256":"<exact 64 lowercase hex>"},
+       "withheld":{"id":789,"sha256":"<exact 64 lowercase hex>"},
+       "independent":{"id":1011,"sha256":"<exact 64 lowercase hex>"}
+     },
+     "stem_selected":false,"production_accepted":false,"authority":"DENY_ALL"
+   }
+   ```
+
+   Values above are **illustrative, not real artifact IDs or usable pins**.
+   The activated file must use compact sorted-key canonical JSON with a final
+   newline, all four actual roles, unique IDs and real SHA-256; the parser
+   rejects missing/phony values. **No such activated file is committed now**.
+3. On each ordinary research-branch push, the first job executes only
+   contract tests. A separate intake job detects the operator's exact manifest.
+   If absent it explicitly **skips physical replay**, not PASS; if malformed it
+   fails closed. Only when present and valid does the two-job chain download
+   the exact source and producer, then seal the label-blind Ridge. This uploads
+   only a small research checkpoint/prediction pair, no raw images or weights.
+4. The next separate job downloads all four ZIPs and their original SHA-pins,
+   verifies the same successful run/head and source/target bytes, and recomputes
+   model weights by independent SVD before opening TEST labels. Only a complete
+   pass writes `readout.json`. Secrets are never printed or uploaded; the
+   GitHub token has `actions:read` and `contents:read` only.
+5. The presence of this workflow (without the operator manifest) or passing
+   source-tests cannot claim an original natural-image task result. For local
+   CLI reproduction use `e2_beans_original_artifact_fetch.py` and
+   `e2_beans_original_replay.py` after obtaining all four original ZIP pins.
 
 ## Scientific qualifications not supplied
 

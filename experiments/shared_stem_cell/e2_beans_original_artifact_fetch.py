@@ -129,16 +129,88 @@ def download_verified(run_id,ids,pins,destination,token,roles=None):
             'archives':result,'production_accepted':False,'authority':'DENY_ALL'}
 
 
+
+PINNED_MANIFEST_SCHEMA='hepta.e2.operator-pinned-natural-beans-archives.v1'
+
+
+def read_operator_manifest(path):
+    """Optional, create-only future input: no phantom artifact IDs or unpinned refs."""
+    p=Path(path)
+    require(p.is_file() and not p.is_symlink() and 0<p.stat().st_size<=4096,
+            'missing or unsafe operator source manifest')
+    raw=p.read_bytes()
+    def unique(pairs):
+        obj={}
+        for k,v in pairs:
+            if k in obj:raise FetchError('duplicate original artifact manifest field')
+            obj[k]=v
+        return obj
+    try:
+        doc=json.loads(raw,object_pairs_hook=unique,
+                       parse_constant=lambda _: (_ for _ in ()).throw(FetchError('nonfinite manifest')))
+    except (ValueError,UnicodeDecodeError,TypeError) as exc:
+        raise FetchError('malformed pinned operator manifest') from exc
+    canonical=(json.dumps(doc,sort_keys=True,ensure_ascii=True,
+                          separators=(',',':'),allow_nan=False)+'\n').encode()
+    require(raw==canonical and type(doc) is dict and set(doc)=={
+        'schema','original_run_id','original_source_sha','artifacts',
+        'stem_selected','production_accepted','authority'},
+        'noncanonical or wrong-version original manifest')
+    require(doc['schema']==PINNED_MANIFEST_SCHEMA and
+            type(doc['original_run_id']) is int and doc['original_run_id']>0 and
+            doc['original_source_sha']==SOURCE_HEAD and
+            doc['stem_selected'] is False and
+            doc['production_accepted'] is False and doc['authority']=='DENY_ALL',
+            'original run/source or denied authority invalid')
+    items=doc['artifacts']
+    require(type(items) is dict and set(items)==set(ORIGINAL),
+            'operator must pin exactly four original ZIP roles')
+    ids={};pins={}
+    for role in ORIGINAL:
+        spec=items[role]
+        require(type(spec) is dict and set(spec)=={'id','sha256'} and
+                type(spec['id']) is int and spec['id']>0,
+                'invalid original artifact identity')
+        ids[role]=spec['id']
+        pins[role]=_hex_sha(spec['sha256'])
+    require(len(set(ids.values()))==4,'original artifact IDs must be distinct')
+    return doc,ids,pins,digest(raw)
+
+
+def safe_gh_env(manifest,env_path):
+    """Export only digit/hex values; cannot inject additional Actions env keys."""
+    doc,ids,pins,sha=read_operator_manifest(manifest)
+    path=Path(env_path)
+    require(path.is_file() and not path.is_symlink() and path.stat().st_size<2_000_000,
+            'workflow environment file unavailable or unsafe')
+    lines=[f'RUN_ID={doc["original_run_id"]}']
+    for role in ORIGINAL:
+        lines.append(f'{role.upper()}_ID={ids[role]}')
+        lines.append(f'{role.upper()}_SHA={pins[role]}')
+    lines.append(f'PIN_MANIFEST_SHA256={sha}')
+    with path.open('a',encoding='ascii') as output:
+        output.write('\n'.join(lines)+'\n')
+    return {'schema':'hepta.e2.gh-original-pins-export.v1','original_run_id':doc['original_run_id'],
+            'pins_digest':sha,'roles':list(ORIGINAL),'production_accepted':False,'authority':'DENY_ALL'}
+
 def cli():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--run-id',type=int,required=True)
-    p.add_argument('--output-dir',type=Path,required=True)
+    p.add_argument('--run-id',type=int)
+    p.add_argument('--operator-manifest',type=Path)
+    p.add_argument('--github-env',type=Path)
+    p.add_argument('--output-dir',type=Path)
     p.add_argument('--roles',default='source,withheld,producer,independent',
                    help='comma-separated subset of original ZIPs physically downloaded')
     for k in ORIGINAL:
-        p.add_argument('--'+k+'-id',type=int,required=True)
-        p.add_argument('--'+k+'-sha256',required=True)
+        p.add_argument('--'+k+'-id',type=int)
+        p.add_argument('--'+k+'-sha256')
     a=p.parse_args()
+    if a.operator_manifest is not None:
+        require(a.github_env is not None,'operator manifest requires GitHub env output')
+        print(json.dumps(safe_gh_env(a.operator_manifest,a.github_env),sort_keys=True))
+        return
+    require(a.run_id is not None and a.output_dir is not None,
+            'fetch requires original run ID and a new output directory')
     token=os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
     values={k:getattr(a,k+'_id') for k in ORIGINAL}
     pins={k:getattr(a,k+'_sha256') for k in ORIGINAL}
