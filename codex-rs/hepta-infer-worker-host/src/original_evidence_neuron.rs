@@ -15,6 +15,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+use codex_hepta_agentd::MetricPhaseV1;
 use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
 use codex_hepta_agentd::MetricsCommittedSampleReadbackV1;
 use codex_hepta_agentd::MetricsLocalFrontierV1;
@@ -23,6 +24,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
 use codex_hepta_infer_core::microbatch::MicrobatchKeyV1;
 use codex_hepta_infer_core::microbatch::MicrobatchLimitsV1;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -249,8 +251,71 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         if !self.original_evidence.healthy() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
-        self.owner
-            .prepare_pending_native_group_signature_v1(now_ms, ordered)
+
+        // Before requesting ANY original WAL group scan, first ensure the
+        // proposed cohort actually exists in THIS Worker's admitted queue,
+        // and passes the original live-CNS, grant and Q24 hash checks.
+        let candidate = self.owner
+            .prepare_pending_native_group_signature_v1(now_ms, ordered)?;
+
+        // One original owner/marker full-history scan for the entire bounded
+        // cohort. Unlike N separate read_committed_sample() calls this is not
+        // N * WAL, and every result is from the SAME committed high-water.
+        // Duplicate, absent or failed Admission rows never become a signing
+        // proposal, even if a broken writer returned a positive flush ACK.
+        let queries = ordered
+            .iter()
+            .map(|(id, key)| MetricsCommittedSampleQueryV1 {
+                scope_digest: Digest32::of_bytes(key.scope_id.as_str().as_bytes()),
+                operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
+                phase: MetricPhaseV1::Admission,
+                succeeded: true,
+            })
+            .collect::<Vec<_>>();
+        let readbacks = self
+            .original_evidence
+            .read_committed_samples(&queries)
+            .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
+        let mut expected_frontier = None;
+        for (query, readback) in queries.iter().zip(readbacks.iter()) {
+            let Some(sample) = readback else {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            };
+            if sample.query != *query
+                || sample.matching_rows != 1
+                || sample.first_group_sequence == 0
+                || sample.last_group_sequence < sample.first_group_sequence
+                || sample.last_group_sequence > sample.frontier.sequence
+                || sample.last_group_head.is_zero()
+                || expected_frontier
+                    .is_some_and(|frontier| frontier != sample.frontier)
+            {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            }
+            expected_frontier = Some(sample.frontier);
+        }
+
+        // A real Scope reader may cut over while the original WAL was being
+        // verified. Re-evaluate the exact ordered signing bytes and all
+        // current Worker/Control/CNS bindings AFTER the I/O boundary.
+        let refreshed = self.owner
+            .prepare_pending_native_group_signature_v1(now_ms, ordered)?;
+        if refreshed != candidate || !self.original_evidence.healthy() {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
+        Ok(refreshed)
+    }
+
+    /// Read-only bounded exact committed cohort membership from the SAME
+    /// original protected Evidence actor. This is LOCAL/UNSIGNED telemetry;
+    /// a valid reply grants no model execution or independent signer trust.
+    pub fn observe_exact_committed_cohort(
+        &self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, BatchWorkerErrorV1> {
+        self.original_evidence
+            .read_committed_samples(queries)
+            .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)
     }
 
     /// First commit ALL preceding Admission Evidence, only then dequeue and
