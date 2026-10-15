@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
@@ -153,6 +154,17 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_interpreter() -> &'static str {
+    // The Windows hosted Bazel runner invokes `python`; `python3` is not
+    // guaranteed to resolve to an executable in the Windows test environment.
+    if cfg!(windows) { "python" } else { "python3" }
+}
+
+fn queue_python_hook_command(script_path: &Path) -> String {
+    // Quote the filename rather than letting the shell split temp directories.
+    format!("{} \"{}\"", queue_python_interpreter(), script_path.display())
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
@@ -176,7 +188,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
@@ -216,13 +228,52 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
     });
     std::fs::write(home.join("hooks.json"), hooks.to_string())
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+}
+
+#[test]
+fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
+    let home = tempfile::tempdir()?;
+    write_rejecting_prompt_hook(home.path());
+    let script_path = home.path().join("queue_prompt_hook.py");
+    let hooks: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(home.path().join("hooks.json"))?)?;
+    let command = hooks
+        .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
+        .and_then(serde_json::Value::as_str)
+        .context("generated UserPromptSubmit command should exist")?;
+    assert_eq!(command, queue_python_hook_command(&script_path));
+
+    let mut child = std::process::Command::new(queue_python_interpreter())
+        .arg(&script_path)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("host Python executable must be available for queue hook tests")?;
+    {
+        let mut stdin = child.stdin.take().context("queue hook stdin must be piped")?;
+        stdin.write_all(br#"{"prompt":"blocked"}"#)?;
+    }
+    let output = child.wait_with_output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "queue hook Python exited unsuccessfully: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(reply["decision"].as_str(), Some("block"));
+    assert_eq!(
+        std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?,
+        "blocked\n"
+    );
+    Ok(())
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
