@@ -21,7 +21,8 @@ def panel():
     return dict(case_ids=ids, targets=labels, source_groups=sources,
         labels_entered_inference=False, metrics=dict(n=128,
             probabilities=probabilities, predictions=labels.copy(), accuracy=1.,
-            both_worlds_correct=1., evidence_switch_rate=1.))
+            both_worlds_correct=1., evidence_switch_rate=1.,
+            binary_cross_entropy=-math.log(.9)))
 
 
 class IndependentBridgeReviewerTests(unittest.TestCase):
@@ -46,7 +47,7 @@ class IndependentBridgeReviewerTests(unittest.TestCase):
                 score(row)
 
     def test_false_success_and_invalid_probabilities_rejected(self):
-        for damage in ("score", "switch", "probability", "prediction", "leak"):
+        for damage in ("score", "switch", "probability", "prediction", "leak", "false_ce"):
             row = deepcopy(panel())
             if damage == "score":
                 row["metrics"]["accuracy"] = .99
@@ -56,6 +57,8 @@ class IndependentBridgeReviewerTests(unittest.TestCase):
                 row["metrics"]["probabilities"][0] = float("nan")
             elif damage == "prediction":
                 row["metrics"]["predictions"][0] ^= 1
+            elif damage == "false_ce":
+                row["metrics"]["binary_cross_entropy"] = 0.00001
             else:
                 row["labels_entered_inference"] = True
             with self.subTest(damage=damage), self.assertRaises(ValueError):

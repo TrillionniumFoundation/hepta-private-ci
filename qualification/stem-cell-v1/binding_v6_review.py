@@ -51,6 +51,7 @@ def score(panel):
         raise ValueError("incomplete or duplicate train-only cohort")
     groups = defaultdict(dict)
     correct = paired = switched = 0
+    probability_log_loss = 0.0
     predictions = []
     for pos, (case_id, label, probability) in enumerate(zip(ids, labels, probs)):
         group, world, candidate, expected = _truth(case_id)
@@ -59,6 +60,7 @@ def score(panel):
                 or not 0 <= probability <= 1 or (world, candidate) in groups[group]):
             raise ValueError("invalid probability, target, or duplicate world")
         prediction = int(probability > .5)
+        probability_log_loss -= math.log(max(1e-12, probability if label else 1 - probability))
         predictions.append(prediction)
         correct += prediction == expected
         groups[group][(world, candidate)] = (prediction, panel["source_groups"][pos])
@@ -81,6 +83,7 @@ def score(panel):
             or abs(expected_metrics["accuracy"] - correct / 128) > 1e-12
             or abs(expected_metrics["both_worlds_correct"] - paired / 64) > 1e-12
             or abs(expected_metrics["evidence_switch_rate"] - switched / 64) > 1e-12
+            or abs(expected_metrics["binary_cross_entropy"] - probability_log_loss / 128) > .002
             or panel["labels_entered_inference"] is not False):
         raise ValueError("self-scored metrics or inference contract mismatched")
     return correct, paired, switched
@@ -166,6 +169,8 @@ def review(root):
                     or receipt["actual_training_exposures"] != row["actual_training_exposures"]
                     or receipt["schedule_sha256"] != row["schedule_sha256"]
                     or receipt["parameter_count"] != row["parameter_count"]
+                    or receipt["parameter_bytes"] != row["initial_parameter_bytes"]
+                    or receipt["optimizer_tensor_bytes"] != row["optimizer_tensor_bytes"]
                     or row["parameter_count"] != 42562
                     or row["completed_updates"] * 16 != row["actual_training_exposures"]
                     or row["gate_passed"] != receipt["train_gate_passed"]
