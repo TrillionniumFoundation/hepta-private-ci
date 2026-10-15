@@ -1,0 +1,95 @@
+name: Hepta P5 reduced-exp outward interval audit (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-p5-fast-outward/**'
+      - '.github/workflows/hepta-p5-fast-outward.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: p5-fast-outward-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  coupled-fbsde-interval-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONHASHSEED: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+      LANG: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Record exact version and complete source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/p5-fast-outward
+          git rev-parse HEAD | tee /tmp/p5-fast-outward/exact-source.sha
+          python --version | tee /tmp/p5-fast-outward/python-version.txt
+          sha256sum qualification/ndu-p5-fast-outward/*.py | tee /tmp/p5-fast-outward/source-sha256.txt
+      - name: Positive Taylor tail and bounded discrete action regression (normal)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/ndu-p5-fast-outward -p 'test_fast.py' -v \
+            > /tmp/p5-fast-outward/tests-normal.log 2>&1 || { cat /tmp/p5-fast-outward/tests-normal.log; exit 1; }
+          tail -8 /tmp/p5-fast-outward/tests-normal.log
+      - name: Same fail-closed regression with Python optimized mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -m unittest discover -s qualification/ndu-p5-fast-outward -p 'test_fast.py' -v \
+            > /tmp/p5-fast-outward/tests-optimized.log 2>&1 || { cat /tmp/p5-fast-outward/tests-optimized.log; exit 1; }
+          tail -8 /tmp/p5-fast-outward/tests-optimized.log
+      - name: Fresh exact-source, label-free sealed predictions and postseal reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/ndu-p5-decision-cert/study.py plan --output /tmp/p5-fast-outward/plan.json
+          PLAN_SHA=$(sha256sum /tmp/p5-fast-outward/plan.json | awk '{print $1}')
+          test "$PLAN_SHA" = 92c568e9694c259b64ac1f8bb1f6db9d9214dd14ca13c81ff7d1f75bbea7a607
+          python qualification/ndu-p5-decision-cert/study.py predict \
+            --source /tmp/p5-fast-outward/plan.json --source-sha256 "$PLAN_SHA" \
+            --output /tmp/p5-fast-outward/sealed-predictions.json \
+            > /tmp/p5-fast-outward/prediction-stdout.log
+          SEAL_SHA=$(sha256sum /tmp/p5-fast-outward/sealed-predictions.json | awk '{print $1}')
+          python qualification/ndu-p5-decision-cert/independent_score.py \
+            --source /tmp/p5-fast-outward/plan.json --source-sha256 "$PLAN_SHA" \
+            --sealed /tmp/p5-fast-outward/sealed-predictions.json --sealed-sha256 "$SEAL_SHA" \
+            --output /tmp/p5-fast-outward/independent-score.json \
+            > /tmp/p5-fast-outward/independent-score-stdout.log
+      - name: Time both interval methods and retain full 192-case comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/ndu-p5-fast-outward/compare.py \
+            --plan /tmp/p5-fast-outward/plan.json \
+            --sealed /tmp/p5-fast-outward/sealed-predictions.json \
+            --prior /tmp/p5-fast-outward/independent-score.json \
+            --output /tmp/p5-fast-outward/fast-outward-audit.json \
+            | tee /tmp/p5-fast-outward/fast-outward-stdout.json
+          python - <<'PY'
+          import json
+          p='/tmp/p5-fast-outward/fast-outward-audit.json'
+          r=json.load(open(p))
+          if (r['task_count']!=192 or r['old_certified']!=192 or r['new_certified']!=192 or
+                  r['original_nominal_map_calls']!=1511 or
+                  r['production_accepted'] is not False or r['authority']!='DENY_ALL' or
+                  r['continuous_time_fbsde_certified'] is not False or
+                  r['cost_adjusted_online_gain_established'] is not False):
+              raise SystemExit('fast-outward research only: missing strict evidence gate')
+          print('Full discrete audit passed. No production or online-efficiency acceptance.')
+          PY
+          sha256sum /tmp/p5-fast-outward/*.json > /tmp/p5-fast-outward/complete-evidence-sha256.txt
+      - name: Preserve completed, partial and failed attempts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p5-fast-outward-research-${{ github.run_id }}
+          path: /tmp/p5-fast-outward/
+          retention-days: 14
+          if-no-files-found: warn
