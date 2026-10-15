@@ -297,6 +297,41 @@ fn capacity_snapshot_tracks_claims_revocations_and_epoch_rollover() {
 }
 
 #[test]
+fn revocation_capacity_snapshot_matches_the_enforced_final_use_limit() {
+    let (authority, _signed, _directory) = fixture().unwrap();
+    let empty = authority.capacity().unwrap();
+    assert_eq!(empty.max_claims, MAX_CLAIMS);
+    assert_eq!(empty.max_revocations, MAX_REVOKED_GRANTS);
+    assert!(empty.max_revocations < empty.max_claims);
+    assert_eq!(empty.remaining_revocations(), MAX_REVOKED_GRANTS);
+
+    let mut at_limit = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    for index in 0..MAX_REVOKED_GRANTS {
+        assert!(at_limit
+            .revoked_grant_ids
+            .insert(format!("grant:{index}")));
+    }
+    assert!(valid_head(&at_limit));
+
+    let mut almost_full = empty;
+    almost_full.revoked_grants = MAX_REVOKED_GRANTS - 1;
+    assert_eq!(almost_full.remaining_revocations(), 1);
+    assert!(!almost_full.rollover_required_with_reserve(0));
+    assert!(almost_full.rollover_required_with_reserve(1));
+
+    let mut full = empty;
+    full.revoked_grants = MAX_REVOKED_GRANTS;
+    assert_eq!(full.remaining_revocations(), 0);
+    assert!(full.rollover_required_with_reserve(0));
+    assert!(at_limit.revoked_grant_ids.insert("grant:overflow".into()));
+    assert!(!valid_head(&at_limit));
+}
+
+#[test]
 fn expired_grant_is_denied_using_verifier_clock() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.not_before_unix_ms = 1;

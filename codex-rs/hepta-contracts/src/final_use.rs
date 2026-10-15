@@ -505,7 +505,7 @@ impl FinalUseAuthority {
             used_nonces: state.used_nonces.len(),
             revoked_grants: state.head.revoked_grant_ids.len(),
             max_claims: MAX_CLAIMS,
-            max_revocations: MAX_CLAIMS,
+            max_revocations: MAX_REVOKED_GRANTS,
         })
     }
 
