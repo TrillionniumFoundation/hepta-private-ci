@@ -1,0 +1,60 @@
+name: Hepta FastCell atomic native batch (research only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/fastcell-atomic-native-batch-20261015
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-compiled-use/**'
+      - '.github/workflows/hepta-fastcell-atomic-batch-research.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fastcell-batch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-abi:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record host toolchain and format exact crate
+        run: |
+          rustc --version
+          cargo --version
+          cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check
+      - name: Execute original and atomic-batch Rust unit tests
+        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use
+      - name: Strict targeted Clippy
+        run: cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings
+      - name: Real native transport pilot and DENY sandbox smoke
+        run: |
+          cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example compiled_use_runner | tee "${RUNNER_TEMP}/sandbox-smoke.log"
+          grep 'NotConfigured' "${RUNNER_TEMP}/sandbox-smoke.log"
+          cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example atomic_batch_bench -- --smoke | tee "${RUNNER_TEMP}/fastcell-native-bench.json"
+          python3 - "${RUNNER_TEMP}/fastcell-native-bench.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert report['schema']=='hepta.fastcell.native-batch-microbench.v1'
+          assert report['frames_per_iteration']==32
+          assert report['external_effects'] is False
+          assert report['production_accepted'] is False
+          for arm in ('scalar','batch'):
+              assert 0<report[f'{arm}_p50_ns']<=report[f'{arm}_p95_ns']<=report[f'{arm}_p99_ns']
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-fastcell-native-batch-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/sandbox-smoke.log
+            ${{ runner.temp }}/fastcell-native-bench.json
+          if-no-files-found: warn
