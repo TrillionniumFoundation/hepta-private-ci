@@ -382,6 +382,40 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     f"{method}: keep the positive reference-host tests isolated",
                 )
 
+    def test_generic_runtime_all_topology_mutations_require_control_owner(self) -> None:
+        # A typed Split rejection alone is insufficient: a mislabeled
+        # Replace/Merge/Rewire or Retire can still physically change a graph.
+        # Until original signed Control Begin/Commit is integrated, EVERY
+        # production mutation entrypoint must deny before lock/Final-use.
+        path = "codex-rs/hepta-runtime/src/organs.rs"
+        code = self.lexical_code(path)
+        public = self.lexical_code("codex-rs/hepta-runtime/src/lib.rs")
+        for method_name in ("apply_governed_topology", "recover_governed_topology"):
+            with self.subTest(method=method_name):
+                self.assertRegex(
+                    public,
+                    rf"\bself\.organs\s*\.\s*{method_name}\s*\(",
+                    "public runtime must delegate to the single guarded owner",
+                )
+                method = re.search(
+                    rf"\bpub\(crate\)\s+fn\s+{method_name}\s*\(", code
+                )
+                self.assertIsNotNone(method, "missing guarded runtime mutation")
+                assert method is not None
+                opening = code.find("{", method.end())
+                closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(closing, "unbalanced runtime mutation body")
+                assert closing is not None
+                body = code[opening + 1 : closing]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+                    r"return\s+Err\s*\(\s*"
+                    r"RuntimeTopologyExecutionError::Binding\s*\)\s*;\s*\}",
+                    "production runtime must deny before lock, claim or write",
+                )
+                self.assertIn("authority.claim(", body)
+
     def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
         # The generic CNS host is shared beyond Cell Split and cannot be
         # arbitrarily disabled. Freeze the concrete non-test callsites for
