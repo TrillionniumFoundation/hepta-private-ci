@@ -18,13 +18,15 @@ import torch
 
 from execution_meter import WorkLedger, TRANSFORMER_POLICY_SCHEMA
 from group_attention_curriculum import build_train_attention
-from group_campaign import packed
+from group_campaign import packed, critic_rows
 from group_core import Core
+from group_critic import fit_critic
 from group_encoder import FrozenTokenEncoder, acquire, digest_json, file_digest
 from group_features import FeatureCache
-from group_loop import parameter_digest
+from group_loop import execute_group, parameter_digest
 from group_tasks import compose_tasks, delete_evidence, feedback_vector, make_tasks, supported_answer, verify
 from group_training import StaticHead, fit_model, matched_static
+from collections import Counter
 from paired_execution import PHASES
 from transformer_work import PROFILE
 
@@ -33,6 +35,9 @@ def summarize(rows):
     times = sorted(x["wall_ns"] for x in rows)
     return dict(n=len(rows), correct=sum(x["success"] for x in rows),
                 unsupported_attempts=sum(x["unsupported_attempt"] for x in rows),
+                steps=sum(x["steps"] for x in rows),
+                verifier_calls=sum(x["verifier_calls"] for x in rows),
+                execution_statuses=dict(Counter(x["execution_status"] for x in rows)),
                 cpu_ns=sum(x["cpu_ns"] for x in rows),
                 wall_ns=sum(times),
                 p50_ns=times[len(times) // 2],
@@ -53,6 +58,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
     torch.set_num_threads(1)
     torch.manual_seed(seed)
     tasks = {"train": make_tasks("train", train_count, seed=seed),
+             "validation": make_tasks("validation", heldout_count, seed=seed),
              "test": make_tasks("test", heldout_count, seed=seed),
              "long": make_tasks("test", heldout_count, seed=seed + 1, longer=True)}
     tasks["deleted"] = [delete_evidence(t) for t in tasks["test"]]
@@ -61,19 +67,26 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                             if a.family != b.family][:heldout_count]
     if not tasks["composition"]:
         raise ValueError("composition cohort lacks distinct public source families")
-    groups = [set(t.source_group for t in tasks[s]) for s in ("train", "test", "long")]
+    groups = [set(t.source_group for t in tasks[s]) for s in ("train", "validation", "test", "long")]
     if any(a & b for i, a in enumerate(groups) for b in groups[i + 1:]):
-        raise ValueError("independent source groups crossed train/test/long")
+        raise ValueError("independent source groups crossed train/validation/test/long")
     source_files = ("group_core.py", "group_training.py", "group_attention_curriculum.py",
                     "group_step_supervision.py", "group_attention_campaign.py",
                     "group_attention_campaign_review.py", "group_campaign_review.py",
                     "group_tasks.py", "group_encoder.py", "group_features.py",
-                    "hf_encoder_kernel.py", "execution_meter.py", "aten_work.py")
+                    "hf_encoder_kernel.py", "execution_meter.py", "aten_work.py",
+                    "group_campaign.py", "group_loop.py", "group_critic.py",
+                    "system2_execution.py", "ndu_continuation.py",
+                    "paired_execution.py", "transformer_work.py", "next_round_matrix.py")
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         seed=seed, steps=steps, train_count=train_count,
         heldout_count=heldout_count, max_depth=4, attention_weight=attention_weight,
         train_source_groups=[t.source_group for t in tasks["train"]],
-        frozen_candidate_arms=["static", "wide", "core", "attention"],
+        frozen_candidate_arms=["static", "wide", "core", "attention",
+                               "core_fixed", "attention_fixed",
+                               "core_ndu", "attention_ndu"],
+        critic_fit_splits=["validation_fit", "validation_calibration"],
+        live_system2_modes=["fixed", "ndu"],
         model_init_shared=["core", "attention"], training_sample_seed=seed,
         evaluation_cohorts=["test", "long", "deleted", "composition"],
         causal_composition_independence=False,
@@ -144,24 +157,85 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             or training["core"]["sample_and_depth_sha256"] !=
                training["attention"]["sample_and_depth_sha256"]):
         raise ValueError("paired parameter/sampling controls drifted")
+    # Fit model-specific frozen critics ONLY on the separate validation group.
+    # This pays the complete existing propose/verify/value/revise executor.
+    critic_start_wall, critic_start_cpu = time.perf_counter_ns(), time.process_time_ns()
+    critics, critic_receipts = {}, {}
+    for owner in ("core", "attention"):
+        midpoint = len(tasks["validation"]) // 2
+        fit_rows = critic_rows(models[owner], tasks["validation"][:midpoint],
+                               features["validation"][:midpoint], 4)
+        cal_rows = critic_rows(models[owner], tasks["validation"][midpoint:],
+                               features["validation"][midpoint:], 4)
+        for records, label in ((fit_rows, "validation_fit"),
+                               (cal_rows, "validation_calibration")):
+            for item in records:
+                item["split"] = label
+        critics[owner] = fit_critic(fit_rows, cal_rows, cutoff_ns=time.time_ns(),
+                                    steps=80, seed=seed)
+        critic_receipts[owner] = dict(metadata=critics[owner].metadata,
+            parameters_sha256=critics[owner].params_sha256,
+            fit_rows=len(fit_rows), calibration_rows=len(cal_rows))
+    critic_cost = dict(wall_ns=time.perf_counter_ns() - critic_start_wall,
+                       cpu_ns=time.process_time_ns() - critic_start_cpu,
+                       receipts=critic_receipts,
+                       separate_fits_charged=True,
+                       source_group_independence_claimed=False)
+
     rows, summaries = [], {}
+    execution_arms = (
+        ("static", "static", "direct"),
+        ("wide", "wide", "direct"),
+        ("core", "core", "direct"),
+        ("attention", "attention", "direct"),
+        ("core_fixed", "core", "fixed"),
+        ("attention_fixed", "attention", "fixed"),
+        ("core_ndu", "core", "ndu"),
+        ("attention_ndu", "attention", "ndu"),
+    )
+    if [a for a, _, _ in execution_arms] != protocol["frozen_candidate_arms"]:
+        raise ValueError("execution arms differ from predeclared policy")
     for cohort in protocol["evaluation_cohorts"]:
-        for name, model in models.items():
+        for name, owner, execution_mode in execution_arms:
+            model = models[owner]
             arm_rows = []
             for task, snapshot in zip(tasks[cohort], features[cohort]):
                 wall, cpu = time.perf_counter_ns(), time.process_time_ns()
-                with torch.no_grad():
-                    t, m = packed([snapshot])
-                    guess = int(model(t, steps=1 if name in ("static", "wide") else 4, mask=m).argmax(1))
+                if execution_mode == "direct":
+                    with torch.no_grad():
+                        t, m = packed([snapshot])
+                        depth = 1 if owner in ("static", "wide") else 4
+                        guess = int(model(t, steps=depth, mask=m).argmax(1))
+                    status, count_steps, verifier_calls, search_work = (
+                        "direct_forward", depth, 0, None)
+                    valid = True
+                else:
+                    result = execute_group(task, model, snapshot,
+                                           critics[owner], mode=execution_mode,
+                                           max_steps=4)
+                    candidate = result["candidate"]
+                    guess = (ord(candidate) - 65
+                             if isinstance(candidate, str) and len(candidate) == 1
+                             and "A" <= candidate <= "H" else -1)
+                    status = result["status"]
+                    count_steps = result["workspace_steps"]
+                    verifier_calls = sum(t["kind"] == "verify" for t in result["trace"])
+                    search_work = result["work_observation"]["phase_flops"]["search"]
+                    valid = status not in {
+                        "budget_exhausted", "callback_failed", "resource_budget_stop",
+                        "ndu_stop:expired_policy", "ndu_stop:continuation_support_violated"}
                 wall_ns, cpu_ns = time.perf_counter_ns() - wall, time.process_time_ns() - cpu
                 truth = supported_answer(task)
                 supported = truth is not None
-                success = supported and guess == truth
+                success = bool(supported and valid and guess == truth)
                 row = dict(cohort=cohort, arm=name, case_id=task.task_id,
                     source_group=task.source_group, feature_sha256=snapshot.digest,
                     model_sha256=parameter_digest(model), prediction=guess,
                     evidence_supported=supported, success=success,
                     unsupported_attempt=not supported,
+                    execution_mode=execution_mode, execution_status=status,
+                    valid_execution=bool(valid), steps=count_steps,
+                    verifier_calls=verifier_calls, search_formula_work=search_work,
                     cpu_ns=cpu_ns, wall_ns=wall_ns)
                 arm_rows.append(row)
                 rows.append(row)
@@ -178,7 +252,9 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         initial_core_sha256=initial_core_digest, training=training,
         wide_parameter_match=geometry, encoder_cost=encoder_cost,
         final_loaded_tensor_verification=final_loaded_tensor_verification,
-        teacher=teacher_receipt, summaries=summaries,
+        teacher=teacher_receipt, summaries=summaries, critic_cost=critic_cost,
+        real_system2_callbacks_executed=True,
+        same_model_critic_frozen_on_validation_only=True,
         actual_lifecycle_cpu_ns=time.process_time_ns() - start_cpu,
         actual_lifecycle_wall_ns=time.perf_counter_ns() - start_wall,
         same_initial_core=True, same_training_cases=True, same_optimizer_updates=True,
