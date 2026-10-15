@@ -332,7 +332,16 @@ class LocalEncoder:
             raise InputError("unsupported pinned pooling profile")
         if not 1 <= len(texts) <= 32:
             raise InputError("batch cardinality")
-        encoded = self.tokenizer(texts, padding=True, truncation=False, return_tensors="pt")
+        # Stock ModernBERT accepts input_ids and attention_mask, not
+        # token_type_ids. Ask for native inputs without silently filtering
+        # any unexpected feature fields after tokenization.
+        native_modernbert = getattr(self.loaded.config, "model_type", None) == "modernbert"
+        token_kwargs = {"padding": True, "truncation": False, "return_tensors": "pt"}
+        if native_modernbert:
+            token_kwargs["return_token_type_ids"] = False
+        encoded = self.tokenizer(texts, **token_kwargs)
+        if native_modernbert and set(encoded) != {"input_ids", "attention_mask"}:
+            raise InputError("ModernBERT tokenizer returned unsupported or missing inputs")
         length = encoded["input_ids"].shape[1]
         if length > self.maximum_tokens or length * len(texts) > 32768:
             raise InputError("token budget; no silent truncation")

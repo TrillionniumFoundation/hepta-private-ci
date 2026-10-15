@@ -46,6 +46,10 @@ class PhysicalModernBertTiedCheckpointTests(unittest.TestCase):
             manifest = {"revision": "c" * 40, "kind": "masked_lm", "files": checksums}
             model = LocalEncoder(root, manifest, maximum_tokens=64)
             self.assertEqual(type(model.loaded).__name__, "ModernBertForMaskedLM")
+            # Exercise the exact hosted regression: this stock BertTokenizer
+            # would emit segment IDs unless the native call disables them.
+            self.assertIn("token_type_ids", model.tokenizer(
+                ["birds migrate in winter"], return_tensors="pt"))
             state = model.loaded.state_dict()
             self.assertTrue(same_physical_view(state[DECODER], state[EMBEDDING]))
             self.assertEqual(set(model.reconciled_tied_aliases) - {DECODER}, set())

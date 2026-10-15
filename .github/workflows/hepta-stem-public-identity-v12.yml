@@ -37,7 +37,8 @@ jobs:
           mkdir -p /tmp/hepta-stem-v12
           python3 -m venv /tmp/hepta-stem-v12-env
           /tmp/hepta-stem-v12-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/hepta-stem-v12-env/bin/pip install numpy==1.26.4 safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0
+          /tmp/hepta-stem-v12-env/bin/pip install numpy==1.26.4 safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0 packaging==25.0
+          /tmp/hepta-stem-v12-env/bin/python -c 'import packaging.version, safetensors.torch; print("V12_IMPORT_PREFLIGHT_OK")'
           /tmp/hepta-stem-v12-env/bin/pip check
           /tmp/hepta-stem-v12-env/bin/pip freeze > /tmp/hepta-stem-v12/environment.txt
       - name: Require V10 profile compatibility and V5 caller identity checks
