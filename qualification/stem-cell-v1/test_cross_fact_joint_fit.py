@@ -136,6 +136,29 @@ class JointTests(unittest.TestCase):
         self.assertEqual(record['partial_attempts'],['cross_fact'])
         self.assertFalse(record['final_evaluation_authorized'])
 
+    def test_granite97_width_384_two_step_real_tensor_training(self):
+        # Physical 384D tensor geometry of the pinned real canary, without
+        # claiming a pretrained forward in this CPU-only fixture.
+        torch.manual_seed(384)
+        cases=self.cases
+        data=Batch((torch.randn(16,4,2,384),torch.randn(16,2,384),
+              torch.randn(16,2,384),torch.ones(16,4,2,dtype=torch.bool),
+              torch.ones(16,2,dtype=torch.bool),torch.ones(16,2,dtype=torch.bool)),
+              self.data.targets, self.data.source_groups)
+        cross,local=matched_reader_pair(input_dim=384,hidden_dim=32,seed=41)
+        models={'cross_fact':cross.eval().requires_grad_(False),
+                'local':local.eval().requires_grad_(False)}
+        trained,receipts,joint=fit_joint_reader_pair(models,data,cases,
+            steps=2,seed=41,batch_size=16,depth=3,diagnostic_interval=2)
+        self.assertEqual(joint['shared_input_batch_materializations'],2)
+        self.assertEqual(joint['completed_steps'],2)
+        self.assertEqual(receipts['cross_fact']['actual_training_exposures'],32)
+        self.assertEqual(receipts['local']['actual_training_exposures'],32)
+        self.assertEqual(receipts['cross_fact']['parameter_count'],
+                         receipts['local']['parameter_count'])
+        self.assertEqual(receipts['local']['parameter_count'],42562)
+        self.assertTrue(all(not p.requires_grad for m in trained.values() for p in m.parameters()))
+
     def test_unregistered_corrupt_pairing_rejected_before_training(self):
         corrupt=list(self.cases)
         c=corrupt[2]
