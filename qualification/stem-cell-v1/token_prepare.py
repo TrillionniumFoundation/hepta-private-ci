@@ -73,7 +73,8 @@ def gate(args):
     model, training = fit_token_reader(TokenReader(384, 32), bank.dataset(natural),
         steps=args.steps, seed=41, batch_size=16, max_depth=3, learning_rate=.003,
         counterfactual_train=bank.dataset(synthetic), counterfactual_fraction=.25,
-        evidence_weight=.2, diagnostic_interval=args.steps, wall_time_ns=900_000_000_000)
+        evidence_weight=.2, diagnostic_interval=args.steps, wall_time_ns=900_000_000_000,
+        failure_receipt_fn=lambda receipt: write_json(root, "failed-training.json", receipt))
     write_json(root, "training.json", training)
     natural_p, natural_cost = infer(model, natural, bank, depth=3, prefix="tiny-natural")
     binding_p, binding_cost = infer(model, synthetic, bank, depth=3, prefix="tiny-binding")
@@ -103,7 +104,15 @@ def main():
     parser.add_argument("--steps", type=int, default=1000)
     args = parser.parse_args()
     torch.set_num_threads(1)
-    (prepare if args.phase == "prepare" else gate)(args)
+    wall, cpu = time.perf_counter_ns(), time.process_time_ns()
+    try:
+        (prepare if args.phase == "prepare" else gate)(args)
+    except Exception as error:
+        if args.output.is_dir():
+            write_json(args.output, "failed-phase-cost.json", dict(error_type=type(error).__name__,
+                message=str(error), cpu_ns=time.process_time_ns() - cpu,
+                wall_ns=time.perf_counter_ns() - wall, completed=False))
+        raise
 
 
 if __name__ == "__main__":

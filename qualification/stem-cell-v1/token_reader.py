@@ -26,7 +26,8 @@ def _normalize(value):
 
 
 def _sigmoid(value):
-    return (1 + (-value).exp()).reciprocal()
+    # FP32 tails are already saturated; bounding exp also keeps backward finite.
+    return (1 + (-value.clamp(min=-30, max=30)).exp()).reciprocal()
 
 
 def _tanh(value):

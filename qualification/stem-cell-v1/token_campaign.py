@@ -85,7 +85,8 @@ def train(args):
                 max_depth=ARM_DEPTHS[arm], learning_rate=.003,
                 counterfactual_train=bank.dataset(synthetic) if auxiliary else None,
                 evidence_weight=.2 if auxiliary else 0, diagnostic_interval=args.steps,
-                wall_time_ns=1_800_000_000_000)
+                wall_time_ns=1_800_000_000_000,
+                failure_receipt_fn=lambda receipt: write_json(folder, f"{arm}-failed-training.json", receipt))
             training[arm] = receipt
             write_json(folder, "training.json", training)
             if receipt["completed_steps"] != args.steps:
@@ -221,7 +222,15 @@ def main():
     parser.add_argument("--steps", type=int, default=512)
     args = parser.parse_args()
     torch.set_num_threads(1)
-    (train if args.phase == "train" else evaluate)(args)
+    wall, cpu = time.perf_counter_ns(), time.process_time_ns()
+    try:
+        (train if args.phase == "train" else evaluate)(args)
+    except Exception as error:
+        if args.output.is_dir():
+            write_json(args.output, "failed-phase-cost.json", dict(error_type=type(error).__name__,
+                message=str(error), cpu_ns=time.process_time_ns() - cpu,
+                wall_ns=time.perf_counter_ns() - wall, completed=False))
+        raise
 
 
 if __name__ == "__main__":

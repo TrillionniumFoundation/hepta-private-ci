@@ -98,10 +98,10 @@ def _evidence_loss(attention, batch):
     return -(batch.evidence_targets[selected] * attention[selected].clamp(min=1e-9).log()).sum(-1).mean()
 
 
-def fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=16,
+def _fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=16,
                      max_depth=1, learning_rate=.003, counterfactual_train=None,
                      counterfactual_fraction=.25, evidence_weight=0., diagnostic_interval=100,
-                     wall_time_ns=180_000_000_000):
+                     wall_time_ns=180_000_000_000, progress=None):
     """Fit a copy using lazy ``take(indices)`` batches, then freeze its parameters.
 
     Training and diagnostic data must have disjoint source groups. Synthetic
@@ -136,6 +136,8 @@ def fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=1
     rng, sample_digest = random.Random(seed), hashlib.sha256()
     updates, diagnostics, natural_exposures, intervention_exposures = [], [], 0, 0
     completed, status = 0, "completed"
+    if progress is not None:
+        progress.update(updates=updates, diagnostics=diagnostics)
 
     def evaluate(data):
         if data is None:
@@ -162,15 +164,21 @@ def fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=1
         depth = rng.randint(1, max_depth)
         sample_digest.update(repr((intervention, indices, depth)).encode())
         before_wall, before_cpu = time.perf_counter_ns(), time.process_time_ns()
+        if progress is not None:
+            progress["attempted_step"] = update + 1
         batch = data.take(indices)
         opt.zero_grad(set_to_none=True)
         trace = trained(*batch.features(), steps=depth, return_attention=True)
         losses = [F.cross_entropy(logits, batch.targets) for logits in trace["step_logits"]]
         evidence_losses = [_evidence_loss(attention, batch) for attention in trace["attentions"]]
         loss = torch.stack(losses).mean() + evidence_weight * torch.stack(evidence_losses).mean()
+        if not torch.isfinite(loss):
+            raise FloatingPointError("nonfinite token Reader training loss")
         for state in trace["states"]:
             state.retain_grad()
         loss.backward()
+        if any(not torch.isfinite(p.grad).all() for p in trained.parameters() if p.grad is not None):
+            raise FloatingPointError("nonfinite token Reader parameter gradient")
         grad_l2 = math.sqrt(sum((p.grad * p.grad).sum().item() for p in trained.parameters() if p.grad is not None))
         state_gradients = [math.sqrt((s.grad * s.grad).sum().item()) for s in trace["states"]]
         opt.step()
@@ -182,6 +190,9 @@ def fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=1
             hop_evidence_losses=[value.detach().item() for value in evidence_losses],
             parameter_gradient_l2=grad_l2, hop_state_gradient_l2=state_gradients,
             cpu_ns=time.process_time_ns() - before_cpu, wall_ns=time.perf_counter_ns() - before_wall))
+        if progress is not None:
+            progress.update(completed_steps=completed, actual_training_exposures=natural_exposures,
+                            actual_intervention_exposures=intervention_exposures)
         if completed % diagnostic_interval == 0 and completed < steps:
             diagnostics.append(dict(optimizer_step=completed, train=evaluate(train), validation=evaluate(validation)))
     diagnostics.append(dict(optimizer_step=completed, train=evaluate(train), validation=evaluate(validation)))
@@ -221,3 +232,42 @@ def fit_token_reader(model, train, validation=None, *, steps, seed, batch_size=1
         budget_overrun_ns=max(0, time.perf_counter_ns() - started_wall - wall_time_ns),
         strict_equal_compute=False, frozen=True, natural_task_gain_established=False)
     return trained, receipt
+
+
+class TokenTrainingFailure(RuntimeError):
+    """An interrupted fit with measured attempted work and completed update receipts."""
+
+    def __init__(self, receipt):
+        super().__init__(receipt["error_type"] + ": " + receipt["error"])
+        self.receipt = receipt
+
+
+def fit_token_reader(model, train, validation=None, *, failure_receipt_fn=None, **schedule):
+    """Persist partial costs before propagating any failed training attempt.
+
+    ``failure_receipt_fn`` receives JSON-compatible data, including actual time
+    through the failed attempt. Successful fits retain the ordinary return API.
+    """
+    wall, cpu, progress = time.perf_counter_ns(), time.process_time_ns(), {}
+    try:
+        trained, receipt = _fit_token_reader(model, train, validation, progress=progress, **schedule)
+        receipt.update(cpu_ns=time.process_time_ns() - cpu, wall_ns=time.perf_counter_ns() - wall,
+                       timing_scope="complete_fit_call_including_input_validation_and_receipt_preparation")
+        return trained, receipt
+    except Exception as error:
+        receipt = dict(schema="hepta.token-reader.cpu-fit-failure.v1", status="failed",
+            requested_steps=schedule.get("steps"), seed=schedule.get("seed"),
+            completed_steps=progress.get("completed_steps", 0),
+            actual_training_exposures=progress.get("actual_training_exposures", 0),
+            actual_intervention_exposures=progress.get("actual_intervention_exposures", 0),
+            attempted_step=progress.get("attempted_step"), updates=progress.get("updates", []),
+            diagnostics=progress.get("diagnostics", []), error_type=type(error).__name__, error=str(error),
+            cpu_ns=time.process_time_ns() - cpu, wall_ns=time.perf_counter_ns() - wall,
+            failed_attempt_time_included=True, failed_update_may_have_mutated_parameters=True,
+            formula_flops=None, final_evaluation_authorized=False)
+        if failure_receipt_fn is not None:
+            try:
+                failure_receipt_fn(receipt)
+            except Exception as sink_error:
+                error.add_note("Failure receipt sink also failed: " + str(sink_error))
+        raise TokenTrainingFailure(receipt) from error
