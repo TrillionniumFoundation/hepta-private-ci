@@ -1190,6 +1190,14 @@ fn validate_neuron_feature_output(
     Ok(())
 }
 
+// Batch planning is non-authorizing and has no physical batch driver.
+// Only the existing signed Final-use Worker may later perform an effect.
+#[path = "model_worker_stem_batch.rs"]
+mod stem_batch;
+pub use stem_batch::NonAuthorizingStemBatchPlanV1;
+pub use stem_batch::StemBatchMemberProposalV1;
+pub use stem_batch::StemBatchProposalV1;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
