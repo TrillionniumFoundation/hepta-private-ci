@@ -13,6 +13,7 @@ from pathlib import Path
 import resource
 import time
 
+from e3_gemma2_budget import check_batch
 from e3_scienceqa_contract import (E3Error, canonical, read_jsonl, read_pinned,
                                    sha, unit_probabilities, validate_labels,
                                    validate_source, write_new)
@@ -29,8 +30,14 @@ def demand(value, reason):
 def vector(model, rows, *, batch_size=4):
     import numpy as np
     features=[]
+    checked_rows=0
+    max_conservative_tokens=0
     for i in range(0,len(rows),batch_size):
         chunk=rows[i:i+batch_size]
+        token_receipt=check_batch(model.model,chunk)
+        checked_rows+=token_receipt["rows"]
+        max_conservative_tokens=max(max_conservative_tokens,
+                                    token_receipt["max_conservative_context_tokens"])
         with model._inference_context():
             value=model.model.encode(chunk, batch_size=batch_size, truncate_dim=256,
                                      normalize_embeddings=True, convert_to_numpy=True,
@@ -41,7 +48,10 @@ def vector(model, rows, *, batch_size=4):
         norm=np.linalg.norm(arr,axis=1)
         demand(bool(np.all(np.abs(norm-1)<0.002)), "native embeddings unnormalized")
         features.append(arr)
-    return np.concatenate(features,axis=0),len(features)
+    return np.concatenate(features,axis=0),len(features),{
+        "checked_rows":checked_rows,
+        "max_conservative_tokens":max_conservative_tokens,
+    }
 
 def compute(sources,labels,images,runner):
     import torch
@@ -59,10 +69,13 @@ def compute(sources,labels,images,runner):
         image.append({"image":str(img_path)})
         candidates.extend("passage: "+question+"\nChoice: "+choice for choice in row["choices"])
     started=time.perf_counter_ns()
-    text_emb,t_calls=vector(runner,plain)
-    joint_emb,j_calls=vector(runner,joint,batch_size=2)
-    image_emb,i_calls=vector(runner,image)
-    choice_emb,c_calls=vector(runner,candidates,batch_size=8)
+    text_emb,t_calls,t_budget=vector(runner,plain)
+    joint_emb,j_calls,j_budget=vector(runner,joint,batch_size=2)
+    image_emb,i_calls,i_budget=vector(runner,image)
+    choice_emb,c_calls,c_budget=vector(runner,candidates,batch_size=8)
+    checked=sum(x["checked_rows"] for x in (t_budget,j_budget,i_budget,c_budget))
+    demand(checked==1344,"incomplete source-token preflight coverage")
+    worst_tokens=max(x["max_conservative_tokens"] for x in (t_budget,j_budget,i_budget,c_budget))
     demand(text_emb.shape==joint_emb.shape==image_emb.shape==(192,256),
            "native complete text/vision representation missing")
     opts=torch.from_numpy(choice_emb.reshape(192,4,256).copy())
@@ -112,6 +125,12 @@ def compute(sources,labels,images,runner):
         "image_encode_api_calls":i_calls,
         "choice_encode_api_calls":c_calls,
         "encoder_api_calls_are_not_transformer_forward_counts":True,
+        "source_token_preflight_rows":checked,
+        "max_conservative_context_tokens":worst_tokens,
+        "native_context_limit":8192,
+        "max_image_soft_tokens_charged":1120,
+        "text_tokenizer_truncation_disabled":True,
+        "image_tokens_physically_verified":False,
         "full_embedding_and_head_training_wall_ns":time.perf_counter_ns()-started,
         "calibration_targets_never_used_for_training":True,
         "original_test_targets_visible":False,
@@ -158,6 +177,12 @@ def main():
         "image_encode_api_calls":stats["image_encode_api_calls"],
         "choice_encode_api_calls":stats["choice_encode_api_calls"],
         "encoder_api_calls_are_not_transformer_forward_counts":True,
+        "source_token_preflight_rows":stats["source_token_preflight_rows"],
+        "max_conservative_context_tokens":stats["max_conservative_context_tokens"],
+        "native_context_limit":stats["native_context_limit"],
+        "max_image_soft_tokens_charged":stats["max_image_soft_tokens_charged"],
+        "text_tokenizer_truncation_disabled":stats["text_tokenizer_truncation_disabled"],
+        "image_tokens_physically_verified":False,
         "gate_weights_sha256":stats["gate_weights_sha256"],
         "full_model_load_embedding_fit_wall_ns":time.perf_counter_ns()-started,
         "full_embedding_and_head_training_wall_ns":stats["full_embedding_and_head_training_wall_ns"],
