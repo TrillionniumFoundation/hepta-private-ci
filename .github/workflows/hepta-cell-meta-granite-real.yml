@@ -5,6 +5,8 @@ on:
     paths:
       - 'qualification/cell_meta_execution_af/physical_router_real_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_top1*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_hard*.py'
+      - 'qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md'
       - 'qualification/cell_meta_execution_af/TOP1_SPARSE_ROUTER_REALITY.md'
       - 'qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md'
       - '.github/workflows/hepta-cell-meta-granite-real.yml'
@@ -62,7 +64,10 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_real_tests.py \
             qualification/cell_meta_execution_af/physical_router_top1.py \
             qualification/cell_meta_execution_af/physical_router_top1_review.py \
-            qualification/cell_meta_execution_af/physical_router_top1_tests.py
+            qualification/cell_meta_execution_af/physical_router_top1_tests.py \
+            qualification/cell_meta_execution_af/physical_router_hard_train.py \
+            qualification/cell_meta_execution_af/physical_router_hard_review.py \
+            qualification/cell_meta_execution_af/physical_router_hard_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -72,6 +77,9 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_top1_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_hard_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -221,6 +229,19 @@ jobs:
               --panel "$ROOT/$seed-trial-panel.json" \
               --soft-report "$ROOT/$seed-trial-report.json" \
               --top1-report "$ROOT/$seed-top1-report.json" > "$ROOT/$seed-top1-review.json"
+            # Train a genuinely sparse Top-1 bank on the identical frozen panel.
+            # No prior Head weights or labels from retrospective partitions train it.
+            python qualification/cell_meta_execution_af/physical_router_hard_train.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --posthoc-report "$ROOT/$seed-top1-report.json" \
+              --out "$ROOT/$seed-hard-train-report.json"
+            python qualification/cell_meta_execution_af/physical_router_hard_review.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --posthoc-report "$ROOT/$seed-top1-report.json" \
+              --hard-report "$ROOT/$seed-hard-train-report.json" \
+              > "$ROOT/$seed-hard-train-review.json"
           done
           python - <<'PY'
           import json,os
@@ -247,6 +268,38 @@ jobs:
               'production_admission':'BLOCKED','authority_posture':'DENY_ALL',
               'arms':out},sort_keys=True))
           PY
+          # Keep the newly hard-TRAINED results a separate non-authorizing
+          # descriptive product; do not overwrite or reinterpret prior arms.
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
+          rows=[]
+          for seed in (41,47,53):
+              report=json.loads((r/f'{seed}-hard-train-report.json').read_text())
+              review=json.loads((r/f'{seed}-hard-train-review.json').read_text())
+              assert review['outcome']=='HARD_TRAINED_NUMERIC_REPLAY_NO_AUTHORITY'
+              assert report['total_compute_matched'] is False
+              assert report['production_admission']=='BLOCKED'
+              for arm in report['results']:
+                  met=arm['meters']
+                  rows.append({'seed':seed,'arm':arm['arm'],'split_proposed':arm['split_proposed'],
+                               'retrospective_test_1':arm['retrospective_evaluation']['future_1'],
+                               'retrospective_test_2':arm['retrospective_evaluation']['future_2'],
+                               'train_head_rows':met['train_head_0_rows']+met['train_head_1_rows'],
+                               'eval_head_rows':met['eval_head_0_rows']+met['eval_head_1_rows'],
+                               'diagnostic_head_rows':met['diagnostic_head_rows'],
+                               'train_router_rows':met['train_router_rows'],
+                               'sampled_routes':met['sampled_routes']})
+          (r/'hardtop1-descriptive-retrospective-summary.json').write_text(json.dumps({
+              'schema':'hepta.cell-meta-hard-trained-physcpu-descriptive.v1',
+              'pretrained_model_invoked_by_preceding_step_claimed':True,
+              'original_model_origin_independently_signed':False,
+              'retrospective_public_test_not_future':True,'ood_true_tested':False,
+              'matched_main_head_rows_only':True,'matched_total_compute':False,
+              'independent_NDU_verified':False,'production_admission':'BLOCKED',
+              'authority_posture':'DENY_ALL','arms':rows},sort_keys=True))
+          PY
       - name: Publish immutable numeric evidence and preserve all failures; never weights/texts
         if: always()
         uses: actions/upload-artifact@v4
@@ -266,5 +319,8 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
             ${{ runner.temp }}/hepta-meta-real/*-top1-report.json
             ${{ runner.temp }}/hepta-meta-real/*-top1-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-hard-train-report.json
+            ${{ runner.temp }}/hepta-meta-real/*-hard-train-review.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
+            ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
