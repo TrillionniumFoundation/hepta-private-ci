@@ -47,7 +47,7 @@ python -S qualification/stem-cell-v1/cross_fact_granite_review.py \
 
 ## Executed checks in this authoring environment
 
-The newly extended source plus the five focused suites were exercised against the exact inherited original TokenReader: **29/29 local tests in ordinary Python and 29/29 under `python -O`**, including sealed-to-score end-to-end fixtures, no-label-before-gate, synthetic autograd and budget parity/adversarial file tests. The pinned original Encoder was NOT run by these suites. Remote exact-head CI has not completed, and a source hash alone is not independent execution proof. The Granite campaign itself **has not loaded real weights or run six pretrained fits** here: only a synthetic earlier paired-world prototype completed. Neither natural-task ability, equal-FLOP advantage, fresh generalization, NDU efficiency, a 4096 Cell physical runtime nor production readiness is asserted.
+The newly extended source plus the five focused suites were exercised against the exact inherited original TokenReader: **30/30 local tests in ordinary Python and 30/30 under `python -O`**, including sealed-to-score end-to-end fixtures, no-label-before-gate, full prelabel source roster checks, synthetic autograd and budget parity/adversarial file tests. The pinned original Encoder was NOT run by these suites. Remote exact-head CI has not completed, and a source hash alone is not independent execution proof. The Granite campaign itself **has not loaded real weights or run six pretrained fits** here: only a synthetic earlier paired-world prototype completed. Neither natural-task ability, equal-FLOP advantage, fresh generalization, NDU efficiency, a 4096 Cell physical runtime nor production readiness is asserted.
 
 ## Selection gates
 
@@ -57,3 +57,9 @@ Do not interpret a gate PASS, trained Head or fast batch as authority to load or
 - The stdlib-only reviewer accepts **three** sealed states: no fresh files after failed fitting, all prelabel predictions sealed and **not yet scored**, or all twelve scored files with a matching write-once scoring-completion manifest.
 - Any partial scoring, modified seal, duplicate JSON key, symlinked evidence, wrong model digest, missing batch identity or tampered training budget fails closed.
 - The original `full_fit_gate` and `matching_training_budgets` are separate facts; only their conjunction opens the fresh seal phase. This is matched *observed update/exposure/optimizer storage*, **not** equal GPU/CPU floating-point operations.
+
+## Strict prelabel roster identity
+
+The training entrypoint now freezes a SHA256 of each of the two original V5 fresh-domain case-ID rosters in `plan.json`, with **no labels** included. In the separate score process, `check_prelabel_seals` first checks complete fitted-model and resource budgets, all 12 sealed prediction files, 128 unique IDs per role, exact original roster digests, ordered physical batch receipts and frozen Head material. Only *after* that full check does it import the fresh-domain scoring protocol. The independent stdlib reviewer reconstructs the rosters again and rejects any changed source membership.
+
+This is deterministic process-stage separation, **not** independently signed label custody, a trusted execution environment, or an empirical claim of source-disjoint natural-task superiority. Any prior failed fit or mismatched optimizer storage must keep outcome scoring unopened.
