@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: b1937864c73972546cafa926523d12c09cfefe5a
+      CHAIN_SOURCE_SHA: 308a0dfbaf9677ef46ccc8251b141e033479df77
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'b1937864c73972546cafa926523d12c09cfefe5a' || 'fc49c9be34019e1d66061d4d18f93409ff1466c3' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '308a0dfbaf9677ef46ccc8251b141e033479df77' || '812c1088498d35d22a2994910c0055ee532835e2' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -307,6 +307,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-inherited-cgroup-real-business.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test public_pool_cli actual_pinned_peer_cli_follows_native_blocks_and_closes_shared_owner -- --exact --nocapture --test-threads=1
+      - name: Require ordinary V3 durable crash-fence and exact clean restart
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ordinary-v3-epoch.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib ordinary_public_v3_ -- --nocapture --test-threads=2
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
