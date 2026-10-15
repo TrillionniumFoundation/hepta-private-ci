@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from e3_model_entry_resnapshot import ChangedDuringAudit, stable_again
 import re
 import stat
 
@@ -205,6 +206,15 @@ def audit(root: Path, source_sha256: str, fit_sha256: str) -> dict:
             cohort['source_only'] is True and cohort['chronological_future'] is False and
             cohort['production_accepted'] is False,
             'changed prelabel source cohort')
+    # The semantic checks re-open files after the first byte inventory.
+    # A second bounded directory read rejects modifications/additions/removals
+    # that occur between the initial scan and these independent checks.
+    # This reduces TOCTOU exposure; it is NOT an OS sandbox or proof against
+    # adversarial modifications deliberately toggled between snapshots.
+    try:
+        stable_again(root, file_byte_hashes)
+    except (ChangedDuringAudit, OSError) as exc:
+        raise ModelEntryDenied('model input mutated during source audit') from exc
     return {'schema':SCHEMA,'authority':'DENY_ALL','production_accepted':False,
             'source_sha256':source_sha256,'fit_sha256':fit_sha256,
             'source_count':len(sources),'train_cal_count':len(fit),

@@ -22,3 +22,19 @@ optimizer, blocking-ci, independent reviewer and all DENY_ALL gates
 remain unchanged. This does not qualify original model efficacy,
 publisher/host identity, secure cache deletion, true prospective
 windows, or FinalUse. Exact-head Actions must pass before acceptance.
+
+## Successor audit: second byte-identical source snapshot
+
+On the source-validated research child `research/e3-race-resnapshot-20261015`,
+`stable_again` re-reads every one of the 196 admitted paths immediately after
+semantic source/fit validation. It rejects late file additions, removals,
+replacements, changed bytes, symlink/hardlink substitutions and unregistered
+folders when they occur after the first inventory. This narrows the inspection
+race that content-bound *single* scans leave. Synthetic standalone source
+mechanism tests (6 ordinary + 6 optimized) passed locally; full inherited
+Hepta filetree tests and original pretrained physical CI remain pending.
+
+A two-snapshot equality test cannot eliminate malicious race toggling or prove
+an OS-level namespace sandbox, authentic original publisher, signed host,
+secure cache deletion, independent label owner or neural model gain. Neither
+queued Actions nor mutation-unit results authorize production model selection.

@@ -10,6 +10,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest import mock
 import zlib
 
 import e3_model_entry_ledger as handoff
@@ -116,6 +117,45 @@ class RealFileTreeContract(unittest.TestCase):
                             after['original_source_receipt_sha256'])
         self.assertEqual(before['source_sha256'],after['source_sha256'])
         self.assertEqual(before['fit_sha256'],after['fit_sha256'])
+
+    def test_mutation_between_inventory_and_receipt_parse_denied(self):
+        # First input walk observes original receipt. The patched document
+        # reader changes only JSON whitespace before the semantic read.
+        # Without a second byte scan, the original audit accepted it.
+        original_document = handoff.document
+        seen = []
+        def rewrite_after_scan(root, relative, size=32*1024*1024):
+            if relative == 'source-seals.json':
+                seal=self.root/'source-seals.json'
+                contents=json.loads(seal.read_bytes())
+                seal.write_text(json.dumps(contents,sort_keys=True,indent=2)+'\n')
+                seen.append(relative)
+            return original_document(root, relative, size)
+        with mock.patch.object(handoff,'document',side_effect=rewrite_after_scan):
+            with self.assertRaises(handoff.ModelEntryDenied):
+                self.check()
+        self.assertEqual(seen,['source-seals.json'])
+        # The rewritten receipt remains semantically admissible; the new
+        # second byte snapshot, not invalid JSON, must explain rejection.
+        parsed=json.loads((self.root/'source-seals.json').read_bytes())
+        self.assertIsNone(parsed['private_test_labels_sha256'])
+        self.assertEqual(parsed['source_sha256'],self.source)
+
+    def test_late_test_label_after_first_inventory_denied(self):
+        # The original path-only/byte-bound first pass has already finished.
+        # Add an unregistered target file as source metadata is parsed.
+        original_document=handoff.document
+        seen=[]
+        def add_late_target(root, relative, size=32*1024*1024):
+            if relative=='source-seals.json':
+                (self.root/'inputs/test_labels.jsonl').write_bytes(b'secret\n')
+                seen.append(relative)
+            return original_document(root,relative,size)
+        with mock.patch.object(handoff,'document',side_effect=add_late_target):
+            with self.assertRaises(handoff.ModelEntryDenied):
+                self.check()
+        self.assertEqual(seen,['source-seals.json'])
+        self.assertTrue((self.root/'inputs/test_labels.jsonl').is_file())
 
     def test_test_label_file_or_original_parquet_rejected(self):
         for relative in ('private_labels/test_labels.jsonl','inputs/test_labels.jsonl',
