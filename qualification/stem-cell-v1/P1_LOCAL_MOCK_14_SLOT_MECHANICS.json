@@ -1,0 +1,107 @@
+{
+  "authority": "DENY_ALL",
+  "real_pretrained_weight_executed": false,
+  "source_is_synthetic_fixture": true,
+  "slots": 14,
+  "audited": 14,
+  "identities": [
+    {
+      "cells": 64,
+      "mode": "repeated4",
+      "cache_bytes": 33554432,
+      "baseline_calls": 8,
+      "shared_calls": 4
+    },
+    {
+      "cells": 64,
+      "mode": "test_panel",
+      "cache_bytes": 33554432,
+      "baseline_calls": 8,
+      "shared_calls": 8
+    },
+    {
+      "cells": 64,
+      "mode": "two_scopes",
+      "cache_bytes": 33554432,
+      "baseline_calls": 8,
+      "shared_calls": 8
+    },
+    {
+      "cells": 256,
+      "mode": "repeated4",
+      "cache_bytes": 33554432,
+      "baseline_calls": 25,
+      "shared_calls": 4
+    },
+    {
+      "cells": 256,
+      "mode": "test_panel",
+      "cache_bytes": 33554432,
+      "baseline_calls": 25,
+      "shared_calls": 25
+    },
+    {
+      "cells": 256,
+      "mode": "two_scopes",
+      "cache_bytes": 33554432,
+      "baseline_calls": 25,
+      "shared_calls": 8
+    },
+    {
+      "cells": 1024,
+      "mode": "repeated4",
+      "cache_bytes": 33554432,
+      "baseline_calls": 102,
+      "shared_calls": 4
+    },
+    {
+      "cells": 1024,
+      "mode": "test_panel",
+      "cache_bytes": 33554432,
+      "baseline_calls": 102,
+      "shared_calls": 64
+    },
+    {
+      "cells": 1024,
+      "mode": "two_scopes",
+      "cache_bytes": 33554432,
+      "baseline_calls": 102,
+      "shared_calls": 8
+    },
+    {
+      "cells": 4096,
+      "mode": "repeated4",
+      "cache_bytes": 33554432,
+      "baseline_calls": 409,
+      "shared_calls": 4
+    },
+    {
+      "cells": 4096,
+      "mode": "test_panel",
+      "cache_bytes": 33554432,
+      "baseline_calls": 409,
+      "shared_calls": 64
+    },
+    {
+      "cells": 4096,
+      "mode": "two_scopes",
+      "cache_bytes": 33554432,
+      "baseline_calls": 409,
+      "shared_calls": 8
+    },
+    {
+      "cells": 256,
+      "mode": "repeated4",
+      "cache_bytes": 0,
+      "baseline_calls": 25,
+      "shared_calls": 25
+    },
+    {
+      "cells": 256,
+      "mode": "test_panel",
+      "cache_bytes": 0,
+      "baseline_calls": 25,
+      "shared_calls": 25
+    }
+  ]
+}
