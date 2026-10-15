@@ -33,3 +33,21 @@ Only the genuine upstream physical canary, its exact original header and
 post-load full SHA/weight proofs can establish real-source loading.
 Even then paired data, future no-change baseline and independent NDU remain
 unqualified. Production remains DENY_ALL.
+
+## V17 physical on-disk proof (actual upstream source)
+
+V17 GitHub run 38666811093, artifact 11943069008, SHA-pinned
+`jhu-clsp/mmBERT-small@0eb3d056ec1d6333cf4e19b0966dfde342a41a3a`:
+
+- safetensors index: **137** original tensors;
+- original `decoder.weight`: **present**, FP32 [256000, 384];
+- original `model.embeddings.tok_embeddings.weight`: **absent**;
+- original tensor-header census SHA256:
+  `62527c9096e5c2cb64ed9ccbdf8d5e16f123eddc65f85dc3829eea0744528387`.
+
+This proves an asymmetrical original saved-key inventory, not that the
+Transformers loader correctly materialized it. The required V18 hosted test
+now deliberately creates a decoder-only *random miniature* checkpoint
+matching this exact saved-key convention and verifies that the decoder
+source becomes one physically shared stock MLM Embedding/Decoder Parameter.
+The test must never be cited as proof of genuine pretrained utility.
