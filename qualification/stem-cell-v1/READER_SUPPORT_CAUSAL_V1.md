@@ -1,70 +1,81 @@
-# Reader evidence support / critical-premise counterfactual (research V1)
+# Hepta Reader P0 — physically replayed source-premise intervention (V2 scoring)
 
-**Scope:** additive MultiRC Reader study built on the frozen V1 Reader and the all-native training research lineage (#2080). This is **DENY_ALL**, not model selection, deployment, original observation replacement, NDU admission, or CellSplit execution.
+**2026-10-15 · research-only / DENY_ALL · stacked on PR #2108.** This increment does not select a Stem, amend the original V1 ModernBERT Reader, train an Encoder, mutate production Cell state, authorize a source, issue FinalUse, promote a model, or merge into `main`. Keep the source-owner and independent-evaluator boundaries intact.
 
-## Scientific motivation
+## Scientific problem and why V1 alone was insufficient
 
-The existing blinded neutral-evidence and cross-question stress tests prove that model outputs can move when input features change. They do not establish that selected evidence is independently sufficient to answer a question, that a named premise is indispensable, or that the Reader can correctly abstain. This experiment introduces strict, source-bound, externally selected character spans and a separate sealed prediction / label-opening sequence.
+The first support-premise experiment executes four evidence variants on the *same task* and isolates human labels until scoring. However the V1 scoring entrypoint could consume a self-hashed observation without **reopening the independently sealed original V1 predictions** or verifying all reported real tensor forwards. A SHA alone can be rehashed by the producer and does not certify numerical work, model origin or semantic adequacy.
 
-## Matched four-condition actual execution
+This child adds **two separate readbacks** without changing the original task roster, source selection or frozen trained weights:
 
-For every original selected question and answer candidate, use the same frozen Reader, Encoder/tokenizer identity, source group and query. Each row receives four distinct Encoder inputs:
+1. **Scoring-time original V1 rebind.** The scorer must separately reload the original `hepta.multirc.unscored-model-seal.v1` and verify every original candidate task, source group, Head weights digest and numeric original-evidence logits. The prior `original_prediction_replay_verified` field must be true but **is not** accepted as sufficient proof.
+2. **Second physical forward pass.** After the original four-condition run and **before opening withheld human labels**, a dedicated `replay` stage reloads the same pinned original full Encoder and frozen Reader, reencodes *every* condition and reexecutes *every* Reader. The complete computed logits must match the first sealed observations to within a fixed `1e-5` absolute float tolerance. Both physical passes and the second-pass file identity are recorded independently. This second pass is not an independent neural architecture, vendor signer or external observer.
 
-| Condition | Input | Legitimate claim |
+The original four evidence conditions remain:
+
+| Condition | Actual feature input | Label/claim boundary |
 | --- | --- | --- |
-| no_evidence | Fixed Evidence unavailable string | No-evidence sensitivity |
-| ordinary_retrieval | Entire original passage | Exact replay of the original frozen V1 prediction |
-| support_candidate | Two to eight verbatim original source spans, in source order | Candidate support only, NOT independently certified sufficient |
-| premise_removed | Same selected spans, excluding the designated critical span | Prediction movement only; the original human binary label is NOT valid ground truth |
+| `no_evidence` | Fixed neutral string | Original-answer descriptive baseline only |
+| `ordinary_retrieval` | Original unchanged passage | Must exactly replay pinned original V1 Reader |
+| `support_candidate` | Original passage verbatim slices from external prelabel span plan | **Candidate** support only; NOT independently adjudicated sufficient |
+| `premise_removed` | Candidate slices with declared critical span omitted | Report probability movement only; the original answer label is not valid ground truth |
 
-All four inputs execute real PyTorch Encoder and frozen Reader forwards. The question embedding is executed once per original task. Separate wall-time counters include each condition, but are not authenticated end-to-end p99, GPU, energy or full model lifecycle cost.
+The external annotated plan is `hepta.reader.external-source-spans.v1` with exact original V1 task/panel/source identities, at least two nonoverlapping source-text spans, critical index, `labels_exposed=false` and `support_independently_verified=false`. Spans are Unicode codepoint offsets into the **exact original passage**, ordered with no overlap. The evaluator must never choose support spans from model or heldout answer labels. Without an independently authored plan, the real-pretrained science case remains **BLOCKED**, not simulated with made-up evidence.
 
-Span annotations are supplied *before* test labels are opened. No code automatically uses the answer label to discover supporting spans. Missing external annotations block the actual pretrained experiment.
+## Version and exact contracts
 
-## External annotation file contract
+- Retain existing `hepta.reader.support-causal-plan.v1` plan schema, since its meaning and fields are unchanged.
+- **Break the old research observation and score schema**: `hepta.reader.support-causal-observation.v2` and `hepta.reader.support-causal-score.v2` cannot silently accept V1 receipts. Add the new `hepta.reader.support-causal-replay.v1` second-pass record.
+- Score requires both the original V1 owner seal and the second-pass seal. It verifies their linked observation ID and original V1 seal, immutable file SHA, every task/prediction/feature digest, counted full Encoder/Reader/query forwards and conditional elapsed-time components.
+- A rehashed but altered logit, incorrect model or Reader digest, forged number/type of tensor calls, changed source/order, missing condition, nonfinite probability, undercounted cumulative wall time, fake `production_authorized`, fake `independent_*` success or stale v1 observation fails closed.
+- A positive structural replay says only that a second computation was run with the source submitted to it. **Neither content-addressing, tests nor same-code repeated inference establishes original model signing or trusted human sufficiency.** In particular the `physically_*` counters are structurally verified receipts from the research processes, not independently metered hardware attestation or GPU/latency/energy data.
 
-Use schema hepta.reader.external-source-spans.v1 with top-level fields: schema, panel_id, original_observation_id, labels_exposed=false, support_independently_verified=false, rows, annotation_id. Annotation_id is the SHA-256 canonical JSON digest of the object without annotation_id.
+## Reproduction with ORIGINAL V1 materials (not the new all-native Head weights)
 
-Each row contains precisely task_id, source_group, support_spans, critical_span_index. Spans are nonoverlapping [start,end] Python character offsets into the original unmodified passage. The complete original task inventory from at least two source groups must appear in original order. No label, rewritten supporting passage or authority claim may enter this input.
+First create a label-free human/span annotation at `/approved/external-source-spans.json`. The original V1 study produces `blind-eval-bundle.json`, `owner-only-labels.json`, and the complete original `conditioned.safetensors` + `COMMITTED.json`. Keep them at the original material/run paths; do not overwrite either study's artifacts. Source-only tests use a stub owner and synthetic 4D Torch features, not real pretrained ModernBERT efficacy.
 
-The trained frozen ModernBERT Reader and original panel identity are verified through existing V1 check_seal, load_conditioned_bank, safetensors and safe_encoder owners. Any mismatched source/weight or original-logit replay refuses execution.
-
-## Three sealed steps against existing original V1 artifact paths
-
-~~~sh
+```bash
 python qualification/stem-cell-v1/reader_support_native_adapter.py prepare \
-  --blind-eval-bundle /approved/multirc-material/blind-eval-bundle.json \
-  --run-dir /approved/multirc-run --expected-v1-seal-id "$V1_SEAL_ID" \
-  --external-spans /approved/sealed-external-spans.json --output /approved/support-plan
+  --blind-eval-bundle /approved/material/blind-eval-bundle.json \
+  --run-dir /approved/v1-run --expected-v1-seal-id "$V1_SEAL" \
+  --external-spans /approved/external-source-spans.json --output /approved/support-plan
 
 python qualification/stem-cell-v1/reader_support_native_adapter.py run \
-  --plan /approved/support-plan/plan.json --run-dir /approved/multirc-run \
-  --expected-v1-seal-id "$V1_SEAL_ID" \
-  --snapshot /approved/public-encoder/snapshot --output /approved/support-observations
+  --plan /approved/support-plan/plan.json \
+  --run-dir /approved/v1-run --expected-v1-seal-id "$V1_SEAL" \
+  --snapshot /approved/modernbert-snapshot --output /approved/support-run
+
+python qualification/stem-cell-v1/reader_support_native_adapter.py replay \
+  --plan /approved/support-plan/plan.json \
+  --observations-dir /approved/support-run \
+  --expected-observation-id "$OBSERVATION_ID" \
+  --run-dir /approved/v1-run --expected-v1-seal-id "$V1_SEAL" \
+  --snapshot /approved/modernbert-snapshot --output /approved/support-replay
 
 python qualification/stem-cell-v1/reader_support_native_adapter.py score \
   --plan /approved/support-plan/plan.json \
-  --observations-dir /approved/support-observations \
-  --expected-observation-id "$SUPPORT_OBSERVATION_ID" \
-  --owner-labels /approved/multirc-material/owner-only-eval-labels.json \
-  --expected-owner-label-file-sha256 "$OWNER_LABEL_FILE_SHA256" \
-  --output /approved/support-scores
-~~~
+  --observations-dir /approved/support-run \
+  --expected-observation-id "$OBSERVATION_ID" \
+  --run-dir /approved/v1-run --expected-v1-seal-id "$V1_SEAL" \
+  --replay-dir /approved/support-replay --expected-replay-id "$REPLAY_ID" \
+  --owner-labels /approved/material/owner-only-labels.json \
+  --expected-owner-label-file-sha256 "$OWNER_LABEL_SHA256" \
+  --output /approved/support-score
+```
 
-The exact label file name comes from the *original* material-owner run. Every stage writes into a new output directory and emits COMMITTED.json or FAILED.json. Score opens labels only after the prediction seal exists and verifies the supplied original owner label SHA256.
+No pre-labeled run or generated proof of semantic sufficiency is supplied. An original unchanged passage can have other valid evidence spans; observed movement under one removed candidate span **does not show** causally necessary evidence without external review. A properly evaluated abstention requires an additional, explicitly labeled "unknown" arm; it is not inferred from binary MultiRC labels.
 
-## Honest interpretation and blockers
+## Actually executed local regression scope
 
-The score reports original-label accuracy/Brier for no_evidence, ordinary_retrieval and support_candidate, and descriptive probability movement for premise_removed. It does **not** score premise_removed against the original human binary answer; the removed condition may be underdetermined. All source and model digests are local identity checks, not independent issuer signatures. Supposed semantic sufficiency is never marked certified, even if the numbers look ideal.
+```bash
+python -m unittest discover -s qualification/stem-cell-v1 -p 'test_reader_support_*.py' -q
+python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_reader_support_*.py' -q
+python -m compileall -q qualification/stem-cell-v1/reader_support_causal.py \
+  qualification/stem-cell-v1/reader_support_native_adapter.py
+```
 
-The completed fixture exercises two toy groups and four real CPU tensor forwards per row. It is not true pretrained effectiveness. The next real scientific gate is independent source-family/time-disjoint annotation, an external semantic sufficiency reviewer, an explicitly valid unknown/abstain answer for removed evidence, Reader/RAG matched controls and full physical cost. Do not fabricate this reviewer, its human annotations, a model winner, 4,096 production Cells, or a general FBSDE gain from this source-only CI.
+**40 distinct tests passed in both runs** on actual local PyTorch CPU. These tests deliberately use tiny **synthetic features** and **stub V1 model/signer** interfaces, while executing two actual sets of Torch Encoder/Reader tensor computations. The file-level test performs the complete prepare → run → replay → score flow with label input held back until the last stage, and asserts failure-only artifact creation if a stale replay seal is presented. This is new mechanism evidence, NOT human-annotated MultiRC/real-pretrained task efficacy.
 
-## Reproduce the isolated numerical and tamper tests
+## Missing independent acceptance evidence
 
-~~~sh
-python -m unittest discover -s qualification/stem-cell-v1 -p 'test_reader_support_*.py' -v
-python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_reader_support_*.py' -v
-python -m compileall -q qualification/stem-cell-v1/reader_support_causal.py qualification/stem-cell-v1/reader_support_native_adapter.py
-~~~
-
-**22 offline numerical and adversarial methods** were executed locally on this exact code. The corresponding source-only GitHub Actions workflow replays them at its own source SHA. Main, CURRENT, selected Stem, original inference Worker, NDU, signed FinalUse, CNS and production learning owners are untouched; no regular blocking-ci check is waived.
+Physical load of the original public pinned ModernBERT (not supplied by this child), independently precommitted actual support spans, a human judgment about sufficiency and criticality, cross-source prospective task outcomes, adequate NDU and cheap Critic controls, full lifecycle p95/p99 and hardware energy, source-owner signatures, production Worker final-use, all source-head and synthetic-merge blocking CI, production selection/rollback and 4,096 real Cell trials **remain explicitly unresolved**. All reported `production_authorized` fields remain false; security and evaluator authority are not modified. Keep this PR Draft, unmerged, DENY_ALL until separate full qualification.

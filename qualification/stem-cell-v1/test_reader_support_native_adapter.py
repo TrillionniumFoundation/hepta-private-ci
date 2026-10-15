@@ -83,3 +83,121 @@ class NativeAdapterPlanTests(unittest.TestCase):
         with self.assertRaises(ValueError):build_plan(panel,model,annotation)
 
 if __name__=='__main__':unittest.main()
+
+
+class FourStageNativeCLITest(unittest.TestCase):
+    """Real Torch numerical forwards and create-only files; fake V1 owner adapters.
+
+    This is an integration CONTRACT test, not an actual public HF model load.
+    """
+
+    def test_cli_prepare_run_replay_score_delays_labels_and_denies_authority(self):
+        import hashlib
+        import json
+        import sys
+        import tempfile
+        import types
+        from pathlib import Path
+        from unittest.mock import patch
+        from reader_support_native_adapter import main
+        from reader_support_causal import run_blind, PLAN
+        from test_reader_support_causal import ToyEncoder, ToyQuery, ToyReader, fixture
+
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            panel,frozen,spans=panel_fixture()
+            p=fixture()
+            reader=ToyReader().eval()
+            plain=run_blind(p,encoder=ToyEncoder(),question_encoder=ToyQuery(),
+                            reader=reader,weight_sha256='c'*64)
+            frozen['training']={'conditioned':{'weights_sha256':'c'*64}}
+            frozen['predictions']['conditioned']=[dict(task_id=r['task_id'],
+                source_group=r['source_group'],logits=r['observations']['ordinary_retrieval']['logits'],
+                weights_sha256='c'*64) for r in plain['rows']]
+            paths=dict(panel=root/'panel.json',spans=root/'spans.json',
+                       owner=root/'owner-only-labels.json',legacy=root/'v1')
+            paths['legacy'].mkdir()
+            paths['panel'].write_text(json.dumps(panel))
+            paths['spans'].write_text(json.dumps(spans))
+            label=dict(schema='hepta.multirc.external-eval-labels.v1',panel_id='a'*64,
+                       labels={'task0':1,'task1':0})
+            paths['owner'].write_text(json.dumps(label))
+            opened=[]; verified=[]
+            def strict_json(path):
+                opened.append(str(path))
+                return json.loads(Path(path).read_text())
+            def file_sha256(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+            def write_json_exclusive(path, content):
+                with open(path,'x',encoding='utf-8') as f:json.dump(content,f,sort_keys=True)
+            def check_seal(path,seal):
+                if Path(path)!=paths['legacy'] or seal!='s'*64:
+                    raise ValueError('unknown original V1 seal')
+                return frozen
+            def safe_encoder(path):
+                return ToyEncoder(),ToyQuery(),lambda:verified.append('snapshot'),'b'*64,None,None
+            def load_conditioned_bank(path,observation):
+                if observation is not frozen:raise ValueError('not original V1 frozen Reader')
+                return reader
+            library={
+                'matrix_materials':dict(file_sha256=file_sha256,strict_json=strict_json),
+                'matrix_runtime':dict(write_json_exclusive=write_json_exclusive),
+                'multirc_reader_study':dict(check_seal=check_seal,safe_encoder=safe_encoder),
+                'multirc_evidence_stress':dict(load_conditioned_bank=load_conditioned_bank)
+            }
+            modules={name:types.ModuleType(name) for name in library}
+            for name, funcs in library.items():
+                for key, fn in funcs.items():setattr(modules[name],key,fn)
+            def invoke(*args):
+                with patch.dict(sys.modules,modules),patch.object(sys,'argv',
+                      ['reader_support_native_adapter.py',*map(str,args)]):
+                    main()
+            common=['--run-dir',paths['legacy'],'--expected-v1-seal-id','s'*64]
+            plan_dir=root/'plan'
+            invoke('prepare','--blind-eval-bundle',paths['panel'],*common,
+                   '--external-spans',paths['spans'],'--output',plan_dir)
+            self.assertTrue((plan_dir/'COMMITTED.json').exists())
+            self.assertFalse(any('owner-only-labels' in x for x in opened))
+            actual_plan=json.loads((plan_dir/'plan.json').read_text())
+            self.assertEqual(actual_plan['schema'],PLAN)
+            run_dir=root/'run'
+            invoke('run','--plan',plan_dir/'plan.json',*common,
+                   '--snapshot',root/'model','--output',run_dir)
+            self.assertFalse(any('owner-only-labels' in x for x in opened))
+            obs=json.loads((run_dir/'observations.json').read_text())
+            self.assertTrue(obs['original_prediction_replay_verified'])
+            self.assertEqual(obs['physical_encoder_calls'],8)
+            replay_dir=root/'replay'
+            invoke('replay','--plan',plan_dir/'plan.json','--observations-dir',run_dir,
+                   '--expected-observation-id',obs['observation_id'],*common,
+                   '--snapshot',root/'model','--output',replay_dir)
+            self.assertFalse(any('owner-only-labels' in x for x in opened))
+            physical=json.loads((replay_dir/'replay.json').read_text())
+            self.assertEqual(physical['physically_reexecuted_encoder_calls'],8)
+            self.assertEqual(len(verified),2)
+            score=root/'scored'
+            invoke('score','--plan',plan_dir/'plan.json','--observations-dir',run_dir,
+                   '--expected-observation-id',obs['observation_id'],*common,
+                   '--replay-dir',replay_dir,'--expected-replay-id',physical['replay_id'],
+                   '--owner-labels',paths['owner'],
+                   '--expected-owner-label-file-sha256',file_sha256(paths['owner']),
+                   '--output',score)
+            self.assertTrue(any('owner-only-labels' in x for x in opened))
+            output=json.loads((score/'scores.json').read_text())
+            self.assertEqual(output['tasks'],2)
+            self.assertTrue(output['physical_second_pass_reexecution_structurally_verified'])
+            self.assertEqual(output['authority'],'DENY_ALL')
+            self.assertNotIn('premise_removed',output['original_label_descriptive_accuracy'])
+            self.assertFalse(output['independent_model_origin_signatures_verified'])
+            self.assertFalse(output['support_candidate_semantic_sufficiency_independently_verified'])
+
+            # The score stage cannot reuse a replay from a different physical run.
+            bad_score=root/'bad-score'
+            with self.assertRaises(ValueError):
+                invoke('score','--plan',plan_dir/'plan.json','--observations-dir',run_dir,
+                       '--expected-observation-id',obs['observation_id'],*common,
+                       '--replay-dir',replay_dir,'--expected-replay-id','e'*64,
+                       '--owner-labels',paths['owner'],
+                       '--expected-owner-label-file-sha256',file_sha256(paths['owner']),
+                       '--output',bad_score)
+            self.assertTrue((bad_score/'FAILED.json').exists())
+            self.assertFalse((bad_score/'COMMITTED.json').exists())
