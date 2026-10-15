@@ -522,6 +522,9 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    // Only unit-test the legacy owned path; production must enter via signed
+    // final-use receipt dispatch rather than this unguarded internal helper.
+    #[cfg(test)]
     pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
