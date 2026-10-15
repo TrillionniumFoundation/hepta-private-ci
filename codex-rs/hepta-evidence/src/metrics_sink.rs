@@ -12,6 +12,7 @@ use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkErrorV1;
 use codex_hepta_types::PhaseMetricSinkV1;
+use std::collections::BTreeSet;
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -261,6 +262,20 @@ impl DurablePhaseMetricSinkV1 {
                 .any(|q| q.scope_digest.is_zero() || q.operation_digest.is_zero())
         {
             return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
+        // Invalid caller selection is NOT original writer corruption.
+        // Reject duplicates before enqueue so they cannot turn the real
+        // Evidence actor into a permanently poisoned WAL owner.
+        let mut distinct = BTreeSet::new();
+        for query in queries {
+            if !distinct.insert((
+                query.scope_digest,
+                query.operation_digest,
+                query.phase as u8,
+                query.succeeded,
+            )) {
+                return Err(PhaseMetricSinkErrorV1::Unavailable);
+            }
         }
         let deadline = std::time::Instant::now() + MAX_FLUSH_WAIT;
         let (reply, rx) = sync_channel(1);
