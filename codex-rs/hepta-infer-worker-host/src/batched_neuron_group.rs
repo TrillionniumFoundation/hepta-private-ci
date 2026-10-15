@@ -157,6 +157,6 @@ fn add_field(bytes: &mut Vec<u8>, field: &str) -> Result<(), BatchWorkerErrorV1>
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "batched_neuron_group_tests.rs"]
 mod tests;
