@@ -1334,9 +1334,11 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
         )
     };
 
-    // Simulate a privileged namespace rebind AFTER the original directory
-    // FD was pinned, but BEFORE the stored journal/lock are reopened.
-    // A path-based reopen can accidentally adopt a different Control owner.
+    // Install same-named impostor WAL/marker after the legitimate parent
+    // is renamed. This forces the *existing* WAL reopen branch, not the
+    // create_new/EXCL path already covered by the genesis rebind regression.
+    let decoy_wal = b"substitute-untrusted-wal";
+    let decoy_marker = b"substitute-untrusted-owner-marker";
     let attempted = NduPublicationOwnerV1::open_production_with_directory_hook(
         &journal,
         original.clone(),
@@ -1346,6 +1348,12 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
             std::fs::create_dir(&parent).expect("install substitute parent");
             std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700))
                 .expect("private substitute");
+            std::fs::write(&journal, decoy_wal).expect("impostor WAL");
+            std::fs::write(&marker, decoy_marker).expect("impostor marker");
+            for fake in [&journal, &marker] {
+                std::fs::set_permissions(fake, std::fs::Permissions::from_mode(0o600))
+                    .expect("impostor must meet first-pass privacy check");
+            }
         },
     );
     assert!(
@@ -1355,10 +1363,15 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
         ),
         "renaming the path must not adopt or reset the existing original WAL"
     );
-    assert!(!journal.exists(), "substitute must not receive a new WAL");
-    assert!(
-        !marker.exists(),
-        "substitute must not receive a new owner marker"
+    assert_eq!(
+        std::fs::read(&journal).unwrap(),
+        decoy_wal,
+        "wrong-directory WAL cannot be read, overwritten or adopted"
+    );
+    assert_eq!(
+        std::fs::read(&marker).unwrap(),
+        decoy_marker,
+        "wrong-directory marker cannot be read, overwritten or adopted"
     );
     assert_eq!(
         std::fs::read(detached.join("control.wal")).unwrap(),
@@ -1373,6 +1386,8 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
 
     // The same original bytes, inodes and checkpoint must still be readable
     // after restoring the *existing* owner path. Do not mint a new genesis.
+    std::fs::remove_file(&journal).expect("delete impostor WAL only");
+    std::fs::remove_file(&marker).expect("delete impostor marker only");
     std::fs::remove_dir(&parent).expect("empty substitute directory");
     std::fs::rename(&detached, &parent).expect("restore original name");
     let reopened =
