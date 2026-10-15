@@ -68,11 +68,16 @@ def verify_adapter(z, prefix: str, original: dict) -> int:
 def measure_benchmark(path: Path, benchmark: str, *, proof=None) -> dict:
     """Read independently pinned model outputs and per-query adapter lineage."""
     original = verified_archive(path, benchmark) if proof is None else proof
-    require(original["archived_zip_sha256"] == ARCHIVES[benchmark][0], "wrong benchmark proof")
+    require(
+        original["archived_zip_sha256"] == ARCHIVES[benchmark][0],
+        "wrong benchmark proof",
+    )
     learned = original["results"]["rag_lora"]
     param_only = original["results"]["parametric_only"]
-    require(set(learned) == set(param_only) and len(learned) == 16,
-            "incomplete paired original trained query census")
+    require(
+        set(learned) == set(param_only) and len(learned) == 16,
+        "incomplete paired original trained query census",
+    )
     seconds = 0.0
     tokens = steps = storage = 0
     adapter_sizes = []
@@ -84,7 +89,9 @@ def measure_benchmark(path: Path, benchmark: str, *, proof=None) -> dict:
             for name in z.namelist()
             if name.startswith(benchmark + "/lora-") and name.endswith("/lineage.json")
         }
-        require(len(lineage_dirs) == 16, "incomplete independently saved adapter census")
+        require(
+            len(lineage_dirs) == 16, "incomplete independently saved adapter census"
+        )
         lineage_index = {}
         for prefix in lineage_dirs:
             value = digest(z.read(prefix + "/lineage.json"))
@@ -94,36 +101,51 @@ def measure_benchmark(path: Path, benchmark: str, *, proof=None) -> dict:
         for case_id in sorted(learned):
             row, reference = learned[case_id], param_only[case_id]
             training = row.get("training")
-            require(isinstance(training, dict) and training == reference.get("training"),
-                    "two parameter arms disagree on original training receipt")
+            require(
+                isinstance(training, dict) and training == reference.get("training"),
+                "two parameter arms disagree on original training receipt",
+            )
             require(
                 training.get("base_unchanged") is True
                 and training.get("artifact_reload", {}).get("base_unchanged") is True
-                and training.get("artifact_reload", {}).get("model_install_authority") is False
+                and training.get("artifact_reload", {}).get("model_install_authority")
+                is False
                 and training.get("steps") == 4
                 and training.get("trainable_parameters") == 230400
                 and training.get("optimizer_tensor_bytes") == 1843680
                 and isinstance(training.get("losses"), list)
                 and len(training["losses"]) == 4
-                and all(type(v) in (int, float) and math.isfinite(v) for v in training["losses"]),
+                and all(
+                    type(v) in (int, float) and math.isfinite(v)
+                    for v in training["losses"]
+                ),
                 "invalid original four-step candidate training receipt",
             )
-            delta_norms.append(positive(training["adapter_delta_squared_norm"], "parameter delta"))
+            delta_norms.append(
+                positive(training["adapter_delta_squared_norm"], "parameter delta")
+            )
             seconds += positive(training["train_seconds"], "observed training seconds")
             tokens += positive(training["tokens"], "original training tokens")
             steps += training["steps"]
             receipt = training["artifact_reload"]["manifest_sha256"]
-            require(receipt in lineage_index and receipt not in used,
-                    "missing or reused trained adapter lineage")
+            require(
+                receipt in lineage_index and receipt not in used,
+                "missing or reused trained adapter lineage",
+            )
             used.add(receipt)
             nbytes = verify_adapter(z, lineage_index[receipt], row)
             adapter_sizes.append(nbytes)
             storage += nbytes
             for root in training["roots"]:
                 training_roots[root] += 1
-        require(len(used) == len(lineage_dirs) == 16, "orphan or missing saved parameter adapter")
-        require(all(v == adapter_sizes[0] for v in adapter_sizes),
-                "original parameter artifact layout drift")
+        require(
+            len(used) == len(lineage_dirs) == 16,
+            "orphan or missing saved parameter adapter",
+        )
+        require(
+            all(v == adapter_sizes[0] for v in adapter_sizes),
+            "original parameter artifact layout drift",
+        )
     return dict(
         benchmark=benchmark,
         actual_training_tasks=16,
@@ -150,9 +172,11 @@ def audit(paths: dict[str, Path]) -> dict:
     # The original answer-only audit verifies the entire archive and 64 matched
     # parameter comparisons first; never use an unsourced success claim.
     answer = answer_audit(paths)
-    require(answer["paired_parametric_comparisons"] == 64
-            and answer["paired_parametric_answers_changed"] == 1,
-            "historical answer-delta census drift")
+    require(
+        answer["paired_parametric_comparisons"] == 64
+        and answer["paired_parametric_answers_changed"] == 1,
+        "historical answer-delta census drift",
+    )
     pairs = [
         answer["per_benchmark"][benchmark]["comparisons"][contrast]
         for benchmark in ARCHIVES
@@ -161,8 +185,10 @@ def audit(paths: dict[str, Path]) -> dict:
     scored_wins = sum(item["f1_wins"] for item in pairs)
     scored_pairs = sum(item["paired_f1_scored"] for item in pairs)
     unscored_pairs = sum(item["paired_f1_unscored"] for item in pairs)
-    require(scored_wins == 0 and scored_pairs == 56 and unscored_pairs == 8,
-            "historical diagnostic answer benefit census drift")
+    require(
+        scored_wins == 0 and scored_pairs == 56 and unscored_pairs == 8,
+        "historical diagnostic answer benefit census drift",
+    )
     result = {key: measure_benchmark(paths[key], key) for key in ARCHIVES}
     seconds = sum(v["measured_training_elapsed_seconds_sum"] for v in result.values())
     storage = sum(v["saved_adapter_tensor_bytes"] for v in result.values())
@@ -174,19 +200,36 @@ def audit(paths: dict[str, Path]) -> dict:
         original_archive_sha256={k: ARCHIVES[k][0] for k in ARCHIVES},
         benchmark_resources=result,
         trained_adapter_instances=32,
-        original_optimizer_steps=sum(v["actual_optimizer_steps"] for v in result.values()),
+        original_optimizer_steps=sum(
+            v["actual_optimizer_steps"] for v in result.values()
+        ),
         measured_training_seconds_sum=seconds,
-        original_training_tokens=sum(v["input_training_tokens"] for v in result.values()),
+        original_training_tokens=sum(
+            v["input_training_tokens"] for v in result.values()
+        ),
         original_saved_adapter_tensor_bytes=storage,
         paired_original_parameter_results=64,
-        original_parameter_answer_strings_identical=answer["paired_parametric_answers_exactly_identical"],
-        original_parameter_answer_strings_changed=answer["paired_parametric_answers_changed"],
+        original_parameter_answer_strings_identical=answer[
+            "paired_parametric_answers_exactly_identical"
+        ],
+        original_parameter_answer_strings_changed=answer[
+            "paired_parametric_answers_changed"
+        ],
         original_parameter_f1_scored_pairs=scored_pairs,
         original_parameter_f1_unscored_pairs=unscored_pairs,
         scored_f1_positive_parameter_wins=scored_wins,
         cost_per_incremental_scored_win=None,
         actual_production_total_cost=None,
-        missing_cost_terms=["raw_source_retention", "indexing", "maintenance", "revocation", "rollback", "recovery", "storage_duration", "cross_node_communication"],
+        missing_cost_terms=[
+            "raw_source_retention",
+            "indexing",
+            "maintenance",
+            "revocation",
+            "rollback",
+            "recovery",
+            "storage_duration",
+            "cross_node_communication",
+        ],
         complete_total_cost_benefit_established=False,
         independent_future_source_families=0,
         independent_human_semantic_citation_review=False,
@@ -204,14 +247,26 @@ def main() -> None:
     p.add_argument("--output", type=Path, required=True)
     args = p.parse_args()
     output = audit({"locomo": args.locomo, "longmemeval": args.longmemeval})
-    require(not args.output.exists() and not args.output.is_symlink(),
-            "refuse overwriting immutable resource receipt")
+    require(
+        not args.output.exists() and not args.output.is_symlink(),
+        "refuse overwriting immutable resource receipt",
+    )
     with args.output.open("x", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        json.dump(
+            output, f, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False
+        )
         f.write("\n")
-    print(json.dumps(dict(training_tasks=32, train_seconds=output["measured_training_seconds_sum"],
-                          saved_parameter_bytes=output["original_saved_adapter_tensor_bytes"],
-                          production_qualified=False), sort_keys=True))
+    print(
+        json.dumps(
+            dict(
+                training_tasks=32,
+                train_seconds=output["measured_training_seconds_sum"],
+                saved_parameter_bytes=output["original_saved_adapter_tensor_bytes"],
+                production_qualified=False,
+            ),
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

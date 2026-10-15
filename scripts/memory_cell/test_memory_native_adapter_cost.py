@@ -25,9 +25,7 @@ class ResourceReceiptTests(unittest.TestCase):
         if not all(names.values()):
             raise unittest.SkipTest("two exact historical source ZIP paths required")
         cls.paths = {k: Path(v) for k, v in names.items()}
-        cls.proofs = {
-            k: verified_archive(cls.paths[k], k) for k in ARCHIVES
-        }
+        cls.proofs = {k: verified_archive(cls.paths[k], k) for k in ARCHIVES}
 
     def test_actual_adapter_resources_and_no_quality_promotion(self):
         result = audit(self.paths)
@@ -53,7 +51,9 @@ class ResourceReceiptTests(unittest.TestCase):
                 self.assertEqual(r["saved_tensor_bytes_per_adapter"], 937056)
                 self.assertEqual(r["saved_adapter_tensor_bytes"], 14992896)
                 self.assertEqual(r["trainable_parameters_per_adapter"], 230400)
-                self.assertEqual(r["optimizer_state_bytes_per_training_instance"], 1843680)
+                self.assertEqual(
+                    r["optimizer_state_bytes_per_training_instance"], 1843680
+                )
                 self.assertGreater(r["min_trainable_delta_norm_squared"], 0)
 
     def test_missing_lineage_is_not_allowed(self):
@@ -61,8 +61,12 @@ class ResourceReceiptTests(unittest.TestCase):
         proof = deepcopy(self.proofs[benchmark])
         item = next(iter(proof["results"]["rag_lora"]))
         for arm in ("rag_lora", "parametric_only"):
-            proof["results"][arm][item]["training"]["artifact_reload"]["manifest_sha256"] = "0" * 64
-        with self.assertRaisesRegex(ValueError, "missing or reused trained adapter lineage"):
+            proof["results"][arm][item]["training"]["artifact_reload"][
+                "manifest_sha256"
+            ] = "0" * 64
+        with self.assertRaisesRegex(
+            ValueError, "missing or reused trained adapter lineage"
+        ):
             measure_benchmark(self.paths[benchmark], benchmark, proof=proof)
 
     def test_change_training_receipt_between_arms_rejected(self):
@@ -113,9 +117,16 @@ class ResourceReceiptTests(unittest.TestCase):
         script = Path(__file__).with_name("memory_native_adapter_cost.py")
         with tempfile.TemporaryDirectory() as td:
             target = Path(td) / "result.json"
-            argv = [sys.executable, str(script), "--locomo", str(self.paths["locomo"]),
-                    "--longmemeval", str(self.paths["longmemeval"]),
-                    "--output", str(target)]
+            argv = [
+                sys.executable,
+                str(script),
+                "--locomo",
+                str(self.paths["locomo"]),
+                "--longmemeval",
+                str(self.paths["longmemeval"]),
+                "--output",
+                str(target),
+            ]
             p = subprocess.run(argv, capture_output=True, text=True, timeout=90)
             self.assertEqual(p.returncode, 0, p.stderr)
             report = json.loads(target.read_bytes())

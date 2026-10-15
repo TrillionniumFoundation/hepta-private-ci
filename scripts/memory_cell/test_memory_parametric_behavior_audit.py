@@ -28,7 +28,9 @@ class NativeParametricBehaviorTests(unittest.TestCase):
             "longmemeval": os.environ.get("MEMORY_NATIVE_LONGMEMEVAL_ZIP"),
         }
         if not all(names.values()):
-            raise unittest.SkipTest("both externally pinned original native ZIPs required")
+            raise unittest.SkipTest(
+                "both externally pinned original native ZIPs required"
+            )
         cls.paths = {k: Path(v) for k, v in names.items()}
         cls.proofs = {k: verified_archive(v, k) for k, v in cls.paths.items()}
 
@@ -50,13 +52,20 @@ class NativeParametricBehaviorTests(unittest.TestCase):
                 a = source["comparisons"]["no_memory_vs_parametric_only"]
                 self.assertEqual(a["exact_answer_identical"], 16)
                 self.assertEqual((a["f1_wins"], a["f1_losses"]), (0, 0))
-                self.assertEqual(source["inner_member_sha256_verified"], ARCHIVES[bench][1])
+                self.assertEqual(
+                    source["inner_member_sha256_verified"], ARCHIVES[bench][1]
+                )
         lora = observed["longmemeval"]["comparisons"]["rag_vs_rag_lora"]
         self.assertEqual(lora["exact_answer_identical"], 15)
-        self.assertEqual(lora["changed_answer_digests"][0]["question_id"],
-                         "longmemeval:b5ef892d")
-        self.assertEqual(lora["changed_answer_digests"][0]["original_diagnostic_f1"], 0.0)
-        self.assertEqual(lora["changed_answer_digests"][0]["candidate_diagnostic_f1"], 0.0)
+        self.assertEqual(
+            lora["changed_answer_digests"][0]["question_id"], "longmemeval:b5ef892d"
+        )
+        self.assertEqual(
+            lora["changed_answer_digests"][0]["original_diagnostic_f1"], 0.0
+        )
+        self.assertEqual(
+            lora["changed_answer_digests"][0]["candidate_diagnostic_f1"], 0.0
+        )
         self.assertEqual(lora["f1_wins"], 0)
         self.assertEqual(lora["f1_losses"], 0)
         self.assertEqual(lora["f1_ties"], 16)
@@ -93,8 +102,9 @@ class NativeParametricBehaviorTests(unittest.TestCase):
     def test_same_answer_cannot_receive_different_diagnostic_f1(self):
         report = self.proofs["locomo"]["results"]
         mutated = deepcopy(report["rag_lora"])
-        first = next(k for k, row in mutated.items()
-                     if row["diagnostic_token_f1"] is not None)
+        first = next(
+            k for k, row in mutated.items() if row["diagnostic_token_f1"] is not None
+        )
         mutated[first]["diagnostic_token_f1"] = 0.999
         with self.assertRaisesRegex(ValueError, "identical paired answers"):
             score_pair(report["rag"], mutated)
@@ -120,9 +130,16 @@ class NativeParametricBehaviorTests(unittest.TestCase):
         script = Path(__file__).with_name("memory_parametric_behavior_audit.py")
         with tempfile.TemporaryDirectory() as td:
             result = Path(td) / "result.json"
-            cmd = [sys.executable, str(script), "--locomo", str(self.paths["locomo"]),
-                   "--longmemeval", str(self.paths["longmemeval"]),
-                   "--output", str(result)]
+            cmd = [
+                sys.executable,
+                str(script),
+                "--locomo",
+                str(self.paths["locomo"]),
+                "--longmemeval",
+                str(self.paths["longmemeval"]),
+                "--output",
+                str(result),
+            ]
             done = subprocess.run(cmd, text=True, capture_output=True, timeout=75)
             self.assertEqual(done.returncode, 0, done.stderr)
             report = json.loads(result.read_bytes())
