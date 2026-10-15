@@ -1,0 +1,56 @@
+name: Hepta causal proof-step research (E0 E3)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/group-evidence-step-latency-p0-20261015
+  pull_request:
+    paths:
+      - 'qualification/group-proof-step-v1/**'
+      - '.github/workflows/hepta-group-proof-step-research.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: group-proof-step-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-and-campaign:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Public evidence and frozen policy regression
+        run: |
+          PYTHONPATH=qualification/group-proof-step-v1 python -m unittest discover -s qualification/group-proof-step-v1 -p 'test_*.py' -v
+          PYTHONPATH=qualification/group-proof-step-v1 python -O -m unittest discover -s qualification/group-proof-step-v1 -p 'test_*.py' -v
+      - name: Three actual source-only training seeds and independent labels
+        run: |
+          python qualification/group-proof-step-v1/group_proof_step_pilot.py --output "${RUNNER_TEMP}/group-proof-observations.json"
+          python - "${RUNNER_TEMP}/group-proof-observations.json" <<'PY'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding='utf-8'))
+          assert data['production_promotion_permitted'] is False
+          assert len(data['runs']) == 3
+          for run in data['runs']:
+              assert not set(run['train_groups']) & set(run['test_groups'])
+              assert run['training']['completed_updates'] > 0
+              assert run['stem_encoder_forwards'] == 0
+              assert run['natural_reasoning_emergence_established'] is False
+              assert len(run['observations']) == 64 * 5 * 2
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-group-proof-step-${{ github.run_id }}
+          path: ${{ runner.temp }}/group-proof-observations.json
+          if-no-files-found: warn
