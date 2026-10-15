@@ -990,7 +990,7 @@ fn decode_effect_uncertainty_row(
     })
 }
 
-async fn verify_effect_intent(
+pub(crate) async fn verify_effect_intent(
     transaction: &mut Transaction<'_, Sqlite>,
     intent: &ProviderEffectIntent,
     payload_json: &str,
