@@ -806,6 +806,14 @@ fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
     assert_eq!(recorded.len(), 4);
     assert_eq!(recorded[3].phase, PhaseMetricKindV1::Admission);
     assert!(!recorded[3].succeeded);
+    assert_eq!(
+        recorded
+            .iter()
+            .filter(|row| row.phase == PhaseMetricKindV1::NeuronFeature)
+            .count(),
+        1
+    );
+    drop(recorded);
     assert!(replacement.0.lock().unwrap().is_empty());
 }
 
