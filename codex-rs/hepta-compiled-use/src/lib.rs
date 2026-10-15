@@ -214,6 +214,34 @@ impl SharedMemoryQueueV1 {
         Ok(verified)
     }
 
+    /// Pop for a separately authorized owner only after its latest verified
+    /// generation, grant digest and capability mask are supplied. This avoids
+    /// treating the verifier captured at queue construction as current.
+    ///
+    /// This method still does not grant OS effects: a sandbox must fetch and
+    /// independently check fresh revocation/final-use state at effect time.
+    /// Any mismatch retains the entire original queue for owner reconciliation.
+    pub fn pop_with_current_verifier(
+        &mut self,
+        current: ActionVerifierV1,
+    ) -> Result<VerifiedActionV1, ActionErrorV1> {
+        if current.generation == 0 || !current.grant.is_well_formed() {
+            return Err(ActionErrorV1::InvalidCapabilityGrant);
+        }
+        if current.generation != self.verifier.generation {
+            return Err(ActionErrorV1::GenerationMismatch);
+        }
+        if current.grant.digest != self.verifier.grant.digest {
+            return Err(ActionErrorV1::CapabilityDenied);
+        }
+        let frame = self.frames.front().ok_or(ActionErrorV1::QueueEmpty)?;
+        let action = ActionFrameV1::decode(frame)?;
+        self.verifier.verify(&action)?;
+        let verified = current.verify_and_bind(&action)?;
+        let _consumed_frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
+        Ok(verified)
+    }
+
     pub fn len(&self) -> usize {
         self.frames.len()
     }
