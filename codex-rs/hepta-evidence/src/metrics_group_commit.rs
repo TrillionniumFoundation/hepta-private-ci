@@ -5,6 +5,7 @@
 //! authority. The caller must not retry an external effect after a telemetry
 //! failure without independently reconciling that effect.
 
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -14,6 +15,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
@@ -624,6 +626,144 @@ impl MetricsGroupCommitV1 {
         #[cfg(not(unix))]
         {
             let _ = query;
+            Err(MetricsJournalErrorV1::UnsafePath)
+        }
+    }
+
+    /// Inspect a BOUNDED cohort of exact original metric identities in one
+    /// complete traversal of the SAME locked WAL/marker history. This is
+    /// admission evidence for a proposed independent batch signature, NOT an
+    /// executed-model receipt or an external anti-rollback signature.
+    ///
+    /// A missing query is reported as None; a duplicate query, corrupt
+    /// group, torn marker or uncertain inode poisons this original writer.
+    /// Scanning is O(committed WAL + matches * log(cohort)), not one full
+    /// file scan per Neuron Cell. Never call on every inference tick.
+    pub fn read_committed_samples(
+        &mut self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, MetricsJournalErrorV1> {
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if queries.is_empty() || queries.len() > MAX_GROUP_ROWS {
+            return Err(MetricsJournalErrorV1::Capacity);
+        }
+        if queries
+            .iter()
+            .any(|q| q.scope_digest.is_zero() || q.operation_digest.is_zero())
+        {
+            return Err(MetricsJournalErrorV1::EmptyDigest);
+        }
+        let result = self.read_committed_samples_checked(queries);
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+
+    fn read_committed_samples_checked(
+        &self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, MetricsJournalErrorV1> {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt as _;
+
+            // Actual query identities are canonical binary values, not
+            // textual substrings of a WAL line.
+            let mut positions = BTreeMap::new();
+            for (i, query) in queries.iter().enumerate() {
+                let key = (
+                    query.scope_digest,
+                    query.operation_digest,
+                    query.phase as u8,
+                    query.succeeded,
+                );
+                if positions.insert(key, i).is_some() {
+                    return Err(MetricsJournalErrorV1::Capacity);
+                }
+            }
+            let mut counts = vec![
+                (0_u64, 0_u64, 0_u64, Digest32::ZERO);
+                queries.len()
+            ];
+            self.verify_original_frontier()?;
+            self.verify_complete_marker_history(|sequence, head, line| {
+                let payload = line
+                    .split('|')
+                    .nth(5)
+                    .ok_or(MetricsJournalErrorV1::Corrupt)?;
+                for encoded in payload.split(';') {
+                    // parse_group already authenticated each group and
+                    // validated all five encoded columns; nevertheless an
+                    // invalid field here must never be silently ignored.
+                    let mut columns = encoded.split(':');
+                    let scope = Digest32::from_str(
+                        columns.next().ok_or(MetricsJournalErrorV1::Corrupt)?,
+                    )
+                    .map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+                    let operation = Digest32::from_str(
+                        columns.next().ok_or(MetricsJournalErrorV1::Corrupt)?,
+                    )
+                    .map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+                    let phase = columns
+                        .next()
+                        .ok_or(MetricsJournalErrorV1::Corrupt)?
+                        .parse::<u8>()
+                        .map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+                    let _latency = columns.next().ok_or(MetricsJournalErrorV1::Corrupt)?;
+                    let succeeded = match columns.next() {
+                        Some("1") => true,
+                        Some("0") => false,
+                        _ => return Err(MetricsJournalErrorV1::Corrupt),
+                    };
+                    if let Some(index) = positions.get(&(scope, operation, phase, succeeded)) {
+                        let row = counts
+                            .get_mut(*index)
+                            .ok_or(MetricsJournalErrorV1::Corrupt)?;
+                        row.0 = row.0.checked_add(1).ok_or(MetricsJournalErrorV1::Capacity)?;
+                        if row.1 == 0 {
+                            row.1 = sequence;
+                        }
+                        row.2 = sequence;
+                        row.3 = head;
+                    }
+                }
+                Ok(())
+            })?;
+            self.verify_original_frontier()?;
+            let wal = self.file.metadata()?;
+            let marker = self.owner_marker.metadata()?;
+            let frontier = MetricsLocalFrontierV1 {
+                sequence: self.sequence,
+                head_digest: self.head,
+                committed_rows: self.committed_rows,
+                journal_bytes: self.bytes,
+                wal_device: wal.dev(),
+                wal_inode: wal.ino(),
+                marker_device: marker.dev(),
+                marker_inode: marker.ino(),
+            };
+            Ok(queries
+                .iter()
+                .copied()
+                .zip(counts)
+                .map(|(query, (matching_rows, first, last, head))| {
+                    (matching_rows != 0).then_some(MetricsCommittedSampleReadbackV1 {
+                        query,
+                        matching_rows,
+                        first_group_sequence: first,
+                        last_group_sequence: last,
+                        last_group_head: head,
+                        frontier,
+                    })
+                })
+                .collect())
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = queries;
             Err(MetricsJournalErrorV1::UnsafePath)
         }
     }
