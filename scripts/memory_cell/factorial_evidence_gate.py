@@ -7,6 +7,7 @@ It cannot certify source independence, semantic correctness, or production eligi
 import argparse
 import hashlib
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
 
@@ -89,7 +90,8 @@ def analyze(plan, rows):
                 "incompatible reader token budget")
         costs = row.get("cost")
         require(isinstance(costs, dict) and set(costs) == set(COST_KEYS), "full lifecycle cost required")
-        require(all(type(costs[k]) in (float, int) and 0 <= costs[k] < 1e12 for k in COST_KEYS),
+        require(all(costs[k] is None or (type(costs[k]) in (float, int) and math.isfinite(costs[k])
+                and 0 <= costs[k] < 1e12) for k in COST_KEYS),
                 "invalid cost entry")
         require(type(row.get("diagnostic_count")) is int and row["diagnostic_count"] >= 0,
                 "diagnostic count required")
@@ -124,7 +126,10 @@ def analyze(plan, rows):
                     "root_macro_success": sum(sum(v) / len(v) for v in roots.values()) / len(roots),
                     "diagnoses": sum(r["diagnostic_count"] for r in subset),
                     "recovery_rate": sum(r["recovery_success"] for r in subset) / len(subset),
-                    "total_cost": {k: sum(r["cost"][k] for r in subset) for k in COST_KEYS},
+                    "total_cost": {k: (None if any(r["cost"][k] is None for r in subset)
+                                       else sum(r["cost"][k] for r in subset)) for k in COST_KEYS},
+                    "unmeasured_cost_categories": [k for k in COST_KEYS if any(
+                        r["cost"][k] is None for r in subset)],
                 }
     baseline = out["arms"]["hybrid_rag"]["frozen"]["hybrid"]["success_rate"]
     organized = out["arms"]["event_graph"]["frozen"]["hybrid"]["success_rate"]

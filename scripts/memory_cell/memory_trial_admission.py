@@ -204,8 +204,14 @@ def admit(plan, originals, scored, *, plan_pin, original_pin):
             ensure(hexsha(row.get("tool_trace_sha256"))
                    and row["tool_trace_sha256"] == original.get("tool_trace_sha256"),
                    "missing actual program execution receipt")
+        ensure(row["cost"] == original.get("cost"),
+               "cost changed from original receipt")
+        ensure(row["diagnostic_count"] == original.get("diagnostic_count")
+               and row["recovery_success"] == original.get("recovery_success"),
+               "execution counters changed from original receipt")
         for cost_name in COST_KEYS:
-            ensure(math.isfinite(row["cost"][cost_name]), "invalid cost value")
+            ensure(row["cost"][cost_name] is None or math.isfinite(row["cost"][cost_name]),
+                   "invalid cost value")
         matrix[row["id"]][(row["arm"], row["condition"], row["reader"])] = row
     # Reader capacity is tested on byte-identical evidence across model tiers;
     # no performance improvement may be assigned to a MemoryCell model switch.

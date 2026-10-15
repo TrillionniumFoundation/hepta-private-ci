@@ -67,6 +67,9 @@ def fixture():
                         observation.update(tool_trace_sha256=original["tool_trace_sha256"],
                                            program_exit_code=0, program_test_count=3,
                                            program_tests_passed=3)
+                    original.update(cost=observation["cost"],
+                                    diagnostic_count=observation["diagnostic_count"],
+                                    recovery_success=observation["recovery_success"])
                     raw.append(original)
                     scored.append(observation)
     return plan, raw, scored
@@ -153,6 +156,22 @@ class AdmissionTest(unittest.TestCase):
         scored[0]["generated_tokens"] = raw[0]["generated_tokens"] = 600
         with self.assertRaisesRegex(ValueError, "total input and output"):
             self.verify(plan, raw, scored)
+
+    def test_cost_must_match_original_receipt(self):
+        plan, raw, scored = fixture()
+        scored[0]["cost"]["query"] = 900.0
+        with self.assertRaisesRegex(ValueError, "cost changed from original receipt"):
+            self.verify(plan, raw, scored)
+
+    def test_unmeasured_cost_is_not_zero(self):
+        plan, raw, scored = fixture()
+        raw[0]["cost"]["maintenance"] = None
+        scored[0]["cost"]["maintenance"] = None
+        report = self.verify(plan, raw, scored)
+        arm = report["arms"]["hybrid_rag"]["frozen"]["none"]
+        self.assertIsNone(arm["total_cost"]["maintenance"])
+        self.assertIn("maintenance", arm["unmeasured_cost_categories"])
+        self.assertIsNone(report["amortized_tco"])
 
     def test_mismatched_knowledge_evidence_is_not_attributed(self):
         plan, raw, scored = fixture()
