@@ -278,7 +278,8 @@ pub fn evaluate_sequence_heads_v3(
     bytes.extend_from_slice(&actual_pairs.to_be_bytes());
     for cell in &cells {
         let id = cell.cell_id.as_str().as_bytes();
-        bytes.extend_from_slice(&(id.len() as u32).to_be_bytes());
+        let id_len = u32::try_from(id.len()).map_err(|_| SequenceReadErrorV3::Arithmetic)?;
+        bytes.extend_from_slice(&id_len.to_be_bytes());
         bytes.extend_from_slice(id);
         bytes.extend_from_slice(cell.head_digest.as_array());
         bytes.extend_from_slice(&cell.score_q24.to_be_bytes());
@@ -384,7 +385,8 @@ fn round_div(value: i128, divisor: i128) -> Result<i64, SequenceReadErrorV3> {
     let remainder = magnitude % divisor;
     let round_up = remainder * 2 > divisor
         || (remainder * 2 == divisor && quotient % 2 != 0);
-    let signed = (quotient + if round_up { 1 } else { 0 }) * value.signum();
+    let increment = if round_up { 1_i128 } else { 0_i128 };
+    let signed = (quotient + increment) * value.signum();
     i64::try_from(signed).map_err(|_| SequenceReadErrorV3::Arithmetic)
 }
 

@@ -124,7 +124,8 @@ fn reversing_two_facts_changes_a_causal_readout_not_just_its_digest() {
     let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
     let first = evaluate_sequence_heads_v3(&fence(&a), &a, &[Arc::clone(&cell)]).expect("a");
     let reversed = evaluate_sequence_heads_v3(&fence(&b), &b, &[cell]).expect("b");
-    assert_ne!(first.cells[0].score_q24, reversed.cells[0].score_q24);
+    assert_eq!(first.cells[0].score_q24, 10_485_760);
+    assert_eq!(reversed.cells[0].score_q24, 5_592_405);
     assert_ne!(first.observation_digest, reversed.observation_digest);
 }
 
@@ -308,4 +309,30 @@ fn extreme_q24_inputs_saturate_and_receipt_remains_deterministic() {
     assert!(report.cells[0].score_q24.abs() <= Q24_BOUND);
     assert!(!report.observation_digest.is_zero());
     assert_eq!(report.attention_pairs, 3);
+}
+
+#[test]
+fn same_feature_bytes_with_extended_expiry_cannot_reuse_prior_result_receipt() {
+    let id = identity(FeatureModalityV3::Text);
+    let first = two_rows(id.clone());
+    let extended = Arc::new(
+        ImmutableFeatureSequenceV3::build(
+            id.clone(),
+            2000,
+            2,
+            2,
+            Arc::from(vec![Q24, 0, 0, Q24]),
+            Arc::from(vec![1_u8, 1]),
+            Arc::from(vec![FeatureCoordinatesV3::default(); 2]),
+        )
+        .expect("extended snapshot"),
+    );
+    assert_eq!(first.content_digest(), extended.content_digest());
+    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let a = evaluate_sequence_heads_v3(&fence(&first), &first, &[Arc::clone(&cell)])
+        .expect("short-lived");
+    let b = evaluate_sequence_heads_v3(&fence(&extended), &extended, &[cell])
+        .expect("extended");
+    assert_eq!(a.cells, b.cells);
+    assert_ne!(a.observation_digest, b.observation_digest);
 }
