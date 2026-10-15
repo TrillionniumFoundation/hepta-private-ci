@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 //! Real external Cargo integration linkage: the Neuron library is compiled
 //! WITHOUT cfg(test), even though this test binary itself is a test harness.
 //! A fabricated local model driver can never obtain production Final-use by
