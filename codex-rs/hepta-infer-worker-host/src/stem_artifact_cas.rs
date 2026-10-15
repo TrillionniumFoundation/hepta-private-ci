@@ -77,11 +77,13 @@ pub struct VerifiedStemCasArtifactsV1 {
     root_device: u64,
     #[cfg(unix)]
     root_inode: u64,
+    #[cfg(unix)]
     role_stamps: [CasRoleStamp; 4],
 }
 
 /// Metadata pin for bytes already SHA-256 verified at CAS admission.
 /// A cheap per-use check never substitutes for actual first-load hashing.
+#[cfg(unix)]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 struct CasRoleStamp {
     device: u64,
@@ -205,11 +207,19 @@ impl StemArtifactCasVerifierV1 {
             return Err(StemCasError::InvalidSelection);
         }
         let mut sizes = [0_u64; 4];
+        #[cfg(unix)]
         let mut stamps = [CasRoleStamp::default(); 4];
         for (index, digest) in roles.iter().enumerate() {
-            let (size, stamp) = self.read_blob_digest(*digest)?;
-            sizes[index] = size;
-            stamps[index] = stamp;
+            #[cfg(unix)]
+            {
+                let (size, stamp) = self.read_blob_digest(*digest)?;
+                sizes[index] = size;
+                stamps[index] = stamp;
+            }
+            #[cfg(not(unix))]
+            {
+                sizes[index] = self.read_blob_digest(*digest)?;
+            }
         }
         self.validate_root_current()?;
         Ok(VerifiedStemCasArtifactsV1 {
@@ -223,6 +233,7 @@ impl StemArtifactCasVerifierV1 {
             root_device: self.root_device,
             #[cfg(unix)]
             root_inode: self.root_inode,
+            #[cfg(unix)]
             role_stamps: stamps,
         })
     }
@@ -319,10 +330,7 @@ impl StemArtifactCasVerifierV1 {
     }
 
     #[cfg(not(unix))]
-    fn read_blob_digest(
-        &self,
-        _expected: Digest32,
-    ) -> Result<(u64, CasRoleStamp), StemCasError> {
+    fn read_blob_digest(&self, _expected: Digest32) -> Result<u64, StemCasError> {
         Err(StemCasError::UnsupportedPlatform)
     }
 
