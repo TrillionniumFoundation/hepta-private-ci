@@ -232,6 +232,14 @@ jobs:
           # before expending resources on repeated signed native suites.
           # Never suppress, remove or replace the later full Rustfmt checks.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence -p codex-hepta-operator-acceptance -p codex-hepta-supervisor -- --check
+      - name: Early original Control WAL non-test effective UID compile
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # The safe rustix process EUID path must compile in the ordinary
+          # product library, not only in cfg(test) original WAL fixtures.
+          # This is build evidence only, never original signer permission.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-euid-product-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib
       - name: Early original Control WAL canonical path native regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
@@ -286,6 +294,9 @@ jobs:
           # lib tests alone can mask unused imports and production-only type errors.
           # This is COMPILE EVIDENCE, never signed effect or Split authorization.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-prod-feature-compile.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port
+          # Link the ordinary non-cfg(test) CNS library and refuse even a
+          # caller-controlled witness before Final-use or topology effects.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-original-control-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --test cell_split_cns_non_test_denial -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-atomic-control-gate.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib cell_split_cns_runtime_port -- --nocapture
           # Two actual original-Control WAL negative tests: missing signed
           # CNS effect and vanished original WAL, both before external RPC.

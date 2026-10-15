@@ -67,6 +67,40 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
 
+    def test_original_control_euid_product_build_is_source_scoped(self):
+        # A Control-only original-owner change may have no learning scope.
+        # The non-test rustix::process EUID path must still compile.
+        path = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        scope = select([path])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["effects"])
+        self.assertFalse(scope["learning"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        title = "      - name: Early original Control WAL non-test effective UID compile\n"
+        next_title = "      - name: Early original Control WAL canonical path native regression\n"
+        self.assertEqual(workflow.count(title), 1)
+        self.assertEqual(workflow.count(next_title), 1)
+        early = workflow.split(title, 1)[1].split(next_title, 1)[0]
+        for required in (
+            "steps.scope.outputs.lifecycle == 'true'",
+            "steps.scope.outputs.effects == 'true'",
+            "control-wal-euid-product-build.json",
+            "--minimum-tests 0",
+            "cargo check --locked --manifest-path codex-rs/Cargo.toml",
+            "-p codex-hepta-control-plane --lib",
+        ):
+            self.assertIn(required, early)
+        self.assertLess(
+            workflow.index(title),
+            workflow.index("control-wal-current-euid.json"),
+            "product library EUID compile must precede native fault tests",
+        )
+
     def test_signed_original_observer_native_gates_cover_effects_and_lifecycle(self):
         # Supervisor/Control original-effect changes can intentionally have
         # no learning scope. Both signed read-only native guards are required.
@@ -123,6 +157,33 @@ class ScopeTests(unittest.TestCase):
                     self.assertIn(receipt, gate)
                 for minimum in minimums:
                     self.assertIn(minimum, gate)
+
+    def test_cns_original_control_non_test_denial_gate(self):
+        # The product-linked CNS library must deny even a caller-supplied
+        # valid-looking signed witness before preflight or a route mutation.
+        path = "codex-rs/hepta-runtime/tests/cell_split_cns_non_test_denial.rs"
+        scope = select([path])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["effects"])
+        self.assertTrue(scope["lifecycle"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        begin = "      - name: CellSplit native CNS route shared-Control admission regression\n"
+        end = "      - name: Early Supervisor original-Control non-test retirement denial\n"
+        self.assertEqual(workflow.count(begin), 1)
+        self.assertEqual(workflow.count(end), 1)
+        gate = workflow.split(begin, 1)[1].split(end, 1)[0]
+        self.assertIn("cns-original-control-non-test-deny.json", gate)
+        self.assertIn("--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate)
+        self.assertIn("--minimum-tests 1", gate)
+        self.assertLess(
+            gate.index("cns-prod-feature-compile.json"),
+            gate.index("cns-original-control-non-test-deny.json"),
+            "the compiled product-feature library must be checked before external denial",
+        )
 
     def test_supervisor_original_control_non_test_retirement_gate(self):
         # The non-test library denies an unverified Supervisor Retired write.
