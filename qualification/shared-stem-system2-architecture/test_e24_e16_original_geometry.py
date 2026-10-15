@@ -17,11 +17,16 @@ import e24_e16_original_geometry as m
 class RealE16OriginalGeometryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        names=('HEPTA_E24_SOURCE',)+tuple('HEPTA_E24_FOLD_'+str(i) for i in range(4))
-        if any(not os.environ.get(k) for k in names):
-            raise ValueError('five real original ZIP files required; NO mock/fake fallback')
-        cls.source=Path(os.environ[names[0]])
-        cls.folds=[Path(os.environ[k]) for k in names[1:]]
+        # Original E22 archive-fetcher already supplies these exact authenticated
+        # paths to the broad inherited test_*.py discovery. Do not require an
+        # E24-only alias or accidentally turn missing genuine files into SKIP.
+        primary=('HEPTA_E24_SOURCE',)+tuple('HEPTA_E24_FOLD_'+str(i) for i in range(4))
+        inherited=('HEPTA_E22_ARCHIVE',)+tuple('HEPTA_E22_E16_FOLD_'+str(i) for i in range(4))
+        selected=primary if all(os.environ.get(k) for k in primary) else inherited
+        if any(not os.environ.get(k) for k in selected):
+            raise ValueError('five original E16 ZIPs required; no synthetic fallback')
+        cls.source=Path(os.environ[selected[0]])
+        cls.folds=[Path(os.environ[k]) for k in selected[1:]]
         cls.result=m.review(cls.source,cls.folds)
 
     def test_actual_original_prelabel_census_and_scope(self):
