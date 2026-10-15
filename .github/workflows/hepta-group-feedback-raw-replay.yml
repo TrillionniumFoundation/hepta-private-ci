@@ -44,7 +44,9 @@ jobs:
           python -S -O -m unittest test_group_feedback_factorial_raw_replay -v
 
   replay-original-physical:
-    if: github.event_name == 'workflow_dispatch'
+    # PR execution intentionally fails closed while the original 24-arm run is queued.
+    # The exact failed job can be retried after original successful completion.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     needs: mechanism-raw-custody
     runs-on: ubuntu-24.04
     timeout-minutes: 55
@@ -59,7 +61,7 @@ jobs:
       - name: Authenticate immutable successful original push workflow
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ inputs.original_run_id }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
           RUN_METADATA: ${{ runner.temp }}/original-run.json
         run: |
           case "$RUN_ID" in ''|*[!0-9]*) echo 'invalid integer run ID' >&2; exit 2;; esac
@@ -82,13 +84,13 @@ jobs:
       - name: Download only exact successful original run artifacts
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ inputs.original_run_id }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
           ORIGINAL_ARTIFACTS: ${{ runner.temp }}/hepta-original-archives
         run: |
           gh run download "$RUN_ID" --repo TrillionniumFoundation/hepta-private-ci --dir "$ORIGINAL_ARTIFACTS"
       - name: Recompute all 24 original case/Head/critic/trace receipts
         env:
-          RUN_ID: ${{ inputs.original_run_id }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
           ORIGINAL_ARTIFACTS: ${{ runner.temp }}/hepta-original-archives
           REPLAY_OUTPUT: ${{ runner.temp }}/hepta-exact-raw-replay.json
         run: |
