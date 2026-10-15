@@ -10,6 +10,7 @@
 //! group grant required for future original-owner admission.
 
 use std::collections::BTreeSet;
+use std::str::FromStr;
 
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
@@ -100,6 +101,18 @@ pub fn prepare_original_native_batch_group_v1(
             || auth.cancelled
             || auth.deadline_ms == 0
             || auth.maximum_tokens == 0
+            || auth.reservation_model_digest != auth.model_digest
+            || Digest32::from_str(&auth.model_digest).ok() != Some(member.key.model_digest)
+            || StableId::new(auth.request_id.clone()).is_err()
+            || StableId::new(auth.reservation_id.clone()).is_err()
+            || [
+                &member.request.encoder_digest,
+                &member.request.head_digest,
+                &member.request.weights_digest,
+                &member.request.input_digest,
+            ]
+            .into_iter()
+            .any(|digest| Digest32::from_str(digest).is_err())
             || auth.reservation_maximum_tokens < auth.maximum_tokens
             || auth.request_id.is_empty()
             || auth.reservation_id.is_empty()
