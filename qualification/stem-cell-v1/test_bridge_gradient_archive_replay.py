@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 from collections import OrderedDict
 import torch
 
@@ -92,6 +93,50 @@ class RealV6ArchiveOnlyWhenAvailable(unittest.TestCase):
         self.assertTrue(all(x['independent_schedule_recomputed'] for x in self.result['plans']))
         self.assertFalse(self.result['new_v7_1_gradient_training_executed'])
         self.assertFalse(self.result['production_authorized'])
+
+    def test_actual_original_warmup_identity_passes_strict_candidate_tensor_gate(self):
+        # This is a byte-level preflight with authentic ORIGINAL frozen V6
+        # checkpoints, but with openly synthetic future candidate weights.
+        # It is NOT a V7.1 pretrained training run or performance result.
+        with tempfile.TemporaryDirectory() as d, zipfile.ZipFile(self.archive) as z:
+            root=Path(d)
+            previous=root/'original-v6'
+            output=root/'new-candidates-synthetic'
+            for name in ('design.json','warmup-completion.json'):
+                source='reader-v6-bridge/'+name
+                dest=previous/name
+                dest.parent.mkdir(parents=True,exist_ok=True)
+                dest.write_bytes(z.read(source))
+            for seed in SEEDS:
+                for name in ('warmup.pt','warmup-model.json'):
+                    source=f'reader-v6-bridge/seed-{seed}/bridge/{name}'
+                    dest=previous/f'seed-{seed}'/'bridge'/name
+                    dest.parent.mkdir(parents=True,exist_ok=True)
+                    dest.write_bytes(z.read(source))
+                original=json.loads((previous/f'seed-{seed}'/'bridge'/'warmup-model.json').read_text())
+                for offset,arm in enumerate(('joint','protect_old','protect_old_guarded')):
+                    folder=output/f'seed-{seed}'/arm
+                    folder.mkdir(parents=True,exist_ok=True)
+                    synthetic=weight_bytes(seed*100+offset)
+                    (folder/'candidate.pt').write_bytes(synthetic)
+                    decoded=decode_fp32_checkpoint(synthetic)
+                    write(folder/'candidate-training.json',{
+                        'initial_model_sha256':original['training_parameter_sha256'],
+                        'final_model_sha256':decoded['training_parameter_sha256'],
+                    })
+                    write(folder/'candidate-model.json',{
+                        'architecture':{'arm':'bridge'},'seed':seed,
+                        'initial_execution_parameter_sha256':original['execution_parameter_sha256'],
+                        'file_sha256':file_hash(folder/'candidate.pt'),
+                        'training_parameter_sha256':decoded['training_parameter_sha256'],
+                        'execution_parameter_sha256':decoded['execution_parameter_sha256'],
+                        'parameter_count':decoded['parameter_count'],
+                    })
+            result=audit_candidate_checkpoints(output,previous)
+            self.assertEqual(result['model_tensor_count'],9)
+            self.assertTrue(result['original_v6_immutable_identity_verified'])
+            self.assertFalse(result['task_success_verified'])
+            self.assertFalse(result['production_authorized'])
 
     def test_historical_replay_refuses_byte_edit(self):
         with tempfile.TemporaryDirectory() as d:

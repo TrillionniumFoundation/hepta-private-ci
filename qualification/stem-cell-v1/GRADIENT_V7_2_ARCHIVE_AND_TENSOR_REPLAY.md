@@ -36,6 +36,13 @@ user's file Library (not created or altered during this run):
 - Original V6 retains **failed global contrastive retention**; neither this new
   readback nor a successful CRC/hash check repairs or reruns that experiment.
 
+A further positive strict-admission test extracted the **actual three original
+V6 warmup weight/manifest bytes** into an isolated scratch tree and paired them
+with nine explicitly **synthetic Torch-generated** future candidate checkpoints.
+The strict original identity + numerical tensor admission accepted this correctly
+pinned *mechanism fixture*, while tampered/rehashed variants failed. It does
+**not** mean nine new pretrained updates happened.
+
 The source-only replay ran under **`python -S`**, without importing PyTorch.
 The sanitized, deterministic output is retained in
 `V6_ORIGINAL_ARCHIVE_REPLAY_20261015.json` (report SHA256
@@ -97,6 +104,11 @@ python -m unittest -q test_bridge_gradient_guard test_bridge_gradient_review \
 python -O -m unittest -q test_bridge_gradient_guard test_bridge_gradient_review \
   test_bridge_gradient_archive_replay
 ```
+
+Local test outcome on PyTorch 2.10.0+cpu: **53/53** normal Python and **53/53**
+Python `-O` tests passed, including actual anchored warmup positives and explicit
+negative source/weight/path/unsafe-pickle cases. The original historical
+archive audit ran additionally as a separate `python -S` process.
 
 The actual V6 ZIP can be supplied from the private file Library; the research
 checkout does not vendor 20.9 MB of historical saved weights.
