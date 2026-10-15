@@ -16,9 +16,11 @@ def record(composition):
         seed_results=[dict(seed=seed,parameter_count=17402,
           added_adapter_parameters=2304,schedule_sha256='a'*64,
           arms={name:dict(completed_updates=800,exposures=51200,
-            cpu_ns=10,optimizer_tensor_bytes=100,
+            cpu_ns=10,wall_ns=11,optimizer_tensor_bytes=100,
+            train=dict(correct=180,complete_questions=0,total=270,
+              questions=90,positive_f1=0.,brier=.3,cross_entropy=.5),
             heldout=dict(correct=36,complete_questions=0,total=54,
-              questions=18,positive_f1=0.,brier=.3)) for name in ARMS})
+              questions=18,positive_f1=0.,brier=.3,cross_entropy=.5)) for name in ARMS})
           for seed in SEEDS])
 
 
@@ -58,6 +60,32 @@ class SixfoldReviewTests(unittest.TestCase):
         value=record(COMPOSITIONS[0]);value['seed_results'][0]['arms']['local']['optimizer_tensor_bytes']=99
         self.files[0].write_text(json.dumps(value))
         with self.assertRaisesRegex(ValueError,'unequal optimizer'):
+            review(self.files)
+
+
+    def test_nonfinite_and_missing_training_metrics_reject(self):
+        for value in (float('nan'), float('inf'), -1., 1.5):
+            row=record(COMPOSITIONS[0])
+            row['seed_results'][0]['arms']['cross_fact']['heldout']['brier']=value
+            self.files[0].write_text(json.dumps(row))
+            with self.assertRaisesRegex(ValueError,'nonfinite|incomplete'):
+                review(self.files)
+        row=record(COMPOSITIONS[0])
+        del row['seed_results'][0]['arms']['local']['train']
+        self.files[0].write_text(json.dumps(row))
+        with self.assertRaisesRegex(ValueError,'nonfinite|incomplete'):
+            review(self.files)
+
+    def test_bool_spoof_and_missing_wall_cost_reject(self):
+        row=record(COMPOSITIONS[0])
+        row['seed_results'][0]['arms']['local']['heldout']['correct']=True
+        self.files[0].write_text(json.dumps(row))
+        with self.assertRaisesRegex(ValueError,'nonfinite|incomplete'):
+            review(self.files)
+        row=record(COMPOSITIONS[0])
+        del row['seed_results'][0]['arms']['local']['wall_ns']
+        self.files[0].write_text(json.dumps(row))
+        with self.assertRaisesRegex(ValueError,'nonfinite|incomplete'):
             review(self.files)
 
 if __name__=='__main__':unittest.main()
