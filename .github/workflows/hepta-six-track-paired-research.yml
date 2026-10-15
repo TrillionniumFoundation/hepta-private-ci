@@ -1,0 +1,41 @@
+name: Hepta P0-P5 paired research scorer (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/six_track_v1.py'
+      - 'experiments/shared_stem_cell/test_six_track_v1.py'
+      - 'experiments/shared_stem_cell/SIX_TRACK_P0_P5.md'
+      - '.github/workflows/hepta-six-track-paired-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  model-free-source-qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile checked source and execute all original source tests
+        run: |
+          python -m py_compile experiments/shared_stem_cell/six_track_v1.py experiments/shared_stem_cell/test_six_track_v1.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_six_track_v1.py' -v
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_six_track_v1.py' -v
+      - name: Expose no model / release grants
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'experiments/shared_stem_cell')
+          import test_six_track_v1
+          import six_track_v1
+          result=six_track_v1.audit(test_six_track_v1.make_fixture())
+          assert result['authority']=='DENY_ALL'
+          assert not result['production_promotion_permitted']
+          assert not result['statistical_model_winner_selected']
+          assert not result['independent_outcome_provenance_verified']
+          print('SYNTHETIC CONTRACT ONLY; NO MODEL, HARDWARE, FINALUSE OR EFFICACY VERIFIED')
+          PY

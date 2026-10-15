@@ -1,0 +1,224 @@
+"""Closed-world fault tests using explicitly SYNTHETIC, untrusted observations.
+
+These tests evaluate validation and paired arithmetic, never actual model efficacy.
+"""
+import copy
+import hashlib
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+import six_track_v1 as target
+
+
+def sha(s):
+    return hashlib.sha256(s.encode()).hexdigest()
+
+
+def make_fixture():
+    cases = []
+    for t, split in enumerate(target.SPLITS, start=1):
+        for j, condition in enumerate(target.READER):
+            cid = f"case-{split}-{j}"
+            cases.append({
+                "case_id": cid, "task_id": f"task-{split}", "split": split,
+                "source_group": f"family-{split}", "modality": target.MODALITY[j],
+                "reader_condition": condition, "label": t % 2,
+                "input_sha256": sha("input/" + cid),
+                "expected_effect_sha256": sha("effect/" + split),
+                "observed_at": t * 100 + j,
+            })
+    doc = {"schema": target.SCHEMA, "authority": "DENY_ALL",
+           "production_promotion_permitted": False, "cases": cases,
+           **{key: sha(key) for key in target.SHA_KEYS}, "tracks": {}}
+    for stage, arms in target.ARMS.items():
+        doc["tracks"][stage] = {}
+        for name in arms:
+            if stage == "P0":
+                family = name.split("_")[0]
+                frozen = name.endswith("_frozen")
+                initial = sha(stage + family + "-initial")
+            elif stage == "P1":
+                family = name.split("_")[0]
+                frozen = name.endswith("_frozen")
+                initial = sha(stage + family + "-initial")
+            else:
+                family, frozen = stage, False
+                initial = sha(stage + "-initial-" + name)
+            arm = {
+                "name": name, "authority": "DENY_ALL",
+                "production_promotion_permitted": False,
+                "model_sha256": sha("one-base-" + (family if stage == "P0" else stage)),
+                "initial_head_sha256": initial,
+                "final_head_sha256": initial if frozen else sha(stage + name + "-final"),
+                "train_data_sha256": sha(stage + "-same-data"),
+                "optimizer_sha256": sha(stage + "-same-optimizer"),
+                "train_cases": 128 if stage == "P2" and name == "parent_more_data" else 64,
+                "train_steps": 24,
+                "trainable_parameters": 9744,
+                "physical_forward_claimed": False,
+                "costs": {k: (40000000 if k == "peak_rss_bytes" else 2.0)
+                          for k in target.COSTS},
+                "results": [],
+            }
+            if stage == "P4":
+                arm["compute_budget_ms"] = 100
+            for c in cases:
+                utility = 0.5
+                if stage == "P0" and not frozen:
+                    utility = 0.6
+                if stage == "P1" and name == "shared_learned":
+                    utility = 0.65
+                if stage == "P2" and name == "split_children":
+                    utility = 0.55
+                if stage == "P4" and name == "bellman":
+                    utility = 0.75
+                if stage == "P4" and name == "ndu_solver":
+                    utility = 0.6
+                if stage == "P5" and name == "typed":
+                    utility = 0.7
+                row = {
+                    "case_id": c["case_id"], "input_sha256": c["input_sha256"],
+                    "prelabel_sealed": True, "trace_sha256": sha(stage + name + c["case_id"]),
+                    "positive_probability": 0.75 if c["label"] else 0.25,
+                    "observed_utility": utility, "end_to_end_ms": 10.0,
+                    "completed": True,
+                }
+                if stage == "P3":
+                    row["generated_artifact_sha256"] = sha("generated-" + c["case_id"] + name)
+                if stage == "P5":
+                    row["observed_effect_sha256"] = c["expected_effect_sha256"]
+                    row["recovery_status"] = "not_needed"
+                arm["results"].append(row)
+            doc["tracks"][stage][name] = arm
+    return doc
+
+
+class SixTrackValidation(unittest.TestCase):
+    def setUp(self):
+        self.doc = make_fixture()
+
+    def rejected(self, change, msg=None):
+        doc = copy.deepcopy(self.doc)
+        change(doc)
+        with self.assertRaises(target.Invalid) as error:
+            target.audit(doc)
+        if msg:
+            self.assertIn(msg, str(error.exception))
+
+    def test_complete_corpus_still_denies_authority(self):
+        result = target.audit(self.doc)
+        self.assertEqual(result["track_count"], 6)
+        self.assertEqual(result["cases"], 28)
+        self.assertEqual(result["authority"], "DENY_ALL")
+        for field in ("production_promotion_permitted", "statistical_model_winner_selected",
+                      "physical_host_cost_authenticated", "future_ndu_superiority_established",
+                      "jit_mcp_end_to_end_superiority_established", "true_generation_quality_verified"):
+            self.assertIs(result[field], False, field)
+        self.assertAlmostEqual(result["tracks"]["P4"]["paired_family_differences"]
+                               ["ndu_solver__vs__bellman"]["future1"]
+                               ["mean_paired_utility_difference"], -0.15)
+        self.assertTrue(result["tracks"]["P4"]["paired_family_differences"]
+                        ["ndu_solver__vs__bellman"]["future1"]
+                        ["insufficient_independent_families_for_efficacy"])
+
+    def test_e2e_nearest_rank_and_amortized_once(self):
+        out = target.audit(self.doc)["tracks"]["P5"]["arms"]["typed"]
+        self.assertEqual(out["future1"]["p99_ms"], 10.0)
+        # 5 one-time columns at 2ms, over 28 requests, not summed twice.
+        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 28)
+
+    def test_wrong_authority(self):
+        self.rejected(lambda d: d.update(authority="GRANT"), "non-authorizing")
+
+    def test_missing_P5_strong_control(self):
+        self.rejected(lambda d: d["tracks"]["P5"].pop("mcp_batch"), "strong baseline")
+
+    def test_duplicate_case(self):
+        self.rejected(lambda d: d["cases"].append(copy.deepcopy(d["cases"][0])), "duplicate case")
+
+    def test_cross_split_source(self):
+        self.rejected(lambda d: d["cases"][4].update(source_group=d["cases"][0]["source_group"]), "leakage")
+
+    def test_chronology_violation(self):
+        self.rejected(lambda d: d["cases"][8].update(observed_at=2), "time boundary")
+
+    def test_reader_counterfactual_missing(self):
+        self.rejected(lambda d: d["cases"][9].update(reader_condition="none"), "repeated Reader")
+
+    def test_reader_answer_flip(self):
+        self.rejected(lambda d: d["cases"][8].update(label=1-d["cases"][8]["label"]), "Reader intervention changed")
+
+    def test_cross_case_prediction_swap(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["granite_learned"]["results"][4].update(
+            input_sha256=d["cases"][0]["input_sha256"]), "swapped input")
+
+    def test_no_result_deletion(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"].pop(), "paired")
+
+    def test_zero_latency_not_accepted(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][0].update(end_to_end_ms=0), "measurement")
+
+    def test_missing_energy_not_zero(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_frozen"]["costs"].pop("energy_joules"), "incomplete lifecycle")
+
+    def test_p2_unmatched_params(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["split_children"].update(trainable_parameters=9745), "parameter count")
+
+    def test_p2_unmatched_data(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["split_children"].update(train_data_sha256=sha("changed")), "example exposure")
+
+    def test_p2_more_data_must_be_real(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["parent_more_data"].update(train_cases=64), "additional independent exposure")
+
+    def test_no_misleading_frozen_head(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(final_head_sha256=sha("changed")), "frozen baseline")
+
+    def test_p4_equal_budget(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(compute_budget_ms=101), "compute budgets")
+
+    def test_p4_ndu_overrun(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(ndu_ms=101), "compute budget")
+
+    def test_p5_wrong_effect(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][2].update(
+            observed_effect_sha256=sha("different-effects")), "different physical effect")
+
+    def test_p5_uncertain_outcome_not_clean_failure(self):
+        def edit(d):
+            d["tracks"]["P5"]["native_cpu"]["results"][0].update(completed=False, observed_utility=0.0)
+        self.rejected(edit, "unreconciled")
+
+    def test_p3_requires_output_artifact(self):
+        self.rejected(lambda d: d["tracks"]["P3"]["multimodal_generator"]["results"][0].pop(
+            "generated_artifact_sha256"), "SHA256")
+
+    def test_bool_cannot_be_a_numeric_metric(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"]["costs"].update(cpu_ms=True), "measurement")
+
+    def test_duplicate_json_keys_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)/"bad.json"
+            p.write_text('{"ok":1,"ok":2}', encoding="utf-8")
+            with self.assertRaisesRegex(target.Invalid, "duplicate JSON key"):
+                target.load_json(p)
+
+    def test_nan_json_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)/"bad.json"
+            p.write_text('{"ok":NaN}', encoding="utf-8")
+            with self.assertRaises(target.Invalid):
+                target.load_json(p)
+
+    def test_full_file_parse_and_observation_hash(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)/"observations.json"
+            p.write_text(json.dumps(self.doc, allow_nan=False), encoding="utf-8")
+            obj, digest = target.load_json(p)
+            self.assertEqual(digest, hashlib.sha256(p.read_bytes()).hexdigest())
+            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v1")
+
+
+if __name__ == "__main__":
+    unittest.main()
