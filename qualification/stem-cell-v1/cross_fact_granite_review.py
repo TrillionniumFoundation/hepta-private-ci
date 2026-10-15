@@ -173,6 +173,7 @@ def review(root):
     require(decision['all_model_fit_gates_passed'] is permitted,
             'opening decision not derived from complete matrix')
     sealed = list(root.glob('sealed-*')) + list(root.glob('score-*'))
+    fresh_scores = {}
     if not permitted:
         require(not sealed and not (root/'all-models-frozen.json').exists()
                 and terminal['status'] == 'train_gate_failed_no_fresh_scoring'
@@ -201,12 +202,14 @@ def review(root):
                     sealed_path = root / ('sealed-' + stem)
                     score_path = root / ('score-' + stem)
                     expected_panels.update((sealed_path.name, score_path.name))
-                    independent_fresh_score(cases, read(sealed_path), read(score_path),
-                                            frozen[str(seed)][arm], _digest(sealed_path))
+                    fresh_scores[f'{role}/{seed}/{arm}'] = independent_fresh_score(
+                        cases, read(sealed_path), read(score_path),
+                        frozen[str(seed)][arm], _digest(sealed_path))
         require({p.name for p in sealed} == expected_panels,
                 'missing or unauthorized extra fresh scoring evidence')
     return dict(schema='hepta.cross-fact.independent-receipt-review.v1',
                 receipt_consistency_passed=True, training_gates=gates,
+                fresh_source_disjoint_scores=fresh_scores,
                 all_training_gates_passed=permitted,
                 fresh_scoring_permitted_under_existing_rule=permitted,
                 independently_verified_pretrained_forward=False,
