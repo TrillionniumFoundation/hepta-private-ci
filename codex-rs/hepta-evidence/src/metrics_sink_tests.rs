@@ -547,6 +547,12 @@ fn original_actor_cohort_readback_uses_one_committed_frontier_and_never_flushes_
         succeeded: true,
     });
     assert_eq!(
+        owner.read_committed_samples(&[queries[0], queries[0]]),
+        Err(PhaseMetricSinkErrorV1::Unavailable),
+        "a duplicate caller query must fail without being submitted to the real writer"
+    );
+    assert!(owner.healthy(), "invalid query never poisons the original WAL actor");
+    assert_eq!(
         owner.read_committed_samples(&queries)
             .expect("non-flushing exact original reader"),
         vec![None, None],
