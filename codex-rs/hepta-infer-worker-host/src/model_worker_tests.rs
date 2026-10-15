@@ -2334,3 +2334,157 @@ fn signed_batch_aggregate_approval_from_another_authority_instance_is_denied() {
     assert_eq!(worker.driver.feature_calls, 0);
     assert!(!worker.poisoned);
 }
+
+
+
+#[test]
+fn borrowed_stem_final_use_matches_full_legacy_owned_digest_and_binding_for_512d() {
+    use codex_hepta_infer_core::stem_encoder_pipeline_digest_v1;
+    use codex_hepta_infer_core::stem_feature_vector_digest_v1;
+
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.borrowed-v1-parity".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker fixture");
+    worker.load_model(100, manifest()).expect("loaded Head");
+
+    let (mut source, access, mut head, _, _) = scoped_shared_stem_fixture();
+    // Match the current maximum worker width: the historical ABI MUST retain
+    // the same byte order, width and Q24 rounding when we drop the Vec copy.
+    let features = vec![1_i64 << 22; 512];
+    source.feature_width = features.len();
+    source.feature_digest = stem_feature_vector_digest_v1(&features)
+        .expect("bounded 512-D source");
+    head.required_feature_width = features.len();
+    head.required_encoder_digest = stem_encoder_pipeline_digest_v1(&source);
+    let auth = approved_fixture_authorization(
+        &source,
+        &access,
+        &head,
+        &features,
+        request(),
+    );
+
+    // Independently construct the complete *old* owned V1 reference path,
+    // including its full Q24 Vec materialization and canonical wire digest.
+    let legacy = bind_stem_feature_request_v1(
+        &source,
+        &access,
+        head.clone(),
+        &features,
+    )
+    .expect("historical exact signed Stem request");
+    let legacy_scoped_digest = scoped_stem_worker_input_digest_v1(&legacy);
+    let old_request = NeuronFeatureRequest {
+        authorization: auth.clone(),
+        encoder_digest: legacy.request.encoder_digest.to_string(),
+        head_digest: legacy.request.head_digest.to_string(),
+        weights_digest: legacy.request.weights_digest.to_string(),
+        input_digest: legacy_scoped_digest.to_string(),
+        feature_vector_q24: legacy.request.feature_vector_q24,
+        expected_output_width: legacy.request.expected_output_width,
+    };
+    let old_payload = canonical_neuron_feature_payload_digest(&old_request);
+    assert_eq!(old_payload, auth.payload_digest);
+    assert_eq!(old_payload, auth.lease_payload_digest);
+    let old_full_binding = FinalUseBinding {
+        subject_id: source.principal_id.to_string(),
+        destination_id: format!("neuron.head:{}", head.head_model_id),
+        request_sha256: stem_final_use_request_digest_v1(
+            &auth,
+            &worker.grant,
+            legacy.feature_ref_digest,
+        )
+        .into_array(),
+        scope_sha256: legacy.feature_ref_digest.into_array(),
+        payload_sha256: parse_digest32(&old_payload)
+            .expect("exact previous payload digest")
+            .into_array(),
+    };
+
+    let borrowed = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &auth,
+        )
+        .expect("borrowed exact equivalent with no Q24 Vec copy");
+    assert_eq!(borrowed, old_full_binding);
+    assert_eq!(worker.driver.feature_calls, 0);
+
+    // The new code does NOT relax Q24 feature integrity or previous owner
+    // payload matching. Neither path may dispatch after a feature mutation.
+    let mut corrupted = features.clone();
+    corrupted[511] += 1;
+    assert_eq!(
+        worker.expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head,
+            &corrupted,
+            &auth,
+        ),
+        Err(Error::FeatureContract)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+}
+
+#[test]
+fn borrowed_stem_payload_hash_agrees_with_legacy_across_q24_sign_and_bounds() {
+    let (source, access, head, _, _) = scoped_shared_stem_fixture();
+    let original_request = request();
+    for features in [
+        vec![1_i64 << 22, -(1_i64 << 21)],
+        vec![0, 0],
+        vec![-(8_i64 << 24), 8_i64 << 24],
+        vec![1_i64 << 24, -(1_i64 << 24)],
+    ] {
+        let mut selected_source = source.clone();
+        selected_source.feature_digest =
+            codex_hepta_infer_core::stem_feature_vector_digest_v1(&features)
+                .expect("bounded source Q24");
+        let auth = approved_fixture_authorization(
+            &selected_source,
+            &access,
+            &head,
+            &features,
+            original_request.clone(),
+        );
+        let bound = bind_stem_feature_request_v1(
+            &selected_source,
+            &access,
+            head.clone(),
+            &features,
+        )
+        .expect("legacy owned source");
+        let scoped_digest = scoped_stem_worker_input_digest_v1(&bound);
+        let legacy = NeuronFeatureRequest {
+            authorization: auth.clone(),
+            encoder_digest: bound.request.encoder_digest.to_string(),
+            head_digest: bound.request.head_digest.to_string(),
+            weights_digest: bound.request.weights_digest.to_string(),
+            input_digest: scoped_digest.to_string(),
+            feature_vector_q24: bound.request.feature_vector_q24,
+            expected_output_width: bound.request.expected_output_width,
+        };
+        let old = canonical_neuron_feature_payload_digest(&legacy);
+        let borrowed = borrowed_stem_worker_payload_digest_v1(
+            &auth,
+            bound.request.encoder_digest,
+            bound.request.head_digest,
+            bound.request.weights_digest,
+            scoped_digest,
+            &features,
+            bound.request.expected_output_width,
+        );
+        assert_eq!(old, borrowed.to_string());
+    }
+}
