@@ -4,6 +4,8 @@ on:
     paths:
       - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**'
       - '.github/workflows/hepta-ndu-predictive-guard.yml'
+      - '.github/scripts/hepta_artifact_fetch.py'
+      - '.github/scripts/test_hepta_artifact_fetch.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -37,23 +39,14 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/guard-evidence/source.txt"
           python --version >> "$RUNNER_TEMP/guard-evidence/source.txt"
           python -m pip freeze >> "$RUNNER_TEMP/guard-evidence/source.txt"
-      - name: Acquire exact original archived features
+      - name: Authenticate to GitHub once, then fetch SHA-pinned signed blob without token
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import hashlib, os, urllib.request
-          from pathlib import Path
-          out=Path(os.environ['RUNNER_TEMP'])/'guard-original.zip'
-          url=f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/artifacts/11870475540/zip"
-          req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
-          with urllib.request.urlopen(req,timeout=120) as response:data=response.read(2000000)
-          if hashlib.sha256(data).hexdigest()!='195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7':
-              raise ValueError('missing, expired or changed original material')
-          with out.open('xb') as f:f.write(data)
-          PY
+          python -m unittest discover -s .github/scripts -p test_hepta_artifact_fetch.py -v
+          python .github/scripts/hepta_artifact_fetch.py --output "$RUNNER_TEMP/guard-original.zip"
       - name: Actual source execution and independent exact/scalar review
         shell: bash
         run: |

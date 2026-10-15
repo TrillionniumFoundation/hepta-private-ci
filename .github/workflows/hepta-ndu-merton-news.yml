@@ -4,6 +4,8 @@ on:
     paths:
       - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**'
       - '.github/workflows/hepta-ndu-merton-news.yml'
+      - '.github/scripts/hepta_artifact_fetch.py'
+      - '.github/scripts/test_hepta_artifact_fetch.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -39,24 +41,14 @@ jobs:
           python -m pip freeze >> "$RUNNER_TEMP/news-evidence/source.txt"
           D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news
           echo "5578624257ef38a25c12a1dffa24d861a92de5cdd8fef193029c689f20e67a2c  $D/protocol.json" | sha256sum -c -
-      - name: Acquire exact original frozen features, not a new model
+      - name: Authenticate to GitHub once, then fetch SHA-pinned signed blob without token
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import hashlib, os, urllib.request
-          from pathlib import Path
-          out=Path(os.environ['RUNNER_TEMP'])/'news-original.zip'
-          url=f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/artifacts/11870475540/zip"
-          req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
-          with urllib.request.urlopen(req,timeout=120) as response:
-              data=response.read(2000000)
-          if hashlib.sha256(data).hexdigest()!='195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7':
-              raise ValueError('missing, expired, oversized or changed original archive')
-          with out.open('xb') as f:f.write(data)
-          PY
+          python -m unittest discover -s .github/scripts -p test_hepta_artifact_fetch.py -v
+          python .github/scripts/hepta_artifact_fetch.py --output "$RUNNER_TEMP/news-original.zip"
       - name: Original-source tests, physical training and independent scoring
         shell: bash
         run: |
