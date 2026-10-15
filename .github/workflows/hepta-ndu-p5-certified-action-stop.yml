@@ -1,0 +1,65 @@
+name: Hepta P5 nominal certified early-stop vs Picard and cheap controls (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-p5-decision-cert/**'
+      - '.github/workflows/hepta-ndu-p5-certified-action-stop.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  registered-discrete-action-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Record exact P5 source and runtime
+        run: |
+          git rev-parse HEAD
+          python --version
+          sha256sum qualification/ndu-p5-decision-cert/*.py
+          git hash-object qualification/ndu-p5-coupled-study/{coupled_binary.py,independent_reference.py}
+      - name: Complete bounded decision, source and tamper regressions (no assert-only gates)
+        run: |
+          python -W error::ResourceWarning -m unittest discover -s qualification/ndu-p5-decision-cert -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s qualification/ndu-p5-decision-cert -p 'test_*.py' -v
+      - name: Execute physically bounded preregister -> predict -> independent score
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/p5-bound-aware
+          python qualification/ndu-p5-decision-cert/study.py plan --output /tmp/p5-bound-aware/plan.json
+          echo '92c568e9694c259b64ac1f8bb1f6db9d9214dd14ca13c81ff7d1f75bbea7a607  /tmp/p5-bound-aware/plan.json' | sha256sum -c -
+          SRC=$(sha256sum /tmp/p5-bound-aware/plan.json | cut -d' ' -f1)
+          python qualification/ndu-p5-decision-cert/study.py predict \
+            --source /tmp/p5-bound-aware/plan.json --source-sha256 "$SRC" \
+            --output /tmp/p5-bound-aware/sealed-predictions.json
+          PRED=$(sha256sum /tmp/p5-bound-aware/sealed-predictions.json | cut -d' ' -f1)
+          echo "$SRC" > /tmp/p5-bound-aware/plan.sha256
+          echo "$PRED" > /tmp/p5-bound-aware/seal.sha256
+          python qualification/ndu-p5-decision-cert/independent_score.py \
+            --source /tmp/p5-bound-aware/plan.json --source-sha256 "$SRC" \
+            --sealed /tmp/p5-bound-aware/sealed-predictions.json --sealed-sha256 "$PRED" \
+            --output /tmp/p5-bound-aware/independent-score.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/p5-bound-aware/independent-score.json').read_text())
+          groups=r['summary']
+          if not len(groups)==2 or not all(v['count']==96 and v['certified']==96 for v in groups.values()): raise SystemExit('unqualified cohort')
+          if sum(v['early_operator_calls'] for v in groups.values())!=1511: raise SystemExit('wrong adaptive work')
+          if sum(v['full_picard_operator_calls'] for v in groups.values())!=6119: raise SystemExit('wrong baseline work')
+          if r['production_accepted'] is not False or r['authority']!='DENY_ALL': raise SystemExit('authority escalation')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p5-bound-aware-complete-raw-discrete-deny-all
+          path: /tmp/p5-bound-aware/
+          retention-days: 7
+          if-no-files-found: warn
