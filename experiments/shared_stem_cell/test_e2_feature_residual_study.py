@@ -49,6 +49,17 @@ class ResidualStudyTests(unittest.TestCase):
         self.assertEqual(x['arms']['from_zero']['trainable_parameters'],514)
         for name,cap in x['head_parameter_ceiling_by_arm'].items():
             self.assertLessEqual(x['training'][name]['trainable_parameters'],cap)
+    def test_768_modernbert_head_budgets_and_shared_storage(self):
+        p,v=fixture(768)
+        result=e.study(p,'synthetic_modernbert_768',v)
+        self.assertEqual(result['width'],768)
+        self.assertEqual(result['arms']['from_zero']['trainable_parameters'],1538)
+        self.assertEqual(result['frozen_base_parameters_counted_as_shared_storage'],1538)
+        self.assertTrue(result['frozen_base_weight_storage_shared_among_residual_arms'])
+        self.assertFalse(result['chronological_future_ndu_verified'])
+        for name,budget in result['head_parameter_ceiling_by_arm'].items():
+            self.assertLessEqual(result['training'][name]['trainable_parameters'],budget)
+            self.assertTrue(result['arms'][name]['initial_baseline_logits_identical'])
     def test_test_labels_cannot_affect_weights_or_predictions(self):
         p,v=fixture(384)
         a=e.study(p,'test',v)
