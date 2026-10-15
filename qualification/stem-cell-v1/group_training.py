@@ -103,7 +103,7 @@ class SplitCore(nn.Module):
 
 def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
               route_targets=None, max_depth=4, learning_rate=.05, batch_size=32,
-              feedback_fn=None):
+              feedback_fn=None, attention_targets=None, attention_weight=0.1):
     """Train only supplied fitting labels, then freeze an independent model.
 
     Route labels are optional, train-only family supervision. They never enter
@@ -117,6 +117,20 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
         raise ValueError("bounded CPU fitting data, steps and optimizer settings required")
     if route_targets is not None and (not hasattr(model, "route_logits") or route_targets.shape != targets.shape):
         raise ValueError("router and aligned training route labels required")
+    if attention_targets is not None:
+        if (type(model) is not Core or type(attention_weight) not in (int, float)
+                or not 0 < attention_weight <= 1
+                or not isinstance(attention_targets, torch.Tensor)
+                or attention_targets.shape != (len(targets), max_depth, features.shape[1])
+                or attention_targets.dtype != torch.float32
+                or attention_targets.device.type != "cpu" or attention_targets.requires_grad
+                or masks is None or masks.shape != features.shape[:2]
+                or masks.dtype != torch.bool
+                or not torch.isfinite(attention_targets).all()
+                or not ((attention_targets == 0) | (attention_targets == 1)).all()
+                or (attention_targets * (~masks).unsqueeze(1)).any()
+                or not attention_targets.sum().gt(0)):
+            raise ValueError("source-bound binary attention masks and Core required")
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
     trained = copy.deepcopy(model).train()
     for parameter in trained.parameters():
@@ -128,6 +142,7 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
     generator, losses, depths, completed, status = random.Random(seed), [], {}, 0, "completed"
     sampling_digest, attempted_exposures = hashlib.sha256(), 0
     feedback_calls, nonzero_feedback_batches = 0, 0
+    attention_supervised_examples = 0
 
     def diagnostic():
         with meter.scope("evaluation", "bank"), torch.no_grad():
@@ -147,12 +162,23 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                 mask = masks[batch] if masks is not None else None
                 fb = feedback[batch] if feedback is not None else None
                 optimizer.zero_grad(set_to_none=True)
-                if feedback_fn is not None and not isinstance(trained, StaticHead):
+                if (feedback_fn is not None or attention_targets is not None) and not isinstance(trained, StaticHead):
                     state, step_losses = None, []
                     for level in range(depth):
-                        state, logits = trained.step(x, state, fb, mask)
-                        step_losses.append(F.cross_entropy(logits, y))
-                        if level + 1 < depth:
+                        if attention_targets is not None:
+                            state, logits, attention = trained.step(
+                                x, state, fb, mask, return_attention=True)
+                            chosen = attention_targets[batch, level]
+                            active = chosen.sum(dim=1).gt(0).to(attention.dtype)
+                            mass = (attention * chosen).sum(dim=1)
+                            pointer_loss = (-(mass.clamp_min(1e-8).log()) * active).sum() / active.sum().clamp_min(1)
+                            step_loss = F.cross_entropy(logits, y) + attention_weight * pointer_loss
+                            attention_supervised_examples += int(active.sum().item())
+                        else:
+                            state, logits = trained.step(x, state, fb, mask)
+                            step_loss = F.cross_entropy(logits, y)
+                        step_losses.append(step_loss)
+                        if feedback_fn is not None and level + 1 < depth:
                             fb = feedback_fn(indices, logits.detach().argmax(-1).tolist())
                             if (not isinstance(fb, torch.Tensor) or fb.shape != (len(indices), 4)
                                     or fb.device.type != "cpu" or fb.requires_grad):
@@ -198,10 +224,15 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "wall_ns": time.perf_counter_ns() - wall, "cpu_ns": time.process_time_ns() - cpu,
                "work_observation": meter.report(), "route_supervision": route_targets is not None,
                "training_feedback_callback": feedback_fn is not None,
+               "attention_supervision_enabled": attention_targets is not None,
+               "attention_loss_weight": float(attention_weight) if attention_targets is not None else 0.,
+               "attention_supervised_step_examples": attention_supervised_examples,
+               "attention_target_sha256": (hashlib.sha256(attention_targets.contiguous().numpy().tobytes()).hexdigest()
+                                           if attention_targets is not None else None),
                "training_feedback_calls": feedback_calls,
                "nonzero_feedback_batches": nonzero_feedback_batches,
                "feedback_interface": "fitting_batch_indices_and_detached_guesses_only",
-               "depth_supervision": "mean_all_steps" if feedback_fn is not None and not isinstance(trained, StaticHead) else "final_step",
+               "depth_supervision": "mean_all_steps" if (feedback_fn is not None or attention_targets is not None) and not isinstance(trained, StaticHead) else "final_step",
                "diagnostic_loss_profile": "fitting_labels_max_depth_without_dynamic_feedback",
                "budget_comparison": "actual_consumption_reported_unequal_budgets",
                "excluded_formula_work": ["caller_initialization", "feature_production", "Python_integer_sampling",
