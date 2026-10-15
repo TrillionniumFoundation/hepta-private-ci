@@ -1635,6 +1635,14 @@ fn shared_stem_batch_preflight_binds_two_real_loaded_heads_without_driver_or_gra
         },
     ).expect("reversed proposal is independently complete");
     assert_ne!(plan.batch_digest, reordered.batch_digest);
+    assert_ne!(
+        plan.group_binding.request_sha256,
+        reordered.group_binding.request_sha256
+    );
+    assert_ne!(
+        plan.group_binding.payload_sha256,
+        reordered.group_binding.payload_sha256
+    );
     assert_eq!(worker.driver.feature_calls, 0);
     assert!(worker.active_requests.is_empty());
     assert!(!worker.poisoned);
