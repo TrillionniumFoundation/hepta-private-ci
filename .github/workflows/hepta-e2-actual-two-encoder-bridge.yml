@@ -1,0 +1,254 @@
+name: Hepta E2 original DINO plus Granite bridge heldout physical (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-original-dino-granite-bridge-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e2-original-dino-granite-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  mechanism-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: python -m pip install Pillow==12.3.0
+      - name: Re-run all local pure mechanics and anti-leakage gates
+        env:
+          PYTHONPATH: experiments/shared_stem_cell
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_crossmodal_physical.py' -v
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_crossmodal_physical.py' -v
+          python -m compileall -q experiments/shared_stem_cell/e2_crossmodal_physical.py experiments/shared_stem_cell/e2_crossmodal_independent_score.py
+  source-authoring:
+    needs: mechanism-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: python -m pip install Pillow==12.3.0
+      - name: Produce exact synthetic source only and separately withheld FUTURE
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_crossmodal_physical.py prepare --out /tmp/hepta-e2-generated
+          test -d /tmp/hepta-e2-generated/source
+          test -d /tmp/hepta-e2-generated/withheld
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-crossmodal-source-no-future-targets
+          path: |
+            /tmp/hepta-e2-generated/source/
+            /tmp/hepta-e2-generated/source-manifest.json
+          if-no-files-found: error
+          retention-days: 3
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-crossmodal-withheld-evaluator-only
+          path: /tmp/hepta-e2-generated/withheld/
+          if-no-files-found: error
+          retention-days: 3
+  original-two-encoder-fit-and-seal:
+    needs: source-authoring
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install original pretrained CPU runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install transformers==4.57.1 huggingface-hub==0.36.0 \
+             safetensors==0.7.0 Pillow==12.3.0 packaging==25.0 numpy==2.3.5 psutil==7.0.0
+          python -m pip check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-crossmodal-source-no-future-targets
+          path: /tmp/hepta-e2-source
+      - name: Acquire immutable original DINO material and pinned Granite via V8 / V9
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from e2_real_vision_features import MODEL_REPO, MODEL_REVISION, FILES, WEIGHTS_SHA256
+          dest=Path('/tmp/hepta-e2-original-dino')
+          dest.mkdir(exist_ok=False)
+          published=Path(snapshot_download(repo_id=MODEL_REPO, revision=MODEL_REVISION, allow_patterns=list(FILES)))
+          for name in FILES:
+              raw=(published/name).read_bytes()
+              assert 0 < len(raw) <= 125_000_000
+              if name == 'model.safetensors': assert hashlib.sha256(raw).hexdigest() == WEIGHTS_SHA256
+              (dest/name).write_bytes(raw)
+          assert set(p.name for p in dest.iterdir()) == set(FILES)
+          PY
+          mkdir -p /tmp/hepta-granite-material
+          python experiments/shared_stem_cell/public_stem_material_v8.py prepare \
+             --candidate granite-97m-r2 --out /tmp/hepta-granite-material/plan.json
+          python experiments/shared_stem_cell/public_stem_material_v8.py run \
+             --plan /tmp/hepta-granite-material/plan.json \
+             --output /tmp/hepta-granite-material/physical
+          python experiments/shared_stem_cell/public_stem_handoff_v9.py \
+             --plan /tmp/hepta-granite-material/plan.json \
+             --material /tmp/hepta-granite-material/physical/material-receipt.json \
+             --physical /tmp/hepta-granite-material/physical/physical-receipt.json \
+             --model-root /tmp/hepta-granite-material/physical/model \
+             --output /tmp/hepta-granite-material/physical/handoff
+      - name: Physically forward 24 original DINO inputs + original Granite TRAIN, then seal future labels unseen
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_crossmodal_physical.py fit-predict \
+             --source /tmp/hepta-e2-source/source \
+             --dino /tmp/hepta-e2-original-dino \
+             --granite /tmp/hepta-granite-material/physical/model \
+             --granite-profile /tmp/hepta-granite-material/physical/handoff/profile.json \
+             --out /tmp/hepta-e2-physical
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/hepta-e2-physical/producer_receipt.json').read_text())
+          assert r['dino_train_forwards']==16 and r['dino_future_forwards']==8
+          assert r['granite_train_forwards']>=1 and r['future_labels_seen'] is False
+          assert r['stem_selected'] is False and r['production_accepted'] is False
+          assert r['authority']=='DENY_ALL'
+          PY
+      - name: Preserve only synthetic feature/fit/producer receipts, no model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-crossmodal-sealed-producer-no-weights
+          path: /tmp/hepta-e2-physical/
+          if-no-files-found: warn
+          retention-days: 3
+  independent-future-readout:
+    needs: original-two-encoder-fit-and-seal
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install CPU runtime for original separate Granite target extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install transformers==4.57.1 huggingface-hub==0.36.0 \
+             safetensors==0.7.0 Pillow==12.3.0 packaging==25.0 numpy==2.3.5 psutil==7.0.0
+          python -m pip check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-crossmodal-sealed-producer-no-weights
+          path: /tmp/hepta-e2-eval/physical
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-crossmodal-source-no-future-targets
+          path: /tmp/hepta-e2-eval
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-crossmodal-withheld-evaluator-only
+          path: /tmp/hepta-e2-eval/withheld
+      - name: Independently reacquire the same original Granite and V9 handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-granite-independent
+          python experiments/shared_stem_cell/public_stem_material_v8.py prepare \
+             --candidate granite-97m-r2 --out /tmp/hepta-granite-independent/plan.json
+          python experiments/shared_stem_cell/public_stem_material_v8.py run \
+             --plan /tmp/hepta-granite-independent/plan.json \
+             --output /tmp/hepta-granite-independent/physical
+          python experiments/shared_stem_cell/public_stem_handoff_v9.py \
+             --plan /tmp/hepta-granite-independent/plan.json \
+             --material /tmp/hepta-granite-independent/physical/material-receipt.json \
+             --physical /tmp/hepta-granite-independent/physical/physical-receipt.json \
+             --model-root /tmp/hepta-granite-independent/physical/model \
+             --output /tmp/hepta-granite-independent/physical/handoff
+      - name: After sealed inference, open held future caption targets and score real Granite geometry
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_crossmodal_physical.py evaluate-geometry \
+             --predicted /tmp/hepta-e2-eval/physical \
+             --withheld /tmp/hepta-e2-eval/withheld \
+             --granite /tmp/hepta-granite-independent/physical/model \
+             --granite-profile /tmp/hepta-granite-independent/physical/handoff/profile.json \
+             --out /tmp/hepta-e2-independent-readout
+          python experiments/shared_stem_cell/e2_crossmodal_independent_score.py \
+             --predicted /tmp/hepta-e2-eval/physical \
+             --source /tmp/hepta-e2-eval/source \
+             --withheld /tmp/hepta-e2-eval/withheld \
+             --output /tmp/hepta-e2-independent-readout/class_independent_readout.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('/tmp/hepta-e2-independent-readout')
+          g=json.loads((out/'geometry_independent_readout.json').read_text())
+          c=json.loads((out/'class_independent_readout.json').read_text())
+          assert g['production_accepted'] is False
+          assert c['synthetic_data'] is True and c['production_accepted'] is False
+          assert c['authority']=='DENY_ALL' and c['cases']==8
+          assert c['complete_e2_five_arm_result'] is False
+          assert c['native_multimodal_and_ocr_not_executed'] is True
+          assert g['physical_future_granite_forward_batches'] >= 1
+          print('E2 synthetic-only original-model geometry:',json.dumps(g['arms'],sort_keys=True))
+          print('E2 synthetic-only original-model class:',json.dumps(c['task_arms'],sort_keys=True))
+          PY
+      - name: Preserve real experimental readouts or failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-synthetic-two-pretrained-stems-independent-outcomes
+          path: /tmp/hepta-e2-independent-readout/
+          if-no-files-found: warn
+          retention-days: 7
