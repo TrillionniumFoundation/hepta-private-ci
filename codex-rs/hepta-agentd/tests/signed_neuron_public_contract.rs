@@ -60,13 +60,9 @@ fn external_signed_neuron_contract_is_typeable_without_granting_effects() {
     let name = std::any::type_name::<NduReadVerifierV1>();
     assert!(name.contains("NduReadVerifierV1"));
     assert!(
-        std::any::type_name::<NduReadVerificationErrorV1>()
-            .contains("NduReadVerificationErrorV1")
+        std::any::type_name::<NduReadVerificationErrorV1>().contains("NduReadVerificationErrorV1")
     );
-    assert!(
-        std::any::type_name::<dyn NduReadFrontierPortV1>()
-            .contains("NduReadFrontierPortV1")
-    );
+    assert!(std::any::type_name::<dyn NduReadFrontierPortV1>().contains("NduReadFrontierPortV1"));
     // No original Control signer or model effect is constructed in this test.
 }
 
