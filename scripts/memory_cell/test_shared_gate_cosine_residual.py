@@ -81,6 +81,17 @@ class RectanglePlanTests(unittest.TestCase):
         self.assertEqual(ab["evidence_key"], bb["evidence_key"])
         self.assertNotEqual(aa["evidence_key"], ab["evidence_key"])
 
+    def test_train_components_reuse_train_partition_scope(self):
+        _, _, public, plan, _ = material()
+        specs = {row["key"]: row for row in public["features"]}
+        available = next(x for x in plan["units"] if x["status"] == "available")
+        aa, ab, ba, bb = available["variants"]
+        for key in (aa["question_key"], ba["question_key"], ab["evidence_key"]):
+            self.assertIn(key, specs)
+            self.assertEqual(specs[key]["scope"][0], "train")
+        self.assertEqual(ab["evidence_key"], bb["evidence_key"])
+        self.assertTrue(all(row["scope"][0] == "train" for row in plan["additional_features"]))
+
     def test_only_original_train_evidence_is_added(self):
         _, _, public, plan, _ = material()
         old = {x["key"] for x in public["features"]}

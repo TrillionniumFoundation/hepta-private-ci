@@ -97,6 +97,21 @@ def index(rows, key):
     return out
 
 
+def component(split, kind, owner, value):
+    """Create a feature identity under its actual data partition.
+
+    The crossed SELECT helper intentionally hard-codes the SELECT partition and
+    must not be reused for TRAIN components. Scope remains cache metadata only;
+    the neural text is still the canonical public question/options or evidence.
+    """
+    c.require(split in ("train", "select") and kind in ("question", "evidence")
+              and c.text_id(owner), "invalid feature component scope")
+    scope = [split, owner, kind]
+    text = c.canonical(value).decode("utf-8")
+    return {"key": c.digest([gate.REPRESENTATION, scope, text]),
+            "scope": scope, "text": text}
+
+
 def build_train_rectangles(public, train_plan, public_inputs):
     """Close fixed TRAIN pairs using their already registered original sources.
 
@@ -132,8 +147,7 @@ def build_train_rectangles(public, train_plan, public_inputs):
         unit = source[qid]
         c.require(unit["split"] == prior["split"] == "train" and unit["family"] == prior["family"]
                   and unit["status"] == prior["status"], "TRAIN pair identity drift")
-        c.require(own[qid]["family"] == prior["family"],
-                  "original TRAIN source family changed")
+        c.require(own[qid]["family"] == unit["family"], "original TRAIN family drift")
         out = {"pair_id": prior["pair_id"], "question_id": qid, "family": prior["family"],
                "donor_question_id": unit.get("donor_question_id"), "donor_family": unit.get("donor_family"),
                "split": "train", "status": unit["status"], "variants": []}
@@ -155,12 +169,12 @@ def build_train_rectangles(public, train_plan, public_inputs):
                   and original["evidence"] != matched["evidence"]
                   and len(original["evidence"]) == len(matched["evidence"]),
                   "not the fixed TRAIN two-question/two-evidence rectangle")
-        qa = crossed.component("question", unit["family"],
-                               {"question": original["question"], "options": original["options"]})
-        qb = crossed.component("question", unit["donor_family"],
-                               {"question": matched["question"], "options": matched["options"]})
-        ea = crossed.component("evidence", unit["family"], {"evidence": original["evidence"]})
-        eb = crossed.component("evidence", unit["donor_family"], {"evidence": matched["evidence"]})
+        qa = component("train", "question", unit["family"],
+                       {"question": original["question"], "options": original["options"]})
+        qb = component("train", "question", unit["donor_family"],
+                       {"question": matched["question"], "options": matched["options"]})
+        ea = component("train", "evidence", unit["family"], {"evidence": original["evidence"]})
+        eb = component("train", "evidence", unit["donor_family"], {"evidence": matched["evidence"]})
         for feature in (qa, qb, eb):
             c.require(specs.get(feature["key"]) == feature, "old TRAIN component was not encoded under fixed scope")
         c.require(prior["variants"] == [
