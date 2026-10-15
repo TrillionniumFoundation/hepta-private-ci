@@ -10,7 +10,6 @@ this audit grants NO source, host, outcome, model-use or production authority.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 from pathlib import Path
@@ -117,7 +116,8 @@ def validate_source_shape(panel: Any) -> None:
     bounds = {}
     for part in expected_parts:
         rows = parts[part]
-        require(type(rows) is list and len(rows) >= (32 if part in ("old_train", "new_train") else 16),
+        min_rows = 32 if part in ("old_train", "new_train") else 16
+        require(type(rows) is list and len(rows) >= min_rows,
                 "undersized partition")
         total += len(rows)
         require(total <= 8192, "unbounded research panel")
@@ -265,7 +265,8 @@ def replay(panel: dict[str, Any], soft: dict[str, Any],
             expected_gate[coordinate] = 1.0
         require(initial_gate == expected_gate, "non-frozen initial Router profile")
         slots = 3*(dim+1)
-        require(type(candidate["parameter_slots"]) is int and candidate["parameter_slots"] == slots and
+        require(type(candidate["parameter_slots"]) is int and
+                candidate["parameter_slots"] == slots and
                 type(candidate["resident_weight_bytes_fp32"]) is int and
                 candidate["resident_weight_bytes_fp32"] == 4*slots,
                 "unmatched model capacity")
@@ -294,7 +295,8 @@ def replay(panel: dict[str, Any], soft: dict[str, Any],
             eval_counts[0] += selected.count(0)
             eval_counts[1] += selected.count(1)
             eval_batches += int(0 in selected) + int(1 in selected)
-            deltas[part] = round(score["brier"] - post["retrospective_evaluation"][part]["brier"], 7)
+            deltas[part] = round(
+                score["brier"] - post["retrospective_evaluation"][part]["brier"], 7)
         traced = candidate["stage2_selected_head_bitsets_le"]
         require(type(traced) is list and len(traced) == steps,
                 "all training route traces must be retained (also for failed splits)")
@@ -325,11 +327,13 @@ def replay(panel: dict[str, Any], soft: dict[str, Any],
             "eval_head_1_rows": eval_counts[1],
             "train_router_rows": steps*n_all if active else 0,
             "eval_router_rows": n_eval if active else 0,
-            "sampled_routes": steps*n_all if active and arm in ("learned_router", "adaptive_split") else 0,
+            "sampled_routes": (
+                steps*n_all if active and arm in ("learned_router", "adaptive_split") else 0),
             "train_head_batches": batch_count,
             "eval_head_batches": eval_batches,
             "optimizer_steps": 2*steps,
-            "learned_gate_optimizer_steps": steps if active and arm in ("learned_router", "adaptive_split") else 0,
+            "learned_gate_optimizer_steps": (
+                steps if active and arm in ("learned_router", "adaptive_split") else 0),
             "sample_exposures": steps*(2*n_old+n_new),
             "diagnostic_head_rows": 2*n_all + (2*n_old if active else 0),
             "diagnostic_router_rows": n_old if active else 0,

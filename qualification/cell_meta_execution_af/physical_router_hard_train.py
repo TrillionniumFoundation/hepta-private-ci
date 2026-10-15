@@ -286,7 +286,8 @@ def score_after_seal(panel: dict[str, Any], fitted: dict[str, Any]) -> dict[str,
         ys = [x["label"] for x in records]
         answer[part] = {
             "count": n,
-            "accuracy": round(sum(int((p >= .5) == bool(y)) for p, y in zip(ps, ys, strict=True))/n, 7),
+            "accuracy": round(
+                sum(int((p >= .5) == bool(y)) for p, y in zip(ps, ys, strict=True))/n, 7),
             "brier": round(sum((p - y)**2 for p, y in zip(ps, ys, strict=True))/n, 7),
             "nll": round(-sum(y * math.log(p) + (1-y) * math.log1p(-p)
                               for p, y in zip(ps, ys, strict=True))/n, 7),

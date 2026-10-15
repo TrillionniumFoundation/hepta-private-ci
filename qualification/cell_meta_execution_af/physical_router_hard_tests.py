@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import copy
-import json
-import math
 import tempfile
 import unittest
 from pathlib import Path
@@ -121,7 +119,8 @@ class GenuineHardTrainTests(unittest.TestCase):
 
     def test_no_change_traces_never_route_to_child(self):
         arm=self.hard["results"][0]
-        self.assertTrue(all(sum(review.bits(b,128))==0 for b in arm["stage2_selected_head_bitsets_le"]))
+        self.assertTrue(all(
+            sum(review.bits(b, 128)) == 0 for b in arm["stage2_selected_head_bitsets_le"]))
 
     def test_fake_final_prediction_fails_replay(self):
         bad=copy.deepcopy(self.hard)
@@ -172,7 +171,8 @@ class GenuineHardTrainTests(unittest.TestCase):
         h=hashlib.sha256()
         for name in ("heads","gate"):
             item=arm["weights_fp32"][name]
-            h.update(name.encode()+b'\x00'+base.canonical(item["shape"])+b'\x00'+bytes.fromhex(item["data_le_hex"]))
+            h.update(name.encode()+b'\x00'+base.canonical(item["shape"])+b'\x00'
+                     +bytes.fromhex(item["data_le_hex"]))
         arm["weights_sha256"]=h.hexdigest()
         self.reject(bad,"fixed Router")
 
@@ -248,7 +248,8 @@ class GenuineHardTrainTests(unittest.TestCase):
     def test_cli_is_create_only_and_independent_review_command(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
-            for p, payload in (("panel.json",self.panel),("soft.json",self.soft),("post.json",self.post)):
+            for p, payload in (("panel.json", self.panel), ("soft.json", self.soft),
+                               ("post.json", self.post)):
                 (root/p).write_bytes(base.canonical(payload)+b'\n')
             argv=["--panel",str(root/'panel.json'),"--soft-report",str(root/'soft.json'),
                   "--posthoc-report",str(root/'post.json'),"--out",str(root/'hard.json')]
