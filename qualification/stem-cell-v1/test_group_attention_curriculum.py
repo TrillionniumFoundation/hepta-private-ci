@@ -74,7 +74,8 @@ class AttentionCurriculumTests(unittest.TestCase):
 
     def test_reject_truncated_or_cross_source_snapshot(self):
         first = self.tasks[0]
-        broken = replace(self.tokens[0], mask=self.tokens[0].mask[:-1])
+        broken = SimpleNamespace(**{**vars(self.tokens[0]),
+                                    "mask": self.tokens[0].mask[:-1]})
         with self.assertRaises(ValueError):
             build_train_attention([first], [broken], self.tokenizer)
         with self.assertRaises(ValueError):
