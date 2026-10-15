@@ -44,6 +44,11 @@ jobs:
           import unittest
           names = (
               "test_group_training_attention",
+              "test_group_terminal_evidence",
+              "test_group_terminal_receipt_review",
+              "test_group_training_feedback",
+              "test_group_feedback_policy_review",
+              "test_group_feedback_factorial_review",
               "test_group_attention_curriculum",
               "test_group_attention_coverage",
               "test_group_attention_campaign_review",
