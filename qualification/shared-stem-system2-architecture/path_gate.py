@@ -60,8 +60,6 @@ def check_two_sided_path(
         worst = max(worst, abs(xs - start), abs(xe - xs - dt * ys),
                     abs(ye - ys))
         # Need BOTH forward state and backward adjoint continuous.
-        if edge is not edges[0]:
-            pass  # backward boundary checked with previous edge below
         start = xe
     initial = q(x0, signed=True)
     worst = max(worst, abs(q(edges[0].x_start, signed=True) - initial))
