@@ -229,6 +229,10 @@ def review(root):
         for role in ('fresh_combinations', 'fresh_vocabulary'):
             cases = tuple(all_fresh[role])
             require(len(cases) == 128, 'fresh source role size drift')
+            require(hashlib.sha256(json.dumps([c.case_id for c in cases],
+                    separators=(',', ':')).encode()).hexdigest()
+                    == plan['fresh_case_roster_sha256'][role],
+                    'fresh original-source roster digest mismatch')
             for seed in SEEDS:
                 for arm in ARMS:
                     stem = f'{role}-{seed}-{arm}.json'
