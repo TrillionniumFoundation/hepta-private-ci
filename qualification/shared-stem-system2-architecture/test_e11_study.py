@@ -42,6 +42,7 @@ class E11Study(unittest.TestCase):
         self.assertTrue(row["all_full_binary_stochastic_trees_globally_verified"])
         self.assertEqual(row["registered_case_count"], len(STUDIES))
         self.assertEqual(row["E10_actual_archive_check"]["retrospective_no_go"], True)
+        self.assertTrue(row["E10_actual_archive_check"]["exact_paired_and_Holm_recomputed"])
         self.assertEqual(row["new_pretrained_forward_count"], 0)
         self.assertEqual(row["root_control_result"], "NO_INCREMENTAL_ANSWER_QUALITY_IN_LINEAR_SPECIAL_CASE")
         self.assertFalse(row["natural_reasoning_efficacy"])
@@ -100,6 +101,18 @@ class E11Study(unittest.TestCase):
         file.write_text(json.dumps(src))
         with self.assertRaises(ValueError):
             audit(str(self.original), self.sha, str(self.dir/"fake-E10-audit.json"),
+                  e10_path=str(file))
+
+    def test_e10_internal_metrics_forgery_denied_even_with_same_negative_flag(self):
+        # A forged E10 retaining NO_GO is still not a valid independent
+        # score: the two frozen original E7 summaries determine each count.
+        original, _ = strict_json(str(E10))
+        original["models"]["gate_conf_075"]["delta_correct"] = -3
+        file = self.dir / "fake-E10-metrics.json"
+        file.write_text(json.dumps(original))
+        with self.assertRaises(ValueError):
+            audit(str(self.original), self.sha,
+                  str(self.dir/"fake-E10-metrics-audit.json"),
                   e10_path=str(file))
 
     def test_duplicate_json_keys_and_nonfinite_reject(self):
