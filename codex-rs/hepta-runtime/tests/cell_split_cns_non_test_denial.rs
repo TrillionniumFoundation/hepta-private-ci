@@ -126,7 +126,8 @@ fn compiled_product_cns_port_denies_before_preflight_or_physical_effect() {
     let private = tempfile::tempdir().expect("private native runtime root");
     std::fs::set_permissions(private.path(), std::fs::Permissions::from_mode(0o700))
         .expect("private owner directory");
-    let root = HeptaStateRoot::parse(private.path().join("runtime")).expect("original runtime path");
+    let root =
+        HeptaStateRoot::parse(private.path().join("runtime")).expect("original runtime path");
     let runtime = HeptaRuntime::from_adapter(root, Arc::new(ReadOnlyHost));
     let predecessor = runtime.topology_snapshot().expect("serving predecessor");
 
@@ -208,7 +209,11 @@ fn compiled_product_cns_port_denies_before_preflight_or_physical_effect() {
         refused,
         "CNS mutation denied: original same-owner Control B/effect/C is not production-composed"
     );
-    assert_eq!(calls.load(Ordering::SeqCst), 0, "no injected owner callback");
+    assert_eq!(
+        calls.load(Ordering::SeqCst),
+        0,
+        "no injected owner callback"
+    );
     assert_eq!(
         runtime.topology_snapshot().expect("unchanged serving CNS"),
         predecessor,
