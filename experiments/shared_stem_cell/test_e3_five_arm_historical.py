@@ -63,6 +63,12 @@ def panel():
             "audio_tower_loaded":False,
             "train_only_private_head_parameters":769,
             "train_only_head_updates":80,"future_labels_visible":False,
+            "source_token_preflight_rows":1344,
+            "max_conservative_context_tokens":1600,
+            "native_context_limit":8192,
+            "max_image_soft_tokens_charged":1120,
+            "text_tokenizer_truncation_disabled":True,
+            "image_tokens_physically_verified":False,
             "rows":z}
     return orig,ocr,native,lab
 
@@ -123,6 +129,30 @@ class FiveArmContract(unittest.TestCase):
 
     def test_missing_real_native_forward(self):
         q=panel();q[2]["physical_joint_encode_batches"]=0
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_preflight_missing(self):
+        q=panel();del q[2]["source_token_preflight_rows"]
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_partial_preflight_denied(self):
+        q=panel();q[2]["source_token_preflight_rows"]=1343
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_non_conservative_image_charge_denied(self):
+        q=panel();q[2]["max_image_soft_tokens_charged"]=280
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_falsely_verified_media_denied(self):
+        q=panel();q[2]["image_tokens_physically_verified"]=True
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_truncated_text_claim_denied(self):
+        q=panel();q[2]["text_tokenizer_truncation_disabled"]=False
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_native_context_overflow_denied(self):
+        q=panel();q[2]["max_conservative_context_tokens"]=8193
         with self.assertRaises(m.FiveArmError):compose(q)
 
     def test_duplicate_native_id(self):
