@@ -3,8 +3,8 @@ name: Hepta Execution Boundary B0 (synthetic only)
 on:
   pull_request:
     paths:
-      - 'qa/execution-boundary/**'
-      - '.github/workflows/hepta-execution-boundary-research.yml'
+      - qa/execution-boundary/**
+      - .github/workflows/hepta-execution-boundary-research.yml
   workflow_dispatch:
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out exact candidate (no persisted credentials)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
