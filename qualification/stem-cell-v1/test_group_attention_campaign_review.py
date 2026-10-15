@@ -106,6 +106,7 @@ def fixture(directory):
                     search_formula_work=None if mode == "direct" else 100,
                     execution_mode=mode,
                     execution_status=("direct_forward" if mode == "direct"
+                        else "verifier_accepted_not_independent_eval" if correct is not None
                         else "depth_exhausted" if mode == "fixed"
                         else "ndu_stop:no_supported_net_gain"),
                     wall_ns=20, cpu_ns=10)
@@ -166,6 +167,24 @@ class PairedReviewTests(unittest.TestCase):
                 mutation(rows)
                 (root / "observations.json").write_text(json.dumps(rows))
                 with self.subTest(mutation=repr(mutation)), self.assertRaises(ValueError):
+                    review(root)
+
+    def test_reject_impossible_verifier_success_and_unpaid_callbacks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            for mutate in (
+                lambda rows: next(r for r in rows if r["arm"] == "core_fixed" and
+                                  r["evidence_supported"]).update(execution_status="depth_exhausted"),
+                lambda rows: next(r for r in rows if r["arm"] == "attention_ndu"
+                                  and r["evidence_supported"]).update(verifier_calls=0),
+                lambda rows: next(r for r in rows if r["arm"] == "core_fixed"
+                                  and r["evidence_supported"]).update(search_formula_work=0),
+            ):
+                rows = copy.deepcopy(files["observations"])
+                mutate(rows)
+                (root / "observations.json").write_text(json.dumps(rows))
+                with self.subTest(mutation=repr(mutate)), self.assertRaises(ValueError):
                     review(root)
 
     def test_reject_teacher_and_unequal_schedule_forgery(self):
