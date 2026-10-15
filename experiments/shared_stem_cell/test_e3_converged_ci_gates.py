@@ -59,6 +59,9 @@ class Converged(unittest.TestCase):
                       reviewer.lower())
         self.assertIn('test_label_count',reviewer)
         self.assertIn('tree_fingerprint',reviewer)
+        self.assertIn('tree_fingerprint_profile',reviewer)
+        self.assertIn('hepta.e3-path-byte-sha256.v2',reviewer)
+        self.assertIn('tree_fingerprint_file_count',reviewer)
         self.assertIn('original_source_receipt_sha256',reviewer)
         self.assertIn('sha256sum',reviewer)
 
