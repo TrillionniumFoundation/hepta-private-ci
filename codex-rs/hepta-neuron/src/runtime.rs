@@ -306,6 +306,15 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         signed_grant: &SignedFinalUseGrant,
         mut verify_live_ndu_read: impl FnMut() -> Result<Digest32, NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // No production authority is derived from a caller-provided NDU read
+        // callback, even when that caller presents an independently signed
+        // nonce. Until the original Control/CNS AND Evidence owners are
+        // authenticated by a non-forgeable product composition, this public
+        // low-level entry must never claim Final-use or invoke a model.
+        // The same-crate deterministic mechanism remains test-only.
+        if !cfg!(test) {
+            return Err(NeuronRuntimeError::OriginalEffectOwnerUnverified);
+        }
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
             &input.subject_id,
