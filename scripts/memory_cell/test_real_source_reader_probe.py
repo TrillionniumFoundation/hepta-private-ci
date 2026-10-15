@@ -89,9 +89,28 @@ class RealSourceProbeTests(unittest.TestCase):
             removed = c["conditions"]["removed_declaration"][0]["text"]
             self.assertIn(c["symbol"], support)
             self.assertNotIn(c["symbol"], removed)
+            self.assertEqual([r["marker"] for r in c["conditions"]["removed_declaration"]],
+                             [r["marker"] for r in c["conditions"]["hybrid_k4"]])
+            self.assertGreaterEqual(len(c["conditions"]["removed_declaration"]), 2)
             self.assertTrue(c["prerequisite_is_machine_checked_not_human"])
         self.assertFalse(self.plan["independently_human_certified_sufficient_evidence"])
         self.assertFalse(self.plan["production_qualified"])
+
+    def test_lesion_preserves_all_hybrid_markers_in_original_order(self):
+        for case in self.plan["cases"]:
+            removed = case["conditions"]["removed_declaration"]
+            original = case["conditions"]["hybrid_k4"]
+            self.assertEqual([r["marker"] for r in removed],
+                             [r["marker"] for r in original])
+            gold = case["conditions"]["mechanical_support"][0]["marker"]
+            self.assertIn(gold, [r["marker"] for r in removed])
+            self.assertNotEqual([r["marker"] for r in removed], [gold])
+            self.assertEqual(sum(r["marker"] == gold for r in removed), 1)
+            for before, after in zip(original, removed, strict=True):
+                if before["marker"] != gold:
+                    self.assertEqual(before, after)
+                else:
+                    self.assertNotIn(case["symbol"], after["text"])
 
     def test_machine_score_does_not_become_human_review(self):
         report = score_outputs(self.plan, self.sources, fake_journals(self.plan))

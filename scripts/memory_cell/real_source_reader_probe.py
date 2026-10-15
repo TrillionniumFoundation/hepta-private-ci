@@ -22,12 +22,13 @@ import zipfile
 SOURCE_SHA = "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4"
 REOPEN_SHA = "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36"
 INVENTORY_SHA = "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0"
-FROZEN_PLAN_SHA256 = "005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b"
+FROZEN_PLAN_SHA256 = "b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412"
+RETIRED_V1_PLAN_SHA256 = "005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b"
 SOURCE_CUT = "2026-10-12T16:05:00Z"
 EVALUATION = ("python/cpython", "scikit-learn/scikit-learn", "denoland/deno")
 CONDITIONS = ("none", "hybrid_k4", "mechanical_support", "removed_declaration")
 TIERS = ("smol-135m", "smol-1.7b")
-SCHEMA = "hepta.memory.real-git-reader-function-probe.v1"
+SCHEMA = "hepta.memory.real-git-reader-function-probe.v2"
 PROBE_COUNT_PER_REPO = 3
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
@@ -287,7 +288,13 @@ def build_plan(files, blobs):
                     "none": [],
                     "hybrid_k4": [entry(row) for row in selected],
                     "mechanical_support": [entry(original)],
-                    "removed_declaration": [entry(original, ablate=True)],
+                    # Keep identical retrieved markers/count/order to hybrid.
+                    # One-source lesion leaked the target marker after deleting
+                    # the declaration; compare source-use with matched distractors.
+                    "removed_declaration": [
+                        entry(row, ablate=row["path"] == target_path)
+                        for row in selected
+                    ],
                 },
                 original_sources=len(docs), original_source_bytes=sum(row["bytes"] for row in docs),
                 source_identity_digest=digest(canonical([(x["path"], x["blob_sha"]) for x in docs])),
@@ -302,6 +309,8 @@ def build_plan(files, blobs):
         conditions=list(CONDITIONS), reader_tiers=list(TIERS),
         token_limit=1024, max_new_tokens=64,
         tools_allowed=False, labels_in_reader_plan=False,
+        replaced_v1_plan_sha256=RETIRED_V1_PLAN_SHA256,
+        source_only_lesion_control="same_retrieved_markers_with_target_declaration_removed",
         mechanical_support_marker_visible_to_execution_harness=True,
         verified_mechanical_original_declarations=True,
         independently_human_certified_sufficient_evidence=False,
@@ -329,6 +338,8 @@ def locked_plan(path: Path, pinned: str):
             and plan.get("token_limit") == 1024 and plan.get("max_new_tokens") == 64
             and len(plan.get("cases", [])) == 9
             and len({r["id"] for r in plan["cases"]}) == 9
+            and plan.get("replaced_v1_plan_sha256") == RETIRED_V1_PLAN_SHA256
+            and plan.get("source_only_lesion_control") == "same_retrieved_markers_with_target_declaration_removed"
             and plan.get("independently_human_certified_sufficient_evidence") is False
             and plan.get("production_qualified") is False, "reader plan census drift")
     for case in plan["cases"]:
@@ -338,8 +349,10 @@ def locked_plan(path: Path, pinned: str):
             require(len(rows) <= 4 and all(digest(r["text"].encode()) == r["evidence_sha256"] for r in rows),
                     "selected evidence bytes changed")
         require(not case["conditions"]["none"] and len(case["conditions"]["mechanical_support"]) == 1
-                and len(case["conditions"]["removed_declaration"]) == 1,
-                "missing exact study controls")
+                and len(case["conditions"]["removed_declaration"]) == len(case["conditions"]["hybrid_k4"])
+                and [r["marker"] for r in case["conditions"]["removed_declaration"]]
+                    == [r["marker"] for r in case["conditions"]["hybrid_k4"]],
+                "missing matched source-declaration lesion controls")
     return plan
 
 

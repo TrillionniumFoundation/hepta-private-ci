@@ -58,3 +58,29 @@ citation fidelity. Three additional mutation regressions exercise these cases.
 Verified source-only lexical retrieval already includes the target file in all
 nine preregistered cases (9/9); that is **not** evidence of a learned selector
 or a new RAG recall improvement. These are research-only source and CI fixes.
+
+## Forward-only versioned lesion correction — v2
+
+The original **v1 plan** is preserved as a retired historical profile at
+SHA-256 `005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b`. Before qualifying any new model result, source-only
+inspection found that its removed-premise arm delivered **one evidence
+source and that source's only marker**. Because the question asks for that
+marker, deleting the function declaration did not hide the correct marker;
+a successful answer would not prove the declaration unnecessary.
+
+The **v2 plan** (`hepta.memory.real-git-reader-function-probe.v2`) uses
+`b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412`. For each of the nine cases the lesion retains the **exact same
+2–4 label-blind retrieved source markers, positions and distractors** as
+`hybrid_k4`, while removing the queried declaration-bearing lines from
+the target source only. Every non-target excerpt remains byte-identical.
+This is still a controlled source-first diagnosis, not independent semantic
+necessity proof. The v1 SHA is explicitly recorded in v2 plan metadata;
+v1 and v2 answer scores must never be pooled or substituted.
+
+For the v2 source-only experiment, all nine lexical retrievals contain the
+target source (seven at rank one, two at rank two). That establishes a 9/9
+retrieval ceiling on these exposed mechanical lookups; new learned-memory
+recall gain is **not** established. Reader/model evidence remains unqualified
+until completed source-head inference and independent review receipts exist.
+No source has been relabeled or edited; original Git ZIP identities remain
+unchanged and production qualification remains false.

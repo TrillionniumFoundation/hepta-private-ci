@@ -65,7 +65,7 @@ jobs:
             --source-zip /tmp/real-git-reader/source.zip \
             --reopen-zip /tmp/real-git-reader/reopen.zip \
             --plan /tmp/real-git-reader/plan-artifact/public-plan.json
-          echo '005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b  /tmp/real-git-reader/plan-artifact/public-plan.json' | sha256sum --check
+          echo 'b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412  /tmp/real-git-reader/plan-artifact/public-plan.json' | sha256sum --check
           echo "plan_sha=$(sha256sum /tmp/real-git-reader/plan-artifact/public-plan.json | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
           git rev-parse HEAD > /tmp/real-git-reader/plan-artifact/preparation-commit.txt
           (cd /tmp/real-git-reader/plan-artifact && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
@@ -102,7 +102,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$PIN"
-          test "$PLAN_SHA" = "005025a81f40759dddd6576c21e3ef10114158e74456600ab5f4b0e39fef164b"
+          test "$PLAN_SHA" = "b44eea2857291f3040ac03c14826cfbbfd2a925578c2130f771bbc57eaec3412"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-real-git-reader-registered-plan
