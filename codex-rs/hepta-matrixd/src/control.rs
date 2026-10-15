@@ -846,6 +846,10 @@ mod tests {
         Ok(())
     }
 
+    // The request/response path requires an OS-authenticated UDS peer.
+    // Windows codex_uds intentionally returns Unsupported instead of trusting
+    // an unauthenticated peer; assert that rejection in the test below.
+    #[cfg(unix)]
     #[tokio::test]
     async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
         // The product fleet root deliberately leaves Darwin `sun_path`
@@ -897,6 +901,37 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         cancel.cancel();
         task.await??;
+        Ok(())
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_control_socket_refuses_unverified_peer_identity() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, connections) =
+            state(&temp, Arc::new(FakeTransport::default())).await?;
+        let socket = temp.path().join("unverified-matrixd-peer");
+        let mut listener = UnixListener::bind(&socket).await?;
+
+        // Exercise an actual connected UDS stream. A Windows connection must
+        // be rejected before any request bytes are parsed or mutations run,
+        // not silently accepted in place of missing OS peer credentials.
+        let _client = UnixStream::connect(&socket).await?;
+        let accepted = listener.accept().await?;
+        let error = serve_connection(accepted, state)
+            .await
+            .expect_err("unverified Windows peer must fail closed");
+        assert!(matches!(
+            error,
+            MatrixdControlError::Io(ref io_error)
+                if io_error.kind() == ErrorKind::Unsupported
+        ));
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Degraded);
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+        connections.set_fenced();
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         Ok(())
     }
 
