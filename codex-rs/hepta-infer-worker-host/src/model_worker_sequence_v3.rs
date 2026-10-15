@@ -214,6 +214,30 @@ impl SequenceCellHeadV3 {
     pub fn parameter_count(&self) -> usize {
         self.width * 4 + 1
     }
+
+    /// Pure manifest compatibility used by the Encoder before any forward.
+    /// This is model identity only: it does not authenticate a producer/grant.
+    pub(crate) fn compatible_with(
+        &self,
+        identity: &FeatureSequenceIdentityV3,
+        width: usize,
+    ) -> bool {
+        self.width == width
+            && self.binding.encoder_digest == identity.base.encoder_digest
+            && self.binding.tokenizer_digest == identity.base.tokenizer_digest
+            && self.binding.normalizer_digest == identity.base.normalizer_digest
+            && self.binding.quantization_digest == identity.base.quantization_digest
+            && self.binding.preprocessing_digest == identity.preprocessing_digest
+            && self.binding.adapter_digest == identity.adapter_digest
+            && self.binding.modality == identity.modality
+    }
+
+    pub(crate) fn attention_pairs_for(&self, active_rows: u64) -> u64 {
+        match self.binding.attention {
+            SequenceAttentionPolicyV3::Causal => active_rows * (active_rows + 1) / 2,
+            SequenceAttentionPolicyV3::Bidirectional => active_rows * active_rows,
+        }
+    }
 }
 
 /// One borrowed immutable Arc input feeds every Cell. This is a physical Q24
@@ -257,21 +281,10 @@ pub fn evaluate_sequence_heads_v3(
         if !seen.insert(head.cell_id().clone()) {
             return Err(SequenceReadErrorV3::DuplicateCell);
         }
-        if head.width != width
-            || head.binding.encoder_digest != fence.expected_identity.base.encoder_digest
-            || head.binding.tokenizer_digest != fence.expected_identity.base.tokenizer_digest
-            || head.binding.normalizer_digest != fence.expected_identity.base.normalizer_digest
-            || head.binding.quantization_digest != fence.expected_identity.base.quantization_digest
-            || head.binding.preprocessing_digest != fence.expected_identity.preprocessing_digest
-            || head.binding.adapter_digest != fence.expected_identity.adapter_digest
-            || head.binding.modality != fence.expected_identity.modality
-        {
+        if !head.compatible_with(&fence.expected_identity, width) {
             return Err(SequenceReadErrorV3::IncompatibleHead);
         }
-        let count = match head.binding.attention {
-            SequenceAttentionPolicyV3::Causal => valid * (valid + 1) / 2,
-            SequenceAttentionPolicyV3::Bidirectional => valid * valid,
-        };
+        let count = head.attention_pairs_for(valid);
         expected_pairs = expected_pairs
             .checked_add(count)
             .ok_or(SequenceReadErrorV3::Arithmetic)?;
