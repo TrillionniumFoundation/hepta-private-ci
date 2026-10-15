@@ -744,6 +744,24 @@ fn execute() -> Result<serde_json::Value, String> {
     }))
 }
 
+
+
+fn main() {
+    match execute() {
+        Ok(result) => println!("{result}"),
+        Err(reason) => {
+            eprintln!(
+                "{}",
+                json!({
+                    "status":"BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW",
+                    "reason":reason, "production_qualification":false
+                })
+            );
+            std::process::exit(2);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -831,21 +849,5 @@ mod tests {
             "QUANTIZATION_AMBIGUOUS_ABSTAIN"
         );
         Ok(())
-    }
-}
-
-fn main() {
-    match execute() {
-        Ok(result) => println!("{result}"),
-        Err(reason) => {
-            eprintln!(
-                "{}",
-                json!({
-                    "status":"BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW",
-                    "reason":reason, "production_qualification":false
-                })
-            );
-            std::process::exit(2);
-        }
     }
 }

@@ -119,7 +119,7 @@ class TestIndependentlySignedChronology(unittest.TestCase):
         self.seal=self.root/'seal.json'
         self.seal.write_text(json.dumps(self.payload))
         self.sha=hashlib.sha256(self.seal.read_bytes()).hexdigest()
-        self.wit={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
+        self.witness_payload={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
                   'seal_sha256':self.sha,'committed_at_utc':at(3,3),
                   'host_id':'fixture-host','operation_id':'fixture-op'}
         self.outcome={'schema':'hepta.neuron.five-arm-independent-outcomes.v1',
@@ -127,7 +127,7 @@ class TestIndependentlySignedChronology(unittest.TestCase):
                       'rows':[{'case_id':f'fu{i}','source_group_sha256':str(i+1)*64,
                                'partition':('future' if i==0 else 'ood'),
                                'label':i,'label_available_at_utc':at(3,4)} for i in range(2)]}
-        self.make_signed(self.wit,'witness')
+        self.make_signed(self.witness_payload,'witness')
         self.make_signed(self.outcome,'outcomes')
 
     def tearDown(self):
