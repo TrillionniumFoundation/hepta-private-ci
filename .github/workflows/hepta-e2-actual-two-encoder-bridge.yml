@@ -1,8 +1,8 @@
-name: Hepta E2 original DINO plus Granite bridge heldout physical (DENY_ALL)
+name: Hepta E2 source-target manifest isolation physical rerun (DENY_ALL)
 on:
   push:
     branches:
-      - research/e2-original-dino-granite-bridge-20261015
+      - research/e2-target-hash-isolation-20261015
   workflow_dispatch:
 permissions:
   contents: read
