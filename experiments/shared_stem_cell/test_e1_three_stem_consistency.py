@@ -73,4 +73,70 @@ class Tests(unittest.TestCase):
  def test_bad_authority(self):self.deny(lambda x:x.update(production_promotion_permitted=True))
  def test_reused_run(self):self.deny(lambda x:x['candidates'][0].update(run_sha256=x['candidates'][1]['run_sha256']))
 
+
+def core_fixture():
+    """Separate 97M/140M/149M pre-registration, using synthetic data only."""
+    panel=fixture()
+    panel['schema']=m.CORE_SCHEMA
+    modern=panel['candidates'][2]
+    modern['model']='modernbert_base'
+    modern['study']['encoder_candidate']='modernbert_base'
+    modern['study']['feature_width']=768
+    modern['study']['pooling_profile']='mean_l2'
+    for item in panel['candidates']:
+        item['study']['upstream_revision']=m.CORE_REVISIONS[item['model']]
+    return panel
+
+class CoreStemTests(unittest.TestCase):
+    def deny(self, mutate):
+        panel=core_fixture()
+        mutate(panel)
+        with self.assertRaises((ValueError,KeyError,TypeError)):
+            m.review(panel)
+
+    def test_core_triad_is_distinct_from_historical_gemma_study(self):
+        output=m.review(core_fixture())
+        self.assertEqual(output['schema'],m.CORE_OUT_SCHEMA)
+        self.assertEqual(set(output['models']),set(m.CORE_CANDIDATES))
+        self.assertEqual(output['models']['modernbert_base']['feature_width'],768)
+        self.assertTrue(output['matched_training_ceiling_and_schedule'])
+        self.assertFalse(output['production_no_change_source_independently_authenticated'])
+        self.assertFalse(output['independent_reader_and_future_outcome_authority'])
+        self.assertFalse(output['stem_winner_selected'])
+        self.assertFalse(output['production_promotion_permitted'])
+        self.assertEqual(output['authority'],'DENY_ALL')
+
+    def test_cannot_replace_149m_with_embeddinggemma(self):
+        def mutate(panel):
+            panel['candidates'][2]['model']='embeddinggemma_2_text'
+            panel['candidates'][2]['study']['encoder_candidate']='embeddinggemma_2_text'
+            panel['candidates'][2]['study']['feature_width']=256
+            panel['candidates'][2]['study']['pooling_profile']='matryoshka_256_l2'
+        self.deny(mutate)
+
+    def test_unpinned_modernbert_revision(self):
+        self.deny(lambda x:x['candidates'][2]['study'].update(upstream_revision='b'*40))
+
+    def test_modernbert_width_drift(self):
+        self.deny(lambda x:x['candidates'][2]['study'].update(feature_width=384))
+
+    def test_modernbert_pooling_drift(self):
+        self.deny(lambda x:x['candidates'][2]['study'].update(pooling_profile='cls_l2'))
+
+    def test_cross_candidate_labels_cannot_change(self):
+        self.deny(lambda x:x['candidates'][2]['study']['cases'][0].update(answer_label=1))
+
+    def test_cross_candidate_future_group_cannot_change(self):
+        self.deny(lambda x:x['candidates'][2]['study']['cases'][-1].update(source_group='g9'))
+
+    def test_head_training_schedule_must_be_matched(self):
+        self.deny(lambda x:x['candidates'][2]['training'].update(steps=41))
+
+    def test_no_change_predictions_must_be_identical(self):
+        self.deny(lambda x:x['candidates'][2]['study']['arms'][0]['predictions'][0].update(positive_probability=.5))
+
+    def test_gemma_schema_cannot_claim_modernbert(self):
+        x=core_fixture();x['schema']=m.SCHEMA
+        with self.assertRaises(ValueError):m.review(x)
+
 if __name__=='__main__':unittest.main()
