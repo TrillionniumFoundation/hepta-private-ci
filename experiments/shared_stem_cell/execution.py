@@ -287,6 +287,14 @@ class LocalEncoder:
             output_loading_info=True, attn_implementation="eager", **config_kwargs)
         if any(info.get(k) for k in ("unexpected_keys", "mismatched_keys", "error_msgs")):
             raise InputError("incomplete model load")
+        # A pinned safetensors checkpoint must not leave lazy/meta weights.
+        # Diagnose missing material BEFORE .cpu(), without to_empty, random
+        # initialization, or silently accepting incomplete training weights.
+        from multimodal_meta_integrity_v14 import UnmaterializedCheckpoint, require_materialized
+        try:
+            require_materialized(loaded, info)
+        except UnmaterializedCheckpoint as error:
+            raise InputError("unmaterialized frozen checkpoint: " + str(error)) from error
         self.loaded = loaded.cpu().float().eval()
         self.loaded.requires_grad_(False)
         # A clean loading report is not enough: compare every materialized tensor.
@@ -324,6 +332,17 @@ class LocalEncoder:
             raise InputError("unverified loaded tensor")
         verify_snapshot(root, manifest)
         self.model = self.loaded.base_model
+        # A correctly hashed tokenizer can still exceed the hashed embedding
+        # matrix. Fail before training/prediction rather than torch.embedding.
+        embedding = self.model.get_input_embeddings()
+        if embedding is None or not hasattr(embedding, "num_embeddings"):
+            raise InputError("verified encoder has no bounded input embedding")
+        vocabulary = self.tokenizer.get_vocab()
+        if (not vocabulary or len(self.tokenizer) > embedding.num_embeddings
+                or any(type(index) is not int or index < 0
+                       or index >= embedding.num_embeddings
+                       for index in vocabulary.values())):
+            raise InputError("tokenizer vocabulary exceeds verified embedding capacity")
         self.forward_calls = 0
 
     @torch.no_grad()

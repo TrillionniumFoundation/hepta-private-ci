@@ -37,7 +37,9 @@ jobs:
           set -euo pipefail
           python3 -m venv /tmp/hepta-native-pool-v7
           /tmp/hepta-native-pool-v7/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/hepta-native-pool-v7/bin/pip install numpy==1.26.4 safetensors==0.6.2 psutil==7.0.0
+          /tmp/hepta-native-pool-v7/bin/pip install numpy==1.26.4 safetensors==0.6.2 psutil==7.0.0 packaging==25.0
+          /tmp/hepta-native-pool-v7/bin/python -c 'import packaging.version, safetensors.torch; print("V7_IMPORT_PREFLIGHT_OK")'
+          /tmp/hepta-native-pool-v7/bin/pip check
           /tmp/hepta-native-pool-v7/bin/pip freeze > /tmp/hepta-native-pool-v7-requirements.txt
       - name: Run native-pooling contract and old ingress regressions
         run: |

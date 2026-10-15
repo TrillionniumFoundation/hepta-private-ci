@@ -42,7 +42,7 @@ class PhysicalPinnedCandidateTest(unittest.TestCase):
         with torch.random.fork_rng():
             torch.manual_seed(101)
             config = self.BertConfig(
-                vocab_size=17, hidden_size=16, intermediate_size=32,
+                vocab_size=18, hidden_size=16, intermediate_size=32,
                 num_hidden_layers=1, num_attention_heads=4, max_position_embeddings=32,
                 hidden_dropout_prob=0., attention_probs_dropout_prob=0.)
             model = self.BertModel(config).eval().requires_grad_(False)
@@ -51,8 +51,10 @@ class PhysicalPinnedCandidateTest(unittest.TestCase):
             "[PAD]\n[UNK]\n[CLS]\n[SEP]\n[MASK]\nsmall\ntest\n"
             "real\nencoder\ntext\nexample\nzero\none\ntwo\nthree\nfour\n"
             "train\nfuture\n", encoding="utf-8")
-        self.BertTokenizerFast(vocab_file=str(self.model_root / "vocab.txt"),
-                               do_lower_case=True).save_pretrained(self.model_root)
+        token = self.BertTokenizerFast(vocab_file=str(self.model_root / "vocab.txt"),
+                                       do_lower_case=True)
+        self.assertEqual(len(token), config.vocab_size)
+        token.save_pretrained(self.model_root)
         inventory = {p.relative_to(self.model_root).as_posix():sha(p.read_bytes())
                      for p in self.model_root.rglob("*") if p.is_file()}
         self.profile={"schema":PROFILE_SCHEMA,"candidate":"tiny_random",
@@ -129,6 +131,21 @@ class PhysicalPinnedCandidateTest(unittest.TestCase):
         receipt_sha=sha(receipt_path.read_bytes())
         receipt=load_pinned_document(receipt_path,receipt_sha)
         return directory,receipt,receipt_sha
+
+    def test_added_token_beyond_verified_embedding_is_rejected(self):
+        from transformers import AutoTokenizer
+        from execution import InputError, LocalEncoder
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.model_root, local_files_only=True, trust_remote_code=False)
+        self.assertEqual(len(tokenizer), 18)
+        self.assertEqual(tokenizer.add_tokens(["brand_new_token"]), 1)
+        self.assertEqual(len(tokenizer), 19)
+        tokenizer.save_pretrained(self.model_root)
+        files = {p.relative_to(self.model_root).as_posix(): sha(p.read_bytes())
+                 for p in self.model_root.rglob("*") if p.is_file()}
+        manifest = {"revision": "a" * 40, "kind": "encoder", "files": files}
+        with self.assertRaisesRegex(InputError, "tokenizer vocabulary exceeds"):
+            LocalEncoder(self.model_root, manifest, maximum_tokens=32)
 
     def test_physical_load_train_persist_reload_source_only_predict(self):
         trained, receipt, receipt_sha=self.trained()

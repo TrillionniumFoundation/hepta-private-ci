@@ -4,6 +4,8 @@ on:
     branches: ["research/multimodal-stem-bridge-20261014"]
     paths:
       - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
       - "experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md"
       - "experiments/shared_stem_cell/public_stem_handoff_v9.py"
@@ -16,6 +18,8 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
       - "experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md"
       - "experiments/shared_stem_cell/public_stem_handoff_v9.py"

@@ -4,6 +4,7 @@ on:
     branches: ["research/multimodal-stem-bridge-20261014"]
     paths:
       - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py"
       - "experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py"
       - "experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py"
@@ -12,6 +13,7 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py"
       - "experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py"
       - "experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py"
@@ -62,7 +64,7 @@ jobs:
           mkdir -p /tmp/hepta-v11-mlm
           git rev-parse HEAD > /tmp/hepta-v11-mlm/commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-v11-mlm/tree.txt
-          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py \
+          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_meta_integrity_v14.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py \
             experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py \
             experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py \
             experiments/shared_stem_cell/MODERNBERT_TIED_MLM_V11.md \
