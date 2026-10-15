@@ -939,9 +939,8 @@ fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories()
         let root = private_control_dir();
         let path = root.path().join("stack-tail.wal");
         let frozen = snapshot(3);
-        let owner =
-            NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
-                .expect("original private Control owner");
+        let owner = NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
+            .expect("original private Control owner");
         let mut previous = Digest32::ZERO;
         for i in 0..ticks {
             let next = Digest32::of_bytes(format!("checkpoint-{i}").as_bytes());
