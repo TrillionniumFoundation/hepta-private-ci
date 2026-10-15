@@ -32,3 +32,29 @@ Run the safe smoke runner with:
 ```text
 cargo run -p codex-hepta-compiled-use --example compiled_use_runner
 ```
+
+## Atomic local batch pilot (2026-10-15)
+
+`SharedMemoryQueueV1::push_batch` now validates a bounded contiguous group
+before any queue mutation. It rejects a late wrong capability, stale generation,
+bad sequence, out-of-capacity batch, empty group or 64-bit sequence overflow
+without consuming the queue sequence or partially appending an action. The
+scalar `push` path shares exactly this code path. `ActionVerifierV1::verify`
+no longer constructs an unused owned action clone.
+
+`cargo test --locked -p codex-hepta-compiled-use` exercises atomicity and
+fixed-wire equality. `cargo run -p codex-hepta-compiled-use --example
+atomic_batch_bench -- --smoke` runs an actual Rust CPU microbenchmark and
+reports local p50/p95/p99 enqueue+dequeue latency over preconstructed,
+digest-bound 256-byte action frames. This is NOT a model-to-tool RPC benchmark,
+browser completion time, GPU launch, OS action execution or measured production
+p99. It is explicitly a source-only native transport pilot.
+
+The original smoke example now uses only defined capability bits instead of
+`u16::MAX`, which the contract correctly rejects as malformed.
+
+**DRAFT / SHADOW_ONLY / DENY_ALL.** These changes deliberately add no machine
+code, raw pointers, executable memory writer, JIT compilation, OS syscall,
+GPU device authority or grant issuer. A separately reviewed original sandbox
+and FinalUse/Control/CNS owner must provide effect authorization before any
+native Computer Use action can actually execute.
