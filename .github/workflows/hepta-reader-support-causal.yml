@@ -1,0 +1,72 @@
+name: hepta-reader-support-causal (research DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/reader_support_causal.py"
+      - "qualification/stem-cell-v1/reader_support_native_adapter.py"
+      - "qualification/stem-cell-v1/test_reader_support_causal.py"
+      - "qualification/stem-cell-v1/test_reader_support_native_adapter.py"
+      - "qualification/stem-cell-v1/READER_SUPPORT_CAUSAL_V1.md"
+      - ".github/workflows/hepta-reader-support-causal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-torch-reader-counterfactual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU torch for actual toy tensor forwards
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Source SHA and exact research file hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/reader-support-source-sha.txt"
+          git hash-object qualification/stem-cell-v1/reader_support_causal.py \
+            qualification/stem-cell-v1/reader_support_native_adapter.py \
+            qualification/stem-cell-v1/test_reader_support_causal.py \
+            qualification/stem-cell-v1/test_reader_support_native_adapter.py \
+            > "$RUNNER_TEMP/reader-support-source-blobs.txt"
+      - name: Run both exact-source suites normally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p "test_reader_support_*.py" -v 2>&1 | tee "$RUNNER_TEMP/reader-support-tests.log"
+      - name: Re-run fail-closed contracts with Python -O
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p "test_reader_support_*.py" -v 2>&1 | tee "$RUNNER_TEMP/reader-support-optimized-tests.log"
+          python -m compileall -q \
+            qualification/stem-cell-v1/reader_support_causal.py \
+            qualification/stem-cell-v1/reader_support_native_adapter.py \
+            qualification/stem-cell-v1/test_reader_support_causal.py \
+            qualification/stem-cell-v1/test_reader_support_native_adapter.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reader-support-causal-mechanics-source-only
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/reader-support-source-sha.txt
+            ${{ runner.temp }}/reader-support-source-blobs.txt
+            ${{ runner.temp }}/reader-support-tests.log
+            ${{ runner.temp }}/reader-support-optimized-tests.log
