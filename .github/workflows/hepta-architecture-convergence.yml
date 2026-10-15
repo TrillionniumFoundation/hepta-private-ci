@@ -175,6 +175,16 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
+      - name: Neuron legacy Tick production denial and mechanism parity
+        if: steps.execution.outputs.run_native == 'true'
+        run: |
+          set -euo pipefail
+          # This external integration test links an ordinary non-cfg(test)
+          # Neuron library; the unit reference path cannot qualify product use.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-legacy-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test legacy_tick_non_test_gate -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-reference-parity.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture --test-threads=1
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

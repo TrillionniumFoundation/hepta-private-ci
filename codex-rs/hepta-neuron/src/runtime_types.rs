@@ -404,6 +404,9 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    /// The legacy generic Tick has no independently verified NDU/Final-use
+    /// capability and may not invoke an external model in product builds.
+    MissingFinalUseAuthorization,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
