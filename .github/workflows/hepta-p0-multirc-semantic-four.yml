@@ -29,6 +29,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_parallel_model_collector_v10.py'
       - 'experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py'
       - 'experiments/shared_stem_cell/P0_PARALLEL_PHYSICAL_MODEL_V10.md'
+      - 'experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py'
+      - 'experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py'
+      - 'experiments/shared_stem_cell/P0_ISOLATED_MATRIX_ARTIFACT_V11.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
   workflow_dispatch:
 permissions:
@@ -72,6 +75,8 @@ jobs:
             experiments/shared_stem_cell/test_p0_real_preflight_v9.py \
             experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py \
+            experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py \
+            experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py \
             experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py \
@@ -120,6 +125,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_parallel_model_collector_v10.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_parallel_model_collector_v10.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_isolated_artifact_intake_v11.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_isolated_artifact_intake_v11.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -411,8 +420,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: hepta-human-original-arm-*-${{ github.run_id }}
-          merge-multiple: true
-          path: ${{ runner.temp }}/physical-collected
+          merge-multiple: false
+          path: ${{ runner.temp }}/physical-arm-artifacts
+        continue-on-error: true
       - uses: actions/download-artifact@v4
         with:
           name: hepta-human-original-fit-${{ github.run_id }}
@@ -421,10 +431,20 @@ jobs:
         with:
           name: hepta-human-original-blind-${{ github.run_id }}
           path: ${{ runner.temp }}/physical-collected
+      - name: Strictly ingest model-specific archives before original four-model census
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/physical-collected"
+          mkdir -p "$RUNNER_TEMP/physical-arm-artifacts"
+          python experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py \
+            --attempts-root "$RUNNER_TEMP/physical-arm-artifacts" \
+            --collected-root "$ROOT" --run-id '${{ github.run_id }}'
+          python -m json.tool "$ROOT/artifact-intake-v11.json" >/dev/null
       - name: Join all original attempted outcomes, DENY missing source and labels
         run: |
           set -euo pipefail
           ROOT="$RUNNER_TEMP/physical-collected"
+          test -s "$ROOT/artifact-intake-v11.json"
           python experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
             --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
             --artifacts-root "$ROOT" --output "$ROOT/all-four-original-census-v10.json"
