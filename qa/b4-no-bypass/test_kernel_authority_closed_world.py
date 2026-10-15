@@ -876,6 +876,23 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             body,
             "live original marker grammar must be encoded without allocation",
         )
+        encoder_start = code.find("fn encode_control_owner_marker_v1(")
+        encoder_end = code.find("fn control_parent_dir_identity(", encoder_start)
+        self.assertGreaterEqual(encoder_start, 0, "stack marker encoder missing")
+        self.assertGreater(encoder_end, encoder_start, "bounded encoder owner missing")
+        encoder = code[encoder_start:encoder_end]
+        for required in (
+            "let mut marker = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES]",
+            "let mut decimal = [0_u8; 20]",
+            ".checked_add(digits.len() + 1)",
+            "if end > marker.len()",
+        ):
+            self.assertIn(required, encoder, f"marker encoding lost bound: {required}")
+        for forbidden in ("format!(", "String::", "Vec::", "vec![", ".to_owned()"):
+            self.assertNotIn(
+                forbidden, encoder,
+                f"original marker encoder must remain allocation-free: {forbidden}",
+            )
         self.assertNotIn(
             "format!(", body,
             "live owner marker checks may not allocate a new String per tick",
