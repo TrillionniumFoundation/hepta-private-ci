@@ -247,9 +247,9 @@ def scoreblind(store, model_root,output):
             model.eval().requires_grad_(False)
             data={}
             with torch.no_grad():
-                for _, batches in by_depth.items():
-                    for i in range(0,len(batches),16):
-                        batch=batches[i:i+16]
+                for rows in by_depth.values():
+                    for i in range(0,len(rows),16):
+                        batch=rows[i:i+16]
                         probabilities=model(*store.batch(batch),steps=DEPTH).softmax(-1)[:,1]
                         if not bool(torch.isfinite(probabilities).all()):
                             raise ValueError('nonfinite blind model scores')
