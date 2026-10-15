@@ -371,6 +371,13 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    // Real original-owner file creation rejects group/world-readable parents.
+    // TempDir defaults depend on the host environment and umask; secure
+    // only this test-owned directory, never relax production sidecar checks.
+    std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))
+        .expect("private original signed registry fixture directory");
     let path = root.join("external-domain-highwater.json");
     let record = CellSplitMonotonicDurableFrontierV1 {
         journal_domain_id: DOMAIN.to_owned(),
