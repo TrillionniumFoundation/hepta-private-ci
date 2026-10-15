@@ -219,3 +219,97 @@ fn original_wal_frontier_blocks_valid_empty_effect_header_against_evidence_histo
     )
     .expect("two nonempty owners only pass the local diagnostic floor");
 }
+
+#[cfg(unix)]
+#[test]
+fn real_reopened_evidence_wal_rejects_clean_reset_effect_intent_header() {
+    use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = tempfile::tempdir().expect("private original owner");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only root");
+    let intent_path = root.path().join("effect-intent.wal");
+    let evidence_path = root.path().join("original-evidence.wal");
+    let scope = JournalScope {
+        scope_digest: Digest32::of_bytes(b"original-scope"),
+        objective_digest: Digest32::of_bytes(b"original-objective"),
+    };
+    let generation = Generation::new(1).expect("valid generation");
+
+    // Only an original, real, fsynced Evidence sample exists. A newly
+    // recreated business-effect WAL is syntactically valid but has no
+    // recovered effect history; it cannot claim a positive restart gate.
+    {
+        let intent = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            &intent_path,
+            scope,
+            generation,
+            32,
+        )
+        .expect("real original empty intent WAL");
+        assert_eq!(intent.status().durable_records, 0);
+        let sink = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+            .expect("real original Evidence writer");
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: scope.scope_digest,
+            operation_digest: Digest32::of_bytes(b"one-durable-original-operation"),
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 7,
+            succeeded: false,
+        })
+        .expect("admit original Evidence record");
+        sink.flush().expect("fsynced group");
+        let observed = sink.read_local_frontier().expect("original WAL readback");
+        assert_eq!(observed.committed_rows, 1);
+        assert!(matches!(
+            require_recovered_effect_metrics_floor_v1(intent.status(), observed),
+            Err(NeuronProductionBootstrapErrorV1::NotReady)
+        ));
+    }
+
+    // This is a REAL cold reopen of both original protected owners, not an
+    // invented frontier object. The negative gate must survive process-like
+    // owner teardown and exact same-inode WAL replay without writing a new
+    // Final-use nonce or invoking a model backend.
+    require_existing_effect_metrics_v1(&intent_path, &evidence_path)
+        .expect("both original journals remain present");
+    let before_intent = std::fs::read(&intent_path).expect("original intent bytes");
+    let before_evidence = std::fs::read(&evidence_path).expect("original Evidence bytes");
+    {
+        let recovered = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            &intent_path,
+            scope,
+            generation,
+            32,
+        )
+        .expect("cold original intent replay");
+        let reopened = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+            .expect("cold original Evidence replay");
+        let recovered_frontier = reopened
+            .read_local_frontier()
+            .expect("fully replayed original frontier");
+        assert_eq!(recovered.status().durable_records, 0);
+        assert_eq!(recovered_frontier.committed_rows, 1);
+        assert!(matches!(
+            require_recovered_effect_metrics_floor_v1(
+                recovered.status(),
+                recovered_frontier
+            ),
+            Err(NeuronProductionBootstrapErrorV1::NotReady)
+        ));
+    }
+    assert_eq!(
+        std::fs::read(&intent_path).expect("immutable original intent"),
+        before_intent
+    );
+    assert_eq!(
+        std::fs::read(&evidence_path).expect("immutable original evidence"),
+        before_evidence
+    );
+}
