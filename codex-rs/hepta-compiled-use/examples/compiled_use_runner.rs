@@ -16,7 +16,7 @@ use codex_hepta_types::Digest32;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let grant = CapabilityGrantV1 {
         digest: Digest32::of_bytes(b"runner-grant"),
-        allowed: u16::MAX,
+        allowed: 1 | 2 | 4 | 8 | 16,
     };
     let verifier = ActionVerifierV1 {
         generation: 1,
