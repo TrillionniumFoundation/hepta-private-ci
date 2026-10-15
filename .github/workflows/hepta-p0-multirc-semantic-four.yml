@@ -30,6 +30,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py'
       - 'experiments/shared_stem_cell/P0_PARALLEL_PHYSICAL_MODEL_V10.md'
       - 'experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py'
+      - 'experiments/shared_stem_cell/p0_runner_stage_diag_v12.py'
+      - 'experiments/shared_stem_cell/test_p0_runner_stage_diag_v12.py'
+      - 'experiments/shared_stem_cell/P0_RUNNER_STAGE_DIAG_V12.md'
       - 'experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py'
       - 'experiments/shared_stem_cell/P0_ISOLATED_MATRIX_ARTIFACT_V11.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
@@ -76,6 +79,8 @@ jobs:
             experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py \
+            experiments/shared_stem_cell/p0_runner_stage_diag_v12.py \
+            experiments/shared_stem_cell/test_p0_runner_stage_diag_v12.py \
             experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py \
             experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
@@ -129,6 +134,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_isolated_artifact_intake_v11.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_isolated_artifact_intake_v11.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -240,6 +249,7 @@ jobs:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Checkout pinned compact source for Encoder arms only
+        id: compact_checkout
         if: ${{ matrix.model != 'laya421_nochange' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -247,6 +257,7 @@ jobs:
           path: pinned-compact
           ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
       - name: Checkout pinned Gemma implementation for Gemma only
+        id: gemma_checkout
         if: ${{ matrix.model == 'embeddinggemma_2_text' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -254,6 +265,7 @@ jobs:
           path: pinned-gemma
           ref: f8d168a7689eb3624d97c44751791badd069e521
       - name: Verify immutable original research implementation identities
+        id: source_lock
         run: |
           set -euo pipefail
           MODEL='${{ matrix.model }}'
@@ -275,6 +287,7 @@ jobs:
           name: hepta-human-original-blind-${{ github.run_id }}
           path: ${{ runner.temp }}/blind-model
       - name: Pin original CPU runtime without shared mutable model state
+        id: runtime
         run: |
           set -euo pipefail
           MODEL='${{ matrix.model }}'
@@ -295,6 +308,7 @@ jobs:
           "$PY" -m pip check
           "$PY" -m pip freeze > "$ROOT/$MODEL.runtime.txt"
       - name: Source-preflight ONLY this pinned model, never other arms
+        id: source_preflight
         run: |
           set -euo pipefail
           MODEL='${{ matrix.model }}'
@@ -319,6 +333,7 @@ jobs:
             fi
           fi
       - name: Attempt ONE actual pretrained model; preserve its negative outcome
+        id: original_attempt
         run: |
           set -euo pipefail
           MODEL='${{ matrix.model }}'
@@ -386,6 +401,18 @@ jobs:
           with (out/f'attempt-{model}.json').open('x',encoding='utf8') as h:
               json.dump(result,h,sort_keys=True,allow_nan=False);h.write('\n')
           PYCODE
+          # Only GitHub stage enum outcomes are exported; never dump raw exceptions,
+          # environments, secrets, model checkpoints or held-label source files.
+          python experiments/shared_stem_cell/p0_runner_stage_diag_v12.py emit \
+            --arm-root "$OUT" --model "$MODEL" \
+            --run-id '${{ github.run_id }}' \
+            --source-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --compact-checkout '${{ steps.compact_checkout.outcome || 'not_run' }}' \
+            --gemma-checkout '${{ steps.gemma_checkout.outcome || 'not_run' }}' \
+            --source-lock '${{ steps.source_lock.outcome || 'not_run' }}' \
+            --runtime '${{ steps.runtime.outcome || 'not_run' }}' \
+            --source-preflight '${{ steps.source_preflight.outcome || 'not_run' }}' \
+            --original-attempt '${{ steps.original_attempt.outcome || 'not_run' }}'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -431,6 +458,22 @@ jobs:
         with:
           name: hepta-human-original-blind-${{ github.run_id }}
           path: ${{ runner.temp }}/physical-collected
+      - name: Independently inventory original runner steps and exact source-head identity
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/physical-arm-artifacts"
+          python experiments/shared_stem_cell/p0_runner_stage_diag_v12.py audit \
+            --attempts-root "$RUNNER_TEMP/physical-arm-artifacts" \
+            --run-id '${{ github.run_id }}' \
+            --source-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --output "$RUNNER_TEMP/physical-attempt-stage-report-v12.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-original-attempt-stage-observations-${{ github.run_id }}
+          path: ${{ runner.temp }}/physical-attempt-stage-report-v12.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Strictly ingest model-specific archives before original four-model census
         run: |
           set -euo pipefail
