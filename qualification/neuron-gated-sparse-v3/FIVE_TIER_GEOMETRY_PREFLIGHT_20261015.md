@@ -72,10 +72,10 @@ The repository's existing `hepta-neuron-gated-v3-shadow.yml` workflow
 discovers the new test file under its A0 negative-tests stage; no second
 model loader, trainer or CI acceptance owner is introduced.
 
-The separate local Python 3.13 execution of 10 focused tests passed in
+The separate local Python 3.13 execution of 11 focused tests passed in
 normal and optimized mode. Exact local Git blobs match uploaded files:
-`0062f6a8529aa2b3af4799e5d8d764fbb8440a90` (implementation) and
-`9e5f25a03f152e38b1878983f2601906dce3e84d` (tests).
+`c58885529cabfd9cbd265bed289219ba4ec36085` (implementation) and
+`b685bdfdbd40fd8c3dc1a2f92d51e92a7a817cce` (tests).
 **These local tests do not physically load pretrained models or reproduce
 production A0**, and hosted exact-commit checks remain separately required.
 
