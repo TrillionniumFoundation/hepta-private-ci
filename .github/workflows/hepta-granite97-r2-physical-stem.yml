@@ -10,6 +10,8 @@ on:
       - "qualification/stem-cell-v1/token_features.py"
       - "qualification/stem-cell-v1/token_protocol.py"
       - "qualification/stem-cell-v1/cross_fact_bridge.py"
+      - "qualification/stem-cell-v1/cross_fact_joint_fit.py"
+      - "qualification/stem-cell-v1/test_cross_fact_joint_fit.py"
       - ".github/workflows/hepta-granite97-r2-physical-stem.yml"
   workflow_dispatch:
 
@@ -106,10 +108,19 @@ jobs:
           assert result['physical_forward_executed'] is True
           assert result['physical_encoder_forward_batches']>0
           assert result['direct_train_cases']==16
+          assert result['joint_training_status'] in {'max_updates_reached','train_gate_passed'}
+          assert result['one_input_batch_per_paired_update'] is True
+          assert result['shared_input_batch_materializations']==2
+          assert result['single_joint_training_cpu_ns']>0
+          assert result['single_joint_training_wall_ns']>0
+          assert result['nested_head_costs_additive'] is False
+          assert result['original_v5_train_only_full_fit_established'] is False
           assert set(result['head_comparators'])=={'cross_fact','local'}
           for arm in result['head_comparators'].values():
               assert arm['steps']==2 and arm['exposures']==32
               assert arm['parameter_count']>4096
+              assert arm['optimizer_tensor_bytes']>0
+              assert arm['synchronized_input_batch'] is True
           assert result['original_full_six_arm_campaign_executed'] is False
           assert result['future_multirc_or_natural_efficacy_established'] is False
           assert result['production_authorized'] is False
