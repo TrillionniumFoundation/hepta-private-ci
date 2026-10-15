@@ -17,6 +17,17 @@ from group_core import Core
 from paired_execution import PHASES
 
 
+def model_parameter_digest(model):
+    """Canonical actual state bytes, including non-parameter frozen buffers."""
+    digest = hashlib.sha256()
+    for name, value in sorted(model.state_dict().items()):
+        digest.update(name.encode())
+        digest.update(str(tuple(value.shape)).encode())
+        digest.update(str(value.dtype).encode())
+        digest.update(value.detach().cpu().contiguous().numpy().tobytes())
+    return digest.hexdigest()
+
+
 def _pool(tokens, mask=None):
     if mask is None:
         return tokens.mean(dim=1)
@@ -132,6 +143,7 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                 or not attention_targets.sum().gt(0)):
             raise ValueError("source-bound binary attention masks and Core required")
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
+    initial_model_sha256 = model_parameter_digest(model)
     trained = copy.deepcopy(model).train()
     for parameter in trained.parameters():
         parameter.requires_grad_(True)
@@ -218,6 +230,8 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "sample_and_depth_sha256": sampling_digest.hexdigest(),
                "depth_counts": depths, "loss_before": loss_before, "loss_after": loss_after,
                "last_objective_loss": losses[-1] if losses else None,
+               "initial_model_sha256": initial_model_sha256,
+               "trained_model_sha256": model_parameter_digest(trained),
                "parameter_count": sum(p.numel() for p in trained.parameters()),
                "parameter_bytes": parameter_bytes, "optimizer_bytes": optimizer_bytes,
                "last_gradient_tensor_bytes": gradient_bytes, "optimizer": "SGD_without_momentum",
