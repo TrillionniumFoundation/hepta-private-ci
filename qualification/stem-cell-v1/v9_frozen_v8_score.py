@@ -14,6 +14,7 @@ from v9_blind_benchmark import read, write_once
 
 SEEDS=(41,47,53)
 ARMS=('base','bridge','wide','endpoint')
+EXPECTED_V8_INVENTORY_SHA256='ec903fa104dbbaa396fd36bc4fb9c025be1aca3f87091d3f5f009b2f764f3af8'
 
 
 def score(public_path, truth_path, frozen_path, out_path):
@@ -28,6 +29,10 @@ def score(public_path, truth_path, frozen_path, out_path):
             or frozen.get('probs_sha256')!=digest(frozen['probabilities'])
             or set(frozen.get('probabilities',{}))!=expected
             or set(frozen.get('weight_files',{}))!=expected
+            or any(type(v) is not dict or type(v.get('sha256')) is not str
+                   for v in frozen.get('weight_files',{}).values())
+            or digest({k:v['sha256'] for k,v in frozen['weight_files'].items()})
+                   != EXPECTED_V8_INVENTORY_SHA256
             or frozen.get('actual_pretrained_encoder_forwards')!=0
             or frozen.get('optimizer_updates')!=0
             or frozen.get('V9_label_access') is not False
