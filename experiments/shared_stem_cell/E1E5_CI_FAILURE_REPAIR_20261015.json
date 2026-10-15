@@ -66,7 +66,11 @@
     "parent_no_overlap_paths": 44,
     "parent_two_parent_merge": "2ab88d66869193196558d377249dad75d0ed3a84",
     "blocking_codespell_diagnostics_fixed": 12,
-    "dependency_scope_test_fixture_auto_maintenance_disabled": true
+    "dependency_scope_test_fixture_auto_maintenance_disabled": true,
+    "mmbert_full_model_checkpoint_tensor_bytes_verified_in_code": true,
+    "mmbert_local_source_check_scope": "all saved original MLM tensors + entire tied token table; no external publisher signature",
+    "mmbert_loading_report_requires_only_one_explained_tied_alias_missing": true,
+    "mmbert_offline_tamper_tests_must_pass_exact_head_actions": true
   },
   "limits": {
     "new_exact_head_CI_green": false,
@@ -77,6 +81,7 @@
     "real_ndu_verified": false,
     "distributed_cas_native_wal_finaluse_verified": false,
     "stem_selected": false,
-    "production_approved": false
+    "production_approved": false,
+    "actual_exact_source_pretrained_e1_three_model_validation_still_pending": true
   }
 }
