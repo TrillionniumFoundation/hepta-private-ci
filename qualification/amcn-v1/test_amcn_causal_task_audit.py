@@ -116,6 +116,36 @@ class CausalTaskAuditTests(unittest.TestCase):
         self.assertFalse(result["superiority_claim"])
         self.assertIsNone(result["citation_precision"])
 
+    def test_original_physical_1968_semantic_procedural_pair_accepted(self):
+        # #1968 physically trains both (semantic, procedural) and historical
+        # LoCoMo also used (episodic, semantic); do not force a second model.
+        bank = self.plan["capacity"]
+        for item in bank.values():
+            item["head_sha256_by_type"]["procedural"] = item[
+                "head_sha256_by_type"].pop("episodic")
+        for case in self.plan["cases"]:
+            if case["memory_type"] == "episodic":
+                case["memory_type"] = "procedural"
+            for choice in case["arm_plans"].values():
+                if choice["route_type"] == "episodic":
+                    choice["route_type"] = "procedural"
+            sources = {x["source_id"]: x for x in case["sources"]}
+            for arm in a.ARMS:
+                case["arm_plans"][arm]["planned_request_sha256"] = a.request_digest(
+                    self.plan, case, arm, sources)
+        self.assertEqual(self.score()["question_count"], 6)
+
+    def test_out_of_bank_type_not_silently_relabelled(self):
+        self.plan["cases"][0]["memory_type"] = "procedural"
+        with self.assertRaisesRegex(a.Refused, "types"):
+            self.score()
+
+    def test_unknown_hnmf_kind_refused_before_gold(self):
+        bank = self.plan["capacity"]["typed"]["head_sha256_by_type"]
+        bank["unnamed_model_or_gold_type"] = bank.pop("episodic")
+        with self.assertRaisesRegex(a.Refused, "permitted original HNMF types"):
+            self.score()
+
     def test_missing_or_duplicate_arm_denied(self):
         self.answers.pop()
         with self.assertRaises(a.Refused):

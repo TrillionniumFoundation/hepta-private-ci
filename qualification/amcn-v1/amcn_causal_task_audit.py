@@ -36,7 +36,12 @@ MAX_CASES = 8192
 MAX_SOURCES = 512
 MAX_SOURCE_BYTES = 8192
 MAX_FILE_BYTES = 32 * 1024 * 1024
+# Original LoCoMo pilot used (episodic, semantic); the original 1968
+# matched physical training fixture also uses (procedural, semantic).
+# Actual two-type identity must come from the frozen Head-bank inventory.
 TYPES = ("episodic", "semantic")
+ALLOWED_TYPES = frozenset({"sensory", "episodic", "semantic", "procedural",
+                           "predictive", "salience", "meta_memory"})
 
 
 class Refused(ValueError):
@@ -130,6 +135,12 @@ def validate_plan(plan):
             "invalid equal Reader budget")
     capacity = plan["capacity"]
     exact(capacity, {"shared", "typed"}, "missing equal-capacity control")
+    typed_keys = capacity["typed"].get("head_sha256_by_type") if isinstance(
+        capacity["typed"], dict) else None
+    require(isinstance(typed_keys, dict) and len(typed_keys) == 2
+            and set(typed_keys) <= ALLOWED_TYPES,
+            "Head bank must precommit two permitted original HNMF types")
+    committed_types = set(typed_keys)
     for item in capacity.values():
         exact(item, {"total_trainable_parameters", "optimizer_steps",
                      "minibatch_examples", "artifact_sha256", "training_receipt_sha256",
@@ -145,7 +156,7 @@ def validate_plan(plan):
         # The unspecialized control trains each bank member on pooled TRAIN
         # families rather than gaining a free additional parameter or call.
         bank = item["head_sha256_by_type"]
-        require(isinstance(bank, dict) and set(bank) == set(TYPES)
+        require(isinstance(bank, dict) and set(bank) == committed_types
                 and all(is_sha(v) for v in bank.values())
                 and len(set(bank.values())) == len(TYPES)
                 and item["trainable_head_count"] == 2
@@ -172,7 +183,7 @@ def validate_plan(plan):
         require(case["question_id"] not in seen and case["split"] in HELDOUT,
                 "duplicate question or TRAIN truth in Reader trial")
         seen.add(case["question_id"])
-        require(case["memory_type"] in TYPES,
+        require(case["memory_type"] in committed_types,
                 "types are predeclared HNMF kinds, not inferred from gold")
         types.add(case["memory_type"])
         roots.add(case["source_root"])
@@ -216,7 +227,7 @@ def validate_plan(plan):
                     "graph/non-graph intervention not bound")
             if arm == "typed_swapped":
                 require(choice["route_type"] != case["memory_type"]
-                        and choice["route_type"] in TYPES,
+                        and choice["route_type"] in committed_types,
                         "swapped-type must really route to the other type")
             elif arm in ("strong_hybrid_rag", "frozen_shared", "learned_shared",
                          "unsplit_equal_graph"):
@@ -231,7 +242,7 @@ def validate_plan(plan):
         typed_bank = capacity["typed"]["head_sha256_by_type"]
         shared_bank = capacity["shared"]["head_sha256_by_type"]
         kind = case["memory_type"]
-        opposite = next(t for t in TYPES if t != kind)
+        opposite = next(t for t in committed_types if t != kind)
         require(get("learned_shared")["head_sha256"] == shared_bank[kind]
                 and get("learned_typed")["head_sha256"] == typed_bank[kind]
                 and get("typed_swapped")["head_sha256"] == typed_bank[opposite],
@@ -250,7 +261,7 @@ def validate_plan(plan):
         require(len({get(arm)["graph_sha256"] for arm in (
             "typed_fixed_graph", "typed_learned_graph", "typed_graph_lesion")}) == 3,
             "fixed, learned, and lesioned graph must be distinct interventions")
-    require(types == set(TYPES),
+    require(types == committed_types,
             "both functional types required for specialization contrast")
     alias = plan["lineage_alias_edges"]
     require(isinstance(alias, list) and len(alias) <= MAX_CASES * 2,

@@ -164,3 +164,57 @@ and prospective task windows are **not supplied** by this increment. The new
 opt-in Runner must refuse those missing inputs; it may not silently substitute
 mock parameters or a different Reader. `production_accepted=false` remains
 mandatory regardless of local execution.
+
+## Journal byte-recount and original physical-bank bridge (2026-10-15)
+
+The original #1968 archival LoCoMo pilot used `episodic` and `semantic`,
+while its separate physically trained equal-capacity Torch fixture used
+`semantic` and `procedural`. The nine-arm protocol now accepts **exactly
+two precommitted HNMF types from the physical Head-bank manifest**, with the
+same types/slots in both banks. Types are never inferred from heldout gold.
+The original raw answer is reparsed for literal `[E<n>]` citations, and
+RETENTION may not share a transitive root-family with SELECT/FUTURE groups.
+
+`amcn_causal_journal_review.py` independently reconstructs **each byte-level
+attempt** from the Reader producer's seven durable files, checking the
+ordered starts/answers/status triples, answers.json against original JSONL,
+failure preservation, Reader/model-material/prompt pins, output text,
+citation labels, tokens, per-request claimed execution receipts, full
+digest and completion seal. A local digest is not an authenticated model
+host, independent outcome, semantic entailment or production selection.
+Both original full-file and source-plan pins must come from outside the
+journal, never from a self-consistent replacement written after the fact.
+
+```sh
+python3 qualification/amcn-v1/amcn_causal_journal_review.py \
+  --journal /retained/original-reader-run \
+  --source-plan-sha256 "$EXTERNAL_SOURCE_PLAN_SHA" \
+  --original-plan-sha256 "$EXTERNAL_PLAN_FILE_SHA" \
+  --original-answers-file-sha256 "$EXTERNAL_ANSWERS_FILE_SHA" \
+  --original-seal-file-sha256 "$EXTERNAL_SEAL_FILE_SHA" \
+  --material-manifest-digest "$EXTERNAL_READER_MANIFEST_DIGEST" \
+  --output /create-only/independent-journal-recount.json
+```
+
+`amcn_causal_physical_bank_bridge.py` physically reloads **the original
+#1968 six safetensors Heads** via the existing `amcn_typed_budget` loader,
+reruns every original heldout Head prediction from immutable shared features,
+and reconstructs matched unspecialized/typed capacity, optimizer updates,
+minibatch exposure, individual tensor SHA identities, and frozen Head SHA.
+There is no parallel Torch trainer, no publisher-label access, no new RAG
+outcome and no substitution of fake tensor files. Its dedicated workflow
+`.github/workflows/hepta-amcn-causal-physical-bank.yml` uses **real CPU
+Torch SGD/AdamW and original safetensors over synthetic input features**.
+This is model-mechanism evidence only; it does NOT establish pretrained
+Encoder accuracy, real Reader answers, actual strong-RAG comparison, signed
+owner outcomes, future calendar windows or memory-system superiority.
+
+Run separate suites:
+
+```sh
+PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_causal_*.py' -v
+PYTHONPATH=.:qualification/amcn-v1 python3 -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_physical_bank_bridge.py' -v
+```
+
+All resulting artifacts remain SHADOW / DENY_ALL and must pass intact
+Architecture + blocking-ci before further consideration.

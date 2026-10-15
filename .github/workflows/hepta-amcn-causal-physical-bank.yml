@@ -1,0 +1,87 @@
+name: Hepta AMCN real CPU two-bank Head bridge (synthetic features / DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_physical_bank_bridge.py"
+      - "qualification/amcn-v1/test_amcn_physical_bank_bridge.py"
+      - ".github/workflows/hepta-amcn-causal-physical-bank.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_physical_bank_bridge.py"
+      - "qualification/amcn-v1/test_amcn_physical_bank_bridge.py"
+      - ".github/workflows/hepta-amcn-causal-physical-bank.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-amcn-causal-physical-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-physical-cpu-head-bank:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned original CPU Head dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-physical-bank-review
+          python3 -m venv /tmp/amcn-causal-physical
+          /tmp/amcn-causal-physical/bin/pip install numpy==1.26.4
+          /tmp/amcn-causal-physical/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/amcn-causal-physical/bin/pip install safetensors==0.6.2 packaging==25.0 ruff==0.15.8
+          /tmp/amcn-causal-physical/bin/pip check
+          /tmp/amcn-causal-physical/bin/pip freeze > /tmp/amcn-physical-bank-review/environment.txt
+      - name: Actually train, physically reload and reforward original #1968 Heads
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-causal-physical/bin
+          "$P/python" -m compileall -q qualification/amcn-v1/amcn_causal_physical_bank_bridge.py qualification/amcn-v1/test_amcn_physical_bank_bridge.py
+          "$P/ruff" check --select E9,F63,F7,F82 qualification/amcn-v1/amcn_causal_physical_bank_bridge.py qualification/amcn-v1/test_amcn_physical_bank_bridge.py
+          PYTHONPATH=.:qualification/amcn-v1 "$P/python" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_physical_bank_bridge.py' -v \
+            2>&1 | tee /tmp/amcn-physical-bank-review/actual-torch-test-log.txt
+      - name: Retain original input and test source identity, never model authority
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-physical-bank-review/source
+          git rev-parse HEAD > /tmp/amcn-physical-bank-review/source/exact-head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-physical-bank-review/source/exact-tree.txt
+          cp qualification/amcn-v1/amcn_causal_physical_bank_bridge.py \
+             qualification/amcn-v1/test_amcn_physical_bank_bridge.py \
+             qualification/amcn-v1/amcn_typed_budget.py \
+             qualification/amcn-v1/test_amcn_typed_budget.py \
+             .github/workflows/hepta-amcn-causal-physical-bank.yml \
+             /tmp/amcn-physical-bank-review/source/
+          printf '%s\n' 'real_torch_head_updates=true' \
+            'only_synthetic_input_features=true' \
+            'real_pretrained_encoder_forwards=0' \
+            'real_reader_generations=0' \
+            'original_strong_rag_reader_answers=0' \
+            'future_calendar_windows=0' \
+            'source_issuer_independence=false' \
+            'production_accepted=false' \
+            > /tmp/amcn-physical-bank-review/negative-capability.txt
+          (cd /tmp/amcn-physical-bank-review && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-real-synthetic-head-bank-shadow-receipt
+          path: /tmp/amcn-physical-bank-review
+          if-no-files-found: error
