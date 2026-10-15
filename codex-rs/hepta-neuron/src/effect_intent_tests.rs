@@ -28,7 +28,7 @@ fn fixture_file() -> (std::path::PathBuf, File) {
     use std::os::unix::fs::OpenOptionsExt;
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .expect("clock")
+        .unwrap_or_else(|error| panic!("fixture clock before Unix epoch: {error}"))
         .as_nanos();
     let suffix = NEXT_TEST_FILE.fetch_add(1, Ordering::Relaxed);
     let path = std::env::temp_dir().join(format!(
@@ -41,7 +41,7 @@ fn fixture_file() -> (std::path::PathBuf, File) {
         .create_new(true)
         .mode(0o600)
         .open(&path)
-        .expect("exclusive fixture");
+        .unwrap_or_else(|error| panic!("exclusive effect-intent fixture: {error}"));
     (path, file)
 }
 
@@ -51,7 +51,7 @@ fn reopen(path: &std::path::Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("reopen")
+        .unwrap_or_else(|error| panic!("reopen effect-intent test journal: {error}"))
 }
 
 #[cfg(unix)]

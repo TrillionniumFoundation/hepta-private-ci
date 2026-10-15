@@ -566,6 +566,30 @@ fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFronti
     .expect("external domain source mutation");
 }
 
+/// The test's externally retained floor is a SEPARATE durable owner file.
+/// Updating only the registry must keep failing: a restarted/compromised
+/// registry is not entitled to change what independent custody has signed.
+/// For a legitimate rollover the fixture simulates a distinct custodian
+/// fsyncing new canonical contents and then atomically replacing its record.
+/// This helper is used only in these unit tests, not by the production RPC.
+fn commit_independent_test_custody_floor(
+    root: &Path,
+    frontier: &CellSplitMonotonicDurableFrontierV1,
+) {
+    let pending = root.join("independently-retained-floor.next.json");
+    let durable = root.join("independently-retained-floor.json");
+    crate::durable::write_private_new(
+        &pending,
+        &crate::durable::canonical_json(frontier).expect("canonical custody frontier"),
+    )
+    .expect("new independently retained custody record");
+    std::fs::rename(&pending, &durable).expect("atomic custody frontier publication");
+    std::fs::File::open(root)
+        .expect("private test custody root")
+        .sync_all()
+        .expect("durably name successor independent custody record");
+}
+
 #[test]
 fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let root = tempfile::tempdir().expect("private registry");
@@ -613,6 +637,10 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
 
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
+    // Even a complete new local registry record is NOT independently
+    // current while its separately administered high-water remains old.
+    assert!(read_through_signed_service(&mut service, &"ad".repeat(32)).is_err());
+    commit_independent_test_custody_floor(root.path(), &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
 
     // The previous epoch/revision cannot be accepted again, even if it
@@ -650,6 +678,10 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
     stale_rollover.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &stale_rollover);
+    // The new epoch/revision/sequence/digests are necessary but not
+    // sufficient; the independent custodian must really advance too.
+    assert!(read_through_signed_service(&mut service, &"cf".repeat(32)).is_err());
+    commit_independent_test_custody_floor(root.path(), &stale_rollover);
     assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
