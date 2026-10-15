@@ -113,6 +113,7 @@ def run(fit_doc,blind_doc,model,args):
         checked={'source_feature_sha256':sha(canonical(feature_digests)),
                  'physical_encoder_ms_by_case':physical.get('encode_ms_by_case'),
                  'source_token_counts_sha256':sha(canonical(tokens)),
+                 'physical_token_counts_by_case':dict(tokens),
                  'physical_encoder_api_requests':physical.get('local_model_api_requests'),
                  'model_load_ms':physical.get('load_ms'),
                  'encoder_ms_by_case':physical.get('encode_ms_by_case'),
