@@ -44,10 +44,7 @@ fn intent_for(raw: &[u8]) -> ExecutionIntentV1 {
     }
 }
 
-fn reject(
-    raw: Vec<u8>,
-    expected: CodexExecServerStartPreflightErrorV1,
-) {
+fn reject(raw: Vec<u8>, expected: CodexExecServerStartPreflightErrorV1) {
     let intent = intent_for(&raw);
     assert_eq!(
         inspect_codex_exec_server_start_v1(&intent, &raw),
@@ -59,15 +56,17 @@ fn reject(
 fn pinned_process_start_is_inspectable_but_has_no_effect_authority() {
     let raw = serialize(wire());
     let intent = intent_for(&raw);
-    let observation =
-        inspect_codex_exec_server_start_v1(&intent, &raw).expect("read-only check");
+    let observation = inspect_codex_exec_server_start_v1(&intent, &raw).expect("read-only check");
     assert_eq!(observation.operation_id, OPERATION);
     assert_eq!(observation.method, CODEX_EXEC_SERVER_P2C_START_METHOD);
     assert_eq!(observation.original_wire_sha256, intent.payload_sha256);
     assert_eq!(observation.argv_count, 2);
     assert_eq!(
         observation.request_sha256,
-        intent.binding_proposal().expect("request binding").request_sha256
+        intent
+            .binding_proposal()
+            .expect("request binding")
+            .request_sha256
     );
     assert_ne!(observation.argv_sha256, [0; 32]);
     assert!(!CODEX_EXEC_SERVER_P2C_EFFECT_AUTHORITY);
@@ -270,10 +269,7 @@ fn argv_must_be_nonempty_bounded_and_without_nul() {
 #[test]
 fn oversized_frames_fail_before_untrusted_rpc_parse() {
     let raw = b" ".repeat(CODEX_EXEC_SERVER_P2C_MAX_WIRE_BYTES + 1);
-    reject(
-        raw,
-        CodexExecServerStartPreflightErrorV1::OversizedWire,
-    );
+    reject(raw, CodexExecServerStartPreflightErrorV1::OversizedWire);
 }
 
 #[test]
@@ -300,10 +296,9 @@ fn reordering_wire_object_members_does_not_change_meaning_but_binds_bytes() {
         serde_json::to_string(&value["params"]).expect("params")
     );
     let reordered = reordered.into_bytes();
-    let left = inspect_codex_exec_server_start_v1(&intent_for(&original), &original)
-        .expect("left");
-    let right = inspect_codex_exec_server_start_v1(&intent_for(&reordered), &reordered)
-        .expect("right");
+    let left = inspect_codex_exec_server_start_v1(&intent_for(&original), &original).expect("left");
+    let right =
+        inspect_codex_exec_server_start_v1(&intent_for(&reordered), &reordered).expect("right");
     assert_eq!(left.argv_sha256, right.argv_sha256);
     assert_ne!(left.request_sha256, right.request_sha256);
 }
