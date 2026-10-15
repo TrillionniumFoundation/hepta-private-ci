@@ -21,7 +21,10 @@ fn socket(dir: &Path) -> (PathBuf, UnixListener) {
     (path, server)
 }
 
-fn read_request(peer: &mut UnixStream) -> CellSplitControlHighwaterRpcRequestV1 {
+fn read_request_for_split(
+    peer: &mut UnixStream,
+    expected_split: &str,
+) -> CellSplitControlHighwaterRpcRequestV1 {
     let mut size = [0_u8; 4];
     peer.read_exact(&mut size).expect("read request frame size");
     let len = u32::from_be_bytes(size) as usize;
@@ -52,9 +55,13 @@ fn read_request(peer: &mut UnixStream) -> CellSplitControlHighwaterRpcRequestV1 
         serde_json::from_value(raw).expect("strict read-only wire schema");
     assert_eq!(request.schema, CELL_SPLIT_CONTROL_HIGHWATER_RPC_SCHEMA_V1);
     assert_eq!(request.method, READ_METHOD);
-    assert_eq!(request.split_id, SPLIT);
+    assert_eq!(request.split_id, expected_split);
     assert_eq!(request.scope_id, SCOPE);
     request
+}
+
+fn read_request(peer: &mut UnixStream) -> CellSplitControlHighwaterRpcRequestV1 {
+    read_request_for_split(peer, SPLIT)
 }
 
 fn send_response(peer: &mut UnixStream, response: &CellSplitControlHighwaterRpcResponseV1) {
@@ -360,6 +367,144 @@ fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
         repeated.observer_signature_bytes
     );
     server.join().expect("signed Control test service");
+}
+
+#[test]
+fn signed_new_split_id_cannot_reset_original_scope_wal_ratchet() {
+    // A genuine remote signature is not enough to reset a previously seen
+    // original WAL by changing only the Cell Split request identity.
+    // Four independent adversarial cases: lower sequence, same-sequence
+    // fork, swapped original WAL inode, and unsigned NDU trust-root change.
+    for fork in 0_u8..4 {
+        let root = tempfile::tempdir().expect("private independent Observer");
+        let (path, listener) = socket(root.path());
+        let server = thread::spawn(move || {
+            for observation in 0..2 {
+                let (mut peer, _) = listener.accept().expect("read-only request");
+                let split = if observation == 0 { SPLIT } else { "split-2" };
+                let request = read_request_for_split(&mut peer, split);
+                let sequence = if observation == 0 {
+                    10
+                } else if fork == 0 {
+                    9
+                } else if fork == 1 {
+                    10
+                } else {
+                    11
+                };
+                let mut claim = signed_proof(&request, &test_signer(), sequence);
+                if observation == 1 {
+                    claim.plan_digest = "dd".repeat(32);
+                    if fork >= 2 {
+                        claim.wal_bytes = 2_048;
+                    }
+                    if fork == 2 {
+                        claim.wal_inode = 99;
+                    }
+                    if fork == 3 {
+                        claim.ndu_owner_id = "another-ndu-owner".into();
+                    }
+                    claim.observer_signature_bytes = test_signer()
+                        .sign(
+                            &cell_split_control_highwater_signing_bytes_v1(&claim)
+                                .expect("fully signed hostile cross-Split proof"),
+                        )
+                        .to_bytes()
+                        .to_vec();
+                }
+                send_response(&mut peer, &response(claim));
+            }
+        });
+        let mut verifier = client(path, Duration::from_secs(2));
+        verifier
+            .read_signed_highwater(SPLIT, SCOPE, &"11".repeat(32))
+            .expect("first signed original WAL frontier");
+        assert!(
+            verifier
+                .read_signed_highwater("split-2", SCOPE, &"22".repeat(32))
+                .is_err(),
+            "Split IDs cannot hide rollback, fork, inode ABA or owner change"
+        );
+        assert_eq!(verifier.seen.len(), 1);
+        assert_eq!(
+            verifier
+                .seen
+                .get(SCOPE)
+                .expect("original Scope ratchet")
+                .split_id,
+            SPLIT
+        );
+        server.join().expect("hostile signed Observer fixture");
+    }
+}
+
+#[test]
+fn new_split_may_follow_actual_same_inode_wal_append_without_erasing_scope_ratchet() {
+    // Distinct frozen plans/snapshots are possible after a REAL committed
+    // WAL advancement. The original Scope's inode and trusted owner remain
+    // pinned, while its sequence, bytes and fences advance monotonically.
+    let root = tempfile::tempdir().expect("private independent Observer");
+    let (path, listener) = socket(root.path());
+    let server = thread::spawn(move || {
+        for observation in 0..3 {
+            let (mut peer, _) = listener.accept().expect("read-only request");
+            let split = if observation == 0 { SPLIT } else { "split-2" };
+            let request = read_request_for_split(&mut peer, split);
+            let mut claim = signed_proof(
+                &request,
+                &test_signer(),
+                if observation == 0 { 10 } else { 11 },
+            );
+            if observation > 0 {
+                claim.wal_bytes = 2_048;
+                claim.generation = 4;
+                claim.route_fence = 8;
+                claim.revocation_epoch = 10;
+                claim.plan_digest = "dd".repeat(32);
+                claim.ndu_snapshot_digest = "ee".repeat(32);
+                claim.checkpoint_digest = "ff".repeat(32);
+                claim.observer_signature_bytes = test_signer()
+                    .sign(
+                        &cell_split_control_highwater_signing_bytes_v1(&claim)
+                            .expect("advanced original WAL proof"),
+                    )
+                    .to_bytes()
+                    .to_vec();
+            }
+            send_response(&mut peer, &response(claim));
+        }
+    });
+    let mut verifier = client(path, Duration::from_secs(2));
+    let original = verifier
+        .read_signed_highwater(SPLIT, SCOPE, &"33".repeat(32))
+        .expect("first original Scope frontier");
+    let next = verifier
+        .read_signed_highwater("split-2", SCOPE, &"44".repeat(32))
+        .expect("different Split ID with real monotonic original WAL append");
+    let repeated = verifier
+        .read_signed_highwater("split-2", SCOPE, &"55".repeat(32))
+        .expect("same new Split, different fresh challenge, same original WAL");
+    assert_eq!(original.sequence, 10);
+    assert_eq!(next.sequence, 11);
+    assert_eq!(repeated.sequence, 11);
+    assert_eq!(next.wal_bytes, 2_048);
+    assert_eq!(next.wal_inode, original.wal_inode);
+    assert_ne!(original.plan_digest, next.plan_digest);
+    assert_eq!(next.plan_digest, repeated.plan_digest);
+    assert_ne!(
+        next.observer_signature_bytes,
+        repeated.observer_signature_bytes
+    );
+    assert_eq!(verifier.seen.len(), 1);
+    assert_eq!(
+        verifier
+            .seen
+            .get(SCOPE)
+            .expect("one monotonic Scope frontier")
+            .split_id,
+        "split-2"
+    );
+    server.join().expect("monotonic original Scope fixture");
 }
 
 #[test]
