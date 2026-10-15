@@ -43,6 +43,10 @@ enum WriterCommandV1 {
         MetricsCommittedSampleQueryV1,
         SyncSender<Result<Option<MetricsCommittedSampleReadbackV1>, MetricsJournalErrorV1>>,
     ),
+    ObserveSamples(
+        Vec<MetricsCommittedSampleQueryV1>,
+        SyncSender<Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, MetricsJournalErrorV1>>,
+    ),
     Stop(SyncSender<bool>),
 }
 
@@ -234,6 +238,57 @@ impl DurablePhaseMetricSinkV1 {
         }
         match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
             Ok(Ok(readback)) if self.healthy() => Ok(readback),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
+        }
+    }
+
+    /// Bounded, ONE-PASS readback of a whole proposed cohort's exact
+    /// original committed WAL Admission rows. This is a non-authorizing
+    /// Observer operation; it never flushes pending metrics or signs an effect.
+    /// Call only after the original Admission flush barrier, never per tick.
+    pub fn read_committed_samples(
+        &self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, PhaseMetricSinkErrorV1> {
+        if !self.healthy()
+            || queries.is_empty()
+            || queries.len() > MAX_BATCH
+            || queries
+                .iter()
+                .any(|q| q.scope_digest.is_zero() || q.operation_digest.is_zero())
+        {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
+        let deadline = std::time::Instant::now() + MAX_FLUSH_WAIT;
+        let (reply, rx) = sync_channel(1);
+        let mut command = WriterCommandV1::ObserveSamples(queries.to_vec(), reply);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
+            Ok(Ok(readbacks)) if self.healthy() && readbacks.len() == queries.len() => {
+                Ok(readbacks)
+            }
             _ => {
                 self.health.healthy.store(false, Ordering::Release);
                 Err(PhaseMetricSinkErrorV1::Unavailable)
@@ -445,6 +500,17 @@ fn writer_loop(
             }
             Ok(WriterCommandV1::ObserveSample(query, reply)) => {
                 let readback = writer.read_committed_sample(query);
+                let success = readback.is_ok();
+                if !success {
+                    health.healthy.store(false, Ordering::Release);
+                }
+                let _ = reply.send(readback);
+                if !success {
+                    break;
+                }
+            }
+            Ok(WriterCommandV1::ObserveSamples(queries, reply)) => {
+                let readback = writer.read_committed_samples(&queries);
                 let success = readback.is_ok();
                 if !success {
                     health.healthy.store(false, Ordering::Release);
