@@ -17,6 +17,9 @@ workspace = true
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
 [dev-dependencies]
 codex-hepta-contracts = { workspace = true }
 codex-hepta-operations = { workspace = true }
