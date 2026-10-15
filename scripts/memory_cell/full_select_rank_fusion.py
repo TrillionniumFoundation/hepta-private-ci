@@ -7,8 +7,6 @@ sealed cosine and lexical score matrices using a fixed evidence-key tie break.
 """
 from __future__ import annotations
 
-from copy import deepcopy
-import math
 from pathlib import Path
 import sys
 
