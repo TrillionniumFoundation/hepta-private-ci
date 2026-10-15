@@ -114,7 +114,11 @@ fn control_parent_dir_identity(
 ) -> Result<(), NduPublicationErrorV1> {
     use std::os::unix::fs::{MetadataExt, PermissionsExt};
 
-    if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
+    if parent
+        .canonicalize()
+        .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+        != parent
+    {
         return Err(NduPublicationErrorV1::UnsafePath);
     }
     let opened = directory
@@ -572,7 +576,11 @@ impl NduPublicationOwnerV1 {
         // aliases before creating, reading or locking either durable file.
         // This bootstrap check is not a substitute for independent custody
         // or kernel-anchored openat protection against privileged path races.
-        if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
+        if parent
+            .canonicalize()
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+            != parent
+        {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let dir = fs::symlink_metadata(parent)?;
@@ -635,7 +643,9 @@ impl NduPublicationOwnerV1 {
         let mut owner_lock = File::from(
             unixfs::openat(
                 &parent_dir,
-                lock_path.file_name().ok_or(NduPublicationErrorV1::UnsafePath)?,
+                lock_path
+                    .file_name()
+                    .ok_or(NduPublicationErrorV1::UnsafePath)?,
                 lock_flags,
                 private_mode,
             )
