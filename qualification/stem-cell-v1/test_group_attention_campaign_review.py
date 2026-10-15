@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from group_attention_campaign_review import ARMS, COHORTS, _digest, review
+from group_attention_campaign_review import ARMS, COHORTS, REQUIRED_SOURCES, _digest, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
 
 
@@ -45,7 +45,13 @@ def fixture(directory):
     deleted = [dict(c, text=c["text"].splitlines()[0]) for c in (first, second)]
     cases = dict(train=[train], test=[first, second], long=[long],
                  deleted=deleted, composition=[composition])
+    source_dir = Path(__file__).parent
+    source_hashes = {
+        name: hashlib.sha256((source_dir / name).read_bytes()).hexdigest()
+        for name in REQUIRED_SOURCES
+    }
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
+        source_sha256=source_hashes,
         frozen_candidate_arms=list(ARMS), evaluation_cohorts=list(COHORTS),
         train_source_groups=[train["source_group"]], public_cases=cases,
         steps=3, seed=17)
@@ -136,6 +142,19 @@ class PairedReviewTests(unittest.TestCase):
             changed["source_groups_sha256"] = "d" * 64
             (root / "teacher.json").write_text(json.dumps(changed))
             with self.assertRaisesRegex(ValueError, "teacher"):
+                review(root)
+
+    def test_reject_forged_exact_source_fingerprint(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            changed = copy.deepcopy(files["protocol"])
+            changed["source_sha256"]["group_attention_campaign.py"] = "a" * 64
+            changed_report = copy.deepcopy(files["report"])
+            changed_report["protocol_sha256"] = _digest(changed)
+            (root / "protocol.json").write_text(json.dumps(changed))
+            (root / "report.json").write_text(json.dumps(changed_report))
+            with self.assertRaisesRegex(ValueError, "source SHA"):
                 review(root)
 
     def test_reject_damaged_public_evidence_and_protocol(self):
