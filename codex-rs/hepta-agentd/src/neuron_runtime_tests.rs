@@ -247,7 +247,10 @@ fn agentd_metrics_require_original_provenance_and_actual_flush_ack() {
         &failures,
         &flushed,
         true,
-        codex_hepta_types::Digest32::of_bytes(b"scope"),
+        codex_hepta_neuron::JournalScope {
+            scope_digest: codex_hepta_types::Digest32::of_bytes(b"scope"),
+            objective_digest: codex_hepta_types::Digest32::of_bytes(b"objective"),
+        },
         codex_hepta_types::Digest32::of_bytes(b"tick"),
         std::time::Duration::from_micros(11),
         true,
@@ -283,7 +286,10 @@ fn agentd_post_effect_observation_failure_is_sticky_even_after_writer_recovers()
         &failures,
         &flushed,
         true,
-        codex_hepta_types::Digest32::of_bytes(b"scope"),
+        codex_hepta_neuron::JournalScope {
+            scope_digest: codex_hepta_types::Digest32::of_bytes(b"scope"),
+            objective_digest: codex_hepta_types::Digest32::of_bytes(b"objective"),
+        },
         codex_hepta_types::Digest32::of_bytes(b"committed-operation"),
         std::time::Duration::from_micros(20),
         true,
@@ -316,4 +322,44 @@ fn agentd_missing_sink_cannot_arm_signed_effect() {
         super::begin_signed_tick_v1(None, &failures, &flushed, true),
         Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
     ));
+}
+
+#[test]
+fn agentd_metrics_bind_domain_separated_owner_journal_scope() {
+    use codex_hepta_neuron::JournalScope;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::StableId;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+
+    let subject = StableId::new("neuron.subject.original").expect("valid subject");
+    let bytes = subject.as_str().as_bytes();
+    let unscoped = Digest32::of_bytes(bytes);
+    let mut canonical = b"hepta.neuron.subject-scope.v1".to_vec();
+    canonical.extend_from_slice(&(bytes.len() as u32).to_be_bytes());
+    canonical.extend_from_slice(bytes);
+    let scope = JournalScope {
+        scope_digest: Digest32::of_bytes(&canonical),
+        objective_digest: Digest32::of_bytes(b"original-objective"),
+    };
+    assert_ne!(scope.scope_digest, unscoped);
+
+    let sink = RecordingPhaseSink::default();
+    let failures = AtomicU64::new(0);
+    let flushed = AtomicBool::new(false);
+    assert!(super::observe_and_commit_neuron_phase_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true,
+        scope,
+        Digest32::of_bytes(b"operation"),
+        std::time::Duration::from_micros(21),
+        true,
+    ));
+    let events = sink.events.lock().expect("recorded original Evidence rows");
+    assert_eq!(events.len(), 1);
+    assert_eq!(events[0].scope_digest, scope.scope_digest);
+    assert_ne!(events[0].scope_digest, unscoped);
+    assert_eq!(events[0].operation_digest, Digest32::of_bytes(b"operation"));
 }

@@ -71,12 +71,12 @@ fn external_signed_neuron_contract_is_typeable_without_granting_effects() {
 fn external_non_test_agentd_neuron_denies_before_journal_or_model_effect() {
     use codex_hepta_contracts::FinalUseBinding;
     use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_neuron::JournalScope;
     use codex_hepta_neuron::NeuronCalibrationProfileV1;
     use codex_hepta_neuron::NeuronResourceEnvelopeV1;
     use codex_hepta_neuron::NeuronRuntime;
     use codex_hepta_neuron::NeuronRuntimeConfigV1;
     use codex_hepta_neuron::SparseConfig;
-    use codex_hepta_neuron::JournalScope;
     use codex_hepta_neuron::canonical_feature_vector_digest_v1;
     use codex_hepta_types::Digest32;
     use codex_hepta_types::Generation;
