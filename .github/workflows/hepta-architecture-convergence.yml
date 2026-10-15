@@ -289,6 +289,16 @@ jobs:
           # A generic governed Update must not dispatch a typed Split before
           # the original CNS/Control Begin/Commit and live Final-use can agree.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/generic-typed-split-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --lib topology_execution::split_control_fence_tests -- --nocapture
+      - name: Early Supervisor original-Control non-test retirement denial
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # A caller-chosen authority trait must never retire the original WAL
+          # without independent original Control B/C, signed CNS and Final-use.
+          # Check the compiled product path, not merely cfg(test) unit fixtures.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-prod-feature-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features cell-split-supervisor-port --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-original-control-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --test cell_split_finalizer_non_test_gate -- --nocapture --test-threads=1
       - name: Early original Deep Observer canonical terminal and signer regressions
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
         run: |
