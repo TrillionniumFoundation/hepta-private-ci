@@ -469,14 +469,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             {
                 return Err(BatchWorkerErrorV1::InvalidBinding);
             }
-            let pending = self.pending.get(id).ok_or(BatchWorkerErrorV1::NoAdmission)?;
+            let pending = self
+                .pending
+                .get(id)
+                .ok_or(BatchWorkerErrorV1::NoAdmission)?;
             if pending.request.authorization.request_id != id.as_str()
                 || pending.request.authorization.deadline_ms <= effective_now
                 || pending.request.authorization.cancelled
                 || !pending.request.feature_vector_q24.is_empty()
                 || pending.signed.grant.binding != pending.binding
                 || pending.signed.grant.authority_epoch != key.authority_epoch
-                || !self.worker.model_matches_digest(&pending.model_id, key.model_digest)
+                || !self
+                    .worker
+                    .model_matches_digest(&pending.model_id, key.model_digest)
             {
                 return Err(BatchWorkerErrorV1::InvalidBinding);
             }
