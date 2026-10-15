@@ -222,10 +222,22 @@ jobs:
               --continued "$ROOT/$seed-trial-report.json" \
               > "$ROOT/$seed-frozen-old-audit.json"
           done
+          # Three different seed labels may still mean one numerical trajectory.
+          # Recompute original/frozen FP32 audits and compare complete original
+          # weights and per-case probability seals across the SAME Q24 inputs.
+          python qualification/cell_meta_execution_af/physical_router_seed_independence.py \
+            --root "$ROOT" --out "$ROOT/seed-independence-census.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           r=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
+          census=json.loads((r/'seed-independence-census.json').read_text())
+          assert census['nominal_trials']==3
+          assert census['independent_outcome_samples_established'] is False
+          assert census['statistical_winner_certified'] is False
+          assert census['ndu_selection_authorized'] is False
+          assert census['production_admission']=='BLOCKED'
+          assert census['authority_posture']=='DENY_ALL'
           out=[]
           frozen_baselines=[]
           for seed in (41,47,53):
@@ -268,7 +280,8 @@ jobs:
               'arms':out,
               'true_old_only_frozen_baselines':frozen_baselines,
               'legacy_no_change_is_unsplit_continued_training':True,
-              'old_only_vs_continued_training_budget_matched':False},sort_keys=True))
+              'old_only_vs_continued_training_budget_matched':False,
+              'seed_numeric_replication_census':census},sort_keys=True))
           PY
       - name: Publish immutable numeric evidence and preserve all failures; never weights/texts
         if: always()
@@ -289,5 +302,6 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
             ${{ runner.temp }}/hepta-meta-real/*-frozen-old-report.json
             ${{ runner.temp }}/hepta-meta-real/*-frozen-old-audit.json
+            ${{ runner.temp }}/hepta-meta-real/seed-independence-census.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
