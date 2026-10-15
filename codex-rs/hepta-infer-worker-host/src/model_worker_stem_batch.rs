@@ -157,6 +157,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         bytes.extend_from_slice(&self.generation.to_be_bytes());
         bytes.extend_from_slice(&self.grant.authority_epoch.to_be_bytes());
         bytes.extend_from_slice(proposal.source.feature_digest.as_array());
+        // Keep this read-only proposal tied to the exact host-selected CAS
+        // directory identity; it is still not an artifact-load certificate.
+        bytes.extend_from_slice(
+            proposal.verified_artifacts.cas_directory_digest().as_array()
+        );
         append_field(&mut bytes, proposal.source.scope_id.as_str())?;
         append_field(&mut bytes, proposal.source.principal_id.as_str())?;
         bytes.extend_from_slice(
