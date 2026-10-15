@@ -110,7 +110,8 @@ def candidate(row):
         removed, extent = remove_answer_sentence(context, start, answer)
     except Invalid:
         return None
-    if question.casefold() in context.casefold() or not words(question):
+    if (question.casefold() in context.casefold() or answer.casefold() in question.casefold()
+            or not words(question)):
         return None
     original = {'source_id': row['id'], 'title': title,
                 'context': context, 'question': question, 'answer': answer,
@@ -140,6 +141,18 @@ def select(rows, count, *, forbidden_titles=frozenset()):
 
 
 def bm25_neighbors(items):
+    """Question-only lexical retrieval. Never use source answer labels in query.
+
+    The annotated answer is a training/evaluation target; reading it here would
+    leak the target *before* the Reader sees evidence, invalidating the P0 arm.
+    The source document remains eligible and every alternative must be measured.
+    """
+    if type(items) is not list or len(items) < 2:
+        raise Invalid('retrieval requires at least two source candidates')
+    if (any(type(x) is not dict or type(x.get('source_id')) is not str
+            or type(x.get('context')) is not str or type(x.get('question')) is not str
+            for x in items) or len({x['source_id'] for x in items}) != len(items)):
+        raise Invalid('duplicate/malformed retrieval source corpus')
     docs = {x['source_id']: words(x['context']) for x in items}
     lengths = {k: len(v) for k, v in docs.items()}
     n = len(docs)
@@ -148,7 +161,9 @@ def bm25_neighbors(items):
     df = Counter(w for doc in docs.values() for w in set(doc))
     result = {}
     for source in items:
-        query = set(words(source['question'])) | set(words(source['answer']))
+        query = set(words(source['question']))
+        if not query:
+            raise Invalid('empty question-only retrieval query')
         ranked = []
         for key, counts in freq.items():
             score = 0.
@@ -223,8 +238,8 @@ def build(train_rows, validation_rows):
     # No future period can be inferred from SQuAD train/validation splits.
     meta = {'schema': SCHEMA, 'dataset_repo': DATASET_REPO,
             'dataset_commit': DATASET_COMMIT, 'train_original_sha256': TRAIN_SHA,
-            'validation_original_sha256': VALID_SHA, 'sample_rule': 'sha256-title-rank:v1',
-            'retriever': 'bm25:k1=1.2:b=0.75:within-partition:v1',
+            'validation_original_sha256': VALID_SHA, 'sample_rule': 'sha256-title-rank:answer-not-in-question:v2',
+            'retriever': 'bm25:k1=1.2:b=0.75:question-only:within-partition:v2',
             'question_groups_by_split': WANTED, 'future_chronology_verified': False,
             'human_annotated_answer_spans': True,
             'negative_premise_removal_independently_reviewed': False,

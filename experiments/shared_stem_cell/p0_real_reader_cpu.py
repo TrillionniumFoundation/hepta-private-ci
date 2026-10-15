@@ -14,10 +14,12 @@ import json
 import math
 from pathlib import Path
 import resource
+import re
 import time
 
 from p0_squad_materials import (SCHEMA, canonical, digest, read, write_new, CONDITIONS,
-                                WANTED, DATASET_COMMIT, TRAIN_SHA, VALID_SHA, Invalid)
+                                WANTED, DATASET_COMMIT, TRAIN_SHA, VALID_SHA, Invalid,
+                                bm25_neighbors, remove_answer_sentence)
 
 COMPACT_REVISIONS = {
     'granite_97m_r2': ('835ad14087e140460703cf0fae09f97d469d65c2', 384),
@@ -44,8 +46,8 @@ def validate_materials(fit, blind):
             meta.get('train_original_sha256')!=TRAIN_SHA or
             meta.get('validation_original_sha256')!=VALID_SHA or
             meta.get('question_groups_by_split')!=WANTED or
-            meta.get('sample_rule')!='sha256-title-rank:v1' or
-            meta.get('retriever')!='bm25:k1=1.2:b=0.75:within-partition:v1'):
+            meta.get('sample_rule')!='sha256-title-rank:answer-not-in-question:v2' or
+            meta.get('retriever')!='bm25:k1=1.2:b=0.75:question-only:within-partition:v2'):
         raise Invalid('changed or falsely authoritative source metadata')
     groups = {'train': set(), 'calibration': set(), 'test': set()}
     ids = set()
@@ -89,17 +91,66 @@ def validate_materials(fit, blind):
         for b in groups:
             if a != b and groups[a] & groups[b]:
                 raise Invalid('shared document across fit/calibration/test')
+    # Independently reconstruct all source-condition views from their actual
+    # model-facing bytes. Self-consistent SHA updates are not source authority.
+    # This check runs before ANY pretrained loader is imported or executed.
+    prompt_pattern = re.compile(
+        r'Can the supplied passage explicitly support the proposed answer "(.+?)" '
+        r'to the question "(.+?)"\?')
     for doc in (fit, blind):
-        by_source = {}
-        source_groups = {}
+        by_split = {}
         for c in doc['cases']:
-            k = (c['split'], c['source_id'])
-            if k in source_groups and source_groups[k]!=c['group_id']:
-                raise Invalid('same source has conflicting source-group identities')
-            source_groups[k]=c['group_id']
-            by_source.setdefault(k, set()).add(c['condition'])
-        if any(v != set(CONDITIONS) for v in by_source.values()):
-            raise Invalid('missing one of four paired evidence interventions')
+            part = c['split']
+            by_split.setdefault(part, {}).setdefault(c['source_id'], {})
+            siblings = by_split[part][c['source_id']]
+            if c['condition'] in siblings:
+                raise Invalid('duplicate original source evidence condition')
+            siblings[c['condition']] = c
+        for split, groups_for_split in by_split.items():
+            selected = []
+            for source_id, paired in groups_for_split.items():
+                if set(paired) != set(CONDITIONS):
+                    raise Invalid('missing one of four paired evidence interventions')
+                original = paired['sufficient']
+                group = original['group_id']
+                origin_sha = original['annotated_answer_source_sha256']
+                original_view = original['joint_input']
+                if digest(original_view['state'].encode()) != origin_sha:
+                    raise Invalid('source context and annotated original digest disagree')
+                original_prompt = original_view['question']
+                match = prompt_pattern.fullmatch(original_prompt)
+                if match is None or not match.group(1) or not match.group(2):
+                    raise Invalid('unregistered original answer/question framing')
+                answer, question = match.groups()
+                for c in paired.values():
+                    if (c['group_id'] != group or c['annotated_answer_source_sha256'] != origin_sha or
+                            c['split'] != split or c['joint_input']['question'] != original_prompt or
+                            c['joint_input']['options'] != original_view['options']):
+                        raise Invalid('four evidence conditions changed original task identity')
+                if (paired['none']['joint_input']['state'] != '(no evidence provided)' or
+                        any(c['retrieved_source_id'] is not None for key,c in paired.items() if key != 'retrieved')):
+                    raise Invalid('no-evidence or nonretrieved input changed')
+                evidence = original_view['state']
+                if answer.casefold() not in evidence.casefold():
+                    raise Invalid('human positive answer absent from original evidence')
+                try:
+                    # SQuAD span start is intentionally NOT in the model input.
+                    # A unique answer-bearing sentence must be reproducibly removed.
+                    expected_removed, _ = remove_answer_sentence(
+                        evidence, evidence.index(answer), answer)
+                except (Invalid, ValueError) as error:
+                    raise Invalid('original evidence cannot reproduce premise deletion') from error
+                if paired['premise_removed']['joint_input']['state'] != expected_removed:
+                    raise Invalid('premise deletion was altered despite valid-looking hashes')
+                selected.append({'source_id': source_id, 'context': evidence, 'question': question})
+            matched = bm25_neighbors(selected)
+            for source_id, paired in groups_for_split.items():
+                expected_donor = matched[source_id]
+                retrieved = paired['retrieved']
+                if (retrieved['retrieved_source_id'] != expected_donor or
+                        retrieved['joint_input']['state'] !=
+                        groups_for_split[expected_donor]['sufficient']['joint_input']['state']):
+                    raise Invalid('retrieval not equal to registered question-only BM25 source')
     return fit['cases'], blind['cases']
 
 
