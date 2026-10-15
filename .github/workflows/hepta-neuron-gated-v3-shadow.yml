@@ -94,6 +94,36 @@ jobs:
           set -euo pipefail
           python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py \
             --matrix "$PROBE_RESULT" --output "$COST_REPORT"
+      - name: Compile exact-source native mechanism fixture with Cargo release profile
+        working-directory: codex-rs
+        run: cargo build --locked --release -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
+      - name: Execute 20 isolated release-profile fixture processes
+        working-directory: codex-rs
+        env:
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/run_shadow_probe_matrix.py
+          --binary target/release/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --report "$RELEASE_PROBE_RESULT"
+      - name: Fail closed on build mode or bitwise checkpoint frontier drift
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+          PROFILE_PAIR_RESULT: ${{ runner.temp }}/neuron-q24-profile-pair-parity.json
+        run: >-
+          python3 qualification/neuron-gated-sparse-v3/verify_build_profile_parity.py
+          --debug-matrix "$PROBE_RESULT"
+          --release-matrix "$RELEASE_PROBE_RESULT"
+          --output "$PROFILE_PAIR_RESULT"
+      - name: Validate release native cost ratios without NDU claims
+        env:
+          RELEASE_PROBE_RESULT: ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+          RELEASE_COST_RESULT: ${{ runner.temp }}/neuron-q24-release-cost-analysis.json
+        run: >-
+          python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py
+          --matrix "$RELEASE_PROBE_RESULT"
+          --output "$RELEASE_COST_RESULT"
       - name: Retain explicitly non-production native fixture measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -102,5 +132,8 @@ jobs:
           path: |
             ${{ runner.temp }}/neuron-q24-fixture-matrix.json
             ${{ runner.temp }}/neuron-q24-cost-analysis.json
+            ${{ runner.temp }}/neuron-q24-release-fixture-matrix.json
+            ${{ runner.temp }}/neuron-q24-release-cost-analysis.json
+            ${{ runner.temp }}/neuron-q24-profile-pair-parity.json
           if-no-files-found: warn
           retention-days: 14
