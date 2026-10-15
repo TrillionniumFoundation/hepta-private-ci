@@ -43,6 +43,12 @@ exceeds fixed `1/4`. The five label-blind immutable arms are:
 are not identified against AG News correctness or an independent NDU
 objective. This arm must not be described as understanding articles.
 
+The original physical ZIP also holds post-label aggregate scorer files.
+The proposer validates the complete ZIP metadata and exact outer SHA but
+**decompresses only six whitelisted original model-report/seal members**;
+it never parses or reads the post-label scorer/panel members. This closes an
+otherwise unnecessary source-contamination path.
+
 The proposer CLI accepts **only** the frozen physical ZIP. It creates
 original source-bound per-case decisions and nonlinear full-tree certificates
 with exclusive-create writing *before any historical labels are available*.

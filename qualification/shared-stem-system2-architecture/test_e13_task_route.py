@@ -11,7 +11,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from e13_labelblind_route import (ARMS, _route_one, produce,
+from e13_labelblind_route import (ARMS, _route_one, produce, read_prelabel_members,
                                  quantized_x0, write_once)
 from e13_independent_score import (decode_cert, json_read, mcnemar_p,
                                    original_law, score, take_source)
@@ -99,6 +99,16 @@ class E13OriginalRealArchive(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.tmp.cleanup()
+
+    def test_proposer_never_decompresses_independent_score_members(self):
+        members=read_prelabel_members(self.physical)
+        self.assertEqual(set(members), {
+            "granite97.report.json", "mmbert_small.report.json",
+            "granite97.stdout.log", "mmbert_small.stdout.log",
+            "pre-score-seals.sha256", "current-source.sha",
+        })
+        self.assertNotIn("independent-scores.json", members)
+        self.assertNotIn("original-panel-receipt.json", members)
 
     def test_original_hashes_and_128_real_rows(self):
         self.assertEqual(sha256(Path(self.physical).read_bytes()).hexdigest(),PHYSICAL_SHA)

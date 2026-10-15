@@ -12,10 +12,11 @@ from dataclasses import asdict
 from fractions import Fraction as Q
 from hashlib import sha256
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from time import process_time_ns
+from zipfile import ZipFile
 
-from e7_archive import PHYSICAL_SHA, physical_rows, read_zip
+from e7_archive import PHYSICAL_SHA, physical_rows
 from e12_nonlinear_cert import Law, operator, solve, rat
 
 SCHEMA = "hepta.e13.real-prediction-label-blind-fbsde-route.v1"
@@ -44,6 +45,36 @@ def write_once(path: str, value: object) -> str:
         f.write(data)
     return sha256(data).hexdigest()
 
+
+def read_prelabel_members(physical_zip: str) -> dict[str, bytes]:
+    """Read exactly six unsupervised original physical members, never ZIP scorers.
+
+    The original artifact also contains post-label `independent-scores.json`;
+    unlike the generic ZIP helper, this function does NOT decompress or
+    access that member. The caller never receives an original label.
+    """
+    path = Path(physical_zip)
+    if not path.is_file() or path.is_symlink() or not 0 < path.stat().st_size <= 20_000_000:
+        raise ValueError("missing or unsupported physical source archive")
+    if sha256(path.read_bytes()).hexdigest() != PHYSICAL_SHA:
+        raise ValueError("original source archive byte identity mismatch")
+    names = ("granite97.report.json", "mmbert_small.report.json",
+             "granite97.stdout.log", "mmbert_small.stdout.log",
+             "pre-score-seals.sha256", "current-source.sha")
+    with ZipFile(path) as z:
+        infos = z.infolist()
+        if (not 0 < len(infos) <= 100
+                or len({i.filename for i in infos}) != len(infos)
+                or any(i.is_dir() or PurePosixPath(i.filename).is_absolute()
+                       or ".." in PurePosixPath(i.filename).parts
+                       or i.file_size > 2_000_000 or i.compress_size > 2_000_000
+                       or ((i.external_attr >> 16) & 0o170000) == 0o120000
+                       for i in infos)
+                or sum(i.file_size for i in infos) > 10_000_000
+                or not set(names) <= set(z.namelist())):
+            raise ValueError("physical ZIP integrity or source member inventory failed")
+        # NEVER z.read() historical label/scorer members on the proposer side.
+        return {name: z.read(name) for name in names}
 
 def quantized_x0(granite_prob: float) -> str:
     """P-only label-blind uncertainty, floor to an exact 1/64 rational grid."""
@@ -91,12 +122,7 @@ def _route_one(cid: str, g: dict, m: dict) -> dict:
 
 
 def produce(physical_zip: str, output: str) -> str:
-    original = read_zip(physical_zip, PHYSICAL_SHA)
-    # Strip every nonphysical report/scorer byte before processing any rows.
-    whitelist = ("granite97.report.json", "mmbert_small.report.json",
-                 "granite97.stdout.log", "mmbert_small.stdout.log",
-                 "pre-score-seals.sha256", "current-source.sha")
-    source = physical_rows({name: original[name] for name in whitelist})
+    source = physical_rows(read_prelabel_members(physical_zip))
     rows = [_route_one(cid, source["granite97"][cid], source["mmbert_small"][cid])
             for cid in sorted(source["granite97"])]
     if len(rows) != 128 or len({row["group_id"] for row in rows}) != 128:
