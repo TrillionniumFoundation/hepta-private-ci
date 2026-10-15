@@ -1,0 +1,27 @@
+{
+  "authority": "DENY_ALL",
+  "distinct_tests_per_mode": 228,
+  "incomplete_prior_consolidated_test_process_excluded": true,
+  "pretrained_weights_executed": false,
+  "schema": "hepta.p2.cpu-operator-cost-source-test-replay.v1",
+  "source_modes": {
+    "optimized": {
+      "granite_p1": 27,
+      "new_backward": 31,
+      "original_p2": 24,
+      "postfit_top1": 22,
+      "reader_p0": 59,
+      "shared_p1": 33,
+      "trained_top1": 32
+    },
+    "regular": {
+      "granite_p1": 27,
+      "new_backward": 31,
+      "original_p2": 24,
+      "postfit_top1": 22,
+      "reader_p0": 59,
+      "shared_p1": 33,
+      "trained_top1": 32
+    }
+  }
+}
