@@ -378,7 +378,14 @@ def audit(doc):
                 raise Invalid("base model changed inside purported same-Stem comparison")
             if stage in ("P1", "P2") and a["optimizer_sha256"] != b["optimizer_sha256"]:
                 raise Invalid("optimizer changed inside purported same-learning comparison")
-            if stage in ("P1", "P2", "P4") and a["train_steps"] != b["train_steps"]:
+            # Freeze-vs-learned is a causal intervention: the control has
+            # zero training steps while the learned arm must train. Only
+            # actual learned-vs-learned P1 pairs need equal optimizer steps.
+            # P2 and P4 matched-compute/effort comparisons remain strict.
+            match_steps = stage in ("P2", "P4") or (
+                stage == "P1" and left.endswith("_learned") == right.endswith("_learned")
+            )
+            if match_steps and a["train_steps"] != b["train_steps"]:
                 raise Invalid("unmatched learning effort in causal comparison")
             if stage == "P2" and a["trainable_parameters"] != b["trainable_parameters"]:
                 raise Invalid("split not matched to unsplit parameter count")
