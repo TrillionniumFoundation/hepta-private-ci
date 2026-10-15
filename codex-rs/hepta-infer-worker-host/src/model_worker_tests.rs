@@ -1769,3 +1769,66 @@ fn shared_stem_batch_rejects_stale_cas_and_group_memory_overcommit() {
     assert_eq!(limited.driver.feature_calls, 0);
     assert!(limited.active_requests.is_empty());
 }
+
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_rejects_more_than_32_members_before_a_driver_call() {
+    let worker = InferenceWorker::new(
+        100, "worker.batch-max32".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    let members: Vec<_> = (0..33).map(|_| StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }).collect();
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features,
+                members: &members,
+            },
+        ),
+        Err(Error::FeatureLimit)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_does_not_promote_caller_revocation_claims_to_permission() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-revoked".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("loaded Head");
+    let (source, mut access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    access.revocation_observed = true;
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features,
+                members: &members,
+            },
+        ),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
