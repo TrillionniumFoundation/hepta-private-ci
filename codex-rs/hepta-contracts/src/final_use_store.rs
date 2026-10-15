@@ -19,6 +19,10 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(windows)]
+#[path = "final_use_store_windows.rs"]
+mod windows;
+
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
@@ -438,11 +442,19 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+    windows::prepare_directory(root)
+}
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+    windows::open_private(directory, name, access)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -473,15 +485,27 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
+    windows::entry_exists(directory, name)
+}
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_state(directory)
+}
+#[cfg(windows)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_claims(directory)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
