@@ -41,7 +41,7 @@ def full_fit_gate(rows):
             return False
         for name in ARMS:
             row = arms[name]
-            if not isinstance(row, dict) or not row.get("train_gate_passed"):
+            if not isinstance(row, dict) or row.get("train_gate_passed") is not True:
                 return False
             if (row.get("status") != "train_gate_passed"
                     or row.get("completed_steps", 0) > TRAIN_STEPS
@@ -63,16 +63,37 @@ def matching_training_budgets(rows):
         a, b = (arms[name] for name in ARMS)
         if not all(isinstance(v, dict) for v in (a, b)):
             return False
+        for row in (a, b):
+            if (type(row.get("completed_steps")) is not int
+                    or not 1 <= row["completed_steps"] <= TRAIN_STEPS
+                    or type(row.get("actual_training_exposures")) is not int
+                    or row["actual_training_exposures"] != row["completed_steps"] * 16
+                    or type(row.get("optimizer_tensor_bytes")) is not int
+                    or row["optimizer_tensor_bytes"] <= 0
+                    or type(row.get("parameter_count")) is not int
+                    or row["parameter_count"] <= 0
+                    or not isinstance(row.get("schedule_sha256"), str)
+                    or re.fullmatch(r"[0-9a-f]{64}", row["schedule_sha256"]) is None):
+                return False
         if any(a.get(key) != b.get(key) for key in
-               ("completed_steps", "actual_training_exposures", "schedule_sha256")):
+               ("completed_steps", "actual_training_exposures", "schedule_sha256",
+                "optimizer_tensor_bytes", "parameter_count")):
             return False
     return True
+
+
+def matched_fresh_gate(rows):
+    """Both real full fits and equal *observed training investment* required.
+
+    This does not assert FLOP parity: masked attention and local MLP have
+    different actual arithmetic even with identical parameters and updates.
+    """
+    return full_fit_gate(rows) and matching_training_budgets(rows)
 
 
 def campaign(args):
     import torch
     from binding_campaign_utils import checked_design, load_bank, natural_panel, save_model, source_inventory
-    from binding_protocol import score_binding_probabilities
     from binding_training import fit_binding_reader
     from cross_fact_bridge import matched_reader_pair
     from group_encoder import file_digest
@@ -177,16 +198,20 @@ def campaign(args):
                 print(json.dumps({"seed": seed, "arm": arm, "train_gate": summary["train_gate_passed"],
                                   "steps": summary["completed_steps"]}), flush=True)
         _write_once(output / "fit-summary.json", summaries)
-        allowed = full_fit_gate(summaries)
-        decision = {"all_model_fit_gates_passed": allowed,
-                    "all_actual_training_budgets_equal": matching_training_budgets(summaries),
+        fits_passed = full_fit_gate(summaries)
+        budgets_equal = matching_training_budgets(summaries)
+        allowed = matched_fresh_gate(summaries)
+        decision = {"all_model_fit_gates_passed": fits_passed,
+                    "all_actual_training_budgets_equal": budgets_equal,
+                    "matched_fresh_gate_passed": allowed,
                     "original_v5_source_protocol_sha256": file_digest(args.output_v5 / "design.json"),
                     "training_only_gate": True,
                     "no_pretrained_superiority_claim": True}
         # Explicit no-data path: V5 does not promote a failed fit by reading TEST.
         _write_once(output / "opening-decision.json", decision)
         if not allowed:
-            status["status"] = "train_gate_failed_no_fresh_scoring"
+            status["status"] = ("train_gate_failed_no_fresh_scoring" if not fits_passed
+                                else "unequal_actual_budgets_no_fresh_scoring")
             return status
         # Freeze every model *before* fresh feature generation, then run all arms.
         frozen = {str(seed): {name: summaries[str(seed)][name]["model_file_sha256"]
@@ -206,11 +231,11 @@ def campaign(args):
                         "probabilities": probs, "batches": batch_receipts,
                         "weights_sha256": frozen[str(seed)][arm],
                         "labels_entered_model": False, "scoring_started": False})
-                    score = score_binding_probabilities(cohort, probs)
-                    _write_once(output / f"score-{role}-{seed}-{arm}.json",
-                        {"predictions_sha256": _digest(prediction_path), "metrics": score})
-        status["status"] = "all_frozen_scored_research_only"
-        status["fresh_scoring_authorized"] = True  # only this gate, not product authority
+        # The separately invoked scorer reconstructs labels from the original
+        # protocol only AFTER all 12 raw prediction seals exist on disk.
+        status["status"] = "all_frozen_predictions_sealed_pending_independent_scoring"
+        status["fresh_prediction_seals_complete"] = True
+        status["fresh_scoring_authorized"] = False
         return status
     except Exception as exc:
         status["status"] = "failed"
