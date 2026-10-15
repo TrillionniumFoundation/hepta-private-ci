@@ -88,7 +88,7 @@ def verify_complete_pretrained_state(torch, mlm, safetensors_path):
             shape = tuple(saved.get_shape())
             if shape != tuple(observed.shape) or observed.numel() == 0:
                 raise Invalid("parameter shape differs from original tensor: "+name)
-            whole.update(name.encode("utf8")+b"\\0")
+            whole.update(name.encode("utf8")+b"\0")
             if not shape:
                 raw = checkpoint.get_tensor(name)
                 if not bool(torch.equal(observed, raw)):
