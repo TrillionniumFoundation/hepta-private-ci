@@ -39,6 +39,12 @@ EXPECTED = frozenset(STATIC | {
     f"{seed}-{suffix}.json" for seed in SEEDS for suffix in SEED_SUFFIXES
 })
 SOURCE_SHA = "2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4"
+# These refer to the previously pinned, source-checked AG News parquet bytes.
+# Equality is an end-of-run integrity check; it is not external provenance signing.
+SOURCE_PARQUET_SHA = {
+    "source-train.parquet": "cc35afe9d5e7ff01878c9aeba08bb0bdfa16947702789530b216a580a1bc09d5",
+    "source-cal-test.parquet": "3171d3aeee227372165bb0f9e84ebf2bfaf5fc870d034f33a5fc568e7995c672",
+}
 MODEL_NAME = "ibm-granite/granite-embedding-97m-multilingual-r2"
 OS_ARMS = (
     "frozen_stage1_no_second_phase_learning", "unsplit_continued_update",
@@ -333,13 +339,23 @@ def produce(root: Path) -> dict[str, Any]:
         result["reason_codes"] = sorted(set(reasons))
         return result
     try:
+        # Recheck actual pinned inputs at the point of evidence export, not
+        # just their separately produced digest-claim sidecars. A changed
+        # payload with an unchanged sidecar must never be marked complete.
+        for name, expected_sha in SOURCE_PARQUET_SHA.items():
+            actual_sha = hashlib.sha256(safe_read(root / name)).hexdigest()
+            require(actual_sha == expected_sha, "pinned_source_bytes_mismatch")
+        actual_panel_sha = hashlib.sha256(
+            safe_read(root / "source-panel.json")).hexdigest()
+        require(actual_panel_sha == SOURCE_SHA, "public_panel_bytes_mismatch")
         source_sha = safe_read(root / "original-source-sha256.txt", max_bytes=128)
         require(source_sha == (SOURCE_SHA + "\n").encode("ascii"),
                 "original_source_digest_drift")
-        for name in ("model-files-source-hash.txt",):
-            value = safe_read(root / name, max_bytes=128)
-            require(HEX64.fullmatch(value.strip().decode("ascii")) is not None,
-                    "model_inventory_digest_missing")
+        model_inventory_sha = hashlib.sha256(
+            safe_read(root / "model-files.json")).hexdigest()
+        model_pointer = safe_read(root / "model-files-source-hash.txt", max_bytes=128)
+        require(model_pointer == (model_inventory_sha + "\n").encode("ascii"),
+                "model_inventory_bytes_mismatch")
         soft = load_json(root / "descriptive-retrospective-summary.json")
         hard = load_json(root / "hardtop1-descriptive-retrospective-summary.json")
         kernel = load_json(root / "os-meter-joined.json")
