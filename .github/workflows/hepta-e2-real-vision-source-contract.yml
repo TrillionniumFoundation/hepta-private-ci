@@ -1,0 +1,129 @@
+name: Hepta E2 real DINO vision physical ingress (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-real-vision-physical-ingress-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin image parser dependency
+        run: python -m pip install --disable-pip-version-check Pillow==12.3.0
+      - name: Test source identity, train-only pairing, and withheld future targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_real_vision.py' -v
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_real_vision.py' -v
+          python -m compileall -q experiments/shared_stem_cell/e2_real_vision_features.py experiments/shared_stem_cell/e2_real_vision_bridge_ingress.py
+
+  pinned-original-vision-forward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: source-contract
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin stock CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check \
+            transformers==4.57.1 huggingface-hub==0.36.0 safetensors==0.7.0 \
+            Pillow==12.3.0 packaging==25.0 numpy==2.3.5
+          python - <<'PY'
+          import torch, transformers, huggingface_hub, safetensors, PIL
+          assert torch.__version__.startswith("2.5.1")
+          assert transformers.__version__ == "4.57.1"
+          PY
+      - name: Acquire publisher revision and validate original safetensors digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from sys import path
+          path.insert(0, 'experiments/shared_stem_cell')
+          from e2_real_vision_features import MODEL_REPO, MODEL_REVISION, WEIGHTS_SHA256, FILES
+          root = Path('/tmp/hepta-e2-dino-original')
+          root.mkdir(exist_ok=False)
+          snap = Path(snapshot_download(repo_id=MODEL_REPO, revision=MODEL_REVISION, allow_patterns=list(FILES)))
+          for fn in FILES:
+              raw = (snap / fn).read_bytes()
+              assert raw and len(raw) < 125_000_000
+              if fn == 'model.safetensors':
+                  assert hashlib.sha256(raw).hexdigest() == WEIGHTS_SHA256
+              (root / fn).write_bytes(raw)
+          assert set(p.name for p in root.iterdir()) == set(FILES)
+          PY
+      - name: Run real pretrained DINO model on two synthetic original image bytes
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-e2-images
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e2_real_vision_features import canonical, sha, run
+          image_root = Path('/tmp/hepta-e2-images')
+          records=[]
+          for i in range(2):
+              image=Image.new('RGB',(64,64),((i+1)*60,30,150))
+              draw=ImageDraw.Draw(image)
+              draw.rectangle((8+i,8,48,48),outline=(255,255,255),width=3)
+              name=f'synthetic_{i}.png'
+              image.save(image_root/name)
+              row=dict(case_id=f'synthetic-case-{i}',group_id=f'independent-synthetic-group-{i}',
+                       scope='e2-synthetic-physical-canary',observed_at=i+1,split='train',
+                       condition='vision_required',image_path=name,
+                       image_sha256=sha((image_root/name).read_bytes()),
+                       question='Which pictured object is this?')
+              row['source_sha256']=sha(canonical(['hepta.e2.image-case.v1',row['case_id'],
+                        row['group_id'],row['scope'],row['observed_at'],row['condition'],
+                        row['image_sha256'],row['question']]))
+              records.append(row)
+          source_path=Path('/tmp/hepta-e2-input.jsonl')
+          source_bytes=b''.join(canonical(x) for x in records)
+          source_path.write_bytes(source_bytes)
+          snap=Path('/tmp/hepta-e2-dino-original')
+          result=run(snap,image_root,source_path,sha(source_bytes),'train',
+                     sha((snap/'config.json').read_bytes()),
+                     sha((snap/'preprocessor_config.json').read_bytes()),
+                     Path('hepta-e2-original-physical-receipts'))
+          assert result['actual_model_forwards']==2
+          assert result['checkpoint_locally_byte_verified'] is True
+          assert result['production_accepted'] is False
+          assert result['publisher_authenticated'] is False
+          assert result['authority']=='DENY_ALL'
+          print(json.dumps({k:result[k] for k in (
+            'schema','encoder_revision','image_count','actual_model_forwards',
+            'feature_width','output_sha256','production_accepted','authority')},sort_keys=True))
+          PY
+      - name: Preserve sanitized proof or failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e2-original-dino-canary
+          path: hepta-e2-original-physical-receipts/
+          if-no-files-found: ignore
+          retention-days: 5
