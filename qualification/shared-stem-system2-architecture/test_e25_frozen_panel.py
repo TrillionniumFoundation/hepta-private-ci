@@ -104,6 +104,18 @@ class E25FrozenSourceContracts(unittest.TestCase):
     def test_original_archived_model_sha_is_real(self):
         self.assertEqual(original_sha(),self.config['model_archive_sha256'])
 
+    def test_original_real_historical_archive_has_exactly_ten_eligible_source_passages(self):
+        # True original pretrained ZIP bytes, but NO new six-passage logits
+        # or human validation labels are accessed in this diagnostic.
+        with ZipFile(ORIGINAL) as z:
+            archive=json.loads(z.read('multirc-material/MATERIAL.json'))
+        validation=archive['material_admission']['validation']
+        self.assertEqual((validation['eligible_passages'],
+                          validation['eligible_distinct_texts']), (10,10))
+        self.assertEqual(archive['total_selected_validation_passages'],4)
+        self.assertEqual(validation['raw_passages'],83)
+        self.assertEqual(validation['raw_rows'],4848)
+
     def test_historical_training_source_and_new_group_division(self):
         self.assertEqual(len(old_source_groups(ORIGINAL)),4)
         self.assertEqual(len(set(old_source_groups(ORIGINAL))),4)
