@@ -142,15 +142,10 @@ impl CognitiveStore {
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
-                CognitiveRecoveryError::Unavailable(
-                    "cognitive recovery root does not exist".to_string(),
+                CognitiveRecoveryError::Indeterminate(
+                    "cognitive recovery root is redirected".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -220,7 +215,9 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
+            std::fs::OpenOptions::new()
+                .write(true)
+                .open(&candidate)
                 .and_then(|file| file.sync_all())
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             std::fs::File::open(&canonical_root)
