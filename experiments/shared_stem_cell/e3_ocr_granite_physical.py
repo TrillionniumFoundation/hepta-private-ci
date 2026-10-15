@@ -123,6 +123,7 @@ def main():
     import torch
     from execution import LocalEncoder
     args.out.mkdir(parents=True,exist_ok=False)
+    (args.out/"weights-not-artifacts").mkdir()
     root=args.out/"weights-not-artifacts"/"granite"
     model_manifest=verified_acquisition(*GRANITE,root)
     with torch.inference_mode():
