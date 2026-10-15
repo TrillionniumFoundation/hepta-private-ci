@@ -110,8 +110,7 @@ fn recovered_evidence_denies_missing_or_empty_effect_ledger_before_creation() {
         Err(NeuronProductionBootstrapErrorV1::NotReady)
     ));
 
-    std::fs::write(&effect, b"previous-effect-intent")
-        .expect("restored previous intent bytes");
+    std::fs::write(&effect, b"previous-effect-intent").expect("restored previous intent bytes");
     require_existing_effect_metrics_v1(&effect, &metrics)
         .expect("presence only; BOTH original open/replay owners must validate bytes");
 }
@@ -297,10 +296,7 @@ fn real_reopened_evidence_wal_rejects_clean_reset_effect_intent_header() {
         assert_eq!(recovered.status().durable_records, 0);
         assert_eq!(recovered_frontier.committed_rows, 1);
         assert!(matches!(
-            require_recovered_effect_metrics_floor_v1(
-                recovered.status(),
-                recovered_frontier
-            ),
+            require_recovered_effect_metrics_floor_v1(recovered.status(), recovered_frontier),
             Err(NeuronProductionBootstrapErrorV1::NotReady)
         ));
     }

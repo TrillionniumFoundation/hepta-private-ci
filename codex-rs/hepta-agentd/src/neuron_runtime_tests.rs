@@ -210,8 +210,18 @@ fn agentd_metrics_require_original_provenance_and_actual_flush_ack() {
     let sink = RecordingPhaseSink::default();
     let failures = AtomicU64::new(0);
     let flushed = AtomicBool::new(false);
-    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &flushed, false));
-    assert!(!super::flush_metrics_v1(Some(&sink), &failures, &flushed, false));
+    assert!(!super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        false
+    ));
+    assert!(!super::flush_metrics_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        false
+    ));
     assert!(matches!(
         super::begin_signed_tick_v1(Some(&sink), &failures, &flushed, false),
         Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
@@ -219,9 +229,19 @@ fn agentd_metrics_require_original_provenance_and_actual_flush_ack() {
 
     // Boolean below exercises only the private protocol helper: product code
     // cannot synthesize the typed DurablePhaseMetricSinkV1 this way.
-    assert!(super::flush_metrics_v1(Some(&sink), &failures, &flushed, true));
+    assert!(super::flush_metrics_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
     super::begin_signed_tick_v1(Some(&sink), &failures, &flushed, true).unwrap();
-    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &flushed, true));
+    assert!(!super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
     assert!(super::observe_and_commit_neuron_phase_v1(
         Some(&sink),
         &failures,
@@ -232,7 +252,12 @@ fn agentd_metrics_require_original_provenance_and_actual_flush_ack() {
         std::time::Duration::from_micros(11),
         true,
     ));
-    assert!(super::metrics_ready_v1(Some(&sink), &failures, &flushed, true));
+    assert!(super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
     assert_eq!(sink.events.lock().expect("sample").len(), 1);
 }
 
@@ -245,7 +270,12 @@ fn agentd_post_effect_observation_failure_is_sticky_even_after_writer_recovers()
     let sink = RecordingPhaseSink::default();
     let failures = AtomicU64::new(0);
     let flushed = AtomicBool::new(false);
-    assert!(super::flush_metrics_v1(Some(&sink), &failures, &flushed, true));
+    assert!(super::flush_metrics_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
     super::begin_signed_tick_v1(Some(&sink), &failures, &flushed, true).unwrap();
     sink.fail.store(true, Ordering::Release);
     assert!(!super::observe_and_commit_neuron_phase_v1(
@@ -260,8 +290,18 @@ fn agentd_post_effect_observation_failure_is_sticky_even_after_writer_recovers()
     ));
     assert_eq!(failures.load(Ordering::Acquire), 1);
     sink.fail.store(false, Ordering::Release);
-    assert!(!super::flush_metrics_v1(Some(&sink), &failures, &flushed, true));
-    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &flushed, true));
+    assert!(!super::flush_metrics_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
+    assert!(!super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &flushed,
+        true
+    ));
 }
 
 #[test]

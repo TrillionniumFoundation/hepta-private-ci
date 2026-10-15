@@ -13,9 +13,9 @@ use std::path::Path;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
-use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 use codex_hepta_neuron::AnchorWitnessStore;
@@ -122,9 +122,7 @@ fn require_existing_effect_metrics_v1(
 
     let probe = |path: &Path| -> Result<Option<u64>, NeuronProductionBootstrapErrorV1> {
         match fs::symlink_metadata(path) {
-            Ok(metadata) if metadata.is_file() && metadata.nlink() == 1 => {
-                Ok(Some(metadata.len()))
-            }
+            Ok(metadata) if metadata.is_file() && metadata.nlink() == 1 => Ok(Some(metadata.len())),
             Ok(_) => Err(NeuronProductionBootstrapErrorV1::InvalidPaths),
             Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(None),
             Err(error) => Err(NeuronProductionBootstrapErrorV1::Io(error)),
@@ -134,9 +132,7 @@ fn require_existing_effect_metrics_v1(
     let evidence = probe(metrics_path)?;
     match (intent, evidence) {
         (None, None) | (Some(0), Some(0)) => Ok(()),
-        (Some(intent_bytes), Some(evidence_bytes))
-            if intent_bytes > 0 && evidence_bytes > 0 =>
-        {
+        (Some(intent_bytes), Some(evidence_bytes)) if intent_bytes > 0 && evidence_bytes > 0 => {
             Ok(())
         }
         // Partial startup, truncated companion, lost original ledger, or a
@@ -144,7 +140,6 @@ fn require_existing_effect_metrics_v1(
         _ => Err(NeuronProductionBootstrapErrorV1::NotReady),
     }
 }
-
 
 #[cfg(unix)]
 fn require_recovered_effect_metrics_floor_v1(

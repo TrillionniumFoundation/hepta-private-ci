@@ -373,7 +373,12 @@ fn begin_signed_tick_v1(
     metrics_flushed: &AtomicBool,
     original_evidence_bound: bool,
 ) -> Result<(), NeuronRuntimeError> {
-    if !metrics_ready_v1(sink, failed_metrics, metrics_flushed, original_evidence_bound) {
+    if !metrics_ready_v1(
+        sink,
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    ) {
         return Err(NeuronRuntimeError::PendingReconciliation);
     }
     metrics_flushed.store(false, Ordering::Release);
@@ -398,7 +403,12 @@ fn flush_metrics_v1(
         return false;
     }
     metrics_flushed.store(true, Ordering::Release);
-    metrics_ready_v1(Some(sink), failed_metrics, metrics_flushed, original_evidence_bound)
+    metrics_ready_v1(
+        Some(sink),
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    )
 }
 
 /// Record exactly one actual signed Neuron call and require its original
@@ -430,7 +440,12 @@ fn observe_and_commit_neuron_phase_v1(
         elapsed,
         succeeded,
     );
-    flush_metrics_v1(Some(sink), failed_metrics, metrics_flushed, original_evidence_bound)
+    flush_metrics_v1(
+        Some(sink),
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    )
 }
 
 #[cfg(test)]
