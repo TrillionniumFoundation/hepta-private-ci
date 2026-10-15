@@ -46,6 +46,28 @@ class TestScaleFrontier(unittest.TestCase):
                   'can_extrapolate_to_unmeasured_10t_100t', 'production_accepted'):
             self.assertIs(result[k],False)
 
+    def test_wilson_interval_and_plateau_not_certified(self):
+        result=one_axis_sweeps(fixture())
+        review=result['matched_one_axis_sweeps'][0]
+        lo,hi=review['held_level_wilson95_iid_only']
+        self.assertLess(lo,hi)
+        self.assertLessEqual(lo,review['held_level_quality'])
+        self.assertLessEqual(review['held_level_quality'],hi)
+        self.assertIs(review['held_level_wilson_independence_established'],False)
+        self.assertIs(review['plateau_claim_admitted'],False)
+        self.assertEqual(review['gain_over_previous_level'],0)
+
+    def test_extreme_extrapolation_keeps_raw_bad_prediction(self):
+        x=fixture()
+        # Intentionally extreme held data in an underpowered toy panel.
+        # A fit can violate the valid probability interval, but must not be
+        # silently clipped and reported as a credible scaling forecast.
+        for i,r in enumerate(x['rows']):
+            r['correct']=(0,0,16,16)[i]
+        review=one_axis_sweeps(x)['matched_one_axis_sweeps'][0]
+        self.assertIsInstance(review['prediction_outside_unit_interval'],bool)
+        self.assertIs(review['plateau_claim_admitted'],False)
+
     def test_valid_one_axis_pair_within_arm_seed(self):
         x=fixture()
         x['rows'] += [trial(s,seed=47) for s in (64,256,1024,4096)]
