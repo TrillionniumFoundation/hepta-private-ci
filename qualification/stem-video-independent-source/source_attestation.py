@@ -12,7 +12,8 @@ import hashlib
 import json
 from pathlib import Path
 import re
-from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from source_gate import SourceGateError, verify
 
@@ -112,18 +113,36 @@ def _decode(raw):
         raise SourceGateError("invalid publisher JSON") from exc
 
 
+class _RejectRedirect(HTTPRedirectHandler):
+    """Fail closed instead of following cross-origin or same-origin redirects."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise SourceGateError("publisher redirect prohibited")
+
+
 def read_url(url, maximum):
-    """HTTPS GitHub endpoints are constructed locally; never taken from a plan."""
-    if not (url.startswith("https://api.github.com/repos/") or
-            url.startswith("https://raw.githubusercontent.com/")):
+    """Fetch bounded bytes from exact GitHub origins without redirects."""
+    if type(maximum) is not int or not 0 < maximum <= MAX_TOTAL_MEDIA_BYTES:
+        raise SourceGateError("invalid publisher read budget")
+    parsed = urlsplit(url)
+    if (parsed.scheme != "https" or parsed.hostname not in
+            ("api.github.com", "raw.githubusercontent.com") or
+            parsed.username is not None or parsed.password is not None or
+            parsed.port is not None or parsed.fragment):
         raise SourceGateError("non-publisher acquisition URL")
-    with urlopen(Request(url, headers={"User-Agent": "hepta-independent-video-attestation", "Accept": "application/vnd.github+json"}),
-                 timeout=45) as response:
+    if parsed.hostname == "api.github.com":
+        if not parsed.path.startswith("/repos/") or parsed.query not in ("", "recursive=1"):
+            raise SourceGateError("non-publisher API URL")
+    elif parsed.query or not parsed.path.startswith("/"):
+        raise SourceGateError("non-publisher raw URL")
+    req = Request(url, headers={"User-Agent": "hepta-independent-video-attestation",
+                                "Accept": "application/vnd.github+json"})
+    with build_opener(_RejectRedirect()).open(req, timeout=45) as response:
+        if response.geturl() != url:
+            raise SourceGateError("publisher final URL drift")
         raw = response.read(maximum + 1)
     if len(raw) > maximum:
         raise SourceGateError("bounded publisher response exceeded")
     return raw
-
 
 def _exact_media(row):
     if not isinstance(row, dict) or set(row) != {"path", "git_blob_sha1", "byte_count", "split", "group_id"}:

@@ -288,6 +288,58 @@ class TestAttestation(unittest.TestCase):
                 with self.assertRaises(SourceGateError):a.main()
             self.assertFalse(output.exists())
 
+    def test_publisher_redirects_fail_closed(self):
+        for status in (301, 302, 303, 307, 308):
+            with self.subTest(status=status), self.assertRaisesRegex(SourceGateError, 'redirect'):
+                a._RejectRedirect().redirect_request(None, None, status, 'moved',
+                                                      {}, 'https://invalid.example/new')
+
+    def test_noncanonical_github_origins_rejected(self):
+        urls = [
+            'https://api.github.com.invalid.example/repos/a/b',
+            'https://raw.githubusercontent.com.invalid.example/a/b',
+            'https://api.github.com:443/repos/a/b',
+            'https://guest@api.github.com/repos/a/b',
+            'http://api.github.com/repos/a/b',
+            'https://raw.githubusercontent.com/a/b/clip.mp4?ref=main',
+        ]
+        for url in urls:
+            with self.subTest(url=url), self.assertRaises(SourceGateError):
+                a.read_url(url, 1024)
+
+    def test_nonredirecting_opener_enforces_exact_url_and_limit(self):
+        target = 'https://api.github.com/repos/publisher/videos/git/commits/' + 'a'*40
+        seen = []
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def geturl(self): return target
+            def read(self, limit):
+                seen.append(limit)
+                return b'abc'
+        class Opener:
+            def open(self, request, timeout):
+                seen.append(request.full_url)
+                seen.append(timeout)
+                return Response()
+        with patch.object(a, 'build_opener', return_value=Opener()) as factory:
+            self.assertEqual(a.read_url(target, 128), b'abc')
+        self.assertIsInstance(factory.call_args.args[0], a._RejectRedirect)
+        self.assertEqual(seen, [target, 45, 129])
+
+    def test_publisher_response_final_url_mismatch_rejected(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def geturl(self): return 'https://other.example/media'
+            def read(self, limit): self.fail('must reject before reading')
+        class Opener:
+            def open(self, request, timeout): return Response()
+        target = 'https://raw.githubusercontent.com/publisher/videos/' + 'a'*40 + '/clip.mp4'
+        with patch.object(a, 'build_opener', return_value=Opener()):
+            with self.assertRaisesRegex(SourceGateError, 'final URL drift'):
+                a.read_url(target, 1024)
+
     def test_github_url_parser_refuses_arbitrary_url(self):
         with self.assertRaises(SourceGateError):
             a.read_url('https://example.com/repo',1000)
