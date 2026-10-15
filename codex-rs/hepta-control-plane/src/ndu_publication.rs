@@ -119,6 +119,47 @@ fn control_owner_file_identity(
     Ok((opened.dev(), opened.ino()))
 }
 
+/// Construct the canonical original Control lock marker without heap
+/// allocation on each live Neuron checkpoint/readback. The bootstrap uses the
+/// identical NDUW1 grammar, including decimal u64 device/inode and final LF.
+/// This is an identity check, never independent authority or a signed proof.
+#[cfg(unix)]
+fn encode_control_owner_marker_v1(
+    device: u64,
+    inode: u64,
+) -> Result<([u8; MAX_CONTROL_OWNER_MARKER_BYTES], usize), NduPublicationErrorV1> {
+    let mut marker = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES];
+    let prefix = b"NDUW1|";
+    marker[..prefix.len()].copy_from_slice(prefix);
+    let mut used = prefix.len();
+
+    for (value, separator) in [(device, b'|'), (inode, b'\n')] {
+        // A decimal u64 uses at most 20 digits, including the value zero.
+        let mut decimal = [0_u8; 20];
+        let mut remaining = value;
+        let mut begin = decimal.len();
+        loop {
+            begin -= 1;
+            decimal[begin] = b'0' + (remaining % 10) as u8;
+            remaining /= 10;
+            if remaining == 0 {
+                break;
+            }
+        }
+        let digits = &decimal[begin..];
+        let end = used
+            .checked_add(digits.len() + 1)
+            .ok_or(NduPublicationErrorV1::Capacity)?;
+        if end > marker.len() {
+            return Err(NduPublicationErrorV1::Capacity);
+        }
+        marker[used..end - 1].copy_from_slice(digits);
+        marker[end - 1] = separator;
+        used = end;
+    }
+    Ok((marker, used))
+}
+
 /// Bind the Control WAL bootstrap to one already-open private directory.
 /// This also rejects a parent path rebind after its first canonical check.
 /// Calls are read-only: only the independently locked WAL writer may mutate.
@@ -334,14 +375,13 @@ impl State {
         let (device, inode) = control_owner_file_identity(&self.file, &self.journal_path)?;
         control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
         after_first_identity();
-        let expected = format!("NDUW1|{device}|{inode}\n");
-        if expected.len() > MAX_CONTROL_OWNER_MARKER_BYTES
-            || self
-                .owner_lock
-                .metadata()
-                .map_err(|_| NduPublicationErrorV1::Indeterminate)?
-                .len()
-                != expected.len() as u64
+        let (expected, expected_len) = encode_control_owner_marker_v1(device, inode)?;
+        if self
+            .owner_lock
+            .metadata()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?
+            .len()
+            != expected_len as u64
         {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
@@ -351,9 +391,9 @@ impl State {
         // original locked FD and do not mutate its shared cursor.
         let mut recorded = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES];
         self.owner_lock
-            .read_exact_at(&mut recorded[..expected.len()], 0)
+            .read_exact_at(&mut recorded[..expected_len], 0)
             .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
-        if &recorded[..expected.len()] != expected.as_bytes()
+        if recorded[..expected_len] != expected[..expected_len]
             || self
                 .file
                 .metadata()
