@@ -40,7 +40,9 @@ superiority claim may be inherited or retroactively repaired.
   ancestry; all 4,500 logged two-stream steps; complete old-binding/new-natural
   IDs and exposures; projection/rollback arithmetic; 13,500 Reader forwards,
   9,000 backward calls; model file/training receipt hash binding; and
-  *independently recomputes* complete old binding TRAIN 128-example binary
+  rejects rewritten producer bytes by pinning both V7.1 trainer SHA256s and
+  the original V6 runtime inventory; it *independently recomputes* complete
+  old binding TRAIN 128-example binary
   accuracy and 64 paired-world correctness from sealed probabilities.
   Importantly, this reviewer does **not** decode or numerically replay the
   trained `.pt` tensors and does **not** cryptographically authenticate the

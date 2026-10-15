@@ -20,6 +20,10 @@ OLD = "v6_binding_paired_world_warmup"
 NEW = "natural_multirc_continuation"
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "hepta.bridge.gradient-campaign.v7.1"
+# Frozen producer bytes: a same-run start receipt cannot self-certify an
+# unknown trainer by merely claiming its own chosen hash.
+GUARD_SOURCE_SHA256 = "09129c79c817305854b5003540189557800ec9dd783c701e72d5145bbde89e68"
+CAMPAIGN_SOURCE_SHA256 = "e4b8db066d014d64e92ec00c5177e10ae8a58d9dd102699fd1d830a2026bad8e"
 
 
 def _fail(reason):
@@ -202,6 +206,11 @@ def review(output, previous_v6):
                 "original_V6_checked_design_and_cached_features"
              and start["original_pretrained_snapshots_independently_authenticated"] is False,
              "original frozen V6 snapshot lineage drift")
+    original_design = read(previous_v6 / "design.json")
+    _require(start["candidate_guard_source_sha256"] == GUARD_SOURCE_SHA256
+             and start["candidate_campaign_source_sha256"] == CAMPAIGN_SOURCE_SHA256
+             and start["original_runtime_sha256"] == original_design.get("runtime_source_sha256"),
+             "candidate trainer/original V6 runtime source digest differs")
     _require(set(completed["results"]) == {f"{seed}/{arm}" for seed in SEEDS for arm in ARMS},
              "all seed/arm cohorts required")
     original_warmup = read(previous_v6 / "warmup-completion.json")
@@ -297,6 +306,9 @@ def review(output, previous_v6):
                 correct_binding_old=round(correct*128), paired_correct=round(paired*64))
             all_work[f"{seed}/{arm}"] = work
     return dict(schema="hepta.bridge.gradient-independent-review.v7.1",
+        independent_reviewer_source_sha256=file_hash(Path(__file__)),
+        accepted_producer_source_sha256={"guard": GUARD_SOURCE_SHA256,
+            "campaign": CAMPAIGN_SOURCE_SHA256},
         disposition="DIAGNOSTIC_CONSISTENT_NOT_PRODUCTION_ADMITTED",
         source_provenance_independently_authenticated=False,
         trained_weight_numerical_replay_performed=False,

@@ -19,7 +19,8 @@ from torch import nn
 from torch.nn import functional as F
 
 from bridge_gradient_guard import ARMS, OLD_TASK, NEW_TASK, gradient_step
-from bridge_gradient_review import review, _digest, file_hash
+from bridge_gradient_review import (review, _digest, file_hash,
+    GUARD_SOURCE_SHA256, CAMPAIGN_SOURCE_SHA256)
 
 
 class MiniReader(nn.Module):
@@ -80,7 +81,9 @@ class CompleteReviewerTests(unittest.TestCase):
         root=Path(self.temp.name)
         self.previous=root/"original-v6"
         self.output=root/"v7-1"
-        write(self.previous/"design.json",{"source":"explicit_synthetic_fixture"})
+        write(self.previous/"design.json",{
+            "source":"explicit_synthetic_fixture",
+            "runtime_source_sha256":{"original_v6_example":"a"*64}})
         write(self.previous/"warmup-completion.json",{
             "primary_all_passed":True,"fresh_scoring_authorized":False,
             "gates":{str(seed):{"bridge":{"passed":True}} for seed in (41,47,53)}})
@@ -91,6 +94,9 @@ class CompleteReviewerTests(unittest.TestCase):
             "previous_v6_design_sha256":file_hash(self.previous/"design.json"),
             "previous_warmup_sha256":file_hash(self.previous/"warmup-completion.json"),
             "original_source_validation_scope":"original_V6_checked_design_and_cached_features",
+            "candidate_guard_source_sha256":GUARD_SOURCE_SHA256,
+            "candidate_campaign_source_sha256":CAMPAIGN_SOURCE_SHA256,
+            "original_runtime_sha256":{"original_v6_example":"a"*64},
             "original_pretrained_snapshots_independently_authenticated":False})
         results={}
         for seed in (41,47,53):
@@ -182,6 +188,14 @@ class CompleteReviewerTests(unittest.TestCase):
         path=self.output/"seed-41"/"protect_old"/"candidate.pt"
         path.write_bytes(path.read_bytes()+b"tamper")
         with self.assertRaisesRegex(ValueError,"weights/receipts"):
+            review(self.output,self.previous)
+
+    def test_reject_rehashed_unapproved_producer_source(self):
+        path=self.output/"start.json"
+        data=json.loads(path.read_text())
+        data["candidate_guard_source_sha256"]="b"*64
+        write(path,data)
+        with self.assertRaisesRegex(ValueError,"trainer/original V6 runtime"):
             review(self.output,self.previous)
 
     def test_reject_changed_original_v6_source(self):
