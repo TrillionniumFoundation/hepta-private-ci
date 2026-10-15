@@ -836,6 +836,11 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             native,
             "deterministic Unix postcheck directory-rebind fixture missing",
         )
+        self.assertIn(
+            "fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontier()",
+            native,
+            "restarted original Control history must reject a rebind and recover exact frontier",
+        )
 
     def test_original_control_wal_requires_canonical_parent_before_open(self) -> None:
         # Original Control WAL and its owner-lock marker share a single
