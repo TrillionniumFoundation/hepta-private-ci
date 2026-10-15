@@ -8,6 +8,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_question_only_head.py'
       - 'experiments/shared_stem_cell/p0_question_only_review.py'
       - 'experiments/shared_stem_cell/p0_encoding_cost_frontier.py'
+      - 'experiments/shared_stem_cell/p0_physical_replay_v5.py'
+      - 'experiments/shared_stem_cell/test_p0_physical_replay_v5.py'
+      - 'experiments/shared_stem_cell/P0_INDEPENDENT_HEAD_REPLAY_V5.md'
       - 'experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py'
       - 'experiments/shared_stem_cell/P0_ENCODING_INCLUSIVE_FRONTIER_V4.md'
       - 'experiments/shared_stem_cell/test_p0_question_only_matched.py'
@@ -34,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
-          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'packaging==25.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'packaging==25.0' 'safetensors==0.8.0'
           python -m pip check
           python - <<'PY'
           import torch,numpy
@@ -49,6 +52,8 @@ jobs:
             experiments/shared_stem_cell/p0_question_only_head.py \
             experiments/shared_stem_cell/p0_question_only_review.py \
             experiments/shared_stem_cell/p0_encoding_cost_frontier.py \
+            experiments/shared_stem_cell/p0_physical_replay_v5.py \
+            experiments/shared_stem_cell/test_p0_physical_replay_v5.py \
             experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/test_p0_question_only_matched.py \
             experiments/shared_stem_cell/test_p0_squad_causal.py \
@@ -65,6 +70,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_encoding_cost_frontier.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_encoding_cost_frontier.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_physical_replay_v5.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_physical_replay_v5.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
@@ -250,6 +259,10 @@ jobs:
           PY="$RUNNER_TEMP/human-p0-venv/bin/python"
           ROOT="$RUNNER_TEMP/physical"
           for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            REPLAY_ARGS=()
+            if [ "$model" != laya421_nochange ]; then
+              REPLAY_ARGS=(--replay-dir "$ROOT/$model.replay")
+            fi
             if timeout --signal=TERM --kill-after=30s 3200s "$PY" \
               experiments/shared_stem_cell/p0_multirc_semantic_execute.py \
               --fit "$RUNNER_TEMP/blind-model/fit.json" \
@@ -257,7 +270,7 @@ jobs:
               --model "$model" \
               --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
               --gemma-manifest "$ROOT/gemma-snapshot/manifest.json" \
-              --output "$ROOT/$model.json"; then
+              --output "$ROOT/$model.json" "${REPLAY_ARGS[@]}"; then
               echo "$model original pretrained task completed"
             else
               echo "$model failed or timed out; do not score as completed" > "$ROOT/$model.failed.txt"
@@ -266,19 +279,84 @@ jobs:
           for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
             test -s "$ROOT/$model.json" || { echo "Missing real pretrained $model" >&2; exit 1; }
           done
+      - name: Stage exact public research outputs, never pretrained checkpoint material
+        if: always()
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/physical"
+          OUT="$RUNNER_TEMP/physical-public"
+          mkdir -p "$OUT"
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            if [ -f "$ROOT/$model.json" ]; then cp "$ROOT/$model.json" "$OUT/$model.json"; fi
+            if [ -f "$ROOT/$model.failed.txt" ]; then cp "$ROOT/$model.failed.txt" "$OUT/$model.failed.txt"; fi
+            if [ -d "$ROOT/$model.replay" ]; then cp -R "$ROOT/$model.replay" "$OUT/$model.replay"; fi
+          done
+          if [ -f "$ROOT/gemma-source-receipt.json" ]; then
+            cp "$ROOT/gemma-source-receipt.json" "$OUT/gemma-source-receipt.json"
+          fi
+          if [ -f "$RUNNER_TEMP/human-p0-freeze.txt" ]; then
+            cp "$RUNNER_TEMP/human-p0-freeze.txt" "$OUT/human-p0-freeze.txt"
+          fi
+          test ! -e "$OUT/gemma-snapshot"  # Never export original giant model weights.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: hepta-human-four-original-predictions-${{ github.run_id }}
-          path: |
-            ${{ runner.temp }}/physical/*.json
-            ${{ runner.temp }}/physical/*.failed.txt
-            ${{ runner.temp }}/human-p0-freeze.txt
+          path: ${{ runner.temp }}/physical-public/
+          if-no-files-found: warn
+          retention-days: 7
+
+  independent-pretrained-replay:
+    needs: [original-human-materials, physical-four-models]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent replay only - no foundation weights, no held labels
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/replay-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/replay-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/replay-only
+      - name: Independently replay all frozen/learned Head logits before any label opening
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/replay-only"
+          python experiments/shared_stem_cell/p0_physical_replay_v5.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --replay-root "$ROOT" --output "$ROOT/head-replay-review.json"
+          python -m json.tool "$ROOT/head-replay-review.json" >/dev/null
+          echo 'Replay verifies numeric Head-feature consistency, NOT checkpoint source, held labels or production acceptance.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-independent-head-replay-${{ github.run_id }}
+          path: ${{ runner.temp }}/replay-only/head-replay-review.json
           if-no-files-found: warn
           retention-days: 7
 
   independent-human-score:
-    needs: [original-human-materials, physical-four-models]
+    needs: [original-human-materials, physical-four-models, independent-pretrained-replay]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:

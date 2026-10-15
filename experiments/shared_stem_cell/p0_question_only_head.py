@@ -49,7 +49,7 @@ def matched_pairs(fit_doc, blind_doc):
     return {part: sorted(rows, key=lambda p: p[0]['case_id']) for part, rows in chosen.items()}
 
 
-def fit_question_only(fit_doc, blind_doc, features, width, evidence_training):
+def fit_question_only(fit_doc, blind_doc, features, width, evidence_training, *, replay_heads=None):
     """Actually fit a separately initialized SGD Head with matched steps and labels.
 
     Evidence labels come exclusively from original TRAIN material; no-evidence
@@ -122,6 +122,10 @@ def fit_question_only(fit_doc, blind_doc, features, width, evidence_training):
     ms = (time.perf_counter_ns() - begin) / 1e6
     if tensor_sha(frozen) != initial_sha or tensor_sha(head) == initial_sha:
         raise Invalid('frozen control mutated or learned Head made no parameter update')
+    if replay_heads is not None:
+        from p0_physical_replay_v5 import capture_head_tensors
+        capture_head_tensors(replay_heads,'question_frozen',frozen)
+        capture_head_tensors(replay_heads,'question_trained',head)
 
     controls = {}
     for mode, h in (('question_frozen_head', frozen), ('question_trained_head', head.eval())):

@@ -24,7 +24,7 @@ LR = 0.1
 TEMPS = (0.5,0.75,1.,1.5,2.,3.)
 
 
-def fit_head(fit, blind, features, width):
+def fit_head(fit, blind, features, width, *, replay_heads=None):
     import torch
     import torch.nn.functional as F
     torch.set_num_threads(1)
@@ -61,6 +61,10 @@ def fit_head(fit, blind, features, width):
     train_ms=(time.perf_counter_ns()-begin)/1e6
     if tensor_sha(frozen)!=old_digest or tensor_sha(model)==old_digest:
         raise Invalid('frozen control modified or zero actual updates')
+    if replay_heads is not None:
+        from p0_physical_replay_v5 import capture_head_tensors
+        capture_head_tensors(replay_heads,'evidence_frozen',frozen)
+        capture_head_tensors(replay_heads,'evidence_trained',model)
     out={}
     for name,head in (('frozen_head',frozen),('trained_head',model.eval())):
         with torch.inference_mode():
@@ -83,7 +87,7 @@ def fit_head(fit, blind, features, width):
             'train_labels_only_in_gradient':True, 'controls':out}
 
 
-def run(fit_doc,blind_doc,model,args):
+def run(fit_doc,blind_doc,model,args,*,replay_capture=None):
     fit,blind=validate(fit_doc,blind_doc)
     if model not in MODELS:
         raise Invalid('unknown original research model')
@@ -103,13 +107,17 @@ def run(fit_doc,blind_doc,model,args):
                          args.compact_checkout,args.gemma_checkout,args.gemma_manifest)
         if set(tokens)!={r['case_id'] for r in fit+blind} or any(type(v) is not int or not 1<=v<=512 for v in tokens.values()):
             raise Invalid('missing or silently truncated original pretrained tokens')
-        trained=fit_head(fit,blind,vectors,width)
+        capture_heads=(replay_capture["heads"] if replay_capture is not None else None)
+        trained=fit_head(fit,blind,vectors,width,replay_heads=capture_heads)
         # Candidate-only matched prior: original human TRAIN labels, separately
         # trained on question/answer with no passage. Reuse frozen Encoder bank.
         # The control does NOT assign a human label to a modified passage.
         from p0_question_only_head import fit_question_only
-        question_only=fit_question_only(fit_doc,blind_doc,vectors,width,trained)
+        question_only=fit_question_only(fit_doc,blind_doc,vectors,width,trained,
+                                        replay_heads=capture_heads)
         head=trained
+        if replay_capture is not None:
+            replay_capture['features']=vectors
         checked={'source_feature_sha256':sha(canonical(feature_digests)),
                  'physical_encoder_ms_by_case':physical.get('encode_ms_by_case'),
                  'source_token_counts_sha256':sha(canonical(tokens)),
@@ -150,10 +158,21 @@ def main():
     p.add_argument('--gemma-checkout',type=Path)
     p.add_argument('--gemma-manifest',type=Path)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--replay-dir',type=Path)
     a=p.parse_args()
-    if a.output.exists():
-        raise FileExistsError('prediction receipt must be create-only')
-    receipt=run(read(a.fit),read(a.blind),a.model,a)
+    if a.output.exists() or (a.replay_dir is not None and a.replay_dir.exists()):
+        raise FileExistsError('prediction/replay receipt must be create-only')
+    if (a.model=='laya421_nochange') != (a.replay_dir is None):
+        raise Invalid('three pretrained Heads require a replay archive; Laya cannot claim it')
+    fit,blind=read(a.fit),read(a.blind)
+    capture={'heads':{}} if a.replay_dir is not None else None
+    receipt=run(fit,blind,a.model,a,replay_capture=capture)
+    if capture is not None:
+        from p0_physical_replay_v5 import export_original_replay, independent_numeric_replay
+        export_original_replay(a.replay_dir,fit,blind,receipt,a.model,
+                               capture['features'],capture['heads'])
+        # Self-check the just-published archive against exact trained predictions.
+        independent_numeric_replay(a.replay_dir,fit,blind,receipt,model=a.model)
     save(a.output,receipt)
     print(json.dumps({'model':a.model,'prediction_sha256':sha(canonical(receipt)),
                       'no_release':True,'human_future_semantics_not_qualified':True}))
