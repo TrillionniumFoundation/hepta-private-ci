@@ -465,7 +465,7 @@ pub fn select_resource_portfolio_shadow_v1(
     }
     ranked.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
 
-    let mut selected = Vec::new();
+    let mut selected: Vec<StableId> = Vec::new();
     let mut aggregate = ResourceVectorV1::default();
     let mut variance_risk = FixedQ32::ZERO;
     let mut utility = FixedQ32::ZERO;
