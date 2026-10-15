@@ -4,8 +4,6 @@
 
 use std::fs::File;
 #[cfg(unix)]
-use std::fs::OpenOptions;
-#[cfg(unix)]
 use std::fs::{self};
 #[cfg(unix)]
 use std::io::BufRead;
@@ -104,6 +102,37 @@ fn control_owner_file_identity(
         return Err(NduPublicationErrorV1::Indeterminate);
     }
     Ok((opened.dev(), opened.ino()))
+}
+
+/// Bind the Control WAL bootstrap to one already-open private directory.
+/// This also rejects a parent path rebind after its first canonical check.
+/// Calls are read-only: only the independently locked WAL writer may mutate.
+#[cfg(unix)]
+fn control_parent_dir_identity(
+    directory: &File,
+    parent: &Path,
+) -> Result<(), NduPublicationErrorV1> {
+    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+
+    if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
+        return Err(NduPublicationErrorV1::UnsafePath);
+    }
+    let opened = directory
+        .metadata()
+        .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    let named = fs::symlink_metadata(parent).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    if !opened.is_dir()
+        || !named.file_type().is_dir()
+        || named.file_type().is_symlink()
+        || opened.dev() != named.dev()
+        || opened.ino() != named.ino()
+        || opened.uid() != named.uid()
+        || opened.permissions().mode() & 0o077 != 0
+        || named.permissions().mode() & 0o077 != 0
+    {
+        return Err(NduPublicationErrorV1::Indeterminate);
+    }
+    Ok(())
 }
 
 /// Identifies bytes returned by the original CNS owner after its
@@ -510,8 +539,20 @@ impl NduPublicationOwnerV1 {
         snapshot: NduSnapshotRefV1,
         canonical_checkpoint: Digest32,
     ) -> Result<Self, NduPublicationErrorV1> {
+        // Public production entry has no caller-supplied hook. Only test code
+        // can inject an exact post-dirfd rebind, never an authorization.
+        Self::open_production_with_directory_hook(path, snapshot, canonical_checkpoint, || {})
+    }
+
+    #[cfg(unix)]
+    fn open_production_with_directory_hook(
+        path: &Path,
+        snapshot: NduSnapshotRefV1,
+        canonical_checkpoint: Digest32,
+        after_directory_pinned: impl FnOnce(),
+    ) -> Result<Self, NduPublicationErrorV1> {
+        use rustix::fs::{self as unixfs, Mode, OFlags};
         use std::os::unix::fs::MetadataExt;
-        use std::os::unix::fs::OpenOptionsExt;
         use std::os::unix::fs::PermissionsExt;
         snapshot
             .validate()
@@ -525,20 +566,34 @@ impl NduPublicationOwnerV1 {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let parent = path.parent().ok_or(NduPublicationErrorV1::UnsafePath)?;
-        // A symlinked ancestor can alias a private original WAL and its
-        // persistent sidecar lock under a second owner path spelling.
-        // This bootstrap guard does not replace dirfd-anchored openat safety.
-        if parent
-            .canonicalize()
-            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
-            != parent
-        {
+        // symlink_metadata(parent) only checks the final path component.
+        // A symlink in an EARLIER ancestor can alias the same private WAL
+        // and owner-lock under a second, non-canonical name. Refuse such
+        // aliases before creating, reading or locking either durable file.
+        // This bootstrap check is not a substitute for independent custody
+        // or kernel-anchored openat protection against privileged path races.
+        if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let dir = fs::symlink_metadata(parent)?;
         if !dir.is_dir() || dir.file_type().is_symlink() || dir.permissions().mode() & 0o077 != 0 {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
+        // Pin the actual private directory before resolving either child.
+        // Safe rustix::openat uses this FD instead of reopening mutable
+        // absolute pathnames, preserving the crate's forbid(unsafe_code).
+        let parent_dir = File::from(
+            unixfs::open(
+                parent,
+                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::empty(),
+            )
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?,
+        );
+        control_parent_dir_identity(&parent_dir, parent)?;
+        // Deterministic fault-injection point for tests: production always
+        // supplies an empty closure and still rechecks parent identity.
+        after_directory_pinned();
         let preexisting = match fs::symlink_metadata(path) {
             Ok(meta)
                 if !meta.file_type().is_file()
@@ -572,29 +627,46 @@ impl NduPublicationOwnerV1 {
         if preexisting != lock_existed {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
-        let mut lock_options = OpenOptions::new();
-        lock_options.read(true).write(true).mode(0o600);
+        let mut lock_flags = OFlags::RDWR | OFlags::NOFOLLOW | OFlags::CLOEXEC;
         if !preexisting {
-            lock_options.create_new(true);
+            lock_flags |= OFlags::CREATE | OFlags::EXCL;
         }
-        let mut owner_lock = lock_options.open(&lock_path)?;
+        let private_mode = Mode::from_bits_truncate(0o600);
+        let mut owner_lock = File::from(
+            unixfs::openat(
+                &parent_dir,
+                lock_path.file_name().ok_or(NduPublicationErrorV1::UnsafePath)?,
+                lock_flags,
+                private_mode,
+            )
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?,
+        );
         control_owner_file_identity(&owner_lock, &lock_path)?;
+        control_parent_dir_identity(&parent_dir, parent)?;
         owner_lock
             .try_lock()
             .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
         if !preexisting {
-            // Once the marker exists durably, a crash before genesis must
-            // quarantine the half-bootstrapped owner rather than reinitialize.
-            fs::File::open(parent)?.sync_all()?;
+            // A crash after this fsync but before genesis is quarantined
+            // by the original marker rather than silently rebootstrapped.
+            parent_dir.sync_all()?;
         }
 
-        let mut journal_options = OpenOptions::new();
-        journal_options.read(true).append(true).mode(0o600);
+        let mut journal_flags = OFlags::RDWR | OFlags::APPEND | OFlags::NOFOLLOW | OFlags::CLOEXEC;
         if !preexisting {
-            journal_options.create_new(true);
+            journal_flags |= OFlags::CREATE | OFlags::EXCL;
         }
-        let file = journal_options.open(path)?;
+        let file = File::from(
+            unixfs::openat(
+                &parent_dir,
+                path.file_name().ok_or(NduPublicationErrorV1::UnsafePath)?,
+                journal_flags,
+                private_mode,
+            )
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?,
+        );
         let (journal_device, journal_inode) = control_owner_file_identity(&file, path)?;
+        control_parent_dir_identity(&parent_dir, parent)?;
         file.try_lock()
             .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
         let expected_marker = format!("NDUW1|{journal_device}|{journal_inode}\n");
@@ -610,7 +682,8 @@ impl NduPublicationOwnerV1 {
         } else {
             owner_lock.write_all(expected_marker.as_bytes())?;
             owner_lock.sync_all()?;
-            fs::File::open(parent)?.sync_all()?;
+            parent_dir.sync_all()?;
+            control_parent_dir_identity(&parent_dir, parent)?;
         }
         let mut reader = BufReader::new(file.try_clone()?);
         let mut row = Vec::new();
@@ -700,6 +773,7 @@ impl NduPublicationOwnerV1 {
             pending_cutover: false,
             last_cns_original_receipt_binding,
         };
+        // Preserve the advanced Control/Observer full-history readback boundary.
         // Pin the replayed last durable row before accepting any new G/P/C.
         state.verify_original_paths(state.bytes, state.sequence, state.head)?;
         if latest.is_none() {
@@ -712,7 +786,8 @@ impl NduPublicationOwnerV1 {
                 Digest32::ZERO,
             )?;
         }
-        fs::File::open(parent)?.sync_all()?;
+        parent_dir.sync_all()?;
+        control_parent_dir_identity(&parent_dir, parent)?;
         Ok(Self {
             state: Mutex::new(state),
         })
