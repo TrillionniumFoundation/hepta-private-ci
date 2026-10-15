@@ -309,3 +309,124 @@ fn real_reopened_evidence_wal_rejects_clean_reset_effect_intent_header() {
         before_evidence
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn original_wal_floor_refuses_unresolved_and_poisoned_effects_with_evidence() {
+    use codex_hepta_neuron::NeuronEffectIntentStatusV1;
+    use codex_hepta_types::Digest32;
+
+    let evidence = MetricsLocalFrontierV1 {
+        sequence: 1,
+        head_digest: Digest32::of_bytes(b"committed-evidence"),
+        committed_rows: 1,
+        journal_bytes: 256,
+        wal_device: 1,
+        wal_inode: 2,
+        marker_device: 1,
+        marker_inode: 3,
+    };
+    let complete = NeuronEffectIntentStatusV1 {
+        attempted_ticks: 1,
+        durable_records: 2,
+        unresolved_tick: None,
+        poisoned: false,
+    };
+    require_recovered_effect_metrics_floor_v1(complete, evidence)
+        .expect("this local floor is not independent serving authorization");
+    assert!(matches!(
+        require_recovered_effect_metrics_floor_v1(
+            NeuronEffectIntentStatusV1 {
+                durable_records: 3,
+                attempted_ticks: 2,
+                unresolved_tick: Some(Digest32::of_bytes(b"orphan-prepare")),
+                ..complete
+            },
+            evidence
+        ),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    assert!(matches!(
+        require_recovered_effect_metrics_floor_v1(
+            NeuronEffectIntentStatusV1 {
+                poisoned: true,
+                ..complete
+            },
+            evidence
+        ),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn actual_pending_original_prepare_stays_quarantined_after_cold_replay() {
+    use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = tempfile::tempdir().expect("private original root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private root permissions");
+    let intent_path = root.path().join("effect-intent.wal");
+    let evidence_path = root.path().join("original-evidence.wal");
+    let scope = JournalScope {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+    };
+    let generation = Generation::new(1).expect("valid generation");
+    let operation = Digest32::of_bytes(b"durably-prepared-tick");
+    {
+        let mut intent = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            &intent_path, scope, generation, 32,
+        )
+        .expect("protected business WAL");
+        intent
+            .prepare(operation, Digest32::ZERO)
+            .expect("durable original Prepare without Resolve");
+        let sink = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+            .expect("original Evidence owner");
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: scope.scope_digest,
+            operation_digest: operation,
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 17,
+            succeeded: false,
+        })
+        .expect("original observer record");
+        sink.flush().expect("original fsync");
+    }
+    let original_intent = std::fs::read(&intent_path).expect("durable intent bytes");
+    let original_evidence = std::fs::read(&evidence_path).expect("durable Evidence bytes");
+    require_existing_effect_metrics_v1(&intent_path, &evidence_path)
+        .expect("both original journals remain present");
+
+    {
+        let recovered = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            &intent_path, scope, generation, 32,
+        )
+        .expect("real original intent replay");
+        let evidence = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+            .expect("real original Evidence replay");
+        let frontier = evidence.read_local_frontier().expect("verified Evidence frontier");
+        assert_eq!(frontier.committed_rows, 1);
+        assert_eq!(recovered.status().unresolved_tick, Some(operation));
+        assert_eq!(recovered.status().durable_records, 1);
+        assert!(matches!(
+            require_recovered_effect_metrics_floor_v1(recovered.status(), frontier),
+            Err(NeuronProductionBootstrapErrorV1::NotReady)
+        ));
+    }
+    assert_eq!(
+        std::fs::read(&intent_path).expect("original bytes survive denial"),
+        original_intent
+    );
+    assert_eq!(
+        std::fs::read(&evidence_path).expect("original Evidence survives denial"),
+        original_evidence
+    );
+}
