@@ -10,6 +10,8 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_fivearm_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_paired_screen*.py'
       - 'qualification/cell_meta_execution_af/physical_router_cost_frontier*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_os_meter*.py'
+      - 'qualification/cell_meta_execution_af/ISOLATED_OS_RESOURCE_REPLAY.md'
       - 'qualification/cell_meta_execution_af/OBSERVED_WORK_COST_FRONTIER.md'
       - 'qualification/cell_meta_execution_af/PAIRED_ORIGINAL_SOURCE_SCREEN.md'
       - 'qualification/cell_meta_execution_af/FIVE_ARM_GRANITE_HANDOFF.md'
@@ -90,7 +92,9 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_paired_screen.py \
             qualification/cell_meta_execution_af/physical_router_paired_screen_tests.py \
             qualification/cell_meta_execution_af/physical_router_cost_frontier.py \
-            qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py
+            qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py \
+            qualification/cell_meta_execution_af/physical_router_os_meter.py \
+            qualification/cell_meta_execution_af/physical_router_os_meter_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -115,6 +119,9 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_cost_frontier_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_os_meter_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -346,6 +353,31 @@ jobs:
           assert r['actual_future_outcomes_verified'] is False
           assert len(r['unmeasured_resource_components'])>=9
           P2COST
+          # Real Linux OS processes, one trained/frozen Arm per child, no
+          # re-encoding, no retry on uncertain failure, independently check
+          # every FP32 Head tensor/route/outcome against the approved archive.
+          # Each seed has its own durable create-only shard; incomplete runs
+          # never create a synthetic three-seed completion.
+          for seed in 41 47 53; do
+            python qualification/cell_meta_execution_af/physical_router_os_meter.py \
+              --bundle-dir "$ROOT" --seeds "$seed" --timeout-seconds 45 \
+              --out "$ROOT/$seed-os-meter.json"
+          done
+          python qualification/cell_meta_execution_af/physical_router_os_meter.py \
+            --bundle-dir "$ROOT" --join-shards "$ROOT" \
+            --out "$ROOT/os-meter-joined.json"
+          python - "$ROOT/os-meter-joined.json" <<'P2OS'
+          import json,sys
+          report=json.load(open(sys.argv[1]))
+          assert report['exact_15_isolated_processes']==15
+          assert report['original_source_row_count_not_tripled']==224
+          assert report['authority_posture']=='DENY_ALL'
+          assert report['production_admission']=='BLOCKED'
+          assert report['resource_or_model_winner_certified'] is False
+          assert report['independent_future_ndu_outcomes_observed'] is False
+          assert report['original_host_or_model_signatures_authenticated'] is False
+          assert report['causal_reuse_or_total_compute_parity_proved'] is False
+          P2OS
           # Identical original source/features/labels in all three seed panels;
           # an apparent independent-seed gain must not count reused source as
           # three independent task families or prospective observations.
@@ -458,6 +490,8 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-fivearm-report.json
             ${{ runner.temp }}/hepta-meta-real/paired-original-source-screen.json
             ${{ runner.temp }}/hepta-meta-real/observed-work-frontier.json
+            ${{ runner.temp }}/hepta-meta-real/*-os-meter.json
+            ${{ runner.temp }}/hepta-meta-real/os-meter-joined.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
