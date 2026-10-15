@@ -63,6 +63,18 @@ def panel():
             "audio_tower_loaded":False,
             "train_only_private_head_parameters":769,
             "train_only_head_updates":80,"future_labels_visible":False,
+            "preencode_text_image_budget":{
+                "registered_context_tokens":8192,
+                "reserved_default_image_tokens":280,
+                "reserved_misc_tokens":128,
+                "maximum_plain_text_tokens":128,
+                "maximum_joint_pre_media_tokens":128,
+                "maximum_choice_tokens":128,
+                "complete_text_tokenizer_truncation_disabled":True,
+                "actual_model_image_token_count_attested":False,
+                "original_model_internal_forward_count_attested":False,
+                "production_accepted":False,
+                "authority":"DENY_ALL"},
             "rows":z}
     return orig,ocr,native,lab
 
@@ -119,6 +131,26 @@ class FiveArmContract(unittest.TestCase):
 
     def test_native_training_budget_changed(self):
         q=panel();q[2]["train_only_private_head_parameters"]=2048
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_missing_native_token_budget(self):
+        q=panel()
+        del q[2]["preencode_text_image_budget"]
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_reject_forged_actual_media_token_attestation(self):
+        q=panel()
+        q[2]["preencode_text_image_budget"]["actual_model_image_token_count_attested"]=True
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_reject_joint_token_count_outside_safe_limit(self):
+        q=panel()
+        q[2]["preencode_text_image_budget"]["maximum_joint_pre_media_tokens"]=8191
+        with self.assertRaises(m.FiveArmError):compose(q)
+
+    def test_reject_no_truncation_claim_missing(self):
+        q=panel()
+        q[2]["preencode_text_image_budget"]["complete_text_tokenizer_truncation_disabled"]=False
         with self.assertRaises(m.FiveArmError):compose(q)
 
     def test_native_pinned_gemma_identity_cannot_be_replaced_by_granite(self):
