@@ -4,6 +4,8 @@ on:
     paths:
       - scripts/memory_cell/real_source_rank_null.py
       - scripts/memory_cell/test_real_source_rank_null.py
+      - scripts/memory_cell/real_source_rank_paired_gate.py
+      - scripts/memory_cell/test_real_source_rank_paired_gate.py
       - scripts/memory_cell/real_source_reader_probe.py
       - .github/workflows/hepta-memory-real-git-rank-null.yml
 permissions:
@@ -46,9 +48,10 @@ jobs:
       - name: Verify complete source-index and fail-closed regression tests
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/memory_cell/real_source_rank_null.py scripts/memory_cell/test_real_source_rank_null.py
+          python3 -m py_compile scripts/memory_cell/real_source_rank_null.py scripts/memory_cell/test_real_source_rank_null.py scripts/memory_cell/real_source_rank_paired_gate.py scripts/memory_cell/test_real_source_rank_paired_gate.py
           python3 -m unittest discover -s scripts/memory_cell -p test_real_source_rank_null.py -v
           python3 -m unittest discover -s scripts/memory_cell -p test_real_source_reader_probe.py -v
+          python3 -m unittest discover -s scripts/memory_cell -p test_real_source_rank_paired_gate.py -v
       - name: Independently recompute rank-only source-bound null on original files
         run: |
           set -euo pipefail
