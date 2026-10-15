@@ -62,6 +62,25 @@ def independent_training_score(cases, probabilities):
                 probability_CE=ce/len(cases))
 
 
+
+def independent_fresh_score(cases, sealed, scores, expected_weight_digest, sealed_digest):
+    """Reconstruct paired fresh truth after all fitting artifacts are frozen."""
+    require(sealed['case_ids'] == [case.case_id for case in cases],
+            'unaligned or incomplete fresh predictions')
+    require(sealed['weights_sha256'] == expected_weight_digest
+            and sealed['labels_entered_model'] is False
+            and sealed['scoring_started'] is False,
+            'fresh prediction seal or frozen weight identity invalid')
+    require(scores['predictions_sha256'] == sealed_digest,
+            'fresh score does not bind original pre-score probabilities')
+    recomputed = independent_training_score(cases, sealed['probabilities'])
+    declared = scores['metrics']
+    for key in ('accuracy', 'both_worlds_correct', 'probability_CE'):
+        require(abs(recomputed[key] - declared[key]) < 1e-12,
+                'fresh independent scoring mismatch: ' + key)
+    return recomputed
+
+
 def review(root):
     from token_protocol import build_binding_cases
 
@@ -163,8 +182,29 @@ def review(root):
         require((root/'all-models-frozen.json').exists()
                 and terminal['status'] == 'all_frozen_scored_research_only',
                 'frozen model and successful research receipt required')
-        # Source-level reviewer stops here; fresh scores need their own source-
-        # and label-independent observer, not a second use of training labels.
+        from binding_protocol import build_binding_protocol
+        all_fresh = build_binding_protocol(seed=41)
+        frozen = read(root/'all-models-frozen.json')
+        require(set(frozen) == {str(seed) for seed in SEEDS},
+                'missing frozen global model manifest')
+        for seed in SEEDS:
+            require(frozen[str(seed)] == {arm: summary[str(seed)][arm]['model_file_sha256']
+                                          for arm in ARMS},
+                    'frozen model digest changed after training')
+        expected_panels = set()
+        for role in ('fresh_combinations', 'fresh_vocabulary'):
+            cases = tuple(all_fresh[role])
+            require(len(cases) == 128, 'fresh source role size drift')
+            for seed in SEEDS:
+                for arm in ARMS:
+                    stem = f'{role}-{seed}-{arm}.json'
+                    sealed_path = root / ('sealed-' + stem)
+                    score_path = root / ('score-' + stem)
+                    expected_panels.update((sealed_path.name, score_path.name))
+                    independent_fresh_score(cases, read(sealed_path), read(score_path),
+                                            frozen[str(seed)][arm], _digest(sealed_path))
+        require({p.name for p in sealed} == expected_panels,
+                'missing or unauthorized extra fresh scoring evidence')
     return dict(schema='hepta.cross-fact.independent-receipt-review.v1',
                 receipt_consistency_passed=True, training_gates=gates,
                 all_training_gates_passed=permitted,
