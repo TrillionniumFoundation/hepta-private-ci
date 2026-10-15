@@ -131,6 +131,24 @@ def one_axis_sweeps(bundle: Any) -> dict[str, Any]:
             last = series[-1]
             prediction = mean_y + slope*(math.log(float(last[axis])) - mean_x)
             actual = last['correct']/last['total']
+            # Accuracy is bounded, but DO NOT silently clip a bad model fit:
+            # explicit out-of-range extrapolations are diagnostic failures.
+            extrapolation_out_of_range = not (0.0 <= prediction <= 1.0)
+            # Wilson score interval at the held 4th level: descriptive only.
+            # Its iid Bernoulli assumption fails for correlated candidates;
+            # record that limitation and never treat it as task-family coverage.
+            z95 = 1.959963984540054
+            n = last['total']
+            p = actual
+            d = 1.0 + z95*z95/n
+            center = (p + z95*z95/(2*n))/d
+            width = (z95/d)*math.sqrt(p*(1-p)/n + z95*z95/(4*n*n))
+            held_wilson = [round(max(0.0,center-width),12),
+                           round(min(1.0,center+width),12)]
+            upper_two = series[-2]['correct']/series[-2]['total']
+            delta_highest = actual-upper_two
+            # Do not call a plateau based only on two noisy points.
+            plateau_claim_admitted = False
             sweeps.append({
                 'swept_axis': axis, 'arm': key[0], 'seed': key[1],
                 'source_sha256': key[2], 'levels': levels, 'held_level': levels[-1],
@@ -138,6 +156,11 @@ def one_axis_sweeps(bundle: Any) -> dict[str, Any]:
                 'held_level_prediction_unclipped': round(prediction, 12),
                 'held_level_quality': round(actual, 12),
                 'held_level_absolute_error': round(abs(prediction-actual), 12),
+                'held_level_wilson95_iid_only': held_wilson,
+                'held_level_wilson_independence_established': False,
+                'prediction_outside_unit_interval': extrapolation_out_of_range,
+                'gain_over_previous_level': round(delta_highest,12),
+                'plateau_claim_admitted': plateau_claim_admitted,
                 'inference_cpu_ns': [r['inference_cpu_ns'] for r in series],
                 'training_cpu_ns': [r['training_cpu_ns'] for r in series],
                 'encoder_forwards': [r['encoder_forwards'] for r in series],
