@@ -1,0 +1,56 @@
+name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-five-arm-same-source-receipts-20261015"]
+    paths:
+      - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
+      - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
+      - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e3-five-arm-contract-\${{ github.sha }}
+  cancel-in-progress: true
+jobs:
+  fail-closed-source-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact source without write token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: \${{ github.sha }}
+          persist-credentials: false
+      - name: Run all five-arm normal Python fault tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_five_arm_historical.py experiments/shared_stem_cell/test_e3_five_arm_historical.py
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_five_arm_historical.py' -v
+      - name: Independently re-run optimized Python, no asserts disabled
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_five_arm_historical.py' -v
+      - name: No real-model or five-arm benefit claims from fixtures
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, 'experiments/shared_stem_cell')
+          import e3_five_arm_historical as e
+          assert e.ARMS == ('text_only', 'ocr_text', 'unaligned_vision', 'aligned_bridge', 'native_multimodal')
+          assert e.FIVE.endswith('historical-five-arm-source-predictions.v1')
+          assert e.SCORE.endswith('historical-five-arm-score.v1')
+          assert e.GEMMA[1] == '914f7f89142e33e77833254d9c9b90c3cef7303b'
+          print('CONTRACT_ONLY_PASS / PHYSICAL_FIVE_ARM_PENDING / DENY_ALL')
+          PY
