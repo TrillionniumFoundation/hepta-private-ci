@@ -1,0 +1,147 @@
+{
+  "authority": "DENY_ALL",
+  "complete_source_and_model_cost_matched": false,
+  "experimental_python": "3.13.5",
+  "full_worker_request_p99_or_energy_measured": false,
+  "independent_real_labels_seen": false,
+  "independent_research_host_attested": false,
+  "negative_budget_controls": [
+    {
+      "active_cells": 25,
+      "cache_budget_bytes": 0,
+      "cohort_logical_cells": 256,
+      "physical_encoder_forward_calls": {
+        "distinct": 25,
+        "repeated": 25,
+        "two_scopes": 25
+      }
+    },
+    {
+      "active_cells": 25,
+      "cache_budget_bytes": 1536,
+      "cohort_logical_cells": 256,
+      "physical_encoder_forward_calls": {
+        "distinct": 25,
+        "repeated": 25,
+        "two_scopes": 25
+      }
+    },
+    {
+      "active_cells": 25,
+      "cache_budget_bytes": 6144,
+      "cohort_logical_cells": 256,
+      "physical_encoder_forward_calls": {
+        "distinct": 25,
+        "repeated": 4,
+        "two_scopes": 25
+      }
+    }
+  ],
+  "observations": [
+    {
+      "active_cells": 8,
+      "changed_active_head_scalars": 75860,
+      "full_source_unchanged": true,
+      "head_forward_rows_including_training_and_spot_checks": 59,
+      "logical_cells": 64,
+      "maximum_train_head_unpacked_error": 8.940696716308594e-07,
+      "paired_frozen_and_learned_logits_identity_on_tenant_separation": true,
+      "physical_encoder_forward_calls": {
+        "distinct": 8,
+        "repeated": 4,
+        "two_scopes": 8
+      },
+      "real_resident_head_weight_bytes_fp32": 2494464
+    },
+    {
+      "active_cells": 25,
+      "changed_active_head_scalars": 222552,
+      "full_source_unchanged": true,
+      "head_forward_rows_including_training_and_spot_checks": 178,
+      "logical_cells": 256,
+      "maximum_train_head_unpacked_error": 8.344650268554688e-07,
+      "paired_frozen_and_learned_logits_identity_on_tenant_separation": true,
+      "physical_encoder_forward_calls": {
+        "distinct": 25,
+        "repeated": 4,
+        "two_scopes": 8
+      },
+      "real_resident_head_weight_bytes_fp32": 9977856
+    },
+    {
+      "active_cells": 102,
+      "changed_active_head_scalars": 751292,
+      "full_source_unchanged": true,
+      "head_forward_rows_including_training_and_spot_checks": 717,
+      "logical_cells": 1024,
+      "maximum_train_head_unpacked_error": 5.960464477539062e-07,
+      "paired_frozen_and_learned_logits_identity_on_tenant_separation": true,
+      "physical_encoder_forward_calls": {
+        "distinct": 102,
+        "repeated": 4,
+        "two_scopes": 8
+      },
+      "real_resident_head_weight_bytes_fp32": 39911424
+    },
+    {
+      "active_cells": 409,
+      "changed_active_head_scalars": 2593529,
+      "full_source_unchanged": true,
+      "head_forward_rows_including_training_and_spot_checks": 2866,
+      "logical_cells": 4096,
+      "maximum_train_head_unpacked_error": 4.76837158203125e-07,
+      "paired_frozen_and_learned_logits_identity_on_tenant_separation": true,
+      "physical_encoder_forward_calls": {
+        "distinct": 409,
+        "repeated": 4,
+        "two_scopes": 8
+      },
+      "real_resident_head_weight_bytes_fp32": 159645696
+    }
+  ],
+  "original_checkpoint_loaded": false,
+  "production_authorized": false,
+  "prospective_model_quality_benefit_established": false,
+  "pytorch": "2.10.0+cpu",
+  "raw_observation_file_sha256": {
+    "1024-audit.json": "5eaa0c55d85a8ae293824e530718687a84d5c7792f5ec27b8420fcccc5fa9086",
+    "1024-distinct.json": "6632172df06c0fb8826f72f1094d3cb996abd3a34a85b39fca2d310e833def03",
+    "1024-repeated.json": "c316515df6f03cc85b9b238e2a98821adbd81095f3783cb99217309522723a5b",
+    "1024-two_scopes.json": "abf7d46472b8088ad648ff2a60ad6e6b6544ee0e7bc1e1e22e2dfd64d6f1a065",
+    "256-0-audit.json": "340c373b424086ece5422b1f13aa1e82a16226e65b776992d18c72a0505f5dbb",
+    "256-0-distinct.json": "b71f3f1358d074ead9151ffa068561fc9ad04b82c463c111c1985f048223f896",
+    "256-0-repeated.json": "db1137dd8a25e28ad4ed01232fe77dc585005919addec0848de99178b536891c",
+    "256-0-two_scopes.json": "dc317f18acbcf63a293af35d95df34611811cb499e7c84f2b8c521862995a793",
+    "256-1536-audit.json": "0f5170cea577efae859c59ffb761e67905a29155e49ce671434c8efe32ed3da0",
+    "256-1536-distinct.json": "4ae4d56c1d5e8c98f78ed87cf4a51857ebdf38bf2164a651f54fc1ea50c7f44d",
+    "256-1536-repeated.json": "217c72e8c5f7f14c3398df8ef951cbbfc33bc35a1790a824870c1279a6875c56",
+    "256-1536-two_scopes.json": "b4112af2a6914c5769f2e00a62964d27bd9da00899007dfdd6046a80378334da",
+    "256-6144-audit.json": "62eb19b1427f668c45fae556d1316bf0ff49f20a8519f0b054e22a84bc7c8bc9",
+    "256-6144-distinct.json": "04cdf9ba6234107ef0aa9ddf01dd4d34714ab3e77636ce039e2fcb23c665dd0e",
+    "256-6144-repeated.json": "d663cfb4c7e84d2dbc49b37ff91bc3a4eaadd0954283d525f6b184e9fa591026",
+    "256-6144-two_scopes.json": "b7c88315ffcc723772ed35bafd4d0deed51d6a512484bf3f9997c6c346c0af67",
+    "256-audit.json": "c63f924b3a433f1108a1d580a5da0b18c348ffc21a9feddc858536de60448a48",
+    "256-distinct.json": "4b17793432cd5252b60d44a2c4b7c8feac8dadb4e769d87627d1bfe9ff77da4d",
+    "256-repeated.json": "ecfe5d5b62dfcb20195e409206950923957243d06d17f9b687bbad297f91b129",
+    "256-two_scopes.json": "28110eb7c8d869859a389b3e6a680d8153772f2b3557a2cfaec9f57444e433b0",
+    "4096-audit.json": "9773ff654c1035e6cd53f1277de6513727ec1a7f26f51a95347613b7526a13da",
+    "4096-distinct.json": "2f784d1582f228709bc80ab46ba33353dd9c723d286ba675084151bc8e0a7e10",
+    "4096-repeated.json": "24de5813a9fe28d786ab2513950abda70a86420070ee9491e8e0a07a5eefce8b",
+    "4096-two_scopes.json": "9bb728da3fb7e017d9ab79f2dd908e328c0c6326a0f7da116384bccee964d676",
+    "64-audit.json": "52fd7503e0f352a5553b09c254b5e4b0b061e02d2cbd5c8cc7e75b8ccf24a4b9",
+    "64-distinct.json": "2b4730d50c657422cb89e9a676fa127569604a3b4ba336afec84d1de6ac1f465",
+    "64-repeated.json": "6cb06353c53f92e14beab54ff4756bd9da10ec3f0c6a99104f4f3c5263db7608",
+    "64-two_scopes.json": "e7b47e352e41e2536d1ac72f1fd53ebe01de1df70d1669478b7a67d0177abccf"
+  },
+  "raw_observation_files_count": 28,
+  "run_kind": "physically_executed_torch_cpu_synthetic_mechanics_unblinded_local_authoring",
+  "schema": "hepta.reader.p1-physical-cohort-local-observation.v1",
+  "source_git_blob_sha1": {
+    "P1_SHARED_STEM_PHYSICAL_CELL_COHORT.md": "7feae6d05ef6fcf5f6e87bceedc2d89cbaed2d04",
+    "hepta-shared-stem-physical-cell-cohort.yml": "5db819a35c51e33a44216fa6a9645d034307e675",
+    "shared_stem_cell_population.py": "13c58b270887d1bab87d2e5aec75d639d91dbabc",
+    "shared_stem_population_review.py": "7bc0a9eff2dbff42dfb80ae7fbbd22a68f9c575e",
+    "test_shared_stem_cell_population.py": "b0d4c5cae93edc2da5dd8b18e88e99bb6e80508e"
+  },
+  "source_parent_commit": "7d97dd23c4392c69caa666bb45a746ff36165f1a"
+}
