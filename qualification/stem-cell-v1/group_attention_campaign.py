@@ -106,7 +106,9 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "group_attention_slot_review.py", "group_token_id_binding.py",
                     "group_abort_trace_audit.py", "group_attention_coverage.py",
                     "group_terminal_evidence.py",
-                    "group_terminal_receipt_review.py")
+                    "group_terminal_receipt_review.py",
+                    "group_feedback_factorial_review.py",
+                    "group_feedback_factorial_campaign.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
