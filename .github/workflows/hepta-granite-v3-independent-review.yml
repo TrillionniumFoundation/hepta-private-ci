@@ -1,0 +1,48 @@
+name: Hepta Granite97 V3 independent physical review source tests
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/granite97_v3_independent_review.py"
+      - "qualification/stem-cell-v1/test_granite97_v3_independent_review.py"
+      - "qualification/stem-cell-v1/GRANITE97_V3_PHYSICAL_REVIEW_NEXT.md"
+      - ".github/workflows/hepta-granite-v3-independent-review.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: granite-v3-independent-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-review-source:
+    name: Exact HEAD source-only replay logic, optimized and adversarial
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact submitted source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Test source-bound physical-review admission without pretrained weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qualification/stem-cell-v1/granite97_v3_independent_review.py
+          python3 -m unittest discover -s qualification/stem-cell-v1 -p 'test_granite97_v3_independent_review.py' -v
+          python3 -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_granite97_v3_independent_review.py' -v
+      - name: No mutation from any review test
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
