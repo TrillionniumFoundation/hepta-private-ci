@@ -88,6 +88,9 @@ pub trait CellSplitFinalizationAuthorityV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellSplitFinalizationErrorV1 {
+    /// The independent original Control/CNS signing and B/C transaction is
+    /// not composed by this generic CellSplit finalizer in a product build.
+    OriginalControlUnverified,
     InvalidBinding,
     NotRoutePublished,
     Revoked(String),
@@ -197,6 +200,15 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
     pub fn finalize_once(
         &mut self,
     ) -> Result<WriterHandoffCheckpointV1, CellSplitFinalizationErrorV1> {
+        // This trait accepts caller-selected implementations; it is NOT an
+        // independently governed, signed original Control/CNS authority.
+        // Until the actual same-owner B -> signed CNS effect -> C protocol is
+        // joined, no ordinary compiled product caller may append Retired.
+        // Crate-local unit tests can still exercise the deterministic real
+        // journal mechanism without granting a production capability.
+        if !cfg!(test) {
+            return Err(CellSplitFinalizationErrorV1::OriginalControlUnverified);
+        }
         self.verify_authority()?;
         if self.journal.checkpoint().phase == WriterHandoffPhaseV1::Retired {
             return Ok(self.journal.checkpoint().clone());
