@@ -40,18 +40,23 @@ def verify_tied_pretrained_table(torch, mlm, safetensors_path):
         view = file.get_slice(source)
         if tuple(view.get_shape()) != tuple(word.shape):
             raise Invalid("pretrained vocabulary size/width mismatch")
-        n = min(4, int(word.shape[0]))
-        reference = view[0:n]
-        final = view[int(word.shape[0]) - 1:int(word.shape[0])]
-        if (not bool(torch.equal(word[:n].detach().cpu(), reference)) or
-                not bool(torch.equal(word[-1:].detach().cpu(), final)) or
-                not bool(torch.isfinite(word[:n]).all()) or
-                not bool(torch.any(word[:n] != 0))):
-            raise Invalid("tied embedding bytes do not match pinned pretrained source")
-        sample_digest = hashlib.sha256(reference.contiguous().numpy().tobytes() +
-                                        final.contiguous().numpy().tobytes()).hexdigest()
-    return {"actual_local_tied_embedding_checkpoint_sample_checked": True,
-            "sample_sha256": sample_digest,
+        whole = hashlib.sha256(b"hepta.e1.mmbert-complete-tied-table.v1")
+        nonzero = False
+        rows = int(word.shape[0])
+        for start in range(0, rows, 8192):
+            end = min(rows, start + 8192)
+            raw = view[start:end]
+            observed = word[start:end].detach().cpu()
+            if (not bool(torch.equal(observed, raw)) or
+                    not bool(torch.isfinite(observed).all())):
+                raise Invalid("pretrained token embedding bytes differ from pinned checkpoint")
+            nonzero = nonzero or bool(torch.any(observed != 0))
+            whole.update(raw.contiguous().numpy().tobytes())
+        if not nonzero:
+            raise Invalid("all-zero pretrained table")
+        full_digest = whole.hexdigest()
+    return {"actual_local_full_tied_embedding_checkpoint_verified": True,
+            "complete_table_sha256": full_digest,
             "publisher_signature_independently_verified": False,
             "authority": "DENY_ALL"}
 
@@ -71,8 +76,19 @@ class FrozenMMBert:
         repo = "jhu-clsp/mmBERT-small"
         opts = dict(revision=revision, local_files_only=True, trust_remote_code=False)
         self.tokenizer = AutoTokenizer.from_pretrained(repo, **opts)
-        mlm = AutoModelForMaskedLM.from_pretrained(
-            repo, use_safetensors=True, **opts).to(device).eval()
+        loaded = AutoModelForMaskedLM.from_pretrained(
+            repo, use_safetensors=True, output_loading_info=True, **opts)
+        if type(loaded) is not tuple or len(loaded) != 2 or type(loaded[1]) is not dict:
+            raise Invalid("full pretrained MLM parameter load report required")
+        mlm, info = loaded
+        if any(info.get(key) for key in ("unexpected_keys", "mismatched_keys", "error_msgs")):
+            raise Invalid("unexpected or mismatched pretrained MLM checkpoint tensor")
+        missing = info.get("missing_keys", [])
+        if type(missing) not in (list, tuple) or len(missing) > 1 or any(
+                key not in ("decoder.weight", "model.embeddings.tok_embeddings.weight")
+                for key in missing):
+            raise Invalid("non-tied pretrained MLM parameter initialized randomly")
+        mlm = mlm.to(device).eval()
         if (getattr(mlm.config, "hidden_size", None) != 384 or
                 getattr(mlm.config, "tie_word_embeddings", None) is not True):
             raise Invalid("unexpected mmBERT architecture or absent tying policy")
