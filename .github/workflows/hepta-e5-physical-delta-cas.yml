@@ -1,0 +1,106 @@
+name: Hepta E5 physical sparse delta CAS (research)
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_delta_cas.py"
+      - "experiments/shared_stem_cell/e5_delta_crash_matrix.py"
+      - "experiments/shared_stem_cell/test_e5_delta_cas.py"
+      - "experiments/shared_stem_cell/E5_DELTA_CAS_20261015.md"
+      - "experiments/shared_stem_cell/E5_DELTA_CAS_LOCAL_20261015.json"
+      - ".github/workflows/hepta-e5-physical-delta-cas.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e5-delta-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  physical-delta-cas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact research SHA
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pin actual CPU Torch plus explicit NumPy/safetensors
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "numpy==2.2.6" "safetensors==0.7.0"
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/e5-delta-runtime.txt"
+      - name: Real SGD and source/epoch/CAS adversarial tests
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e5_delta_cas.py experiments/shared_stem_cell/e5_delta_crash_matrix.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_delta_cas.py' -v
+      - name: Ten actual 64-Cell SIGKILL child process cuts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-delta"
+          timeout --signal=TERM --kill-after=10s 300s python experiments/shared_stem_cell/e5_delta_crash_matrix.py --cells 64 --active 8 --output "$RUNNER_TEMP/e5-delta/64-cuts.json"
+      - name: Three real 4096-Cell separate-process SGD / delta / replay
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-delta/store-4096"
+          for action in first second verify; do
+            timeout --signal=TERM --kill-after=10s 120s python experiments/shared_stem_cell/e5_delta_cas.py --store "$RUNNER_TEMP/e5-delta/store-4096" --action "$action" --cells 4096 --active 409 --output "$RUNNER_TEMP/e5-delta/4096-$action.json"
+          done
+      - name: 4096-Cell process killed before delta publication
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 180s python experiments/shared_stem_cell/e5_delta_crash_matrix.py --cells 4096 --active 409 --failpoint blob_partial --output "$RUNNER_TEMP/e5-delta/4096-pre.json"
+      - name: 4096-Cell process killed after atomic HEAD replacement
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 180s python experiments/shared_stem_cell/e5_delta_crash_matrix.py --cells 4096 --active 409 --failpoint head_replaced --output "$RUNNER_TEMP/e5-delta/4096-post.json"
+      - name: Independent saved-report gate (never promotion)
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"e5-delta"
+          small=json.loads((root/"64-cuts.json").read_text())
+          assert small["sigkill_processes"]==10
+          assert sorted(e["observed_recovery_wave"] for e in small["events"])==[1]*8+[2]*2
+          for name,wave in [("4096-pre.json",1),("4096-post.json",2)]:
+              x=json.loads((root/name).read_text())
+              assert x["sigkill_processes"]==1
+              assert x["events"][0]["observed_recovery_wave"]==wave
+              assert x["events"][0]["full_bank_and_momentum_bit_exact"] is True
+              assert x["native_worker_or_wal_verified"] is False
+              assert x["production_promotion_permitted"] is False
+          init=json.loads((root/"4096-first.json").read_text())
+          second=json.loads((root/"4096-second.json").read_text())
+          verify=json.loads((root/"4096-verify.json").read_text())
+          assert init["snapshot_bytes"]==second["snapshot_bytes"]
+          assert second["snapshot_bytes"]<second["full_head_fp32_bytes"]
+          assert verify["full_bank_replayed_bit_exact"] is True
+          assert verify["production_promotion_permitted"] is False
+          PY
+      - name: Retain completed or partial source receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e5-delta-cas-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e5-delta/*.json
+            ${{ runner.temp }}/e5-delta-runtime.txt
+          retention-days: 7
