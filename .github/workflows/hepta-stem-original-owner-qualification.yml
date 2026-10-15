@@ -87,6 +87,8 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
       - name: Prove actual original Worker Arc sharing and one native backend batch
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
+      - name: Prove typed Stem-to-original signed Native Batch invokes one test backend
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Check source integrity after compiler and formatter
