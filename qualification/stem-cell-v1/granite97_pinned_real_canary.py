@@ -40,9 +40,8 @@ def exclusive_json(path, data):
 def run(*, output, checkpoint=None, acquire_public=False):
     import torch
     import transformers
-    from torch.nn import functional as F
-
     from cross_fact_bridge import matched_reader_pair
+    from cross_fact_joint_fit import fit_joint_reader_pair
     from group_encoder import FrozenTokenEncoder, MODEL_ID as SOURCE_ID
     from group_encoder import REVISION as SOURCE_REVISION
     from group_encoder import acquire, file_digest
@@ -88,33 +87,35 @@ def run(*, output, checkpoint=None, acquire_public=False):
         if len(cases) != 16 or unique_sources < 4 or bank.forward_batches < 1:
             raise RuntimeError("actual physical Encoder feature acquisition missing")
 
-        arms = {}
         cross, local = matched_reader_pair(384, 32, seed=41)
         initial = parameter_digest(cross)
         if parameter_digest(local) != initial:
             raise RuntimeError("matched Head and Reader initializations differ")
-        for arm, reader in (("cross_fact", cross), ("local", local)):
-            reader.train()
-            optimizer = torch.optim.AdamW(reader.parameters(), lr=.001, foreach=False)
-            arm_wall, arm_cpu = time.perf_counter_ns(), time.process_time_ns()
-            for _ in range(2):
-                optimizer.zero_grad(set_to_none=True)
-                logits = reader(*data.features(), steps=3)
-                loss = F.cross_entropy(logits, data.targets)
-                if not bool(torch.isfinite(loss).item()):
-                    raise FloatingPointError("nonfinite real-Encoder-fed Reader loss")
-                loss.backward()
-                if any(p.grad is None or not bool(torch.isfinite(p.grad).all().item())
-                       for p in reader.parameters()):
-                    raise FloatingPointError("nonfinite or missing Reader gradients")
-                optimizer.step()
-            reader.eval().requires_grad_(False)
+        originals = {"cross_fact": cross.eval().requires_grad_(False),
+                     "local": local.eval().requires_grad_(False)}
+        fitted, receipts, joint = fit_joint_reader_pair(
+            originals, data, cases, steps=2, seed=41, batch_size=16,
+            depth=3, learning_rate=.001, pair_weight=.5,
+            diagnostic_interval=2, wall_time_ns=600_000_000_000)
+        if (joint["completed_steps"] != 2
+                or joint["shared_input_batch_materializations"] != 2):
+            raise RuntimeError("unmatched physical joint training")
+        arms = {}
+        for arm in ("cross_fact", "local"):
+            reader, receipt = fitted[arm], receipts[arm]
+            if (receipt["initial_model_sha256"] != initial
+                    or receipt["completed_steps"] != 2
+                    or receipt["actual_training_exposures"] != 32
+                    or not receipt["frozen"]):
+                raise RuntimeError("unmatched pretrained-fed Head training receipt")
             arms[arm] = dict(initial_parameter_sha256=initial,
                 trained_parameter_sha256=parameter_digest(reader),
-                parameter_count=sum(p.numel() for p in reader.parameters()),
-                steps=2, exposures=32, last_train_CE=float(loss.detach().item()),
-                cpu_ns=time.process_time_ns()-arm_cpu,
-                wall_ns=time.perf_counter_ns()-arm_wall)
+                parameter_count=receipt["parameter_count"],
+                steps=2, exposures=32,
+                last_train_CE=receipt["updates"][-1]["binary_cross_entropy"],
+                optimizer_tensor_bytes=receipt["optimizer_tensor_bytes"],
+                synchronized_input_batch=True,
+                cpu_ns=receipt["cpu_ns"], wall_ns=receipt["wall_ns"])
         if (arms["cross_fact"]["parameter_count"] != arms["local"]["parameter_count"]
                 or arms["cross_fact"]["trained_parameter_sha256"] == initial
                 or arms["local"]["trained_parameter_sha256"] == initial):
@@ -131,6 +132,13 @@ def run(*, output, checkpoint=None, acquire_public=False):
             encoded_sequences=bank.encoded_sequences, distinct_public_texts=len(bank.values),
             rows_shape=[*data.facts.shape],
             head_comparators=arms,
+            joint_training_status=joint["status"],
+            one_input_batch_per_paired_update=True,
+            shared_input_batch_materializations=joint["shared_input_batch_materializations"],
+            single_joint_training_cpu_ns=joint["cpu_ns"],
+            single_joint_training_wall_ns=joint["wall_ns"],
+            nested_head_costs_additive=False,
+            original_v5_train_only_full_fit_established=False,
             total_cpu_ns=time.process_time_ns()-started_cpu,
             total_wall_ns=time.perf_counter_ns()-started_wall,
             max_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
