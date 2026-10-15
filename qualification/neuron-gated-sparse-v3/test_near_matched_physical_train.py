@@ -3,6 +3,7 @@ from __future__ import annotations
 from argparse import Namespace
 import copy
 import hashlib
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -15,6 +16,13 @@ from near_matched_capacity_design import choose
 
 Q=1<<24
 
+# The fast A0 protocol job has intentionally no Tensor framework.  It must
+# still discover this suite, but only the separately pinned CPU Torch jobs may
+# exercise physical weights and create the eight artifacts.
+@unittest.skipUnless(
+    os.environ.get("HEPTA_NEURON_PHYSICAL_TESTS") == "1",
+    "physical Torch/safetensors suite runs in the dedicated pinned CPU job only",
+)
 class NearMatchedPhysicalTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
