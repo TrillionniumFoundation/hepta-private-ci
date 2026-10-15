@@ -154,6 +154,15 @@ jobs:
             args+=(--base "$BASE_SHA")
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
+      - name: Fail-fast P0 original Neuron Agentd Worker Rust formatting
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Do not postpone a deterministic source Rustfmt failure until
+          # after V8 downloads, CellSplit canary and deep native tests.
+          # This checks the EXACT source HEAD or synthetic merge tree using
+          # the owning pinned workspace rustfmt configuration.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
