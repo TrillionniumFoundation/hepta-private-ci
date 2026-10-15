@@ -34,6 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
       - name: Source and test conformance only
         run: |
           set -euo pipefail
