@@ -60,6 +60,16 @@ class OperationSlotReviewTests(unittest.TestCase):
             with self.subTest(edit=edit),self.assertRaises(ValueError):
                 review_train_slots([case],row,4)
 
+    def test_reject_forged_test_role_inside_train_manifest(self):
+        case, original = self.example()
+        case = copy.deepcopy(case)
+        row = copy.deepcopy(original)
+        case["case_id"] = case["case_id"].replace("train/", "test/")
+        row["slot_assignments"][0]["case_id"] = case["case_id"]
+        row["slot_assignment_sha256"] = digest(row["slot_assignments"])
+        with self.assertRaisesRegex(ValueError, "TRAIN source-role"):
+            review_train_slots([case], row, 4)
+
     def test_reject_unbound_source_and_nontrain_schema(self):
         case, receipt = self.example()
         modified = copy.deepcopy(case)

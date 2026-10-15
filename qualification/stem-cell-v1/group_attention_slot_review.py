@@ -101,6 +101,11 @@ def review_train_slots(public_cases, receipt, max_depth):
         raise ValueError("teacher slot archive digest mismatch")
     total = grouped = slots = 0
     for case, row in zip(public_cases, rows):
+        if (type(case) is not dict or
+                type(case.get("source_group")) is not str or
+                type(case.get("case_id")) is not str or
+                case["case_id"] != "train/" + case["source_group"][:20]):
+            raise ValueError("canonical TRAIN source-role identity required")
         expected = _public_ops(case)
         n = len(expected)
         wanted = {
