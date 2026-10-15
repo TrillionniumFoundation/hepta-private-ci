@@ -1,0 +1,150 @@
+name: Hepta Group Feedback 2x2 Physical Qualification (Research)
+on:
+  push:
+    branches:
+      - research/group-feedback-factorial-20261015
+    paths:
+      - 'qualification/stem-cell-v1/group_*.py'
+      - 'qualification/stem-cell-v1/test_group_*.py'
+      - 'qualification/stem-cell-v1/TRAIN_VERIFIER_FACTORIAL_HANDOFF_20261015.md'
+      - '.github/workflows/hepta-group-feedback-factorial.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-group-2x2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mechanism-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install pinned actual CPU dependencies
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0'
+      - name: Compile changed mechanism and audit modules
+        run: |
+          python -m py_compile qualification/stem-cell-v1/group_training.py \
+            qualification/stem-cell-v1/group_attention_campaign.py \
+            qualification/stem-cell-v1/group_attention_campaign_review.py \
+            qualification/stem-cell-v1/group_feedback_factorial_campaign.py \
+            qualification/stem-cell-v1/group_feedback_factorial_review.py \
+            qualification/stem-cell-v1/test_group_training_feedback.py \
+            qualification/stem-cell-v1/test_group_feedback_policy_review.py \
+            qualification/stem-cell-v1/test_group_feedback_factorial_review.py
+      - name: Normal and optimized Python exact-source CPU regressions
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python - <<'PY'
+          import torch._dynamo
+          import unittest
+          names = ('test_group_training_feedback',
+                   'test_group_feedback_policy_review',
+                   'test_group_feedback_factorial_review',
+                   'test_group_training_attention',
+                   'test_group_terminal_evidence',
+                   'test_group_terminal_receipt_review')
+          suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in names)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+          python -O - <<'PY'
+          import torch._dynamo
+          import unittest
+          names = ('test_group_training_feedback',
+                   'test_group_feedback_policy_review',
+                   'test_group_feedback_factorial_review',
+                   'test_group_terminal_evidence',
+                   'test_group_terminal_receipt_review')
+          suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in names)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+
+  pinned-granite-four-arm:
+    needs: mechanism-cpu
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [41, 47, 53]
+        optimizer: [sgd_v1, adam_v1]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install fixed source and CPU model stack
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0' 'huggingface_hub==0.36.0'
+      - name: Fetch original Granite97 revision into isolated local-only snapshot
+        env:
+          SNAPSHOT: ${{ runner.temp }}/granite97-frozen
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python - <<'PY'
+          import os
+          from group_encoder import acquire
+          acquire(os.environ['SNAPSHOT'])
+          PY
+      - name: Execute four actual trained arms, fully meter and independently review
+        env:
+          SNAPSHOT: ${{ runner.temp }}/granite97-frozen
+          RESULT_ROOT: ${{ runner.temp }}/group-feedback-four-arm
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          python qualification/stem-cell-v1/group_feedback_factorial_campaign.py \
+            --snapshot "$SNAPSHOT" --output-root "$RESULT_ROOT" \
+            --seed "${{ matrix.seed }}" --training-profile "${{ matrix.optimizer }}" \
+            --train-count 256 --heldout-count 96 --steps 120
+          python -S qualification/stem-cell-v1/group_feedback_factorial_review.py \
+            --legacy-oracle "$RESULT_ROOT/legacy_oracle" \
+            --legacy-no-verifier "$RESULT_ROOT/legacy_no_verifier" \
+            --guarded-oracle "$RESULT_ROOT/guarded_oracle" \
+            --guarded-no-verifier "$RESULT_ROOT/guarded_no_verifier" \
+            --output "$RESULT_ROOT/external-recheck.json"
+          python -S - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ['RESULT_ROOT'])
+          result = json.loads((root/'external-recheck.json').read_text())
+          if (result['passed'] is not True or
+                  result['production_promotion_permitted'] is not False or
+                  result['independently_future_tested'] is not False):
+              raise SystemExit('research factorial must remain deny-all and source-only')
+          PY
+      - name: Retain research receipts and Head checkpoints, never model snapshot/media
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-group-2x2-${{ matrix.seed }}-${{ matrix.optimizer }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/group-feedback-four-arm/**/*.json
+            ${{ runner.temp }}/group-feedback-four-arm/**/*.safetensors
+            ${{ runner.temp }}/group-feedback-four-arm/*.json
+          if-no-files-found: warn
+          retention-days: 7

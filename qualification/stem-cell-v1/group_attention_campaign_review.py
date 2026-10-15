@@ -48,6 +48,7 @@ REQUIRED_SOURCES = (
     "group_attention_slot_review.py", "group_token_id_binding.py",
     "group_abort_trace_audit.py", "group_attention_coverage.py",
     "group_terminal_evidence.py", "group_terminal_receipt_review.py",
+    "group_feedback_factorial_review.py", "group_feedback_factorial_campaign.py",
 )
 
 
@@ -171,6 +172,11 @@ def review(root):
     selected_profile = protocol.get("training_profile")
     if type(protocol.get("terminal_guard", False)) is not bool:
         raise ValueError("malformed terminal-guard experiment policy")
+    declared_feedback_policy = "training_feedback_policy" in protocol
+    feedback_policy = protocol.get("training_feedback_policy", "legacy_oracle_v1")
+    if (type(feedback_policy) is not str
+            or feedback_policy not in ("legacy_oracle_v1", "no_verifier_v1")):
+        raise ValueError("unregistered TRAIN verifier oracle policy")
     if (selected_profile not in registered_optimizer
             or protocol.get("optimizer_policy") != registered_optimizer[selected_profile]
             or protocol.get("optimizer_comparison_scope") !=
@@ -304,6 +310,24 @@ def review(root):
             or training["core"].get("operation_coverage_enabled") is not False):
 
         raise ValueError("paired training schedule or teacher digest mismatch")
+    if declared_feedback_policy:
+        for arm in DIRECT:
+            receipt = training[arm]
+            expected_oracle = feedback_policy == "legacy_oracle_v1" and arm in ("core", "attention")
+            if (receipt.get("training_feedback_policy") != feedback_policy
+                    or receipt.get("training_feedback_callback") is not expected_oracle
+                    or receipt.get("training_verifier_oracle_enabled") is not expected_oracle
+                    or type(receipt.get("training_feedback_calls")) is not int
+                    or type(receipt.get("nonzero_feedback_batches")) is not int
+                    or (expected_oracle and receipt["training_feedback_calls"] <= 0)
+                    or (not expected_oracle and receipt["training_feedback_calls"] != 0)
+                    or (not expected_oracle and receipt["nonzero_feedback_batches"] != 0)
+                    or (not expected_oracle and receipt.get("feedback_interface") !=
+                        "no_training_verifier_and_zero_initial_feedback")):
+                raise ValueError("TRAIN verifier feedback policy or measured callbacks mismatch")
+        if (feedback_policy == "no_verifier_v1"
+                and training["core"].get("depth_supervision") != "mean_all_steps"):
+            raise ValueError("no-verifier Core changed stepwise label objective")
     guarded = protocol.get("terminal_guard", False)
     learned = training["attention"]
     if guarded:
