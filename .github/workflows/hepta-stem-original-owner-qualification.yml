@@ -100,7 +100,7 @@ jobs:
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Run typed Stem to original signed Batch ABI parity tests
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::"
       - name: Verify signed shared Arc queue keeps one immutable allocation
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
       - name: Verify two typed Stem Cells invoke exactly one native Worker batch
@@ -114,19 +114,19 @@ jobs:
       - name: Run external production Neuron denial through non-test library
         run: cargo +1.95.0 test --locked -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
       - name: Preserve original Neuron reference mechanism regression
-        run: cargo +1.95.0 test --locked -p codex-hepta-neuron --lib runtime::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-neuron --lib runtime::tests::"
       - name: Strict Neuron all-target Clippy on external-denial change
         run: cargo +1.95.0 clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Verify Agentd original Evidence bootstrap Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-agentd -- --check
       - name: Exercise Agentd signed Neuron telemetry gates
-        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_runtime::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_runtime::tests::"
       - name: Verify actual durable Evidence writer cold reopen
-        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests::"
       - name: Require two executed non-test Agentd signed-boundary regressions
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-agentd-external.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --test signed_neuron_public_contract -- --nocapture --test-threads=1
       - name: Require ten original durable Evidence and Intent recovery regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-neuron-bootstrap.json" --minimum-tests 11 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1
+        run: "python3 ../scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/hepta-original-neuron-bootstrap.json\" --minimum-tests 11 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1"
       - name: Require six original Agentd signed metrics readiness regressions
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-agentd-metrics.json" --minimum-tests 6 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib agentd_ -- --nocapture --test-threads=1
       - name: Strict Agentd all-target Clippy
