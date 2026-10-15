@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+#[cfg(test)]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -587,6 +588,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Fail before a signed one-shot nonce claim if the selected loaded model
     /// has no native batch backend. Actual execution revalidates every grant,
     /// current model and resource fence independently of this advisory flag.
+    #[cfg(test)]
     pub(crate) fn can_run_neuron_feature_batch(&self, model_id: &str) -> bool {
         self.models
             .get(model_id)
@@ -711,6 +713,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 
     /// No sequential fallback: a multi-request group must be handled by a
     /// genuinely native feature-batch backend or fail without replay.
+    #[cfg(test)]
     pub(crate) fn run_neuron_features_batch_receipts(
         &mut self,
         now_ms: u64,
