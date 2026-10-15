@@ -1,0 +1,282 @@
+name: Hepta E2 natural Beans original DINO Granite bridge (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-natural-beans-original-vision-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e2-natural-beans-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-and-evaluator-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check Pillow==12.3.0
+      - name: Require natural-source, 4-arm Head and independent readout contracts
+        env:
+          PYTHONPATH: experiments/shared_stem_cell
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_beans_*.py' -v
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_beans_*.py' -v
+          python -m compileall -q experiments/shared_stem_cell/e2_beans_source.py \
+            experiments/shared_stem_cell/e2_beans_run.py \
+            experiments/shared_stem_cell/e2_beans_independent_score.py
+
+  independent-original-natural-source:
+    needs: source-and-evaluator-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Pin original byte-source and safe parquet dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+             huggingface-hub==0.36.0 pyarrow==20.0.0 Pillow==12.3.0 packaging==25.0
+          python -m pip check
+      - name: Obtain original immutable Beans train/test Parquet and hash every byte
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e2_beans_source import DATA_REPO, DATA_REV, TRAIN_SHA, TEST_SHA
+          root=Path('/tmp/hepta-beans-original-parquet');root.mkdir(exist_ok=False)
+          for phase,pin in (('train',TRAIN_SHA),('test',TEST_SHA)):
+              filename=f'data/{phase}-00000-of-00001.parquet'
+              path=Path(hf_hub_download(repo_type='dataset',repo_id=DATA_REPO,
+                        revision=DATA_REV,filename=filename))
+              h=hashlib.sha256()
+              with path.open('rb') as f:
+                  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+              if h.hexdigest()!=pin:raise ValueError('published original Beans split bytes changed')
+              (root/f'{phase}.parquet').write_bytes(path.read_bytes())
+          PY
+          python experiments/shared_stem_cell/e2_beans_source.py \
+            --train-parquet /tmp/hepta-beans-original-parquet/train.parquet \
+            --test-parquet /tmp/hepta-beans-original-parquet/test.parquet \
+            --out /tmp/hepta-beans-registered-panel
+      - name: Source-only artifact (never test targets or test Parquet)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-beans-source-original-label-blind
+          path: |
+            /tmp/hepta-beans-registered-panel/source/
+            /tmp/hepta-beans-registered-panel/source-manifest.json
+          if-no-files-found: error
+          retention-days: 5
+      - name: Independent label-only artifact (never visible to producer)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-beans-withheld-test-targets
+          path: /tmp/hepta-beans-registered-panel/withheld/
+          if-no-files-found: error
+          retention-days: 5
+
+  original-vision-granite-bridge-fit-and-seal:
+    needs: independent-original-natural-source
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned stock CPU pretrained runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 \
+            huggingface-hub==0.36.0 safetensors==0.7.0 Pillow==12.3.0 \
+            packaging==25.0 numpy==2.3.5 psutil==7.0.0
+          python -m pip check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-beans-source-original-label-blind
+          path: /tmp/hepta-beans-source
+      - name: Fetch exact-original DINOv2 and pinned published Granite through V8/V9
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from e2_real_vision_features import MODEL_REPO, MODEL_REVISION, WEIGHTS_SHA256, FILES
+          root=Path('/tmp/hepta-beans-dino');root.mkdir(exist_ok=False)
+          origin=Path(snapshot_download(repo_id=MODEL_REPO,revision=MODEL_REVISION,
+                                         allow_patterns=list(FILES)))
+          for name in FILES:
+              blob=(origin/name).read_bytes()
+              assert 0<len(blob)<=125_000_000
+              if name=='model.safetensors':assert hashlib.sha256(blob).hexdigest()==WEIGHTS_SHA256
+              (root/name).write_bytes(blob)
+          assert set(x.name for x in root.iterdir())==set(FILES)
+          PY
+          mkdir -p /tmp/hepta-beans-granite
+          python experiments/shared_stem_cell/public_stem_material_v8.py prepare \
+            --candidate granite-97m-r2 --out /tmp/hepta-beans-granite/plan.json
+          python experiments/shared_stem_cell/public_stem_material_v8.py run \
+            --plan /tmp/hepta-beans-granite/plan.json \
+            --output /tmp/hepta-beans-granite/physical
+          python experiments/shared_stem_cell/public_stem_handoff_v9.py \
+            --plan /tmp/hepta-beans-granite/plan.json \
+            --material /tmp/hepta-beans-granite/physical/material-receipt.json \
+            --physical /tmp/hepta-beans-granite/physical/physical-receipt.json \
+            --model-root /tmp/hepta-beans-granite/physical/model \
+            --output /tmp/hepta-beans-granite/physical/handoff
+      - name: Actual original DINO 60 forwards and Granite train/Bridge, sealed test outputs
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_beans_run.py fit-predict \
+            --source-root /tmp/hepta-beans-source \
+            --dino /tmp/hepta-beans-dino \
+            --granite /tmp/hepta-beans-granite/physical/model \
+            --granite-profile /tmp/hepta-beans-granite/physical/handoff/profile.json \
+            --output /tmp/hepta-beans-producer
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/hepta-beans-producer/producer_receipt.json').read_text())
+          assert r['dino_train_forwards']==36 and r['dino_future_forwards']==24
+          assert r['granite_train_forwards']>=1 and r['test_labels_seen'] is False
+          assert r['stem_selected'] is False and r['production_accepted'] is False
+          assert r['authority']=='DENY_ALL'
+          PY
+      - name: Preserve original-model feature and provenance evidence, no pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-beans-original-dual-encoder-sealed-no-weights
+          path: /tmp/hepta-beans-producer/
+          if-no-files-found: warn
+          retention-days: 5
+
+  independent-retrospective-natural-outcomes:
+    needs: original-vision-granite-bridge-fit-and-seal
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install source-verified CPU runner for original separate Granite future target embedding
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 \
+             huggingface-hub==0.36.0 safetensors==0.7.0 Pillow==12.3.0 \
+             packaging==25.0 numpy==2.3.5 psutil==7.0.0
+          python -m pip check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-beans-source-original-label-blind
+          path: /tmp/hepta-beans-eval/source-root
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-beans-withheld-test-targets
+          path: /tmp/hepta-beans-eval/withheld
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e2-beans-original-dual-encoder-sealed-no-weights
+          path: /tmp/hepta-beans-eval/producer
+      - name: Independently reacquire pinned original Granite weights and model handoff
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-beans-indep-granite
+          python experiments/shared_stem_cell/public_stem_material_v8.py prepare \
+            --candidate granite-97m-r2 --out /tmp/hepta-beans-indep-granite/plan.json
+          python experiments/shared_stem_cell/public_stem_material_v8.py run \
+            --plan /tmp/hepta-beans-indep-granite/plan.json \
+            --output /tmp/hepta-beans-indep-granite/physical
+          python experiments/shared_stem_cell/public_stem_handoff_v9.py \
+            --plan /tmp/hepta-beans-indep-granite/plan.json \
+            --material /tmp/hepta-beans-indep-granite/physical/material-receipt.json \
+            --physical /tmp/hepta-beans-indep-granite/physical/physical-receipt.json \
+            --model-root /tmp/hepta-beans-indep-granite/physical/model \
+            --output /tmp/hepta-beans-indep-granite/physical/handoff
+      - name: Score frozen real Granite future geometry only after producer outputs sealed
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e2_beans_run.py evaluate-geometry \
+            --producer /tmp/hepta-beans-eval/producer \
+            --withheld /tmp/hepta-beans-eval/withheld \
+            --source-manifest /tmp/hepta-beans-eval/source-root/source-manifest.json \
+            --granite /tmp/hepta-beans-indep-granite/physical/model \
+            --granite-profile /tmp/hepta-beans-indep-granite/physical/handoff/profile.json \
+            --output /tmp/hepta-beans-indep-readout
+          python experiments/shared_stem_cell/e2_beans_independent_score.py \
+            --source-root /tmp/hepta-beans-eval/source-root \
+            --withheld /tmp/hepta-beans-eval/withheld \
+            --producer /tmp/hepta-beans-eval/producer \
+            --output /tmp/hepta-beans-indep-readout/independent_class_readout.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/hepta-beans-indep-readout')
+          scores=json.loads((p/'independent_class_readout.json').read_text())
+          geometry=json.loads((p/'independent_geometry_readout.json').read_text())
+          assert scores['total_cases']==24 and scores['natural_original_images'] is True
+          assert scores['chronological_future_test'] is False
+          assert scores['production_accepted'] is False and scores['authority']=='DENY_ALL'
+          assert geometry['physical_future_granite_batched_forwards']>=1
+          assert geometry['production_accepted'] is False
+          print('Original Beans retrospective 4-arm class:',json.dumps(scores['accuracy'],sort_keys=True))
+          print('Original Beans retrospective frozen Granite geometry:',json.dumps(geometry['arms'],sort_keys=True))
+          PY
+      - name: Preserve independent class and geometry readout (never model weights)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e2-beans-original-retrospective-independent-results
+          path: /tmp/hepta-beans-indep-readout/
+          if-no-files-found: warn
+          retention-days: 5
