@@ -87,7 +87,8 @@ def load_material(root):
         total += observed_size
         if total > 512_000_000:
             raise ValueError("pretrained materials exceed 512MB")
-        digest = sha(file.read_bytes())
+        with file.open("rb") as stream:
+            digest = hashlib.file_digest(stream, "sha256").hexdigest()
         if digest != manifest["sha256"][name]:
             raise ValueError("pretrained file digest changed")
         raw = name.encode("utf8")
@@ -237,9 +238,11 @@ def physical_export(root, original, *, max_tokens, expires_at_ms,
     # never silently assume previously checked path bytes remained unchanged.
     if load_material(root)[1] != material_digest:
         raise ValueError("checkpoint mutated during physical forward")
+    if forward_cpu <= 0 or forward_wall <= 0:
+        raise ValueError("unobserved physical Encoder timing; refuse synthetic counters")
     return build_record(original, ids, mask, features[0].detach().cpu().tolist(),
                         identities, material_digest, expires_at_ms,
-                        max(1, forward_cpu), max(1, forward_wall),
+                        forward_cpu, forward_wall,
                         principal_id=principal_id, purpose_id=purpose_id,
                         generation=generation, authority_epoch=authority_epoch)
 
