@@ -49,7 +49,7 @@ jobs:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Record actual source and environment
         run: |
@@ -87,7 +87,7 @@ jobs:
           python-version: "3.13"
       - name: Install exact stock HF compatibility profile
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Exercise real stock architecture offline, without pretrained claims
         shell: bash
@@ -126,7 +126,7 @@ jobs:
           python-version: "3.13"
       - name: Install exact CPU pretrained canary dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Pin public commit, acquire safe weights, execute Encoder
         shell: bash
