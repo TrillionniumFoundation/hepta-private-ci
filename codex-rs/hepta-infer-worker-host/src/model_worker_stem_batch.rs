@@ -143,11 +143,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             // Existing single-owner preflight binds physical loaded Head,
             // Scope/Principal, whole Q24 payload, lease, reservation, grant,
             // deadline and exact per-item Final-use signature proposal.
-            bindings.push(self.expected_stem_final_use_binding_v1(
+            bindings.push(self.expected_stem_final_use_binding_borrowed_v1(
                 now_ms,
                 proposal.source,
                 proposal.access,
-                item.selected_head.clone(),
+                item.selected_head,
                 proposal.feature_vector_q24,
                 item.authorization,
             )?);
