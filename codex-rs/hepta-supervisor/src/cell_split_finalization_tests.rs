@@ -931,7 +931,23 @@ fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
                 .verify_current(&intent, &original)
                 .expect("live journal")
         );
-        owner.commit_once(&intent).expect("no second append");
+        // A committed original fourth-step operation cannot execute twice.
+        // Only authenticated read-only reconciliation may confirm it; no
+        // extra Supervisor journal record or positive Execute ack is minted.
+        assert!(matches!(
+            owner.commit_once(&intent),
+            Err(codex_hepta_operator_acceptance::CellSplitSupervisorFenceErrorV1::Ambiguous)
+        ));
+        assert_eq!(
+            owner.read_committed(&intent).expect("existing durable effect"),
+            Some(original.clone()),
+            "rejected replay must preserve the exact original signed receipt"
+        );
+        assert_eq!(
+            owner.current_sequence().expect("original journal revision"),
+            original.owner_sequence,
+            "rejected replay must not append a second Supervisor journal entry"
+        );
     }
 
     let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
