@@ -1,0 +1,252 @@
+name: Hepta Cell Meta pinned Granite retrospective physical study (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/cell_meta_execution_af/physical_router_real_*.py'
+      - 'qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md'
+      - '.github/workflows/hepta-cell-meta-granite-real.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-meta-granite-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  HF_HUB_DISABLE_TELEMETRY: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+  OMP_NUM_THREADS: '2'
+  MKL_NUM_THREADS: '2'
+  OPENBLAS_NUM_THREADS: '2'
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONPATH: '.'
+
+jobs:
+  offline-contract:
+    name: Pinned source/projection and CPU numeric fault gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze current candidate SHA
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install physical CPU tensor backend for numerical trial only
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+      - name: Reproduce new source/projection/strict numeric tests
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            qualification/cell_meta_execution_af/physical_router_real_bridge.py \
+            qualification/cell_meta_execution_af/physical_router_real_review.py \
+            qualification/cell_meta_execution_af/physical_router_real_tests.py
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_real_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_trial_tests.py'
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  real-granite:
+    name: Pinned 97M physical Encoder and 3-seed independent Router replay
+    needs: offline-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact research candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout actual reviewed compact Encoder source, not mutable branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          path: pinned-compact
+          persist-credentials: false
+      - name: Checkout actual reviewed AG News source builder
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          path: pinned-gemma
+          persist-credentials: false
+      - name: Verify all three source commits before running model
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU model dependencies, no pickle/remote-code fallback
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'huggingface-hub==1.33.0' \
+            'safetensors==0.8.0' 'numpy==2.2.6' 'pyarrow==21.0.0' \
+            'psutil==7.2.2' 'packaging==25.0'
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/granite-model-environment.txt"
+      - name: Acquire exact dataset revision and reconstruct preregistered 224-case source
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-meta-real"
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(__import__('os').environ['RUNNER_TEMP'])/'hepta-meta-real'
+          sys.path.insert(0,'pinned-gemma/qualification/neuron-dynamic-learning')
+          from public_agnews_source import download_checked
+          from public_agnews_panel import prepare,canonical,sha
+          a=root/'source-train.parquet';b=root/'source-cal-test.parquet'
+          for role,path in [('train',a),('calibration_test',b)]:
+              download_checked(role,path)
+          source,receipt=prepare(a,b)
+          pinned='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4'
+          assert sha(canonical(source))==pinned and receipt['panel_digest']==pinned
+          (root/'source-panel.json').write_bytes(canonical(source))
+          (root/'original-source-sha256.txt').write_text(pinned+'\n')
+          PY
+      - name: Stage exact Granite revision, independently rehash local model files
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from huggingface_hub import HfApi,snapshot_download
+          repo='ibm-granite/granite-embedding-97m-multilingual-r2'
+          revision='835ad14087e140460703cf0fae09f97d469d65c2'
+          api=HfApi();info=api.model_info(repo_id=repo,revision=revision,files_metadata=True)
+          assert info.sha==revision
+          path=Path(snapshot_download(repo_id=repo,revision=revision,
+              allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+          loaded=[]
+          for item in sorted(info.siblings,key=lambda x:x.rfilename):
+              filename=item.rfilename
+              file=path/filename
+              if not file.is_file() or not (filename.endswith(('.safetensors','.json','.txt','.model'))):
+                  continue
+              raw=file.read_bytes();actual=hashlib.sha256(raw).hexdigest()
+              lfs=item.lfs
+              expected=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+              if expected is not None and actual!=expected:
+                  raise ValueError('model staging digest mismatch '+filename)
+              loaded.append({'name':filename,'bytes':len(raw),'sha256':actual,
+                             'upstream_lfs_sha256_verified':expected is not None})
+          files={x['name'] for x in loaded}
+          assert 'config.json' in files and 'tokenizer.json' in files
+          assert any(x.endswith('.safetensors') for x in files)
+          missing=[x.rfilename for x in info.siblings if x.rfilename.endswith('.safetensors')
+                   and x.rfilename not in files]
+          assert not missing, 'incomplete pretrained tensor inventory'
+          source=json.dumps(loaded,sort_keys=True,separators=(',',':')).encode()
+          hash_=hashlib.sha256(source).hexdigest()
+          root=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
+          (root/'model-files-source-hash.txt').write_text(hash_+'\n')
+          (root/'model-files.json').write_bytes(source)
+          PY
+      - name: Actual CPU pretrained Granite Encoder -> 224 Q24 rows exactly once
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-meta-real"
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          python qualification/cell_meta_execution_af/physical_router_real_bridge.py encode \
+            --source-panel "$ROOT/source-panel.json" --compact-checkout pinned-compact \
+            --snapshot-files-sha256 "$(cat "$ROOT/model-files-source-hash.txt")" \
+            --out "$ROOT/granite-q24-features.json"
+      - name: Three immutable panels, actual paired Head fits and two independent reviewers
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-meta-real"
+          for seed in 41 47 53; do
+            python qualification/cell_meta_execution_af/physical_router_real_bridge.py convert \
+              --source-panel "$ROOT/source-panel.json" \
+              --features "$ROOT/granite-q24-features.json" --seed "$seed" \
+              --out "$ROOT/$seed-trial-panel.json" \
+              --receipt "$ROOT/$seed-bridge-receipt.json"
+            python qualification/cell_meta_execution_af/physical_router_real_review.py \
+              --source-panel "$ROOT/source-panel.json" \
+              --features "$ROOT/granite-q24-features.json" \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --receipt "$ROOT/$seed-bridge-receipt.json" \
+              --seed "$seed" > "$ROOT/$seed-feature-review.json"
+            python qualification/cell_meta_execution_af/physical_router_trial.py \
+              --input "$ROOT/$seed-trial-panel.json" --steps 24 \
+              --out "$ROOT/$seed-trial-report.json"
+            python qualification/cell_meta_execution_af/physical_router_audit.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --report "$ROOT/$seed-trial-report.json" > "$ROOT/$seed-numeric-review.json"
+          done
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
+          out=[]
+          for seed in (41,47,53):
+              x=json.loads((r/f'{seed}-trial-report.json').read_text())
+              assert x['authority_posture']=='DENY_ALL'
+              assert x['future_window_prospective'] is False
+              assert x['independent_outcome_verified'] is False
+              for arm in x['results']:
+                  out.append({'seed':seed,'arm':arm['arm'],'split_proposed':arm['split_proposed'],
+                              'retrospective_test_1':arm['evaluation']['future_1'],
+                              'retrospective_test_2':arm['evaluation']['future_2'],
+                              'head_forward_rows':arm['meters']['head_forward_rows']})
+          (r/'descriptive-retrospective-summary.json').write_text(json.dumps({
+              'schema':'hepta.cell-meta-granite-descriptive-only.v1',
+              'registered_public_model':'ibm-granite/granite-embedding-97m-multilingual-r2',
+              'real_pretrained_encoder_claimed':True,
+              'independent_model_origin_authenticated':False,
+              'real_ood_verified':False,'future_window_prospective':False,
+              'ndu_selection_authorized':False,'total_compute_matched':False,
+              'production_admission':'BLOCKED','authority_posture':'DENY_ALL',
+              'arms':out},sort_keys=True))
+          PY
+      - name: Publish immutable numeric evidence and preserve all failures; never weights/texts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-granite-cell-meta-physical-${{ github.run_id }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-meta-real/model-files.json
+            ${{ runner.temp }}/hepta-meta-real/model-files-source-hash.txt
+            ${{ runner.temp }}/hepta-meta-real/original-source-sha256.txt
+            ${{ runner.temp }}/hepta-meta-real/granite-q24-features.json
+            ${{ runner.temp }}/hepta-meta-real/*-trial-panel.json
+            ${{ runner.temp }}/hepta-meta-real/*-trial-report.json
+            ${{ runner.temp }}/hepta-meta-real/*-bridge-receipt.json
+            ${{ runner.temp }}/hepta-meta-real/*-feature-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
+            ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
+            ${{ runner.temp }}/granite-model-environment.txt
