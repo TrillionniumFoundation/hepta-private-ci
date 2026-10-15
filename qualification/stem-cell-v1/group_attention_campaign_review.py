@@ -59,6 +59,89 @@ def _summarize(rows):
                 p95_ns=times[min(len(times) - 1, int(.95 * len(times)))])
 
 
+def _verify_system2_trace(row, record, critic_sha):
+    """Strict callback-order and workspace replay from the retained raw trace.
+
+    Digests and self-reported work are structural checks, NOT execution
+    attestations, signed external outcomes, or independent timing witnesses.
+    """
+    fields = {
+        "schema", "authority", "cohort", "arm", "case_id", "mode", "status",
+        "feature_sha256", "model_sha256", "critic_sha256", "final_candidate",
+        "calls", "trace", "workspace_bindings", "verifier_statuses",
+        "ndu_decisions", "independent_success_established",
+        "production_authorized",
+    }
+    if (type(record) is not dict or set(record) != fields
+            or record["schema"] != "hepta.group.system2-full-trace.v1"
+            or record["authority"] != "DENY_ALL"
+            or record["production_authorized"] is not False
+            or record["independent_success_established"] is not False
+            or record["cohort"] != row["cohort"] or record["arm"] != row["arm"]
+            or record["case_id"] != row["case_id"]
+            or record["mode"] != row["execution_mode"]
+            or record["status"] != row["execution_status"]
+            or record["feature_sha256"] != row["feature_sha256"]
+            or record["model_sha256"] != row["model_sha256"]
+            or record["critic_sha256"] != critic_sha
+            or row["full_trace_sha256"] != _digest(record)):
+        raise ValueError("System2 trace identity or provenance mismatch")
+    step_count = row["steps"]
+    if (type(record["trace"]) is not list or type(record["calls"]) is not int
+            or record["calls"] != len(record["trace"])
+            or type(record["workspace_bindings"]) is not list
+            or len(record["workspace_bindings"]) != step_count
+            or type(record["verifier_statuses"]) is not list
+            or len(record["verifier_statuses"]) != step_count):
+        raise ValueError("missing or fabricated System2 callback/workspace counts")
+    expected = []
+    ended_after_value = (row["execution_status"].startswith("ndu_stop:")
+                         or row["execution_status"] == "utility_stop")
+    for step in range(step_count):
+        expected.extend(("propose", "verify"))
+        if step < step_count - 1 or ended_after_value:
+            expected.append("value")
+    if [entry.get("kind") for entry in record["trace"]] != expected:
+        raise ValueError("invalid causal propose/verify/value callback order")
+    for index, entry in enumerate(record["trace"], start=1):
+        digest = entry.get("output_digest")
+        if (type(entry.get("call")) is not int or entry["call"] != index
+                or entry.get("status") != "completed"
+                or type(entry.get("elapsed_ns")) is not int
+                or entry["elapsed_ns"] < 0
+                or type(digest) is not str or len(digest) != 64
+                or not all(ch in "0123456789abcdef" for ch in digest)):
+            raise ValueError("incomplete or forged callback output receipt")
+    for index, item in enumerate(record["workspace_bindings"], start=1):
+        if (type(item) is not dict or item.get("step") != index
+                or item.get("feature_sha256") != row["feature_sha256"]
+                or item.get("model_sha256") != row["model_sha256"]
+                or type(item.get("state_sha256")) is not str
+                or len(item["state_sha256"]) != 64):
+            raise ValueError("workspace state generation or model changed")
+    if (record["final_candidate"] != (
+            chr(65 + row["prediction"]) if row["prediction"] >= 0 else None)):
+        raise ValueError("final logged candidate differs from independently scored row")
+    if (row["success"] and
+            (record["verifier_statuses"][-1] != "supported"
+             or row["execution_status"] != "verifier_accepted_not_independent_eval")):
+        raise ValueError("unverifiable accepted System2 answer")
+    if row["cohort"] == "deleted" and any(
+            v != "missing_evidence" for v in record["verifier_statuses"]):
+        raise ValueError("deleted evidence was treated as available")
+    value_calls = expected.count("value")
+    if row["execution_mode"] == "ndu":
+        if (type(record["ndu_decisions"]) is not list
+                or len(record["ndu_decisions"]) != value_calls
+                or any(type(x) is not dict or
+                       type(x.get("continue_computation")) is not bool
+                       for x in record["ndu_decisions"])):
+            raise ValueError("unreplayed or malformed NDU decisions")
+    elif record["ndu_decisions"] != []:
+        raise ValueError("fixed-depth control cannot emit NDU decisions")
+    return True
+
+
 def review(root):
     root = Path(root)
     protocol = json.loads((root / "protocol.json").read_text())
@@ -66,6 +149,7 @@ def review(root):
     report = json.loads((root / "report.json").read_text())
     teacher = json.loads((root / "teacher.json").read_text())
     encoder = json.loads((root / "encoder.json").read_text())
+    raw_traces = json.loads((root / "system2-traces.json").read_text())
     if (protocol["schema"] != "hepta.group.paired-step-campaign.v1"
             or report["schema"] != "hepta.group.paired-step-observation.v1"
             or report["protocol_sha256"] != _digest(protocol)
@@ -172,6 +256,18 @@ def review(root):
             or any(training[name]["initial_model_sha256"] !=
                    report["initial_core_sha256"] for name in ("core", "attention"))):
         raise ValueError("paired initial model tensor digest mismatch")
+    if (type(raw_traces) is not list
+            or report.get("full_system2_trace_count") != len(raw_traces)
+            or report.get("full_system2_trace_manifest_sha256") != _digest(raw_traces)):
+        raise ValueError("missing or altered full System2 trajectory manifest")
+    traces = {}
+    for receipt in raw_traces:
+        if type(receipt) is not dict:
+            raise ValueError("malformed System2 trace row")
+        key = (receipt.get("cohort"), receipt.get("arm"), receipt.get("case_id"))
+        if key in traces:
+            raise ValueError("duplicate System2 trace entry")
+        traces[key] = receipt
     expected = {(cohort, arm, case["case_id"]) for cohort in COHORTS
                 for arm in ARMS for case in public[cohort]}
     cases = {cohort: {r["case_id"]: r for r in public[cohort]} for cohort in COHORTS}
@@ -230,9 +326,18 @@ def review(root):
             if (type(value) is not str or len(value) != 64
                     or any(c not in "0123456789abcdef" for c in value)):
                 raise ValueError("unbound digest")
+        if arm in SYSTEM2:
+            owner = MODELS[arm]
+            _verify_system2_trace(row, traces.get(key),
+                                  critic["receipts"][owner]["parameters_sha256"])
+        elif row.get("full_trace_sha256") is not None:
+            raise ValueError("direct control must not claim an executed System2 trace")
         feature_hashes[(cohort, cid)].add(row["feature_sha256"])
         model_hashes[arm].add(row["model_sha256"])
         by_arm[f"{cohort}.{arm}"].append(row)
+    expected_trace_keys = {key for key in expected if key[1] in SYSTEM2}
+    if set(traces) != expected_trace_keys:
+        raise ValueError("missing or extra full System2 execution trajectories")
     if seen != expected or any(len(v) != 1 for v in
                                (*feature_hashes.values(), *model_hashes.values())):
         raise ValueError("incomplete pairs, drifting frozen models or feature mismatch")
