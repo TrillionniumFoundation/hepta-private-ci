@@ -1542,3 +1542,293 @@ fn signed_final_use_rejects_stale_cas_bytes_before_any_head_driver_effect() {
     assert_eq!(worker.driver.feature_calls, 0);
     assert!(!worker.poisoned, "no physical Head effect took place");
 }
+
+
+#[cfg(unix)]
+fn add_second_batch_head(
+    worker: &mut InferenceWorker<Driver>,
+    source: &StemFeatureRefV1,
+    access: &StemAccessContextV1,
+    original: &StemHeadBindingV1,
+    features: &[i64],
+) -> (StemHeadBindingV1, WorkerRequest) {
+    let mut second_model = manifest();
+    second_model.model_id = "model.2".to_string();
+    second_model.model_digest = "a".repeat(64);
+    worker
+        .load_model(100, second_model)
+        .expect("distinct physical Head handle");
+    let mut second_head = original.clone();
+    second_head.head_model_id = StableId::new("model.2").expect("second Head");
+    second_head.request_id = StableId::new("request.2").expect("second request");
+    second_head.head_digest = Digest32::of_bytes(b"second Head config");
+    let mut second_request = request();
+    second_request.request_id = "request.2".to_string();
+    second_request.reservation_id = "reservation.2".to_string();
+    second_request.model_digest = "a".repeat(64);
+    second_request.reservation_model_digest = "a".repeat(64);
+    let second_auth = approved_fixture_authorization(
+        source,
+        access,
+        &second_head,
+        features,
+        second_request,
+    );
+    (second_head, second_auth)
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_preflight_binds_two_real_loaded_heads_without_driver_or_grants() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-plan".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (other_head, other_auth) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &other_head, authorization: &other_auth },
+    ];
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(
+        100,
+        StemBatchProposalV1 {
+            source: &source,
+            access: &access,
+            verified_artifacts: &verified_artifacts,
+            cas_verifier: &cas_verifier,
+            feature_vector_q24: &features,
+            members: &members,
+        },
+    ).expect("complete pure owner preflight");
+    assert_eq!(plan.bindings.len(), 2);
+    assert_ne!(plan.bindings[0].request_sha256, plan.bindings[1].request_sha256);
+    assert_ne!(plan.bindings[0].destination_id, plan.bindings[1].destination_id);
+    assert!(!plan.batch_digest.is_zero());
+    assert!(!plan.authority.grants_any());
+
+    // Even with the same CAS bytes and two identical signed-member proposals,
+    // changing physical batch order changes the aggregate intent identity.
+    let reversed = [
+        StemBatchMemberProposalV1 {
+            selected_head: &other_head,
+            authorization: &other_auth,
+        },
+        StemBatchMemberProposalV1 {
+            selected_head: &head,
+            authorization: &auth,
+        },
+    ];
+    let reordered = worker.prepare_stem_final_use_batch_proposal_v1(
+        100,
+        StemBatchProposalV1 {
+            source: &source,
+            access: &access,
+            verified_artifacts: &verified_artifacts,
+            cas_verifier: &cas_verifier,
+            feature_vector_q24: &features,
+            members: &reversed,
+        },
+    ).expect("reversed proposal is independently complete");
+    assert_ne!(plan.batch_digest, reordered.batch_digest);
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_rejects_reused_reservation_before_any_effect() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-alias".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (other_head, mut other_auth) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    other_auth.reservation_id = auth.reservation_id.clone();
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &other_head, authorization: &other_auth },
+    ];
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source, access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features, members: &members,
+            },
+        ),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_rejects_second_payload_drift_without_partial_execution() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-drift".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (other_head, mut other_auth) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    other_auth.lease_payload_digest = "e".repeat(64);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &other_head, authorization: &other_auth },
+    ];
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source, access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features, members: &members,
+            },
+        ),
+        Err(Error::PayloadMismatch)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_rejects_stale_cas_and_group_memory_overcommit() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-stale-cas".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (other_head, other_auth) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (verified_artifacts, cas_verifier, root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &other_head, authorization: &other_auth },
+    ];
+    std::fs::write(
+        root.path().join(source.stem_weights_digest.to_string()),
+        b"mutated after cas admission",
+    ).expect("simulate stale CAS bytes");
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source, access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features, members: &members,
+            },
+        ),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+
+    // A separate worker with the same two loaded Heads has no slack for
+    // the minimum distinct drive/prediction vectors and gated scratch.
+    let mut limited_grant = grant();
+    limited_grant.maximum_memory_bytes = 2_048;
+    let mut limited = InferenceWorker::new(
+        100, "worker.batch-memory".into(), 3, limited_grant, Driver::default()
+    ).expect("limited worker");
+    limited.load_model(100, manifest()).expect("first Head");
+    let (second_limited, second_auth_limited) =
+        add_second_batch_head(&mut limited, &source, &access, &head, &features);
+    let (fresh_artifacts, fresh_verifier, _fresh_root) = verified_stem_cas_fixture(&source);
+    let constrained_members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 {
+            selected_head: &second_limited,
+            authorization: &second_auth_limited,
+        },
+    ];
+    assert!(matches!(
+        limited.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source, access: &access,
+                verified_artifacts: &fresh_artifacts,
+                cas_verifier: &fresh_verifier,
+                feature_vector_q24: &features,
+                members: &constrained_members,
+            },
+        ),
+        Err(Error::ModelCapacity)
+    ));
+    assert_eq!(limited.driver.feature_calls, 0);
+    assert!(limited.active_requests.is_empty());
+}
+
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_rejects_more_than_32_members_before_a_driver_call() {
+    let worker = InferenceWorker::new(
+        100, "worker.batch-max32".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    let members: Vec<_> = (0..33).map(|_| StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }).collect();
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features,
+                members: &members,
+            },
+        ),
+        Err(Error::FeatureLimit)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(worker.active_requests.is_empty());
+}
+
+#[cfg(unix)]
+#[test]
+fn shared_stem_batch_does_not_promote_caller_revocation_claims_to_permission() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.batch-revoked".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("loaded Head");
+    let (source, mut access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, _root) = verified_stem_cas_fixture(&source);
+    access.revocation_observed = true;
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    assert!(matches!(
+        worker.prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                feature_vector_q24: &features,
+                members: &members,
+            },
+        ),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
