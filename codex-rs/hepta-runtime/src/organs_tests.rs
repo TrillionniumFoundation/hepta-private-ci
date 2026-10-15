@@ -788,6 +788,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         original_path: PathBuf,
         _authority_dir: tempfile::TempDir,
         successor: Option<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1)>,
+        admission_take_calls: Arc<AtomicUsize>,
     }
 
     impl CellSplitCnsKernelWitnessV1 for DurableTestCnsWitness {
@@ -844,6 +845,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
             _intent: &CellSplitExecutionIntentV1,
         ) -> std::result::Result<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1), String>
         {
+            self.admission_take_calls.fetch_add(1, Ordering::SeqCst);
             self.successor
                 .take()
                 .ok_or_else(|| "signed successor consumed".into())
@@ -995,6 +997,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         previous_receipt_digest,
     };
     let witness_directory = tempfile::tempdir()?;
+    let admission_take_calls = Arc::new(AtomicUsize::new(0));
     let runtime_signer = SigningKey::from_bytes(&[0x6b; 32]);
     let original_path = witness_directory.path().join("original-cns-runtime.json");
     let pinned_authority = Arc::new(authority);
@@ -1003,6 +1006,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         original_path: original_path.clone(),
         _authority_dir: authority_dir,
         successor: Some((signed_grant, request)),
+        admission_take_calls: Arc::clone(&admission_take_calls),
     };
     let mut port = CellSplitCnsKernelRuntimePortV1::new(
         runtime.clone(),
@@ -1034,6 +1038,11 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
     assert_eq!(runtime.topology_snapshot()?, before);
     assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
     assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        admission_take_calls.load(Ordering::SeqCst),
+        0,
+        "missing Control must deny before consuming signed Final-use"
+    );
     assert!(
         port.read_original_commit(&intent.idempotency_key)
             .map_err(anyhow::Error::msg)?
@@ -1052,6 +1061,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
     );
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
     assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(admission_take_calls.load(Ordering::SeqCst), 0);
 
     // Restart must not manufacture a successor or a positive commit from a
     // signed candidate which never crossed the durable Control transaction.
@@ -1063,6 +1073,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         original_path: original_path.clone(),
         _authority_dir: tempfile::tempdir()?,
         successor: None,
+        admission_take_calls: Arc::clone(&admission_take_calls),
     };
     let restarted_port = CellSplitCnsKernelRuntimePortV1::new(
         after_restart,
@@ -1089,6 +1100,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         owner.read_committed(&intent)?.is_none(),
         "no original Control/CNS commit means no physical successor effect",
     );
+    assert_eq!(admission_take_calls.load(Ordering::SeqCst), 0);
     assert!(
         !original_path.exists(),
         "restart may not manufacture a CNS commit"
