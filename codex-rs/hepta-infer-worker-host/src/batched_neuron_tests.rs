@@ -3424,3 +3424,47 @@ fn original_pending_group_signature_rejects_unadmitted_rebound_and_expired_cohor
     );
     assert_eq!(worker.pending(), 2);
 }
+
+
+
+#[test]
+fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests_remain_live() {
+    let root = tempfile::tempdir().expect("original signed nonce owner");
+    let signer = SigningKey::from_bytes(&[89; 32]);
+    let (manifest, mut first, key) = fixture_request();
+    // The original physical ResourceGrant expires at 10_000 ms. Keep the
+    // requests live to prove this rejection is genuinely due to the WORKER
+    // grant rather than their individual deadlines.
+    first.authorization.deadline_ms = 11_000;
+    let second = second_request(&first);
+    let first_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+            .expect("first exact original requested use");
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+            .expect("second original requested use");
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let mut original = runner_with_driver(
+        &signer, root.path(), manifest, Driver, 2,
+    );
+    original.enqueue(
+        100, "model".into(), first, key.clone(),
+        signed_member(&signer, first_binding, "grant-expired-1", 91),
+    ).expect("first admitted before original Worker grant expiry");
+    original.enqueue(
+        100, "model".into(), second, key.clone(),
+        signed_member(&signer, second_binding, "grant-expired-2", 92),
+    ).expect("second admitted before original Worker grant expiry");
+    let ordered = [(first_id, key.clone()), (second_id, key)];
+    assert!(original
+        .prepare_pending_native_group_signature_v1(100, &ordered)
+        .is_ok());
+
+    assert_eq!(
+        original.prepare_pending_native_group_signature_v1(10_000, &ordered),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+        "an unexpired request or signed Head grant never extends the original physical Worker resource grant"
+    );
+    assert_eq!(original.pending(), 2);
+}
