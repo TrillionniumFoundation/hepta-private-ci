@@ -150,6 +150,16 @@ jobs:
             --output "$OUTPUT/real-routed-retrospective-score.json" \
             | tee "$OUTPUT/score-stdout.json"
           sha256sum "$OUTPUT/real-routed-retrospective-score.json" > "$OUTPUT/original-score-sha256.txt"
+      - name: Mandatory separate algorithm audit of original labels and model predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e7_second_opinion.py \
+            --historical "$HISTORICAL" --physical "$PHYSICAL" \
+            --original-score "$OUTPUT/real-routed-retrospective-score.json" \
+            --output "$OUTPUT/independent-second-algorithm-score.json" \
+            | tee "$OUTPUT/second-score-stdout.json"
+          sha256sum "$OUTPUT/independent-second-algorithm-score.json" > "$OUTPUT/second-score-sha256.txt"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
