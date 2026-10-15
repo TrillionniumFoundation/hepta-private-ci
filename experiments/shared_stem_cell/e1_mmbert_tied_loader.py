@@ -62,6 +62,53 @@ def verify_tied_pretrained_table(torch, mlm, safetensors_path):
             "authority": "DENY_ALL"}
 
 
+
+def verify_complete_pretrained_state(torch, mlm, safetensors_path):
+    """Byte-compare EVERY serialized tensor; allow one physically proven tied alias."""
+    from safetensors import safe_open
+    path = Path(safetensors_path)
+    if path.is_symlink() or not path.is_file():
+        raise Invalid("no pinned safe checkpoint for complete parameter verification")
+    state = mlm.state_dict()
+    if not state:
+        raise Invalid("empty physical model parameter state")
+    alias = {"decoder.weight", "model.embeddings.tok_embeddings.weight"}
+    whole = hashlib.sha256(b"hepta.e1.mmbert-whole-pretrained-mlm-v1")
+    with safe_open(str(path), framework="pt", device="cpu") as checkpoint:
+        names = set(checkpoint.keys())
+        unverified = set(state) - names
+        if unverified not in (set(), {"decoder.weight"},
+                             {"model.embeddings.tok_embeddings.weight"}):
+            raise Invalid("model contains unverified or newly initialized saved weights")
+        if not names or names - set(state):
+            raise Invalid("checkpoint contains unmapped original weight tensors")
+        for name in sorted(names):
+            observed = state[name].detach().cpu().contiguous()
+            saved = checkpoint.get_slice(name)
+            shape = tuple(saved.get_shape())
+            if shape != tuple(observed.shape) or observed.numel() == 0:
+                raise Invalid("parameter shape differs from original tensor: "+name)
+            whole.update(name.encode("utf8")+b"\\0")
+            if not shape:
+                raw = checkpoint.get_tensor(name)
+                if not bool(torch.equal(observed, raw)):
+                    raise Invalid("parameter value differs from original scalar: "+name)
+                whole.update(raw.contiguous().numpy().tobytes())
+            else:
+                for start in range(0, shape[0], 8192):
+                    end = min(shape[0], start+8192)
+                    raw = saved[start:end]
+                    current = observed[start:end]
+                    if not bool(torch.equal(current, raw)) or not bool(torch.isfinite(current).all()):
+                        raise Invalid("loaded model parameter is not the pretrained source: "+name)
+                    whole.update(raw.contiguous().numpy().tobytes())
+    return {"all_serialized_pretrained_tensor_bytes_verified": True,
+            "source_tensor_count": len(names),
+            "whole_pretrained_state_sha256": whole.hexdigest(),
+            "publisher_signature_independently_verified": False,
+            "authority": "DENY_ALL"}
+
+
 class FrozenMMBert:
     """Matches compact Stem's encode(row) API; pinned local checkpoint only."""
     def __init__(self, revision, *, device="cpu", max_tokens=512):
@@ -96,6 +143,7 @@ class FrozenMMBert:
         weights = hf_hub_download(repo_id=repo, filename="model.safetensors",
                                   revision=revision, local_files_only=True)
         self.pretrained_weight_receipt = verify_tied_pretrained_table(torch, mlm, weights)
+        self.complete_weight_receipt = verify_complete_pretrained_state(torch, mlm, weights)
         self.model = mlm.model.eval()
         for parameter in self.model.parameters():
             parameter.requires_grad_(False)
