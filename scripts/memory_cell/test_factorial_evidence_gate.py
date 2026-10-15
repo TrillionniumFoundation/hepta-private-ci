@@ -1,4 +1,5 @@
 """Regression gates for the preregistered factorial evidence audit."""
+
 import copy
 import hashlib
 import json
@@ -13,35 +14,53 @@ def digest(s):
 
 def fixture():
     cases = [
-        {"id": f"case-{i}", "root": f"family-{i // 2}",
-         "task": TASKS[i % len(TASKS)], "answer_sha256": digest(f"a{i}"),
-         "oracle_source_sha256": digest(f"o{i}"), "premise_sha256": digest(f"p{i}")}
+        {
+            "id": f"case-{i}",
+            "root": f"family-{i // 2}",
+            "task": TASKS[i % len(TASKS)],
+            "answer_sha256": digest(f"a{i}"),
+            "oracle_source_sha256": digest(f"o{i}"),
+            "premise_sha256": digest(f"p{i}"),
+        }
         for i in range(4)
     ]
     plan = {
         "schema": "hepta.memory-factorial.plan.v1",
-        "conditions": list(CONDITIONS), "readers": list(READERS),
-        "arms": list(ARMS), "tasks": list(TASKS), "cutoff": "2026-10-15T00:00:00Z",
-        "registered_before_exposure": True, "tool_permissions_equal": True,
-        "reader_budget": {"total_tokens": 1024}, "cases": cases,
+        "conditions": list(CONDITIONS),
+        "readers": list(READERS),
+        "arms": list(ARMS),
+        "tasks": list(TASKS),
+        "cutoff": "2026-10-15T00:00:00Z",
+        "registered_before_exposure": True,
+        "tool_permissions_equal": True,
+        "reader_budget": {"total_tokens": 1024},
+        "cases": cases,
     }
     rows = []
     for case in cases:
         for arm in ARMS:
             for reader in READERS:
                 for condition in CONDITIONS:
-                    rows.append({
-                        "id": case["id"], "root": case["root"], "arm": arm,
-                        "reader": reader, "condition": condition,
-                        "plan_sha256": sha(plan), "verified": True,
-                        "success": condition == "oracle",
-                        "answer_digest": digest("answer"),
-                        "source_digest": digest("source" + condition),
-                        "reader_revision": "immutable-model-sha",
-                        "prompt_digest": digest("same-prompt"),
-                        "tokens": 500, "cost": {k: 1.0 for k in COST_KEYS},
-                        "diagnostic_count": 2, "recovery_success": False,
-                    })
+                    rows.append(
+                        {
+                            "id": case["id"],
+                            "root": case["root"],
+                            "arm": arm,
+                            "reader": reader,
+                            "condition": condition,
+                            "plan_sha256": sha(plan),
+                            "verified": True,
+                            "success": condition == "oracle",
+                            "answer_digest": digest("answer"),
+                            "source_digest": digest("source" + condition),
+                            "reader_revision": "immutable-model-sha",
+                            "prompt_digest": digest("same-prompt"),
+                            "tokens": 500,
+                            "cost": {k: 1.0 for k in COST_KEYS},
+                            "diagnostic_count": 2,
+                            "recovery_success": False,
+                        }
+                    )
     return plan, rows
 
 
@@ -50,8 +69,13 @@ class FactorialAuditTest(unittest.TestCase):
         plan, rows = fixture()
         report = analyze(plan, rows)
         self.assertEqual(report["observations"], 160)
-        self.assertEqual(report["arms"]["hybrid_rag"]["frozen"]["oracle"]["success_rate"], 1)
-        self.assertEqual(report["arms"]["hybrid_rag"]["frozen"]["hybrid"]["total_cost"]["raw_storage"], 4)
+        self.assertEqual(report["source_families_claimed"], 2)
+        self.assertEqual(
+            report["arms"]["hybrid_rag"]["frozen"]["oracle"]["success_rate"], 1
+        )
+        self.assertEqual(
+            report["arms"]["hybrid_rag"]["frozen"]["hybrid"]["total_cost"]["raw_storage"], 4
+        )
         self.assertFalse(report["production_qualified"])
         self.assertTrue(report["diagnosis"]["learning_candidate_rejected"])
 

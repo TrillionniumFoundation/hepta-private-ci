@@ -160,7 +160,9 @@ class DisjointArchivedRecoveryTests(unittest.TestCase):
                 destination = root / "safe"
                 if file_name == "raw-answers.jsonl":
                     self.assertEqual(extract_one(pins, name, archive, destination), 1)
-                    self.assertEqual((destination / file_name).read_text(), "original-answer\n")
+                    self.assertEqual(
+                        (destination / file_name).read_text(), "original-answer\n"
+                    )
                 else:
                     with self.assertRaises(ValueError):
                         extract_one(pins, name, archive, destination)

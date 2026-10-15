@@ -18,9 +18,7 @@ SOURCE = "bc76ac57ba972bf105c71ddd997cd215cec5df2e"
 WORKFLOW = "MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence"
 SPECIAL = ("rag-sharded-original", "rag-sharded-calibration-joined")
 EVALUATION = tuple(
-    f"memory-evaluation-{case}-{part}"
-    for case in range(8)
-    for part in range(2)
+    f"memory-evaluation-{case}-{part}" for case in range(8) for part in range(2)
 )
 REQUIRED = frozenset((*SPECIAL, *EVALUATION))
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
@@ -250,7 +248,9 @@ def main():
     args = parser.parse_args()
     pins = validate_pins(read_json(args.pins))
     if args.command == "plan":
-        report = qualify(pins, read_json(args.run), read_json(args.jobs), read_json(args.artifacts))
+        report = qualify(
+            pins, read_json(args.run), read_json(args.jobs), read_json(args.artifacts)
+        )
         with args.report.open("x", encoding="utf-8") as handle:
             json.dump(report, handle, indent=2, sort_keys=True)
             handle.write("\n")
