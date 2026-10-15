@@ -94,7 +94,7 @@ class E2RealVisionTests(unittest.TestCase):
         rows=[row(0),row(1)]; anchor=[json.loads(x) for x in anchors(rows).splitlines()]
         anchor[0]["group_id"]="tampered"
         with self.assertRaises(Rejected):
-            produce(doc(feature_rows(rows)),receipt(rows,"train",),phase="train",anchors=doc(anchor))
+            produce(doc(feature_rows(rows)),receipt(rows,"train"),phase="train",anchors=doc(anchor))
 
     def test_missing_anchor_rejected(self):
         rows=[row(0),row(1)]
