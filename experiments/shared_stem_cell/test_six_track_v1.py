@@ -61,7 +61,7 @@ def make_fixture():
                 "train_steps": 0 if frozen else 24,
                 "trainable_parameters": 9744,
                 "physical_forward_claimed": False,
-                "e2e_includes_one_time": False,
+                "one_time_in_e2e": {k: False for k in target.ONE_TIME},
                 "costs": {k: (40000000 if k == "peak_rss_bytes" else 2.0)
                           for k in target.COSTS},
                 "results": [],
@@ -234,15 +234,34 @@ class SixTrackValidation(unittest.TestCase):
     def test_reader_does_not_change_source(self):
         self.rejected(lambda d: d["cases"][33].update(source_group="different-family"), "Reader intervention changed original task media")
 
-    def test_one_time_accounting_flag_required(self):
-        self.rejected(lambda d: d["tracks"]["P5"]["typed"].pop("e2e_includes_one_time"), "one-time/e2e")
+    def test_one_time_component_census_required(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"].pop("one_time_in_e2e"),
+                      "per-component one-time")
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"]["one_time_in_e2e"].pop("training_ms"),
+                      "per-component one-time")
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"]["one_time_in_e2e"].update(
+            training_ms=1), "per-component one-time")
 
-    def test_no_double_count_when_first_request_includes_load(self):
+    def test_obsolete_global_cost_flag_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"].update(
+            e2e_includes_one_time=True), "obsolete")
+
+    def test_all_one_time_components_already_in_e2e(self):
         doc = copy.deepcopy(self.doc)
-        doc["tracks"]["P5"]["typed"]["e2e_includes_one_time"] = True
+        doc["tracks"]["P5"]["typed"]["one_time_in_e2e"] = {
+            k: True for k in target.ONE_TIME
+        }
         life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
+        self.assertEqual(life["one_time_not_in_e2e_ms"], 0)
         self.assertEqual(life["amortized_one_time_ms_per_request"], 0)
         self.assertEqual(life["mean_e2e_plus_amortized_ms"], 10)
+
+    def test_mixed_one_time_costs_count_missing_training_and_jit(self):
+        doc = copy.deepcopy(self.doc)
+        doc["tracks"]["P5"]["typed"]["one_time_in_e2e"]["load_ms"] = True
+        life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
+        self.assertEqual(life["one_time_not_in_e2e_ms"], 8)
+        self.assertAlmostEqual(life["mean_e2e_plus_amortized_ms"], 10 + 8 / 112)
 
     def test_p4_per_case_solver_overrun(self):
         self.rejected(lambda d: d["tracks"]["P4"]["tree_search"]["results"][0].update(
