@@ -1,0 +1,160 @@
+name: Hepta AMCN original HF tokenizer / model numerical parity (SHADOW)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - 'qualification/amcn-v1/amcn_original_hf_parity.py'
+      - 'qualification/amcn-v1/amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/test_amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md'
+      - '.github/workflows/hepta-amcn-original-hf-parity.yml'
+  pull_request:
+    branches: ['research/amcn-typed-budget-20261014']
+    paths:
+      - 'qualification/amcn-v1/amcn_original_hf_parity.py'
+      - 'qualification/amcn-v1/amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/test_amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md'
+      - '.github/workflows/hepta-amcn-original-hf-parity.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: amcn-original-hf-parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-original-hf-parity:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install official HF reference runtime on isolated CPU
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-amcn-hf-parity-venv
+          P=/tmp/hepta-amcn-hf-parity-venv/bin
+          "$P/pip" install numpy==1.26.4
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install transformers==4.46.3 tokenizers==0.20.3 safetensors==0.7.0 regex==2024.11.6 packaging==25.0 jinja2==3.1.6
+          "$P/pip" check
+          mkdir -p /tmp/amcn-hf-parity-evidence
+          "$P/pip" freeze > /tmp/amcn-hf-parity-evidence/installed-environment.txt
+      - name: Download EXACT previously retained original model archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-hf-parity-evidence /tmp/amcn-hf-parity-private
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output /tmp/amcn-hf-parity-private/archive.zip
+          printf '%s  %s\n' \
+            07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            /tmp/amcn-hf-parity-private/archive.zip | sha256sum --check -
+          unzip -p /tmp/amcn-hf-parity-private/archive.zip memory-inputs.tar.gz \
+            > /tmp/amcn-hf-parity-private/original.tar.gz
+          python3 - <<'PY'
+          from pathlib import Path
+          from tarfile import open as open_tar
+          origin=Path('/tmp/amcn-hf-parity-private/original.tar.gz')
+          output=Path('/tmp/amcn-hf-parity-private/original')
+          expected={
+              'reader/model.safetensors', 'reader/config.json',
+              'reader/tokenizer.json', 'reader/tokenizer_config.json',
+              'reader/special_tokens_map.json', 'reader/vocab.json',
+              'reader/merges.txt', 'reader/generation_config.json',
+              'encoder/model.safetensors', 'encoder/config.json',
+              'encoder/tokenizer.json', 'encoder/tokenizer_config.json',
+              'encoder/special_tokens_map.json', 'encoder/vocab.txt',
+          }
+          seen=set()
+          with open_tar(origin, 'r:gz') as archive:
+              for member in archive:
+                  if not member.isfile():
+                      continue
+                  name=member.name.removeprefix('memory-inputs/')
+                  if name not in expected:
+                      continue
+                  if name in seen or member.size > 310 * 1024 * 1024:
+                      raise RuntimeError('unsafe or duplicate model source')
+                  seen.add(name)
+                  path=output / name
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.extractfile(member) as source, path.open('xb') as target:
+                      while block := source.read(1048576):
+                          target.write(block)
+          if seen != expected:
+              raise RuntimeError('missing exact original reader or encoder inventory: ' + repr(expected-seen))
+          PY
+      - name: Execute ORIGINAL HF fast tokenizer, BERT and Llama reference parity
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-hf-parity-venv/bin/python
+          "$P" -m compileall -q \
+            qualification/amcn-v1/amcn_original_hf_parity.py \
+            qualification/amcn-v1/amcn_original_text_reader.py \
+            qualification/amcn-v1/test_amcn_original_text_reader.py
+          HEPTA_AMCN_ORIGINAL_ROOT=/tmp/amcn-hf-parity-private/original \
+            PYTHONPATH=qualification/amcn-v1 "$P" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_original_text_reader.py' -v \
+            2>&1 | tee /tmp/amcn-hf-parity-evidence/contract-tests.txt
+          PYTHONPATH=qualification/amcn-v1 "$P" qualification/amcn-v1/amcn_original_hf_parity.py \
+            --archive-root /tmp/amcn-hf-parity-private/original \
+            --output /tmp/amcn-hf-parity-evidence/official-parity-result.json \
+            2>&1 | tee /tmp/amcn-hf-parity-evidence/parity-stdout.txt
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('/tmp/amcn-hf-parity-evidence/official-parity-result.json').read_text())
+          assert receipt['real_official_fast_tokenizer_parity'] is True
+          assert receipt['real_official_model_forward_parity'] is True
+          assert receipt['real_official_greedy_token_parity'] is True
+          assert receipt['production_accepted'] is False
+          assert receipt['nine_arm_executions'] == 0
+          PY
+      - name: Seal exact HEAD, source code and failed-capability claims
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-hf-parity-evidence/source
+          git rev-parse HEAD > /tmp/amcn-hf-parity-evidence/source/head.sha
+          git rev-parse HEAD^{tree} > /tmp/amcn-hf-parity-evidence/source/tree.sha
+          cp qualification/amcn-v1/amcn_original_hf_parity.py \
+             qualification/amcn-v1/amcn_original_text_reader.py \
+             qualification/amcn-v1/test_amcn_original_text_reader.py \
+             qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md \
+             .github/workflows/hepta-amcn-original-hf-parity.yml \
+             /tmp/amcn-hf-parity-evidence/source/
+          printf '%s\n' 'real_natural_language_reader_task_answers=0' \
+            'strong_rag_original_task_comparison=false' \
+            'three_axis_utility_superiority=false' \
+            'future_calendar_windows=0' \
+            'independent_reviewed_citations=false' \
+            'production_accepted=false' 'no_model_promotion=true' \
+            'original_checkpoint_bytes_not_uploaded=true' \
+            > /tmp/amcn-hf-parity-evidence/negative-authority.txt
+          (cd /tmp/amcn-hf-parity-evidence && find . -type f ! -name SHA256SUMS \
+             -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-original-official-hf-parity-shadow
+          path: /tmp/amcn-hf-parity-evidence
+          if-no-files-found: error
