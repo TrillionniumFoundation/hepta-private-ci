@@ -96,11 +96,7 @@ fn control_parent_dir_identity(
 ) -> Result<(), NduPublicationErrorV1> {
     use std::os::unix::fs::{MetadataExt, PermissionsExt};
 
-    if parent
-        .canonicalize()
-        .map_err(|_| NduPublicationErrorV1::UnsafePath)?
-        != parent
-    {
+    if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
         return Err(NduPublicationErrorV1::UnsafePath);
     }
     let opened = directory
@@ -552,8 +548,7 @@ impl NduPublicationOwnerV1 {
             parent_dir.sync_all()?;
         }
 
-        let mut journal_flags =
-            OFlags::RDWR | OFlags::APPEND | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+        let mut journal_flags = OFlags::RDWR | OFlags::APPEND | OFlags::NOFOLLOW | OFlags::CLOEXEC;
         if !preexisting {
             journal_flags |= OFlags::CREATE | OFlags::EXCL;
         }
