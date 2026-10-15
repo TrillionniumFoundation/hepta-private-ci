@@ -84,6 +84,11 @@ jobs:
             huggingface-hub==0.36.0 tokenizers==0.22.1 safetensors==0.7.0
           python -m pip freeze > "$RUNNER_TEMP/granite97-python-environment.txt"
           git rev-parse HEAD > "$RUNNER_TEMP/granite97-exact-source.txt"
+      - name: Exercise 384D synchronized CPU Reader before the expensive public download
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest test_cross_fact_joint_fit -v
+          PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest test_cross_fact_joint_fit -v
       - name: Download pinned public checkpoint, verify all pretrained tensors and run real CPU Head steps
         shell: bash
         run: |
