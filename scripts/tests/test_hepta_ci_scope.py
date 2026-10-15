@@ -101,6 +101,38 @@ class ScopeTests(unittest.TestCase):
             "product library EUID compile must precede native fault tests",
         )
 
+    def test_original_operator_config_uid_gate_has_real_product_and_native_receipts(self):
+        scope = select(["codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["effects"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        start = "      - name: Early CellSplit operator config original EUID product and native regression\\n"
+        end = "      - name: Early original Control WAL canonical path native regression\\n"
+        self.assertEqual(workflow.count(start), 1)
+        self.assertEqual(workflow.count(end), 1)
+        command = workflow.split(start, 1)[1].split(end, 1)[0]
+        for required in (
+            "steps.scope.outputs.lifecycle == 'true'",
+            "steps.scope.outputs.effects == 'true'",
+            "operator-config-euid-product.json",
+            "operator-config-euid-native.json",
+            "--minimum-tests 0",
+            "--minimum-tests 1",
+            "cargo check --locked",
+            "cargo test --locked",
+            "operator_config_requires_current_effective_uid_for_original_inode",
+        ):
+            self.assertIn(required, command)
+        self.assertLess(
+            workflow.index(start),
+            workflow.index("cell-split-durable-execution-owner.json"),
+            "original config UID gate must precede effect-owner operation",
+        )
+
     def test_signed_original_observer_native_gates_cover_effects_and_lifecycle(self):
         # Supervisor/Control original-effect changes can intentionally have
         # no learning scope. Both signed read-only native guards are required.
