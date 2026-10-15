@@ -142,6 +142,10 @@ def campaign(args):
                 "original_token_cache_sha256": file_digest(args.prepared / "features" / "metadata.json"),
                 "train_case_ids_sha256": hashlib.sha256(json.dumps(
                     [case.case_id for case in cases], separators=(",", ":")).encode()).hexdigest(),
+                "fresh_case_roster_sha256": {
+                    role: hashlib.sha256(json.dumps([case.case_id for case in parts[role]],
+                        separators=(",", ":")).encode()).hexdigest()
+                    for role in ("fresh_combinations", "fresh_vocabulary")},
                 "source_groups": len(set(case.source_hash for case in cases)),
                 "new_code_sha256": code_hashes,
                 "source_disjoint_fresh_evaluation_only_after_global_fit": True,
