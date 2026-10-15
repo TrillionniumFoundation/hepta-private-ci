@@ -9,6 +9,11 @@ on:
       - "qualification/stem-cell-v1/p2_train_sparse_equal_compute.py"
       - "qualification/stem-cell-v1/p2_train_sparse_equal_compute_review.py"
       - "qualification/stem-cell-v1/test_p2_train_sparse_equal_compute.py"
+      - "qualification/stem-cell-v1/p2_backward_cost_profiler.py"
+      - "qualification/stem-cell-v1/p2_backward_cost_profile_review.py"
+      - "qualification/stem-cell-v1/test_p2_backward_cost_profiler.py"
+      - "qualification/stem-cell-v1/P2_BACKWARD_OPERATOR_COST_PROVENANCE_20261015.md"
+      - "qualification/stem-cell-v1/P2_LOCAL_BACKWARD_OPERATOR_3SEED_20261015.json"
       - "qualification/stem-cell-v1/P2_TRAINED_TOP1_EQUAL_FORWARD_WORK.md"
       - "qualification/stem-cell-v1/P2_LOCAL_TRAINED_TOP1_TOY_20261015.json"
       - "qualification/stem-cell-v1/p2_postfit_sparse_top1.py"
@@ -70,6 +75,13 @@ jobs:
           python -m compileall -q qualification/stem-cell-v1/p2_train_sparse_equal_compute.py \
             qualification/stem-cell-v1/p2_train_sparse_equal_compute_review.py \
             qualification/stem-cell-v1/test_p2_train_sparse_equal_compute.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_backward_cost_profiler.py -v 2>&1 | tee "$RUNNER_TEMP/p2/backward-operator-source-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_backward_cost_profiler.py -v 2>&1 | tee "$RUNNER_TEMP/p2/backward-operator-optimized-tests.log"
+          python -m compileall -q qualification/stem-cell-v1/p2_backward_cost_profiler.py \
+            qualification/stem-cell-v1/p2_backward_cost_profile_review.py \
+            qualification/stem-cell-v1/test_p2_backward_cost_profiler.py
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
             qualification/stem-cell-v1/test_p2_real_cell_split.py
@@ -117,6 +129,33 @@ jobs:
               observed=subprocess.check_output(['git','hash-object',str(root/name)],text=True).strip()
               if observed!=expected:raise ValueError('original local experiment source bytes drifted '+name)
           print('Three synthetic seed reports are byte-bound and deny model selection; not hosted pretrained efficacy')
+          PYCODE
+      - name: Bind the three synthetic CPU operator observations to the exact tested source (not model efficacy)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          root=Path('qualification/stem-cell-v1')
+          report=json.loads((root/'P2_LOCAL_BACKWARD_OPERATOR_3SEED_20261015.json').read_text())
+          compact=lambda x:json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+          if (report.get('schema')!='hepta.p2.cpu-backward-cost-three-seed-mechanism-receipt.v1'
+              or report.get('seed_census')!=[41,47,53]
+              or report.get('public_pretrained_weight_executed') is not False
+              or report.get('partial_flops_not_complete_backward_or_total_cost') is not True
+              or report.get('production_promotion_permitted') is not False
+              or report.get('authority')!='DENY_ALL'
+              or hashlib.sha256(compact({k:v for k,v in report.items() if k!='receipt_sha256'})).hexdigest()!=report.get('receipt_sha256')):
+              raise ValueError('historical synthetic operator results changed or overclaim real efficacy')
+          expected={'p2_backward_cost_profiler.py','p2_backward_cost_profile_review.py',
+                    'test_p2_backward_cost_profiler.py','P2_BACKWARD_OPERATOR_COST_PROVENANCE_20261015.md'}
+          if set(report.get('source_git_blob_sha1',{})) != expected:
+              raise ValueError('unregistered benchmark source/hash inventory')
+          for name,prior in report['source_git_blob_sha1'].items():
+              observed=subprocess.check_output(['git','hash-object',str(root/name)],text=True).strip()
+              if observed!=prior:raise ValueError('original 3-seed profiler code changed '+name)
+          print('historical synthetic-only operator work retains exact source SHA; not real model qualification')
           PYCODE
       - uses: actions/upload-artifact@v4
         if: always()
@@ -267,6 +306,21 @@ jobs:
             --original-p2-report "$ROOT/predictions-unscored.json" \
             --output "$ROOT/trained-top1-unscored.json" \
             2>&1 | tee "$ROOT/trained-top1-physical.log"
+      - name: Re-encode pinned pretrained Granite97 and PHYSICALLY re-profile original 40-step backward operators before label access
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_backward_cost_profiler.py \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --compact-source pinned-compact \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --output "$ROOT/backward-operator-profile-unscored.json" \
+            2>&1 | tee "$ROOT/backward-operator-physical.log"
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -308,6 +362,21 @@ jobs:
             --original-p2-report "$ROOT/predictions-unscored.json" \
             --trained-top1-report "$ROOT/trained-top1-unscored.json" \
             --output "$ROOT/trained-top1-independent-review.json"
+      - name: Independently reopen genuine original human labels and audit ALL CPU backpropagation operator-cost conditions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_backward_cost_profile_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --cost-report "$ROOT/backward-operator-profile-unscored.json" \
+            --output "$ROOT/backward-operator-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -326,3 +395,7 @@ jobs:
             ${{ runner.temp }}/p2/trained-top1-optimized-tests.log
             ${{ runner.temp }}/p2/trained-top1-physical.log
             ${{ runner.temp }}/p2/trained-top1-independent-review.json
+            ${{ runner.temp }}/p2/backward-operator-source-tests.log
+            ${{ runner.temp }}/p2/backward-operator-optimized-tests.log
+            ${{ runner.temp }}/p2/backward-operator-physical.log
+            ${{ runner.temp }}/p2/backward-operator-independent-review.json
