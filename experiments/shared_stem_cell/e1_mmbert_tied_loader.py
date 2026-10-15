@@ -23,9 +23,10 @@ def verify_tied_pretrained_table(torch, mlm, safetensors_path):
     decoder = getattr(mlm, "decoder", None)
     if body is None or embeddings is None or decoder is None:
         raise Invalid("checkpoint was not loaded as ModernBertForMaskedLM")
+    from multimodal_exact_tied_alias_v11 import same_physical_view
     word = embeddings.weight
     decoded = decoder.weight
-    if (word.data_ptr() != decoded.data_ptr() or word.shape != decoded.shape or
+    if (not same_physical_view(word, decoded) or word.shape != decoded.shape or
             word.ndim != 2 or word.shape[1] != 384 or word.shape[0] < 8):
         raise Invalid("token embedding and pretrained MLM decoder are not tied at 384D")
     path = Path(safetensors_path)
