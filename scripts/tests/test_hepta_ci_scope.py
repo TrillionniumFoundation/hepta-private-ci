@@ -151,6 +151,43 @@ class ScopeTests(unittest.TestCase):
             "the compiled product-feature library must be checked before external denial",
         )
 
+    def test_original_control_abrupt_process_exit_recovery_native_gate(self):
+        # Genuine Control B and an external test marker must survive process
+        # exit without being promoted by a cold-start counterfeit Control C.
+        source = (
+            Path(__file__).resolve().parents[2]
+            / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn abrupt_process_exit_after_control_begin_fences_recovery()",
+            source,
+        )
+        path = "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        self.assertTrue(select([path])["native"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        start = "      - name: Same-owner CNS and signed Neuron checkpoint linearization\n"
+        end = "      - name: CellSplit native CNS route shared-Control admission regression\n"
+        self.assertEqual(workflow.count(start), 1)
+        self.assertEqual(workflow.count(end), 1)
+        gate = workflow.split(start, 1)[1].split(end, 1)[0]
+        self.assertIn(
+            "control-ndu-process-exit-between-b-c.json", gate
+        )
+        self.assertIn(
+            "--lib abrupt_process_exit_after_control_begin_fences_recovery",
+            gate,
+        )
+        self.assertIn("--minimum-tests 1", gate)
+        self.assertIn("--test-threads=1", gate)
+        self.assertLess(
+            gate.index("control-ndu-atomic-owner.json"),
+            gate.index("control-ndu-process-exit-between-b-c.json"),
+        )
+
     def test_neuron_original_effect_non_test_denial_gate(self):
         # A public callback cannot be an independent Control/Evidence owner.
         # Scope must run an external test linked against the normal library.
