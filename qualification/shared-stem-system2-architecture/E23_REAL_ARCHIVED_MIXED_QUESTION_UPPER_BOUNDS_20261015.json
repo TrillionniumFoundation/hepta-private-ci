@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.e23.real-original-archived-conditional-bounds-observation.v1",
+  "authority_posture": "DENY_ALL",
+  "original_pretrained_source_sha256": "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17",
+  "original_human_validation_sha256": "5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada",
+  "e14_original_human_zip_sha256": "efd3525b6c412b1681333b1f1185a6879973ae93340b12f786139eb45a3ff0f4",
+  "e15_source_human_zip_sha256": "f332ab92181a0e088d941dbf4c77165ab2e4c40e48e9bbda4915e8d1543aceb8",
+  "e15_merge_human_zip_sha256": "63da90cb7da7f2f6ef478e44731e548a62a4b3c1a071593864f23b5896290acc",
+  "original_model_prediction_cases": 33,
+  "original_questions": 8,
+  "original_passages": 4,
+  "original_human_score_receipts_all_questions_mixed": true,
+  "locally_executed_full_diagnostic_sha256": "5df63a38378848e0dc9829b0346de23f09c462ff36657fc9c8d3b5133c192c6a",
+  "unchanged_policy_upper_bounds": {
+    "conditioned": {
+      "constant_hard": 8,
+      "exact_constant_score": 4,
+      "max_complete_questions": 0,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 16
+    },
+    "mean_pool_query_fused": {
+      "constant_hard": 8,
+      "exact_constant_score": 0,
+      "max_complete_questions": 0,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 17
+    },
+    "no_evidence": {
+      "constant_hard": 7,
+      "exact_constant_score": 0,
+      "max_complete_questions": 1,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 16
+    },
+    "no_query": {
+      "constant_hard": 8,
+      "exact_constant_score": 8,
+      "max_complete_questions": 0,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 19
+    },
+    "learned_linear_5": {
+      "constant_hard": 8,
+      "exact_constant_score": 0,
+      "max_complete_questions": 0,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 17
+    },
+    "learned_gated_3": {
+      "constant_hard": 8,
+      "exact_constant_score": 0,
+      "max_complete_questions": 0,
+      "max_complete_passages": 0,
+      "historical_candidate_correct": 16
+    }
+  },
+  "conditional_on_historical_original_human_mixed_label_reports": true,
+  "new_model_forward_or_training": false,
+  "raw_human_label_parquet_reopened": false,
+  "independent_new_human_ground_truth_score": false,
+  "independent_external_host_signature_verified": false,
+  "future_task_generalization_proven": false,
+  "fully_uninformative_floating_representation_proven": false,
+  "reader_sufficiency_certified": false,
+  "ndu_full_system2_admitted": false,
+  "production_accepted": false
+}
