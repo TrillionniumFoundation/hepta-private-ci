@@ -97,8 +97,15 @@ class SeparateScoreTests(unittest.TestCase):
         module = types.ModuleType('binding_protocol')
         module.build_binding_protocol = lambda seed: {role: mock_cases(role) for role in ROLES}
         module.score_binding_probabilities = independent_training_score
-        with patch.dict(sys.modules, {'binding_protocol': module}):
-            self.assertEqual(score_sealed(self.root), 12)
+        verified = dict(receipt_consistency_passed=True,
+            all_training_gates_passed=True, matched_training_budget_observed=True,
+            separate_scoring_completed=False,
+            fresh_scoring_permitted_under_existing_rule=True,
+            production_authorized=False)
+        with patch('cross_fact_granite_review.review', return_value=verified) as auditor:
+            with patch.dict(sys.modules, {'binding_protocol': module}):
+                self.assertEqual(score_sealed(self.root), 12)
+            auditor.assert_called_once_with(self.root)
         manifest = read(self.root/'scoring-completion.json')
         self.assertEqual(manifest['scored_count'],12)
         self.assertEqual(len(manifest['score_files']),12)
@@ -116,6 +123,31 @@ class SeparateScoreTests(unittest.TestCase):
         with patch.dict(sys.modules, {'binding_protocol': None}):
             with self.assertRaisesRegex(ValueError, 'prelabel|source roster|roster'):
                 score_sealed(self.root)
+        self.assertFalse(list(self.root.glob('score-*.json')))
+
+    def test_forged_summary_flags_cannot_substitute_independent_model_audit(self):
+        # The forged fixture contains no six physical model weights or TRAIN
+        # receipts. It must no longer pass on summary flags alone, and no
+        # fresh role should be scored while the independent audit rejects.
+        with patch.dict(sys.modules, {'binding_protocol': None}):
+            with patch('cross_fact_granite_review.review', side_effect=ValueError(
+                    'missing original model weights')) as auditor:
+                with self.assertRaisesRegex(ValueError, 'missing original model weights'):
+                    score_sealed(self.root)
+                auditor.assert_called_once_with(self.root)
+        self.assertFalse(list(self.root.glob('score-*.json')))
+
+    def test_auditor_cannot_authorize_with_incomplete_gate_claims(self):
+        claims = dict(receipt_consistency_passed=True,
+            all_training_gates_passed=False,
+            matched_training_budget_observed=True,
+            separate_scoring_completed=False,
+            fresh_scoring_permitted_under_existing_rule=True,
+            production_authorized=False)
+        with patch.dict(sys.modules, {'binding_protocol': None}):
+            with patch('cross_fact_granite_review.review', return_value=claims):
+                with self.assertRaisesRegex(ValueError, 'independent original training'):
+                    score_sealed(self.root)
         self.assertFalse(list(self.root.glob('score-*.json')))
 
     def test_no_fresh_labels_import_before_training_gate(self):
