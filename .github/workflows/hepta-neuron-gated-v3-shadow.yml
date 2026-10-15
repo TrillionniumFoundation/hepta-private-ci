@@ -144,6 +144,7 @@ jobs:
     timeout-minutes: 45
     env:
       PYTHONPATH: qualification/neuron-gated-sparse-v3
+      HEPTA_NEURON_PHYSICAL_TESTS: "1"
     steps:
       - name: Bind original host temp directory at step runtime
         shell: bash
