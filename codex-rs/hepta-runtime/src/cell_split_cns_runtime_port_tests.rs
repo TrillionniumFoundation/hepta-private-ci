@@ -7,7 +7,6 @@ use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
 use codex_hepta_paths::HeptaStateRoot;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
-use sha2::Digest as _;
 use sha2::Sha256;
 
 use crate::RuntimeStateAdapter;
