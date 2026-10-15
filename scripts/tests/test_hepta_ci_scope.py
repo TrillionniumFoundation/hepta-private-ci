@@ -67,6 +67,63 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
 
+    def test_signed_original_observer_native_gates_cover_effects_and_lifecycle(self):
+        # Supervisor/Control original-effect changes can intentionally have
+        # no learning scope. Both signed read-only native guards are required.
+        for path in [
+            "codex-rs/hepta-supervisor/src/writer_handoff.rs",
+            "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["effects"])
+                self.assertTrue(scope["lifecycle"])
+                self.assertTrue(scope["native"])
+                self.assertFalse(scope["learning"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        expected_if = (
+            "if: steps.execution.outputs.run_native == 'true' && "
+            "(steps.scope.outputs.effects == 'true' || "
+            "steps.scope.outputs.lifecycle == 'true' || "
+            "steps.scope.outputs.learning == 'true')"
+        )
+        checkpoints = (
+            (
+                "Early original Deep Observer canonical terminal "
+                "and signer regressions",
+                "Early original signed monotonic custody RPC and no-replay tests",
+                ("deep-observer-early-negative.json", "deep-observer-early-full.json"),
+                ("--minimum-tests 1", "--minimum-tests 2"),
+            ),
+            (
+                "Early original signed monotonic custody RPC and no-replay tests",
+                "Signed serving owners and durable metrics regression",
+                ("original-monotonic-custody-signed-rpc.json",),
+                ("--minimum-tests 19",),
+            ),
+        )
+        for title, following, records, minimums in checkpoints:
+            with self.subTest(gate=title):
+                begin = "      - name: " + title + "\n"
+                end = "      - name: " + following + "\n"
+                self.assertEqual(workflow.count(begin), 1)
+                self.assertEqual(workflow.count(end), 1)
+                gate = workflow.split(begin, 1)[1].split(end, 1)[0]
+                actual_if = next(
+                    line.strip()
+                    for line in gate.splitlines()
+                    if line.strip().startswith("if: ")
+                )
+                self.assertEqual(actual_if, expected_if)
+                for receipt in records:
+                    self.assertIn(receipt, gate)
+                for minimum in minimums:
+                    self.assertIn(minimum, gate)
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
             "codex-rs/hepta-types/src/lib.rs",
