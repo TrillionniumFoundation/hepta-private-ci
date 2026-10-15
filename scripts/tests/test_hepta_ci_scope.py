@@ -67,7 +67,7 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
 
-    def test_signed_deep_observer_native_preflight_covers_nonlearning_effect_owners(self):
+    def test_deep_observer_preflight_covers_nonlearning_effect_owners(self):
         # Original Supervisor/CNS handoffs are physical effects. Neither may
         # bypass canonical Supervisor terminal-journal tests simply because
         # a patch lacks a separate learning-module source change.
@@ -86,11 +86,17 @@ class ScopeTests(unittest.TestCase):
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
         gate = workflow.split(
-            "      - name: Early original Deep Observer canonical terminal and signer regressions\n",
+            "      - name: Early original Deep Observer canonical terminal "
+            "and signer regressions\n",
             1,
-        )[1].split("      - name: Signed serving owners and durable metrics regression\n", 1)[0]
+        )[1].split(
+            "      - name: Signed serving owners and durable metrics regression\n",
+            1,
+        )[0]
         actual_if = next(
-            line.strip() for line in gate.splitlines() if line.strip().startswith("if: ")
+            line.strip()
+            for line in gate.splitlines()
+            if line.strip().startswith("if: ")
         )
         expected_if = (
             "if: steps.execution.outputs.run_native == 'true' && "
