@@ -147,8 +147,8 @@ fn acknowledged_stop_releases_original_metrics_lock_before_reopen() {
 
         // The public writer Drop already received its Stop ACK. Reopen
         // immediately to prove ACK cannot race the original OS lock release.
-        let recovered = MetricsGroupCommitV1::open(&path)
-            .expect("Stop ACK must follow writer lock release");
+        let recovered =
+            MetricsGroupCommitV1::open(&path).expect("Stop ACK must follow writer lock release");
         assert_eq!(recovered.committed_rows(), round + 1);
         assert_eq!(recovered.committed_groups(), round + 1);
     }
