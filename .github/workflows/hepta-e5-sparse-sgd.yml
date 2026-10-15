@@ -47,6 +47,7 @@ jobs:
           python -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: 'psutil==7.2.2'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/e5-sparse-python-versions.txt"
       - name: Actual CPU numerical parity and adversarial review tests
