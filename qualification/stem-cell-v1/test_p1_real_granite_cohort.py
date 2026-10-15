@@ -97,6 +97,30 @@ class RealGraniteP1Contracts(unittest.TestCase):
         for name,p in stem.model.named_parameters():
             self.assertTrue(torch.equal(p,before[name]),name)
 
+    def test_zero_dim_bfloat16_and_float32_parameter_hashes_are_byte_exact(self):
+        class TinyStem:
+            pass
+        stem=TinyStem()
+        stem.model=torch.nn.Linear(16,4).to(dtype=torch.bfloat16).eval()
+        stem.model.register_parameter(
+            'scalar_bf16',torch.nn.Parameter(
+                torch.tensor(0.5,dtype=torch.bfloat16),requires_grad=False))
+        stem.model.register_parameter(
+            'scalar_f32',torch.nn.Parameter(
+                torch.tensor(0.5,dtype=torch.float32),requires_grad=False))
+        for parameter in stem.model.parameters():
+            parameter.requires_grad_(False)
+        got,count=p1.backend_digest(stem)
+        self.assertEqual(count,70)
+        independent=hashlib.sha256()
+        for name,p in sorted(stem.model.named_parameters()):
+            flat=p.detach().contiguous().reshape(-1)
+            data=flat.view(torch.uint8).numpy().tobytes()
+            self.assertEqual(len(data),p.numel()*p.element_size())
+            independent.update(name.encode()+b'\0')
+            independent.update(data)
+        self.assertEqual(got,independent.hexdigest())
+
     def test_native_float32_storage_hash_keeps_previous_bytes(self):
         class TinyStem:
             pass
