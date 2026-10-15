@@ -68,6 +68,9 @@ class Tests(unittest.TestCase):
     def test_11_original_saddle_unpinned_by_parameter_channel(self):
         self.assertAlmostEqual(full((0,0),ETA)[0],full((0,0),0)[0])
         self.assertGreater(full((0,0),ETA)[0],full((1.64,.423),ETA)[0])
+        np.testing.assert_array_equal(full((0,0),0)[1],np.zeros(2))
+        self.assertGreater(float(np.max(np.abs(full((0,0),ETA)[1]))),.06)
+        self.assertLess(np.linalg.eigvalsh(full((0,0),ETA)[2])[0],0)
     def test_12_parent_convexity_constant(self):
         s=setup();self.assertEqual(s['m'],F(81,50))
         self.assertLess(s['exact_candidate_absolute_upper'],F(9,4))
