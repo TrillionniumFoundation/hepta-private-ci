@@ -96,7 +96,7 @@ The delivery retains the eight raw rows, their input hashes and source texts,
 start/finish journal, public-input seal, model-material verification, canonical
 source reconciliation and completed local test logs. It excludes original model
 weights and the full benchmark. The independent duplicate runner is not in this
-patch. Raw answers and old results were not edited or regraded.
+patch. Raw answers and old results were not edited or re-scored.
 
 Formal reviews received:0. New pretrained optimizer steps:0.
 No Reader, SYSTEM2, NDU, multimodal/split or production admission is issued.

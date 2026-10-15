@@ -81,6 +81,31 @@ class RectanglePlanTests(unittest.TestCase):
         self.assertEqual(ab["evidence_key"], bb["evidence_key"])
         self.assertNotEqual(aa["evidence_key"], ab["evidence_key"])
 
+    def test_original_train_component_scope_matches_frozen_gate_keys(self):
+        train, select = plans()
+        public = gate.public_plan(train, select)
+        original = own_inputs()[0]["request"]
+        unit = train["units"][0]
+        own_question = r._train_component(
+            "question", unit["family"],
+            {"question": original["question"], "options": original["options"]})
+        donor_question = r._train_component(
+            "question", unit["donor_family"],
+            {"question": unit["matched_request"]["question"],
+             "options": unit["matched_request"]["options"]})
+        donor_evidence = r._train_component(
+            "evidence", unit["donor_family"],
+            {"evidence": unit["matched_request"]["evidence"]})
+        registered = {feature["key"]: feature for feature in public["features"]}
+        for item in (own_question, donor_question, donor_evidence):
+            self.assertEqual(registered[item["key"]], item)
+            self.assertEqual(item["scope"][0], "train")
+        self.assertNotEqual(
+            own_question["key"],
+            r.crossed.component(
+                "question", unit["family"],
+                {"question": original["question"], "options": original["options"]})["key"])
+
     def test_only_original_train_evidence_is_added(self):
         _, _, public, plan, _ = material()
         old = {x["key"] for x in public["features"]}

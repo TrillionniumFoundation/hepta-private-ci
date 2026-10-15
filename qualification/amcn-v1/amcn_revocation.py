@@ -18,7 +18,8 @@ MAX_SOURCE_WITNESSES = 512
 MAX_PARENTS = 32
 PROFILE = "hepta.amcn.source-parameter-revocation.v1"
 KINDS = frozenset({"semantic_head", "relation_router", "split_child",
-                   "consolidation_student", "multimodal_connector"})
+                   "consolidation_student", "multimodal_connector",
+                   "typed_memory_head"})
 
 
 @dataclass(frozen=True)

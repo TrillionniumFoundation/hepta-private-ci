@@ -1,0 +1,67 @@
+name: AMCN typed Cell matched-budget CPU research (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_*.py"
+      - "qualification/amcn-v1/test_amcn_typed_*.py"
+      - ".github/workflows/hepta-amcn-typed-budget.yml"
+  pull_request:
+    branches: ["research/amcn-five-stage-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_*.py"
+      - "qualification/amcn-v1/test_amcn_typed_*.py"
+      - ".github/workflows/hepta-amcn-typed-budget.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-typed-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typed-physical-shadow:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install isolated CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-amcn-typed
+          /tmp/hepta-amcn-typed/bin/pip install numpy==1.26.4
+          /tmp/hepta-amcn-typed/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-amcn-typed/bin/pip install ruff==0.15.8
+          /tmp/hepta-amcn-typed/bin/pip install safetensors==0.6.2
+          /tmp/hepta-amcn-typed/bin/pip install packaging==25.0
+      - name: Real CPU matched-Head training and negative tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-typed-evidence
+          /tmp/hepta-amcn-typed/bin/python -m compileall -q qualification/amcn-v1/amcn_typed_*.py qualification/amcn-v1/test_amcn_typed_*.py
+          /tmp/hepta-amcn-typed/bin/ruff check --select E9,F63,F7,F82 qualification/amcn-v1/amcn_typed_*.py qualification/amcn-v1/test_amcn_typed_*.py | tee /tmp/amcn-typed-evidence/lint.txt
+          PYTHONPATH=.:qualification/amcn-v1 /tmp/hepta-amcn-typed/bin/python -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_typed_*.py' -v 2>&1 | tee /tmp/amcn-typed-evidence/tests.txt
+          /tmp/hepta-amcn-typed/bin/pip check
+          /tmp/hepta-amcn-typed/bin/pip freeze > /tmp/amcn-typed-evidence/environment.txt
+      - name: Pin exact checkout and non-authorizing origin
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-typed-evidence/source
+          git rev-parse HEAD > /tmp/amcn-typed-evidence/source/executed-sha.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-typed-evidence/source/executed-tree.txt
+          printf '%s\n' 'production_accepted=false' 'human_reader_sufficiency=false' 'future_calendar_verified=false' 'no_pretrained_forward_performed=true' 'model_selection_authorized=false' 'source_ledger_mutated=false' 'no_e2e_compression_claim=true' > /tmp/amcn-typed-evidence/negative-authority.txt
+          cp qualification/amcn-v1/amcn_typed_*.py qualification/amcn-v1/test_amcn_typed_*.py /tmp/amcn-typed-evidence/source/
+          (cd /tmp/amcn-typed-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-typed-budget-physical-cpu-source
+          path: /tmp/amcn-typed-evidence
+          if-no-files-found: error
