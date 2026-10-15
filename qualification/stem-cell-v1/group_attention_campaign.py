@@ -12,6 +12,7 @@ import hashlib
 import json
 import platform
 from pathlib import Path
+from dataclasses import replace as dataclass_replace
 import time
 
 import torch
@@ -210,7 +211,11 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                         "direct_forward", depth, 0, None)
                     valid = True
                 else:
-                    result = execute_group(task, model, snapshot,
+                    # The live proposer/checker/controller receives only
+                    # public evidence; the original held-out target is retained
+                    # exclusively by the external scoring loop below.
+                    public_task = dataclass_replace(task, target=-1)
+                    result = execute_group(public_task, model, snapshot,
                                            critics[owner], mode=execution_mode,
                                            max_steps=4)
                     candidate = result["candidate"]
@@ -254,6 +259,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         final_loaded_tensor_verification=final_loaded_tensor_verification,
         teacher=teacher_receipt, summaries=summaries, critic_cost=critic_cost,
         real_system2_callbacks_executed=True,
+        heldout_target_stripped_before_system2_callbacks=True,
         same_model_critic_frozen_on_validation_only=True,
         actual_lifecycle_cpu_ns=time.process_time_ns() - start_cpu,
         actual_lifecycle_wall_ns=time.perf_counter_ns() - start_wall,
