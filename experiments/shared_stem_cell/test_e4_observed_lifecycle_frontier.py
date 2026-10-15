@@ -1,6 +1,7 @@
 """Read-only E4 cost/quality ancestry and completeness tests (synthetic receipts)."""
 import copy
 import unittest
+from pathlib import Path
 
 from e1_matched_gated_head import run_probe
 from e4_observed_lifecycle_frontier import (MODELS, observed_frontier, sha,
@@ -61,6 +62,19 @@ class ObservedLifecycleFrontierTests(unittest.TestCase):
           kwargs.get('e3',self.e3),kwargs.get('reviews',self.e3_reviews),
           kwargs.get('human',self.e3_human),candidate_sha=kwargs.get('head','1'*40),
           run_id=kwargs.get('run',77))
+
+    def test_source_ci_fetches_actual_ancestor_commit_before_verifying(self):
+        # Regression for real GitHub run 38743232013/source, which failed with
+        # "fatal: Not a valid commit name" on the default depth-1 checkout.
+        workflow=(Path(__file__).resolve().parents[2] / '.github' / 'workflows' /
+                  'hepta-e3-original-source-group.yml').read_text()
+        source=workflow.split('  original-feature-source-budget:',1)[0]
+        before, after=source.split('      - uses: actions/setup-python@v5',1)
+        self.assertIn('fetch-depth: 16',before)
+        self.assertIn('persist-credentials: false',before)
+        self.assertIn('ref: ${{ github.event.pull_request.head.sha || github.sha }}',before)
+        self.assertIn('git merge-base --is-ancestor '
+                      '72c2316348b7537921ab5e3ef478c46be27a895e HEAD',after)
 
     def test_all_three_model_work_censuses_and_4096_head_math(self):
         out=self.valid()

@@ -24,6 +24,11 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # A depth-1 checkout lacks the fixed E2 ancestor object and makes
+          # git merge-base fail with 128 even for a valid research descendant.
+          # This pinned study is fewer than 16 commits past E2; fetch history
+          # for ancestry verification, without altering the exact HEAD ref.
+          fetch-depth: 16
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
