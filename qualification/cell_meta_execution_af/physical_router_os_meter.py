@@ -297,6 +297,7 @@ def join_shards(bundle_dir: Path, receipts_dir: Path) -> dict[str, Any]:
     expected_cost=audit.digest(frontier)
     all_rows=[]
     runs={}
+    common_machine = None
     for seed in paired.SEEDS:
         item=audit.load(receipts_dir/f"{seed}-os-meter.json")
         require(type(item) is dict and set(item)=={
@@ -329,6 +330,14 @@ def join_shards(bundle_dir: Path, receipts_dir: Path) -> dict[str, Any]:
                 item["authority_posture"]=="DENY_ALL" and
                 item["production_admission"]=="BLOCKED",
                 "OS shard does not preserve exact source/non-authority")
+        # Keep a cross-architecture shard out of the same CPU/RSS panel.
+        # This is only an untrusted machine-class equality check, NOT host
+        # attestation or proof of one physical device across all three seeds.
+        if common_machine is None:
+            common_machine = item["host_machine"]
+        else:
+            require(item["host_machine"] == common_machine,
+                    "mixed host architectures cannot form one CPU/RSS panel")
         rows=item["measurements"]
         require(type(rows) is list and len(rows)==len(NAMED) and
                 [r.get("arm") for r in rows]==list(NAMED),
