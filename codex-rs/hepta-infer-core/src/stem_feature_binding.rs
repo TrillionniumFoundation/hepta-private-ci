@@ -1056,6 +1056,14 @@ mod tests {
         assert_eq!(view.feature_vector_q24(), features.as_slice());
         assert!(!view.authority().grants_any());
 
+        // Dropping the original buffer does not invalidate a correctly owned
+        // Arc snapshot or allocate another Q24 matrix for a later Cell.
+        drop(original);
+        let after_original_drop = new_stem
+            .borrow_for_head(&access, &head)
+            .expect("Stem retains actual shared Q24 allocation");
+        assert_eq!(after_original_drop.feature_vector_q24().as_ptr(), retained_ptr);
+
         // Physical pointer reuse is never a principal, epoch, or revocation
         // grant; changing live access still fails before returning any Head
         // decision input.
