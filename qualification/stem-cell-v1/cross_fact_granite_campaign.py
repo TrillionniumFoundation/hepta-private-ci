@@ -71,7 +71,7 @@ def matching_training_budgets(rows):
 
 def campaign(args):
     import torch
-    from binding_campaign_utils import checked_design, load_bank, save_model, source_inventory
+    from binding_campaign_utils import checked_design, load_bank, natural_panel, save_model, source_inventory
     from binding_protocol import score_binding_probabilities
     from binding_training import fit_binding_reader
     from cross_fact_bridge import matched_reader_pair
@@ -96,7 +96,7 @@ def campaign(args):
         # The original complete input checks freeze earlier V4 and V5 decisions.
         original_args = argparse.Namespace(**vars(args))
         original_args.output = args.output_v5
-        _original_design, parts, _natural = checked_design(original_args)
+        _original_design, parts, natural = checked_design(original_args)
         source_inventory_bytes = source_inventory()
         bank = load_bank(original_args)
         cases = tuple(parts["reader_train"])
@@ -150,6 +150,11 @@ def campaign(args):
                 if receipt["initial_model_sha256"] != baseline:
                     raise RuntimeError("original initialization drift")
                 record = save_model(folder, arm, trained, receipt)
+                # Same previously exposed TRAIN-source internal-tune questions,
+                # never a fresh holdout or selection signal. Meter it anyway.
+                natural_metrics = natural_panel(folder, f"{arm}-natural-internal",
+                                                trained, natural["tune"], bank)
+                natural_file = folder / f"{arm}-natural-internal.json"
                 summary = {"status": receipt["status"], "train_gate_passed": receipt["train_gate_passed"],
                            "completed_steps": receipt["completed_steps"],
                            "actual_training_exposures": receipt["actual_training_exposures"],
@@ -162,6 +167,9 @@ def campaign(args):
                            "training_cpu_ns": receipt["cpu_ns"], "training_wall_ns": receipt["wall_ns"],
                            "training_receipt_file": f"{arm}-training.json",
                            "loss_last": receipt["diagnostics"][-1]["binding"],
+                           "natural_internal_tune": natural_metrics,
+                           "natural_internal_file_sha256": file_digest(natural_file),
+                           "old_task_internal_not_selection": True,
                            "fresh_evaluation_executed": False}
                 summaries.setdefault(str(seed), {})[arm] = summary
                 model_map[(seed, arm)] = trained
