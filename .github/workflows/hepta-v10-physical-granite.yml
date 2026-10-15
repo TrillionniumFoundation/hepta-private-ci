@@ -40,9 +40,9 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/head.txt"
-          python -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract \
+          python -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
             2>&1 | tee "$RUNNER_TEMP/normal.log"
-          python -O -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract \
+          python -O -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
             2>&1 | tee "$RUNNER_TEMP/optimized.log"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -294,6 +294,8 @@ jobs:
           r=json.load(open(sys.argv[1]))
           assert r['held_independent_groups']==240 and r['held_distinct_candidates']==960
           assert len(r['neural_observations'])==90
+          assert len(r['independent_training_trace_audits'])==9
+          assert all(x['real_recorded_optimizer_exposures']==4096 for x in r['independent_training_trace_audits'].values())
           assert r['V7_joint_admission_passed'] is False
           assert r['model_selected'] is False and r['production_accepted'] is False
           assert r['authority']=='DENY_ALL'
