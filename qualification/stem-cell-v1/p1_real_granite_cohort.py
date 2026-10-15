@@ -153,7 +153,9 @@ def backend_digest(backend):
         # BF16 has no NumPy scalar conversion. Reinterpret the original
         # contiguous CPU tensor as uint8: preserve every stored bit rather
         # than rounding/casting a pretrained checkpoint to FP32 for hashing.
-        raw=param.detach().contiguous()
+        # A zero-dimensional BF16 scalar must be flattened before the
+        # byte reinterpretation; flattening preserves the exact native bits.
+        raw=param.detach().contiguous().reshape(-1)
         payload=raw.view(torch.uint8).numpy().tobytes()
         check(len(payload)==raw.numel()*raw.element_size(),
               'physical Stem parameter byte length drift')
