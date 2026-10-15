@@ -240,8 +240,8 @@ fn external_non_test_agentd_neuron_denies_before_journal_or_model_effect() {
         records: Arc::clone(&records),
         flushes: Arc::clone(&flushes),
     });
-    let mut owner = AgentdNeuronOwner::new(runtime, CountingPort(Arc::clone(&calls)))
-        .with_metric_sink(sink);
+    let mut owner =
+        AgentdNeuronOwner::new(runtime, CountingPort(Arc::clone(&calls))).with_metric_sink(sink);
     let features = vec![Q24 / 4, Q24 / 8, -Q24 / 8];
     let ndu_digest = Digest32::of_bytes(b"ndu");
     let input = NeuronTickInputV1 {

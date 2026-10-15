@@ -377,12 +377,16 @@ fn agentd_effect_intent_state_is_required_before_metrics_can_be_ready() {
     };
     assert!(!super::effect_intent_ready_v1(None));
     assert!(super::effect_intent_ready_v1(Some(clean)));
-    assert!(!super::effect_intent_ready_v1(Some(NeuronEffectIntentStatusV1 {
-        unresolved_tick: Some(Digest32::of_bytes(b"unresolved-effect")),
-        ..clean
-    })));
-    assert!(!super::effect_intent_ready_v1(Some(NeuronEffectIntentStatusV1 {
-        poisoned: true,
-        ..clean
-    })));
+    assert!(!super::effect_intent_ready_v1(Some(
+        NeuronEffectIntentStatusV1 {
+            unresolved_tick: Some(Digest32::of_bytes(b"unresolved-effect")),
+            ..clean
+        }
+    )));
+    assert!(!super::effect_intent_ready_v1(Some(
+        NeuronEffectIntentStatusV1 {
+            poisoned: true,
+            ..clean
+        }
+    )));
 }
