@@ -1292,6 +1292,101 @@ fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory() {
     ));
 }
 
+#[cfg(unix)]
+#[test]
+fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontier() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = private_control_dir();
+    let parent = dir.path().join("serving-control");
+    let detached = dir.path().join("detached-control");
+    std::fs::create_dir(&parent).expect("canonical private parent");
+    std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700))
+        .expect("private original Control");
+    let journal = parent.join("control.wal");
+    let marker = parent.join("control.wal.owner-lock");
+    let original = snapshot(3);
+    let checkpoint = Digest32::of_bytes(b"durable-checkpoint-before-rebind");
+
+    // Commit a real G + P original WAL history, not a digest-only fixture.
+    let (original_frontier, journal_bytes, marker_bytes) = {
+        let owner =
+            NduPublicationOwnerV1::open_production(&journal, original.clone(), Digest32::ZERO)
+                .expect("first original Control writer");
+        owner
+            .compare_and_publish_checkpoint(
+                &original,
+                Digest32::of_bytes(b"authenticated-read"),
+                Digest32::of_bytes(b"authorized-model-tick"),
+                Digest32::ZERO,
+                checkpoint,
+            )
+            .expect("fsynced original checkpoint");
+        let frontier = owner
+            .read_original_local_frontier_v1()
+            .expect("original full-history frontier");
+        assert_eq!(frontier.sequence, 2, "actual genesis and checkpoint");
+        assert_eq!(frontier.checkpoint, checkpoint);
+        (
+            frontier,
+            std::fs::read(&journal).expect("original durable WAL"),
+            std::fs::read(&marker).expect("original durable writer marker"),
+        )
+    };
+
+    // Simulate a privileged namespace rebind AFTER the original directory
+    // FD was pinned, but BEFORE the stored journal/lock are reopened.
+    // A path-based reopen can accidentally adopt a different Control owner.
+    let attempted = NduPublicationOwnerV1::open_production_with_directory_hook(
+        &journal,
+        original.clone(),
+        checkpoint,
+        || {
+            std::fs::rename(&parent, &detached).expect("detach original Control");
+            std::fs::create_dir(&parent).expect("install substitute parent");
+            std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700))
+                .expect("private substitute");
+        },
+    );
+    assert!(
+        matches!(
+            attempted,
+            Err(NduPublicationErrorV1::Indeterminate) | Err(NduPublicationErrorV1::UnsafePath)
+        ),
+        "renaming the path must not adopt or reset the existing original WAL"
+    );
+    assert!(!journal.exists(), "substitute must not receive a new WAL");
+    assert!(
+        !marker.exists(),
+        "substitute must not receive a new owner marker"
+    );
+    assert_eq!(
+        std::fs::read(detached.join("control.wal")).unwrap(),
+        journal_bytes,
+        "denied rebind cannot rewrite original history"
+    );
+    assert_eq!(
+        std::fs::read(detached.join("control.wal.owner-lock")).unwrap(),
+        marker_bytes,
+        "denied rebind cannot rewrite the owner marker"
+    );
+
+    // The same original bytes, inodes and checkpoint must still be readable
+    // after restoring the *existing* owner path. Do not mint a new genesis.
+    std::fs::remove_dir(&parent).expect("empty substitute directory");
+    std::fs::rename(&detached, &parent).expect("restore original name");
+    let reopened = NduPublicationOwnerV1::open_production(&journal, original.clone(), checkpoint)
+        .expect("unchanged original Control must recover");
+    assert_eq!(
+        reopened.read_original_local_frontier_v1().unwrap(),
+        original_frontier,
+        "full original Control frontier must survive the failed reopen"
+    );
+    assert_eq!(reopened.current().unwrap(), (original, checkpoint));
+    assert_eq!(std::fs::read(&journal).unwrap(), journal_bytes);
+    assert_eq!(std::fs::read(&marker).unwrap(), marker_bytes);
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
