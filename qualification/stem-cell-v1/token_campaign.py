@@ -55,8 +55,8 @@ def train(args):
     design = dict(**membership, source_sha256=inventory(), seeds=list(SEEDS),
         expected_arms=list(ARMS), expected_cohorts=list(COHORTS), arm_depths=ARM_DEPTHS,
         arm_input_transforms={arm: "delete_evidence" if arm == "query_only" else "identity" for arm in ARMS},
-        selected_hyperparameters=dict(hidden_dim=32, steps=args.steps, batch_size=16, learning_rate=.003,
-            evidence_weight=.2, intervention_probability=.25, optimizer="Adam_foreach_false"),
+        selected_hyperparameters=dict(hidden_dim=32, steps=args.steps, batch_size=16, learning_rate=.001,
+            evidence_weight=.2, intervention_probability=.5, optimizer="Adam_foreach_false"),
         threshold_grid=[i / 20 for i in range(1, 20)],
         threshold_selection="internal_tune_F1a_then_EM_then_nearest_0.5_then_lower",
         synthetic_groups=dict(train=32, tune=16, final=32), synthetic_seed=41,
@@ -82,8 +82,9 @@ def train(args):
             auxiliary = arm in ("intervention", "recurrent")
             model, receipt = fit_token_reader(TokenReader(384, 32, interaction="pooled" if arm == "pooled" else "token"),
                 train_data, tune_data, steps=args.steps, seed=seed, batch_size=16,
-                max_depth=ARM_DEPTHS[arm], learning_rate=.003,
+                max_depth=ARM_DEPTHS[arm], learning_rate=.001,
                 counterfactual_train=bank.dataset(synthetic) if auxiliary else None,
+                counterfactual_fraction=.5,
                 evidence_weight=.2 if auxiliary else 0, diagnostic_interval=args.steps,
                 wall_time_ns=1_800_000_000_000,
                 failure_receipt_fn=lambda receipt: write_json(folder, f"{arm}-failed-training.json", receipt))
@@ -219,7 +220,7 @@ def main():
     parser.add_argument("phase", choices=("train", "evaluate"))
     for name in ("source", "snapshot", "previous-design", "prepared", "gate", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--steps", type=int, default=512)
+    parser.add_argument("--steps", type=int, default=1000)
     args = parser.parse_args()
     torch.set_num_threads(1)
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()

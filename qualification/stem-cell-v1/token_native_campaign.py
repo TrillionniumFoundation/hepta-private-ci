@@ -85,7 +85,7 @@ def train(args):
         expected_arms=list(ARMS), expected_cohorts=list(COHORTS), seeds=list(SEEDS),
         main_freeze_sha256=file_digest(args.campaign / "all-models-frozen.json"),
         main_model_manifests_sha256=main_frozen["model_manifests_sha256"],
-        verifier=dict(hidden_dim=32, steps=args.steps, depth=1, learning_rate=.003,
+        verifier=dict(hidden_dim=32, steps=args.steps, depth=1, learning_rate=.001,
                       batch_size=16, evidence_weight=0., counterfactual_train=False),
         critic=dict(steps=80, target="empirical_next_argmax_correctness", threshold_selection=False),
         prediction_rule="argmax_ties_negative_for_all_arms", reader_training_feedback=False,
@@ -102,7 +102,7 @@ def train(args):
         model = load_models(args.campaign / f"seed-{seed}", manifests[seed])["recurrent"]
         torch.manual_seed(seed)
         verifier, receipt = fit_token_reader(TokenReader(384, 32), bank.dataset(parts["verifier_fit"]),
-            steps=args.steps, seed=seed, batch_size=16, max_depth=1, learning_rate=.003,
+            steps=args.steps, seed=seed, batch_size=16, max_depth=1, learning_rate=.001,
             counterfactual_fraction=0., evidence_weight=0., diagnostic_interval=args.steps,
             wall_time_ns=1_800_000_000_000,
             failure_receipt_fn=lambda receipt: write_json(folder, "verifier-failed-training.json", receipt))
@@ -256,7 +256,7 @@ def main():
     parser.add_argument("phase", choices=("train", "evaluate"))
     for name in ("campaign", "prepared", "source", "snapshot", "previous-design", "native-binary", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--steps", type=int, default=512)
+    parser.add_argument("--steps", type=int, default=1000)
     args = parser.parse_args()
     torch.set_num_threads(1)
     (train if args.phase == "train" else evaluate)(args)
