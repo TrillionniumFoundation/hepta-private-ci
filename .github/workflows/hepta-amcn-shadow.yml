@@ -1,0 +1,87 @@
+name: Hepta AMCN five-stage research (non-authorizing)
+
+on:
+  pull_request:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "qualification/amcn-v1/**"
+      - ".github/workflows/hepta-amcn-shadow.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-shadow-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  actual-cpu-mechanisms:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install exact isolated CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-amcn-python
+          /tmp/hepta-amcn-python/bin/pip install numpy==1.26.4
+          /tmp/hepta-amcn-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-amcn-python/bin/pip install safetensors==0.6.2
+          /tmp/hepta-amcn-python/bin/pip install packaging==25.0
+          /tmp/hepta-amcn-python/bin/pip install cryptography==46.0.4
+          /tmp/hepta-amcn-python/bin/pip install ruff==0.15.8
+      - name: Check source and execute actual trainable Head tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-evidence
+          /tmp/hepta-amcn-python/bin/python -m compileall -q qualification/amcn-v1 experiments/shared_stem_cell/execution.py
+          /tmp/hepta-amcn-python/bin/ruff check --select E9,F63,F7,F82 qualification/amcn-v1/ | tee /tmp/hepta-amcn-evidence/lint.log
+          /tmp/hepta-amcn-python/bin/python -m unittest discover -s qualification/amcn-v1 -p 'test_*.py' -v 2>&1 | tee /tmp/hepta-amcn-evidence/tests.log
+          PYTHONPATH=.:qualification/amcn-v1 /tmp/hepta-amcn-python/bin/python qualification/amcn-v1/amcn_reader_prerequisite_cli.py /tmp/hepta-amcn-evidence/reader-prerequisite.json | tee /tmp/hepta-amcn-evidence/reader-prerequisite-status.txt
+          /tmp/hepta-amcn-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('/tmp/hepta-amcn-evidence/reader-prerequisite.json').read_text())
+          assert receipt['production_accepted'] is False
+          assert receipt['metrics']['disposition']=='blocked_reader_adequacy'
+          assert receipt['metrics']['physical_reader_generations_executed']==0
+          assert receipt['metrics']['may_scale_cell_population'] is False
+          assert receipt['metrics']['may_train_new_semantic_head_for_product'] is False
+          PY
+          /tmp/hepta-amcn-python/bin/pip check
+          /tmp/hepta-amcn-python/bin/pip freeze > /tmp/hepta-amcn-evidence/environment.txt
+      - name: Preserve immutable execution identity and negative capability
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-evidence/source
+          git rev-parse HEAD > /tmp/hepta-amcn-evidence/source/tested-head.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-amcn-evidence/source/tested-tree.txt
+          printf '%s\n' "${{ github.event.pull_request.head.sha }}" > /tmp/hepta-amcn-evidence/source/source-head.txt
+          printf '%s\n' "${{ github.event.pull_request.base.sha }}" > /tmp/hepta-amcn-evidence/source/base-head.txt
+          cp qualification/amcn-v1/*.py qualification/amcn-v1/README.md /tmp/hepta-amcn-evidence/source/
+          mkdir -p /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell
+          mkdir -p /tmp/hepta-amcn-evidence/source/scripts/memory_cell
+          cp experiments/shared_stem_cell/execution.py /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell/
+          cp scripts/memory_cell/native.py scripts/memory_cell/sessions.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/system2_reader_controls.py /tmp/hepta-amcn-evidence/source/scripts/memory_cell/
+          mkdir -p /tmp/hepta-amcn-evidence/formatted-research-candidate
+          cp qualification/amcn-v1/*.py /tmp/hepta-amcn-evidence/formatted-research-candidate/
+          /tmp/hepta-amcn-python/bin/ruff format /tmp/hepta-amcn-evidence/formatted-research-candidate/             > /tmp/hepta-amcn-evidence/formatter-report.txt 2>&1
+          /tmp/hepta-amcn-python/bin/ruff format --check qualification/amcn-v1/             > /tmp/hepta-amcn-evidence/formatter-check-original.txt 2>&1 || true
+          printf '%s\n' 'production_accepted=false' 'reader_semantic_review=null' \
+             'future_window_evidence=false' 'full_longmemeval_v2=false' \
+             'independent_evaluator=false' 'pretrained_encoder_loaded=false' \
+             'production_source_owner_fenced=false' 'parameter_unlearning_performed=false' \
+             'production_runtime_fenced=false' 'single_host_shadow_only=true' \
+             'model_activation_allowed=false' 'zero_resurrection_proven=false' \
+             > /tmp/hepta-amcn-evidence/nonpromotion.txt
+          (cd /tmp/hepta-amcn-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-five-stage-shadow-source-and-tests
+          path: /tmp/hepta-amcn-evidence
+          if-no-files-found: error

@@ -3939,6 +3939,7 @@ dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-kg",
+ "codex-hepta-learning-artifacts",
  "codex-hepta-memory-federation",
  "codex-hepta-memory-retrieval",
  "codex-hepta-operations",
@@ -4026,6 +4027,7 @@ name = "codex-hepta-neuron"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-infer-core",
+ "codex-hepta-learning-artifacts",
  "codex-hepta-types",
  "pretty_assertions",
  "serde",

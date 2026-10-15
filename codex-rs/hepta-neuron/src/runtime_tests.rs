@@ -514,3 +514,395 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         predecessor.checkpoint_digest
     );
 }
+
+
+// This feature-only test uses the actual NeuronRuntime journal and independent
+// AnchorWitnessStore, not merely an inference.control receipt fixture.
+// A pending Journal commit may otherwise return its cached model output without
+// calling InferenceControlModelPort again, so the whole tick needs source fencing.
+#[cfg(feature = "amcn-shadow")]
+mod amcn_pending_runtime {
+    use super::*;
+
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::TryLockError;
+
+    use codex_hepta_infer_core::{
+        NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
+        NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1,
+        build_neuron_feature_receipt_v1,
+    };
+    use pretty_assertions::assert_eq;
+    use crate::{
+        AmcnFencedModelBindingV1, AmcnSourceArtifactFence, NeuronInferenceControlPort,
+        NeuronModelError,
+    };
+
+    struct LiveSourceGate {
+        source_lease: Arc<Mutex<bool>>,
+        checks: Arc<AtomicUsize>,
+    }
+
+    /// Independently witnessed Journal CAS must execute under the same lock.
+    #[derive(Clone)]
+    struct FencedWitness {
+        original: MemoryWitness,
+        source_lease: Arc<Mutex<bool>>,
+        cas_checks: Arc<AtomicUsize>,
+    }
+
+    impl AnchorWitnessStore for FencedWitness {
+        fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+            self.original.current()
+        }
+
+        fn compare_and_swap(
+            &mut self,
+            expected: Option<JournalAnchor>,
+            next: JournalAnchor,
+        ) -> Result<(), WitnessStoreError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease RELEASED before real Runtime Witness CAS"
+            );
+            self.cas_checks.fetch_add(1, Ordering::SeqCst);
+            self.original.compare_and_swap(expected, next)
+        }
+    }
+
+    impl AmcnSourceArtifactFence for LiveSourceGate {
+        fn with_fenced_candidate<T, E>(
+            &mut self,
+            _binding: &AmcnFencedModelBindingV1,
+            _request: &NeuronModelRequestV1,
+            action: impl FnOnce() -> Result<T, E>,
+        ) -> Result<T, E>
+        where
+            E: From<NeuronModelError>,
+        {
+            let owner_lock = self.source_lease.lock()
+                .map_err(|_| E::from(NeuronModelError::Indeterminate))?;
+            self.checks.fetch_add(1, Ordering::SeqCst);
+            if !*owner_lock {
+                return Err(E::from(NeuronModelError::Rejected));
+            }
+            // One local critical section covers actual InferenceControl,
+            // Journal commit AND independent runtime Witness CAS.
+            let outcome = action();
+            drop(owner_lock);
+            outcome
+        }
+    }
+
+    struct OwnerControl {
+        config: NeuronRuntimeConfigV1,
+        calls: Arc<AtomicUsize>,
+        source_lease: Arc<Mutex<bool>>,
+    }
+
+    impl NeuronInferenceControlPort for OwnerControl {
+        fn execute_feature(
+            &mut self,
+            request: &NeuronFeatureRequestV1,
+        ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease RELEASED before actual inference.control call"
+            );
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            let config = &self.config;
+            let runtime_tuple = NeuronModelRuntimeTupleV1 {
+                model_id: request.model_id.clone(),
+                model_manifest_digest: config.model_manifest_digest,
+                weights_digest: request.weights_digest,
+                tokenizer_digest: config.tokenizer_digest,
+                preprocessor_digest: config.preprocessor_digest,
+                quantization_digest: config.quantization_digest,
+                runtime_digest: config.runtime_digest,
+                device_digest: config.device_digest,
+            };
+            let observation = NeuronFeatureObservationV1 {
+                encoder_digest: request.encoder_digest,
+                head_digest: request.head_digest,
+                drive_q24: (0..request.expected_output_width)
+                    .map(|index| match index { 0 => Q, 1 => Q / 2, _ => 0 })
+                    .collect(),
+                prediction_q24: vec![0; request.expected_output_width],
+                observed_memory_bytes: 4096,
+                transient_allocation_bytes: 8192,
+                queue_age_micros: 7,
+                latency_micros: 50,
+                status: NeuronFeatureTerminalStatusV1::Succeeded,
+            };
+            build_neuron_feature_receipt_v1(request, runtime_tuple, observation)
+                .map_err(|_| NeuronModelError::Rejected)
+        }
+    }
+
+    fn bound(request: &NeuronModelRequestV1) -> AmcnFencedModelBindingV1 {
+        AmcnFencedModelBindingV1 {
+            scope: checked(StableId::new("amcn:test-owner-scope")),
+            request_id: request.request_id.clone(),
+            config_id: request.config_id.clone(),
+            generation: request.generation,
+            model_id: request.model_id.clone(),
+            encoder_digest: request.encoder_digest,
+            head_digest: request.head_digest,
+            weights_digest: request.weights_digest,
+            input_digest: request.input_digest,
+            expected_output_width: request.expected_output_width,
+            artifact_manifest_digest: Digest32::of_bytes(b"actual-param-lineage"),
+            source_frontier_digest: Digest32::of_bytes(b"authoritative-source-cut"),
+            withdrawal_registry_head_digest: Digest32::of_bytes(b"withdrawal-head"),
+            quarantine_journal_head_digest: Digest32::of_bytes(b"monotonic-quarantine-head"),
+            runtime_anchor_digest: Digest32::of_bytes(b"independent-runtime-anchor"),
+        }
+    }
+
+    #[test]
+    fn amcn_shadow_fence_runtime_pending_witness_reconciles_only_after_new_source_lease() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let witness = MemoryWitness::default();
+        let lease = Arc::new(Mutex::new(true));
+        let cas_checks = Arc::new(AtomicUsize::new(0));
+        let owned_witness = FencedWitness {
+            original: witness.clone(),
+            source_lease: Arc::clone(&lease),
+            cas_checks: Arc::clone(&cas_checks),
+        };
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(), native, scope(), 16, config.clone(), owned_witness,
+        ));
+        let request_input = input(1, Digest32::ZERO);
+        let original_request = checked(runtime.model_request(&request_input));
+        let binding = bound(&original_request);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let mut fence = LiveSourceGate {
+            source_lease: Arc::clone(&lease),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl {
+            config, calls: Arc::clone(&calls),
+            source_lease: Arc::clone(&lease),
+        };
+
+        // Model execution and journal commit really succeed; the separately
+        // held witness fails after commit and leaves a cached pending receipt.
+        witness.fail_next_compare_and_swap();
+        let first = runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input.clone(),
+        );
+        assert!(matches!(first, Err(NeuronRuntimeError::WitnessAfterCommit { .. })));
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(witness.current()), None);
+
+        // Revoke the original source between model execution and retry.
+        *checked(lease.lock()) = false;
+        let blocked = runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input.clone(),
+        );
+        assert_eq!(
+            blocked, Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(witness.current()), None);
+        assert_eq!(checks.load(Ordering::SeqCst), 2);
+
+        // Fixture-only restoration of its valid source lease lets the pending
+        // witness reconcile WITHOUT re-running the model or reusing an
+        // unchecked cached output. Real owner tombstones must remain monotonic.
+        *checked(lease.lock()) = true;
+        let reconciled = checked(runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input,
+        ));
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        let anchor = checked(witness.current()).expect("witness reconciled");
+        assert_eq!(anchor.checkpoint_digest, reconciled.tick.checkpoint_after);
+        assert_eq!(checks.load(Ordering::SeqCst), 3);
+        assert_eq!(cas_checks.load(Ordering::SeqCst), 2);
+        assert!(!reconciled.signal.authority.grants_any());
+    }
+
+    #[test]
+    fn amcn_shadow_fence_runtime_rejects_stale_binding_before_journal_or_model() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(), native, scope(), 16, config.clone(),
+            MemoryWitness::default(),
+        ));
+        let request_input = input(1, Digest32::ZERO);
+        let request = checked(runtime.model_request(&request_input));
+        let mut bad_binding = bound(&request);
+        bad_binding.head_digest = Digest32::of_bytes(b"replaced-head");
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let source_lease = Arc::new(Mutex::new(true));
+        let mut fence = LiveSourceGate {
+            source_lease: Arc::clone(&source_lease),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl {
+            config, calls: Arc::clone(&calls), source_lease,
+        };
+        assert_eq!(
+            runtime.tick_amcn_fenced(
+                &mut fence, &mut control, &bad_binding, request_input,
+            ),
+            Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
+        assert_eq!(checks.load(Ordering::SeqCst), 0);
+        assert_eq!(checked(runtime.current_anchor()), None);
+    }
+
+    // A genuinely disk-backed, independently locked Witness (not MemoryWitness)
+    // verifies the same source lease is still held during its durable CAS.
+    struct DiskFencedWitness {
+        witness: crate::FileAnchorWitnessStore,
+        source_lease: Arc<Mutex<bool>>,
+        cas_checks: Arc<AtomicUsize>,
+    }
+
+    impl AnchorWitnessStore for DiskFencedWitness {
+        fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+            self.witness.current()
+        }
+
+        fn compare_and_swap(
+            &mut self,
+            expected: Option<JournalAnchor>,
+            next: JournalAnchor,
+        ) -> Result<(), WitnessStoreError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease must remain held during the durable Witness CAS"
+            );
+            self.cas_checks.fetch_add(1, Ordering::SeqCst);
+            self.witness.compare_and_swap(expected, next)
+        }
+    }
+
+    #[test]
+    fn amcn_shadow_fence_disk_witness_restart_refuses_revoked_old_head() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let source_lease = Arc::new(Mutex::new(true));
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let cas_checks = Arc::new(AtomicUsize::new(0));
+        let scope_identity = scope();
+        let witnessed_generation = config.generation;
+
+        let committed_anchor = {
+            // Real append-only disk Witness and the real runtime Journal start
+            // at independent physical files. Both are fsynced by their owners.
+            let witness = checked(crate::FileAnchorWitnessStore::open(
+                fixture.named_file("amcn-durable-witness"),
+                scope_identity,
+                witnessed_generation,
+                16,
+            ));
+            let disk_witness = DiskFencedWitness {
+                witness,
+                source_lease: Arc::clone(&source_lease),
+                cas_checks: Arc::clone(&cas_checks),
+            };
+            let mut runtime = checked(NeuronRuntime::bootstrap(
+                fixture.file(),
+                native.clone(),
+                scope_identity,
+                16,
+                config.clone(),
+                disk_witness,
+            ));
+            let first_input = input(1, Digest32::ZERO);
+            let request = checked(runtime.model_request(&first_input));
+            let binding = bound(&request);
+            let mut gate = LiveSourceGate {
+                source_lease: Arc::clone(&source_lease),
+                checks: Arc::clone(&checks),
+            };
+            let mut control = OwnerControl {
+                config: config.clone(),
+                calls: Arc::clone(&calls),
+                source_lease: Arc::clone(&source_lease),
+            };
+            let committed = checked(runtime.tick_amcn_fenced(
+                &mut gate,
+                &mut control,
+                &binding,
+                first_input,
+            ));
+            assert_eq!(calls.load(Ordering::SeqCst), 1);
+            assert_eq!(cas_checks.load(Ordering::SeqCst), 1);
+            let anchor = checked(runtime.current_anchor())
+                .expect("disk Journal has a committed anchor");
+            assert_eq!(anchor.checkpoint_digest, committed.tick.checkpoint_after);
+            anchor
+        };
+        // The ephemeral runtime and disk Witness owners are now CLOSED.
+        // Reopening at a newer generation against old Witness bytes must not
+        // silently reinitialize an old acknowledged source/model history.
+        assert_eq!(
+            crate::FileAnchorWitnessStore::open(
+                fixture.named_file("amcn-durable-witness"),
+                scope_identity,
+                checked(Generation::new(2)),
+                16,
+            ).err(),
+            Some(WitnessStoreError::ContextMismatch)
+        );
+        let reopened = checked(crate::FileAnchorWitnessStore::open(
+            fixture.named_file("amcn-durable-witness"),
+            scope_identity,
+            witnessed_generation,
+            16,
+        ));
+        assert_eq!(checked(reopened.current()), Some(committed_anchor));
+        let disk_witness = DiskFencedWitness {
+            witness: reopened,
+            source_lease: Arc::clone(&source_lease),
+            cas_checks: Arc::clone(&cas_checks),
+        };
+        let mut runtime = checked(NeuronRuntime::recover(
+            fixture.file(),
+            native,
+            scope_identity,
+            16,
+            config.clone(),
+            committed_anchor,
+            disk_witness,
+        ));
+        let second_input = input(2, committed_anchor.checkpoint_digest);
+        let second_request = checked(runtime.model_request(&second_input));
+        let bound = bound(&second_request);
+        let mut gate = LiveSourceGate {
+            source_lease: Arc::clone(&source_lease),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl {
+            config,
+            calls: Arc::clone(&calls),
+            source_lease: Arc::clone(&source_lease),
+        };
+        // The source owner would have persisted a monotonic quarantine before
+        // allowing a readmission. This negative test never claims that a bool
+        // itself is a durable tombstone; it deliberately stays false.
+        *checked(source_lease.lock()) = false;
+        assert_eq!(
+            runtime.tick_amcn_fenced(&mut gate, &mut control, &bound, second_input),
+            Err(NeuronRuntimeError::Model(NeuronModelError::Rejected))
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(cas_checks.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(runtime.current_anchor()), Some(committed_anchor));
+        assert_eq!(checks.load(Ordering::SeqCst), 2);
+    }
+
+}

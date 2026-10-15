@@ -1,0 +1,107 @@
+name: Hepta AMCN SQLite source write fence (research only)
+
+on:
+  pull_request:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "codex-rs/hepta-memory/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+      - "codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_*.rs"
+      - ".github/workflows/hepta-amcn-sqlite-source-fence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-sqlite-fence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-source-store-fence:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind original source, toolchain, and feature-off identity
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-sqlite-owner/source
+          git rev-parse HEAD > /tmp/amcn-sqlite-owner/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-sqlite-owner/source/tree.txt
+          rustc -Vv > /tmp/amcn-sqlite-owner/rustc-version.txt
+          cargo -V > /tmp/amcn-sqlite-owner/cargo-version.txt
+          grep -Fq 'amcn-shadow = []' codex-rs/hepta-memory/Cargo.toml
+          grep -Fq 'AMCN_SHADOW_COGNITIVE_FENCE_PRODUCTION_ACCEPTED: bool = false' codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence.rs
+          git diff --quiet
+      - name: Real CognitiveStore transaction held during model-like research callback
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --features amcn-shadow \
+            amcn_shadow_sqlite_fence -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-sqlite-owner/sqlite-fence-tests.log
+          grep -Fq 'amcn_shadow_sqlite_fence_prevents_real_competing_source_writer_until_work_exits' \
+            /tmp/amcn-sqlite-owner/sqlite-fence-tests.log
+      - name: Real Learning Artifacts withdrawal and CognitiveStore write locks compose
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --features amcn-artifact-shadow \
+            amcn_shadow_two_owner -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
+          grep -Fq 'amcn_shadow_two_owner_withdrawal_denies_old_head_when_cognitive_cut_is_unchanged' \
+            /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
+          grep -Fq 'amcn_shadow_two_owner_holds_artifact_and_sqlite_locks_during_actual_callback' \
+            /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
+      - name: Default production Source Store fixture, no research feature
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --no-default-features \
+            stores_are_per_agent_append_only_and_scope_fail_closed \
+            -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-sqlite-owner/default-source-test.log
+      - name: Preserve original source and deny-production disposition
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-sqlite-owner/source
+          git rev-parse HEAD > /tmp/amcn-sqlite-owner/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-sqlite-owner/source/tree.txt
+          cp codex-rs/hepta-memory/Cargo.toml \
+             codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence_tests.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_artifact.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_artifact_tests.rs \
+             .github/workflows/hepta-amcn-sqlite-source-fence.yml \
+             /tmp/amcn-sqlite-owner/source/
+          printf '%s\n' \
+            'source_store_begin_immediate=true' \
+            'production_accepted=false' \
+            'cognitive_owner_full_current_cut_authentication_external=true' \
+            'artifact_quarantine_owner_fenced=false' \
+            'neuron_runtime_witness_jointly_fenced=false' \
+            'host_executor_blocking_unqualified=true' \
+            'source_store_lease_is_not_a_grant=true' \
+            'artifact_owner_mutex_is_not_signed_or_persistent=true' \
+            'learning_artifact_selection_still_independent=true' \
+            'deletion_zero_resurrection_product_proven=false' \
+            > /tmp/amcn-sqlite-owner/nonpromotion.txt
+          (cd /tmp/amcn-sqlite-owner && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-real-sqlite-source-fence-non-authorizing
+          path: /tmp/amcn-sqlite-owner
+          if-no-files-found: error

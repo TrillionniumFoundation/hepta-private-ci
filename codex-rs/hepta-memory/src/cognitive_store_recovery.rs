@@ -45,6 +45,18 @@ use crate::framing::frame_part;
 mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
+// Research-only real SQLite source write fence. The production CognitiveStore
+// and Model/Runtime APIs remain unchanged with the feature disabled.
+#[cfg(feature = "amcn-shadow")]
+#[path = "cognitive_store_recovery_amcn_fence.rs"]
+mod amcn_shadow;
+
+// Experimental two-owner handshake; artifact mutex is not an issued grant.
+#[cfg(feature = "amcn-artifact-shadow")]
+#[path = "cognitive_store_recovery_amcn_artifact.rs"]
+mod amcn_artifact;
+
+
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
 const MAX_ROWS: i64 = 262_144;
 const MAX_BYTES: i64 = 128 * 1024 * 1024;

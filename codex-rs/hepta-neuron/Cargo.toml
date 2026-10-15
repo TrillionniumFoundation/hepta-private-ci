@@ -10,11 +10,22 @@ name = "codex_hepta_neuron"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Research-only adapter; default product host cannot compile it accidentally.
+amcn-shadow = []
+# Tie cached candidate population to ORIGINAL signed Artifact current view.
+amcn-artifact-owner-shadow = [
+    "amcn-shadow",
+    "dep:codex-hepta-learning-artifacts",
+    "codex-hepta-learning-artifacts/amcn-epoch-shadow",
+]
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
+codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts", optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
