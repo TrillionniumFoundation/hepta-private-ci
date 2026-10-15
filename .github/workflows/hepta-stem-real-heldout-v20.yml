@@ -1,15 +1,21 @@
-name: Hepta V20 pinned AG News pretrained Stem matched Head pilot (research NO-GO)
+name: Hepta V20 + V21 real AG News paired uncertainty (research NO-GO)
 on:
   push:
     branches: ["research/multimodal-stem-bridge-20261014"]
     paths:
       - "experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py"
+      - "experiments/shared_stem_cell/public_stem_paired_uncertainty_v21.py"
+      - "experiments/shared_stem_cell/test_public_stem_paired_uncertainty_v21.py"
+      - "experiments/shared_stem_cell/PAIRED_EXPLORATORY_UNCERTAINTY_V21.md"
       - "experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py"
       - "experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md"
       - ".github/workflows/hepta-stem-real-heldout-v20.yml"
   pull_request:
     paths:
       - "experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py"
+      - "experiments/shared_stem_cell/public_stem_paired_uncertainty_v21.py"
+      - "experiments/shared_stem_cell/test_public_stem_paired_uncertainty_v21.py"
+      - "experiments/shared_stem_cell/PAIRED_EXPLORATORY_UNCERTAINTY_V21.md"
       - "experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py"
       - ".github/workflows/hepta-stem-real-heldout-v20.yml"
 permissions:
@@ -40,7 +46,7 @@ jobs:
           /tmp/stem-v20-offline-venv/bin/pip install numpy==1.26.4
           /tmp/stem-v20-offline-venv/bin/pip check
           /tmp/stem-v20-offline-venv/bin/pip freeze > /tmp/stem-v20-offline/environment.txt
-      - name: Require all ten pinned-data/Head-budget and no-change NO-GO contracts
+      - name: Require V20 and V21 source-bound label-only independent evaluation contracts
         run: |
           set -euo pipefail
           /tmp/stem-v20-offline-venv/bin/python -m unittest discover \
@@ -49,9 +55,17 @@ jobs:
           grep -q 'Ran 10 tests' /tmp/stem-v20-offline/tests.log
           grep -q '^OK$' /tmp/stem-v20-offline/tests.log
           if grep -Ei 'skipped[=: ]' /tmp/stem-v20-offline/tests.log; then exit 1; fi
+          /tmp/stem-v20-offline-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_public_stem_paired_uncertainty_v21.py' -v \
+            2>&1 | tee /tmp/stem-v20-offline/paired-posthoc.log
+          grep -q 'Ran 8 tests' /tmp/stem-v20-offline/paired-posthoc.log
+          grep -q '^OK$' /tmp/stem-v20-offline/paired-posthoc.log
+          if grep -Ei 'skipped[=: ]' /tmp/stem-v20-offline/paired-posthoc.log; then exit 1; fi
           /tmp/stem-v20-offline-venv/bin/python -m py_compile \
             experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
-            experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py
+            experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/public_stem_paired_uncertainty_v21.py \
+            experiments/shared_stem_cell/test_public_stem_paired_uncertainty_v21.py
       - name: Retain exact source and test disposition
         if: always()
         run: |
@@ -61,6 +75,9 @@ jobs:
           git rev-parse HEAD^{tree} > /tmp/stem-v20-offline/tree.txt
           sha256sum experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
             experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/public_stem_paired_uncertainty_v21.py \
+            experiments/shared_stem_cell/test_public_stem_paired_uncertainty_v21.py \
+            experiments/shared_stem_cell/PAIRED_EXPLORATORY_UNCERTAINTY_V21.md \
             experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md \
             .github/workflows/hepta-stem-real-heldout-v20.yml \
             > /tmp/stem-v20-offline/SHA256SUMS
@@ -161,7 +178,16 @@ jobs:
           assert report['deployed_no_change_baseline_observed'] is False
           assert report['winner'] is None
           assert set(report['candidate_reports'])=={'mmbert-small','granite-97m-r2'}
-          print('BOTH_REAL_PRETRAINED_HELDOUT_ARMS_REPORTED_NO_PRODUCTION_PROMOTION')
+          paired=report['paired_exploratory_posthoc']
+          assert paired['case_count']==64
+          assert sum(paired['paired_contingency'].values())==64
+          assert paired['inference_status']=='posthoc_exploratory_public_test_set'
+          assert paired['significance_or_model_superiority_qualified'] is False
+          assert paired['deployed_no_change_observed'] is False
+          assert paired['experiment_winner'] is None
+          assert paired['production_accepted'] is False
+          assert paired['authority']=='DENY_ALL'
+          print('TWO_REAL_PRETRAINED_HELDOUT_ARMS_WITH_PAIRED_EXPLORATORY_UNCERTAINTY_NO_WINNER')
           PY
       - name: Preserve source, failure and numeric evidence; exclude raw text, labels and model weights
         if: always()
@@ -173,6 +199,9 @@ jobs:
           git rev-parse HEAD^{tree} > "$D/source/tree.txt"
           cp experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
             experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/public_stem_paired_uncertainty_v21.py \
+            experiments/shared_stem_cell/test_public_stem_paired_uncertainty_v21.py \
+            experiments/shared_stem_cell/PAIRED_EXPLORATORY_UNCERTAINTY_V21.md \
             experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md \
             .github/workflows/hepta-stem-real-heldout-v20.yml "$D/source/"
           if test -e /tmp/stem-v20/agnews/plan.json; then

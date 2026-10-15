@@ -481,11 +481,21 @@ def evaluate(plan, targets:list, documents:dict):
             'Head parameter budgets differ')
     require(len(set(snapshot_hashes))==len(CANDIDATES),
             'same checkpoint may not impersonate both public model families')
+    # Separate independent evaluator sees true heldout labels; the Head
+    # producer never receives them. All paired statistics are EXPLORATORY.
+    from public_stem_paired_uncertainty_v21 import paired_posthoc
+    paired = paired_posthoc(
+        targets,
+        {name: documents[name]['predictions'] for name in CANDIDATES},
+        plan_sha256=sha(canon(plan)),
+        target_sha256=plan['heldout_targets_sha256'],
+    )
     uniform=_score([[1/N_CLASSES]*N_CLASSES for _ in labels],labels)
     return {'schema':EVALUATION,'dataset':DATA_REPO,'dataset_commit':DATA_REVISION,
             'source_plan_sha256':sha(canon(plan)),
             'heldout_targets_sha256':plan['heldout_targets_sha256'],
-            'candidate_reports':report,'uniform_reference_not_no_change':uniform,
+            'candidate_reports':report,'paired_exploratory_posthoc':paired,
+            'uniform_reference_not_no_change':uniform,
             'deployed_no_change_baseline_observed':False,
             'time_sealed_independent_future_utility':False,
             'selection_permitted':False,'winner':None,
