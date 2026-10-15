@@ -128,13 +128,18 @@ class RealFileTreeContract(unittest.TestCase):
             if relative == 'source-seals.json':
                 seal=self.root/'source-seals.json'
                 contents=json.loads(seal.read_bytes())
-                seal.write_text(json.dumps(contents,sort_keys=True,indent=2)+'\\n')
+                seal.write_text(json.dumps(contents,sort_keys=True,indent=2)+'\n')
                 seen.append(relative)
             return original_document(root, relative, size)
         with mock.patch.object(handoff,'document',side_effect=rewrite_after_scan):
             with self.assertRaises(handoff.ModelEntryDenied):
                 self.check()
         self.assertEqual(seen,['source-seals.json'])
+        # The rewritten receipt remains semantically admissible; the new
+        # second byte snapshot, not invalid JSON, must explain rejection.
+        parsed=json.loads((self.root/'source-seals.json').read_bytes())
+        self.assertIsNone(parsed['private_test_labels_sha256'])
+        self.assertEqual(parsed['source_sha256'],self.source)
 
     def test_late_test_label_after_first_inventory_denied(self):
         # The original path-only/byte-bound first pass has already finished.
@@ -143,13 +148,14 @@ class RealFileTreeContract(unittest.TestCase):
         seen=[]
         def add_late_target(root, relative, size=32*1024*1024):
             if relative=='source-seals.json':
-                (self.root/'inputs/test_labels.jsonl').write_bytes(b'secret\\n')
+                (self.root/'inputs/test_labels.jsonl').write_bytes(b'secret\n')
                 seen.append(relative)
             return original_document(root,relative,size)
         with mock.patch.object(handoff,'document',side_effect=add_late_target):
             with self.assertRaises(handoff.ModelEntryDenied):
                 self.check()
         self.assertEqual(seen,['source-seals.json'])
+        self.assertTrue((self.root/'inputs/test_labels.jsonl').is_file())
 
     def test_test_label_file_or_original_parquet_rejected(self):
         for relative in ('private_labels/test_labels.jsonl','inputs/test_labels.jsonl',
