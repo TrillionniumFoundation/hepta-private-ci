@@ -127,6 +127,8 @@ def review(panel, parents, studies, parent_sha):
                     info.get('frozen_initial_head_sha256')!=train['initial_head_sha256'] or
                     info.get('calibration_temperature') not in (.5,.75,1.,1.5,2.,3.,4.)):
                 raise Invalid('Head training/complete private parameter mismatch')
+            if train.get('learnable_query_actually_changed') is not (arm=='token_query' if arm=='token_query' else None):
+                raise Invalid('learnable token Query movement must be physically recorded')
             costs[arm]=_positive(train.get('train_ms'))
             predictions={}
             for p in info.get('predictions',[]):
