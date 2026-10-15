@@ -1,12 +1,14 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015"]
+    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015", "research/e3-five-arm-decongest-ci-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
       - "experiments/shared_stem_cell/e3_source_target_partition.py"
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/test_e3_runner_budget.py"
+      - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_HELD_TARGET_BOUNDARY_20261015.md"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_ocr_granite_physical.py"
@@ -25,7 +27,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-e3-five-real-${{ github.sha }}
+  group: hepta-e3-five-real-${{ github.ref }}
   cancel-in-progress: true
 env:
   SOURCE_SHA: a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202
@@ -67,6 +69,7 @@ jobs:
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
   physical-ocr-granite:
+    if: github.event_name == 'push'
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -134,6 +137,7 @@ jobs:
             ${{ runner.temp }}/e3-ocr-packages.txt
           if-no-files-found: warn
   physical-native-gemma2:
+    if: github.event_name == 'push'
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -226,6 +230,7 @@ jobs:
             ${{ runner.temp }}/e3-native-snapshot-receipt.json
           if-no-files-found: warn
   independent-five-arm-review:
+    if: github.event_name == 'push'
     needs: [physical-ocr-granite, physical-native-gemma2]
     runs-on: ubuntu-24.04
     timeout-minutes: 45

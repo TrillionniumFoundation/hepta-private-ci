@@ -1,12 +1,14 @@
 name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015"]
+    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015", "research/e3-five-arm-decongest-ci-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
       - "experiments/shared_stem_cell/e3_source_target_partition.py"
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/test_e3_runner_budget.py"
+      - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_HELD_TARGET_BOUNDARY_20261015.md"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -20,7 +22,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hepta-e3-five-arm-contract-${{ github.sha }}
+  group: hepta-e3-five-arm-contract-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   fail-closed-source-contract:
