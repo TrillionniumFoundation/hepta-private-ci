@@ -110,8 +110,8 @@ class ScopeTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
-        start = "      - name: Early CellSplit operator config original EUID product and native regression\\n"
-        end = "      - name: Early original Control WAL canonical path native regression\\n"
+        start = "      - name: Early CellSplit operator config original EUID product and native regression\n"
+        end = "      - name: Early original Control WAL canonical path native regression\n"
         self.assertEqual(workflow.count(start), 1)
         self.assertEqual(workflow.count(end), 1)
         command = workflow.split(start, 1)[1].split(end, 1)[0]
