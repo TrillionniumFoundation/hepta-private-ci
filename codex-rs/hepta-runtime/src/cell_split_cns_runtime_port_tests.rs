@@ -385,7 +385,10 @@ fn independent_control_observer_uses_fresh_signed_original_highwater_without_mut
         .is_err(),
         "an old signed high-water must not bless newer/rolled-back Control state"
     );
-    assert!(control.current().is_ok(), "Observer denial cannot mutate Control");
+    assert!(
+        control.current().is_ok(),
+        "Observer denial cannot mutate Control"
+    );
 }
 
 #[test]
@@ -504,7 +507,10 @@ fn joined_cns_control_observer_denies_missing_original_commit_before_remote_rpc(
         )
         .expect_err("original CNS runtime commit must exist before remote Observer");
     assert!(denial.contains("original durable effect receipt is missing"));
-    assert_eq!(observer.calls, 0, "never query remote on missing original effect");
+    assert_eq!(
+        observer.calls, 0,
+        "never query remote on missing original effect"
+    );
     assert_eq!(std::fs::read(&path).unwrap(), original_bytes);
     assert_eq!(control.read_original_local_frontier_v1().unwrap(), before);
     assert_eq!(runtime.topology_snapshot().unwrap(), state_before);
@@ -540,7 +546,10 @@ fn joined_cns_control_observer_denies_missing_original_wal_before_remote_rpc() {
     assert!(denial.contains("original Control WAL unavailable before join"));
     assert_eq!(observer.calls, 0);
     assert!(control.read_original_local_frontier_v1().is_err());
-    assert!(!path.exists(), "read-only verification must not rebootstrap WAL");
+    assert!(
+        !path.exists(),
+        "read-only verification must not rebootstrap WAL"
+    );
 }
 
 #[test]

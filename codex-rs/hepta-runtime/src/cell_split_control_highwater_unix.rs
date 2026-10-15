@@ -157,7 +157,9 @@ impl CellSplitControlHighwaterUnixPortV1 {
         if !valid_id(split_id)
             || !valid_id(scope_id)
             || nonce.len() != 64
-            || !nonce.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+            || !nonce
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         {
             return Err("unbound Control high-water request identity or challenge".into());
         }
@@ -171,8 +173,8 @@ impl CellSplitControlHighwaterUnixPortV1 {
             return Err("independent Control high-water endpoint is not a Unix socket".into());
         }
         let started = Instant::now();
-        let mut stream = UnixStream::connect(&self.socket_path)
-            .map_err(|error| error.to_string())?;
+        let mut stream =
+            UnixStream::connect(&self.socket_path).map_err(|error| error.to_string())?;
         let request = CellSplitControlHighwaterRpcRequestV1 {
             schema: CELL_SPLIT_CONTROL_HIGHWATER_RPC_SCHEMA_V1.to_owned(),
             method: READ_METHOD.to_owned(),
@@ -192,9 +194,13 @@ impl CellSplitControlHighwaterUnixPortV1 {
             if response.proof.is_some() || error.is_empty() || error.len() > 512 {
                 return Err("mixed or malformed Control Observer denial".into());
             }
-            return Err(format!("independent Control Observer refused read: {error}"));
+            return Err(format!(
+                "independent Control Observer refused read: {error}"
+            ));
         }
-        let proof = response.proof.ok_or("missing independent signed Control proof")?;
+        let proof = response
+            .proof
+            .ok_or("missing independent signed Control proof")?;
         if proof.schema != CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_V1
             || proof.observer_id != self.observer_id
             || proof.split_id != split_id
