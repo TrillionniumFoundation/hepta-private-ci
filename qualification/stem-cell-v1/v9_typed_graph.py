@@ -101,9 +101,32 @@ def verify_proof(facts, question, candidate, receipt):
 
     Does not invoke solve or trust the claimed source indices/terminal value.
     """
+    if (type(facts) not in (list, tuple) or not 1 <= len(facts) <= 64
+            or any(type(fact) is not str or not 1 <= len(fact) <= 256 for fact in facts)
+            or type(question) is not str or type(candidate) is not str
+            or len(question) > 256 or len(candidate) > 256):
+        raise RejectGraph("bounded complete public evidence required")
     if type(receipt) is not dict or set(receipt) != {
             "claim", "object", "candidate", "final_type", "hops", "source_sha256"}:
         raise RejectGraph("complete proof receipt required")
+    # A path witness alone can look correct while the source contains a second,
+    # conflicting edge not cited by that path. Bind GLOBAL fact-graph uniqueness
+    # BEFORE validating the local hops; neither a self-resealed source digest nor
+    # a valid sequence of source IDs is a semantic consistency certificate.
+    graph = {}
+    candidate_domain = set()
+    for source_line, fact in enumerate(facts, 1):
+        recognized = [(level, match) for level, regex in enumerate(PATTERNS)
+                      if (match := regex.fullmatch(fact)) is not None]
+        if len(recognized) != 1:
+            raise RejectGraph("unknown or ambiguous complete evidence")
+        level, match = recognized[0]
+        left, right = match.groups()
+        key = (TYPES[level], left)
+        if key in graph:
+            raise RejectGraph("conflicting or duplicated complete relation edge")
+        graph[key] = (TYPES[level + 1], right, source_line)
+        candidate_domain.add((TYPES[level + 1], right))
     if digest(list(facts)) != receipt["source_sha256"]:
         raise RejectGraph("source content was replaced")
     qm, cm = QUESTION.fullmatch(question), CANDIDATE.fullmatch(candidate)
@@ -111,6 +134,8 @@ def verify_proof(facts, question, candidate, receipt):
         raise RejectGraph("proof question mismatch")
     if cm[1] != receipt["candidate"] or cm[2] != receipt["final_type"]:
         raise RejectGraph("proof candidate mismatch")
+    if (cm[2], cm[1]) not in candidate_domain:
+        raise RejectGraph("candidate outside declared source evidence domain")
     steps = receipt["hops"]
     depth = TYPES.index(qm[2])
     if type(steps) is not list or len(steps) != depth:
@@ -127,8 +152,9 @@ def verify_proof(facts, question, candidate, receipt):
             raise RejectGraph("invalid witness transition or repeated source")
         used.add(line)
         match = PATTERNS[i].fullmatch(facts[line - 1])
-        if match is None or match.groups() != (src_name, dst_name):
-            raise RejectGraph("witness not grounded in cited sentence")
+        if (match is None or match.groups() != (src_name, dst_name)
+                or graph.get(current) != (dst_type, dst_name, line)):
+            raise RejectGraph("witness not grounded in globally unique source graph")
         current = dst_type, dst_name
     if type(receipt["claim"]) is not bool or receipt["claim"] != (current[1] == cm[1]):
         raise RejectGraph("incorrect proof conclusion")

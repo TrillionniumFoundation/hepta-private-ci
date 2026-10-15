@@ -1,0 +1,311 @@
+name: Hepta V10 real Granite 9-arm physical (research only)
+on:
+  push:
+    branches:
+      - research/v10-global-proof-granite-sourcefirst-20261015
+    paths:
+      - qualification/stem-cell-v1/v10_*.py
+      - qualification/stem-cell-v1/test_v10_*.py
+      - .github/workflows/hepta-v10-physical-granite.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-v10-real-granite-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Actual original-source tests (both Python modes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/head.txt"
+          python -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
+            2>&1 | tee "$RUNNER_TEMP/normal.log"
+          python -O -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
+            2>&1 | tee "$RUNNER_TEMP/optimized.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v10-test-receipts-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/head.txt
+            ${{ runner.temp }}/normal.log
+            ${{ runner.temp }}/optimized.log
+          if-no-files-found: warn
+          retention-days: 5
+
+  source-owner:
+    needs: source-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Freeze complete task universe and segregate source labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v10_granite_features.py source --output "$RUNNER_TEMP/registered"
+          python - "$RUNNER_TEMP/registered" <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          r=json.loads((root/'source-seal.json').read_text())
+          assert r['train_rows']==288 and r['held_rows']==960
+          assert r['source_groups']==312
+          assert r['label_owner_is_external_independent'] is False
+          assert r['authority']=='DENY_ALL' and r['production_accepted'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v10-public-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/registered/public.json
+            ${{ runner.temp }}/registered/source-seal.json
+          if-no-files-found: error
+          retention-days: 5
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v10-train-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/registered/train-labels.json
+          if-no-files-found: error
+          retention-days: 5
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v10-held-truth-${{ github.run_id }}
+          path: ${{ runner.temp }}/registered/held-labels-restricted.json
+          if-no-files-found: error
+          retention-days: 5
+
+  real-encoder:
+    needs: source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install immutable physical Encoder stack
+        run: |
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0 \
+            transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/public
+      - name: Physically load EXACT Granite97 and encode all 1,248 public inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/public/held-labels-restricted.json"
+          test ! -e "$RUNNER_TEMP/public/train-labels.json"
+          git rev-parse HEAD > "$RUNNER_TEMP/encoder-head.txt"
+          python - "$RUNNER_TEMP/model" <<'PY'
+          import sys
+          from group_encoder import acquire
+          acquire(sys.argv[1])
+          PY
+          python qualification/stem-cell-v1/v10_granite_features.py encode \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --snapshot "$RUNNER_TEMP/model" \
+            --output "$RUNNER_TEMP/real-features" | tee "$RUNNER_TEMP/encode.log"
+          python - "$RUNNER_TEMP/real-features/real-encoder-receipt.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['model_revision']=='835ad14087e140460703cf0fae09f97d469d65c2'
+          assert x['real_pretrained_forward_executed'] is True
+          assert x['actually_executed_encoder_batches']>0
+          assert x['frozen_weight_verified'] is True
+          assert x['held_labels_accessed'] is False
+          assert x['production_accepted'] is False and x['authority']=='DENY_ALL'
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v10-real-features-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/encoder-head.txt
+            ${{ runner.temp }}/encode.log
+            ${{ runner.temp }}/real-features/tokens.pt
+            ${{ runner.temp }}/real-features/metadata.json
+            ${{ runner.temp }}/real-features/real-encoder-receipt.json
+          if-no-files-found: warn
+          retention-days: 5
+
+  nine-reader-fits:
+    needs: [source-owner, real-encoder]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONPATH: qualification/stem-cell-v1
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-train-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-real-features-${{ github.run_id }}
+          path: ${{ runner.temp }}/real-features
+      - name: 9 real-feature 256-step Adam fits and independent label-blind predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/source/held-labels-restricted.json"
+          python qualification/stem-cell-v1/v10_granite_reader.py fit \
+            --public "$RUNNER_TEMP/source/public.json" \
+            --features "$RUNNER_TEMP/real-features" \
+            --train-labels "$RUNNER_TEMP/source/train-labels.json" \
+            --models "$RUNNER_TEMP/models" \
+            --output "$RUNNER_TEMP/fits-unused-output.json" 2>&1 | tee "$RUNNER_TEMP/train.log"
+          python qualification/stem-cell-v1/v10_granite_reader.py predict \
+            --public "$RUNNER_TEMP/source/public.json" \
+            --features "$RUNNER_TEMP/real-features" \
+            --models "$RUNNER_TEMP/models" \
+            --output "$RUNNER_TEMP/blind-predictions.json" 2>&1 | tee "$RUNNER_TEMP/predict.log"
+          python - "$RUNNER_TEMP/models" "$RUNNER_TEMP/blind-predictions.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          paths=list(root.glob('*/training.json'))
+          assert len(paths)==9
+          assert all(json.loads(p.read_text())['actual_updates']==256 for p in paths)
+          p=json.load(open(sys.argv[2]))
+          assert p['result_records']==11232 and len(p['training_commitments'])==9
+          assert p['held_labels_used'] is False and p['model_selected'] is False
+          assert p['authority']=='DENY_ALL' and p['production_accepted'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v10-real-reader-seals-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/models/
+            ${{ runner.temp }}/blind-predictions.json
+            ${{ runner.temp }}/train.log
+            ${{ runner.temp }}/predict.log
+          if-no-files-found: warn
+          retention-days: 5
+
+  independent-held-review:
+    needs: [source-owner, real-encoder, nine-reader-fits]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal/public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-held-truth-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal/held
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-real-features-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal/features
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v10-real-reader-seals-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal/reader
+      - name: Independently recalculate original 960 hidden targets from nine frozen model seals
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/postseal/reader/blind-predictions.json"
+          python qualification/stem-cell-v1/v10_granite_score.py \
+            --public "$RUNNER_TEMP/postseal/public/public.json" \
+            --source-seal "$RUNNER_TEMP/postseal/public/source-seal.json" \
+            --held-labels "$RUNNER_TEMP/postseal/held/held-labels-restricted.json" \
+            --predictions "$RUNNER_TEMP/postseal/reader/blind-predictions.json" \
+            --models "$RUNNER_TEMP/postseal/reader/models" \
+            --feature-receipt "$RUNNER_TEMP/postseal/features/real-encoder-receipt.json" \
+            --output "$RUNNER_TEMP/postseal/independent-scores.json" | tee "$RUNNER_TEMP/review.log"
+          python - "$RUNNER_TEMP/postseal/independent-scores.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['held_independent_groups']==240 and r['held_distinct_candidates']==960
+          assert len(r['neural_observations'])==90
+          assert len(r['independent_training_trace_audits'])==9
+          assert all(x['real_recorded_optimizer_exposures']==4096 for x in r['independent_training_trace_audits'].values())
+          assert r['V7_joint_admission_passed'] is False
+          assert r['model_selected'] is False and r['production_accepted'] is False
+          assert r['authority']=='DENY_ALL'
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v10-independent-real-results-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/postseal/independent-scores.json
+            ${{ runner.temp }}/review.log
+          if-no-files-found: warn
+          retention-days: 5
