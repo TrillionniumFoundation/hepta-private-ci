@@ -9,7 +9,7 @@ import torch
 from torch import nn
 from safetensors.torch import save_file
 
-from group_checkpoint_audit import verify_checkpoint_file
+from group_checkpoint_audit import verify_checkpoint_file, strict_json_loads, strict_json_file
 from group_training import model_parameter_digest
 
 
@@ -64,6 +64,45 @@ class CheckpointAuditTests(unittest.TestCase):
                 with self.subTest(bytes=len(mutated)), self.assertRaises(ValueError):
                     path.write_bytes(mutated)
                     verify_checkpoint_file(path)
+
+
+    def test_duplicate_or_nonfinite_safetensors_header_denied(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "header.safetensors"
+            for malformed in (
+                b'{"weight":{"dtype":"F32","dtype":"F32","shape":[2],"data_offsets":[0,8]}}',
+                b'{"weight":{"dtype":"F32","shape":[2],"data_offsets":[0,8],"extra":1e999}}',
+            ):
+                path.write_bytes(len(malformed).to_bytes(8, "little") +
+                                 malformed + struct.pack("<ff", 0.5, -2.0))
+                with self.subTest(header=malformed), self.assertRaises(ValueError):
+                    verify_checkpoint_file(path)
+
+    def test_strict_record_decoder_and_no_symlink(self):
+        self.assertEqual(
+            strict_json_loads(b'{"a":1,"b":{"x":2}}', max_bytes=80),
+            {"a": 1, "b": {"x": 2}})
+        for ambiguous in (
+            b'{"a":1,"a":2}',
+            b'{"a":{"x":1,"x":1}}',
+            b'{"a":NaN}', b'{"a":Infinity}', b'{"a":1e999}',
+        ):
+            with self.subTest(value=ambiguous), self.assertRaises(ValueError):
+                strict_json_loads(ambiguous, max_bytes=80)
+        with tempfile.TemporaryDirectory() as directory:
+            regular = Path(directory) / "observed.json"
+            regular.write_text('{"supported":true}')
+            self.assertTrue(strict_json_file(regular)["supported"])
+            shortcut = Path(directory) / "alias.json"
+            shortcut.symlink_to(regular)
+            with self.assertRaisesRegex(ValueError, "non-symlink"):
+                strict_json_file(shortcut)
+            checkpoint = Path(directory) / "original.safetensors"
+            synthetic_file(checkpoint)
+            checkpoint_alias = Path(directory) / "alias.safetensors"
+            checkpoint_alias.symlink_to(checkpoint)
+            with self.assertRaisesRegex(ValueError, "non-symlink"):
+                verify_checkpoint_file(checkpoint_alias)
 
 
 if __name__ == "__main__":

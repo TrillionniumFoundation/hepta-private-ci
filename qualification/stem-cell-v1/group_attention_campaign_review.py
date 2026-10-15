@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 
 from group_campaign_review import _parse
-from group_checkpoint_audit import verify_checkpoint_file
+from group_checkpoint_audit import verify_checkpoint_file, strict_json_file
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -146,12 +146,12 @@ def _verify_system2_trace(row, record, critic_sha):
 
 def review(root):
     root = Path(root)
-    protocol = json.loads((root / "protocol.json").read_text())
-    rows = json.loads((root / "observations.json").read_text())
-    report = json.loads((root / "report.json").read_text())
-    teacher = json.loads((root / "teacher.json").read_text())
-    encoder = json.loads((root / "encoder.json").read_text())
-    raw_traces = json.loads((root / "system2-traces.json").read_text())
+    protocol = strict_json_file(root / "protocol.json")
+    rows = strict_json_file(root / "observations.json")
+    report = strict_json_file(root / "report.json")
+    teacher = strict_json_file(root / "teacher.json")
+    encoder = strict_json_file(root / "encoder.json")
+    raw_traces = strict_json_file(root / "system2-traces.json")
     if (protocol["schema"] != "hepta.group.paired-step-campaign.v1"
             or report["schema"] != "hepta.group.paired-step-observation.v1"
             or report["protocol_sha256"] != _digest(protocol)

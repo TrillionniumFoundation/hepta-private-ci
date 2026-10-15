@@ -388,5 +388,24 @@ class PairedReviewTests(unittest.TestCase):
                 review(root)
 
 
+    def test_reject_duplicate_keys_and_nonfinite_values_before_hashes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture(root)
+            protocol = root / "protocol.json"
+            raw = protocol.read_text()
+            protocol.write_text('{"schema":"injected",' + raw.lstrip()[1:])
+            with self.assertRaisesRegex(ValueError, "duplicate JSON"):
+                review(root)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture(root)
+            teacher = root / "teacher.json"
+            raw = teacher.read_text()
+            teacher.write_text('{"untrusted":1e999,' + raw.lstrip()[1:])
+            with self.assertRaisesRegex(ValueError, "non-finite"):
+                review(root)
+
+
 if __name__ == "__main__":
     unittest.main()

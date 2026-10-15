@@ -108,3 +108,7 @@ future task outcomes at matched total compute and independent sources**,
 including reliability under missing evidence and old-task retention, before
 consideration for a selected runtime. Inference-time teacher use and
 evaluator/selection label access are prohibited.
+
+## Strict independent JSON / archive admission hardening
+
+The latest research-only independent reviewer rejects duplicate JSON keys, NaN/Infinity (including overflowing exponent notation), oversized records, symlinked input files, and ambiguous safetensors headers before any hash or success comparison. This is a bounded structural negative control; canonical hashes and local checks are **not** independent model-execution or CI attestation.

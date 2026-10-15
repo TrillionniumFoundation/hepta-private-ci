@@ -19,16 +19,73 @@ MAX_TENSORS = 4096
 MAX_SHAPE_DIM = 8192
 
 
+
+def _unique_json_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON field: " + key)
+        value[key] = item
+    return value
+
+
+def _illegal_json_constant(value):
+    raise ValueError("non-finite JSON constant: " + value)
+
+
+def _finite_json_float(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise ValueError("non-finite JSON numeric value")
+    return value
+
+
+def strict_json_loads(value, *, max_bytes):
+    """Reject duplicate fields, NaNs/infinity and unbounded source data.
+
+    Hashes alone are not provenance. This parser prevents the observer and
+    authoring runtime from interpreting identical JSON bytes differently.
+    """
+    if type(max_bytes) is not int or not 1 <= max_bytes <= 128_000_000:
+        raise ValueError("invalid JSON byte ceiling")
+    if isinstance(value, str):
+        encoded = value.encode("utf-8", errors="strict")
+    elif isinstance(value, bytes):
+        encoded = value
+    else:
+        raise ValueError("JSON payload must be UTF-8 text or bytes")
+    if not 1 <= len(encoded) <= max_bytes:
+        raise ValueError("JSON payload byte ceiling exceeded or empty")
+    try:
+        return json.loads(encoded, object_pairs_hook=_unique_json_object,
+                          parse_constant=_illegal_json_constant,
+                          parse_float=_finite_json_float)
+    except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
+        raise ValueError("noncanonical JSON structure") from exc
+
+
+def strict_json_file(path, *, max_bytes=64_000_000):
+    path = Path(path)
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("expected a non-symlink regular JSON record file")
+    if not 0 < path.stat().st_size <= max_bytes:
+        raise ValueError("JSON record file outside byte ceiling")
+    return strict_json_loads(path.read_bytes(), max_bytes=max_bytes)
+
+
 def verify_checkpoint_file(path):
     """Return independently recomputed digests and a bounded shape inventory."""
-    raw = Path(path).read_bytes()
+    path = Path(path)
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("checkpoint must be a non-symlink regular file")
+    raw = path.read_bytes()
     if not 16 <= len(raw) <= MAX_ARCHIVE_BYTES:
         raise ValueError("bounded checkpoint archive bytes required")
     header_bytes = int.from_bytes(raw[:8], "little")
     if not 2 <= header_bytes <= MAX_HEADER_BYTES or 8 + header_bytes >= len(raw):
         raise ValueError("invalid or unbounded safetensors header")
     try:
-        header = json.loads(raw[8:8 + header_bytes])
+        header = strict_json_loads(raw[8:8 + header_bytes], max_bytes=MAX_HEADER_BYTES)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ValueError("invalid checkpoint JSON header") from exc
     if type(header) is not dict:
