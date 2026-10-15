@@ -94,7 +94,7 @@ def matched_fresh_gate(rows):
 def campaign(args):
     import torch
     from binding_campaign_utils import checked_design, load_bank, natural_panel, save_model, source_inventory
-    from binding_training import fit_binding_reader
+    from cross_fact_joint_fit import fit_joint_reader_pair
     from cross_fact_bridge import matched_reader_pair
     from group_encoder import file_digest
     from token_campaign_utils import infer
@@ -127,7 +127,8 @@ def campaign(args):
         source_dir = Path(__file__).parent
         code_hashes = {name: file_digest(source_dir / name) for name in
                        ("cross_fact_bridge.py", "cross_fact_granite_campaign.py",
-                        "cross_fact_granite_receipt_oracle.py")}
+                        "cross_fact_granite_receipt_oracle.py",
+                        "cross_fact_joint_fit.py")}
         plan = {"schema": "hepta.cross-fact.granite-v5.plan.v1", "seeds": list(seeds),
                 "registered_complete_seeds": list(SEEDS), "arms": list(ARMS),
                 "model_input_width": 384, "hidden_width": 32,
@@ -135,6 +136,9 @@ def campaign(args):
                 "steps": TRAIN_STEPS, "batch_size": 16, "depth": 3,
                 "learning_rate": .001, "pair_weight": .5,
                 "diagnostic_interval": 250,
+                "train_pairing": "synchronized_dual_optimizer_train_only_stop",
+                "both_heads_stop_at_same_actual_optimizer_update": True,
+                "old_v5_trainer_bytes_untouched": True,
                 "full_fit_required_for_all_arms_before_fresh": True,
                 "normalization_and_encoder_reused_from_original_v5": True,
                 "original_design_sha256": file_digest(args.output_v5 / "design.json"),
@@ -166,13 +170,16 @@ def campaign(args):
             if sum(p.numel() for p in cross.parameters()) != sum(p.numel() for p in local.parameters()):
                 raise RuntimeError("unequal model parameter budgets")
             baseline = parameter_digest(cross)
-            for arm, original in zip(ARMS, (cross, local)):
-                original.eval().requires_grad_(False)
-                trained, receipt = fit_binding_reader(original, data, cases,
-                    steps=TRAIN_STEPS, seed=seed, batch_size=16, depth=3,
-                    learning_rate=.001, pair_weight=.5, diagnostic_interval=250,
-                    wall_time_ns=1_800_000_000_000,
-                    failure_receipt_fn=lambda failure, a=arm: _write_once(folder / f"{a}-failed.json", failure))
+            originals = {"cross_fact": cross.eval().requires_grad_(False),
+                         "local": local.eval().requires_grad_(False)}
+            trained_pair, paired_receipts, joint_receipt = fit_joint_reader_pair(
+                originals, data, cases, steps=TRAIN_STEPS, seed=seed, batch_size=16,
+                depth=3, learning_rate=.001, pair_weight=.5,
+                diagnostic_interval=250, wall_time_ns=1_800_000_000_000,
+                failure_receipt_fn=lambda failure: _write_once(folder / "joint-failed.json", failure))
+            _write_once(folder / "joint-training.json", joint_receipt)
+            for arm in ARMS:
+                trained, receipt = trained_pair[arm], paired_receipts[arm]
                 if receipt["initial_model_sha256"] != baseline:
                     raise RuntimeError("original initialization drift")
                 record = save_model(folder, arm, trained, receipt)
@@ -192,6 +199,8 @@ def campaign(args):
                            "parameter_count": receipt["parameter_count"],
                            "training_cpu_ns": receipt["cpu_ns"], "training_wall_ns": receipt["wall_ns"],
                            "training_receipt_file": f"{arm}-training.json",
+                           "joint_training_file_sha256": file_digest(folder / "joint-training.json"),
+                           "joint_training_contract": "hepta.cross-fact.joint-fit.v1",
                            "loss_last": receipt["diagnostics"][-1]["binding"],
                            "natural_internal_tune": natural_metrics,
                            "natural_internal_file_sha256": file_digest(natural_file),
