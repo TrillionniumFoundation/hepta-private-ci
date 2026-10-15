@@ -1,7 +1,7 @@
 name: Hepta P5 five-axis Stem scaling negative and claim-control tests (DENY_ALL)
 on:
   push:
-    branches: ["research/p5-five-axis-scaling-falsification-20261015", "research/p5-original-source-cluster-pairing-20261015"]
+    branches: ["research/p5-five-axis-scaling-falsification-20261015", "research/p5-original-source-cluster-pairing-20261015", "research/p5-source-head-merge-physical-conformance-20261015"]
     paths:
       - "qualification/stem_scaling_v1/**"
       - ".github/workflows/hepta-p5-five-axis-scaling-review.yml"
@@ -16,6 +16,10 @@ jobs:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON(github.event_name == 'pull_request' && '["source_head","synthetic_merge"]' || '["source_head"]') }}
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/stem_scaling_v1
@@ -23,25 +27,56 @@ jobs:
       - name: Checkout exact source with no persisted write token
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && matrix.profile == 'source_head' && github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Prove exact source-head or synthetic-merge Git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
+          mkdir -p "$EVIDENCE_DIR"
+          if [[ '${{ github.event_name }}' == pull_request && '${{ matrix.profile }}' == source_head ]]; then
+            expected='${{ github.event.pull_request.head.sha }}'
+          else
+            expected='${{ github.sha }}'
+          fi
+          observed="$(git rev-parse HEAD)"
+          test -n "$expected" && test "$observed" = "$expected"
+          printf 'profile=%s\nexpected=%s\nobserved=%s\n' \
+            '${{ matrix.profile }}' "$expected" "$observed" > "$EVIDENCE_DIR/candidate-identity.txt"
+          git status --porcelain=v1 > "$EVIDENCE_DIR/status-before.txt"
+          test ! -s "$EVIDENCE_DIR/status-before.txt"
+          sha256sum qualification/stem_scaling_v1/scaling_frontier.py \
+            qualification/stem_scaling_v1/test_scaling_frontier.py \
+            qualification/stem_scaling_v1/p5_cluster_replay.py \
+            qualification/stem_scaling_v1/test_p5_cluster_replay.py \
+            > "$EVIDENCE_DIR/tested-source-sha256.txt"
       - name: Compile actual P5 research/auditor sources
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 -m py_compile qualification/stem_scaling_v1/scaling_frontier.py qualification/stem_scaling_v1/test_scaling_frontier.py qualification/stem_scaling_v1/p5_cluster_replay.py qualification/stem_scaling_v1/test_p5_cluster_replay.py
+          echo 'Source-only Python compile PASS; no model execution' | tee "$EVIDENCE_DIR/compile.txt"
       - name: Run genuine contract, corruption and five-axis tests
         run: |
           set -euo pipefail
-          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
-          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
+          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v 2>&1 | tee "$EVIDENCE_DIR/normal-parent.txt"
+          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v 2>&1 | tee "$EVIDENCE_DIR/normal-child.txt"
+          grep -F 'Ran 12 tests' "$EVIDENCE_DIR/normal-parent.txt"
+          grep -F 'Ran 11 tests' "$EVIDENCE_DIR/normal-child.txt"
       - name: Test same contracts with Python optimized mode
         run: |
           set -euo pipefail
-          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
-          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
+          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v 2>&1 | tee "$EVIDENCE_DIR/optimized-parent.txt"
+          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v 2>&1 | tee "$EVIDENCE_DIR/optimized-child.txt"
+          grep -F 'Ran 12 tests' "$EVIDENCE_DIR/optimized-parent.txt"
+          grep -F 'Ran 11 tests' "$EVIDENCE_DIR/optimized-child.txt"
       - name: No false physically observed real-model or 10T/100T inference
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 - <<'PY'
           import sys
           sys.path.insert(0, "qualification/stem_scaling_v1")
@@ -54,3 +89,11 @@ jobs:
           assert report["production_accepted"] is False
           print("SOURCE_ONLY_CONTRACT_OK / REAL_MODEL_RESULTS_NOT_PRODUCED / DENY_ALL")
           PY
+      - name: Save exact code identity and scope-bound local test receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p5-source-only-${{ matrix.profile }}
+          path: ${{ runner.temp }}/p5-source-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
