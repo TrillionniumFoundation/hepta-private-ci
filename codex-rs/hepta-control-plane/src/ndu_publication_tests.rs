@@ -1191,12 +1191,9 @@ fn symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner() {
     let canonical_lock = actual_parent.join("control.wal.owner-lock");
     let frozen = snapshot(3);
     {
-        let owner = NduPublicationOwnerV1::open_production(
-            &canonical_path,
-            frozen.clone(),
-            Digest32::ZERO,
-        )
-        .expect("canonical owner must open");
+        let owner =
+            NduPublicationOwnerV1::open_production(&canonical_path, frozen.clone(), Digest32::ZERO)
+                .expect("canonical owner must open");
         assert!(owner.current().is_ok());
     }
     let journal_before = std::fs::read(&canonical_path).expect("canonical WAL");
