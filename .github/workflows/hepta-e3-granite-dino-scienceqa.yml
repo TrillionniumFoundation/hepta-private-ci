@@ -1,0 +1,153 @@
+name: Hepta E3 real Granite97 DINOv2 source-only paired study (DENY_ALL)
+on:
+  push:
+    branches: ["research/stem-e3-granite-dino-real-20261015"]
+    paths:
+      - "experiments/shared_stem_cell/e3_scienceqa_*.py"
+      - "experiments/shared_stem_cell/e3_granite_dino_real.py"
+      - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_scienceqa_*.py"
+      - "experiments/shared_stem_cell/e3_granite_dino_real.py"
+      - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e3-granite-dino-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  e3-actual-pretrained-and-independent-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned stock PyTorch, HF, dataset and media dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/e3-venv
+          /tmp/e3-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/e3-venv/bin/pip install numpy==1.26.4 transformers==4.57.1 \
+            safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 \
+            datasets==3.6.0 pyarrow==19.0.1 Pillow==11.3.0 psutil==7.0.0 packaging==25.0
+          /tmp/e3-venv/bin/pip check
+          /tmp/e3-venv/bin/pip freeze > /tmp/e3-environment.txt
+          /tmp/e3-venv/bin/python -c 'import numpy, pyarrow; assert numpy.__version__ == "1.26.4" and pyarrow.__version__ == "19.0.1"; from transformers import AutoImageProcessor, Dinov2Model, AutoModel; from huggingface_hub import HfApi; from datasets import load_dataset; print("STOCK_PRETRAINED_API_PREFLIGHT_OK")'
+      - name: Execute original mechanistic and negative-contract tests
+        run: |
+          set -euo pipefail
+          P=/tmp/e3-venv/bin/python
+          "$P" -m compileall -q experiments/shared_stem_cell/e3_*.py experiments/shared_stem_cell/test_e3_scienceqa_real.py
+          "$P" -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_scienceqa_real.py' -v 2>&1 | tee /tmp/e3-local-test.log
+          grep -q 'Ran 27 tests' /tmp/e3-local-test.log
+          grep -q '^OK$' /tmp/e3-local-test.log
+          "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_scienceqa_real.py' -q 2>&1 | tee /tmp/e3-optimized-test.log
+      - name: Stage source-only ScienceQA and create separate held-label seal
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          /tmp/e3-venv/bin/python experiments/shared_stem_cell/e3_scienceqa_stage.py --output /tmp/e3-scienceqa
+          /tmp/e3-venv/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/e3-scienceqa')
+          s=json.loads((p/'source-seals.json').read_bytes())
+          assert s['dataset_revision']=='b9984af01798586705cee1fbdfa80a6dcbef04f1'
+          assert (p/'private_labels'/'test_labels.jsonl').is_file()
+          assert (p/'inputs'/'fit_labels.jsonl').is_file()
+          assert (p/'inputs'/'sources.jsonl').is_file()
+          # The next process receives no held target path; raw source media
+          # and private targets are never included in uploaded artifacts.
+          PY
+      - name: Physically run exact Granite97 and DINOv2 weights; fit and seal held predictions
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          P=/tmp/e3-venv/bin/python
+          read -r SRC FIT < <("$P" - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('/tmp/e3-scienceqa/source-seals.json').read_text())
+          print(s['source_sha256'],s['fit_labels_sha256'])
+          PY
+          )
+          "$P" experiments/shared_stem_cell/e3_granite_dino_real.py \
+             --sources /tmp/e3-scienceqa/inputs/sources.jsonl --source-sha256 "$SRC" \
+             --fit-labels /tmp/e3-scienceqa/inputs/fit_labels.jsonl --fit-labels-sha256 "$FIT" \
+             --images /tmp/e3-scienceqa/images --output /tmp/e3-original-model
+          test -s /tmp/e3-original-model/sealed-predictions.json
+          sha256sum /tmp/e3-original-model/sealed-predictions.json > /tmp/e3-prediction-seal-before-label.txt
+      - name: Independently reopen original test targets only AFTER model predictions seal
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          P=/tmp/e3-venv/bin/python
+          test -s /tmp/e3-prediction-seal-before-label.txt
+          read -r SRC HELD < <("$P" - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path('/tmp/e3-scienceqa/source-seals.json').read_text())
+          print(s['source_sha256'],s['private_test_labels_sha256'])
+          PY
+          )
+          PRED=$(cut -d' ' -f1 /tmp/e3-prediction-seal-before-label.txt)
+          "$P" experiments/shared_stem_cell/e3_scienceqa_review.py \
+            --sources /tmp/e3-scienceqa/inputs/sources.jsonl --source-sha256 "$SRC" \
+            --heldout-labels /tmp/e3-scienceqa/private_labels/test_labels.jsonl \
+            --heldout-labels-sha256 "$HELD" \
+            --predictions /tmp/e3-original-model/sealed-predictions.json \
+            --predictions-sha256 "$PRED" --output /tmp/e3-original-review.json
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('/tmp/e3-original-review.json').read_text())
+          assert p['original_heldout_cases']==64
+          assert p['stem_winner'] is None and p['authority']=='DENY_ALL'
+          for arm in p['arms'].values():
+              assert arm['cases']==64
+          print('REAL MODEL DESCRIPTIVE E3 REVIEW COMPLETED, NEVER A PRODUCTION SELECTION')
+          PY
+      - name: Retain immutable source and available failure evidence without raw media or weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/e3-safe-evidence
+          git rev-parse HEAD > /tmp/e3-safe-evidence/source-head.txt
+          git rev-parse HEAD^{tree} > /tmp/e3-safe-evidence/source-tree.txt
+          cp /tmp/e3-environment.txt /tmp/e3-safe-evidence/versions.txt || true
+          cp /tmp/e3-local-test.log /tmp/e3-safe-evidence/offline-tests.txt || true
+          cp /tmp/e3-optimized-test.log /tmp/e3-safe-evidence/optimized-tests.txt || true
+          cp /tmp/e3-prediction-seal-before-label.txt /tmp/e3-safe-evidence/predictions-before-labels.sha256 || true
+          cp /tmp/e3-scienceqa/source-seals.json /tmp/e3-safe-evidence/source-seals.json || true
+          cp /tmp/e3-original-model/sealed-predictions.json /tmp/e3-safe-evidence/sealed-source-bound-predictions.json || true
+          cp /tmp/e3-original-review.json /tmp/e3-safe-evidence/independent-descriptive-review.json || true
+          sha256sum experiments/shared_stem_cell/e3_scienceqa_contract.py \
+            experiments/shared_stem_cell/e3_scienceqa_stage.py \
+            experiments/shared_stem_cell/e3_granite_dino_real.py \
+            experiments/shared_stem_cell/e3_scienceqa_review.py \
+            experiments/shared_stem_cell/test_e3_scienceqa_real.py \
+            experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md \
+            .github/workflows/hepta-e3-granite-dino-scienceqa.yml \
+            > /tmp/e3-safe-evidence/source-blobs-SHA256
+          (cd /tmp/e3-safe-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-e3-granite-dino-actual-or-failure-no-weights-no-media
+          path: /tmp/e3-safe-evidence
+          if-no-files-found: error
