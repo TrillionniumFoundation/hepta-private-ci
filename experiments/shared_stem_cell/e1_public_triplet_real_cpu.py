@@ -55,8 +55,12 @@ def encode_pretrained(cases,model,compact_dir,gemma_dir,manifest):
  name,revision,width=MODELS[model];begin=time.perf_counter_ns()
  if model!='embeddinggemma_2_text':
   sys.path.insert(0,str(Path(compact_dir)/'qualification/neuron-stem'))
-  from compact_stem_trial import FrozenCompactStem
-  backend=FrozenCompactStem(name,revision,device='cpu',max_tokens=512)
+  if model=='mmbert_small':
+   from e1_mmbert_tied_loader import FrozenMMBert
+   backend=FrozenMMBert(revision,device='cpu',max_tokens=512)
+  else:
+   from compact_stem_trial import FrozenCompactStem
+   backend=FrozenCompactStem(name,revision,device='cpu',max_tokens=512)
  else:
   sys.path.insert(0,str(Path(gemma_dir)/'qualification/neuron-dynamic-learning'))
   from embeddinggemma2_shadow import FrozenGemmaShadow
@@ -91,7 +95,12 @@ def encode_pretrained(cases,model,compact_dir,gemma_dir,manifest):
   vectors[key]=[round(float(x)*(1<<24))/(1<<24) for x in values]
   tokens[key]=n;durations[key]=(time.perf_counter_ns()-start)/1e6
  return vectors,tokens,digests,{'load_ms':load_ms,'encode_ms_by_case':durations,
-     'local_model_api_requests':len(cases),'physical_transformer_forward_count_attested':False}
+     'local_model_api_requests':len(cases),'physical_transformer_forward_count_attested':False,
+     'mmbert_pretrained_tied_checkpoint_sample_verified':(
+       backend.pretrained_weight_receipt['actual_local_tied_embedding_checkpoint_sample_checked']
+       if model=='mmbert_small' else None),
+     'mmbert_local_sample_sha256':(
+       backend.pretrained_weight_receipt['sample_sha256'] if model=='mmbert_small' else None)}
 def fit_heads(panel,model,vectors,*,seed=20261014,steps=40,lr=.15):
  import torch
  import torch.nn.functional as F
