@@ -9,6 +9,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_question_only_review.py'
       - 'experiments/shared_stem_cell/p0_encoding_cost_frontier.py'
       - 'experiments/shared_stem_cell/p0_physical_replay_v5.py'
+      - 'experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py'
+      - 'experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py'
+      - 'experiments/shared_stem_cell/P0_COLD_PRETRAINED_ENCODER_V6.md'
       - 'experiments/shared_stem_cell/test_p0_physical_replay_v5.py'
       - 'experiments/shared_stem_cell/P0_INDEPENDENT_HEAD_REPLAY_V5.md'
       - 'experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py'
@@ -53,6 +56,8 @@ jobs:
             experiments/shared_stem_cell/p0_question_only_review.py \
             experiments/shared_stem_cell/p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/p0_physical_replay_v5.py \
+            experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py \
+            experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/test_p0_physical_replay_v5.py \
             experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/test_p0_question_only_matched.py \
@@ -78,6 +83,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_cold_encoder_replay_v6.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_cold_encoder_replay_v6.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -355,8 +364,141 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-  independent-human-score:
+  independent-cold-pretrained-encoder:
+    # Another hosted Runner, with a SECOND cold load of the ORIGINAL pinned
+    # pretrained weights; independent of the worker that produced V5 features.
     needs: [original-human-materials, physical-four-models, independent-pretrained-replay]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 200
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      USE_TF: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Checkout independently reviewed compact model loader
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+      - name: Checkout independently reviewed Gemma loader
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-gemma
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/cold-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/cold-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/cold-only
+      - name: Verify original independent loader source Git SHA
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+      - name: Install pinned safe CPU inference stack and numerical auditor
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/hepta-cold-p0-venv"
+          PY="$RUNNER_TEMP/hepta-cold-p0-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pillow==11.3.0'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/cold-only/cold-runtime-lock.txt"
+      - name: Reacquire exact reviewed Granite and mmBERT weight bytes
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hepta-cold-p0-venv/bin/python" - <<'PYCODE'
+          from pathlib import Path
+          import hashlib
+          from huggingface_hub import HfApi, snapshot_download
+          models=(('ibm-granite/granite-embedding-97m-multilingual-r2',
+                   '835ad14087e140460703cf0fae09f97d469d65c2'),
+                  ('jhu-clsp/mmBERT-small',
+                   '0eb3d056ec1d6333cf4e19b0966dfde342a41a3a'))
+          for name,revision in models:
+              info=HfApi().model_info(repo_id=name,revision=revision,files_metadata=True)
+              if info.sha!=revision:raise ValueError('unpinned cold real model revision')
+              root=Path(snapshot_download(repo_id=name,revision=revision,
+                    allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+              found={p.relative_to(root).as_posix():p for p in root.rglob('*') if p.is_file()}
+              if not {'model.safetensors','tokenizer.json','config.json'}<=set(found):
+                  raise ValueError('incomplete original cold pretrained model files')
+              if any(f.endswith(('.bin','.pkl','.pickle','.pt','.py')) for f in found):
+                  raise ValueError('insecure pretrained serialization found')
+              for sibling in info.siblings:
+                  if sibling.rfilename not in found:continue
+                  lfs=sibling.lfs
+                  expected=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+                  if expected and hashlib.sha256(found[sibling.rfilename].read_bytes()).hexdigest()!=expected:
+                      raise ValueError('cold original safetensors or tokenizer bytes changed')
+          PYCODE
+      - name: Prepare newly loaded original Gemma text-only checkpoint
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cold-work"
+          "$RUNNER_TEMP/hepta-cold-p0-venv/bin/python" \
+            pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+            --destination "$RUNNER_TEMP/cold-work/gemma-snapshot" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/cold-only/gemma-cold-source-receipt.json"
+      - name: Re-forward 2 source-disjoint pairs per train/cal/test split per model
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/cold-only"
+          PY="$RUNNER_TEMP/hepta-cold-p0-venv/bin/python"
+          if ! timeout --signal=TERM --kill-after=30s 8500s "$PY" \
+            experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --replay-root "$ROOT" --compact-checkout pinned-compact \
+            --gemma-checkout pinned-gemma \
+            --gemma-manifest "$RUNNER_TEMP/cold-work/gemma-snapshot/manifest.json" \
+            --output "$ROOT/independent-cold-encoder.json"; then
+            printf '%s\n' 'cold re-forward did not establish physical Encoder feature parity' > "$ROOT/cold-failed.txt"
+            exit 1
+          fi
+          "$PY" -m json.tool "$ROOT/independent-cold-encoder.json" >/dev/null
+          echo 'Q24 tolerance 2 units was fixed before model execution. No held label or release permission.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-independent-cold-encoder-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/cold-only/independent-cold-encoder.json
+            ${{ runner.temp }}/cold-only/gemma-cold-source-receipt.json
+            ${{ runner.temp }}/cold-only/cold-runtime-lock.txt
+            ${{ runner.temp }}/cold-only/cold-failed.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+  independent-human-score:
+    needs: [original-human-materials, physical-four-models, independent-pretrained-replay, independent-cold-pretrained-encoder]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
