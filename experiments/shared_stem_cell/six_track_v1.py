@@ -73,6 +73,13 @@ def number(v, *, positive=False):
     return float(v)
 
 
+def signed_utility(v):
+    """An observed result may have negative net utility or a failure penalty."""
+    if type(v) not in (float, int) or not math.isfinite(v) or not -1 <= v <= 1:
+        raise Invalid("missing/nonfinite/out-of-bound signed utility")
+    return float(v)
+
+
 def _pairs(items):
     d = {}
     for k, v in items:
@@ -215,13 +222,13 @@ def check_arm(stage, name, arm, cases):
             raise Invalid("outcome-dependent/unsealed prediction")
         digest(row.get("trace_sha256"))
         p = number(row.get("positive_probability"))
-        q = number(row.get("observed_utility"))
+        q = signed_utility(row.get("observed_utility"))
         latency = number(row.get("end_to_end_ms"), positive=True)
-        if p > 1 or q > 1:
-            raise Invalid("unbounded outcome/probability")
+        if p > 1:
+            raise Invalid("unbounded probability")
         if type(row.get("completed")) is not bool:
             raise Invalid("missing completed/failed result")
-        if not row["completed"] and q != 0:
+        if not row["completed"] and q > 0:
             raise Invalid("failed task assigned positive utility")
         if stage == "P3":
             digest(row.get("generated_artifact_sha256"))
@@ -251,14 +258,21 @@ def check_arm(stage, name, arm, cases):
         if not data:
             raise Invalid("incomplete future partition")
         correct = sum(int((r["positive_probability"] >= .5) == bool(c["label"])) for c, r in data)
+        completed_and_correct = sum(
+            int(r["completed"] and (r["positive_probability"] >= .5) == bool(c["label"]))
+            for c, r in data
+        )
         latencies = [r["end_to_end_ms"] for _, r in data]
         metrics[split] = {
             "case_count": len(data),
             "source_family_count": len({c["source_group"] for c, _ in data}),
             "distinct_task_count": len({c["task_id"] for c, _ in data}),
             "accuracy": correct / len(data),
+            "accuracy_counts_predictions_even_if_execution_failed": True,
+            "completed_and_correct_fraction": completed_and_correct / len(data),
             "brier": sum((r["positive_probability"] - c["label"]) ** 2 for c, r in data) / len(data),
             "mean_observed_utility": sum(r["observed_utility"] for _, r in data) / len(data),
+            "negative_utility_count": sum(r["observed_utility"] < 0 for _, r in data),
             "completion_rate": sum(r["completed"] for _, r in data) / len(data),
             "p50_ms": supported_nearest_rank(latencies, .5, 3),
             "p95_ms": supported_nearest_rank(latencies, .95, 20),
@@ -269,16 +283,26 @@ def check_arm(stage, name, arm, cases):
     # one-off costs may or may not appear in the measured request stream. Charge
     # EACH missing component once: an all-or-nothing flag can silently erase
     # e.g. model training cost because model load happened inside one request.
-    n = len(rows)
+    # Train/calibration case forwards cannot silently inflate the effective
+    # number of measured holdout/future/OOD serving requests. The experiment
+    # horizon is exactly its observed EVAL_SPLITS; no invented lifetime reuse.
+    n = sum(len(by_split[split]) for split in EVAL_SPLITS)
+    if n == 0:
+        raise Invalid("no evaluation requests for lifecycle cost")
     not_in_e2e = sum(costs[k] for k in ONE_TIME if not one_time_in_e2e[k])
     amortized = not_in_e2e / n
+    measured_e2e = sum(
+        row["end_to_end_ms"] for split in EVAL_SPLITS for _, row in by_split[split]
+    )
     metrics["lifecycle"] = {
-        "observed_all_split_requests": n,
+        "observed_all_split_requests": len(rows),
+        "observed_evaluation_requests": n,
+        "excluded_training_calibration_requests": len(rows) - n,
         "one_time_work_ms": sum(costs[k] for k in ONE_TIME),
         "one_time_not_in_e2e_ms": not_in_e2e,
         "one_time_included_in_e2e": dict(one_time_in_e2e),
         "amortized_one_time_ms_per_request": amortized,
-        "mean_e2e_plus_amortized_ms": sum(row["end_to_end_ms"] for row in rows) / n + amortized,
+        "mean_e2e_plus_amortized_ms": measured_e2e / n + amortized,
         "reported_peak_rss_bytes": costs["peak_rss_bytes"],
         "reported_peak_gpu_bytes": costs["peak_gpu_bytes"],
         "reported_energy_joules": costs["energy_joules"],
