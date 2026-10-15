@@ -1046,7 +1046,10 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
         1,
         "no durable successor sequence is permitted"
     );
-    assert!(!original_path.exists(), "denied cutover has no durable effect");
+    assert!(
+        !original_path.exists(),
+        "denied cutover has no durable effect"
+    );
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
     assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
 
@@ -1088,6 +1091,9 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
             .is_none(),
         "missing original Control/CNS handoff must return no committed effect",
     );
-    assert!(!original_path.exists(), "restart may not manufacture a CNS commit");
+    assert!(
+        !original_path.exists(),
+        "restart may not manufacture a CNS commit"
+    );
     Ok(())
 }
