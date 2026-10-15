@@ -434,7 +434,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             return Err(BatchWorkerErrorV1::Capacity);
         }
         self.validate_caller_now_ms(now_ms)?;
-        if !self.metrics_available_for_effect() {
+        // Proposing a batch to an independent signer BEFORE the original
+        // Admission WAL has acknowledged its prior queued members risks
+        // orphaned grants after a crash. A healthy async writer is not an
+        // fsynced admission receipt. The exact original group-commit barrier
+        // must have completed when a metric writer is installed.
+        //
+        // The only sink-free exception is the pre-existing in-process unit
+        // test fixture; no non-test library can mark that fixture ready.
+        if !self.metrics_available_for_effect()
+            || (self.metric_sink.is_some() && !self.production_metrics_ready())
+        {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
         let effective_now = self.queue_effective_now_ms(now_ms);
