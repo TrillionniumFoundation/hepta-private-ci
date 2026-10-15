@@ -13,6 +13,10 @@ jobs:
   exact-stochastic-research:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONPATH: qualification/shared-stem-system2-architecture
@@ -20,6 +24,8 @@ jobs:
       OUTPUT: /tmp/hepta-e11-stochastic
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -29,6 +35,9 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUTPUT"
           git rev-parse HEAD | tee "$OUTPUT/original-head.txt"
+          if [[ "${{ matrix.source_profile }}" == "source_head" && "${{ github.event_name }}" == "pull_request" ]]; then
+            test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          fi
           python --version | tee "$OUTPUT/python.txt"
           sha256sum "$ROOT"/e11_*.py "$ROOT"/test_e11_*.py | tee "$OUTPUT/research-code.sha256"
           sha256sum "$ROOT"/observations/E10_EXACT_PAIRED_PARETO_LOCAL_20261015.json \
@@ -75,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hepta-e11-exact-stochastic-negative
+          name: hepta-e11-exact-stochastic-negative-${{ matrix.source_profile }}
           path: /tmp/hepta-e11-stochastic/
           retention-days: 14
           if-no-files-found: warn
