@@ -1,0 +1,50 @@
+name: Hepta System2 immutable Reader outcome audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_outcome_audit.py"
+      - "scripts/memory_cell/test_system2_reader_outcome_audit.py"
+      - ".github/workflows/hepta-system2-reader-outcome-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-outcome-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-receipt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test stdlib audit without staging any models
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-audit
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_system2_reader_outcome_audit.py' -v 2>&1 | tee /tmp/reader-audit/tests.log
+          python3 -m py_compile scripts/memory_cell/system2_reader_outcome_audit.py
+      - name: Read the completed exact-source experiment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11721757214/zip > /tmp/original-reader.zip
+          printf '%s  %s\n' 53dff155f79d4b333ba30060022cc38d351807993f09812ee94e0d8f5f24aee3 /tmp/original-reader.zip | sha256sum -c -
+          python3 scripts/memory_cell/system2_reader_outcome_audit.py /tmp/original-reader.zip /tmp/reader-audit/report | tee /tmp/reader-audit/audit.log
+      - name: Preserve failures and exact audit source
+        if: always()
+        run: |
+          mkdir -p /tmp/reader-audit/source
+          git rev-parse HEAD > /tmp/reader-audit/auditor-commit.txt
+          cp scripts/memory_cell/system2_reader_outcome_audit.py scripts/memory_cell/test_system2_reader_outcome_audit.py /tmp/reader-audit/source/
+          (cd /tmp/reader-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-outcome-audit
+          path: /tmp/reader-audit
+          if-no-files-found: error

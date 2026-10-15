@@ -1,0 +1,94 @@
+name: Hepta full shared Stem and Cell matrix
+
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - "scripts/memory_cell/test_full_cell_matrix.py"
+      - "scripts/memory_cell/reader_review_ledger.py"
+      - "scripts/memory_cell/test_reader_review_ledger.py"
+      - "scripts/memory_cell/reader_originals_attestation.py"
+      - "scripts/memory_cell/test_reader_originals_attestation.py"
+      - "scripts/memory_cell/reader_review_handoff.py"
+      - "scripts/memory_cell/test_reader_review_handoff.py"
+      - "scripts/memory_cell/reader_review_intake.py"
+      - "scripts/memory_cell/test_reader_review_intake.py"
+      - ".github/workflows/hepta-full-cell-matrix.yml"
+      - "codex-rs/hepta-ndu/research/READER_DUAL_SIGNATURE_TRUST.md"
+      - "codex-rs/hepta-ndu/research/READER_CASE_LEDGER.md"
+      - "codex-rs/hepta-ndu/research/READER_ORIGINALS_ATTESTATION.md"
+      - "codex-rs/hepta-ndu/research/READER_REVIEW_HANDOFF.md"
+      - "codex-rs/hepta-ndu/research/READER_REVIEW_INTAKE.md"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - "scripts/memory_cell/test_full_cell_matrix.py"
+      - "scripts/memory_cell/reader_review_ledger.py"
+      - "scripts/memory_cell/test_reader_review_ledger.py"
+      - "scripts/memory_cell/reader_originals_attestation.py"
+      - "scripts/memory_cell/test_reader_originals_attestation.py"
+      - "scripts/memory_cell/reader_review_handoff.py"
+      - "scripts/memory_cell/test_reader_review_handoff.py"
+      - "scripts/memory_cell/reader_review_intake.py"
+      - "scripts/memory_cell/test_reader_review_intake.py"
+      - ".github/workflows/hepta-full-cell-matrix.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-cell-matrix-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  matrix-plan-and-gate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned independent-review signature verifier
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-cell-matrix
+          python3 -m venv /tmp/full-cell-review
+          /tmp/full-cell-review/bin/pip install cryptography==46.0.4 ruff==0.15.8 > /tmp/full-cell-matrix/install-cryptography.log 2>&1
+          /tmp/full-cell-review/bin/pip freeze > /tmp/full-cell-matrix/reviewer-env.txt
+      - name: Run hermetic matrix and reviewer-signature tests
+        run: |
+          set -euo pipefail
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_full_cell_matrix.py' -v | tee /tmp/full-cell-matrix/regression.log
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_ledger.py' -v | tee /tmp/full-cell-matrix/ledger-tests.log
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_originals_attestation.py' -v | tee /tmp/full-cell-matrix/originals-tests.log
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_handoff.py' -v | tee /tmp/full-cell-matrix/handoff-tests.log
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_intake.py' -v | tee /tmp/full-cell-matrix/intake-tests.log
+          /tmp/full-cell-review/bin/ruff check --select F,E9 scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py scripts/memory_cell/reader_review_intake.py scripts/memory_cell/test_reader_review_intake.py | tee /tmp/full-cell-matrix/lint.log
+          /tmp/full-cell-review/bin/python scripts/memory_cell/full_cell_matrix.py /tmp/full-cell-matrix/plan | tee /tmp/full-cell-matrix/run.log
+          /tmp/full-cell-review/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads((Path('/tmp/full-cell-matrix/plan')/'run-summary.json').read_text())
+          if (result['planned_records'],result['blocked_reader_records'],
+                  result['planned_neural_records'],result['neural_calls'])!=(768,768,0,0):
+              raise ValueError('unreviewed neural matrix was admitted')
+          print('UNREVIEWED_READER_GATE_BLOCKS_ALL_768')
+          PY
+      - name: Retain source identity and matrix plan
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-cell-matrix/source
+          git rev-parse HEAD > /tmp/full-cell-matrix/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/full-cell-matrix/source/tested-tree.txt
+          cp scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py scripts/memory_cell/reader_review_intake.py scripts/memory_cell/test_reader_review_intake.py .github/workflows/hepta-full-cell-matrix.yml codex-rs/hepta-ndu/research/READER_DUAL_SIGNATURE_TRUST.md codex-rs/hepta-ndu/research/READER_CASE_LEDGER.md codex-rs/hepta-ndu/research/READER_ORIGINALS_ATTESTATION.md codex-rs/hepta-ndu/research/READER_REVIEW_HANDOFF.md codex-rs/hepta-ndu/research/READER_REVIEW_INTAKE.md /tmp/full-cell-matrix/source/
+          (cd /tmp/full-cell-matrix && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-full-cell-matrix
+          path: /tmp/full-cell-matrix
+          if-no-files-found: error

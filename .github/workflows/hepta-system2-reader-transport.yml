@@ -1,0 +1,121 @@
+name: Hepta System2 frozen Reader input transport ablation
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_transport_trial.py"
+      - "scripts/memory_cell/test_system2_reader_transport_trial.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_TRANSPORT.md"
+      - ".github/workflows/hepta-system2-reader-transport.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-transport-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-transport-contrast:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_STRONG_READER_ARCHIVE: /tmp/frozen-0p5b-parent.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin isolated offline CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-transport
+          python3 -m venv /tmp/reader-transport-python
+          /tmp/reader-transport-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/reader-transport/install-torch.log 2>&1
+          /tmp/reader-transport-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/reader-transport/install-deps.log 2>&1
+          /tmp/reader-transport-python/bin/pip freeze > /tmp/reader-transport/environment.txt
+      - name: Fetch and externally verify immutable 160-answer Qwen parent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11768355664/zip > "$HEPTA_STRONG_READER_ARCHIVE"
+          printf '%s  %s\n' 853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37 "$HEPTA_STRONG_READER_ARCHIVE" | sha256sum -c -
+          PYTHONPATH=scripts/memory_cell /tmp/reader-transport-python/bin/python - <<'PY'
+          from pathlib import Path
+          from system2_reader_paired_capacity_audit import open_strong
+          files, plan, rows = open_strong(Path('/tmp/frozen-0p5b-parent.zip'))
+          if len(rows) != 160 or plan.get('production_accepted') is not False:
+              raise ValueError('incomplete original experiment')
+          print('FROZEN_0P5B_OUTPUT_ARCHIVE_VERIFIED', len(files)-1, len(rows))
+          PY
+      - name: Full MemoryCell regression plus strict scoped static checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/reader-transport-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/reader-transport/regression.log 2>&1; then
+            tail -100 /tmp/reader-transport/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/reader-transport/regression.log
+          /tmp/reader-transport-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_transport_trial.py scripts/memory_cell/test_system2_reader_transport_trial.py | tee /tmp/reader-transport/lint.log
+      - name: Pin the EXACT original strong checkpoint and tokenizer inventory
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/reader-transport-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from system2_native_receipt import verified_archive, strict_json
+          from system2_reader_capacity_reference import MODEL_ID, MODEL_REV, MODEL_FILES
+          if MODEL_ID != 'Qwen/Qwen2.5-0.5B-Instruct' or MODEL_REV != 'a338b55dd21219a5f4da42bc11a9313d1a27d4cc':
+              raise ValueError('different model/revision')
+          files=verified_archive(Path('/tmp/frozen-0p5b-parent.zip'),
+              '853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37')
+          pinned=strict_json(files['reference-inventory.json'])
+          root=Path('/tmp/qwen-0p5b-transport')
+          snapshot_download(repo_id=MODEL_ID,revision=MODEL_REV,token=False,
+              local_dir=str(root),allow_patterns=[
+                  'config.json','generation_config.json','tokenizer.json',
+                  'tokenizer_config.json','special_tokens_map.json',
+                  'model.safetensors','merges.txt','vocab.json'],
+              ignore_patterns=['*.bin','*.pt','*.onnx','*.msgpack'])
+          current=file_inventory(root)
+          if (pinned.get('model_id')!=MODEL_ID or pinned.get('revision')!=MODEL_REV
+                  or current!=pinned.get('model_snapshot_inventory')
+                  or set(MODEL_FILES)-set(current)
+                  or not root.joinpath('model.safetensors').is_file()):
+              raise ValueError('original 0.5B snapshot inventory drift')
+          Path('/tmp/reader-transport/reader-inventory.json').write_text(json.dumps(
+              dict(model=MODEL_ID,revision=MODEL_REV,files=current,
+                   untrusted_remote_code_executed=False),sort_keys=True,indent=2)+'\n')
+          print('EXACT_MODEL_INVENTORY_VERIFIED',len(current))
+          PY
+      - name: Compare same sources as original JSON vs readable quoted record lines
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/reader-transport/resources.txt /tmp/reader-transport-python/bin/python scripts/memory_cell/system2_reader_transport_trial.py "$HEPTA_STRONG_READER_ARCHIVE" /tmp/qwen-0p5b-transport /tmp/reader-transport/trial --development > /tmp/reader-transport/execution.log 2>&1 || { tail -100 /tmp/reader-transport/execution.log; exit 1; }
+          tail -1 /tmp/reader-transport/execution.log
+      - name: Retain exact tested source, raw outputs, failure journals and hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-transport/source
+          git rev-parse HEAD > /tmp/reader-transport/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/reader-transport/tested-tree.txt
+          cp scripts/memory_cell/system2_reader_transport_trial.py scripts/memory_cell/test_system2_reader_transport_trial.py /tmp/reader-transport/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_TRANSPORT.md .github/workflows/hepta-system2-reader-transport.yml /tmp/reader-transport/source/
+          (cd /tmp/reader-transport && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-frozen-reader-transport
+          path: /tmp/reader-transport
+          if-no-files-found: error

@@ -1,0 +1,63 @@
+name: Hepta full Cell-head mechanism probe
+
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/full_cell_heads_probe.py"
+      - "scripts/memory_cell/test_full_cell_heads_probe.py"
+      - ".github/workflows/hepta-full-cell-heads.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/full_cell_heads_probe.py"
+      - "scripts/memory_cell/test_full_cell_heads_probe.py"
+      - ".github/workflows/hepta-full-cell-heads.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-cell-heads-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  mechanism-probe:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU PyTorch probe environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-heads-python
+          /tmp/hepta-heads-python/bin/pip install numpy==1.26.4
+          /tmp/hepta-heads-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-heads-python/bin/pip install ruff==0.15.8
+          /tmp/hepta-heads-python/bin/pip freeze > /tmp/hepta-heads-environment.txt
+      - name: Run Cell-head controls and profiler probe
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-full-cell-heads
+          /tmp/hepta-heads-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_full_cell_heads_probe.py' -v 2>&1 | tee /tmp/hepta-full-cell-heads/tests.log
+          /tmp/hepta-heads-python/bin/ruff check --select F,E9 scripts/memory_cell/full_cell_heads_probe.py scripts/memory_cell/test_full_cell_heads_probe.py | tee /tmp/hepta-full-cell-heads/lint.log
+          /tmp/hepta-heads-python/bin/python scripts/memory_cell/full_cell_heads_probe.py /tmp/hepta-full-cell-heads/probe.json
+          cp /tmp/hepta-heads-environment.txt /tmp/hepta-full-cell-heads/environment.txt
+      - name: Retain source identity and probe result
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-full-cell-heads/source
+          git rev-parse HEAD > /tmp/hepta-full-cell-heads/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-full-cell-heads/source/tested-tree.txt
+          cp scripts/memory_cell/full_cell_heads_probe.py scripts/memory_cell/test_full_cell_heads_probe.py .github/workflows/hepta-full-cell-heads.yml /tmp/hepta-full-cell-heads/source/
+          (cd /tmp/hepta-full-cell-heads && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-full-cell-heads
+          path: /tmp/hepta-full-cell-heads
+          if-no-files-found: error

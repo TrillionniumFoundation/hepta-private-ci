@@ -1,0 +1,84 @@
+name: Hepta System2 one-hop three-presentation sealed Reader audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_onehop_label_triad_audit.py"
+      - "scripts/memory_cell/test_system2_onehop_label_triad_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_TRIAD.md"
+      - ".github/workflows/hepta-system2-onehop-label-triad.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-label-triad-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  sealed-no-new-model-calls:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_ONEHOP_CARDINALITY_ARCHIVE: /tmp/hepta-cardinality-original.zip
+      HEPTA_ONEHOP_LABEL_ARCHIVE: /tmp/hepta-label-E-and-none.zip
+      HEPTA_ONEHOP_NEUTRAL_ARCHIVE: /tmp/hepta-label-R.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned isolated CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-label-triad
+          python3 -m venv /tmp/triad-python
+          /tmp/triad-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-label-triad/install-torch.log 2>&1
+          /tmp/triad-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-label-triad/install-deps.log 2>&1
+          /tmp/triad-python/bin/pip freeze > /tmp/system2-label-triad/environment.txt
+      - name: Verify externally pinned three completed source archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_ONEHOP_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_ONEHOP_CARDINALITY_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_ONEHOP_LABEL_ARCHIVE"
+          printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_ONEHOP_LABEL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11762587793/zip > "$HEPTA_ONEHOP_NEUTRAL_ARCHIVE"
+          printf '%s  %s\n' 7341c519fc80b66a0156f0b349516ff260042dce9e5c9b94e9af49e362bf9e9b "$HEPTA_ONEHOP_NEUTRAL_ARCHIVE" | sha256sum -c -
+      - name: Full MemoryCell regression and scoped static lint
+        run: |
+          set -euo pipefail
+          if ! /tmp/triad-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-label-triad/full-regression.log 2>&1; then
+            tail -100 /tmp/system2-label-triad/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/system2-label-triad/full-regression.log
+          /tmp/triad-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_label_triad_audit.py scripts/memory_cell/test_system2_onehop_label_triad_audit.py | tee /tmp/system2-label-triad/lint.log
+      - name: Replay sealed Reader inputs and compare three presentation controls
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /tmp/triad-python/bin/python scripts/memory_cell/system2_onehop_label_triad_audit.py "$HEPTA_ONEHOP_CARDINALITY_ARCHIVE" "$HEPTA_ONEHOP_LABEL_ARCHIVE" "$HEPTA_ONEHOP_NEUTRAL_ARCHIVE" /tmp/system2-label-triad/paired-summary.json > /tmp/system2-label-triad/replay.log 2>&1 || { tail -100 /tmp/system2-label-triad/replay.log; exit 1; }
+          cat /tmp/system2-label-triad/replay.log
+      - name: Retain exact source, work receipts and SHA manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-label-triad/source
+          git rev-parse HEAD > /tmp/system2-label-triad/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-label-triad/tested-tree.txt
+          cp scripts/memory_cell/system2_onehop_label_triad_audit.py scripts/memory_cell/test_system2_onehop_label_triad_audit.py /tmp/system2-label-triad/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_TRIAD.md .github/workflows/hepta-system2-onehop-label-triad.yml /tmp/system2-label-triad/source/
+          (cd /tmp/system2-label-triad && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-sealed-label-triad
+          path: /tmp/system2-label-triad
+          if-no-files-found: error

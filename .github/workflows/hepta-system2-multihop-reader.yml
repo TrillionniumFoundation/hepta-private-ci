@@ -1,0 +1,117 @@
+name: Hepta System2 synthetic multi-hop frozen Reader
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_multihop_evidence.py"
+      - "scripts/memory_cell/system2_multihop_trial.py"
+      - "scripts/memory_cell/test_system2_multihop.py"
+      - "scripts/memory_cell/system2_multihop_stress.py"
+      - "scripts/memory_cell/test_system2_multihop_stress.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_SYNTHETIC_MULTIHOP.md"
+      - ".github/workflows/hepta-system2-multihop-reader.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-multihop-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-reader-multihop:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned isolated CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-multihop
+          python3 -m venv /tmp/multihop-python
+          /tmp/multihop-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-multihop/install-torch.log 2>&1
+          /tmp/multihop-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-multihop/install-deps.log 2>&1
+          /tmp/multihop-python/bin/pip freeze > /tmp/system2-multihop/environment.txt
+      - name: Full MemoryCell regression and strict static checks
+        run: |
+          set -euo pipefail
+          if ! /tmp/multihop-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-multihop/full-regression.log 2>&1; then
+            tail -100 /tmp/system2-multihop/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/system2-multihop/full-regression.log
+          /tmp/multihop-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py scripts/memory_cell/system2_multihop_stress.py scripts/memory_cell/test_system2_multihop_stress.py | tee /tmp/system2-multihop/lint.log
+      - name: Stage exact historical Reader only, no model download or replacement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/system2-models.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/system2-models.zip | sha256sum -c -
+          PYTHONPATH=scripts/memory_cell /tmp/multihop-python/bin/python - <<'PY'
+          import tarfile
+          import zipfile
+          from pathlib import Path, PurePosixPath
+          from native import digest
+          from pretrained import file_inventory
+          from stem_cell_trial import READER
+          with zipfile.ZipFile('/tmp/system2-models.zip') as z:
+              if z.namelist()!=['memory-inputs.tar.gz']:
+                  raise ValueError('historical model bundle structure drift')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz','r:gz') as t:
+              ms=t.getmembers()
+              if len(ms)>10000 or sum(m.size for m in ms)>2*1024**3:
+                  raise ValueError('historical tar bound exceeded')
+              if len({m.name for m in ms}) != len(ms):
+                  raise ValueError('duplicate tar path')
+              for m in ms:
+                  path=PurePosixPath(m.name)
+                  if path.is_absolute() or '..' in path.parts or not path.parts or path.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir()):
+                      raise ValueError('unsafe tar entry')
+              reader=[m for m in ms if m.name.startswith('memory-inputs/reader/')]
+              if not reader:
+                  raise ValueError('missing pinned Reader files')
+              t.extractall('/tmp',members=reader,filter='data')
+          reader_dir=Path('/tmp/memory-inputs/reader')
+          if digest(file_inventory(reader_dir)) != READER:
+              raise ValueError('frozen Reader inventory changed')
+          out=Path('/tmp/system2-multihop/reader-inventory.json')
+          out.write_text(__import__('json').dumps(dict(reader_sha256=READER,files=file_inventory(reader_dir)),indent=2))
+          print('READER_INVENTORY_PINNED')
+          PY
+      - name: Generate fixed multi-hop raw answers, then seal and score
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-multihop/resources.txt /tmp/multihop-python/bin/python scripts/memory_cell/system2_multihop_trial.py /tmp/memory-inputs/reader /tmp/system2-multihop/native --development > /tmp/system2-multihop/execution.log 2>&1 || { tail -100 /tmp/system2-multihop/execution.log; exit 1; }
+          tail -1 /tmp/system2-multihop/execution.log
+      - name: Quoted-instruction and missing-premise paired frozen Reader stress
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-multihop/stress-resources.txt /tmp/multihop-python/bin/python scripts/memory_cell/system2_multihop_stress.py /tmp/memory-inputs/reader /tmp/system2-multihop/stress --development > /tmp/system2-multihop/stress-execution.log 2>&1 || { tail -100 /tmp/system2-multihop/stress-execution.log; exit 1; }
+          tail -1 /tmp/system2-multihop/stress-execution.log
+      - name: Retain exact source, raw model outputs, failures, identity and complete artifacts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-multihop/source
+          git rev-parse HEAD > /tmp/system2-multihop/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-multihop/tested-tree.txt
+          cp scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py scripts/memory_cell/system2_multihop_stress.py scripts/memory_cell/test_system2_multihop_stress.py /tmp/system2-multihop/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_SYNTHETIC_MULTIHOP.md .github/workflows/hepta-system2-multihop-reader.yml /tmp/system2-multihop/source/
+          (cd /tmp/system2-multihop && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-multihop-reader
+          path: /tmp/system2-multihop
+          if-no-files-found: error

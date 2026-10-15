@@ -1,0 +1,177 @@
+name: Hepta System2 observed budget returns
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_budget_control.py"
+      - "scripts/memory_cell/system2_budget_trial.py"
+      - "scripts/memory_cell/test_system2_budget_control.py"
+      - "scripts/memory_cell/system2_budget_audit.py"
+      - "scripts/memory_cell/test_system2_budget_evidence.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_EVIDENCE.md"
+      - "scripts/memory_cell/system2_resumable_search.py"
+      - "scripts/memory_cell/system2_resume_trial.py"
+      - "scripts/memory_cell/test_system2_resumable_search.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_RESUME.md"
+      - "scripts/memory_cell/system2_canonical_generation.py"
+      - "scripts/memory_cell/system2_canonical_trial.py"
+      - "scripts/memory_cell/test_system2_canonical_generation.py"
+      - "scripts/memory_cell/system2_canonical_cpu.py"
+      - "scripts/memory_cell/test_system2_canonical_cpu.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_GENERATION.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_CPU.md"
+      - "scripts/memory_cell/system2_terminal_prefilter_trial.py"
+      - "scripts/memory_cell/test_system2_terminal_prefilter.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_TERMINAL_PREFILTER.md"
+      - "scripts/memory_cell/system2_cpu_exchange.py"
+      - "scripts/memory_cell/test_system2_cpu_exchange.py"
+      - "scripts/memory_cell/system2_cpu_confirmation.py"
+      - "scripts/memory_cell/test_system2_cpu_confirmation.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CPU_EXCHANGE.md"
+      - "scripts/memory_cell/system2_frontier_value.py"
+      - "scripts/memory_cell/system2_frontier_trial.py"
+      - "scripts/memory_cell/test_system2_frontier_value.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_FRONTIER_VALUE.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_RETURNS.md"
+      - ".github/workflows/hepta-system2-budget-returns.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-budget-returns-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  observed-returns:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
+      HEPTA_SYSTEM2_VERIFIED_ARCHIVE: /tmp/parent-verified-control.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU environment, no pretrained models
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/budget-returns
+          python3 -m venv /tmp/system2-python
+          /tmp/system2-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/budget-returns/install-torch.log 2>&1
+          /tmp/system2-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/budget-returns/install-deps.log 2>&1
+          /tmp/system2-python/bin/pip freeze > /tmp/budget-returns/environment.txt
+      - name: Pin existing fixtures, frozen child critic, and completed parent evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11724608246/zip > "$HEPTA_SYSTEM2_VERIFIED_ARCHIVE"
+          printf '%s  %s\n' 3838a940e601117070438a6e6f88ffc7c46645c50df5ef0f1ea304ebe91ae0bd "$HEPTA_SYSTEM2_VERIFIED_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11725096251/zip > /tmp/reuse-budget-parent.zip
+          /tmp/system2-python/bin/python - <<'PY'
+          from pathlib import Path
+          from system2_native_receipt import verified_archive, strict_json
+          from system2_search_budget import write
+          pin='326d68e4fe0df296948f371976bf2950b520250d52ef792e8c613e96c058a9e7'
+          files=verified_archive(Path('/tmp/reuse-budget-parent.zip'), pin)
+          if files['tested-commit.txt'].decode().strip()!='e5999e69937fe1259591e477927a95057671eb71':
+              raise ValueError('parent generating source drift')
+          if files['tested-tree.txt'].decode().strip()!='58551a58ee69ed66883302d3792a6f325d5839ac':
+              raise ValueError('parent tree drift')
+          write(Path('/tmp/budget-returns/parent-completed.json'), dict(
+              archive_sha256=pin, verified_files=len(files)-1,
+              reuse=strict_json(files['reuse/summary.json']),
+              search=strict_json(files['search-budget/summary.json'])))
+          print('PARENT_ARCHIVE_VERIFIED', len(files)-1)
+          PY
+      - name: Full MemoryCell regression and scoped static checks
+        run: |
+          set -euo pipefail
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/budget-returns/regression.log 2>&1 || { tail -100 /tmp/budget-returns/regression.log; exit 1; }
+          tail -5 /tmp/budget-returns/regression.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_budget_control.py scripts/memory_cell/system2_budget_trial.py scripts/memory_cell/test_system2_budget_control.py scripts/memory_cell/system2_resumable_search.py scripts/memory_cell/system2_resume_trial.py scripts/memory_cell/test_system2_resumable_search.py scripts/memory_cell/system2_budget_audit.py scripts/memory_cell/test_system2_budget_evidence.py scripts/memory_cell/system2_frontier_value.py scripts/memory_cell/system2_frontier_trial.py scripts/memory_cell/test_system2_frontier_value.py scripts/memory_cell/system2_canonical_generation.py scripts/memory_cell/system2_canonical_trial.py scripts/memory_cell/test_system2_canonical_generation.py scripts/memory_cell/system2_canonical_cpu.py  scripts/memory_cell/test_system2_canonical_cpu.py  scripts/memory_cell/system2_terminal_prefilter_trial.py scripts/memory_cell/test_system2_terminal_prefilter.py scripts/memory_cell/system2_cpu_exchange.py scripts/memory_cell/test_system2_cpu_exchange.py scripts/memory_cell/system2_cpu_confirmation.py scripts/memory_cell/test_system2_cpu_confirmation.py | tee /tmp/budget-returns/lint.log
+      - name: Train from fixed-policy returns, freeze, evaluate different task multisets
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_budget_trial.py "$HEPTA_SYSTEM2_VERIFIED_ARCHIVE" /tmp/budget-returns/trial > /tmp/budget-returns/execution.log 2>&1 || { tail -80 /tmp/budget-returns/execution.log; exit 1; }
+          tail -1 /tmp/budget-returns/execution.log
+      - name: Preserve search frontier instead of restarting the root
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/resume-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_resume_trial.py "$HEPTA_SYSTEM2_VERIFIED_ARCHIVE" /tmp/budget-returns/trial /tmp/budget-returns/resume > /tmp/budget-returns/resume.log 2>&1 || { tail -80 /tmp/budget-returns/resume.log; exit 1; }
+          tail -1 /tmp/budget-returns/resume.log
+      - name: Learn actual retained-frontier returns, freeze, and compare stop decisions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/frontier-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_frontier_trial.py "$HEPTA_SYSTEM2_VERIFIED_ARCHIVE" /tmp/budget-returns/frontier > /tmp/budget-returns/frontier.log 2>&1 || { tail -80 /tmp/budget-returns/frontier.log; exit 1; }
+          tail -1 /tmp/budget-returns/frontier.log
+      - name: Compare charged canonical generation on fixed arithmetic tasks
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/canonical-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_canonical_trial.py /tmp/budget-returns/canonical > /tmp/budget-returns/canonical.log 2>&1 || { tail -80 /tmp/budget-returns/canonical.log; exit 1; }
+          tail -1 /tmp/budget-returns/canonical.log
+      - name: Charge real CPU cost after the canonical prediction seal
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/canonical-cpu-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_canonical_cpu.py /tmp/budget-returns/canonical /tmp/budget-returns/canonical-cpu > /tmp/budget-returns/canonical-cpu.log 2>&1 || { tail -80 /tmp/budget-returns/canonical-cpu.log; exit 1; }
+          tail -1 /tmp/budget-returns/canonical-cpu.log
+      - name: Qualify exact-target terminal verification cost on sealed source
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/terminal-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_terminal_prefilter_trial.py /tmp/budget-returns/canonical /tmp/budget-returns/terminal-prefilter > /tmp/budget-returns/terminal.log 2>&1 || { tail -80 /tmp/budget-returns/terminal.log; exit 1; }
+          tail -1 /tmp/budget-returns/terminal.log
+      - name: Freeze CPU-only budget allocation, then evaluate disjoint development tasks
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/cpu-exchange-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_cpu_exchange.py /tmp/budget-returns/cpu-exchange > /tmp/budget-returns/cpu-exchange.log 2>&1 || { tail -80 /tmp/budget-returns/cpu-exchange.log; exit 1; }
+          tail -1 /tmp/budget-returns/cpu-exchange.log
+      - name: Frozen 512-to-1024 confirmatory symbolic CPU/quality comparison
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/cpu-confirm-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_cpu_confirmation.py /tmp/budget-returns/cpu-confirm > /tmp/budget-returns/cpu-confirm.log 2>&1 || { tail -80 /tmp/budget-returns/cpu-confirm.log; exit 1; }
+          tail -1 /tmp/budget-returns/cpu-confirm.log
+      - name: Retain exact source, original decisions, failure journals, and manifests
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/budget-returns/source
+          git rev-parse HEAD > /tmp/budget-returns/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/budget-returns/tested-tree.txt
+          cp scripts/memory_cell/{system2_budget_control.py,system2_budget_trial.py,test_system2_budget_control.py,system2_verified_search.py,system2_search_budget.py} /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_resumable_search.py,system2_resume_trial.py,test_system2_resumable_search.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_RESUME.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_budget_audit.py,test_system2_budget_evidence.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_EVIDENCE.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_frontier_value.py,system2_frontier_trial.py,test_system2_frontier_value.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_FRONTIER_VALUE.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_canonical_generation.py,system2_canonical_trial.py,test_system2_canonical_generation.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_GENERATION.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_canonical_cpu.py,test_system2_canonical_cpu.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_CPU.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_terminal_prefilter_trial.py,test_system2_terminal_prefilter.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_TERMINAL_PREFILTER.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_cpu_exchange.py,test_system2_cpu_exchange.py,system2_cpu_confirmation.py,test_system2_cpu_confirmation.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_CPU_EXCHANGE.md /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_RETURNS.md .github/workflows/hepta-system2-budget-returns.yml /tmp/budget-returns/source/
+          (cd /tmp/budget-returns && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-budget-returns
+          path: /tmp/budget-returns
+          if-no-files-found: error

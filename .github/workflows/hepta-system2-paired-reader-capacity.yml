@@ -1,0 +1,82 @@
+name: Hepta System2 sealed paired frozen Reader capacity audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_paired_capacity_audit.py"
+      - "scripts/memory_cell/test_system2_reader_paired_capacity_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_PAIRED_READER_CAPACITY.md"
+      - ".github/workflows/hepta-system2-paired-reader-capacity.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-sealed-reader-paired-capacity-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  archived-reader-pair:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HEPTA_STRONG_READER_ARCHIVE: /tmp/strong-reference-05b.zip
+      HEPTA_CARDINALITY_ARCHIVE: /tmp/historical-onehop-cardinality.zip
+      HEPTA_LABEL_ARCHIVE: /tmp/historical-onehop-label.zip
+      HEPTA_NEW_135M_ARCHIVE: /tmp/new20-135m-verified.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned offline CPU validation environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/paired-reader-audit
+          python3 -m venv /tmp/paired-reader-python
+          /tmp/paired-reader-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/paired-reader-audit/install-torch.log 2>&1
+          /tmp/paired-reader-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/paired-reader-audit/install-deps.log 2>&1
+          /tmp/paired-reader-python/bin/pip freeze > /tmp/paired-reader-audit/environment.txt
+      - name: Download four independently SHA-pinned completed archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11768355664/zip > "$HEPTA_STRONG_READER_ARCHIVE"
+          printf '%s  %s\n' 853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37 "$HEPTA_STRONG_READER_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756357532/zip > "$HEPTA_CARDINALITY_ARCHIVE"
+          printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_CARDINALITY_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_LABEL_ARCHIVE"
+          printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_LABEL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11770341844/zip > "$HEPTA_NEW_135M_ARCHIVE"
+          printf '%s  %s\n' aaa8d1ee112ae8ad903834d0384f5de94cf19197d36e9ea4b6fce99d485715f0 "$HEPTA_NEW_135M_ARCHIVE" | sha256sum -c -
+      - name: Inherited MemoryCell regressions, archive-tamper checks, static lint
+        run: |
+          set -euo pipefail
+          /tmp/paired-reader-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/paired-reader-audit/regression.log 2>&1 || { tail -100 /tmp/paired-reader-audit/regression.log; exit 1; }
+          tail -5 /tmp/paired-reader-audit/regression.log
+          /tmp/paired-reader-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_paired_capacity_audit.py scripts/memory_cell/test_system2_reader_paired_capacity_audit.py scripts/memory_cell/system2_reader_newcohort_135m.py scripts/memory_cell/test_system2_reader_newcohort_135m.py | tee /tmp/paired-reader-audit/lint.log
+      - name: Audit actual paired Reader answers without new model calls
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/paired-reader-python/bin/python scripts/memory_cell/system2_reader_paired_capacity_audit.py "$HEPTA_STRONG_READER_ARCHIVE" "$HEPTA_CARDINALITY_ARCHIVE" "$HEPTA_LABEL_ARCHIVE" "$HEPTA_NEW_135M_ARCHIVE" /tmp/paired-reader-audit/paired-result.json | tee /tmp/paired-reader-audit/result.log
+      - name: Preserve exact source, auth, model identities and all results
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/paired-reader-audit/source
+          git rev-parse HEAD > /tmp/paired-reader-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/paired-reader-audit/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_paired_capacity_audit.py,test_system2_reader_paired_capacity_audit.py,system2_reader_newcohort_135m.py,test_system2_reader_newcohort_135m.py} /tmp/paired-reader-audit/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_PAIRED_READER_CAPACITY.md .github/workflows/hepta-system2-paired-reader-capacity.yml /tmp/paired-reader-audit/source/
+          (cd /tmp/paired-reader-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-sealed-paired-reader-capacity
+          path: /tmp/paired-reader-audit
+          if-no-files-found: error
