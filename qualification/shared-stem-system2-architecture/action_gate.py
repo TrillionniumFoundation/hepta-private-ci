@@ -14,10 +14,10 @@ _ID = re.compile(r"[A-Za-z0-9_.:/-]{1,96}\Z")
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 
 
-def q(value: str) -> Q:
-    """Canonical nonnegative bounded rational, no float approximation."""
+def q(value: str, *, signed: bool = False) -> Q:
+    """Canonical bounded rational with explicit signed-value permission."""
     if type(value) is not str or len(value) > 64 or not re.fullmatch(
-        r"(0|[1-9][0-9]*)(?:/[1-9][0-9]*)?", value
+        r"-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?" if signed else r"(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?", value
     ):
         raise ValueError("canonical rational required")
     result = Q(value)
@@ -46,7 +46,7 @@ class Candidate:
             self.feasible, self.sufficient_evidence, self.qualified_bounds
         )):
             raise ValueError("untyped flag")
-        lo, hi = q(self.utility_lo), q(self.utility_hi)
+        lo, hi = q(self.utility_lo, signed=True), q(self.utility_hi, signed=True)
         if lo > hi:
             raise ValueError("inverted utility interval")
         if type(self.costs) is not tuple or len(self.costs) > 20:
