@@ -185,7 +185,7 @@ def cert(n,out,mode='hybrid',node_cap=old.NODE_CAP,threshold=old.TARGET):
           best=min([cand_l]+[x[2] for x in heap]);progress.append(dict(splits=splits,gap=str(max(F(0),cand_u-best)),frontier=len(heap),cpu=time.process_time()-cpu))
     with (out/'FRONTIER.jsonl').open('x') as fh:
       for _,idx,lo,box in sorted(heap,key=lambda v:v[1]):
-        fh.write(json.dumps(dict(id=idx,lower=str(lo),box=old.encode_box(box)),separators=(',',':')+'\n')
+        fh.write(json.dumps(dict(id=idx,lower=str(lo),box=old.encode_box(box)),separators=(',',':'))+'\n')
     global_lo=min([cand_l]+[x[2] for x in heap]);gap=max(F(0),cand_u-global_lo)
     result=dict(schema='hepta.ndu.centered-interval.r22.v1',width=n,mode=mode,
       inherited_parent='77fc87181d0abe28150b8293070bf48112bcab54',
