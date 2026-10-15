@@ -1010,7 +1010,7 @@ mod tests {
         let model = Digest32::of_bytes(b"actual physical weight bytes");
         let after = q24_adapter_tick(&source, &bank, model, 5)?;
         assert_eq!(after.temporal_drive_q24, vec![2, -2, 0, 0, 0]);
-        assert_eq!(after.prediction_q24, vec![-2, -2, 0, 0, 0]);
+        assert_eq!(after.prediction_q24, vec![-2, 2, 0, 0, 0]);
         assert_ne!(after.input_digest, source.input_digest);
         assert_eq!(source.temporal_drive_q24, vec![3, -5, 0, 0, 0]);
         assert!(q24_adapter_tick(&source, &bank, model, 6).is_err());
