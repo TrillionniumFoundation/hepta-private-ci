@@ -117,6 +117,25 @@ type ShapeSpec = (&'static str, &'static str, Vec<usize>);
 fn fail(what: &str) -> String {
     what.to_owned()
 }
+
+/// Only the two physically near-matchable tiers from the independently checked
+/// 32D geometry preflight. Never silently relabel 2K trained weights as 256K.
+fn registered_near_match(
+    arm: &str,
+    ceiling: usize,
+) -> Result<(usize, Option<usize>, usize), String> {
+    match (ceiling, arm) {
+        (2048, "v2") => Ok((58, None, 2031)),
+        (2048, "v3") => Ok((53, None, 2015)),
+        (2048, "ssm") => Ok((55, None, 2036)),
+        (2048, "min_gru") => Ok((45, Some(2), 2026)),
+        (8192, "v2") => Ok((234, None, 8191)),
+        (8192, "v3") => Ok((215, None, 8171)),
+        (8192, "ssm") => Ok((221, None, 8178)),
+        (8192, "min_gru") => Ok((182, Some(2), 8191)),
+        _ => Err(fail("unregistered near-matched Cell candidate/tier")),
+    }
+}
 fn digest(s: &str) -> Result<Digest32, String> {
     let parsed = Digest32::from_str(s).map_err(|_| fail("invalid lowercase digest"))?;
     if parsed.is_zero() {
@@ -746,8 +765,8 @@ fn execute() -> Result<serde_json::Value, String> {
     let opts = args()?;
     let arm = arg(&opts, "--arm")?;
     let cap: usize = arg(&opts, "--cap")?.parse().map_err(|_| fail("bad cap"))?;
-    if ![2048, 8192, 16384, 65536, 262144].contains(&cap) {
-        return Err(fail("unsupported budget cap"));
+    if ![2048, 8192].contains(&cap) {
+        return Err(fail("16K/64K/256K near-matched geometry is not implemented"));
     }
     let rank = opts
         .get("--rank")
@@ -762,12 +781,17 @@ fn execute() -> Result<serde_json::Value, String> {
     let width: usize = arg(&opts, "--hidden-width")?
         .parse()
         .map_err(|_| fail("invalid hidden width"))?;
-    if !(5..=256).contains(&width) {
-        return Err(fail("unsupported private hidden width"));
+    let (registered_width, registered_rank, registered_count) =
+        registered_near_match(arm, cap)?;
+    if width != registered_width || rank != registered_rank {
+        return Err(fail("candidate width/rank differs from registered realized geometry"));
     }
     let model_path = Path::new(arg(&opts, "--model")?);
     let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
     let bank = physical_weights(&bytes, arm, width, rank, cap, source_width)?;
+    if source_width != 32 || bank.parameter_count != registered_count {
+        return Err(fail("physical trained model is not an exactly registered 32D budget shape"));
+    }
     let adapted_inputs = inputs
         .iter()
         .map(|input| q24_adapter_tick(input, &bank, model_sha, width))
@@ -941,6 +965,19 @@ mod tests {
         );
         Ok(())
     }
+    #[test]
+    fn only_eight_registered_near_matched_physical_candidates_are_admitted() {
+        assert_eq!(registered_near_match("v2", 2048), Ok((58, None, 2031)));
+        assert_eq!(registered_near_match("v3", 8192), Ok((215, None, 8171)));
+        assert_eq!(registered_near_match("min_gru", 8192), Ok((182, Some(2), 8191)));
+        for ceiling in [16384, 65536, 262144] {
+            for arm in ["v2", "v3", "ssm", "min_gru"] {
+                assert!(registered_near_match(arm, ceiling).is_err());
+            }
+        }
+        assert!(registered_near_match("foreign", 2048).is_err());
+    }
+
     #[test]
     fn adapter_signed_q24_projection_binds_physical_matrix_and_digest() -> Result<(), String> {
         let mut matrix = vec![0_i64; 25];
