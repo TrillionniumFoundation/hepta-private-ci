@@ -6,6 +6,7 @@ mod authbus_outbox_worker;
 mod authbus_recovery;
 mod authbus_store;
 mod canonical;
+mod execution_complete_v1;
 mod execution_entry_deny_v1;
 mod execution_preparation_v1;
 mod governance_store;
@@ -36,6 +37,7 @@ pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_recovery::AuthBusRecoveryError;
 pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
+pub use execution_complete_v1::RecoveredExecutionPreparationV1;
 pub use execution_entry_deny_v1::EXECUTION_EFFECT_ENTRY_P2B_PERMITTED;
 pub use execution_entry_deny_v1::ExecutionEffectEntryAuditV1;
 pub use execution_entry_deny_v1::ExecutionEffectEntryDeniedV1;
@@ -150,6 +152,10 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "execution_complete_v1_tests.rs"]
+mod execution_complete_v1_tests;
 
 #[cfg(test)]
 #[path = "execution_entry_deny_v1_tests.rs"]

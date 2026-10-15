@@ -309,6 +309,43 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "provider invocation terminals are immutable",
         ],
     },
+    // Same ORIGINAL Evidence lineage; no new database, writer or authority.
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes",
+        object_type: "table",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "create table",
+            "effect_key text primary key not null",
+            "schema_version integer not null check (schema_version = 1)",
+            "length(cast(intent_json as blob)) between 1 and 4096",
+            "json_valid(intent_json)",
+            "request_sha256 blob not null check (length(request_sha256) = 32)",
+            "foreign key(effect_key)",
+            "on delete restrict",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes_no_update",
+        object_type: "trigger",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "before update on execution_prepared_envelopes",
+            "raise(abort",
+            "execution prepared envelopes are immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "execution_prepared_envelopes_no_delete",
+        object_type: "trigger",
+        table_name: "execution_prepared_envelopes",
+        required_sql_fragments: &[
+            "before delete on execution_prepared_envelopes",
+            "raise(abort",
+            "execution prepared envelopes are immutable",
+        ],
+    },
     SchemaObjectSpec {
         name: "provider_effect_intents",
         object_type: "table",

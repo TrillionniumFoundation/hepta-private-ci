@@ -162,3 +162,40 @@ async fn read_only_reopen_can_deny_without_write_authority() {
         ExecutionEffectEntryDeniedV1::IndependentFinalUseAndPhysicalOwnerUnavailable
     );
 }
+
+#[tokio::test]
+async fn source_free_cold_reopen_still_denies_physical_tool_entry() {
+    let tmp = TempDir::new().expect("temp");
+    let cfg = config(&tmp);
+    let writer = HeptaEvidenceStore::open(&cfg).await.expect("writer");
+    let original = input();
+    let receipt = writer
+        .prepare_execution_intent_v1(&original, PAYLOAD)
+        .await
+        .expect("atomic original prepare");
+    let key = receipt.readback.provider_effect_key;
+    writer.close().await;
+
+    let reader = HeptaEvidenceStore::open_existing_read_only(&cfg)
+        .await
+        .expect("cold original owner");
+    let recovered = reader
+        .recover_execution_preparation_by_key_v1(&key)
+        .await
+        .expect("recover by owner key")
+        .expect("complete original");
+    assert_eq!(recovered.intent, original);
+    assert_eq!(
+        recovered.readback.status,
+        crate::ExecutionPreparationReadbackStatusV1::RecordedOnly
+    );
+    let denial = reader
+        .audit_execution_effect_entry_denied_v1(&recovered.intent, PAYLOAD)
+        .await
+        .expect("no tool entry from complete recovered intent");
+    assert_eq!(
+        denial.denied,
+        ExecutionEffectEntryDeniedV1::IndependentFinalUseAndPhysicalOwnerUnavailable
+    );
+    reader.close().await;
+}

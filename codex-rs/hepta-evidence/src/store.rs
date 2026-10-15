@@ -18,6 +18,7 @@ use sqlx::Transaction;
 
 use crate::EvidenceError;
 use crate::canonical::canonical_json;
+use crate::execution_complete_v1::verify_execution_prepared_rows;
 use crate::governance_store::decode_decision_row;
 use crate::governance_store::decode_receipt_row;
 use crate::governance_store::ensure_decision;
@@ -348,6 +349,7 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_provider_host_bindings(pool).await?;
     verify_provider_ephemeral_input_projection(pool).await?;
     verify_provider_effect_rows(pool).await?;
+    verify_execution_prepared_rows(pool).await?;
     verify_qualification_evidence_rows(pool).await?;
     verify_foreign_keys(pool).await
 }
