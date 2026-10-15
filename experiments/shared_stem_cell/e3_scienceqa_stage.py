@@ -132,8 +132,10 @@ def prepare(selected, answer, output, *, include_test_labels: bool = True):
     return source_sha, train_sha, held_sha
 
 
-def acquire_public():
-    """Original parquet inventory with publisher LFS or source-byte checks."""
+def acquire_public(*, include_test_labels: bool = True):
+    """Pin original Parquet; never construct TEST-label view for predictors."""
+    if type(include_test_labels) is not bool:
+        raise E3Error("explicit label view admission required")
     from datasets import Image, load_dataset
     from huggingface_hub import HfApi, hf_hub_download
     info = HfApi().dataset_info(DATASET, revision=revision(DATASET_REVISION), files_metadata=True)
@@ -165,7 +167,8 @@ def acquire_public():
     public = {split: data[split].select_columns(["question", "hint", "choices", "image"])
                  .cast_column("image", Image(decode=False)) for split in SIZES}
     # Answer column is deliberately accessed ONLY by the callback after cohort sealed.
-    labels = {split: data[split].select_columns(["answer"]) for split in SIZES}
+    labels = {split: data[split].select_columns(["answer"]) for split in SIZES
+              if include_test_labels or split != "test"}
     return public, lambda split, index: int(labels[split][index]["answer"])
 
 
@@ -175,7 +178,8 @@ def main():
     parser.add_argument("--predictor-source-only", action="store_true",
                         help="do not read, hash or write original TEST labels")
     args = parser.parse_args()
-    public, labels = acquire_public()
+    public, labels = acquire_public(
+        include_test_labels=not args.predictor_source_only)
     selection = select(public)
     prepare(selection, labels, args.output,
             include_test_labels=not args.predictor_source_only)
