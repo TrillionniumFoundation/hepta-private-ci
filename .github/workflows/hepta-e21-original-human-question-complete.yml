@@ -1,0 +1,212 @@
+name: Hepta E21 original-human complete-question Reader audit (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e21_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e21_*.py'
+      - 'qualification/shared-stem-system2-architecture/E21_*.md'
+      - '.github/workflows/hepta-e21-original-human-question-complete.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-blind-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E21_SOURCE: /tmp/hepta-e21-original-real-prelabel.zip
+      HEPTA_E21_FOLD_0: /tmp/hepta-e21-e15-held-fold-0.zip
+      HEPTA_E21_FOLD_1: /tmp/hepta-e21-e15-held-fold-1.zip
+      HEPTA_E21_FOLD_2: /tmp/hepta-e21-e15-held-fold-2.zip
+      HEPTA_E21_FOLD_3: /tmp/hepta-e21-e15-held-fold-3.zip
+      OUT: /tmp/hepta-e21-blind-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze the exact source and predecessor identities before model reuse
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e21_*.py "$ROOT"/test_e21_*.py | tee "$OUT/source-file-hashes.sha256"
+      - name: Fetch original pre-score model and the four truly held E15 ZIPs; NO human labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          fetch() {
+            local id="$1" sha="$2" dest="$3"
+            curl --fail --location --retry 3 --max-time 240 \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${id}/zip" \
+              -o "$dest"
+            printf '%s  %s\n' "$sha" "$dest" | sha256sum -c -
+          }
+          fetch 11946621518 1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17 "$HEPTA_E21_SOURCE"
+          fetch 11949475467 01ce78555923bd641b3c072157f89dc22f9105a070d0fe167bb945c210a429fc "$HEPTA_E21_FOLD_0"
+          fetch 11948693014 035d1efa3e05c4a15d1dd31456bf571f2499e53de3fd783e0ab28f0028639271 "$HEPTA_E21_FOLD_1"
+          fetch 11949330575 2a84cb7e2cf4d1fafb478eba0fe3b0111067a844bc3a71ecb68376b4762871b3 "$HEPTA_E21_FOLD_2"
+          fetch 11948993287 6a0df6d14eb1fb5d8ddde40b448ddeb48551f214187dc056974e771c5ca28316 "$HEPTA_E21_FOLD_3"
+          test ! -e /tmp/hepta-e21-original-validation.parquet
+          test ! -e /tmp/hepta-e21-source-human-score.zip
+          test ! -e /tmp/hepta-e21-merge-human-score.zip
+      - name: Original-pretrained byte-pinned, strictly blind adversarial checks normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e21_blind_only.py' -v > "$OUT/normal-tests.txt" 2>&1 \
+            || { cat "$OUT/normal-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e21_blind_only.py' -v > "$OUT/optimized-tests.txt" 2>&1 \
+            || { cat "$OUT/optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 8 tests' "$OUT/normal-tests.txt"
+          grep -F 'Ran 8 tests' "$OUT/optimized-tests.txt"
+          if grep -E '\.\.\. skipped|FAILED|^ERROR:' "$OUT"/*tests.txt; then exit 1; fi
+      - name: Seal E15 original held predictions and six unchanged frozen/learned arms BEFORE labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e21_whole_question.py" blind \
+            --original "$HEPTA_E21_SOURCE" \
+            --fold-0 "$HEPTA_E21_FOLD_0" --fold-1 "$HEPTA_E21_FOLD_1" \
+            --fold-2 "$HEPTA_E21_FOLD_2" --fold-3 "$HEPTA_E21_FOLD_3" \
+            --out "$OUT/sealed-label-blind-predictions.json" | tee "$OUT/seal-output.txt"
+          sha256sum "$OUT/sealed-label-blind-predictions.json" > "$OUT/sealed-predictions.sha256"
+          test ! -e /tmp/hepta-e21-original-validation.parquet
+      - name: Retain complete original-score-absent E21 source-head or synthetic-merge attempt
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e21-blind-${{ matrix.profile }}
+          path: ${{ env.OUT }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  independent-original-human-whole-question:
+    needs: original-blind-source
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E21_SOURCE: /tmp/hepta-e21-original-real-prelabel.zip
+      HEPTA_E21_FOLD_0: /tmp/hepta-e21-e15-held-fold-0.zip
+      HEPTA_E21_FOLD_1: /tmp/hepta-e21-e15-held-fold-1.zip
+      HEPTA_E21_FOLD_2: /tmp/hepta-e21-e15-held-fold-2.zip
+      HEPTA_E21_FOLD_3: /tmp/hepta-e21-e15-held-fold-3.zip
+      HEPTA_E21_SCORE_SOURCE: /tmp/hepta-e21-source-human-score.zip
+      HEPTA_E21_SCORE_MERGE: /tmp/hepta-e21-merge-human-score.zip
+      VAL: /tmp/hepta-e21-original-validation.parquet
+      OUT: /tmp/hepta-e21-human-score-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e21-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e21-frozen
+      - name: Verify E21 original label-blind source seal before opening source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          test -s /tmp/hepta-e21-frozen/sealed-label-blind-predictions.json
+          seal="$(cut -d ' ' -f1 /tmp/hepta-e21-frozen/sealed-predictions.sha256)"
+          printf '%s  %s\n' "$seal" /tmp/hepta-e21-frozen/sealed-label-blind-predictions.json | sha256sum -c -
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+      - name: Retrieve six immutable original E15 model/held-prediction ZIPs and both completed human scores
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          fetch() {
+            local id="$1" sha="$2" dest="$3"
+            curl --fail --location --retry 3 --max-time 240 \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${id}/zip" \
+              -o "$dest"
+            printf '%s  %s\n' "$sha" "$dest" | sha256sum -c -
+          }
+          fetch 11946621518 1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17 "$HEPTA_E21_SOURCE"
+          fetch 11949475467 01ce78555923bd641b3c072157f89dc22f9105a070d0fe167bb945c210a429fc "$HEPTA_E21_FOLD_0"
+          fetch 11948693014 035d1efa3e05c4a15d1dd31456bf571f2499e53de3fd783e0ab28f0028639271 "$HEPTA_E21_FOLD_1"
+          fetch 11949330575 2a84cb7e2cf4d1fafb478eba0fe3b0111067a844bc3a71ecb68376b4762871b3 "$HEPTA_E21_FOLD_2"
+          fetch 11948993287 6a0df6d14eb1fb5d8ddde40b448ddeb48551f214187dc056974e771c5ca28316 "$HEPTA_E21_FOLD_3"
+          fetch 11950611472 f332ab92181a0e088d941dbf4c77165ab2e4c40e48e9bbda4915e8d1543aceb8 "$HEPTA_E21_SCORE_SOURCE"
+          fetch 11950935731 63da90cb7da7f2f6ef478e44731e548a62a4b3c1a071593864f23b5896290acc "$HEPTA_E21_SCORE_MERGE"
+      - name: Run 18 original-source and human-score contract regressions in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e21_whole_question.py' -v > "$OUT/normal-tests.txt" 2>&1 \
+            || { cat "$OUT/normal-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e21_whole_question.py' -v > "$OUT/optimized-tests.txt" 2>&1 \
+            || { cat "$OUT/optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 18 tests' "$OUT/normal-tests.txt"
+          grep -F 'Ran 18 tests' "$OUT/optimized-tests.txt"
+          if grep -E '\.\.\. skipped|FAILED|^ERROR:' "$OUT"/*tests.txt; then exit 1; fi
+      - name: Open pinned original MultiRC human truth ONLY AFTER pre-score prediction seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import shutil
+          source=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+              revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+              filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(source.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('original MultiRC human target bytes changed')
+          shutil.copyfile(source,'/tmp/hepta-e21-original-validation.parquet')
+          PY
+      - name: Independently recompute complete questions and both prior E15 human reviews
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e21_whole_question.py" score \
+            --blind /tmp/hepta-e21-frozen/sealed-label-blind-predictions.json \
+            --validation "$VAL" --e15-source "$HEPTA_E21_SCORE_SOURCE" \
+            --e15-merge "$HEPTA_E21_SCORE_MERGE" \
+            --out "$OUT/independent-original-human-question-score.json" \
+            | tee "$OUT/review-sha.txt"
+          sha256sum "$OUT/independent-original-human-question-score.json" > "$OUT/score.sha256"
+      - name: Preserve complete independent E21 original human truth and failures without source rows
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e21-question-score-${{ matrix.profile }}
+          path: ${{ env.OUT }}/
+          retention-days: 14
+          if-no-files-found: warn
