@@ -369,6 +369,77 @@ fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
     server.join().expect("signed Control test service");
 }
 
+
+#[test]
+fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
+    // Control records an original CNS receipt in an fsynced C row. A later
+    // checkpoint P or cutover C can advance its binding but cannot erase it.
+    // This is a signed Unix RPC test, not a local digest-only declaration.
+    for erased_binding in [true, false] {
+        let root = tempfile::tempdir().expect("separate signed Observer root");
+        let (socket_path, listener) = socket(root.path());
+        let server = thread::spawn(move || {
+            for observation in 0..2 {
+                let (mut peer, _) = listener.accept().expect("original read-only request");
+                let request = read_request(&mut peer);
+                let mut claim = signed_proof(
+                    &request,
+                    &test_signer(),
+                    if observation == 0 { 10 } else { 11 },
+                );
+                claim.original_cns_receipt_binding = if observation == 0 {
+                    Some("dd".repeat(32))
+                } else if erased_binding {
+                    None
+                } else {
+                    Some("ee".repeat(32))
+                };
+                if observation == 1 {
+                    claim.wal_bytes = 2_048;
+                }
+                claim.observer_signature_bytes = test_signer()
+                    .sign(
+                        &cell_split_control_highwater_signing_bytes_v1(&claim)
+                            .expect("fully signed CNS binding history"),
+                    )
+                    .to_bytes()
+                    .to_vec();
+                send_response(&mut peer, &response(claim));
+            }
+        });
+
+        let mut verifier = client(socket_path, Duration::from_secs(2));
+        let first = verifier
+            .read_signed_highwater(SPLIT, SCOPE, &"33".repeat(32))
+            .expect("signed original committed CNS binding");
+        assert_eq!(
+            first.original_cns_receipt_binding.as_deref(),
+            Some("dd".repeat(32).as_str())
+        );
+        let second = verifier.read_signed_highwater(SPLIT, SCOPE, &"44".repeat(32));
+        if erased_binding {
+            assert!(
+                second.is_err(),
+                "a newer signed WAL must not erase an original CNS effect binding"
+            );
+            assert_eq!(
+                verifier
+                    .seen
+                    .get(SCOPE)
+                    .expect("original Scope remains pinned")
+                    .original_cns_receipt_binding,
+                Some("dd".repeat(32))
+            );
+        } else {
+            let next = second.expect("a genuinely newer committed CNS binding is permitted");
+            assert_eq!(next.sequence, 11);
+            assert_eq!(next.wal_bytes, 2_048);
+            assert_eq!(next.original_cns_receipt_binding, Some("ee".repeat(32)));
+        }
+        server.join().expect("signed original high-water RPC server");
+    }
+}
+
 #[test]
 fn signed_new_split_id_cannot_reset_original_scope_wal_ratchet() {
     // A genuine remote signature is not enough to reset a previously seen
