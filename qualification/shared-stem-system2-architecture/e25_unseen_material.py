@@ -142,6 +142,7 @@ def build(original_archive, train_rows, val_rows):
         'seed':SEED,'exhausts_remaining_eligible_passages':True,
         'selection_uses_labels_or_predictions':False,'same_original_data_family':True,
         'eligible_unused_passage_count_verified':6,
+        'original_unused_validation_admission':remaining_admission,
         'eligible_unused_distinct_text_count_verified':6,
         'eligible_unused_group_set_sha256':sha256(
             json.dumps(sorted(remaining_ids),separators=(',',':')).encode()).hexdigest(),
