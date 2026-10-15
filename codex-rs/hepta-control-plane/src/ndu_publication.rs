@@ -364,9 +364,12 @@ impl State {
                 return Err(NduPublicationErrorV1::Indeterminate);
             }
             let tail_bytes = expected_bytes.min(MAX_ROW as u64) as usize;
-            let mut tail = vec![0_u8; tail_bytes];
+            // A live Neuron tick verifies this bounded original WAL tail.
+            // Use the stack instead of allocating a Vec for every CAS/read.
+            let mut tail_storage = [0_u8; MAX_ROW];
+            let tail = &mut tail_storage[..tail_bytes];
             self.file
-                .read_exact_at(&mut tail, expected_bytes - tail_bytes as u64)
+                .read_exact_at(tail, expected_bytes - tail_bytes as u64)
                 .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
             if tail.last() != Some(&b'\n') {
                 return Err(NduPublicationErrorV1::Indeterminate);

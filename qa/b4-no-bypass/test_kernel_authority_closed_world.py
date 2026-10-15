@@ -778,12 +778,27 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "Control must pin WAL length, monotonic sequence and fsynced head",
         )
         for assertion in (
-            "read_exact_at(&mut tail",
+            "let mut tail_storage = [0_u8; MAX_ROW]",
+            "let tail = &mut tail_storage[..tail_bytes]",
+            "read_exact_at(tail,",
             "last.sequence != expected_sequence",
             "last.head != expected_head",
             "last.head != event_hash(&last)",
         ):
             self.assertIn(assertion, code, f"Control WAL tail fence missing: {assertion}")
+        self.assertNotIn(
+            "vec![0_u8; tail_bytes]",
+            code,
+            "Control hot-path readback must not allocate one tail Vec per tick",
+        )
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories()",
+            native,
+            "bounded tail needs genuine short/long Unix WAL corruption coverage",
+        )
         self.assertNotIn("state.verify_original_paths()", code)
 
         body = self.locked_original_cns_receipt_body(code)

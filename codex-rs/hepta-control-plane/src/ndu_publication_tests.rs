@@ -929,6 +929,88 @@ fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
 
 #[cfg(unix)]
 #[test]
+fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    // Exercise both the short-tail and MAX_ROW-clamped positional read.
+    // A corrupted terminal row must poison the original owner regardless
+    // of whether the durable WAL spans several bounded read windows.
+    for ticks in [1_usize, 8] {
+        let root = private_control_dir();
+        let path = root.path().join("stack-tail.wal");
+        let frozen = snapshot(3);
+        let owner =
+            NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
+                .expect("original private Control owner");
+        let mut previous = Digest32::ZERO;
+        for i in 0..ticks {
+            let next = Digest32::of_bytes(format!("checkpoint-{i}").as_bytes());
+            owner
+                .compare_and_publish_checkpoint(
+                    &frozen,
+                    Digest32::of_bytes(format!("signed-read-{i}").as_bytes()),
+                    Digest32::of_bytes(format!("signed-tick-{i}").as_bytes()),
+                    previous,
+                    next,
+                )
+                .expect("actual fsynced Control checkpoint");
+            previous = next;
+        }
+
+        let original = std::fs::read(&path).expect("original WAL");
+        if ticks == 1 {
+            assert!(original.len() < MAX_ROW, "single P must fit a short tail");
+        } else {
+            assert!(
+                original.len() > MAX_ROW,
+                "multi-P history must cross the fixed tail buffer size"
+            );
+        }
+        assert_eq!(owner.current(), Ok((frozen.clone(), previous)));
+        let replayed = owner
+            .read_original_local_frontier_v1()
+            .expect("original full prefix must replay");
+        assert_eq!(replayed.sequence, ticks as u64 + 1);
+        assert_eq!(replayed.wal_bytes, original.len() as u64);
+        let inode = std::fs::metadata(&path).expect("original WAL inode").ino();
+
+        let mut tampered = original.clone();
+        let last_value_byte = tampered.len() - 2;
+        tampered[last_value_byte] = if tampered[last_value_byte] == b'0' {
+            b'1'
+        } else {
+            b'0'
+        };
+        std::fs::write(&path, tampered).expect("rewrite same WAL inode");
+        OpenOptions::new()
+            .write(true)
+            .open(&path)
+            .expect("existing original WAL")
+            .sync_all()
+            .expect("durably record terminal tamper");
+        assert_eq!(
+            std::fs::metadata(&path).expect("still same WAL").ino(),
+            inode
+        );
+        assert_eq!(
+            std::fs::metadata(&path).expect("unchanged WAL size").len(),
+            original.len() as u64
+        );
+        assert_eq!(
+            owner.current(),
+            Err(NduPublicationErrorV1::Indeterminate),
+            "fixed stack tail cannot treat equal-size terminal hash corruption as current"
+        );
+        assert_eq!(
+            owner.current(),
+            Err(NduPublicationErrorV1::Poisoned),
+            "a failed original Control verification must remain poisoned"
+        );
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
     let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
