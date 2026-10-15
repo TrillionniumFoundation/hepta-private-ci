@@ -833,10 +833,62 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         })
     }
 
-    /// One physical model-driver call for the entire homogeneous batch. If
-    /// any member cannot be authenticated/fenced, none crosses the model
-    /// boundary. All dequeued identities are terminal, even after unknown
-    /// backend outcomes: replay requires external reconciliation.
+    /// STRICT PRODUCTION GATE: the original executor has member-level signed
+    /// FinalUse grants but no independently signed EXACT ORDERED aggregate
+    /// grant in its production scheduler yet. Never run an unauthorized joined
+    /// model effect merely because each individual request was approved.
+    ///
+    /// Return a typed rejection for EVERY dequeued member; retire every ID
+    /// without consuming ANY FinalUse nonce or invoking the physical driver.
+    /// The old single-request signed effect pathway is unchanged. This gate
+    /// is compiled into the normal library; tests cannot manufacture runtime
+    /// permission that persists into a release build.
+    #[cfg(not(test))]
+    fn execute_native_batch(
+        &mut self,
+        _now_ms: u64,
+        _dispatch_started: Instant,
+        _key: &MicrobatchKeyV1,
+        intents: Vec<InferenceIntentV1>,
+    ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let mut outcomes = Vec::with_capacity(intents.len());
+        for intent in intents {
+            let id = intent.request_id;
+            self.pending.remove(&id);
+            self.retired.insert(retired_identity(&id));
+            if let Some(sink) = &self.metric_sink {
+                self.metrics_flushed.store(false, Ordering::Release);
+                if sink
+                    .record(PhaseMetricEventV1 {
+                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
+                        operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
+                        phase: PhaseMetricKindV1::NeuronFeature,
+                        latency_micros: 0,
+                        succeeded: false,
+                    })
+                    .is_err()
+                {
+                    self.failed_metrics.fetch_add(1, Ordering::Release);
+                }
+            }
+            outcomes.push(BatchWorkerItemOutcomeV1 {
+                request_id: id,
+                result: Err(BatchWorkerErrorV1::BatchUnsupported),
+            });
+        }
+        outcomes
+    }
+
+    /// RESEARCH UNIT TESTS ONLY: one physical model-driver call for an
+    /// independently signed group of per-member intents. Before production
+    /// enablement, this exact path must consume an additional independently
+    /// signed ORDERED aggregate FinalUse grant in the same original
+    /// claim_batch/with_verified_effect_batch boundary, with original
+    /// Control/CNS, CAS ArtifactLoad and durable effect-recovery receipts.
+    ///
+    /// Do not change this cfg gate to a feature flag that could be enabled by
+    /// request input. Every release build must deny until those owners exist.
+    #[cfg(test)]
     fn execute_native_batch(
         &mut self,
         now_ms: u64,
