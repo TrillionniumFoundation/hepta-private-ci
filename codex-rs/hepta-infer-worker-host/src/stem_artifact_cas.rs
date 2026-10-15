@@ -115,7 +115,9 @@ impl StemArtifactCasVerifierV1 {
         {
             use std::os::unix::fs::PermissionsExt;
 
-            let meta = root.symlink_metadata().map_err(|_| StemCasError::InvalidRoot)?;
+            let meta = root
+                .symlink_metadata()
+                .map_err(|_| StemCasError::InvalidRoot)?;
             if !meta.is_dir() || meta.file_type().is_symlink() {
                 return Err(StemCasError::InvalidRoot);
             }
