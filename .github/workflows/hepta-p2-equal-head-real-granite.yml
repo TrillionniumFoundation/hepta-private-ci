@@ -250,6 +250,10 @@ jobs:
             --original-report "$ROOT/predictions-unscored.json" \
             --physical-probe "$ROOT/physical-selected-head-private.json" \
             --original-review "$ROOT/independent-review.json" \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
             --output "$ROOT/physical-sparse-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4

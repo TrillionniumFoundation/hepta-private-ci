@@ -33,7 +33,20 @@ class PhysicallySelectedHeadTests(unittest.TestCase):
             cls.legacy_review = original_math.review(
                 cls.panel, cls.train, cls.blind, cls.owner, cls.parent)
         cls.physical = sparse.run(cls.parent)
-        cls.independent = audit.audit(cls.parent, cls.physical, cls.legacy_review)
+        with patch.object(p1, "PANEL_SHA", cls.source_sha), \
+             patch.object(original_source, "PANEL_SHA", cls.source_sha):
+            cls.independent = audit.audit(cls.parent, cls.physical, cls.legacy_review,
+                                          cls.panel, cls.train, cls.blind, cls.owner)
+
+    def review_sparse(self, physical=None, prior=None, parent=None, panel=None, owner=None):
+        with patch.object(p1, "PANEL_SHA", self.source_sha), \
+             patch.object(original_source, "PANEL_SHA", self.source_sha):
+            return audit.audit(self.parent if parent is None else parent,
+                               self.physical if physical is None else physical,
+                               self.legacy_review if prior is None else prior,
+                               self.panel if panel is None else panel,
+                               self.train, self.blind,
+                               self.owner if owner is None else owner)
 
     def test_actual_selected_only_forward_matches_original_trained_logits(self):
         self.assertEqual(self.independent["outcome"], "NUMERIC_SELECTED_HEAD_PARITY_ONLY")
@@ -99,7 +112,7 @@ class PhysicallySelectedHeadTests(unittest.TestCase):
                 bad = copy.deepcopy(self.physical)
                 edit(bad)
                 with self.assertRaises((ValueError, TypeError)):
-                    audit.audit(self.parent,bad,self.legacy_review)
+                    self.review_sparse(physical=bad)
 
     def test_false_grants_and_lifecycle_cost_claims_are_refused(self):
         for field,fake in (
@@ -115,7 +128,7 @@ class PhysicallySelectedHeadTests(unittest.TestCase):
                 bad=copy.deepcopy(self.physical)
                 bad[field]=fake
                 with self.assertRaises(ValueError):
-                    audit.audit(self.parent,bad,self.legacy_review)
+                    self.review_sparse(physical=bad)
 
     def test_original_report_and_independent_human_review_cannot_be_replaced(self):
         bad = copy.deepcopy(self.parent)
@@ -127,7 +140,7 @@ class PhysicallySelectedHeadTests(unittest.TestCase):
         bad = copy.deepcopy(self.legacy_review)
         bad["eligible_model_selection"] = True
         with self.assertRaises(ValueError):
-            audit.audit(self.parent,self.physical,bad)
+            self.review_sparse(prior=bad)
 
     def test_original_tensor_bytes_and_hidden_extra_controls_refused(self):
         bad=copy.deepcopy(self.parent)
@@ -140,7 +153,27 @@ class PhysicallySelectedHeadTests(unittest.TestCase):
         bad=copy.deepcopy(self.physical)
         bad["grant"]=True
         with self.assertRaises(ValueError):
-            audit.audit(self.parent,bad,self.legacy_review)
+            self.review_sparse(physical=bad)
+
+    def test_rehashed_plausible_original_human_score_cannot_stand_in_for_real_owner(self):
+        prior = copy.deepcopy(self.legacy_review)
+        score = prior["results"]["fixed_two_cell"]["test"]
+        score["accuracy"] = 0.0 if score["accuracy"] > 0.5 else 1.0
+        # Source panel and authority fields remain identical; the old
+        # shallow prior-record acceptance would have admitted this.
+        with self.assertRaisesRegex(ValueError, "human-label score"):
+            self.review_sparse(prior=prior)
+
+    def test_relabelled_owner_and_resealed_source_cannot_launder_human_score(self):
+        owner = copy.deepcopy(self.owner)
+        owner["rows"][0]["label"] = 1 - owner["rows"][0]["label"]
+        # Neither an internally consistent SHA nor a post-score claim
+        # permits altering the registered owner labels.
+        if "seal_id" in owner:
+            owner["seal_id"] = original_math.digest({k:v for k,v in owner.items()
+                                                      if k != "seal_id"})
+        with self.assertRaises(ValueError):
+            self.review_sparse(owner=owner)
 
     def test_reviewer_is_independent_of_torch_and_sparse_producer(self):
         text=inspect.getsource(audit)

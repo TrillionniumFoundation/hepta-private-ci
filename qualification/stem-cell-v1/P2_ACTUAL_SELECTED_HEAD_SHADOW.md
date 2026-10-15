@@ -60,21 +60,34 @@ benefit on tiny CPU batches. All negative timings are preserved.
 ## Independently reviewed, not self-awarded
 
 The reviewer `p2_real_cell_split_sparse_review.py` contains **no Torch
-or sparse-producer import**. It first requires the original P2 independent
-human-label/NumPy study verdict, replays the 96 source-ordered Q24
-vectors, independently recomputes both output logits from the original
-FP32 Head weights with the original independent NumPy equations,
-checks exact route mask and group sizes and refuses all false claims
-about execution, cost parity or independent model/task utility.
+or sparse-producer import**. A prior report's well-formed fields **do not
+prove that the original human-label evaluator actually ran**. After the
+original post-seal scorer has completed, the sparse reviewer separately
+reopens the exact source panel, train/label-blind materials, original
+owner-label file, and sealed P2 predictions; it **reruns all five original
+P2 NumPy/human-label scores** and requires the supplied prior scoring
+report to match the newly reproduced result. An invented `prior` dict,
+even with correct schema/digest fields, is rejected. It then independently
+replays the 96 source-ordered Q24 vectors, computes the selected Head
+logits from the original FP32 weights with NumPy, checks exact route
+masks and group sizes, and refuses false execution/cost/permission claims.
+
+This extra reopening verifies original pinned-source and score
+consistency, **not a cryptographically signed label publisher or physical
+hardware attestation**. The reviewer exposes
+`original_human_source_score_sha256` and retains
+`original_model_and_label_origin_independently_attested=false`.
 The physical operator invocation/CPU counters are still producer
 observations, *not independently signed hardware measurements*.
 
 The original hosted workflow performs physical selected-Head execution
 **before** opening the original heldout human labels. Only after the
 original P2 independent label/weight scorer succeeds does the new
-Torch-free sidecar reviewer execute. Only a **sanitized aggregate**
-review is uploaded; no raw texts, shared feature vectors, per-case
-logits or trained Head weights are published as artifacts.
+Torch-free sidecar reopen the original owner-label file for full
+five-arm score reproduction and selected-Head auditing. Only a
+**sanitized aggregate** review is uploaded; no raw texts, shared
+feature vectors, per-case logits or trained Head weights are published
+as artifacts.
 
 ## Reproduction / strict gates
 

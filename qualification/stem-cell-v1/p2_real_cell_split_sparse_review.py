@@ -55,7 +55,13 @@ def require(value, description):
         raise ValueError(description)
 
 
-def audit(parent, physical, prior):
+def audit(parent, physical, prior, original_panel, train, blind, owner):
+    """Reopen the actual original-source owner and recompute human scores.
+
+    A matching prior-report schema or a caller-computed hash is not evidence
+    that the registered original human labels were checked. Source validation
+    and score computation here remain strictly post-prediction-seal.
+    """
     require(type(parent) is dict and
             parent.get("schema") == original_math.SCHEMA and
             parent.get("report_sha256") ==
@@ -72,6 +78,12 @@ def audit(parent, physical, prior):
             prior.get("eligible_model_selection") is False and
             prior.get("production_promotion_permitted") is False,
             "previous original human-source NumPy review not complete")
+    # Independently reopen the source owner/heldout labels, replay ALL FIVE
+    # previously trained P2 reference arms, and require byte-equivalent prior
+    # numerical scores. A plausible forged prior object cannot pass this.
+    reproduced = original_math.review(original_panel, train, blind, owner, parent)
+    require(original_math.digest(prior) == original_math.digest(reproduced),
+            "original source-owner human-label score cannot be forged or skipped")
     require(type(physical) is dict and set(physical) == {
         "schema", "original_p2_report_sha256",
         "original_source_heldout_sha256", "original_source_q24_sha256",
@@ -206,6 +218,8 @@ def audit(parent, physical, prior):
         "original_p2_report_sha256": parent["report_sha256"],
         "private_selected_head_probe_sha256": original_math.digest(physical),
         "independently_replayed_original_human_source_review": True,
+        "original_human_source_score_sha256": original_math.digest(reproduced),
+        "original_model_and_label_origin_independently_attested": False,
         "per_head_forward_row_reduction_observed_in_source": 0.5,
         "source_execution_counters_independently_attested": False,
         "actual_cpu_wall_speedup_certified": False,
@@ -222,14 +236,20 @@ def audit(parent, physical, prior):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    for key in ("original-report","physical-probe","original-review","output"):
+    for key in ("original-report","physical-probe","original-review",
+                "original-panel","train-material","blind-material","owner-labels",
+                "output"):
         ap.add_argument("--"+key, required=True, type=Path)
     args = ap.parse_args(argv)
     try:
         parent = read_source(args.original_report)
         physical = read_source(args.physical_probe)
         prior = read_source(args.original_review)
-        verdict = audit(parent, physical, prior)
+        original_panel = read_source(args.original_panel)
+        train = read_source(args.train_material)
+        blind = read_source(args.blind_material)
+        owner = read_source(args.owner_labels)
+        verdict = audit(parent, physical, prior, original_panel, train, blind, owner)
         data = original_math.canonical(verdict) + b"\n"
         import os
         fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
