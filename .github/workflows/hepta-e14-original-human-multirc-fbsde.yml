@@ -1,0 +1,163 @@
+name: Hepta E14 original-human MultiRC paired NDU gate (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e14_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e14_*.py'
+      - 'qualification/shared-stem-system2-architecture/E14_ORIGINAL_MULTIRC_FBSDE_20261015.md'
+      - '.github/workflows/hepta-e14-original-human-multirc-fbsde.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-label-blind-model-and-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E14_ARCHIVE: /tmp/hepta-e14-original-11946621518.zip
+      E14: /tmp/hepta-e14-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze exact original execution HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$E14"
+          git rev-parse HEAD | tee "$E14/source-head.txt"
+          if [[ "${{ matrix.profile }}" == 'source_head' && "${{ github.event_name }}" == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e14_*.py "$ROOT"/test_e14_*.py | tee "$E14/exact-python.sha256"
+      - name: Download only original archived pretrained ModernBERT inference
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E14_ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$HEPTA_E14_ARCHIVE" | sha256sum -c -
+      - name: Independent adversarial tests with original pretrained ZIP (normal and -O)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e14_*.py' -v > "$E14/test-normal.txt" 2>&1 || { cat "$E14/test-normal.txt"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e14_*.py' -v > "$E14/test-optimized.txt" 2>&1 || { cat "$E14/test-optimized.txt"; exit 1; }
+          grep 'Ran 15 tests' "$E14/test-normal.txt"
+          grep 'Ran 15 tests' "$E14/test-optimized.txt"
+          if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$E14"/test-*.txt; then exit 1; fi
+      - name: Seal human-label-blind policy decisions before scorer is invoked
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e14_multirc_route.py" \
+            --prelabel-archive "$HEPTA_E14_ARCHIVE" \
+            --output "$E14/original-human-blind-policies.json" | tee "$E14/prelabel-seal-stdout.json"
+          sha256sum "$E14/original-human-blind-policies.json" | tee "$E14/original-prelabel.sha256"
+          grep -F '"authority": "DENY_ALL"' "$E14/prelabel-seal-stdout.json"
+          test ! -e "$E14/validation.parquet"
+      - name: Archive all label-blind products, never original labels or scored ZIP
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e14-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e14-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
+  original-independent-human-label-score:
+    needs: original-label-blind-model-and-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ZIP: /tmp/e14-original-11946621518.zip
+      E14: /tmp/hepta-e14-scored-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e14-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e14-sealed
+      - name: Install only pinned validation-material libraries
+        shell: bash
+        run: python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+      - name: Independently reload old model receipt and ORIGINAL validation human annotations
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$E14"
+          git rev-parse HEAD | tee "$E14/score-source-head.txt"
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$ZIP"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$ZIP" | sha256sum -c -
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import shutil
+          p = Path(hf_hub_download(repo_id='aps/super_glue', repo_type='dataset',
+              revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+              filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(p.read_bytes()).hexdigest() != '5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('untrusted validation human-label source')
+          shutil.copyfile(p, '/tmp/e14-original-validation.parquet')
+          PY
+      - name: Rescore sealed PRE-LABEL proposals against exact original human task labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path=/tmp/hepta-e14-sealed/original-human-blind-policies.json
+          test -s "$source_path"
+          source_sha="$(cut -d ' ' -f1 /tmp/hepta-e14-sealed/original-prelabel.sha256)"
+          printf '%s  %s\n' "$source_sha" "$source_path" | sha256sum -c -
+          python "$ROOT/e14_multirc_score.py" \
+            --archive "$ZIP" --prelabel "$source_path" \
+            --prelabel-sha256 "$source_sha" \
+            --validation-parquet /tmp/e14-original-validation.parquet \
+            --output "$E14/independent-original-human-e14-score.json" \
+            | tee "$E14/independent-score-stdout.json"
+          sha256sum "$E14/independent-original-human-e14-score.json" | tee "$E14/score.sha256"
+          test "$(python - "$E14/independent-original-human-e14-score.json" <<'PY'
+          import json,sys
+          s=json.load(open(sys.argv[1]))
+          print(s['evaluation_arms']['conditioned']['correct'])
+          PY
+          )" = 16
+      - name: Retain original score and failed attempts without raw human parquet
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e14-original-human-score-${{ matrix.profile }}
+          path: /tmp/hepta-e14-scored-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
