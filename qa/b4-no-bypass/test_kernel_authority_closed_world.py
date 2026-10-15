@@ -790,6 +790,53 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "released Control lock can admit a different signed receipt frontier",
         )
 
+    def test_original_control_wal_uses_pinned_dirfd_for_both_children(self) -> None:
+        # Local owner writes must never resolve the journal or owner-lock by
+        # a second mutable absolute pathname after checking a private parent.
+        # The actual rename/rebind proof remains the native Unix test below.
+        relative = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        code = self.lexical_code(relative)
+        bootstrap = code.find("fn open_production_with_directory_hook(")
+        self.assertGreaterEqual(bootstrap, 0, "pinned directory owner missing")
+        live = code[bootstrap : code.find("pub fn compare_and_publish_checkpoint(", bootstrap)]
+        self.assertIn(
+            "control_parent_dir_identity(&parent_dir, parent)",
+            live,
+            "the pinned parent path must be rechecked after child opens",
+        )
+        self.assertRegex(
+            live,
+            r"unixfs::openat\(\s*&parent_dir,\s*"
+            r"lock_path\s*\.\s*file_name\(\)",
+            "owner-lock must be opened relative to the original dirfd",
+        )
+        self.assertRegex(
+            live,
+            r"unixfs::openat\(\s*&parent_dir,\s*"
+            r"path\s*\.\s*file_name\(\)",
+            "original WAL must be opened relative to the same dirfd",
+        )
+        self.assertEqual(
+            live.count("unixfs::openat("),
+            2,
+            "adding an unreviewed Control file opener is an authority change",
+        )
+        self.assertGreaterEqual(
+            live.count("OFlags::NOFOLLOW"),
+            3,
+            "original directory and both children require no-follow flags",
+        )
+        self.assertNotIn("lock_options.open(", live)
+        self.assertNotIn("journal_options.open(", live)
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory()",
+            native,
+            "deterministic Unix postcheck directory-rebind fixture missing",
+        )
+
     def test_original_control_wal_requires_canonical_parent_before_open(self) -> None:
         # Original Control WAL and its owner-lock marker share a single
         # canonical persistent identity. The native symlink-ancestor fixture
@@ -800,7 +847,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         production = self.lexical_code(relative)
         bootstrap = production.find("pub fn open_production(")
         self.assertGreaterEqual(bootstrap, 0, "original Control bootstrap missing")
-        open_lock = production.find("let mut lock_options =", bootstrap)
+        open_lock = production.find("let mut lock_flags =", bootstrap)
         self.assertGreater(
             open_lock, bootstrap, "original persistent lock opener missing"
         )
