@@ -6,6 +6,9 @@ on:
       - 'scripts/memory_cell/associative_cell.py'
       - 'scripts/memory_cell/associative_cell_trial.py'
       - 'scripts/memory_cell/test_associative_cell.py'
+      - 'scripts/memory_cell/associative_shadow_gate.py'
+      - 'scripts/memory_cell/test_associative_shadow_gate.py'
+      - 'scripts/memory_cell/ASSOCIATIVE_SHADOW_GATE.md'
       - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_CELL_LAB.md'
       - '.github/workflows/hepta-associative-cell-lab.yml'
   workflow_dispatch:
@@ -33,6 +36,12 @@ jobs:
           export PYTHONPATH=scripts/memory_cell
           /tmp/associative-env/bin/python -m unittest discover -s scripts/memory_cell \
             -p 'test_associative_cell.py' -v 2>&1 | tee /tmp/associative-receipt/test.log
+      - name: Run frozen-vector cohort source-isolation and neighbor controls
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=scripts/memory_cell
+          /tmp/associative-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_shadow_gate.py' -v 2>&1 | tee /tmp/associative-receipt/cohort-tests.log
       - name: Execute controlled synthetic five-arm contrast
         run: |
           set -euo pipefail
