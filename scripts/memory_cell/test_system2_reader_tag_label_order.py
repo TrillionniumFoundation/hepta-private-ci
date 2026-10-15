@@ -151,10 +151,10 @@ class TagLabelTests(unittest.TestCase):
     def test_strict_complete_census_and_paired_question_counts(self):
         rows=[]
         for c in probe.cohort():
-            for arm,pres in probe.POSITIONS:
+            for arm,presentation in probe.POSITIONS:
                 v,_=probe.context(c,arm)
                 rows.append(dict(qid=c.question.identity,arm=arm,
-                    presentation=pres,status="succeeded",
+                    presentation=presentation,status="succeeded",
                     answer=v.answer if arm in probe.POSITIVE else ABSTAIN,
                     reader=dict(input_tokens=80,generated_tokens=8,cpu_time_ns=10)))
         summary,pairs,disposition=probe.contrasts(rows,probe.cohort())

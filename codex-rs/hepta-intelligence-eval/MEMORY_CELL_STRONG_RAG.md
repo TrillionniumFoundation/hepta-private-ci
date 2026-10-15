@@ -223,7 +223,7 @@ training questions, source stories are authored, and none of the eight final
 test labels is involved. A stable choice does not establish generalization,
 a statistical confidence bound or MemoryCell's learned benefit; instability
 is evidence to distrust this tiny calibration. The predeclared full-eight-case
-choice still controls the evaluation and is never retuned from its answers.
+choice still controls the evaluation and is never re-tuned from its answers.
 
 The actual calibration report retains the full sensitivity record. The
 frozen policy contains its digest, while the separate read-only replay
