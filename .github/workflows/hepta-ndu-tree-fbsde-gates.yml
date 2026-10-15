@@ -25,8 +25,22 @@ jobs:
           python --version
           python -m pip freeze
           sha256sum experiments/ndu_tree_fbsde_gates/*.py
-      - name: Exact global field, numerical integrity and Head contract regressions
-        run: python -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates -p 'test_*.py' -v
+      - name: Run numpy-only NDU and Head contracts; keep Torch P0 in its pinned physical job
+        env:
+          PYTHONPATH: experiments/ndu_tree_fbsde_gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The P0 pretrained job separately runs its exact 17 PyTorch contract
+          # tests on Python 3.11 / torch 2.5.1. This numeric-only job must
+          # neither silently skip import errors nor install unpinned Torch.
+          test -f experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py
+          grep -Fq "test_p0_compact_paired.py" .github/workflows/hepta-p0-compact-physical.yml
+          mapfile -t TEST_MODULES < <(find experiments/ndu_tree_fbsde_gates -maxdepth 1 -type f -name 'test_*.py' ! -name 'test_p0_compact_paired.py' -printf '%f\\n' | sort)
+          test "${#TEST_MODULES[@]}" -ge 10
+          for i in "${!TEST_MODULES[@]}"; do TEST_MODULES[i]="${TEST_MODULES[i]%.py}"; done
+          printf 'Explicit NumPy-only modules: %s\\n' "${TEST_MODULES[@]}"
+          python -W error::ResourceWarning -m unittest -v "${TEST_MODULES[@]}"
       - name: Execute separate-process 64/256/1024/4096 actual CPU Head-only batches
         env:
           OPENBLAS_NUM_THREADS: '1'
