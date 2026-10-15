@@ -320,13 +320,63 @@ def review(output, previous_v6):
         total_physical_backward_calls=sum(row["backwards"] for row in all_work.values()))
 
 
+
+def review_complete(output, previous_v6, *, original_v6_zip=None,
+                    _synthetic_test_only=False):
+    """Mandatory CLI admission: historical ledger PLUS Torch-free actual tensor replay.
+
+    The separately callable ``review`` function remains a *synthetic test
+    fixture* ledger verifier; it never certifies saved tensor values. Real-run
+    acceptance must go through this complete entrypoint or ``main`` below.
+    """
+    from bridge_gradient_archive_replay import (
+        audit_candidate_checkpoints, audit_v6_archive,
+    )
+    report = review(output, previous_v6)
+    physical = audit_candidate_checkpoints(
+        output, previous_v6, strict_original=not _synthetic_test_only)
+    _require(physical["model_tensor_count"] == 9 and
+             physical["independent_trained_weight_tensor_replay"] is True and
+             physical["production_authorized"] is False,
+             "all nine trained checkpoint tensors must independently replay")
+    report["trained_weight_numerical_replay_performed"] = True
+    report["original_v6_immutable_identity_verified"] = (not _synthetic_test_only)
+    report["tensor_replay"] = physical
+    if original_v6_zip is not None:
+        historical = audit_v6_archive(original_v6_zip)
+        v6_design = read(Path(previous_v6) / "design.json")
+        _require(historical["checkpoint_count"] == 12 and
+                 v6_design == _read_archive_design(original_v6_zip),
+                 "original ZIP/historical V6 live source differs")
+        report["original_historical_zip_replay"] = {
+            "archive_sha256": historical["archive_sha256"],
+            "checkpoints": historical["checkpoint_count"],
+            "independent_schedule_recomputed": all(
+                p["independent_schedule_recomputed"] for p in historical["plans"]),
+            "pretrained_encoder_executed_this_review": False,
+        }
+    report["source_provenance_independently_authenticated"] = False
+    report["future_task_quality_established"] = False
+    report["production_authorized"] = False
+    return report
+
+
+def _read_archive_design(path):
+    import zipfile
+    from bridge_gradient_archive_replay import parse_json
+    with zipfile.ZipFile(path) as archive:
+        return parse_json(archive.read("reader-v6-bridge/design.json"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--previous-v6", type=Path, required=True)
     parser.add_argument("--review", type=Path, required=True)
+    parser.add_argument("--original-v6-zip", type=Path, default=None)
     args = parser.parse_args()
-    result = review(args.output, args.previous_v6)
+    result = review_complete(args.output, args.previous_v6,
+                             original_v6_zip=args.original_v6_zip)
     if args.review.exists() or args.review.is_symlink():
         raise ValueError("independent review output must be create-only")
     with args.review.open("x", encoding="utf-8") as stream:

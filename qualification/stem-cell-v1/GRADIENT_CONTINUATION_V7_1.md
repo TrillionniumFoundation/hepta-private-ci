@@ -101,3 +101,20 @@ unsplit Head, matched projection and no-change reference. Test real separate
 calendar future windows; the 100%-fit TRAIN gate is not generalization. Keep
 all candidate actions and NDU/FBSDE promotion at DENY_ALL until independent
 science, target-host measurements and native owner authority complete.
+
+## V7.2 mandatory actual-tensor review (2026-10-15)
+
+The original V7.1 ledger-only reviewer has been supplemented with a restricted,
+Torch-free state-dictionary decoder. The **actual `bridge_gradient_review.py`
+CLI now invokes `review_complete()`**, requiring all nine candidate checkpoint
+numerical digests and three source-warmup tensor identities, also requiring
+exact SHA-pinned original V6 design/warmup source and weight bytes. Its callable
+`review()` remains ledger-only for clearly synthetic fixtures, and cannot be
+used to claim genuine numerical model admission. Supply `--original-v6-zip`
+when the SHA-pinned historical archive is present for additional 12-checkpoint
+and 3-seed original-source/sampling-plan replay.
+
+Complete code, local numeric tests, original archive replay and scientific
+nonclaims are in `GRADIENT_V7_2_ARCHIVE_AND_TENSOR_REPLAY.md`. The 97M Encoder and
+its original TokenBank tensors are still absent; this stage cannot recreate a
+full authentic nine-arm pretrained study or choose a Cell Split.
