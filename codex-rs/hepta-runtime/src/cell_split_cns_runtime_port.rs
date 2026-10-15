@@ -296,9 +296,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         let original_before = control
             .read_original_local_frontier_v1()
             .map_err(|error| format!("original Control high-water unavailable: {error}"))?;
-        if original_before.snapshot.snapshot_digest.to_string()
-            != self.plan.ndu_snapshot_digest
-        {
+        if original_before.snapshot.snapshot_digest.to_string() != self.plan.ndu_snapshot_digest {
             return Err("Control snapshot differs from the frozen NDU plan".into());
         }
 
@@ -329,7 +327,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             || claimed.marker_device != original_before.marker_device
             || claimed.marker_inode != original_before.marker_inode
             || claimed.original_cns_receipt_binding
-                != original_before.original_cns_receipt_binding.map(|value| value.to_string())
+                != original_before
+                    .original_cns_receipt_binding
+                    .map(|value| value.to_string())
             || claimed.challenge_nonce != nonce
         {
             return Err("independent Control high-water mismatches original owner".into());

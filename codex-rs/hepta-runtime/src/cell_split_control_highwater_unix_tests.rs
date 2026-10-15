@@ -45,7 +45,10 @@ fn read_request(peer: &mut UnixStream) -> CellSplitControlHighwaterRpcRequestV1 
         "nduSnapshotDigest",
         "originalCnsReceiptBinding",
     ] {
-        assert!(raw.get(forbidden).is_none(), "untrusted echo input {forbidden}");
+        assert!(
+            raw.get(forbidden).is_none(),
+            "untrusted echo input {forbidden}"
+        );
     }
     let request: CellSplitControlHighwaterRpcRequestV1 =
         serde_json::from_value(raw).expect("strict read-only wire schema");
@@ -144,7 +147,10 @@ fn signed_unix_observer_requests_only_scope_split_and_fresh_challenge() {
     assert_eq!(first.sequence, 10);
     assert_eq!(first.wal_head, second.wal_head);
     assert_ne!(first.challenge_nonce, second.challenge_nonce);
-    assert_ne!(first.observer_signature_bytes, second.observer_signature_bytes);
+    assert_ne!(
+        first.observer_signature_bytes,
+        second.observer_signature_bytes
+    );
     server.join().expect("independent test service");
 }
 
@@ -196,7 +202,10 @@ fn even_a_validly_signed_remote_rollback_is_denied_by_client_ratchet() {
         for sequence in [10, 9] {
             let (mut peer, _) = listener.accept().expect("read-only client");
             let req = read_request(&mut peer);
-            send_response(&mut peer, &response(signed_proof(&req, &test_signer(), sequence)));
+            send_response(
+                &mut peer,
+                &response(signed_proof(&req, &test_signer(), sequence)),
+            );
         }
     });
     let mut client = client(path, Duration::from_secs(2));
@@ -351,7 +360,10 @@ fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
     assert_eq!(next.wal_head, repeated.wal_head);
     assert_eq!(next.checkpoint_digest, repeated.checkpoint_digest);
     assert_ne!(next.challenge_nonce, repeated.challenge_nonce);
-    assert_ne!(next.observer_signature_bytes, repeated.observer_signature_bytes);
+    assert_ne!(
+        next.observer_signature_bytes,
+        repeated.observer_signature_bytes
+    );
     server.join().expect("signed Control test service");
 }
 
