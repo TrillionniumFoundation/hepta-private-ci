@@ -65,6 +65,13 @@ def evaluate(panel,reports):
   if (any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in measurements) or
       any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in latency.values())):
    raise Invalid('nonpositive or missing measured runtime/RSS')
+  if model=='mmbert_small':
+   flag=measures.get('mmbert_pretrained_tied_checkpoint_sample_verified')
+   identity=measures.get('mmbert_local_sample_sha256')
+   if flag is not True or type(identity) is not str or len(identity)!=64 or identity=='0'*64 or any(c not in '0123456789abcdef' for c in identity):
+    raise Invalid('mmBERT MLM pretrained tied token embeddings not verified')
+  elif measures.get('mmbert_pretrained_tied_checkpoint_sample_verified') is not None:
+   raise Invalid('non-mmBERT arm forged mmBERT provenance')
   encoded=sum(latency.values())
   if report['wall_ms'] + .001 < measures['load_ms'] + encoded + fit['train_time_ms']:
    raise Invalid('whole-lifecycle physical time undercounts completed operations')
