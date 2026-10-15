@@ -82,6 +82,52 @@ class GroupAttentionTrainingTests(unittest.TestCase):
                       steps=1, seed=41, max_depth=3,
                       attention_targets=teacher, operation_targets=broken)
 
+    def test_prefix_guard_real_optimizer_counts_and_matched_sampling(self):
+        import torch._dynamo  # initialize before the strict work-meter context
+        teacher = torch.zeros(24, 3, 3, dtype=torch.float32)
+        teacher[:, 0, 0] = 1.
+        teacher[:, 2, 2] = 1.
+        operations = teacher.unsqueeze(2).clone()
+        core = Core(8, 16)
+        original = copy.deepcopy(core.state_dict())
+        legacy, a = fit_model(
+            core, self.features, self.mask, self.targets, steps=12,
+            seed=57, max_depth=3, learning_rate=.05,
+            attention_targets=teacher, operation_targets=operations)
+        guarded, b = fit_model(
+            core, self.features, self.mask, self.targets, steps=12,
+            seed=57, max_depth=3, learning_rate=.05,
+            attention_targets=teacher, operation_targets=operations,
+            terminal_guard=True)
+        self.assertEqual(a["sample_and_depth_sha256"], b["sample_and_depth_sha256"])
+        self.assertEqual(a["initial_model_sha256"], b["initial_model_sha256"])
+        self.assertEqual(a["completed_steps"], b["completed_steps"])
+        self.assertEqual(a["parameter_count"], b["parameter_count"])
+        self.assertEqual(b["work_observation"]["unknown_operators"], {})
+        self.assertEqual(b["status"], "completed")
+        self.assertTrue(b["terminal_guard_enabled"])
+        self.assertEqual(b["terminal_label_contract"],
+                         "train_evidence_completed_before_final_ce.v1")
+        self.assertGreater(b["terminal_eligible_step_examples"], 0)
+        self.assertGreater(b["terminal_suppressed_step_examples"], 0)
+        self.assertEqual(b["depth_supervision"],
+                         "terminal_ce_only_after_required_train_evidence")
+        self.assertEqual(len(b["terminal_eligibility_sha256"]), 64)
+        self.assertGreater(b["terminal_eligibility_bytes"], 0)
+        self.assertTrue(any(not torch.equal(x, y) for x, y
+                            in zip(legacy.parameters(), guarded.parameters())))
+        for key, value in original.items():
+            torch.testing.assert_close(value, core.state_dict()[key], rtol=0, atol=0)
+
+    def test_prefix_guard_requires_real_per_operation_teacher(self):
+        with self.assertRaisesRegex(ValueError, "terminal guard"):
+            fit_model(Core(8, 16), self.features, self.mask, self.targets,
+                      steps=1, seed=41, max_depth=3,
+                      attention_targets=self.attention, terminal_guard=True)
+        with self.assertRaisesRegex(ValueError, "terminal guard"):
+            fit_model(Core(8, 16), self.features, self.mask, self.targets,
+                      steps=1, seed=41, max_depth=3, terminal_guard=1)
+
     def test_invalid_masks_missing_scope_and_static_model_rejected(self):
         bad = self.attention.clone()
         bad[:, :, 1] = .5
