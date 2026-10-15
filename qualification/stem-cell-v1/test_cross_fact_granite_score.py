@@ -1,5 +1,6 @@
 """Model-free end-to-end independent sealed-to-scored phase and negative controls."""
 from dataclasses import dataclass
+import hashlib
 import json
 import sys
 import tempfile
@@ -10,7 +11,7 @@ from unittest.mock import patch
 
 from cross_fact_granite_campaign import ARMS, SEEDS, _write_once
 from cross_fact_granite_score import (
-    ROLES, check_campaign_gates, check_global_seals, check_sealed_panel, score_sealed,
+    ROLES, check_campaign_gates, check_prelabel_seals, check_global_seals, check_sealed_panel, score_sealed,
 )
 from cross_fact_granite_review import independent_training_score, read
 
@@ -37,7 +38,10 @@ def fake_store(root):
          optimizer_tensor_bytes=800, parameter_count=8192,
          model_file_sha256='a'*64, schedule_sha256='b'*64)
          for arm in ARMS} for seed in SEEDS}
-    _write_once(root/'plan.json', dict(seeds=list(SEEDS), arms=list(ARMS), production_authorized=False))
+    _write_once(root/'plan.json', dict(seeds=list(SEEDS), arms=list(ARMS), production_authorized=False,
+         fresh_case_roster_sha256={role: hashlib.sha256(json.dumps(
+             [c.case_id for c in mock_cases(role)], separators=(',', ':')).encode()).hexdigest()
+             for role in ROLES}))
     _write_once(root/'fit-summary.json', summary)
     _write_once(root/'opening-decision.json', dict(matched_fresh_gate_passed=True,
          all_model_fit_gates_passed=True, all_actual_training_budgets_equal=True))
@@ -65,6 +69,7 @@ class SeparateScoreTests(unittest.TestCase):
         self.ids = {role: [c.case_id for c in mock_cases(role)] for role in ROLES}
 
     def test_exact_twelve_frozen_seals_admit_without_outcome(self):
+        self.assertEqual(len(check_prelabel_seals(self.root)), 12)
         self.assertEqual(len(check_global_seals(self.root, self.ids)), 12)
         self.assertEqual(check_campaign_gates(self.root)['41']['local'], 'a'*64)
 
@@ -102,6 +107,16 @@ class SeparateScoreTests(unittest.TestCase):
         with patch.dict(sys.modules, {'binding_protocol': module}):
             with self.assertRaisesRegex(ValueError, 'duplicate fresh'):
                 score_sealed(self.root)
+
+    def test_bad_prelabel_roster_denies_before_source_labels_import(self):
+        victim = self.root / 'sealed-fresh_vocabulary-53-local.json'
+        tampered = read(victim)
+        tampered['case_ids'][0] = 'source-tampered'
+        victim.write_text(json.dumps(tampered))
+        with patch.dict(sys.modules, {'binding_protocol': None}):
+            with self.assertRaisesRegex(ValueError, 'prelabel|source roster|roster'):
+                score_sealed(self.root)
+        self.assertFalse(list(self.root.glob('score-*.json')))
 
     def test_no_fresh_labels_import_before_training_gate(self):
         self.summary['53']['local']['train_gate_passed'] = False
