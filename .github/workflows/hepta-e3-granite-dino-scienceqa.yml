@@ -1,28 +1,34 @@
-name: Hepta E3 real Granite97 DINOv2 source-only paired study (DENY_ALL)
+name: Hepta E3 original Granite97 DINOv2 physical-and-score (DENY_ALL)
 on:
   push:
-    branches: ["research/stem-e3-granite-dino-real-20261015"]
+    branches: ["research/e3-required-physical-score-pr-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_scienceqa_*.py"
       - "experiments/shared_stem_cell/e3_granite_dino_real.py"
       - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
+      - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
   pull_request:
     paths:
       - "experiments/shared_stem_cell/e3_scienceqa_*.py"
       - "experiments/shared_stem_cell/e3_granite_dino_real.py"
       - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
+      - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
 permissions:
   contents: read
 concurrency:
   group: hepta-e3-granite-dino-${{ github.sha }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
-  e3-actual-pretrained-and-independent-audit:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+  e3-physical-required-not-contract-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == 'TrillionniumFoundation/hepta-private-ci'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -37,6 +43,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Fail fast on independent stdlib negative-contract tests (no pretrained claims)
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q experiments/shared_stem_cell/e3_physical_ci_gate.py experiments/shared_stem_cell/test_e3_physical_ci_gate.py
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -q
       - name: Install pinned stock PyTorch, HF, dataset and media dependencies
         run: |
           set -euo pipefail
@@ -57,8 +69,10 @@ jobs:
           grep -q 'Ran 27 tests' /tmp/e3-local-test.log
           grep -q '^OK$' /tmp/e3-local-test.log
           "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_scienceqa_real.py' -q 2>&1 | tee /tmp/e3-optimized-test.log
+          "$P" -m compileall -q experiments/shared_stem_cell/e3_physical_ci_gate.py experiments/shared_stem_cell/test_e3_physical_ci_gate.py
+          "$P" -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -v 2>&1 | tee /tmp/e3-physical-gate-tests.log
+          "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -q 2>&1 | tee /tmp/e3-physical-gate-optimized.log
       - name: Stage source-only ScienceQA and create separate held-label seal
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           /tmp/e3-venv/bin/python experiments/shared_stem_cell/e3_scienceqa_stage.py --output /tmp/e3-scienceqa
@@ -75,7 +89,6 @@ jobs:
           # and private targets are never included in uploaded artifacts.
           PY
       - name: Physically run exact Granite97 and DINOv2 weights; fit and seal held predictions
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           P=/tmp/e3-venv/bin/python
@@ -93,7 +106,6 @@ jobs:
           test -s /tmp/e3-original-model/sealed-predictions.json
           sha256sum /tmp/e3-original-model/sealed-predictions.json > /tmp/e3-prediction-seal-before-label.txt
       - name: Independently reopen original test targets only AFTER model predictions seal
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           P=/tmp/e3-venv/bin/python
@@ -122,6 +134,16 @@ jobs:
               assert arm['cases']==64
           print('REAL MODEL DESCRIPTIVE E3 REVIEW COMPLETED, NEVER A PRODUCTION SELECTION')
           PY
+      - name: Independently verify physical and heldout evidence without promotion
+        run: |
+          set -euo pipefail
+          /tmp/e3-venv/bin/python experiments/shared_stem_cell/e3_physical_ci_gate.py \
+            --source-seals /tmp/e3-scienceqa/source-seals.json \
+            --predictions /tmp/e3-original-model/sealed-predictions.json \
+            --prediction-seal /tmp/e3-prediction-seal-before-label.txt \
+            --review /tmp/e3-original-review.json \
+            --exact-head ${{ github.sha }} \
+            --out /tmp/e3-physical-verified.json
       - name: Retain immutable source and available failure evidence without raw media or weights
         if: always()
         run: |
@@ -132,16 +154,22 @@ jobs:
           cp /tmp/e3-environment.txt /tmp/e3-safe-evidence/versions.txt || true
           cp /tmp/e3-local-test.log /tmp/e3-safe-evidence/offline-tests.txt || true
           cp /tmp/e3-optimized-test.log /tmp/e3-safe-evidence/optimized-tests.txt || true
+          cp /tmp/e3-physical-gate-tests.log /tmp/e3-safe-evidence/physical-gate-contract-tests.txt || true
+          cp /tmp/e3-physical-gate-optimized.log /tmp/e3-safe-evidence/physical-gate-optimized-tests.txt || true
           cp /tmp/e3-prediction-seal-before-label.txt /tmp/e3-safe-evidence/predictions-before-labels.sha256 || true
           cp /tmp/e3-scienceqa/source-seals.json /tmp/e3-safe-evidence/source-seals.json || true
           cp /tmp/e3-original-model/sealed-predictions.json /tmp/e3-safe-evidence/sealed-source-bound-predictions.json || true
           cp /tmp/e3-original-review.json /tmp/e3-safe-evidence/independent-descriptive-review.json || true
+          cp /tmp/e3-physical-verified.json /tmp/e3-safe-evidence/physical-completed-or-absent.json || true
           sha256sum experiments/shared_stem_cell/e3_scienceqa_contract.py \
             experiments/shared_stem_cell/e3_scienceqa_stage.py \
             experiments/shared_stem_cell/e3_granite_dino_real.py \
             experiments/shared_stem_cell/e3_scienceqa_review.py \
             experiments/shared_stem_cell/test_e3_scienceqa_real.py \
+            experiments/shared_stem_cell/e3_physical_ci_gate.py \
+            experiments/shared_stem_cell/test_e3_physical_ci_gate.py \
             experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md \
+            experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md \
             .github/workflows/hepta-e3-granite-dino-scienceqa.yml \
             > /tmp/e3-safe-evidence/source-blobs-SHA256
           (cd /tmp/e3-safe-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
