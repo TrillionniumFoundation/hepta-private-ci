@@ -5,6 +5,15 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/app-server-client/**"
+      - "codex-rs/app-server-protocol/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/utils/absolute-path/**"
+      - "codex-rs/core/tests/common/**"
+      - "scripts/check_neuron_qualification_triggers.py"
+      - "scripts/tests/test_neuron_qualification_triggers.py"
       # Changes to the direct inference contract and build inputs must never
       # inherit an old exact-SHA native qualification check.
       - "codex-rs/hepta-types/**"
@@ -238,6 +247,12 @@ jobs:
           cd codex-rs
           rustc --version --verbose
           cargo --version
+      - name: Fail closed on unqualified direct Rust inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/tests -p 'test_neuron_qualification_triggers.py' -v
+          python3 scripts/check_neuron_qualification_triggers.py
       - name: Prove CLI recursion attributes live on actual crate roots
         shell: bash
         run: |
