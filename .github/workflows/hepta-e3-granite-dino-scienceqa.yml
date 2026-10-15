@@ -1,7 +1,7 @@
-name: Hepta E3 real Granite97 DINOv2 source-only paired study (DENY_ALL)
+name: Hepta E3 original Granite97 DINOv2 physical-and-score (DENY_ALL)
 on:
   push:
-    branches: ["research/stem-e3-granite-dino-real-20261015"]
+    branches: ["research/e3-required-physical-score-pr-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_scienceqa_*.py"
       - "experiments/shared_stem_cell/e3_granite_dino_real.py"
@@ -19,10 +19,10 @@ permissions:
   contents: read
 concurrency:
   group: hepta-e3-granite-dino-${{ github.sha }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
-  e3-actual-pretrained-and-independent-audit:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+  e3-physical-required-not-contract-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == 'TrillionniumFoundation/hepta-private-ci'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -58,7 +58,6 @@ jobs:
           grep -q '^OK$' /tmp/e3-local-test.log
           "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_scienceqa_real.py' -q 2>&1 | tee /tmp/e3-optimized-test.log
       - name: Stage source-only ScienceQA and create separate held-label seal
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           /tmp/e3-venv/bin/python experiments/shared_stem_cell/e3_scienceqa_stage.py --output /tmp/e3-scienceqa
@@ -75,7 +74,6 @@ jobs:
           # and private targets are never included in uploaded artifacts.
           PY
       - name: Physically run exact Granite97 and DINOv2 weights; fit and seal held predictions
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           P=/tmp/e3-venv/bin/python
@@ -93,7 +91,6 @@ jobs:
           test -s /tmp/e3-original-model/sealed-predictions.json
           sha256sum /tmp/e3-original-model/sealed-predictions.json > /tmp/e3-prediction-seal-before-label.txt
       - name: Independently reopen original test targets only AFTER model predictions seal
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           P=/tmp/e3-venv/bin/python
@@ -122,6 +119,63 @@ jobs:
               assert arm['cases']==64
           print('REAL MODEL DESCRIPTIVE E3 REVIEW COMPLETED, NEVER A PRODUCTION SELECTION')
           PY
+      - name: Fail closed unless original pretrained forward AND held-label readout completed
+        run: |
+          set -euo pipefail
+          /tmp/e3-venv/bin/python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/e3-scienceqa')
+          pred_path = Path('/tmp/e3-original-model/sealed-predictions.json')
+          score_path = Path('/tmp/e3-original-review.json')
+          seal_path = Path('/tmp/e3-prediction-seal-before-label.txt')
+          source = json.loads((root / 'source-seals.json').read_bytes())
+          raw = pred_path.read_bytes()
+          got_sha = hashlib.sha256(raw).hexdigest()
+          stored_sha = seal_path.read_text().split()[0]
+          pred = json.loads(raw)
+          score = json.loads(score_path.read_bytes())
+          assert len(got_sha) == 64 and got_sha == stored_sha == score['sealed_predictions_sha256']
+          assert pred['source_sha256'] == source['source_sha256'] == score['source_sha256']
+          assert score['holdout_targets_sha256'] == source['private_test_labels_sha256']
+          assert pred['fit_labels_sha256'] == source['fit_labels_sha256']
+          for name in ('physical_text_forward_batches', 'physical_vision_forward_batches'):
+              assert type(pred.get(name)) is int and pred[name] > 0, name
+          assert pred['stem_model']['repo'] == 'ibm-granite/granite-embedding-97m-multilingual-r2'
+          assert pred['vision_model']['repo'] == 'facebook/dinov2-small'
+          assert pred['fit']['private_cell_head_parameters'] == 769
+          assert pred['fit']['train_cases'] == 96
+          assert pred['fit']['calibration_cases'] == 32
+          assert pred['fit']['holdout_cases'] == score['original_heldout_cases'] == 64
+          assert pred['held_labels_visible_to_inference'] is False
+          assert pred['production_accepted'] is False
+          assert score['production_accepted'] is False
+          assert score['stem_winner'] is None and score['authority'] == 'DENY_ALL'
+          assert score['statistical_selection_authorized'] is False
+          assert len(score['arms']) == 8
+          assert all(v['cases'] == 64 for v in score['arms'].values())
+          out = {
+              'schema': 'hepta.e3.physical-and-score-required.v1',
+              'exact_source_sha': '${{ github.sha }}',
+              'source_sha256': source['source_sha256'],
+              'sealed_predictions_sha256': got_sha,
+              'physical_text_forward_batches': pred['physical_text_forward_batches'],
+              'physical_vision_forward_batches': pred['physical_vision_forward_batches'],
+              'heldout_cases': 64,
+              'completed_original_pretrained_stage_and_scoring': True,
+              'signed_model_origin_authenticated': False,
+              'natural_visual_necessity_adjudicated': False,
+              'stem_winner': None,
+              'authority': 'DENY_ALL',
+          }
+          p = Path('/tmp/e3-physical-verified.json')
+          with p.open('x', encoding='utf-8') as f:
+              json.dump(out, f, sort_keys=True, separators=(',', ':'))
+              f.write('\n')
+          print('E3_PHYSICAL_AND_SCORE_REQUIRED_PASS: native model origin remains unsigned')
+          PY
       - name: Retain immutable source and available failure evidence without raw media or weights
         if: always()
         run: |
@@ -136,6 +190,7 @@ jobs:
           cp /tmp/e3-scienceqa/source-seals.json /tmp/e3-safe-evidence/source-seals.json || true
           cp /tmp/e3-original-model/sealed-predictions.json /tmp/e3-safe-evidence/sealed-source-bound-predictions.json || true
           cp /tmp/e3-original-review.json /tmp/e3-safe-evidence/independent-descriptive-review.json || true
+          cp /tmp/e3-physical-verified.json /tmp/e3-safe-evidence/physical-completed-or-absent.json || true
           sha256sum experiments/shared_stem_cell/e3_scienceqa_contract.py \
             experiments/shared_stem_cell/e3_scienceqa_stage.py \
             experiments/shared_stem_cell/e3_granite_dino_real.py \
