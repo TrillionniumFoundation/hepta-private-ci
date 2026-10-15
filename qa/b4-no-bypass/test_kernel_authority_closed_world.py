@@ -312,10 +312,11 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             r"atomic_control_cutover_owner:\s*None",
             "native physical CNS port must not invent a Control owner",
         )
-        # Rustfmt may wrap field / as_ref / ok_or across separate lines.
-        # Extract the exact non-test publish_once body and prove the Control
-        # owner check is its FIRST executable statement, before verify_pin or
-        # any Final-use claim, original mutation, route or child dispatch.
+        # A populated optional Control handle would not prove B/effect/C.
+        # Require the non-test-only denial as the first executable statement;
+        # then retain the existing optional-owner guard for test mechanisms.
+        # No signed preflight, Final-use, original mutation or child dispatch
+        # is permitted before this explicit production closure.
         method = re.search(r"\bfn\s+publish_once\s*\(", physical)
         self.assertIsNotNone(method, "original runtime CNS mutator missing")
         assert method is not None
@@ -326,9 +327,20 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         body = physical[opening + 1 : closing]
         self.assertRegex(
             body,
-            r"^\s*self\s*\.\s*atomic_control_cutover_owner\s*\.\s*"
+            r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+            r"return\s+Err\s*\(",
+            "non-test CNS port must deny before consulting any optional owner",
+        )
+        self.assertRegex(
+            body,
+            r"self\s*\.\s*atomic_control_cutover_owner\s*\.\s*"
             r"as_ref\(\)\s*\.\s*ok_or\(",
-            "original CNS cutover must refuse before any other executable step",
+            "test CNS cutover must still require an original Control owner",
+        )
+        self.assertLess(
+            body.index("if !cfg!(test)"),
+            body.index("atomic_control_cutover_owner"),
+            "a possibly populated owner is not the original B/effect/C protocol",
         )
         self.assertLess(
             body.index("atomic_control_cutover_owner"),
