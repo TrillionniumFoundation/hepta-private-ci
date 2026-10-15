@@ -1,7 +1,6 @@
 """Model-free CSPRNG label sealer regressions, without human review claims."""
 from datetime import datetime, timezone
 import json
-import os
 from pathlib import Path
 import stat
 import tempfile

@@ -1,9 +1,7 @@
 """Scoring tests only; authored fixtures have zero pretrained model executions."""
-import copy
 import hashlib
 import unittest
 
-from factorial_evidence_gate import COST_KEYS
 from memory_trial_independent_score import COMMITMENT_SCHEME, commit_identifier, score
 from test_memory_trial_admission import fixture
 
