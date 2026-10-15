@@ -13,7 +13,6 @@ from hashlib import sha256
 from math import comb, isfinite
 import json
 from pathlib import Path
-from collections import Counter
 
 from e7_second_opinion import (archive, group_labels, model_predictions,
                                HIST_SHA, REAL_SHA)

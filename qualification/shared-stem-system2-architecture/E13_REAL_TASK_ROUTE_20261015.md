@@ -63,6 +63,11 @@ byte integrity, not independent human signatures.
 | Cheap one-map | 120 | 11 | 0.0423222 | +711,814,625 ns |
 | E12 certified nonlinear | **119** | **12** | **0.0435701** | **+776,589,149 ns** |
 
+**Discriminating paired fact:** E12 and cheap one-map route choices differ
+for exactly **1 of 128** original cases. The additional certified
+second-model call loses this historical case; the expensive mathematical
+solve introduces no new task information here.
+
 The E12 proposal additionally performed **97,276,809 ns of locally
 self-observed Python process CPU** across the original 128 cases. It is
 neither authenticated nor measured on the same hardware/process as the

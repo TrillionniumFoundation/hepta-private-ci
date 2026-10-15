@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import replace
 from fractions import Fraction as Q
 from hashlib import sha256
 import json
@@ -12,12 +11,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from e13_labelblind_route import (CUT, ARMS, _route_one, canon, produce,
+from e13_labelblind_route import (ARMS, _route_one, produce,
                                  quantized_x0, write_once)
 from e13_independent_score import (decode_cert, json_read, mcnemar_p,
                                    original_law, score, take_source)
 from e12_independent_audit import audit, reference
-from e7_archive import PHYSICAL_SHA, physical_rows, read_zip
+from e7_archive import PHYSICAL_SHA
 from e7_second_opinion import (HIST_SHA, archive, group_labels,
                                model_predictions)
 
@@ -106,6 +105,8 @@ class E13OriginalRealArchive(unittest.TestCase):
         self.assertEqual(sha256(Path(self.historical).read_bytes()).hexdigest(),HIST_SHA)
         self.assertEqual(len(self.rows["rows"]),128)
         self.assertFalse(self.rows["human_labels_loaded_by_proposer"])
+        self.assertEqual(sum(r["routes"]["e12_certified"] != r["routes"]["cheap_one_map"]
+                             for r in self.rows["rows"]), 1)
 
     def test_original_independent_review_and_negative_status(self):
         r=score(self.rows,self.labels,self.models)
