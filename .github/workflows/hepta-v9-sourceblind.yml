@@ -1,0 +1,157 @@
+name: Hepta V9 source-blind multihop (research DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v9_*.py'
+      - 'qualification/stem-cell-v1/test_v9_graph.py'
+      - '.github/workflows/hepta-v9-sourceblind.yml'
+  push:
+    branches: ['research/typed-multihop-v9-sourceblind-20261015']
+    paths:
+      - 'qualification/stem-cell-v1/v9_*.py'
+      - 'qualification/stem-cell-v1/test_v9_graph.py'
+      - '.github/workflows/hepta-v9-sourceblind.yml'
+
+permissions:
+  contents: read
+concurrency:
+  group: hepta-v9-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Native 24 bounded scientific tests, both interpreter modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/source-head.txt"
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest -v test_v9_graph 2>&1 | tee "$RUNNER_TEMP/v9-normal.log"
+          python -O -m unittest -v test_v9_graph 2>&1 | tee "$RUNNER_TEMP/v9-optimized.log"
+          python -m compileall -q qualification/stem-cell-v1/v9_*.py qualification/stem-cell-v1/test_v9_graph.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v9-contract-tests-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source-head.txt
+            ${{ runner.temp }}/v9-normal.log
+            ${{ runner.temp }}/v9-optimized.log
+          if-no-files-found: warn
+
+  source-owner:
+    needs: source-regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Construct exact paired-world sources; do not score
+        run: |
+          python qualification/stem-cell-v1/v9_blind_benchmark.py prepare --output "$RUNNER_TEMP/source"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v9-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/source/public.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v9-truth-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source/design.json
+            ${{ runner.temp }}/source/truth-restricted.json
+          if-no-files-found: error
+
+  public-proposer:
+    needs: source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v9-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/public
+      - name: Predict from public information only; no truth artifact mounted
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/public/truth-restricted.json"
+          python qualification/stem-cell-v1/v9_blind_benchmark.py predict \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --output "$RUNNER_TEMP/public/predictions.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v9-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/public/predictions.json
+          if-no-files-found: error
+
+  postseal-independent-review:
+    needs: [source-owner, public-proposer]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v9-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v9-truth-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v9-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal
+      - name: Independent grammar and proof re-execution, after sealed output exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v9_independent_review.py \
+            --design "$RUNNER_TEMP/postseal/design.json" \
+            --public "$RUNNER_TEMP/postseal/public.json" \
+            --truth "$RUNNER_TEMP/postseal/truth-restricted.json" \
+            --predictions "$RUNNER_TEMP/postseal/predictions.json" \
+            --output "$RUNNER_TEMP/postseal/independent-review.json"
+          python - "$RUNNER_TEMP/postseal/independent-review.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['unique_cases']==1248 and x['independent_source_groups']==312
+          assert x['verified_proofs']==1536 and x['authority']=='DENY_ALL'
+          assert x['production_accepted'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v9-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/postseal/independent-review.json
+          if-no-files-found: warn
