@@ -47,7 +47,7 @@ python -S qualification/stem-cell-v1/cross_fact_granite_review.py \
 
 ## Executed checks in this authoring environment
 
-The newly extended source plus the five focused suites were exercised against the exact inherited original TokenReader: **30/30 local tests in ordinary Python and 30/30 under `python -O`**, including sealed-to-score end-to-end fixtures, no-label-before-gate, full prelabel source roster checks, synthetic autograd and budget parity/adversarial file tests. The pinned original Encoder was NOT run by these suites. Remote exact-head CI has not completed, and a source hash alone is not independent execution proof. The Granite campaign itself **has not loaded real weights or run six pretrained fits** here: only a synthetic earlier paired-world prototype completed. Neither natural-task ability, equal-FLOP advantage, fresh generalization, NDU efficiency, a 4096 Cell physical runtime nor production readiness is asserted.
+The newly extended source plus the five focused suites were exercised against the exact inherited original TokenReader: **42/42 focused local tests in ordinary Python and 42/42 under `python -O`**, including sealed-to-score end-to-end fixtures, no-label-before-gate, full prelabel source roster checks, synthetic autograd and budget parity/adversarial file tests. The pinned original Encoder was NOT run by these suites. Remote exact-head CI has not completed, and a source hash alone is not independent execution proof. The Granite campaign itself **has not loaded real weights or run six pretrained fits** here: only a synthetic earlier paired-world prototype completed. Neither natural-task ability, equal-FLOP advantage, fresh generalization, NDU efficiency, a 4096 Cell physical runtime nor production readiness is asserted.
 
 ## Selection gates
 
@@ -63,3 +63,43 @@ Do not interpret a gate PASS, trained Head or fast batch as authority to load or
 The training entrypoint now freezes a SHA256 of each of the two original V5 fresh-domain case-ID rosters in `plan.json`, with **no labels** included. In the separate score process, `check_prelabel_seals` first checks complete fitted-model and resource budgets, all 12 sealed prediction files, 128 unique IDs per role, exact original roster digests, ordered physical batch receipts and frozen Head material. Only *after* that full check does it import the fresh-domain scoring protocol. The independent stdlib reviewer reconstructs the rosters again and rejects any changed source membership.
 
 This is deterministic process-stage separation, **not** independently signed label custody, a trusted execution environment, or an empirical claim of source-disjoint natural-task superiority. Any prior failed fit or mismatched optimizer storage must keep outcome scoring unopened.
+
+## Strict full-receipt replay before fresh-label scoring
+
+The separate scorer now invokes the independent `review(root)` **after**
+validating all twelve prelabel seals but **before** using their new-domain
+labels. Coordinator-written training PASS flags, model digests, and cumulative
+update counts cannot grant access to scoring by themselves.
+
+New `cross_fact_granite_receipt_oracle.py` rebuilds the original four-case
+paired worlds and all 8,000 planned deterministic RNG sampler updates using
+only stdlib. It compares the training schedule SHA against the source, checks
+every actually completed optimizer step's exact original case IDs, order,
+sampling digest, exposure, depth, training-only pair weight, finite-gradient
+status, and nonzero CPU/wall cost. It reconstructs per-case exposure counts
+and refuses a lifecycle timing report smaller than the sum of its nested
+observed updates. The reviewer additionally cross-checks optimizer tensor
+bytes and reported CPU/wall time with the actual trainer receipt, and binds
+old-task internal tune diagnostics to each frozen model digest.
+
+Regression tests include a **full non-mocked reviewer → scorer → reviewer
+replay**, using six deliberately fake (invalid model) byte artifacts and twelve
+synthetic prediction panels. These validate the integrity boundary only:
+modifying a single purported weight file, training receipt, old-task receipt,
+sample order, optimizer record, or cumulative work denies scoring. Other tests
+exercise real Torch tensor gradients but do not claim a real Granite97 forward.
+
+Exact tests executed in this working CPU container:
+```sh
+PYTHONPATH=qualification/stem-cell-v1 python -m unittest discover \
+  -s qualification/stem-cell-v1 -p 'test_cross_fact*.py' -q
+PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest discover \
+  -s qualification/stem-cell-v1 -p 'test_cross_fact*.py' -q
+```
+
+Observed results: **42/42 passed per mode**, no skips. This is only a
+focused local suite; the hosted exact-source `hepta-neuron-next-round-matrix`
+CI and the complete Cargo/Bazel workspace qualification are separate.
+This reviewer still cannot prove physical execution of original pretrained
+weights, accurate hardware clocks, independent signer identity, or the truth
+of external observations. No synthetic fixture score may be promoted.
