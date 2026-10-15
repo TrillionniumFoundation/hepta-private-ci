@@ -49,7 +49,7 @@ class Tests(unittest.TestCase):
     def test_descriptive_only(self):
         answer=review.review(*self.data)
         self.assertEqual(len(answer['models']),3)
-        self.assertEqual(answer['models']['modernbert_base']['token_query']['n'],64)
+        self.assertEqual(answer['models']['modernbert_base']['token_query']['learned']['n'],64)
         self.assertFalse(answer['future_ndu_utility_verified'])
         self.assertFalse(answer['production_promotion_permitted'])
 
@@ -70,6 +70,9 @@ class Tests(unittest.TestCase):
 
     def test_reject_missing_prediction(self):
         self.deny(lambda p,a,r,h:r['granite_97m_r2']['head_study']['arms']['pooled_gated']['predictions'].pop())
+
+    def test_reject_missing_frozen_head_control(self):
+        self.deny(lambda p,a,r,h:r['modernbert_base']['head_study']['arms']['token_query']['frozen_predictions'].pop())
 
     def test_reject_fake_source(self):
         self.deny(lambda p,a,r,h:r['granite_97m_r2'].update(parent_e1_report_sha256='f'*64))

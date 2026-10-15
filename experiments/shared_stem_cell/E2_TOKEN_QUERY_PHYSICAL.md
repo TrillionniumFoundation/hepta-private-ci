@@ -31,3 +31,7 @@ The E1/E2 workflow is located at .github/workflows/hepta-e1-core-triad-real-cpu.
     python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_token_query_*.py' -v
 
 Every output remains **production_promotion_permitted=false**, **stem_winner_selected=false**, **authority=DENY_ALL**. No main merge, Cell split or production route change is permitted.
+
+## Explicit within-arm frozen comparator
+
+For every E2 arm, the runner now publishes its original untrained Head's complete calibration-only-temperature-selected 96-case predictions, alongside the 96-case learned probabilities. The independent reviewer rejects a single missing/swapped frozen case and reports learned-minus-its-own-frozen accuracy as well as the paired query-minus-equal-capacity pooled result. This **is not** a substitute for the E0 deployed original no-change model or a prospective NDU improvement.

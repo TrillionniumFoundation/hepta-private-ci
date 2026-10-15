@@ -171,6 +171,10 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
         frozen_digest = _digest_module(head)
         with torch.no_grad():
             frozen_scores = head(scored_tokens, scored_mask, scored_pooled)
+            frozen_cal_logits = head(cal_tokens, cal_mask, cal_pooled)
+            frozen_temperature = min(TEMPERATURES, key=lambda t: float(
+                F.cross_entropy(frozen_cal_logits / t, cy)))
+            frozen_probs = F.softmax(frozen_scores / frozen_temperature, dim=-1)[:, 1].tolist()
         receipt = _train(head, train_tokens, train_mask, train_pooled, y,
                          steps=steps, lr=lr)
         if _digest_module(head) != receipt["final_head_sha256"]:
@@ -184,6 +188,10 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
             "frozen_initial_head_sha256": frozen_digest,
             "frozen_initial_predictions_sha256": _sha(
                 frozen_scores.detach().cpu().numpy().tobytes()),
+            "frozen_calibration_temperature": frozen_temperature,
+            "frozen_predictions": [{"case_id": row["case_id"], "split": row["split"],
+                                    "joint_input_digest": row["joint_input_digest"],
+                                    "positive_probability": float(p)} for row, p in zip(scored, frozen_probs)],
             "train_receipt": receipt,
             "calibration_temperature": temperature,
             "predictions": [{"case_id": row["case_id"], "split": row["split"],

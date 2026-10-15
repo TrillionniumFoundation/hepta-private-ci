@@ -130,34 +130,44 @@ def review(panel, parents, studies, parent_sha):
             if train.get('learnable_query_actually_changed') is not (arm=='token_query' if arm=='token_query' else None):
                 raise Invalid('learnable token Query movement must be physically recorded')
             costs[arm]=_positive(train.get('train_ms'))
-            predictions={}
-            for p in info.get('predictions',[]):
-                case=p.get('case_id')
-                if (case not in observed or case in predictions or
-                    p.get('split')!=bycase[case]['split'] or
-                    p.get('joint_input_digest')!=bycase[case]['joint_input_digest']):
-                    raise Invalid('E2 case swap/duplicated future prediction')
-                value=p.get('positive_probability')
-                if type(value) not in (float,int) or not math.isfinite(value) or not 0<=value<=1:
-                    raise Invalid('invalid learned probability')
-                predictions[case]=float(value)
-            if set(predictions)!=observed:raise Invalid('incomplete source-matched arm')
-            current[arm]=predictions
+            if info.get('frozen_calibration_temperature') not in (.5,.75,1.,1.5,2.,3.,4.):
+                raise Invalid('frozen original Head calibration missing')
+            current[arm]={}
+            for mode in ('frozen_predictions','predictions'):
+                predictions={}
+                for p in info.get(mode,[]):
+                    case=p.get('case_id')
+                    if (case not in observed or case in predictions or
+                        p.get('split')!=bycase[case]['split'] or
+                        p.get('joint_input_digest')!=bycase[case]['joint_input_digest']):
+                        raise Invalid('E2 frozen/learned case swap or duplication')
+                    value=p.get('positive_probability')
+                    if type(value) not in (float,int) or not math.isfinite(value) or not 0<=value<=1:
+                        raise Invalid('invalid frozen/learned probability')
+                    predictions[case]=float(value)
+                if set(predictions)!=observed:raise Invalid('incomplete source-matched control')
+                current[arm]['frozen' if mode=='frozen_predictions' else 'learned']=predictions
         required=_positive(d.get('model_load_ms'))+_positive(phys['producer_observed_encode_wall_ms'])+sum(costs.values())
         if _positive(d.get('total_wall_ms')) +.001<required:
             raise Invalid('model+feature+Head lifecycle underreported')
         _positive(d.get('cpu_process_ms'))
         _positive(d.get('process_lifetime_peak_rss_bytes'))
         metrics[model]={}
-        for arm,pred in current.items():
-            test=[row for row in panel['cases'] if row['split']=='test']
-            correct=sum(int((pred[row['case_id']]>=.5)==bool(row['label'])) for row in test)
-            brier=sum((pred[row['case_id']]-row['label'])**2 for row in test)/len(test)
-            metrics[model][arm]={'n':len(test),'correct':correct,'accuracy':correct/len(test),
-                                 'brier':brier,'train_ms_reported':costs[arm]}
+        test=[row for row in panel['cases'] if row['split']=='test']
+        for arm,control in current.items():
+            record={}
+            for mode,pred in control.items():
+                correct=sum(int((pred[row['case_id']]>=.5)==bool(row['label'])) for row in test)
+                brier=sum((pred[row['case_id']]-row['label'])**2 for row in test)/len(test)
+                record[mode]={'n':len(test),'correct':correct,'accuracy':correct/len(test),
+                              'brier':brier}
+            record['trained_minus_frozen_accuracy']=record['learned']['accuracy']-record['frozen']['accuracy']
+            record['train_ms_reported']=costs[arm]
+            metrics[model][arm]=record
         comparisons[model]={
-            'query_minus_equal_parameter_pooled_gated_accuracy':metrics[model]['token_query']['accuracy']-metrics[model]['pooled_gated']['accuracy'],
-            'query_minus_linear_pooled_accuracy':metrics[model]['token_query']['accuracy']-metrics[model]['pooled_linear']['accuracy'],
+            'query_minus_equal_parameter_pooled_gated_accuracy':metrics[model]['token_query']['learned']['accuracy']-metrics[model]['pooled_gated']['learned']['accuracy'],
+            'query_minus_linear_pooled_accuracy':metrics[model]['token_query']['learned']['accuracy']-metrics[model]['pooled_linear']['learned']['accuracy'],
+            'query_trained_minus_own_frozen_accuracy':metrics[model]['token_query']['trained_minus_frozen_accuracy'],
         }
         budgets[model]={'original_model_loaded_once_for_E2_claimed':True,
                         'model_load_ms_reported':d['model_load_ms'],
