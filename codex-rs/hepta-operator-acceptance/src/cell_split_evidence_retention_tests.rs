@@ -1,7 +1,6 @@
 //! Shadow-only verification of independently retained Evidence minimums.
 //! These keys are test fixtures, not independently administered deployment keys.
 use super::*;
-use base64::Engine as _;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
 
