@@ -9,6 +9,8 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_frozen_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_fivearm_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_paired_screen*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_cost_frontier*.py'
+      - 'qualification/cell_meta_execution_af/OBSERVED_WORK_COST_FRONTIER.md'
       - 'qualification/cell_meta_execution_af/PAIRED_ORIGINAL_SOURCE_SCREEN.md'
       - 'qualification/cell_meta_execution_af/FIVE_ARM_GRANITE_HANDOFF.md'
       - 'qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md'
@@ -86,7 +88,9 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_fivearm_review.py \
             qualification/cell_meta_execution_af/physical_router_fivearm_tests.py \
             qualification/cell_meta_execution_af/physical_router_paired_screen.py \
-            qualification/cell_meta_execution_af/physical_router_paired_screen_tests.py
+            qualification/cell_meta_execution_af/physical_router_paired_screen_tests.py \
+            qualification/cell_meta_execution_af/physical_router_cost_frontier.py \
+            qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -108,6 +112,9 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_paired_screen_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_cost_frontier_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -319,6 +326,26 @@ jobs:
                   assert v['original_family_independence_verified'] is False
                   assert v['interval_is_valid_future_effect_CI'] is False
           PY
+          # Non-authorizing observed-work lower bounds, after the independent
+          # original-case multi-seed numeric reviewer, never before it.
+          python qualification/cell_meta_execution_af/physical_router_cost_frontier.py \
+            --bundle-dir "$ROOT" --out "$ROOT/observed-work-frontier.json"
+          python - "$ROOT/observed-work-frontier.json" <<'P2COST'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['authority_posture']=='DENY_ALL'
+          assert r['production_admission']=='BLOCKED'
+          assert r['unique_original_rows_not_multiplied_by_seeds']==224
+          assert r['paired_training_seed_count']==3
+          assert r['observed_primary_head_train_eval_equal_across_hard_arms'] is True
+          assert r['frozen_no_change_has_unequal_post_stage1_budget'] is True
+          assert r['additional_diagnostic_and_router_work_differs_between_arms'] is True
+          assert r['full_lifecycle_cost_matched'] is False
+          assert r['all_costs_independently_attested'] is False
+          assert r['statistical_or_resource_winner_certified'] is False
+          assert r['actual_future_outcomes_verified'] is False
+          assert len(r['unmeasured_resource_components'])>=9
+          P2COST
           # Identical original source/features/labels in all three seed panels;
           # an apparent independent-seed gain must not count reused source as
           # three independent task families or prospective observations.
@@ -430,6 +457,7 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-frozen-review.json
             ${{ runner.temp }}/hepta-meta-real/*-fivearm-report.json
             ${{ runner.temp }}/hepta-meta-real/paired-original-source-screen.json
+            ${{ runner.temp }}/hepta-meta-real/observed-work-frontier.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
