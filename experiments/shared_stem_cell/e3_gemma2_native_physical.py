@@ -16,6 +16,7 @@ import time
 from e3_scienceqa_contract import (E3Error, canonical, read_jsonl, read_pinned,
                                    sha, unit_probabilities, validate_labels,
                                    validate_source, write_new)
+from e3_gemma2_native_budget import original_native_input_preflight
 
 MODEL = ("google/embeddinggemma-2", "914f7f89142e33e77833254d9c9b90c3cef7303b")
 SCHEMA = "hepta.e3.native-gemma2-physical.v1"
@@ -58,6 +59,10 @@ def compute(sources,labels,images,runner):
         joint.append({"text":"query: "+question,"image":str(img_path)})
         image.append({"image":str(img_path)})
         candidates.extend("passage: "+question+"\nChoice: "+choice for choice in row["choices"])
+    # The original frozen tokenizer MUST observe the complete literal text
+    # and composed-image input before any model forward. Media token counts
+    # are conservatively reserved, not falsely reported as physical counts.
+    token_preflight=original_native_input_preflight(runner.model,plain,joint,image,candidates)
     started=time.perf_counter_ns()
     text_emb,t_calls=vector(runner,plain)
     joint_emb,j_calls=vector(runner,joint,batch_size=2)
@@ -115,6 +120,7 @@ def compute(sources,labels,images,runner):
         "full_embedding_and_head_training_wall_ns":time.perf_counter_ns()-started,
         "calibration_targets_never_used_for_training":True,
         "original_test_targets_visible":False,
+        "preencode_text_image_budget":token_preflight,
     }
 
 def main():
@@ -159,6 +165,7 @@ def main():
         "choice_encode_api_calls":stats["choice_encode_api_calls"],
         "encoder_api_calls_are_not_transformer_forward_counts":True,
         "gate_weights_sha256":stats["gate_weights_sha256"],
+        "preencode_text_image_budget":stats["preencode_text_image_budget"],
         "full_model_load_embedding_fit_wall_ns":time.perf_counter_ns()-started,
         "full_embedding_and_head_training_wall_ns":stats["full_embedding_and_head_training_wall_ns"],
         "process_peak_rss_kib":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
