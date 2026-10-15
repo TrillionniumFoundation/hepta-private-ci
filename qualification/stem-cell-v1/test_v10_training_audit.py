@@ -101,5 +101,4 @@ class TrainingTrace(unittest.TestCase):
     def test_different_seed_plan_rejected(self):
         self.reject(schedule=self.schedule[47])
 
-
 if __name__=='__main__': unittest.main()
