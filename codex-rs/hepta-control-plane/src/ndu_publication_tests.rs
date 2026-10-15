@@ -1468,6 +1468,85 @@ fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check() {
     assert_eq!(std::fs::read(&marker).unwrap(), original_marker_bytes);
 }
 
+#[cfg(unix)]
+#[test]
+fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen() {
+    use std::os::unix::fs::MetadataExt;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("principal-owned.wal");
+    let marker = dir.path().join("principal-owned.wal.owner-lock");
+    let effective_uid = rustix::process::geteuid().as_raw();
+    let foreign_uid = effective_uid.wrapping_add(1);
+
+    let dir_meta = std::fs::symlink_metadata(dir.path()).expect("original private owner root");
+    assert_eq!(dir_meta.uid(), effective_uid);
+    assert!(control_original_owner_uid_matches_euid(
+        dir_meta.uid(),
+        dir_meta.uid()
+    ));
+
+    // Deterministic foreign-UID denial without requiring chown, privileges
+    // or a forged root process. Both a replaced path and a replaced open
+    // descriptor's owner must be rejected, even with private 0700 modes.
+    assert!(!control_original_owner_uid_matches_euid(
+        foreign_uid,
+        foreign_uid
+    ));
+    assert!(!control_original_owner_uid_matches_euid(
+        effective_uid,
+        foreign_uid
+    ));
+    assert!(!control_original_owner_uid_matches_euid(
+        foreign_uid,
+        effective_uid
+    ));
+
+    let frozen = snapshot(3);
+    let checkpoint = Digest32::of_bytes(b"original-principal-checkpoint");
+    let original_frontier;
+    {
+        let owner =
+            NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
+                .expect("actual principal opens original Control owner");
+        owner
+            .compare_and_publish_checkpoint(
+                &frozen,
+                Digest32::of_bytes(b"principal-read"),
+                Digest32::of_bytes(b"principal-tick"),
+                Digest32::ZERO,
+                checkpoint,
+            )
+            .expect("original WAL fsync");
+        original_frontier = owner
+            .read_original_local_frontier_v1()
+            .expect("original full-prefix readback");
+
+        let wal_meta = std::fs::symlink_metadata(&path).expect("actual original WAL");
+        let marker_meta = std::fs::symlink_metadata(&marker).expect("actual original marker");
+        assert_eq!(wal_meta.uid(), effective_uid);
+        assert_eq!(marker_meta.uid(), effective_uid);
+        assert!(control_original_owner_uid_matches_euid(
+            wal_meta.uid(),
+            wal_meta.uid()
+        ));
+        assert!(control_original_owner_uid_matches_euid(
+            marker_meta.uid(),
+            marker_meta.uid()
+        ));
+    }
+
+    // The ownership fence must not reject legitimate same-principal
+    // recovery or mint another Genesis when original G/P history exists.
+    let reopened = NduPublicationOwnerV1::open_production(&path, frozen.clone(), checkpoint)
+        .expect("same-principal original Control recovery");
+    assert_eq!(
+        reopened.read_original_local_frontier_v1().unwrap(),
+        original_frontier
+    );
+    assert_eq!(reopened.current().unwrap(), (frozen, checkpoint));
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
