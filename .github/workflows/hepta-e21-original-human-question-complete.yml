@@ -106,6 +106,41 @@ jobs:
             --output "$OUT/e22-sealed-blind-answer-information.json"
           sha256sum "$OUT/e22-sealed-blind-answer-information.json" > "$OUT/e22-sealed-answer-information.sha256"
           test ! -e /tmp/hepta-e21-original-validation.parquet
+      - name: Independently recount original real six-Reader answer geometry, no human labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$OUT/sealed-label-blind-predictions.json" "$ROOT/E22_REAL_ORIGINAL_BLIND_OBSERVATION_20261015.json" <<'PY'
+          from collections import defaultdict
+          import json
+          from pathlib import Path
+          import sys
+          blind=json.loads(Path(sys.argv[1]).read_text())
+          registered=json.loads(Path(sys.argv[2]).read_text())
+          assert blind['source_archive_sha256']==registered['original_pretrained_zip_sha256']
+          assert blind['held_human_labels_opened'] is False
+          assert not registered['human_labels_accessed_in_this_study']
+          assert (blind['source_group_count'],blind['question_count'],blind['candidate_count'])==(4,8,33)
+          assert registered['reader_sufficient_information_proven'] is False
+          assert registered['full_NDU_system2_admitted'] is False
+          groups=defaultdict(list)
+          for row in blind['rows']:
+              assert 'label' not in row and 'human_truth' not in row
+              groups[(row['source_group'],row['question_slot'])].append(row)
+          assert len(groups)==8
+          for arm,expect in registered['per_arm_question_geometry'].items():
+              exact=constant=near=0
+              for rows in groups.values():
+                  p=[r['probs'][arm] for r in rows]
+                  exact+=int(len(set(p))==1)
+                  near+=int(max(p)-min(p)<=.001)
+                  classes={int(x>=.5) if arm.startswith('learned_') else int(x>.5) for x in p}
+                  constant+=int(len(classes)==1)
+              assert exact==expect['exact_score_invariant_questions']
+              assert constant==expect['single_hard_prediction_class_questions']
+              assert near==expect['span_at_most_0p001_diagnostic_questions']
+          print('E22_ORIGINAL_PRETRAINED_ARCHIVE_BLIND_GEOMETRY_RECOUNT_PASS / LABELS_ABSENT / DENY_ALL')
+          PY
       - name: Retain complete original-score-absent E21 source-head or synthetic-merge attempt
         uses: actions/upload-artifact@v4
         if: always()
