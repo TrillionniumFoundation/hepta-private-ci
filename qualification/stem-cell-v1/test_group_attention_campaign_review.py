@@ -3,11 +3,13 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
 
 from group_attention_campaign_review import ARMS, COHORTS, DIRECT, SYSTEM2, REQUIRED_SOURCES, MODES, MODELS, _digest, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
+from group_checkpoint_audit import verify_checkpoint_file
 
 
 def _case(family, query, facts, prefix):
@@ -65,6 +67,16 @@ def fake_system2_trace(row, critic_sha):
                 independent_success_established=False, production_authorized=False)
 
 
+def fixture_checkpoint(path, scalar):
+    """Valid tiny safetensors archive built without Torch or its serializer."""
+    header = json.dumps({
+        "weight": {"dtype": "F32", "shape": [1], "data_offsets": [0, 4]}
+    }, sort_keys=True, separators=(",", ":")).encode()
+    path.write_bytes(len(header).to_bytes(8, "little") + header +
+                     struct.pack("<f", float(scalar)))
+    return verify_checkpoint_file(path)
+
+
 def fixture(directory):
     train = _case("dependency", ("follow", "n0"),
                   [("link", "n0", "n9"), ("label", "n9", "A")], "train")
@@ -113,14 +125,27 @@ def fixture(directory):
                 confidence_bound_established=False),
             parameters_sha256=hashlib.sha256(model_owner.encode()).hexdigest(),
             fit_rows=3, calibration_rows=3)
+    material = {}
+    for i, name in enumerate(("core_initial", *DIRECT), start=1):
+        filename = f"group-{name}.safetensors"
+        observed = fixture_checkpoint(directory / filename, i)
+        material[name] = dict(
+            file=filename, authority="DENY_ALL",
+            model_sha256=observed["model_sha256"],
+            checkpoint_sha256=observed["checkpoint_sha256"],
+            bytes=observed["bytes"], tensor_count=len(observed["tensors"]))
+    material_cost = dict(
+        cpu_ns=40, wall_ns=50,
+        total_artifact_bytes=sum(x["bytes"] for x in material.values()),
+        independent_execution_attested=False, files=material)
     training = {}
-    initial_core = hashlib.sha256(b"same-real-core-initialization").hexdigest()
+    initial_core = material["core_initial"]["model_sha256"]
     for arm in DIRECT:
         training[arm] = dict(status="completed", completed_steps=3, seed=17,
             cpu_ns=100, wall_ns=100, parameter_count=112,
             initial_model_sha256=(initial_core if arm in ("core", "attention")
                                   else hashlib.sha256(("initial:" + arm).encode()).hexdigest()),
-            trained_model_sha256=hashlib.sha256(arm.encode()).hexdigest(),
+            trained_model_sha256=material[arm]["model_sha256"],
             sample_and_depth_sha256="b" * 64,
             attention_supervision_enabled=arm == "attention",
             attention_target_sha256="a" * 64 if arm == "attention" else None)
@@ -138,7 +163,7 @@ def fixture(directory):
                     source_group=case["source_group"],
                     feature_sha256=hashlib.sha256(
                         (cohort + case["text"]).encode()).hexdigest(),
-                    model_sha256=hashlib.sha256(MODELS[arm].encode()).hexdigest(),
+                    model_sha256=material[MODELS[arm]]["model_sha256"],
                     prediction=0 if correct is None else correct,
                     evidence_supported=correct is not None,
                     success=correct is not None, unsupported_attempt=correct is None,
@@ -182,6 +207,7 @@ def fixture(directory):
         heldout_target_stripped_before_system2_callbacks=True,
         same_model_critic_frozen_on_validation_only=True,
         initial_core_sha256=initial_core,
+        checkpoint_materialization=material_cost,
         encoder_cost=encoder, training=training, summaries=summaries)
     for name, data in (("protocol", protocol), ("teacher", teacher),
                        ("encoder", encoder), ("observations", rows), ("report", report),
@@ -284,6 +310,22 @@ class PairedReviewTests(unittest.TestCase):
             changed["source_groups_sha256"] = "d" * 64
             (root / "teacher.json").write_text(json.dumps(changed))
             with self.assertRaisesRegex(ValueError, "teacher"):
+                review(root)
+
+    def test_reject_missing_or_tampered_physical_checkpoint_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            path = root / "group-attention.safetensors"
+            original = path.read_bytes()
+            modified = bytearray(original)
+            modified[-1] ^= 1
+            path.write_bytes(modified)
+            with self.assertRaisesRegex(ValueError, "stored model bytes"):
+                review(root)
+            path.write_bytes(original)
+            (root / "group-core_initial.safetensors").unlink()
+            with self.assertRaises(OSError):
                 review(root)
 
     def test_reject_rehashed_but_causally_wrong_system2_call_order(self):
