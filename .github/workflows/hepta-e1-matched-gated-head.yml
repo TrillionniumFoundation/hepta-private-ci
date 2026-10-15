@@ -1,0 +1,105 @@
+name: Hepta E1 matched gated Head on original P0 snapshots (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e1_matched_gated_head.py'
+      - 'experiments/shared_stem_cell/e1_matched_gated_review.py'
+      - 'experiments/shared_stem_cell/test_e1_matched_gated_head.py'
+      - '.github/workflows/hepta-e1-matched-gated-head.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pinned CPU runtime and complete normal/optimized tests
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+          export PYTHONPATH=experiments/shared_stem_cell
+          python -m unittest discover -s "$PYTHONPATH" -p test_e1_matched_gated_head.py -v
+          python -O -m unittest discover -s "$PYTHONPATH" -p test_e1_matched_gated_head.py -v
+  original-feature-probe:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [granite_97m_r2, mmbert_small, embeddinggemma_2_text]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require completed SUCCESS of exact original four-model P0 source
+        env:
+          GH_READ_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,urllib.request
+          url='https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38686023757'
+          req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_READ_TOKEN']})
+          with urllib.request.urlopen(req,timeout=30) as r: run=json.load(r)
+          if (run.get('head_sha')!='b3b3712828cb5814e1a87d1e69a030ec947c43c1'
+              or run.get('workflow_id')!=385031696 or run.get('status')!='completed'
+              or run.get('conclusion')!='success'):
+              raise SystemExit('BLOCKED: original pinned four-model study incomplete; no fallback')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-fit-38686023757
+          path: ${{ runner.temp }}/e1/fit
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-blind-38686023757
+          path: ${{ runner.temp }}/e1/blind
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-arm-${{ matrix.model }}-38686023757
+          path: ${{ runner.temp }}/e1/arm
+      - name: Physical Head training followed by separate-process NumPy replay
+        env:
+          MODEL: ${{ matrix.model }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+          ROOT="$RUNNER_TEMP/e1"
+          COMMON=(--fit "$ROOT/fit/fit.json" --blind "$ROOT/blind/blind.json" --model "$MODEL"
+                  --original-report "$ROOT/arm/$MODEL.json" --replay-dir "$ROOT/arm/$MODEL.replay")
+          python experiments/shared_stem_cell/e1_matched_gated_head.py "${COMMON[@]}" --output-dir "$ROOT/probe"
+          python experiments/shared_stem_cell/e1_matched_gated_review.py "${COMMON[@]}" --probe-dir "$ROOT/probe" --output "$ROOT/numeric-review.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e1-${{ matrix.model }}-numeric-only-${{ github.run_id }}
+          path: ${{ runner.temp }}/e1/numeric-review.json
+          if-no-files-found: error
+          retention-days: 7
