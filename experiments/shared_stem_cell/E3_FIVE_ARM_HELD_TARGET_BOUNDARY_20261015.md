@@ -30,7 +30,11 @@ claiming that the prospective five-arm producer was label-blind.
 3. Both physical model jobs explicitly require the label-blind source mode,
    assert the target hash is absent and the test-label file is missing before
    loading pretrained material, and do not receive a `HELD_SHA` environment
-   variable. The protected TEST digest is provided **only** to
+   variable. The source stage also constructs no TEST answer-column view,
+   runs in an isolated Hugging Face source cache, and removes that raw
+   Parquet/Arrow cache *before* the model subprocess is invoked. This is
+   ordinary filesystem cleanup, **not** a secure deletion certificate.
+   The protected TEST digest is provided **only** to
    `independent-five-arm-review` after the full 5-arm prediction seal.
 4. The separate lightweight and physical workflow contract jobs now run
    the original 28 five-arm controls *and* isolated TRAIN/TEST visibility
@@ -40,9 +44,12 @@ claiming that the prospective five-arm producer was label-blind.
 
 ## Remaining limitations / fail closed
 
-The original Parquet source acquisition process can obtain the published
-answer column; this change prevents TEST values and TEST digests from being
-materialized into the **successor model-facing** process inputs. It does not
+The original Parquet source acquisition process can still access the
+published answer column, and a privileged runner could access data beyond
+the declared program inputs. The predictor source stage now deliberately
+does not create a TEST label view or digest, and its isolated downloaded
+Parquet/Arrow cache is removed before the **successor model-facing**
+process starts. It does not
 create an independent ground-truth owner, prove noninterference of every
 possible information channel, or provide human-adjudicated image necessity.
 
