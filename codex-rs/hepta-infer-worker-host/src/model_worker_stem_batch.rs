@@ -196,7 +196,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let canonical_scope = bindings[0].scope_sha256;
         if bindings.iter().any(|binding| {
             binding.scope_sha256 != canonical_scope
-                || binding.subject_id != proposal.source.principal_id.to_string()
+                || binding.subject_id.as_str() != proposal.source.principal_id.as_str()
         }) {
             return Err(Error::FeatureContract);
         }
