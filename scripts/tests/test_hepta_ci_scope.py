@@ -124,6 +124,48 @@ class ScopeTests(unittest.TestCase):
                 for minimum in minimums:
                     self.assertIn(minimum, gate)
 
+    def test_neuron_original_effect_non_test_denial_gate(self):
+        # A public callback cannot be an independent Control/Evidence owner.
+        # Scope must run an external test linked against the normal library.
+        for path in [
+            "codex-rs/hepta-neuron/src/runtime.rs",
+            "codex-rs/hepta-neuron/src/runtime_types.rs",
+            "codex-rs/hepta-neuron/tests/public_ndu_tick_non_test_denial.rs",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["native"])
+                self.assertTrue(scope["learning"])
+                self.assertFalse(scope["effects"])
+                self.assertFalse(scope["lifecycle"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        name = (
+            "      - name: Early Neuron original Control/Evidence "
+            "non-test model denial\n"
+        )
+        next_gate = (
+            "      - name: Early Supervisor original-Control "
+            "non-test retirement denial\n"
+        )
+        self.assertEqual(workflow.count(name), 1)
+        self.assertEqual(workflow.count(next_gate), 1)
+        gate = workflow.split(name, 1)[1].split(next_gate, 1)[0]
+        self.assertIn(
+            "if: steps.execution.outputs.run_native == 'true' && "
+            "(steps.scope.outputs.effects == 'true' || "
+            "steps.scope.outputs.lifecycle == 'true' || "
+            "steps.scope.outputs.learning == 'true')",
+            gate,
+        )
+        self.assertIn("--test public_ndu_tick_non_test_denial", gate)
+        self.assertIn("neuron-original-effect-product-build.json", gate)
+        self.assertIn("neuron-original-effect-non-test-deny.json", gate)
+        self.assertIn("--minimum-tests 1", gate)
+
     def test_supervisor_original_control_non_test_retirement_gate(self):
         # The non-test library denies an unverified Supervisor Retired write.
         # A cfg(test) unit fixture cannot substitute for this linked test.

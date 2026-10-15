@@ -311,6 +311,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             Digest32,
         ) -> Result<(), NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // Caller-supplied NDU read and Control checkpoint callbacks are not
+        // independently signed original Control/CNS + Evidence ownership.
+        // In a product build refuse before any Final-use nonce, business WAL
+        // Prepare or physical encoder/Head model effect. This still preserves
+        // the advanced internal Control checkpoint mechanism in cfg(test).
+        if !cfg!(test) {
+            return Err(NeuronRuntimeError::OriginalEffectOwnerUnverified);
+        }
         let tick_digest = input.semantic_digest()?;
         let previous_checkpoint = input.checkpoint_digest;
         crate::bind_ndu_snapshot_stage_v1(
@@ -395,6 +403,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
 
     /// Internal deterministic mechanism for qualification only; product
     /// serving must enter through the independently signed Final-use path.
+    #[cfg(test)]
     pub(crate) fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
