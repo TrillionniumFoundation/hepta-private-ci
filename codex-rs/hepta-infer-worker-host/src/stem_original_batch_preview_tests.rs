@@ -307,6 +307,24 @@ fn preview_rechecks_lease_epoch_and_stem_digest_not_just_same_arc_pointer() {
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
     ));
+
+    // A new caller-controlled lease expiry is not a renewed original Stem
+    // source. The canonical full Stem reference hash includes this field,
+    // even if Scope, model ID, Q24 values and all weights are unchanged.
+    let mut longer_lease = fx.source.clone();
+    longer_lease.lease_expires_at_ms += 500;
+    assert!(matches!(
+        prepare_stem_original_batch_preview_v1(
+            "worker.1",
+            &longer_lease,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.key,
+            &fx.authorization,
+        ),
+        Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
+    ));
 }
 
 #[test]
