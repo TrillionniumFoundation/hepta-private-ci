@@ -44,3 +44,7 @@ No training, evaluation label, source group, provenance SHA, RSS, or energy valu
 - Source-HEAD and merge-tree CI, protected runtime owner security/FinalUse/revocation and separate human model selection if any improvement is eventually demonstrated.
 
 Every output deliberately retains `source_outcomes_authenticated_externally=false`, `task_quality_winner_certified=false`, `complete_cost_pareto_certified=false`, `model_or_teacher_equivalence_certified=false`, `can_extrapolate_to_unmeasured_10t_100t=false`, `production_accepted=false` and `authority_posture=DENY_ALL`.
+
+## 2026-10-15 held-scale uncertainty and plateau discipline
+
+The fourth-point outcome now retains an explicitly **iid-only Wilson 95% descriptive interval**, an un-clipped forecast and an `prediction_outside_unit_interval` warning, the signed fourth-versus-third quality difference, and `plateau_claim_admitted=false`. Real candidate answers from the same question, shared passage or episode are correlated; the Wilson interval **does not** supply a valid independent passage/task-family confidence bound. A proper held-out cluster bootstrap or a preregistered randomization design on independent sources remains necessary. Even a zero fourth-minus-third observed gain does **not** establish a statistical plateau. New adversarial tests cover these claims; hosted checks on their *new* exact SHA are required and must not inherit old green status.
