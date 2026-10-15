@@ -124,6 +124,33 @@ class ScopeTests(unittest.TestCase):
                 for minimum in minimums:
                     self.assertIn(minimum, gate)
 
+    def test_cns_original_control_non_test_denial_gate(self):
+        # The product-linked CNS library must deny even a caller-supplied
+        # valid-looking signed witness before preflight or a route mutation.
+        path = "codex-rs/hepta-runtime/tests/cell_split_cns_non_test_denial.rs"
+        scope = select([path])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["effects"])
+        self.assertTrue(scope["lifecycle"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        begin = "      - name: CellSplit native CNS route shared-Control admission regression\n"
+        end = "      - name: Early Supervisor original-Control non-test retirement denial\n"
+        self.assertEqual(workflow.count(begin), 1)
+        self.assertEqual(workflow.count(end), 1)
+        gate = workflow.split(begin, 1)[1].split(end, 1)[0]
+        self.assertIn("cns-original-control-non-test-deny.json", gate)
+        self.assertIn("--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate)
+        self.assertIn("--minimum-tests 1", gate)
+        self.assertLess(
+            gate.index("cns-prod-feature-compile.json"),
+            gate.index("cns-original-control-non-test-deny.json"),
+            "the compiled product-feature library must be checked before external denial",
+        )
+
     def test_supervisor_original_control_non_test_retirement_gate(self):
         # The non-test library denies an unverified Supervisor Retired write.
         # A cfg(test) unit fixture cannot substitute for this linked test.
