@@ -16,6 +16,7 @@ import shutil
 import sys
 import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from e1_public_triplet_real_cpu import load_panel, fit_heads, canonical, sha
 from e1e2_q24_identity import feature_digest, feature_inventory
