@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
@@ -46,7 +47,12 @@ def pairs(items):
 
 def strict_json(raw: bytes) -> dict:
     require(1 <= len(raw) <= 1_000_000, 'oversize/empty JSON member')
-    x = json.loads(raw, object_pairs_hook=pairs,
+    def finite_number(token: str) -> float:
+        value = float(token)
+        require(math.isfinite(value), 'nonfinite JSON evidence')
+        return value
+
+    x = json.loads(raw, object_pairs_hook=pairs, parse_float=finite_number,
                    parse_constant=lambda _: (_ for _ in ()).throw(Invalid('nonfinite JSON evidence')))
     require(type(x) is dict, 'bad archived JSON payload')
     return x
@@ -64,7 +70,9 @@ def pinned_zip(path: Path, name: str) -> tuple[dict, dict]:
     attrs = ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns')
     require(all(getattr(a, k) == getattr(b, k) for k in attrs), 'ZIP changed during hashing')
     require(hashlib.sha256(raw).hexdigest() == expected_hash, 'original hosted ZIP SHA256 mismatch')
-    with zipfile.ZipFile(path, 'r') as z:
+    # Read exactly the immutable bytes already SHA-256 checked; a second
+    # filesystem path open would permit replacement between hash and parse.
+    with zipfile.ZipFile(io.BytesIO(raw), 'r') as z:
         infos = z.infolist()
         require(sorted(i.filename for i in infos) == sorted(expected_members),
                 'missing/foreign/duplicate evidence member')
