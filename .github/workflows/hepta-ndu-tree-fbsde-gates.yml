@@ -36,10 +36,10 @@ jobs:
           # neither silently skip import errors nor install unpinned Torch.
           test -f experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py
           grep -Fq "test_p0_compact_paired.py" .github/workflows/hepta-p0-compact-physical.yml
-          mapfile -t TEST_MODULES < <(find experiments/ndu_tree_fbsde_gates -maxdepth 1 -type f -name 'test_*.py' ! -name 'test_p0_compact_paired.py' -printf '%f\\n' | sort)
+          mapfile -t TEST_MODULES < <(find experiments/ndu_tree_fbsde_gates -maxdepth 1 -type f -name 'test_*.py' ! -name 'test_p0_compact_paired.py' -printf '%f\n' | sort)
           test "${#TEST_MODULES[@]}" -ge 10
           for i in "${!TEST_MODULES[@]}"; do TEST_MODULES[i]="${TEST_MODULES[i]%.py}"; done
-          printf 'Explicit NumPy-only modules: %s\\n' "${TEST_MODULES[@]}"
+          printf 'Explicit NumPy-only modules: %s\n' "${TEST_MODULES[@]}"
           python -W error::ResourceWarning -m unittest -v "${TEST_MODULES[@]}"
       - name: Execute separate-process 64/256/1024/4096 actual CPU Head-only batches
         env:
