@@ -13,7 +13,7 @@ from time import process_time_ns, perf_counter_ns
 import math
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'ndu-p5-coupled-study'))
+sys.path.append(str(Path(__file__).resolve().parents[1] / 'ndu-p5-coupled-study'))
 from coupled_binary import Profile, mapping, Unsupported
 
 
