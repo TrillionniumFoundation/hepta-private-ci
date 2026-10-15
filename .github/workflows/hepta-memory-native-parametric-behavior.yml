@@ -1,0 +1,96 @@
+name: MemoryCell original native parameter answer-delta audit (no model)
+on:
+  push:
+    branches:
+      - codex/memory-native-parametric-answer-delta-20261015
+    paths:
+      - scripts/memory_cell/memory_parametric_behavior_audit.py
+      - scripts/memory_cell/test_memory_parametric_behavior_audit.py
+      - .github/workflows/hepta-memory-native-parametric-behavior.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: native-parametric-answer-delta-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  exact-original-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MEMORY_NATIVE_LOCOMO_ZIP: /tmp/parametric-effect/original-locomo.zip
+      MEMORY_NATIVE_LONGMEMEVAL_ZIP: /tmp/parametric-effect/original-longmemeval.zip
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require exactly the pushed source commit
+        env:
+          PIN: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$PIN"
+      - name: Download historical immutable original pretrained model archives
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/parametric-effect
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946307808/zip' \
+            -o "$MEMORY_NATIVE_LOCOMO_ZIP"
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946513138/zip' \
+            -o "$MEMORY_NATIVE_LONGMEMEVAL_ZIP"
+          echo '310e38cfe87ae55838afb8612fb90eb028fc7abde55c529faa1d807fa878f333  /tmp/parametric-effect/original-locomo.zip' | sha256sum --check
+          echo '95d1b57cab057e7fb5c45d9ba994c4b9d22d49f6e834abe7a0a7b2cc6106c315  /tmp/parametric-effect/original-longmemeval.zip' | sha256sum --check
+      - name: Run 10 source-backed fail-closed regressions without models
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_parametric_behavior_audit.py scripts/memory_cell/test_memory_parametric_behavior_audit.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_parametric_behavior_audit.py -v
+      - name: Independently rehash all 199 original members and paired results
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/parametric-effect/review
+          python3 scripts/memory_cell/memory_parametric_behavior_audit.py \
+            --locomo "$MEMORY_NATIVE_LOCOMO_ZIP" \
+            --longmemeval "$MEMORY_NATIVE_LONGMEMEVAL_ZIP" \
+            --output /tmp/parametric-effect/review/independent-answer-delta.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('/tmp/parametric-effect/review/independent-answer-delta.json')
+          x = json.loads(p.read_bytes())
+          if not (x['original_real_model_calls'] == 128
+                  and x['paired_parametric_comparisons'] == 64
+                  and x['paired_parametric_answers_exactly_identical'] == 63
+                  and x['paired_parametric_answers_changed'] == 1
+                  and x['distinct_source_family_proxies'] == 3
+                  and x['production_qualified'] is False):
+              raise ValueError('original native answer-delta cohort drift')
+          PY
+          # Compare a separately committed, model-free research result. No answer regeneration.
+          cmp /tmp/parametric-effect/review/independent-answer-delta.json \
+            scripts/memory_cell/data/memory-native-parametric-answer-delta-38675845950.json
+          # Verify actual trained tensor bytes/config/lineage against original
+          # learning receipts, retaining unknown TCO instead of setting it to zero.
+          python3 -m py_compile scripts/memory_cell/memory_native_adapter_cost.py scripts/memory_cell/test_memory_native_adapter_cost.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_native_adapter_cost.py -v
+          python3 scripts/memory_cell/memory_native_adapter_cost.py \
+            --locomo "$MEMORY_NATIVE_LOCOMO_ZIP" \
+            --longmemeval "$MEMORY_NATIVE_LONGMEMEVAL_ZIP" \
+            --output /tmp/parametric-effect/review/adapter-resource.json
+          cmp /tmp/parametric-effect/review/adapter-resource.json \
+            scripts/memory_cell/data/memory-native-adapter-resource-38675845950.json
+          git rev-parse HEAD > /tmp/parametric-effect/review/tested-head.txt
+          (cd /tmp/parametric-effect/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-parametric-answer-delta
+          path: /tmp/parametric-effect/review
+          if-no-files-found: warn
