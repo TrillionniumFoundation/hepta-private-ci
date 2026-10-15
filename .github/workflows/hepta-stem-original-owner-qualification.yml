@@ -8,6 +8,9 @@ on:
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
+      - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview.rs"
+      - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview_tests.rs"
+      - "codex-rs/hepta-infer-worker-host/src/lib.rs"
       - ".github/workflows/hepta-stem-original-owner-qualification.yml"
 
 permissions:
@@ -75,6 +78,10 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+      - name: Strict original Worker Clippy including bridge tests
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Run typed Stem to original signed Batch ABI parity tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Check source integrity after compiler and formatter
