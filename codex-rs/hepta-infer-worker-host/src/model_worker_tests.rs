@@ -733,7 +733,9 @@ fn verified_stem_cas_fixture(
     }
     let cas = StemArtifactCasVerifierV1::open(root.path(), 4096)
         .expect("audited private read-only CAS root");
-    let proof = cas.verify_selected(source).expect("genuine matched blob hashes");
+    let proof = cas
+        .verify_selected(source)
+        .expect("genuine matched blob hashes");
     (proof, root)
 }
 
@@ -978,7 +980,9 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
         Driver::default(),
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("loaded Head fixture");
+    worker
+        .load_model(100, manifest())
+        .expect("loaded Head fixture");
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
     let mut wrong_source = source.clone();
     wrong_source.stem_generation = Generation::new(4).unwrap();
@@ -1019,10 +1023,16 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
 #[test]
 fn typed_neuron_receipt_move_preserves_512d_payload_and_tamper_rejection() {
     let mut worker = InferenceWorker::new(
-        100, "worker.move-512".to_string(), 3, grant(), Driver::default(),
+        100,
+        "worker.move-512".to_string(),
+        3,
+        grant(),
+        Driver::default(),
     )
     .expect("Worker fixture");
-    worker.load_model(100, manifest()).expect("loaded model fixture");
+    worker
+        .load_model(100, manifest())
+        .expect("loaded model fixture");
 
     let mut request = neuron_feature_request();
     request.feature_vector_q24 = vec![1 << 22; 512];
