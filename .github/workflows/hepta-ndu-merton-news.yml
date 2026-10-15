@@ -84,6 +84,36 @@ jobs:
           if semantic(records[0])!=semantic(records[1]):raise ValueError('interpreter semantic drift')
           PY
           git diff --exit-code
+      - name: Pre-execution admission, actual early stopping and original scalar replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/sequential
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          echo "f312ed72af7cf29224b98846b17d6ac089248f2dcb8d43cb502aab54648fd105  $D/protocol.json" | sha256sum -c -
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_online.py -v 2>&1 | tee "$E/sequential-tests-$mode.log"
+            grep -F 'Ran 35 tests' "$E/sequential-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/online.py" --material "$RUNNER_TEMP/news-material" --output "$E/sequential-$mode"
+            python "${FLAGS[@]}" "$D/audit_online.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --run "$E/sequential-$mode" --output "$E/sequential-audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          seals=[json.loads((e/f'sequential-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def semantic(seal):
+              if len(seal['rows'])!=96:raise ValueError('incomplete sequential cohort')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns')} for r in seal['rows']]
+          if semantic(seals[0])!=semantic(seals[1]):raise ValueError('sequential mode drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'sequential-audit-{m}.json').read_text())
+              if a['verified_lifecycles']!=96 or a['actual_optimizer_updates']!=2280:
+                  raise ValueError('missing actual work or replay')
+          PYCODE
+          git diff --exit-code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
