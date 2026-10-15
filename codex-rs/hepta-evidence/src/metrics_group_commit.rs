@@ -7,6 +7,7 @@
 
 #[cfg(unix)]
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -656,6 +657,19 @@ impl MetricsGroupCommitV1 {
             .any(|q| q.scope_digest.is_zero() || q.operation_digest.is_zero())
         {
             return Err(MetricsJournalErrorV1::EmptyDigest);
+        }
+        // Caller-supplied duplicate queries are an invalid selection, NOT
+        // proof of disk corruption; refuse without poisoning the real WAL.
+        let mut unique = BTreeSet::new();
+        for query in queries {
+            if !unique.insert((
+                query.scope_digest,
+                query.operation_digest,
+                query.phase as u8,
+                query.succeeded,
+            )) {
+                return Err(MetricsJournalErrorV1::Capacity);
+            }
         }
         let result = self.read_committed_samples_checked(queries);
         if result.is_err() {
