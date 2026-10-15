@@ -176,10 +176,16 @@ fn configuration(n: &SparseConfig) -> NeuronRuntimeConfigV1 {
 #[test]
 fn public_callback_cannot_claim_product_model_use_without_original_control_and_evidence() {
     let directory = PrivateJournalRoot::create();
-    checked(fs::set_permissions(&directory.0, fs::Permissions::from_mode(0o700)));
+    checked(fs::set_permissions(
+        &directory.0,
+        fs::Permissions::from_mode(0o700),
+    ));
     let authority_root = directory.0.join("authority");
     checked(fs::create_dir(&authority_root));
-    checked(fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700)));
+    checked(fs::set_permissions(
+        &authority_root,
+        fs::Permissions::from_mode(0o700),
+    ));
 
     let subject = checked(StableId::new("subject.1"));
     let id = subject.as_str().as_bytes();
@@ -228,8 +234,8 @@ fn public_callback_cannot_claim_product_model_use_without_original_control_and_e
         &authority_root,
         "security-owner".into(),
         [
-            110, 50, 193, 151, 65, 240, 175, 130, 96, 97, 42, 233, 159, 209, 61, 138,
-            56, 148, 71, 34, 224, 137, 100, 221, 35, 151, 56, 245, 82, 166, 21, 59,
+            110, 50, 193, 151, 65, 240, 175, 130, 96, 97, 42, 233, 159, 209, 61, 138, 56, 148, 71,
+            34, 224, 137, 100, 221, 35, 151, 56, 245, 82, 166, 21, 59,
         ],
         FinalUseRevocations {
             authority_epoch: 9,
@@ -307,10 +313,16 @@ fn public_callback_cannot_claim_product_model_use_without_original_control_and_e
         },
     );
     assert!(
-        matches!(denied, Err(NeuronRuntimeError::OriginalEffectOwnerUnverified)),
+        matches!(
+            denied,
+            Err(NeuronRuntimeError::OriginalEffectOwnerUnverified)
+        ),
         "non-test production code must refuse an untrusted callback before effect entry"
     );
-    assert_eq!(callback_calls, 0, "no caller callback counts as original NDU");
+    assert_eq!(
+        callback_calls, 0,
+        "no caller callback counts as original NDU"
+    );
     assert_eq!(
         control_publish_calls, 0,
         "a caller-selected checkpoint publisher cannot emulate the original Control owner"
