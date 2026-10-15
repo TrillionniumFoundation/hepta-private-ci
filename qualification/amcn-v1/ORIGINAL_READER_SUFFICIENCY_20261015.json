@@ -1,0 +1,190 @@
+{
+  "actual_total_Reader_compute_equal": false,
+  "all_precommitted_regimes": [
+    "no_evidence",
+    "original_bm25_top3",
+    "publisher_annotated_witness",
+    "publisher_witness_lesion"
+  ],
+  "automatic_cell_fission_fusion_authorized": false,
+  "cohorts": {
+    "annotation_only_12": {
+      "actual_completed_reader_calls": 48,
+      "arm_totals": {
+        "no_evidence": {
+          "completed": 12,
+          "contains_literal_unknown_marker": 0,
+          "input_tokens": 616,
+          "output_ceiling_reached": 8,
+          "output_tokens": 273,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 12,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        },
+        "original_bm25_top3": {
+          "completed": 12,
+          "contains_literal_unknown_marker": 1,
+          "input_tokens": 1897,
+          "output_ceiling_reached": 9,
+          "output_tokens": 261,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 12,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        },
+        "publisher_annotated_witness": {
+          "completed": 12,
+          "contains_literal_unknown_marker": 1,
+          "input_tokens": 1978,
+          "output_ceiling_reached": 8,
+          "output_tokens": 260,
+          "publisher_answer_substring_proxy": 1,
+          "questions": 12,
+          "strict_literal": 0,
+          "weak_support_hit": 12
+        },
+        "publisher_witness_lesion": {
+          "completed": 12,
+          "contains_literal_unknown_marker": 1,
+          "input_tokens": 1880,
+          "output_ceiling_reached": 9,
+          "output_tokens": 265,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 12,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        }
+      },
+      "case_selection_uses_publisher_gold_answer": false,
+      "failed_original_reader_calls": 0,
+      "family_root_counts": {
+        "conv-47": 3,
+        "conv-48": 3,
+        "conv-49": 3,
+        "conv-50": 3
+      },
+      "independent_historical_source_family_roots": 4,
+      "ordinary_gold_verbatim_in_original_publisher_source": {
+        "gold_literal_in_original_witness": 2,
+        "ordinary_questions": 7
+      },
+      "original_attempt_status_sha256": "f2394be985510658a13713a672cc09e2f2b4ec48073267ddeb7247d9e191bf41",
+      "original_case_count": 12,
+      "original_input_starts_sha256": "b5537988f9ea4a62e9f2efeb882154341e8f3b207c719f6d3dbc0372207f8642",
+      "original_plan_sha256": "7b410e2e05b66767d8c5a67c97eee354f294b1ce8e4c8954e87cdb4ee7db4cb7",
+      "original_raw_answers_sha256": "c3cb3cae2f8076389407b531ab58166dfd76f03fcf9fd369e71e7c6c19777993",
+      "original_reader_attempts": 48,
+      "original_sealed_answers_sha256": "8ba6e315dfcd70158c2d7b1c220411b2deee5cad062c0634c5dae66404f16692",
+      "postseal_scored_aggregate_sha256": "b1764ceb36872ad3b95f29ea2d23a8fde8a285989657afe0c3fcfff9abb2571a",
+      "publisher_label_result_after_seal": true,
+      "publisher_witness_human_verified": false,
+      "question_answer_class_counts": {
+        "adversarial": 5,
+        "ordinary": 7
+      }
+    },
+    "verbatim_stress_8": {
+      "actual_completed_reader_calls": 32,
+      "arm_totals": {
+        "no_evidence": {
+          "completed": 8,
+          "contains_literal_unknown_marker": 0,
+          "input_tokens": 413,
+          "output_ceiling_reached": 7,
+          "output_tokens": 182,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 8,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        },
+        "original_bm25_top3": {
+          "completed": 8,
+          "contains_literal_unknown_marker": 1,
+          "input_tokens": 1181,
+          "output_ceiling_reached": 5,
+          "output_tokens": 160,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 8,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        },
+        "publisher_annotated_witness": {
+          "completed": 8,
+          "contains_literal_unknown_marker": 0,
+          "input_tokens": 1425,
+          "output_ceiling_reached": 5,
+          "output_tokens": 161,
+          "publisher_answer_substring_proxy": 4,
+          "questions": 8,
+          "strict_literal": 0,
+          "weak_support_hit": 8
+        },
+        "publisher_witness_lesion": {
+          "completed": 8,
+          "contains_literal_unknown_marker": 0,
+          "input_tokens": 1266,
+          "output_ceiling_reached": 7,
+          "output_tokens": 178,
+          "publisher_answer_substring_proxy": 0,
+          "questions": 8,
+          "strict_literal": 0,
+          "weak_support_hit": 0
+        }
+      },
+      "case_selection_uses_publisher_gold_answer": true,
+      "failed_original_reader_calls": 0,
+      "family_root_counts": {
+        "conv-47": 2,
+        "conv-48": 2,
+        "conv-49": 2,
+        "conv-50": 2
+      },
+      "independent_historical_source_family_roots": 4,
+      "ordinary_gold_verbatim_in_original_publisher_source": {
+        "gold_literal_in_original_witness": 8,
+        "ordinary_questions": 8
+      },
+      "original_attempt_status_sha256": "42a29a4ff794a316d10048fa930b07000762e88c0e8d5b4925426f699a68d1e2",
+      "original_case_count": 8,
+      "original_input_starts_sha256": "9caaf43d4219b052c27f620b6560b3d539a389d69911a2082da2fe2ee23738f2",
+      "original_plan_sha256": "8810ac2a88190fb27aded5f25920c8e0ea48ad08c1369ae67b5aed4723087b41",
+      "original_raw_answers_sha256": "87b648412b9c41c6a926b3acd9142f98c416a53ae812e89c4de1407143e62a3f",
+      "original_reader_attempts": 32,
+      "original_sealed_answers_sha256": "6cdb9eb4ce4dd94eaf008f4fc85e7dc387bcec432105388ba6e2eea8c8842a89",
+      "postseal_scored_aggregate_sha256": "3c1014b1d2b0ebc634c686139c7184571dbe8dba78ee37f713016c8445e1544c",
+      "publisher_label_result_after_seal": true,
+      "publisher_witness_human_verified": false,
+      "question_answer_class_counts": {
+        "adversarial": 0,
+        "ordinary": 8
+      }
+    }
+  },
+  "date": "2026-10-15",
+  "environment": "isolated_analysis_container_not_user_dot_host",
+  "evidence_slots_per_evidence_arm": 3,
+  "graph_network_gain_proven": false,
+  "independent_human_verified_sufficient_evidence": false,
+  "independent_semantic_judgment": null,
+  "independent_source_family_roots_union": 4,
+  "max_new_tokens_per_call": 24,
+  "no_evidence_arm_slots": 0,
+  "original_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "original_reader_135m_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "original_reader_HF_parity_verified": false,
+  "original_reader_tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+  "parametric_memory_task_gain_proven": false,
+  "production_accepted": false,
+  "profile": "hepta.amcn.original-reader-4-evidence-regimes-two-cohort-negative.v1",
+  "publisher_annotations_only_weak_support": true,
+  "publisher_answer_text_not_passed_as_reader_gold_field": true,
+  "reader_sufficiency_full_task_proven": false,
+  "strict_matched_input_tokens_across_arms": false,
+  "superiority_claim": false,
+  "total_actual_original_reader_calls": 80,
+  "total_model_failures": 0,
+  "true_future_calendar_windows": 0,
+  "typed_head_gain_proven": false,
+  "verbatim_stress_selection_opened_answers_before_generation": true
+}

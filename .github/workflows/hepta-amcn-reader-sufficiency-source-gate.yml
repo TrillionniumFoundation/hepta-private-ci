@@ -1,0 +1,52 @@
+name: Hepta AMCN original Reader sufficiency negative-evidence gate (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_reader_sufficiency.py"
+      - "qualification/amcn-v1/amcn_reader_sufficiency_gate.py"
+      - "qualification/amcn-v1/test_amcn_reader_sufficiency_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_READER_SUFFICIENCY_20261015.json"
+      - "qualification/amcn-v1/ORIGINAL_READER_SUFFICIENCY.md"
+      - ".github/workflows/hepta-amcn-reader-sufficiency-source-gate.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+
+permissions:
+  contents: read
+
+jobs:
+  deny-unverified-reader-efficacy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Recheck pinned original source-only negative receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=qualification/amcn-v1
+          printf '%s  %s\n' \
+            7ed4ddc5ad8defb780b0931c5e9ed6c0330e01f1097a4f0196bf0128161a9864 \
+            "$SRC/ORIGINAL_READER_SUFFICIENCY_20261015.json" | sha256sum -c -
+          python3 -m compileall -q \
+            "$SRC/amcn_reader_sufficiency.py" \
+            "$SRC/amcn_reader_sufficiency_gate.py" \
+            "$SRC/test_amcn_reader_sufficiency_gate.py"
+          PYTHONPATH="$SRC" python3 -m unittest discover -s "$SRC" \
+            -p 'test_amcn_reader_sufficiency_gate.py' -v
+          PYTHONPATH="$SRC" python3 "$SRC/amcn_reader_sufficiency_gate.py" \
+            --summary "$SRC/ORIGINAL_READER_SUFFICIENCY_20261015.json" \
+            --output /tmp/hepta-original-reader-negative-denial.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/hepta-original-reader-negative-denial.json'))
+          assert p['original_physical_reader_attempts_recounted_from_author_receipts']==80
+          assert p['human_sufficient_evidence_verified'] is False
+          assert p['reader_capacity_accepted'] is False
+          assert p['production_accepted'] is False
+          PY
