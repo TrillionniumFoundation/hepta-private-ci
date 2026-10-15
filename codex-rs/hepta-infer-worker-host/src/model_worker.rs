@@ -943,6 +943,15 @@ pub use frozen_stem_v4::StemPhysicalErrorV4;
 pub use frozen_stem_v4::StemSourceSequenceV4;
 pub use frozen_stem_v4::canonical_stem_source_digest_v4;
 
+#[path = "model_worker_granite_v5.rs"]
+mod granite_v5;
+pub use granite_v5::GraniteFeatureExpectationV5;
+pub use granite_v5::GraniteFeatureImportErrorV5;
+pub use granite_v5::ImportedGraniteFeaturesV5;
+pub use granite_v5::granite97_complete_input_digest_v5;
+pub use granite_v5::granite97_encoder_identity_v5;
+pub use granite_v5::import_granite97_token_v5;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
