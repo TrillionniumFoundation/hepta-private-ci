@@ -45,6 +45,8 @@ class TestMMBertSourceTie(unittest.TestCase):
         self.run_case(edit)
     def test_checkpoint_bytes_tampered(self):
         self.run_case(lambda m,s:s.__setitem__((0,0),-9))
+    def test_middle_vocabulary_byte_corruption_is_not_ignored(self):
+        self.run_case(lambda m,s:s.__setitem__((5,123),-42))
     def test_wrong_embedding_width(self):
         def edit(m,s):
             m.model.embeddings.tok_embeddings.weight=torch.nn.Parameter(torch.ones(9,128))
