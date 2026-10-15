@@ -171,6 +171,7 @@ class ScopeTests(unittest.TestCase):
         # A cfg(test) unit fixture cannot substitute for this linked test.
         for path in [
             "codex-rs/hepta-supervisor/src/cell_split_finalization.rs",
+            "codex-rs/hepta-supervisor/src/cell_split_finalization_tests.rs",
             "codex-rs/hepta-supervisor/tests/cell_split_finalizer_non_test_gate.rs",
         ]:
             with self.subTest(path=path):
@@ -206,6 +207,9 @@ class ScopeTests(unittest.TestCase):
         self.assertIn("--test cell_split_finalizer_non_test_gate", gate)
         self.assertIn("--minimum-tests 1", gate)
         self.assertIn("supervisor-original-control-non-test-deny.json", gate)
+        self.assertIn("supervisor-original-retirement-no-reexecute.json", gate)
+        self.assertIn("--features cell-split-supervisor-port --lib real_journal_port", gate)
+        self.assertIn("--minimum-tests 5", gate)
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
