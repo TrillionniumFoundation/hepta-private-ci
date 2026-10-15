@@ -387,6 +387,8 @@ fn run() -> Result<(), String> {
         "state_persistence_measured": false,
         "microbatch_and_gpu_measured": false,
         "artifact_provenance_verified": false,
+        // Distinguishes compiled debug assertions, not an attested optimizer profile.
+        "compiler_debug_assertions_enabled": cfg!(debug_assertions),
         "arm": arm,
         "cells": cells,
         "width": trace.width,
