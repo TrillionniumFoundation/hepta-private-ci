@@ -7,11 +7,9 @@ from __future__ import annotations
 
 import copy
 import inspect
-import math
 import unittest
 from unittest.mock import patch
 
-import numpy as np
 import torch
 
 import p1_real_granite_cohort as p1
