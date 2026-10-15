@@ -204,6 +204,10 @@ pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV
 pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleReadbackV1;
 pub use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+pub use neuron_ndu_read::NduReadFrontierPortV1;
+pub use neuron_ndu_read::NduReadVerificationErrorV1;
+pub use neuron_ndu_read::NduReadVerifierV1;
+pub use neuron_ndu_read::SignedNduSnapshotReadV1;
 pub use neuron_production_bootstrap::NeuronProductionBootstrapErrorV1;
 pub use neuron_production_bootstrap::bootstrap_neuron_production_owner_v1;
 pub use neuron_runtime::AgentdNeuronOwner;
