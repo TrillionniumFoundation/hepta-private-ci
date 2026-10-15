@@ -738,6 +738,71 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "non-test product library must be linked by the required gate",
         )
 
+    def test_generic_supervisor_effect_owner_denies_product_retirement_before_callbacks(self) -> None:
+        # The concrete Supervisor journal finalizer already fails closed
+        # without genuine original Control B/C. A public generic effect owner
+        # could still accept another port's forged success unless both entry
+        # methods deny BEFORE calling arbitrary Supervisor trait methods.
+        code = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_supervisor_fence.rs"
+        )
+        self.assertIn("OriginalControlUnverified", code)
+        owner = code.find(
+            "impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1"
+        )
+        self.assertGreaterEqual(owner, 0, "generic Supervisor effect owner missing")
+        for method_name, next_method in (
+            ("authorize_execute", "commit_once"),
+            ("commit_once", "read_committed"),
+        ):
+            with self.subTest(method=method_name):
+                start = code.find(f"fn {method_name}(", owner)
+                end = code.find(f"fn {next_method}(", start)
+                self.assertGreater(end, start, "Supervisor mutation boundary missing")
+                method = code[start:end]
+                opening = method.find("{")
+                self.assertGreaterEqual(opening, 0)
+                body = method[opening + 1 :]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!cfg!\(test\)\s*\{\s*"
+                    r"return\s+Err\(CellSplitSupervisorFenceErrorV1::"
+                    r"OriginalControlUnverified\);\s*\}",
+                    "compiled generic Supervisor must deny before callback",
+                )
+                self.assertLess(
+                    body.index("if !cfg!(test)"),
+                    body.index("self.actual_effect("),
+                    "untrusted Supervisor preflight must not precede denial",
+                )
+        native = (
+            ROOT
+            / "codex-rs/hepta-operator-acceptance/tests/"
+            "cell_split_supervisor_non_test_owner_denial.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn compiled_generic_supervisor_owner_denies_execute_and_cold_replay_before_callbacks()",
+            native,
+            "external linked non-cfg(test) Supervisor denial is required",
+        )
+        self.assertIn("owner.authorize_execute(&intent)", native)
+        self.assertIn("owner.commit_once(&intent)", native)
+        self.assertIn("reopened.commit_once(&intent)", native)
+        self.assertIn("retirements.load(Ordering::SeqCst)", native)
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "supervisor-generic-owner-non-test-deny.json",
+            workflow,
+            "early native generic Supervisor product denial must not be skipped",
+        )
+        self.assertIn(
+            "--test cell_split_supervisor_non_test_owner_denial",
+            workflow,
+            "ordinary non-cfg(test) Supervisor generic owner must be compiled",
+        )
+
     def test_generic_runtime_denies_typed_split_before_final_use(self) -> None:
         # This is a second physical cutover route distinct from the direct
         # CellSplitRouteController. An admitted topology Update carrying a
