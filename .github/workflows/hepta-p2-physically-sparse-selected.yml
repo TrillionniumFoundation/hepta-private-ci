@@ -1,0 +1,94 @@
+name: Hepta P2 selected-only physical Head research (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/p2_real_cell_split_sparse_probe.py"
+      - "qualification/stem-cell-v1/p2_real_cell_split_sparse_review.py"
+      - "qualification/stem-cell-v1/test_p2_selected_head_sparse.py"
+      - "qualification/stem-cell-v1/P2_ACTUAL_SELECTED_HEAD_SHADOW.md"
+      - ".github/workflows/hepta-p2-equal-head-real-granite.yml"
+      - ".github/workflows/hepta-p2-physically-sparse-selected.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p2-selected-physical-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  selected-only-physical:
+    name: Original P2 and physical Top-1 CPU (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source revision and original P2 ancestor
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor \
+            51e685f1ec4debf33b0bd3cbae6ba39cfd04944a HEAD
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Construct prospective base merge; never merge original product
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Physical Top1 Research Qualification
+          author-email: hepta-top1-research@users.noreply.github.com
+          message: Synthetic P2 physical Top-1 research merge
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Install pinned actual CPU float32 math dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: "numpy==2.3.5"
+          python -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip check
+          python - <<'PY'
+          import torch,numpy
+          assert numpy.__version__=="2.3.5"
+          assert torch.tensor([0.25],dtype=torch.float32).numpy().dtype==numpy.float32
+          PY
+      - name: Original equal-budget tests and actual selected-only physical controls
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            qualification/stem-cell-v1/p2_real_cell_split.py \
+            qualification/stem-cell-v1/p2_real_cell_split_review.py \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_probe.py \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_review.py \
+            qualification/stem-cell-v1/test_p2_selected_head_sparse.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_real_cell_split.py -v
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_selected_head_sparse.py -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_selected_head_sparse.py -v
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
