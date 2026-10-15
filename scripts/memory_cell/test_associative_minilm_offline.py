@@ -81,7 +81,8 @@ class NativeWeightTests(unittest.TestCase):
         self.assertEqual(tokens.encode("hello world", add_special_tokens=False), [7592, 2088])
         self.assertEqual(tokens.encode("HELLO WORLD"), tokens.encode("hello world"))
         self.assertIn(100, tokens.encode("q" * 101))
-        for bad in ("", "   ", "caf\u00e9", "\u4e16\u754c", "hello\x00word"):
+        for bad in ("", "   ", "caf\u00e9", "\u4e16\u754c", "hello\x00word",
+                    "someone typed [CLS]", "[MASK]", "[SEP]", "[PAD]", "[UNK]"):
             with self.subTest(text=bad), self.assertRaises(ValueError):
                 tokens.encode(bad)
 
@@ -123,8 +124,12 @@ class NativeWeightTests(unittest.TestCase):
         projection = PinnedTextProjection(self.encoder,dimension=24)
         examples = prepare_experiences(source_facts(tuple(docs))[0],projection,scope="safe_scope")
         self.assertEqual({e.kind for e in examples},{"semantic","procedural"})
+        self.assertEqual({e.family for e in examples}, {"unverified-scope:safe_scope"})
         candidate,receipt = train_scope(examples,tuple(docs),projection,steps=36,rank=4)
         self.assertGreater(receipt["tensor_delta_squared_norm"],0)
+        self.assertEqual(receipt["source_family_groups"], 1)
+        self.assertFalse(receipt["source_family_independence_verified"])
+        self.assertEqual(len(receipt["training_cut_digest"]), 64)
         self.assertEqual(candidate.roots,{"root_0","root_1","root_2"})
         self.assertEqual(candidate.encoder_identity,projection.identity)
         self.assertEqual(candidate.parameter_count(),2*4*24)

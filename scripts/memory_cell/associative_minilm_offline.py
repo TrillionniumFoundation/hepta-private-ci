@@ -30,6 +30,7 @@ MODEL_FILES = frozenset({
 LAYERS, HIDDEN, HEADS, INTERMEDIATE, VOCAB = 6, 384, 12, 1536, 30522
 MAX_BATCH, MAX_TOKENS = 16, 256
 MAX_TEXT_BYTES = 4096
+SPECIAL_TOKENS = ("[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]")
 
 
 def _json_bytes(raw):
@@ -81,7 +82,7 @@ def inventory(folder, *, expected=None):
 def _printable_ascii(text):
     return isinstance(text, str) and 0 < len(text.encode("utf-8")) <= MAX_TEXT_BYTES and all(
         ch in "\n\r\t" or " " <= ch <= "~" for ch in text
-    ) and bool(text.strip())
+    ) and bool(text.strip()) and not any(token in text for token in SPECIAL_TOKENS)
 
 
 class AsciiWordPiece:
@@ -112,6 +113,14 @@ class AsciiWordPiece:
             or post.get("type") != "TemplateProcessing"
             or set(post.get("special_tokens", {})) != {"[CLS]", "[SEP]"}):
             raise ValueError("unregistered tokenizer profile")
+        added = obj.get("added_tokens")
+        if (not isinstance(added, list)
+            or {(x.get("id"), x.get("content")) for x in added}
+               != {(0, "[PAD]"), (100, "[UNK]"), (101, "[CLS]"),
+                   (102, "[SEP]"), (103, "[MASK]")}
+            or any(x.get("special") is not True or x.get("normalized") is not False
+                   for x in added)):
+            raise ValueError("unknown registered special token semantics")
         self.vocab = model["vocab"]
         if (len(self.vocab) != VOCAB or len(set(self.vocab.values())) != VOCAB
             or self.vocab.get("[PAD]") != 0

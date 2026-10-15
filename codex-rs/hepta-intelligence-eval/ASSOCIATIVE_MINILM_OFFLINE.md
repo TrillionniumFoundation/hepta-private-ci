@@ -26,6 +26,9 @@ The native port:
 - Implements ASCII-only BERT normalization/pre-tokenization, WordPiece and CLS/SEP
   tokens, rejecting Unicode/unknown tokenizer configuration, oversize inputs,
   unsupported model architectures, new model files and silent truncation.
+  Literal registered special-token strings such as `[MASK]` are rejected:
+  the real tokenizer treats those as atomic tokens, while the restricted local
+  WordPiece mechanism would otherwise misinterpret the same byte sequence.
 - Executes six actual BERT encoder layers with position/type embeddings,
   attention, feedforward GELU, residuals and LayerNorm. Returns masked mean-pooled
   L2-normalized float32 vectors. Frozen weights never receive gradients.
@@ -141,3 +144,17 @@ PYTHONPATH=scripts/memory_cell python -m unittest discover -s scripts/memory_cel
 and must not be replaced with a count of per-event roots. A future research
 run should use outside-authenticated source families, independently authored
 queries, real future windows and source-lineage-safe per-family evaluation.
+
+## Correlated-family correction
+
+`prepare_experiences()` previously assigned an apparently distinct family to
+**each record** by concatenating scope and event ID. This is not evidence of
+independent source families: repeated observations from a common source scope
+remain correlated. The research bridge now tags such examples with the same
+`unverified-scope:<scope>` family key, explicitly leaving source independence
+unauthenticated. The candidate training-cut digest now binds the declared
+family keys; its receipt reports their group count and keeps external
+independence verification false. This narrows the risk of accidentally counting per-record IDs
+as independent validation samples. It does not certify that different scopes
+come from independent issuers. In the six-event MiniLM trial, effective
+independence remains **one** authored family.

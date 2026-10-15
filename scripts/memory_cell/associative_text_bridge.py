@@ -232,10 +232,12 @@ class PinnedTextProjection:
 def prepare_experiences(facts, projector, *, scope):
     if not facts or any(f.scope != scope for f in facts):
         raise ValueError("nonempty admitted single-scope facts required")
+    # Correlated facts from one source scope are ONE unverified source family.
+    # Never elevate per-event IDs to independent-family evidence.
     cues = projector.encode([f.cue for f in facts])
     values = projector.encode([f.target for f in facts])
     return tuple(Experience(
-        identity=f.identity, scope=f.scope, family=f.scope + ":" + f.identity,
+        identity=f.identity, scope=f.scope, family="unverified-scope:" + f.scope,
         root=f.root, kind=f.kind, encoder_identity=projector.identity,
         observed_at=f.observed_at, cue=cues[i], value=values[i],
     ) for i, f in enumerate(facts))
@@ -252,6 +254,7 @@ def train_scope(experiences, documents, projector, *, steps=128, rank=4, lr=0.25
         raise ValueError("unbound or overbudget scope training")
     scope = experiences[0].scope
     through = max(_timestamp(d.observed_at) for d in documents)
+    family_keys = sorted({row.family for row in experiences})
     cut = TrainingCut(
         scope, projector.identity, through,
         frozenset(d.root for d in documents),
@@ -260,6 +263,7 @@ def train_scope(experiences, documents, projector, *, steps=128, rank=4, lr=0.25
         sha256(json.dumps({
             "profile": PROFILE, "roots": sorted(d.root for d in documents),
             "scope": scope, "through": through,
+            "family_keys": family_keys,
         }, sort_keys=True, separators=(",", ":")).encode()),
     )
     parent = AssociativeCell(projector.dimension, rank, projector.identity,
@@ -277,6 +281,9 @@ def train_scope(experiences, documents, projector, *, steps=128, rank=4, lr=0.25
         candidate=sha256(candidate.export()),
         source_roots=len(candidate.roots),
         complete_inspected_scope_roots_bound=True,
+        source_family_groups=len(family_keys),
+        source_family_independence_verified=False,
+        training_cut_digest=cut.admission_digest,
     )
     return candidate, receipt
 

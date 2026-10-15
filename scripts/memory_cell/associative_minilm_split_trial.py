@@ -52,6 +52,8 @@ def run(encoder_dir, output_dir, *, pre_steps=64, post_steps=64, rank=4, dimensi
     rows = prepare_experiences(facts, projection, scope="shadow_scope")
     if {e.kind for e in rows} != {"semantic", "procedural"}:
         raise ValueError("two real source-derived kinds required")
+    if len({e.family for e in rows}) != 1:
+        raise ValueError("correlated single-scope events inflated source-family count")
     prior_threads = torch.get_num_threads()
     try:
         torch.set_num_threads(2)
