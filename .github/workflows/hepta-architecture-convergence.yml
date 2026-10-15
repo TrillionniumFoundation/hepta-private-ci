@@ -241,6 +241,16 @@ jobs:
           # Require actual original Unix directory rename/rebind behavior.
           # Merely canonicalizing a pathname before open is not sufficient.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-dirfd-rebind.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory -- --nocapture --test-threads=1
+      - name: Early original signed CNS-binding Control high-water negative regressions
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Original signed Unix RPC, not a self-declared digest: never allow
+          # a later fsynced P/C claim to erase the prior original CNS binding.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-original-binding-highwater.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding -- --nocapture --test-threads=1
+          # A changed original physical CNS receipt requires a valid Control
+          # B/C sequence, new route fence and fresh split owner identity.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-original-binding-cutover-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib changed_original_cns_binding_requires_begin_commit_and_new_route_fence -- --nocapture --test-threads=1
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
