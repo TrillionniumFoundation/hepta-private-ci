@@ -1,7 +1,7 @@
 name: Hepta P5 five-axis Stem scaling negative and claim-control tests (DENY_ALL)
 on:
   push:
-    branches: ["research/p5-five-axis-scaling-falsification-20261015"]
+    branches: ["research/p5-five-axis-scaling-falsification-20261015", "research/p5-original-source-cluster-pairing-20261015"]
     paths:
       - "qualification/stem_scaling_v1/**"
       - ".github/workflows/hepta-p5-five-axis-scaling-review.yml"
@@ -28,15 +28,17 @@ jobs:
       - name: Compile actual P5 research/auditor sources
         run: |
           set -euo pipefail
-          python3 -m py_compile qualification/stem_scaling_v1/scaling_frontier.py qualification/stem_scaling_v1/test_scaling_frontier.py
+          python3 -m py_compile qualification/stem_scaling_v1/scaling_frontier.py qualification/stem_scaling_v1/test_scaling_frontier.py qualification/stem_scaling_v1/p5_cluster_replay.py qualification/stem_scaling_v1/test_p5_cluster_replay.py
       - name: Run genuine contract, corruption and five-axis tests
         run: |
           set -euo pipefail
           python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
+          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v
       - name: Test same contracts with Python optimized mode
         run: |
           set -euo pipefail
           python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
+          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v
       - name: No false physically observed real-model or 10T/100T inference
         run: |
           set -euo pipefail
