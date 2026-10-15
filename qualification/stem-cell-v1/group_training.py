@@ -15,6 +15,7 @@ from torch.nn import functional as F
 
 from execution_meter import BudgetStop, POLICY_SCHEMA, WorkLedger
 from group_core import Core
+from group_attention_coverage import per_operation_mass_loss
 from paired_execution import PHASES
 
 
@@ -115,7 +116,8 @@ class SplitCore(nn.Module):
 
 def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
               route_targets=None, max_depth=4, learning_rate=.05, batch_size=32,
-              feedback_fn=None, attention_targets=None, attention_weight=0.1,
+              feedback_fn=None, attention_targets=None, operation_targets=None,
+              attention_weight=0.1,
               optimizer_kind="sgd"):
     """Train only supplied fitting labels, then freeze an independent model.
 
@@ -148,6 +150,22 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                 or (attention_targets * (~masks).unsqueeze(1)).any()
                 or not attention_targets.sum().gt(0)):
             raise ValueError("source-bound binary attention masks and Core required")
+    if operation_targets is not None:
+        if (attention_targets is None
+                or type(model) is not Core
+                or not isinstance(operation_targets, torch.Tensor)
+                or operation_targets.ndim != 4
+                or operation_targets.shape[:2] != (len(targets), max_depth)
+                or not 1 <= operation_targets.shape[2] <= 64
+                or operation_targets.shape[3] != features.shape[1]
+                or operation_targets.dtype != torch.float32
+                or operation_targets.device.type != "cpu"
+                or operation_targets.requires_grad
+                or not torch.isfinite(operation_targets).all()
+                or not ((operation_targets == 0) | (operation_targets == 1)).all()
+                or (operation_targets * (~masks).unsqueeze(1).unsqueeze(1)).any()
+                or not torch.equal(operation_targets.amax(dim=2), attention_targets)):
+            raise ValueError("complete binary per-operation evidence masks required")
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
     initial_model_sha256 = model_parameter_digest(model)
     trained = copy.deepcopy(model).train()
@@ -165,6 +183,7 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
     sampling_digest, attempted_exposures = hashlib.sha256(), 0
     feedback_calls, nonzero_feedback_batches = 0, 0
     attention_supervised_examples = 0
+    operation_supervised_examples = 0
 
     def diagnostic():
         with meter.scope("evaluation", "bank"), torch.no_grad():
@@ -192,8 +211,14 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                                 x, state, fb, mask, return_attention=True)
                             chosen = attention_targets[batch, level]
                             active = chosen.sum(dim=1).gt(0).to(attention.dtype)
-                            mass = (attention * chosen).sum(dim=1)
-                            pointer_loss = (-(mass.clamp_min(1e-8).log()) * active).sum() / active.sum().clamp_min(1)
+                            if operation_targets is not None:
+                                per_fact = operation_targets[batch, level]
+                                pointer_loss = per_operation_mass_loss(attention, per_fact)
+                                operation_supervised_examples += int(
+                                    per_fact.sum(dim=-1).gt(0).sum().item())
+                            else:
+                                mass = (attention * chosen).sum(dim=1)
+                                pointer_loss = (-(mass.clamp_min(1e-8).log()) * active).sum() / active.sum().clamp_min(1)
                             step_loss = F.cross_entropy(logits, y) + attention_weight * pointer_loss
                             attention_supervised_examples += int(active.sum().item())
                         else:
@@ -255,6 +280,19 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "attention_supervision_enabled": attention_targets is not None,
                "attention_loss_weight": float(attention_weight) if attention_targets is not None else 0.,
                "attention_supervised_step_examples": attention_supervised_examples,
+               "operation_supervised_step_examples": operation_supervised_examples,
+               "operation_coverage_enabled": operation_targets is not None,
+               "attention_loss_contract": ("per_operation_log_mass.v1"
+                                           if operation_targets is not None
+                                           else "union_log_mass_legacy"
+                                           if attention_targets is not None else "none"),
+               "operation_target_sha256": (
+                   hashlib.sha256(operation_targets.contiguous().numpy().tobytes()).hexdigest()
+                   if operation_targets is not None else None),
+               "operation_target_bytes": (operation_targets.numel() * operation_targets.element_size()
+                                           if operation_targets is not None else 0),
+               "max_operations_per_slot": (operation_targets.shape[2]
+                                            if operation_targets is not None else 0),
                "attention_target_sha256": (hashlib.sha256(attention_targets.contiguous().numpy().tobytes()).hexdigest()
                                            if attention_targets is not None else None),
                "training_feedback_calls": feedback_calls,

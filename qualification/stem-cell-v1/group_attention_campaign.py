@@ -100,7 +100,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
                     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
                     "group_attention_slot_review.py", "group_token_id_binding.py",
-                    "group_abort_trace_audit.py")
+                    "group_abort_trace_audit.py", "group_attention_coverage.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
@@ -155,9 +155,9 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         full_formula_flops_qualified=False)
     (root / "encoder.json").write_text(json.dumps(encoder_cost, sort_keys=True))
     teacher_wall, teacher_cpu = time.perf_counter_ns(), time.process_time_ns()
-    teacher, teacher_receipt = build_train_attention(
+    teacher, teacher_receipt, per_operation_targets = build_train_attention(
         tasks["train"], features["train"], encoder.tokenizer, max_depth=4,
-        token_id_witnesses=train_forward_token_witnesses)
+        token_id_witnesses=train_forward_token_witnesses, return_operation_masks=True)
     teacher_receipt["cpu_ns"] = time.process_time_ns() - teacher_cpu
     teacher_receipt["wall_ns"] = time.perf_counter_ns() - teacher_wall
     (root / "teacher.json").write_text(json.dumps(teacher_receipt, sort_keys=True))
@@ -188,9 +188,16 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             optimizer_kind=optimizer_kind, learning_rate=learning_rate,
             feedback_fn=feedback if depth > 1 else None,
             attention_targets=teacher if special else None,
+            operation_targets=per_operation_targets if special else None,
             attention_weight=attention_weight)
         if training[name]["status"] != "completed" or training[name]["completed_steps"] != steps:
             raise ValueError("partial training cannot be scored as completed")
+    if (teacher_receipt["operation_mask_sha256"] !=
+            training["attention"]["operation_target_sha256"]
+            or teacher_receipt["coverage_loss_contract"] !=
+               training["attention"]["attention_loss_contract"]
+            or not training["attention"]["operation_coverage_enabled"]):
+        raise ValueError("required public fact coverage was lost in measured training")
     if (training["core"]["parameter_count"] != training["attention"]["parameter_count"]
             or training["core"]["initial_model_sha256"] != initial_core_digest
             or training["attention"]["initial_model_sha256"] != initial_core_digest

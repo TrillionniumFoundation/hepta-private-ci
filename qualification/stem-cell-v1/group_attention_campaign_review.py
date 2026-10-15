@@ -45,7 +45,7 @@ REQUIRED_SOURCES = (
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
     "group_attention_slot_review.py", "group_token_id_binding.py",
-    "group_abort_trace_audit.py",
+    "group_abort_trace_audit.py", "group_attention_coverage.py",
 )
 
 
@@ -273,6 +273,13 @@ def review(root):
         raise ValueError("frozen forward Token ID witness differs from TRAIN retokenization")
     independent_training_slots = review_train_slots(
         public["train"], teacher, protocol["max_depth"])
+    if (teacher.get("operation_masks_complete") is not True
+            or teacher.get("coverage_loss_contract") != "per_operation_log_mass.v1"
+            or type(teacher.get("operation_mask_sha256")) is not str
+            or len(teacher["operation_mask_sha256"]) != 64
+            or type(teacher.get("max_operations_per_slot")) is not int
+            or not 1 <= teacher["max_operations_per_slot"] <= 64):
+        raise ValueError("actual operation-level attention coverage evidence required")
     training = report["training"]
     if (set(training) != set(DIRECT)
             or training["core"]["sample_and_depth_sha256"] !=
@@ -281,7 +288,17 @@ def review(root):
             or not training["attention"]["attention_supervision_enabled"]
             or training["core"]["attention_supervision_enabled"]
             or training["attention"]["attention_target_sha256"] !=
-               teacher["teacher_tensor_sha256"]):
+               teacher["teacher_tensor_sha256"]
+            or training["attention"].get("operation_coverage_enabled") is not True
+            or training["attention"].get("attention_loss_contract") !=
+               teacher["coverage_loss_contract"]
+            or training["attention"].get("operation_target_sha256") !=
+               teacher["operation_mask_sha256"]
+            or training["attention"].get("max_operations_per_slot") !=
+               teacher["max_operations_per_slot"]
+            or training["attention"].get("operation_target_bytes", 0) <= 0
+            or training["core"].get("operation_coverage_enabled") is not False):
+
         raise ValueError("paired training schedule or teacher digest mismatch")
     def valid_sha(value):
         return (type(value) is str and len(value) == 64

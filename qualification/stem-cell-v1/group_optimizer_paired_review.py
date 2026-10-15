@@ -67,6 +67,8 @@ def review_pair(sgd_root, adam_root):
                 raise ValueError("optimizer fitting inventory drift: " + field)
     teachers = [strict_json_file(root / "teacher.json") for root in roots]
     for field in ("schema", "teacher_tensor_sha256", "trace_hashes_sha256",
+                  "operation_masks_complete", "operation_mask_sha256",
+                  "max_operations_per_slot", "coverage_loss_contract",
                   "token_id_binding_complete", "token_id_forward_witness_sha256",
                   "token_id_retokenized_sha256",
                   "feature_hashes_sha256", "slot_assignment_sha256",

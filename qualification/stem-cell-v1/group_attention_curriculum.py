@@ -51,7 +51,7 @@ def _fact_spans(text, expected):
 
 
 def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
-                          token_id_witnesses=None):
+                          token_id_witnesses=None, return_operation_masks=False):
     """Return float32 [examples, depth, padded tokens] binary evidence masks.
 
     A 1 denotes a tokenizer position wholly inside the teacher-selected fact.
@@ -62,7 +62,8 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
     import torch
     if (type(max_depth) is not int or not 1 <= max_depth <= 8
             or not tasks or len(tasks) != len(snapshots)
-            or not callable(tokenizer)):
+            or not callable(tokenizer)
+            or type(return_operation_masks) is not bool):
         raise ValueError("bounded aligned training cohort and tokenizer required")
     if token_id_witnesses is not None and (
             type(token_id_witnesses) not in (list, tuple)
@@ -78,6 +79,7 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
     trace_hashes, feature_hashes, reencoded_ids = [], [], []
     coalesced, supervised, total, supervised_slots, terminal_cases = 0, 0, 0, 0, 0
     slot_assignments = []
+    operation_token_positions = [[[] for _ in range(max_depth)] for _ in tasks]
     unique_groups = set()
     for i, (task, snapshot) in enumerate(zip(tasks, snapshots)):
         teacher = training_trace(task)
@@ -128,6 +130,7 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
             if not positions:
                 raise ValueError("teacher fact lost during tokenization or truncation")
             targets[i, depth, positions] = 1.0
+            operation_token_positions[i][depth].append(tuple(positions))
             supervised += 1
         if not targets[i, slots[-1]].any():
             raise ValueError("terminal public evidence was not retained")
@@ -141,13 +144,33 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
         feature_hashes.append(snapshot.digest)
     if not supervised:
         raise ValueError("zero aligned intermediate steps")
-    return targets, {
+    per_operation_targets = None
+    if return_operation_masks:
+        max_ops = max(len(group) for rows in operation_token_positions for group in rows)
+        per_operation_targets = torch.zeros(
+            len(tasks), max_depth, max_ops, max(widths), dtype=torch.float32)
+        for i, rows in enumerate(operation_token_positions):
+            for depth, group in enumerate(rows):
+                for op, positions in enumerate(group):
+                    per_operation_targets[i, depth, op, list(positions)] = 1.0
+        if not torch.equal(per_operation_targets.amax(dim=2), targets):
+            raise ValueError("operation attention union does not match retained evidence")
+    receipt = {
         "schema": "hepta.group.train-attention-binding.v2",
         "authority": "DENY_ALL", "train_only": True,
         "source_groups_sha256": digest(sorted(unique_groups)),
         "trace_hashes_sha256": digest(trace_hashes),
         "feature_hashes_sha256": digest(feature_hashes),
         "teacher_tensor_sha256": hashlib.sha256(targets.numpy().tobytes()).hexdigest(),
+        "operation_masks_complete": per_operation_targets is not None,
+        "operation_mask_sha256": (
+            hashlib.sha256(per_operation_targets.numpy().tobytes()).hexdigest()
+            if per_operation_targets is not None else None),
+        "max_operations_per_slot": (
+            per_operation_targets.shape[2] if per_operation_targets is not None else 0),
+        "coverage_loss_contract": (
+            "per_operation_log_mass.v1" if per_operation_targets is not None
+            else "unbound_union_legacy"),
         "tokenizer_identity_attested_independently": False,
         "token_id_binding_complete": token_id_witnesses is not None,
         "token_id_forward_witness_sha256": (
@@ -162,3 +185,4 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4,
         "total_teacher_steps": total, "tokenizer_calls": len(tasks),
         "teacher_does_not_run_at_inference": True,
     }
+    return (targets, receipt, per_operation_targets) if return_operation_masks else (targets, receipt)

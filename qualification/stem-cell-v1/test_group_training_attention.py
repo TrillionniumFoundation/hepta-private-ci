@@ -56,6 +56,32 @@ class GroupAttentionTrainingTests(unittest.TestCase):
                             zip(baseline.parameters(), supervised.parameters())))
         self.assertTrue(all(not p.requires_grad for p in supervised.parameters()))
 
+
+    def test_real_cpu_per_operation_coverage_training_and_union_drift_rejection(self):
+        import torch._dynamo
+        teacher = self.attention.clone()
+        teacher[:, :, 2] = 1.0
+        per_op = torch.zeros(24, 3, 2, 3, dtype=torch.float32)
+        per_op[:, :, 0, 0] = 1.0
+        per_op[:, :, 1, 2] = 1.0
+        init = Core(8, 16)
+        trained, receipt = fit_model(
+            init, self.features, self.mask, self.targets,
+            steps=4, seed=41, max_depth=3, learning_rate=.05,
+            attention_targets=teacher, operation_targets=per_op)
+        self.assertTrue(receipt["operation_coverage_enabled"])
+        self.assertEqual(receipt["attention_loss_contract"], "per_operation_log_mass.v1")
+        self.assertGreater(receipt["operation_supervised_step_examples"], 0)
+        self.assertGreater(receipt["operation_target_bytes"], 0)
+        self.assertEqual(receipt["work_observation"]["unknown_operators"], {})
+        self.assertTrue(all(not p.requires_grad for p in trained.parameters()))
+        broken = per_op.clone()
+        broken[:, :, 1, 2] = 0.0
+        with self.assertRaisesRegex(ValueError, "per-operation"):
+            fit_model(Core(8, 16), self.features, self.mask, self.targets,
+                      steps=1, seed=41, max_depth=3,
+                      attention_targets=teacher, operation_targets=broken)
+
     def test_invalid_masks_missing_scope_and_static_model_rejected(self):
         bad = self.attention.clone()
         bad[:, :, 1] = .5

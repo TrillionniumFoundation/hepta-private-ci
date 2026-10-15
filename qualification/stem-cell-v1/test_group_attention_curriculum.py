@@ -125,6 +125,24 @@ class AttentionCurriculumTests(unittest.TestCase):
                          "read_terminal_label")
         self.assertEqual(manifest["slot_assignments"][0]["slots"][-1], 3)
 
+
+    def test_compressed_teacher_retains_distinct_fact_masks(self):
+        examples = make_tasks("train", count=120, seed=53)
+        task = next(t for t in examples if t.family == "dependency" and t.depth == 4)
+        union, receipt, ops = build_train_attention(
+            [task], snapshots([task]), self.tokenizer,
+            max_depth=4, return_operation_masks=True)
+        self.assertEqual(ops.ndim, 4)
+        torch.testing.assert_close(ops.amax(dim=2), union)
+        self.assertTrue(receipt["operation_masks_complete"])
+        self.assertEqual(receipt["coverage_loss_contract"], "per_operation_log_mass.v1")
+        self.assertEqual(receipt["max_operations_per_slot"], 2)
+        self.assertEqual(int(ops[0,0].sum(dim=1).gt(0).sum()), 2)
+        self.assertTrue(ops[0,0,0].bool().any())
+        self.assertTrue(ops[0,0,1].bool().any())
+        self.assertFalse(torch.equal(ops[0,0,0], ops[0,0,1]))
+        self.assertFalse(ops[0,3,1].bool().any())
+
     def test_test_selection_and_validation_never_supervise(self):
         for split in ("test", "selection", "validation"):
             task = make_tasks(split, count=1, seed=7)[0]

@@ -132,6 +132,10 @@ def fixture(directory):
                         operations=["follow_edge", "read_terminal_label"],
                         evidence_indices=[0, 1], slots=[0, 1])]
     teacher = dict(schema="hepta.group.train-attention-binding.v2",
+        operation_masks_complete=True,
+        operation_mask_sha256="e" * 64,
+        max_operations_per_slot=1,
+        coverage_loss_contract="per_operation_log_mass.v1",
         source_groups_sha256=_digest([train["source_group"]]),
         authority="DENY_ALL", train_only=True, supervised_steps=2,
         total_teacher_steps=2, truncated_teacher_steps=0,
@@ -183,7 +187,13 @@ def fixture(directory):
             optimizer_kind="sgd", optimizer_learning_rate=0.05,
             optimizer="SGD_without_momentum", optimizer_bytes=0,
             attention_supervision_enabled=arm == "attention",
-            attention_target_sha256="a" * 64 if arm == "attention" else None)
+            attention_target_sha256="a" * 64 if arm == "attention" else None,
+            operation_coverage_enabled=arm == "attention",
+            attention_loss_contract=("per_operation_log_mass.v1" if arm == "attention"
+                                    else "none"),
+            operation_target_sha256="e" * 64 if arm == "attention" else None,
+            operation_target_bytes=16 if arm == "attention" else 0,
+            max_operations_per_slot=1 if arm == "attention" else 0)
     rows, summaries, full_traces = [], {}, []
     for cohort in COHORTS:
         for arm in ARMS:
@@ -402,6 +412,24 @@ class PairedReviewTests(unittest.TestCase):
             (root / "report.json").write_text(json.dumps(report))
             with self.assertRaisesRegex(ValueError, "forward Token ID"):
                 review(root)
+
+
+    def test_reject_unbounded_or_union_only_attention_as_complete_coverage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            original = fixture(root)
+            for mode in ("missing_per_fact", "wrong_loss", "foreign_mask"):
+                current = copy.deepcopy(original["report"])
+                if mode == "missing_per_fact":
+                    current["training"]["attention"]["operation_coverage_enabled"] = False
+                elif mode == "wrong_loss":
+                    current["training"]["attention"]["attention_loss_contract"] = "union_log_mass_legacy"
+                else:
+                    current["training"]["attention"]["operation_target_sha256"] = "d" * 64
+                (root / "report.json").write_text(json.dumps(current))
+                with self.subTest(mode=mode), self.assertRaisesRegex(
+                        ValueError, "paired training schedule"):
+                    review(root)
 
     def test_reject_teacher_and_unequal_schedule_forgery(self):
         with tempfile.TemporaryDirectory() as tmp:
