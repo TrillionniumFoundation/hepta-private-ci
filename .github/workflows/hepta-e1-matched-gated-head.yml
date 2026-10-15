@@ -125,6 +125,14 @@ jobs:
           retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
+          # This report has unscored predictions, parameter digests and source
+          # indices, NOT actual Head weights or held human labels.
+          name: e2-${{ matrix.model }}-producer-report-${{ github.run_id }}
+          path: ${{ runner.temp }}/e1/probe/COMMITTED.json
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
           name: e1-${{ matrix.model }}-numeric-only-${{ github.run_id }}
           path: ${{ runner.temp }}/e1/numeric-review.json
           if-no-files-found: error
@@ -186,6 +194,11 @@ jobs:
           pattern: e1-*-numeric-only-${{ github.run_id }}
           merge-multiple: false
           path: ${{ runner.temp }}/e2/e1-numeric
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: e2-*-producer-report-${{ github.run_id }}
+          merge-multiple: false
+          path: ${{ runner.temp }}/e2/e1-probes
       - name: Reacquire pinned original human parquet and re-score independently
         run: |
           set -euo pipefail
@@ -223,6 +236,9 @@ jobs:
           for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
             test -s "$ROOT/e1-numeric/e1-$MODEL-numeric-only-${{ github.run_id }}/numeric-review.json"
           done
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            test -s "$ROOT/e1-probes/e2-$MODEL-producer-report-${{ github.run_id }}/COMMITTED.json"
+          done
           python experiments/shared_stem_cell/e2_original_human_score.py "${COMMON[@]}" \
             --p0-granite-97m-r2 "$ROOT/p0-arms/hepta-human-original-arm-granite_97m_r2-38686023757/granite_97m_r2.json" \
             --p0-mmbert-small "$ROOT/p0-arms/hepta-human-original-arm-mmbert_small-38686023757/mmbert_small.json" \
@@ -234,6 +250,9 @@ jobs:
             --numeric-granite-97m-r2 "$ROOT/e1-numeric/e1-granite_97m_r2-numeric-only-${{ github.run_id }}/numeric-review.json" \
             --numeric-mmbert-small "$ROOT/e1-numeric/e1-mmbert_small-numeric-only-${{ github.run_id }}/numeric-review.json" \
             --numeric-embeddinggemma-2-text "$ROOT/e1-numeric/e1-embeddinggemma_2_text-numeric-only-${{ github.run_id }}/numeric-review.json" \
+            --probe-granite-97m-r2 "$ROOT/e1-probes/e2-granite_97m_r2-producer-report-${{ github.run_id }}/COMMITTED.json" \
+            --probe-mmbert-small "$ROOT/e1-probes/e2-mmbert_small-producer-report-${{ github.run_id }}/COMMITTED.json" \
+            --probe-embeddinggemma-2-text "$ROOT/e1-probes/e2-embeddinggemma_2_text-producer-report-${{ github.run_id }}/COMMITTED.json" \
             --candidate-head-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
             --candidate-run-id '${{ github.run_id }}' \
             --output "$ROOT/score/e2-original-human-summary.json"

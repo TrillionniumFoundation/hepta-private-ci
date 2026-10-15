@@ -11,12 +11,12 @@ import json
 import math
 from pathlib import Path
 from e2_seal_blind_predictions import (SCHEMA as SEAL_SCHEMA, P0_SOURCE, P0_RUN,
-                                       ARMS, SEEDS, MODELS, source_cases, sha, canonical)
+                                       ARMS, SEEDS, MODELS, source_cases, sha, canonical, seal as rebuild_prelabel_seal)
 
 SCHEMA = 'hepta.e2.original-human-matched-gated-independent-score.v1'
 
 
-def score(blind, original_labels, original_reports, numeric_reviews, sealed, *, original_p0_scored,
+def score(blind, original_labels, original_reports, numeric_reviews, sealed, probe_reports, *, original_p0_scored,
           current_candidate_sha, current_run_id):
     rows=source_cases(blind)
     originals={r['case_id']:r for r in rows if r['condition']=='original'}
@@ -26,7 +26,8 @@ def score(blind, original_labels, original_reports, numeric_reviews, sealed, *, 
         len({r['source_group'] for r in originals.values()})!=8 or
         type(original_reports) is not dict or set(original_reports)!=set(MODELS) or
         type(sealed) is not dict or set(sealed)!=set(MODELS) or
-        type(numeric_reviews) is not dict or set(numeric_reviews)!=set(MODELS)):
+        type(numeric_reviews) is not dict or set(numeric_reviews)!=set(MODELS) or
+        type(probe_reports) is not dict or set(probe_reports)!=set(MODELS)):
         raise ValueError('missing full original human source and all real P0/E1 arms')
     baseline_sha={m:sha(original_reports[m]) for m in MODELS}
     out={}
@@ -62,6 +63,20 @@ def score(blind, original_labels, original_reports, numeric_reviews, sealed, *, 
             v=s.get(key)
             if type(v) is not str or len(v)!=64 or any(c not in '0123456789abcdef' for c in v):
                 raise ValueError('missing originally sealed numeric identity')
+        # The previous E2 only checked a self-reported probe SHA. A changed,
+        # valid-length forecast could be scored even if it never appeared in
+        # the E1 producer. Reconstruct the exact published seal FROM the
+        # independently archived original producer report and numeric receipt.
+        # This prevents detached/rehashed forecast swaps. It is NOT a signed
+        # execution attestation: a compromised runner could forge all inputs.
+        probe=probe_reports[model]
+        if (type(probe) is not dict or sha(probe)!=s.get('probe_report_sha256') or
+                probe.get('original_report_sha256')!=baseline_sha[model]):
+            raise ValueError('detached original E1 producer prediction report')
+        rebuilt=rebuild_prelabel_seal(blind,probe,numeric,model,
+                                       current_candidate_sha,current_run_id)
+        if canonical(rebuilt)!=canonical(s):
+            raise ValueError('sealed forecast differs from original E1 producer output')
         forecasts=s.get('forecasts')
         if (type(forecasts) is not list or
             [(x.get('seed'),x.get('arm')) for x in forecasts] != [(seed,arm) for seed in SEEDS for arm in ARMS]):
@@ -100,6 +115,7 @@ def score(blind, original_labels, original_reports, numeric_reviews, sealed, *, 
                                 'source_groups_tied':sum(v==0 for v in vals)}
             by_seed[str(seed)]={'arms':arms,'paired':paired}
         out[model]={'seeds':by_seed,'original_human_source_passage_groups':8,
+                    'reconstructed_exact_original_prelabel_forecasts':True,
                     'head_parameter_count_each':4145,
                     'projection_information_loss_matched':True,
                     'comparison_is_with_original_deployed_nochange':False}
@@ -123,6 +139,7 @@ def main():
     for model in MODELS:
         p.add_argument('--seal-'+model.replace('_','-'),type=Path,required=True)
         p.add_argument('--numeric-'+model.replace('_','-'),type=Path,required=True)
+        p.add_argument('--probe-'+model.replace('_','-'),type=Path,required=True)
     p.add_argument('--candidate-head-sha',required=True)
     p.add_argument('--candidate-run-id',type=int,required=True)
     a=p.parse_args()
@@ -142,6 +159,7 @@ def main():
     result=score(blind,labels,{m:reports[m] for m in MODELS},
                  {m:read(getattr(a,'numeric_'+m)) for m in MODELS},
                  {m:read(getattr(a,'seal_'+m)) for m in MODELS},
+                 {m:read(getattr(a,'probe_'+m)) for m in MODELS},
                  original_p0_scored=True, current_candidate_sha=a.candidate_head_sha,
                  current_run_id=a.candidate_run_id)
     with a.output.open('xb') as f:

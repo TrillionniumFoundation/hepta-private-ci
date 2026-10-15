@@ -33,20 +33,31 @@ class E2SealedOriginalScore(unittest.TestCase):
                  'source_group':'group%d'%(i//3),'condition':'original' if i%3<2 else 'no_evidence'}
             blind['cases'].append(row)
             if row['condition']=='original': labels[row['case_id']]=i%2
-        cls.blind=blind;cls.labels=labels;cls.numeric={m:numeric for m in MODELS}
+        cls.blind=blind;cls.labels=labels
         cls.source={m:{'original-model-report':m} for m in MODELS}
+        cls.numeric={}
         cls.seals={}
+        cls.probes={}
         for m in MODELS:
             report=copy.deepcopy(r)
             report.update({'model':m,'blind_case_ids':[c['case_id'] for c in blind['cases']],
                            'original_blind_sha256':sha(blind),
                            'original_report_sha256':sha(cls.source[m]),
                            'probe_safetensors_sha256':'a'*64})
-            cls.seals[m]=seal(blind,report,numeric,m,SHA,RUN)
+            cls.probes[m]=report
+            reviewed=dict(numeric)
+            reviewed.update({'reviewed_probe_report_sha256':sha(report),
+                             'reviewed_probe_weights_sha256':report['probe_safetensors_sha256'],
+                             'reviewed_original_p0_report_sha256':report['original_report_sha256'],
+                             'reviewed_blind_material_sha256':sha(blind),
+                             'reviewed_model':m})
+            cls.numeric[m]=reviewed
+            cls.seals[m]=seal(blind,report,reviewed,m,SHA,RUN)
 
     def valid(self,**patch):
         return score(patch.get('blind',self.blind),patch.get('labels',self.labels),
                      patch.get('p0',self.source),patch.get('numeric',self.numeric),patch.get('seals',self.seals),
+                     patch.get('probes',self.probes),
                      original_p0_scored=patch.get('p0_ok',True),
                      current_candidate_sha=patch.get('sha',SHA),
                      current_run_id=patch.get('run',RUN))
@@ -63,6 +74,8 @@ class E2SealedOriginalScore(unittest.TestCase):
                 self.assertEqual(set(x['arms']),set(ARMS))
                 self.assertEqual(x['arms']['trained_gated']['original_rows'],16)
                 self.assertEqual(len(x['paired']['trained']['per_original_source_group_gains']),8)
+        self.assertTrue(all(z['reconstructed_exact_original_prelabel_forecasts']
+                            for z in out['models'].values()))
         self.assertFalse(out['model_or_head_winner_selected'])
         self.assertFalse(out['production_promotion_permitted'])
 
@@ -149,6 +162,45 @@ class E2SealedOriginalScore(unittest.TestCase):
         for key in ('p0_source_sha','p0_run_id','blind_material_sha256','original_report_sha256'):
             seals=copy.deepcopy(self.seals);seals[MODELS[0]][key]='wrong'
             with self.subTest(key=key),self.assertRaises(ValueError):self.valid(seals=seals)
+
+    def test_valid_length_probability_forgery_is_refused(self):
+        # This is the critical E2 v2 regression: v1 accepted this mutation.
+        fake=copy.deepcopy(self.seals)
+        p=fake[MODELS[0]]['forecasts'][7]['probabilities']
+        p[0]=0.99 if p[0]<0.5 else 0.01
+        with self.assertRaisesRegex(ValueError,'producer output'):
+            self.valid(seals=fake)
+
+    def test_matching_bogus_probe_report_sha_still_refused(self):
+        forged=copy.deepcopy(self.seals)
+        report=copy.deepcopy(self.probes)
+        report[MODELS[0]]['arms'][3]['blind_probabilities'][4]=0.999
+        # Attacker updates report hash and copied probabilities but does not
+        # possess a matching independently verified training+numeric receipt.
+        forged[MODELS[0]]['probe_report_sha256']=sha(report[MODELS[0]])
+        forged[MODELS[0]]['forecasts'][3]['probabilities'][4]=0.999
+        with self.assertRaisesRegex(ValueError,'independently replayed'):
+            self.valid(seals=forged,probes=report)
+
+    def test_independent_numeric_review_does_not_authenticate_forged_report(self):
+        numeric=copy.deepcopy(self.numeric)
+        numeric[MODELS[0]]['reviewed_probe_report_sha256']='0'*64
+        with self.assertRaises(ValueError):self.valid(numeric=numeric)
+
+    def test_seal_requires_original_numeric_replay_digest(self):
+        report=self.probes[MODELS[0]]
+        doc=copy.deepcopy(self.numeric[MODELS[0]])
+        doc['reviewed_probe_report_sha256']='f'*64
+        with self.assertRaisesRegex(ValueError,'independently replayed'):
+            seal(self.blind,report,doc,MODELS[0],SHA,RUN)
+
+    def test_original_probe_report_required_and_same_model(self):
+        missing=dict(self.probes)
+        missing.pop(MODELS[0])
+        with self.assertRaises(ValueError):self.valid(probes=missing)
+        substituted=copy.deepcopy(self.probes)
+        substituted[MODELS[0]]=substituted[MODELS[1]]
+        with self.assertRaises(ValueError):self.valid(probes=substituted)
 
     def test_core_score_does_not_import_trainer_or_torch(self):
         import subprocess,sys

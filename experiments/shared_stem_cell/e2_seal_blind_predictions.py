@@ -74,6 +74,12 @@ def seal(blind, report, numeric, model, candidate_sha, candidate_run):
             numeric.get('production_promotion_permitted') is not False or
             numeric.get('authority')!='DENY_ALL'):
         raise ValueError('missing actual independent numeric-only review')
+    if (numeric.get('reviewed_probe_report_sha256')!=sha(report) or
+            numeric.get('reviewed_probe_weights_sha256')!=report['probe_safetensors_sha256'] or
+            numeric.get('reviewed_original_p0_report_sha256')!=report['original_report_sha256'] or
+            numeric.get('reviewed_blind_material_sha256')!=sha(blind) or
+            numeric.get('reviewed_model')!=model):
+        raise ValueError('forecast not bound to independently replayed E1 producer report')
     threshold=numeric.get('tolerance')
     if (type(threshold) not in (float,int) or not 0 < threshold <= 3e-5 or
         any(type(numeric.get(k)) not in (float,int) or

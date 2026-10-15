@@ -55,7 +55,7 @@ code tests are not a real ModernBERT experiment.
 
 Local actual CPU Torch + NumPy tests on **synthetic feature data**:
 `test_e1_matched_gated_head.py` (22) and
-`test_e2_original_human_score.py` (16), **38/38 each** in normal and `-O`
+`test_e2_original_human_score.py` (16), **43/43 each** in normal and `-O`
 mode. New E2 negative source tests include altered/rehashed model references,
 missing/malformed labels, case permutation, missing/duplicated trials,
 nonfinite predictions, forged authorization and numeric reviewer mismatch.
@@ -70,3 +70,31 @@ training/serving TCO and energy, future task windows, old task retention,
 
 **DRAFT / DENY_ALL / no main merge / no model selection / no physical split
 or deployment.**
+
+## E2 v2 verified producer-to-score forecast binding
+
+The first E2 implementation could check a probability vector's shape, source
+identity and numeric-review SHA, but did **not** recompute its contents from
+the original E1 producer report. A modified, valid-length prediction vector
+could have been scored without matching the actual reviewed E1 report.
+
+The independent E1 NumPy reviewer now emits, **only after all 40 original
+TRAIN-label updates, CAL-temperature choices and blind forecasts replay**,
+SHA256 identities of its reviewed E1 producer report, probe safetensors,
+original P0 report, blind source and registered model. The E2 prelabel seal
+refuses any mismatch with those independent reviewer identities.
+
+The E2 human scorer also downloads the original E1 producer COMMITTED.json
+for **each** registered model from separate non-merged artifacts, checks
+its digest against the reviewed summary, and rebuilds the complete prelabel
+seal from the original producer report and independent numeric result.
+A detached/rehashed forecast fails, even when it remains a finite valid
+probability and its self-reported hash is updated. The E1 producer report
+contains original unscored forecasts and metadata, NOT raw Head weights or
+held human labels.
+
+New local focused suites: **43/43** normal and **43/43** under `python -O`
+(synthetic CPU feature test data only). No authentic pretrained E1 task
+efficacy can be claimed from the source-only tests. A coordinated compromise
+of producer plus numeric-review runner remains possible: SHA256 is a content
+identity, **not independent signed physical execution authority**.

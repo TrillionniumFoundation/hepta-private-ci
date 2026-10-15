@@ -167,6 +167,14 @@ def main():
     ca = [i for i,r in enumerate(rows) if r['split']=='calibration' and r['condition']=='original']
     out = verify_probe(report,load(payload),x,tr,[rows[i]['label'] for i in tr],ca,
                        [rows[i]['label'] for i in ca],list(range(len(rows),len(rows)+len(held))))
+    # These identities are emitted ONLY after the independent TRAIN-gradient,
+    # CAL-temperature and blind-prediction numeric verification succeeds.
+    # They bind the later human scorer to the exact reviewed producer report.
+    out.update({'reviewed_probe_report_sha256':hashlib.sha256(canonical(report)).hexdigest(),
+                'reviewed_probe_weights_sha256':hashlib.sha256(payload).hexdigest(),
+                'reviewed_original_p0_report_sha256':hashlib.sha256(canonical(old)).hexdigest(),
+                'reviewed_blind_material_sha256':hashlib.sha256(canonical(blind)).hexdigest(),
+                'reviewed_model':a.model})
     with a.output.open('xb') as stream:
         stream.write(canonical(out)+b'\n')
 
