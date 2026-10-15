@@ -49,10 +49,18 @@ def mocked_report(model,fit,blind,*,native=False):
              'positive_probability':.51 if r['condition']=='original' else .49,
              ('full_request_ms' if is_laya else 'head_request_ms'): .05}
             for r in blind['cases']]}
+        if not is_laya:
+            controls[arm]['head_sha256'] = ('a' if arm=='frozen_head' else 'b')*64
     width=384 if model in ('granite_97m_r2','mmbert_small') else 256
     param=width*2+2
     training=None if is_laya else {'parameter_count':param,'steps':40,'seed':20261015,
-                                   'optimizer':'torch.optim.SGD','head_training_ms':3.}
+            'optimizer':'torch.optim.SGD','head_training_ms':3.,'learning_rate':0.1,
+            'fit_train_case_ids_sha256':sha(canonical([r['case_id'] for r in fit['cases']
+                 if r['split']=='train' and r['condition']=='original'])),
+            'calibration_case_ids_sha256':sha(canonical([r['case_id'] for r in fit['cases']
+                 if r['split']=='calibration' and r['condition']=='original'])),
+            'train_labels_only_in_gradient':True,
+            'initial_frozen_head_sha256':'a'*64,'controls':controls}
     profile=None if is_laya else {'physical_encoder_api_requests':len(fit['cases'])+len(blind['cases']),
                                   'model_load_ms':10.,
                                   'complete_mmbert_weight_bytes_checked':True}
@@ -238,6 +246,97 @@ class EfficacyReviewTests(unittest.TestCase):
         out=review(self.fit,self.blind,self.owner,self.train,self.validation,self.reports)
         self.assertFalse(out['artificially_transformed_evidence_has_human_label'])
         self.assertAlmostEqual(out['models']['granite_97m_r2']['arms']['frozen_head']['original_minus_no_evidence_mean_probability_shift'],.02)
+
+    def test_no_evidence_is_original_target_prior_not_invented_label(self):
+        out=review(self.fit,self.blind,self.owner,self.train,self.validation,self.reports)
+        self.assertEqual(out['schema'],'hepta.p0.multirc-original-semantic-independent-review.v2')
+        d=out['models']['granite_97m_r2']['arms']['trained_head']['evidence_vs_priors_original_target_only']
+        self.assertEqual(d['target'],'original_human_label_only_not_no_evidence_entailment')
+        self.assertEqual(d['per_source_brier_gain_count'],COUNTS['test'])
+        self.assertEqual(d['no_evidence_prior_predictor_against_original_labels']['rows'],32)
+        self.assertFalse(d['causal_semantic_superiority_proven'])
+        self.assertFalse(out['no_evidence_has_new_human_ground_truth'])
+
+    def test_evidence_zero_delta_still_inconclusive(self):
+        d=copy.deepcopy(self.reports)
+        for r in d['granite_97m_r2']['control']['trained_head']['predictions']:
+            r['positive_probability']=.5
+        out=review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+        x=out['models']['granite_97m_r2']['arms']['trained_head']['evidence_vs_priors_original_target_only']
+        self.assertEqual(x['mean_paired_brier_gain_positive_is_better'],0)
+        self.assertEqual(x['source_groups_improved'],0)
+        self.assertEqual(x['source_groups_harmed'],0)
+
+    def test_negative_evidence_gain_not_filtered(self):
+        d=copy.deepcopy(self.reports)
+        rows={r['case_id']:r for r in self.blind['cases']}
+        for item in d['mmbert_small']['control']['trained_head']['predictions']:
+            r=rows[item['case_id']]
+            if r['condition']=='original':
+                item['positive_probability']=.95 if self.owner['original_human_candidate_labels'][item['case_id']]==0 else .05
+            else:
+                item['positive_probability']=.5
+        out=review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+        x=out['models']['mmbert_small']['arms']['trained_head']['evidence_vs_priors_original_target_only']
+        self.assertLess(x['mean_paired_brier_gain_positive_is_better'],0)
+        self.assertEqual(x['source_groups_harmed'],COUNTS['test'])
+        self.assertFalse(x['causal_semantic_superiority_proven'])
+
+    def test_source_train_id_wrong_with_rehashed_claim_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['granite_97m_r2']['training']['fit_train_case_ids_sha256']='c'*64
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_calibration_provenance_wrong_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['mmbert_small']['training']['calibration_case_ids_sha256']='d'*64
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_false_train_only_gradient_receipt_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['embeddinggemma_2_text']['training']['train_labels_only_in_gradient']=False
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_frozen_initial_tensor_lineage_wrong_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['granite_97m_r2']['training']['initial_frozen_head_sha256']='e'*64
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_cloned_unchanged_trained_head_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['mmbert_small']['control']['trained_head']['head_sha256']='a'*64
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_report_training_controls_drift_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['granite_97m_r2']['training']['controls']=copy.deepcopy(d['granite_97m_r2']['control'])
+        d['granite_97m_r2']['control']['trained_head']['predictions'][0]['positive_probability']=0.1
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_paid_request_sum_exceeds_process_time_rejects(self):
+        d=copy.deepcopy(self.reports)
+        for item in d['laya421_nochange']['control']['laya_native_nochange']['predictions']:
+            item['full_request_ms']=4.0
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_head_lr_drift_rejects(self):
+        d=copy.deepcopy(self.reports)
+        d['granite_97m_r2']['training']['learning_rate']=.11
+        with self.assertRaises(Invalid):review(self.fit,self.blind,self.owner,self.train,self.validation,d)
+
+    def test_real_torch_head_lineage_fields_equal_to_physical_receipt(self):
+        import torch
+        train,val,fit,blind,owner=setup()
+        gen=torch.Generator().manual_seed(109)
+        x={r['case_id']:torch.randn(384,generator=gen).tolist()
+           for r in fit['cases']+blind['cases']}
+        actual=fit_head(fit['cases'],blind['cases'],x,384)
+        self.assertEqual(actual['initial_frozen_head_sha256'],actual['controls']['frozen_head']['head_sha256'])
+        self.assertNotEqual(actual['initial_frozen_head_sha256'],actual['controls']['trained_head']['head_sha256'])
+        self.assertEqual(actual['fit_train_case_ids_sha256'],sha(canonical([r['case_id'] for r in fit['cases']
+                         if r['split']=='train' and r['condition']=='original'])))
+        self.assertEqual(actual['calibration_case_ids_sha256'],sha(canonical([r['case_id'] for r in fit['cases']
+                         if r['split']=='calibration' and r['condition']=='original'])))
 
     def test_missing_model_fails(self):
         d=copy.deepcopy(self.reports);d.pop('laya421_nochange')

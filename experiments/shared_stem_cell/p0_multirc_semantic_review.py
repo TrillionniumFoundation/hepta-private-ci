@@ -104,6 +104,12 @@ def review(fit,blind,owner,source_train,source_validation,reports):
     if any(set(d)!={'original','no_evidence'} for d in byid.values()):
         raise Invalid('incomplete original/no-evidence diagnostic pair')
     outputs={}
+    fit_train = [r['case_id'] for r in fit['cases']
+                 if r['condition']=='original' and r['split']=='train']
+    fit_calibration = [r['case_id'] for r in fit['cases']
+                       if r['condition']=='original' and r['split']=='calibration']
+    train_digest=sha(canonical(fit_train))
+    calibration_digest=sha(canonical(fit_calibration))
     for model in REQUIRED:
         report=reports[model]
         if (type(report) is not dict or
@@ -133,7 +139,11 @@ def review(fit,blind,owner,source_train,source_validation,reports):
             training=report['training']
             if (type(training) is not dict or training.get('parameter_count')!=expected or
                     training.get('steps')!=40 or training.get('seed')!=20261015 or
+                    training.get('learning_rate')!=0.1 or
                     training.get('optimizer')!='torch.optim.SGD' or
+                    training.get('fit_train_case_ids_sha256')!=train_digest or
+                    training.get('calibration_case_ids_sha256')!=calibration_digest or
+                    training.get('train_labels_only_in_gradient') is not True or
                     type(profile) is not dict or
                     profile.get('physical_encoder_api_requests')!=len(fit['cases'])+len(all_rows)):
                 raise Invalid('training parameter, schedule or physical call mismatch')
@@ -148,7 +158,21 @@ def review(fit,blind,owner,source_train,source_validation,reports):
                            else {'frozen_head','trained_head'})
         if type(controls) is not dict or set(controls)!=expected_controls:
             raise Invalid('frozen or learned baseline missing')
+        if model!='laya421_nochange':
+            # These lineage links are checked against the actual immutable
+            # training/calibration case census, not self-reported arbitrary SHAs.
+            initial=training.get('initial_frozen_head_sha256')
+            if (not isinstance(initial,str) or len(initial)!=64 or
+                    any(c not in '0123456789abcdef' for c in initial) or
+                    controls['frozen_head'].get('head_sha256')!=initial or
+                    controls['trained_head'].get('head_sha256')==initial or
+                    training.get('controls')!=controls):
+                raise Invalid('frozen/learned Head tensor lineage or controls diverged')
+        else:
+            if numeric(report.get('model_load_ms'),positive=True)>cost['local_process_wall_ms']+5:
+                raise Invalid('Laya model load exceeds whole local process time')
         arms={}
+        complete_measured_requests=0.0
         for arm,material in controls.items():
             if type(material) is not dict or type(material.get('predictions')) is not list:
                 raise Invalid('missing original sealed predictions')
@@ -160,7 +184,7 @@ def review(fit,blind,owner,source_train,source_validation,reports):
                     raise Invalid('swapped, duplicate or unregistered model task')
                 preds[p['case_id']]=probability(p.get('positive_probability'))
                 tick=('full_request_ms' if model=='laya421_nochange' else 'head_request_ms')
-                numeric(p.get(tick),positive=True)
+                complete_measured_requests+=numeric(p.get(tick),positive=True)
             if len(preds)!=len(all_rows):
                 raise Invalid('one physical model missing full blind census')
             full=[(preds[cid],y) for cid,y in labels.items()]
@@ -169,6 +193,34 @@ def review(fit,blind,owner,source_train,source_validation,reports):
             hard=[(preds[cid], labels[cid]) for cid in hard_exact]
             relaxed=[(preds[cid], labels[cid]) for cid in hard_overlap]
             # Counterfactual has no label; report only sensitivity, never accuracy.
+            # The true target is the HUMAN LABEL OF THE ORIGINAL INPUT.
+            # A no-evidence model score is a prior-only predictor of that same
+            # target, NOT a newly human-labeled empty-passage entailment claim.
+            evidence_brier_by_source=defaultdict(list)
+            prior_for_original=[]
+            for d in byid.values():
+                r=d['original']
+                y=labels[r['case_id']]
+                true_p=preds[r['case_id']]
+                prior_p=preds[d['no_evidence']['case_id']]
+                evidence_brier_by_source[r['source_group']].append(
+                    (prior_p-y)**2-(true_p-y)**2)
+                prior_for_original.append((prior_p,y))
+            if set(evidence_brier_by_source)!={r['source_group'] for r in eval_original.values()}:
+                raise Invalid('incomplete paired evidence source groups')
+            group_deltas=[sum(v)/len(v) for _,v in sorted(evidence_brier_by_source.items())]
+            evidence_diagnostic={
+                'target':'original_human_label_only_not_no_evidence_entailment',
+                'no_evidence_prior_predictor_against_original_labels':metrics(prior_for_original),
+                'mean_paired_brier_gain_positive_is_better':sum(group_deltas)/len(group_deltas),
+                'per_source_brier_gain_count':len(group_deltas),
+                'source_groups_improved':sum(x>0 for x in group_deltas),
+                'source_groups_harmed':sum(x<0 for x in group_deltas),
+                'source_groups_tied':sum(x==0 for x in group_deltas),
+                'minimum_group_gain':min(group_deltas),
+                'maximum_group_gain':max(group_deltas),
+                'matched_head_budget_not_a_separately_trained_prior':True,
+                'causal_semantic_superiority_proven':False}
             group_concordance=[]
             for rows in by_question.values():
                 if {y for _,y,p,_ in rows if p}=={0,1}:
@@ -180,10 +232,14 @@ def review(fit,blind,owner,source_train,source_validation,reports):
                        'original_minus_no_evidence_mean_probability_shift':sum(signed)/len(signed),
                        'same_question_hard_exact_positive_beats_negative':(
                            sum(group_concordance)/len(group_concordance) if group_concordance else None),
-                       'hard_question_count':len(group_concordance)}
+                       'hard_question_count':len(group_concordance),
+                       'evidence_vs_priors_original_target_only':evidence_diagnostic}
+        if complete_measured_requests>cost['local_process_wall_ms']+5:
+            raise Invalid('summed paid requests exceed observed process lifetime')
         outputs[model]={'arms':arms,'physical_costs_unattested':cost,
+                        'measured_head_or_laya_request_time_ms':complete_measured_requests,
                         'comparison_with_equal_parameter_head_permitted':model!='laya421_nochange'}
-    return {'schema':'hepta.p0.multirc-original-semantic-independent-review.v1',
+    return {'schema':'hepta.p0.multirc-original-semantic-independent-review.v2',
             'original_human_answer_rows':len(labels),
             'independent_source_passages':COUNTS['test'],
             'cheap_exact_literal_presence_baseline':lexical,
@@ -195,6 +251,8 @@ def review(fit,blind,owner,source_train,source_validation,reports):
             'artificially_transformed_evidence_has_human_label':False,
             'new_future_task_benefit_verified':False,
             'pretraining_contamination_or_source_origin_independently_certified':False,
+            'no_evidence_has_new_human_ground_truth':False,
+            'no_evidence_only_a_predictor_for_original_target':True,
             'model_winner_selected':False,'production_promotion_permitted':False,
             'authority':'DENY_ALL'}
 
