@@ -183,8 +183,12 @@ def check_arm(stage, name, arm, cases):
         raise Invalid("missing data-exposure accounting")
     if type(arm.get("physical_forward_claimed")) is not bool:
         raise Invalid("unreported physical-forward status")
-    if type(arm.get("e2e_includes_one_time")) is not bool:
-        raise Invalid("unreported one-time/e2e accounting convention")
+    if "e2e_includes_one_time" in arm:
+        raise Invalid("obsolete all-or-nothing one-time cost flag")
+    one_time_in_e2e = arm.get("one_time_in_e2e")
+    if (type(one_time_in_e2e) is not dict or set(one_time_in_e2e) != set(ONE_TIME)
+            or any(type(included) is not bool for included in one_time_in_e2e.values())):
+        raise Invalid("missing per-component one-time cost inclusion evidence")
     costs = arm.get("costs")
     if type(costs) is not dict or set(costs) != set(COSTS):
         raise Invalid("incomplete lifecycle/resource cost breakdown")
@@ -261,15 +265,18 @@ def check_arm(stage, name, arm, cases):
             "p99_ms": supported_nearest_rank(latencies, .99, 100),
             "tail_percentiles_are_request_samples_not_independent_families": True,
         }
-    # Explicit total-cost accounting. The measured end-to-end request time ALREADY
-    # includes Encoder/Reader/Head/NDU/Tool. Only one-time training/load/compile/
-    # evaluation/migration work is additionally amortized over actual completed rows.
+    # End-to-end request latency includes request execution, but different
+    # one-off costs may or may not appear in the measured request stream. Charge
+    # EACH missing component once: an all-or-nothing flag can silently erase
+    # e.g. model training cost because model load happened inside one request.
     n = len(rows)
-    amortized = (0 if arm["e2e_includes_one_time"] else sum(costs[k] for k in ONE_TIME)) / n
+    not_in_e2e = sum(costs[k] for k in ONE_TIME if not one_time_in_e2e[k])
+    amortized = not_in_e2e / n
     metrics["lifecycle"] = {
-        "observed_evaluation_requests": n,
+        "observed_all_split_requests": n,
         "one_time_work_ms": sum(costs[k] for k in ONE_TIME),
-        "one_time_included_in_e2e": arm["e2e_includes_one_time"],
+        "one_time_not_in_e2e_ms": not_in_e2e,
+        "one_time_included_in_e2e": dict(one_time_in_e2e),
         "amortized_one_time_ms_per_request": amortized,
         "mean_e2e_plus_amortized_ms": sum(row["end_to_end_ms"] for row in rows) / n + amortized,
         "reported_peak_rss_bytes": costs["peak_rss_bytes"],
