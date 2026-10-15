@@ -91,8 +91,11 @@ def component_count(arm: str, width: int, *, rank: int | None = None) -> dict:
 
 
 def audit(*, width: int, caps: tuple[int, ...] = CAPS,
-          pinned_source: dict | None = None) -> dict:
+          trainer_source: Path | None = None) -> dict:
     strictly_int(width, lo=5, hi=256)
+    # Only this owner may authenticate source bytes. A caller-supplied dict
+    # cannot fabricate the local-source verification flag.
+    source_receipt = verify_trainer(trainer_source) if trainer_source is not None else None
     if type(caps) is not tuple or not caps or len(caps) > 8 or any(
         type(cap) is not int or cap <= 0 or cap > 262_144 for cap in caps
     ) or tuple(sorted(set(caps))) != caps:
@@ -128,7 +131,7 @@ def audit(*, width: int, caps: tuple[int, ...] = CAPS,
     return {'schema': SCHEMA, 'authority': 'DENY_ALL', 'decision': 'NO_FAIR_FIVE_TIER_COMPARISON',
             'reusable_existing_trainer_geometry_only': True,
             'source_blob_expected': TRAINER_GIT_BLOB,
-            'source_git_blob_verified_locally': pinned_source is not None,
+            'source_git_blob_verified_locally': source_receipt is not None,
             'declared_width_not_authenticated_against_deployment': True,
             'nominal_caps_are_not_realized_parameters': True,
             'five_tier_equal_realized_parameter_design_valid': feasible,
@@ -152,8 +155,7 @@ def main() -> int:
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     try:
-        source = verify_trainer(args.trainer_source) if args.trainer_source else None
-        result = audit(width=args.width, pinned_source=source)
+        result = audit(width=args.width, trainer_source=args.trainer_source)
         # New file only, never overwrite an earlier study result.
         with args.output.open('x', encoding='utf-8') as dst:
             json.dump(result, dst, sort_keys=True, indent=2, allow_nan=False)
