@@ -67,6 +67,42 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
 
+    def test_signed_deep_observer_native_preflight_covers_nonlearning_effect_owners(self):
+        # Original Supervisor/CNS handoffs are physical effects. Neither may
+        # bypass canonical Supervisor terminal-journal tests simply because
+        # a patch lacks a separate learning-module source change.
+        for path in [
+            "codex-rs/hepta-supervisor/src/writer_handoff.rs",
+            "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["effects"] and scope["lifecycle"])
+                self.assertFalse(scope["learning"])
+                self.assertTrue(scope["native"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        gate = workflow.split(
+            "      - name: Early original Deep Observer canonical terminal and signer regressions\n",
+            1,
+        )[1].split("      - name: Signed serving owners and durable metrics regression\n", 1)[0]
+        actual_if = next(
+            line.strip() for line in gate.splitlines() if line.strip().startswith("if: ")
+        )
+        expected_if = (
+            "if: steps.execution.outputs.run_native == 'true' && "
+            "(steps.scope.outputs.effects == 'true' || "
+            "steps.scope.outputs.lifecycle == 'true' || "
+            "steps.scope.outputs.learning == 'true')"
+        )
+        self.assertEqual(actual_if, expected_if)
+        self.assertIn("deep-observer-early-negative.json", gate)
+        self.assertIn("deep-observer-early-full.json", gate)
+        self.assertIn("--minimum-tests 2", gate)
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
             "codex-rs/hepta-types/src/lib.rs",
