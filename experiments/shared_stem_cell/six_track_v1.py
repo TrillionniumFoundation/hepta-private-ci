@@ -67,17 +67,35 @@ def ident(s):
     return s
 
 
+# A single claimed physical scalar bigger than 10^18 cannot represent a
+# credible observed per-request time/byte/energy measurement in this study.
+# Bound it before accumulation, independent of the JSON parser's int limits.
+MAX_SCALAR = 10**18
+
+
 def number(v, *, positive=False):
-    if type(v) not in (float, int) or not math.isfinite(v) or v < 0 or (positive and v == 0):
+    if type(v) not in (float, int) or v < 0 or (positive and v == 0):
         raise Invalid("missing/negative/nonfinite physical measurement")
-    return float(v)
+    try:
+        value = float(v)
+    except (OverflowError, ValueError) as exc:
+        raise Invalid("missing/negative/nonfinite physical measurement") from exc
+    if not math.isfinite(value) or value > MAX_SCALAR:
+        raise Invalid("missing/negative/nonfinite physical measurement")
+    return value
 
 
 def signed_utility(v):
     """An observed result may have negative net utility or a failure penalty."""
-    if type(v) not in (float, int) or not math.isfinite(v) or not -1 <= v <= 1:
+    if type(v) not in (float, int):
         raise Invalid("missing/nonfinite/out-of-bound signed utility")
-    return float(v)
+    try:
+        value = float(v)
+    except (OverflowError, ValueError) as exc:
+        raise Invalid("missing/nonfinite/out-of-bound signed utility") from exc
+    if not math.isfinite(value) or not -1 <= value <= 1:
+        raise Invalid("missing/nonfinite/out-of-bound signed utility")
+    return value
 
 
 def _pairs(items):
