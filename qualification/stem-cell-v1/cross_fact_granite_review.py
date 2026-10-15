@@ -152,8 +152,11 @@ def review(root):
                     'training case or gate mismatch')
             replay = verify_observed_training(cases, seed, receipt,
                                               steps=8000, batch_size=16)
-            require(replay['completed_steps'] == row['completed_steps'],
-                    'independent physical update replay differs from summary')
+            require(replay['completed_steps'] == row['completed_steps']
+                    and receipt['cpu_ns'] == row['training_cpu_ns']
+                    and receipt['wall_ns'] == row['training_wall_ns']
+                    and receipt['optimizer_tensor_bytes'] == row['optimizer_tensor_bytes'],
+                    'independent physical update or observed resource cost differs from summary')
             last_step = receipt['diagnostics'][-1]['optimizer_step']
             require(0 <= last_step <= receipt['completed_steps'],
                     'training metric checkpoint inconsistent')
