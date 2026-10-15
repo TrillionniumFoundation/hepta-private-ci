@@ -369,7 +369,6 @@ fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
     server.join().expect("signed Control test service");
 }
 
-
 #[test]
 fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
     // Control records an original CNS receipt in an fsynced C row. A later
@@ -412,10 +411,7 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
         let first = verifier
             .read_signed_highwater(SPLIT, SCOPE, &"33".repeat(32))
             .expect("signed original committed CNS binding");
-        assert_eq!(
-            first.original_cns_receipt_binding.as_deref(),
-            Some("dd".repeat(32).as_str())
-        );
+        assert_eq!(first.original_cns_receipt_binding, Some("dd".repeat(32)));
         let second = verifier.read_signed_highwater(SPLIT, SCOPE, &"44".repeat(32));
         if erased_binding {
             assert!(
