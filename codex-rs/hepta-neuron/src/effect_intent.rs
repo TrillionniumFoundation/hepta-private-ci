@@ -207,9 +207,7 @@ impl DurableNeuronEffectIntentV1 {
     /// original WAL. This local list is not a signed Control decision or a
     /// model-effect receipt; Agentd must verify exact original Evidence
     /// membership and an independent authority before considering recovery.
-    pub fn completed_tick_digests_v1(
-        &self,
-    ) -> Result<Vec<Digest32>, NeuronEffectIntentErrorV1> {
+    pub fn completed_tick_digests_v1(&self) -> Result<Vec<Digest32>, NeuronEffectIntentErrorV1> {
         #[cfg(unix)]
         if self.owner_path.is_some() {
             self.verify_bound_owner_path()?;
