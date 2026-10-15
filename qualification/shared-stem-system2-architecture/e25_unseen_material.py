@@ -31,6 +31,22 @@ def old_source_groups(archive: str) -> tuple[str, ...]:
         data = z.read(entry)
         if len(data) > 200000: raise ValueError('oversized historic source')
         obj = json.loads(data)
+        original_material = z.read('multirc-material/MATERIAL.json')
+        if len(original_material) > 16384:
+            raise ValueError('unbounded historical original admission census')
+        material = json.loads(original_material)
+    validation = material.get('material_admission', {}).get('validation', {})
+    if (material.get('source_repo') != 'aps/super_glue' or
+            material.get('source_revision') !=
+                '4e14482c58d790d467ecfb29b6790e1917bf8756' or
+            material.get('train_sha256') != TRAIN_SHA or
+            material.get('val_sha256') != VAL_SHA or
+            material.get('total_selected_validation_passages') != 4 or
+            validation.get('admission') !=
+                'complete-valid-passage-and-native-slate-label-blind-v1' or
+            validation.get('eligible_passages') != 10 or
+            validation.get('eligible_distinct_texts') != 10):
+        raise ValueError('archived genuine ten eligible original validation passages changed')
     if obj.get('actual_candidate_count') != 33 or obj.get('question_count') != 8:
         raise ValueError('original previous source size changed')
     groups = tuple(dict.fromkeys(x['source_group'] for x in obj['rows']))
