@@ -65,7 +65,10 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
     if any(a & b for i, a in enumerate(groups) for b in groups[i + 1:]):
         raise ValueError("independent source groups crossed train/test/long")
     source_files = ("group_core.py", "group_training.py", "group_attention_curriculum.py",
-                    "group_step_supervision.py", "group_attention_campaign.py")
+                    "group_step_supervision.py", "group_attention_campaign.py",
+                    "group_attention_campaign_review.py", "group_campaign_review.py",
+                    "group_tasks.py", "group_encoder.py", "group_features.py",
+                    "hf_encoder_kernel.py", "execution_meter.py", "aten_work.py")
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         seed=seed, steps=steps, train_count=train_count,
         heldout_count=heldout_count, max_depth=4, attention_weight=attention_weight,
@@ -166,11 +169,15 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             print(json.dumps({"cohort": cohort, "arm": name, **summaries[f"{cohort}.{name}"]}),
                   flush=True)
     encoder.verify_files()
+    from hf_encoder_kernel import verify_loaded_safetensors
+    final_loaded_tensor_verification = verify_loaded_safetensors(
+        torch, encoder.model, encoder.root)
     report = dict(schema="hepta.group.paired-step-observation.v1",
         protocol_sha256=digest_json(protocol), seed=seed,
         runtime=dict(python=platform.python_version(), torch=torch.__version__),
         initial_core_sha256=initial_core_digest, training=training,
         wide_parameter_match=geometry, encoder_cost=encoder_cost,
+        final_loaded_tensor_verification=final_loaded_tensor_verification,
         teacher=teacher_receipt, summaries=summaries,
         actual_lifecycle_cpu_ns=time.process_time_ns() - start_cpu,
         actual_lifecycle_wall_ns=time.perf_counter_ns() - start_wall,
