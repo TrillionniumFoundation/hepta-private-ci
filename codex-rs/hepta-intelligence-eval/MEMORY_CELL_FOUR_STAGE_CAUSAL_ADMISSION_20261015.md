@@ -145,3 +145,29 @@ original answers are durably closed. Test-fixture nonces are deterministic
 The verifier checks this structure; it cannot independently certify that
 a source plan was committed before exposure or that the nonce was truly
 kept secret. Production and independent-human review remain blocked.
+
+### Source-before-task label freeze utility
+
+`memory_trial_preexposure_freeze.py` now turns an external, private,
+source-reviewed exact-label packet into two separate new immutable outputs:
+a public factorial plan containing unique salted answer commitments and
+a mode-0600 protected `{id,expected,nonce}` scorer-only label file.
+The utility draws each 256-bit nonce from the operating system CSPRNG.
+It fails closed if a task is already exposed, a source write is incomplete,
+the expected answer already has a commitment, a review is missing/duplicated,
+answers violate strict identifier grammar, or any target output exists.
+The protected answers and nonces are never printed in routine output.
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/memory_trial_preexposure_freeze.py \
+  --template REVIEWED_UNSEALED_PLAN.json --template-sha256 PINNED_TEMPLATE_SHA \
+  --reviews PROTECTED_REVIEWED_ANSWERS.json --reviews-sha256 PINNED_REVIEWS_SHA \
+  --public-plan NEW_PUBLIC_PLAN.json --protected-labels NEW_PRIVATE_LABELS.json
+python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_preexposure_freeze.py' -v
+```
+
+Retain original source/reader snapshot receipts, commit the resulting public
+plan before releasing evaluation tasks, and keep the protected file outside
+Reader/encoder/index/optimizer visibility. File timestamps and SHA hashes
+alone do not prove a historical GitHub preregistration or an authenticated
+human review; that authority remains a separate required gate.
