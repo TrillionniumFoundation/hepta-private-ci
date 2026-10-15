@@ -3,6 +3,7 @@
 GitHub event/ref controls are orthogonal to the model science result.
 """
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,10 +12,14 @@ CONTRACT = ROOT / ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
 CHILD = "research/e3-five-arm-decongest-ci-20261015"
 
 def physical_job(name, text):
-    marker = "  " + name + ":\n"
-    if text.count(marker) != 1:
+    # Match job-level two-space headings, never nested four-space steps.
+    marker = re.compile(
+        r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [a-z][a-z0-9-]*:|\Z)"
+    )
+    matches = marker.findall(text)
+    if len(matches) != 1:
         raise ValueError("missing or duplicate workflow job")
-    return text.split(marker, 1)[1].split("\n  ", 1)[0]
+    return matches[0]
 
 class ExpensiveWorkGuard(unittest.TestCase):
     def test_physical_model_jobs_run_only_on_push(self):
