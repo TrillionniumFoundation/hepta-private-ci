@@ -12,6 +12,12 @@ on:
       - "qualification/stem-cell-v1/p2_backward_cost_profiler.py"
       - "qualification/stem-cell-v1/p2_backward_cost_profile_review.py"
       - "qualification/stem-cell-v1/test_p2_backward_cost_profiler.py"
+      - "qualification/stem-cell-v1/p2_counterbalanced_cpu_training.py"
+      - "qualification/stem-cell-v1/p2_counterbalanced_cpu_training_review.py"
+      - "qualification/stem-cell-v1/test_p2_counterbalanced_cpu_training.py"
+      - "qualification/stem-cell-v1/P2_COUNTERBALANCED_CPU_COST_REPLAY.md"
+      - "qualification/stem-cell-v1/P2_LOCAL_COUNTERBALANCED_3SEED_20261015.json"
+      - "qualification/stem-cell-v1/P2_COUNTERBALANCED_SOURCE_TEST_COUNTS_20261015.json"
       - "qualification/stem-cell-v1/P2_BACKWARD_OPERATOR_COST_PROVENANCE_20261015.md"
       - "qualification/stem-cell-v1/P2_LOCAL_BACKWARD_OPERATOR_3SEED_20261015.json"
       - "qualification/stem-cell-v1/P2_TRAINED_TOP1_EQUAL_FORWARD_WORK.md"
@@ -82,6 +88,13 @@ jobs:
           python -m compileall -q qualification/stem-cell-v1/p2_backward_cost_profiler.py \
             qualification/stem-cell-v1/p2_backward_cost_profile_review.py \
             qualification/stem-cell-v1/test_p2_backward_cost_profiler.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_counterbalanced_cpu_training.py -v 2>&1 | tee "$RUNNER_TEMP/p2/counterbalanced-source-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_counterbalanced_cpu_training.py -v 2>&1 | tee "$RUNNER_TEMP/p2/counterbalanced-optimized-tests.log"
+          python -m compileall -q qualification/stem-cell-v1/p2_counterbalanced_cpu_training.py \
+            qualification/stem-cell-v1/p2_counterbalanced_cpu_training_review.py \
+            qualification/stem-cell-v1/test_p2_counterbalanced_cpu_training.py
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
             qualification/stem-cell-v1/test_p2_real_cell_split.py
@@ -156,6 +169,47 @@ jobs:
               observed=subprocess.check_output(['git','hash-object',str(root/name)],text=True).strip()
               if observed!=prior:raise ValueError('original 3-seed profiler code changed '+name)
           print('historical synthetic-only operator work retains exact source SHA; not real model qualification')
+          PYCODE
+      - name: Verify three synthetic balanced CPU trials are not rewritten into pretrained/latency proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          root=Path('qualification/stem-cell-v1')
+          receipt=json.loads((root/'P2_LOCAL_COUNTERBALANCED_3SEED_20261015.json').read_text())
+          canonical=lambda x:json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+          if (receipt.get('schema')!='hepta.p2.counterbalanced-cpu-three-seed-synthetic.v1'
+              or receipt.get('authority')!='DENY_ALL' or receipt.get('production_authorized') is not False
+              or receipt.get('real_pretrained_encoder_loaded') is not False
+              or receipt.get('future_quality_established') is not False
+              or receipt.get('seeds')!=[41,47,53]
+              or receipt.get('cpu_wall_not_full_worker_cost') is not True
+              or receipt.get('repetitions_are_not_independent_episodes') is not True
+              or receipt.get('receipt_sha256')!=hashlib.sha256(canonical({k:v for k,v in receipt.items() if k!='receipt_sha256'})).hexdigest()):
+              raise ValueError('false historical physical CPU effectiveness assertion')
+          expected={'p2_counterbalanced_cpu_training.py','p2_counterbalanced_cpu_training_review.py',
+                    'test_p2_counterbalanced_cpu_training.py','P2_COUNTERBALANCED_CPU_COST_REPLAY.md'}
+          if set(receipt.get('source_git_blob_sha1',{}))!=expected:
+              raise ValueError('unregistered original measured source inventory')
+          for name,sha in receipt['source_git_blob_sha1'].items():
+              if subprocess.check_output(['git','hash-object',str(root/name)],text=True).strip()!=sha:
+                  raise ValueError('original local CPU source bytes drifted: '+name)
+          counts=json.loads((root/'P2_COUNTERBALANCED_SOURCE_TEST_COUNTS_20261015.json').read_text())
+          expected_counts={'new_counterbalanced':31,'new_backward':31,'trained_top1':32,
+                           'postfit_top1':22,'original_p2':24,'granite_p1':27,
+                           'shared_p1':33,'reader_p0':59}
+          if (counts.get('schema')!='hepta.p2.counterbalanced-cpu-local-regression-census.v1'
+              or counts.get('authority')!='DENY_ALL' or counts.get('production_authorized') is not False
+              or counts.get('source_only_not_pretrained') is not True
+              or counts.get('original_combined_attempt_timed_out') is not True
+              or counts.get('partial_combined_attempt_counted_as_pass') is not False
+              or counts.get('normal_counts')!=expected_counts
+              or counts.get('optimized_counts')!=expected_counts
+              or counts.get('distinct_test_count_per_mode')!=259):
+              raise ValueError('incomplete/optimistic original local test counts')
+          print('historical local fake-Stem paired CPU observations source bound; not pretrained')
           PYCODE
       - uses: actions/upload-artifact@v4
         if: always()
@@ -321,6 +375,22 @@ jobs:
             --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
             --output "$ROOT/backward-operator-profile-unscored.json" \
             2>&1 | tee "$ROOT/backward-operator-physical.log"
+      - name: Re-encode the same real Granite97 and run counterbalanced UNPROFILED CPU 40-step re-trainings before label opening
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_counterbalanced_cpu_training.py \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --compact-source pinned-compact \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --rounds 8 --crossover-seed 20261015 \
+            --output "$ROOT/counterbalanced-cpu-unscored.json" \
+            2>&1 | tee "$ROOT/counterbalanced-cpu-physical.log"
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -377,6 +447,22 @@ jobs:
             --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
             --cost-report "$ROOT/backward-operator-profile-unscored.json" \
             --output "$ROOT/backward-operator-independent-review.json"
+      - name: Independently rescore original human labels then review FULL balanced CPU training schedule
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_counterbalanced_cpu_training_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --original-backward-cost-report "$ROOT/backward-operator-profile-unscored.json" \
+            --counterbalanced-cost-report "$ROOT/counterbalanced-cpu-unscored.json" \
+            --output "$ROOT/counterbalanced-cpu-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -399,3 +485,7 @@ jobs:
             ${{ runner.temp }}/p2/backward-operator-optimized-tests.log
             ${{ runner.temp }}/p2/backward-operator-physical.log
             ${{ runner.temp }}/p2/backward-operator-independent-review.json
+            ${{ runner.temp }}/p2/counterbalanced-source-tests.log
+            ${{ runner.temp }}/p2/counterbalanced-optimized-tests.log
+            ${{ runner.temp }}/p2/counterbalanced-cpu-physical.log
+            ${{ runner.temp }}/p2/counterbalanced-cpu-independent-review.json
