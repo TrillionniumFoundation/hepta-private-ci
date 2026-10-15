@@ -136,7 +136,9 @@ class SixTrackValidation(unittest.TestCase):
         self.assertIsNone(out["future1"]["p99_ms"])
         self.assertEqual(out["future1"]["distinct_task_count"], 4)
         # 5 one-time columns at 2ms, over 112 requests, not summed twice.
-        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 112)
+        self.assertEqual(out["lifecycle"]["observed_evaluation_requests"], 80)
+        self.assertEqual(out["lifecycle"]["excluded_training_calibration_requests"], 32)
+        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 80)
 
     def test_frozen_head_cannot_claim_optimizer_steps(self):
         self.rejected(lambda d: d["tracks"]["P0"]["granite_frozen"].update(
@@ -261,7 +263,7 @@ class SixTrackValidation(unittest.TestCase):
         doc["tracks"]["P5"]["typed"]["one_time_in_e2e"]["load_ms"] = True
         life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
         self.assertEqual(life["one_time_not_in_e2e_ms"], 8)
-        self.assertAlmostEqual(life["mean_e2e_plus_amortized_ms"], 10 + 8 / 112)
+        self.assertAlmostEqual(life["mean_e2e_plus_amortized_ms"], 10 + 8 / 80)
 
     def test_p4_per_case_solver_overrun(self):
         self.rejected(lambda d: d["tracks"]["P4"]["tree_search"]["results"][0].update(
@@ -274,6 +276,46 @@ class SixTrackValidation(unittest.TestCase):
     def test_cross_case_prediction_swap(self):
         self.rejected(lambda d: d["tracks"]["P0"]["granite_learned"]["results"][16].update(
             input_sha256=d["cases"][0]["input_sha256"]), "swapped input")
+
+    def test_negative_future_net_utility_is_not_clamped_to_zero(self):
+        doc = copy.deepcopy(self.doc)
+        index = next(i for i, case in enumerate(doc["cases"])
+                     if case["split"] == "future1")
+        doc["tracks"]["P4"]["ndu_solver"]["results"][index]["observed_utility"] = -0.4
+        output = target.audit(doc)
+        future = output["tracks"]["P4"]["arms"]["ndu_solver"]["future1"]
+        self.assertEqual(future["negative_utility_count"], 1)
+        self.assertAlmostEqual(future["mean_observed_utility"], (15 * 0.6 - 0.4) / 16)
+        self.assertLess(output["tracks"]["P4"]["paired_family_differences"]
+                        ["ndu_solver__vs__bellman"]["future1"]
+                        ["mean_paired_utility_difference"], -0.15)
+
+    def test_failed_case_can_record_negative_penalty_without_success(self):
+        doc = copy.deepcopy(self.doc)
+        index = next(i for i, case in enumerate(doc["cases"])
+                     if case["split"] == "future1")
+        row = doc["tracks"]["P5"]["typed"]["results"][index]
+        row.update(completed=False, observed_utility=-0.2,
+                   observed_effect_sha256=None, recovery_status="blocked")
+        future = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["future1"]
+        self.assertAlmostEqual(future["accuracy"], 1)
+        self.assertAlmostEqual(future["completed_and_correct_fraction"], 15 / 16)
+        self.assertEqual(future["negative_utility_count"], 1)
+
+    def test_negative_utility_outside_frozen_range_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=-1.0001), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=1.0001), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=True), "signed utility")
+
+    def test_failed_case_cannot_claim_positive_net_utility(self):
+        def fail_with_positive_utility(d):
+            row = d["tracks"]["P5"]["typed"]["results"][0]
+            row.update(completed=False, observed_utility=0.2,
+                       observed_effect_sha256=None, recovery_status="blocked")
+        self.rejected(fail_with_positive_utility, "failed task assigned positive utility")
 
     def test_no_result_deletion(self):
         self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"].pop(), "paired")
