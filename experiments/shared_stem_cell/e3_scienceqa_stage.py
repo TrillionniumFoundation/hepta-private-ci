@@ -2,13 +2,17 @@
 
 Only source fields are inspected when selecting a fixed cohort. The original
 answer column is read only AFTER source membership/identity has been sealed.
-Train+validation labels and test labels are materialized in distinct directories.
-One acquisition process can access both, so it is not an independent observer.
+Train+validation labels are materialized in the predictor mode; TEST answer
+callbacks, label bytes and label digests are omitted in that mode. The label
+owner can separately use the original default mode after predictions seal.
+One dataset source owner can still access original Parquet labels, so this is
+not cryptographic independent label ownership.
 """
 from __future__ import annotations
 import argparse
 import io
 from pathlib import Path
+from e3_source_target_partition import partition_source_labels
 
 from e3_scienceqa_contract import (
     DATASET, DATASET_REVISION, SIZES, E3Error, canonical, revision,
@@ -80,13 +84,16 @@ def select(public, *, sizes=SIZES):
     return selected
 
 
-def prepare(selected, answer, output):
+def prepare(selected, answer, output, *, include_test_labels: bool = True):
     if output.exists():
         raise E3Error("create-only output required")
     output.mkdir(parents=True)
     (output / "images").mkdir()
     (output / "inputs").mkdir()
-    (output / "private_labels").mkdir()
+    if type(include_test_labels) is not bool:
+        raise E3Error("explicit target-visibility mode required")
+    if include_test_labels:
+        (output / "private_labels").mkdir()
     cases, images, label_lookups = [], {}, []
     for split in SIZES:
         if len(selected[split]) != SIZES[split]:
@@ -110,15 +117,12 @@ def prepare(selected, answer, output):
         p = output / "images" / digest
         with p.open("xb") as f:
             f.write(raw)
-    fit, held = [], []
-    for rid, group, split, index in label_lookups:
-        value = answer(split, index)
-        if type(value) is not int or not 0 <= value < 4:
-            raise E3Error("invalid original label")
-        row = {"id": rid, "group": group, "split": split, "label": value}
-        (held if split == "test" else fit).append(row)
+    # The model-facing mode never invokes the answer callback for TEST.
+    fit, held = partition_source_labels(
+        label_lookups, answer, include_test_labels=include_test_labels)
     train_sha = write_jsonl(output / "inputs" / "fit_labels.jsonl", fit)
-    held_sha = write_jsonl(output / "private_labels" / "test_labels.jsonl", held)
+    held_sha = (write_jsonl(output / "private_labels" / "test_labels.jsonl", held)
+                if include_test_labels else None)
     write_new(output / "source-seals.json", {"dataset": DATASET,
         "dataset_revision": DATASET_REVISION, "source_sha256": source_sha,
         "cohort_sha256": prelabel, "fit_labels_sha256": train_sha,
@@ -168,10 +172,13 @@ def acquire_public():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--predictor-source-only", action="store_true",
+                        help="do not read, hash or write original TEST labels")
     args = parser.parse_args()
     public, labels = acquire_public()
     selection = select(public)
-    prepare(selection, labels, args.output)
+    prepare(selection, labels, args.output,
+            include_test_labels=not args.predictor_source_only)
 
 if __name__ == "__main__":
     main()
