@@ -790,6 +790,37 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "released Control lock can admit a different signed receipt frontier",
         )
 
+    def test_original_control_wal_requires_canonical_parent_before_open(self) -> None:
+        # Original Control WAL and its owner-lock marker share a single
+        # canonical persistent identity. The native symlink-ancestor fixture
+        # exercises actual Unix behavior; this early B4 audit makes removal
+        # of the production bootstrap guard review-visible before expensive
+        # Rust owner suites run.
+        relative = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        production = self.lexical_code(relative)
+        bootstrap = production.find("pub fn open_production(")
+        self.assertGreaterEqual(bootstrap, 0, "original Control bootstrap missing")
+        open_lock = production.find("let mut lock_options =", bootstrap)
+        self.assertGreater(
+            open_lock, bootstrap, "original persistent lock opener missing"
+        )
+        prefix = production[bootstrap:open_lock]
+        self.assertRegex(
+            prefix,
+            r"if\s+parent\s*\.canonicalize\(\)\s*\.map_err\(\|_\|\s*"
+            r"NduPublicationErrorV1::UnsafePath\)\?\s*!=\s*parent\s*"
+            r"\{\s*return\s+Err\(NduPublicationErrorV1::UnsafePath\);\s*\}",
+            "noncanonical ancestor must fail before opening original WAL or lock",
+        )
+        test_source = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner()",
+            test_source,
+            "original Unix symlink-ancestor regression must remain present",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()

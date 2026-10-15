@@ -221,6 +221,12 @@ jobs:
           # Compile and execute the same negative canary cases before the
           # heavyweight learning/effect suites, retaining a separate receipt.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-canary-preflight.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib canary_ -- --nocapture
+      - name: Early original Control WAL canonical path native regression
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Require original Unix WAL and owner-lock behavior before inference.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-canonical-ancestor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner -- --nocapture --test-threads=1
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
