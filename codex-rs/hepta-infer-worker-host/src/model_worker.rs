@@ -23,6 +23,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::stem_artifact_cas::StemArtifactCasVerifierV1;
 use crate::stem_artifact_cas::VerifiedStemCasArtifactsV1;
 
 const MAX_MODELS: usize = 8;
@@ -864,6 +865,9 @@ pub struct VerifiedStemFeatureDispatchV1<'a> {
     /// Actual read-and-verified CAS bytes for the selected four-role Stem.
     /// Its private fields cannot be manufactured from unverified digests.
     pub verified_artifacts: &'a VerifiedStemCasArtifactsV1,
+    /// The same host-owned CAS verifier that made the original byte proof.
+    /// An old proof without this live filesystem owner cannot dispatch.
+    pub cas_verifier: &'a StemArtifactCasVerifierV1,
     pub selected_head: StemHeadBindingV1,
     pub feature_vector_q24: &'a [i64],
     pub authorization: WorkerRequest,
@@ -1007,6 +1011,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             source,
             access,
             verified_artifacts,
+            cas_verifier,
             selected_head,
             feature_vector_q24,
             authorization,
@@ -1014,7 +1019,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // Fail closed before claiming the final-use effect: a signed digest
         // declaration without actual bytes in the protected host CAS is not
         // sufficient to dispatch even an otherwise valid Head request.
-        if !verified_artifacts.matches_source(source) || verified_artifacts.authority().grants_any()
+        if !verified_artifacts.matches_source(source)
+            || verified_artifacts.authority().grants_any()
+            || cas_verifier
+                .verify_pinned_current(source, verified_artifacts)
+                .is_err()
         {
             return Err(Error::FeatureContract);
         }
@@ -1033,6 +1042,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             Digest32::of_bytes(&serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?);
         let outcome = trusted_authority
             .with_verified_effect(verified_use, &binding, || {
+                // Recheck the pinned four-role CAS tuple *inside* the real
+                // one-use effect fence. This is metadata-only here because
+                // verify_selected already hashed every CAS byte at admission.
+                cas_verifier
+                    .verify_pinned_current(source, verified_artifacts)
+                    .map_err(|_| Error::FeatureContract)?;
                 self.run_bound_stem_feature_receipt_v1(
                     now_ms,
                     source,

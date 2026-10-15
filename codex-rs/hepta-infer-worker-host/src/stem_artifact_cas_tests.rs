@@ -278,3 +278,73 @@ fn byte_verified_cas_and_shared_q24_views_preserve_legacy_v1_without_granting_ex
         Err(StemCasError::DigestMismatch)
     ));
 }
+
+
+#[test]
+fn admitted_cas_proof_rejects_mutated_bytes_replaced_inode_and_root_mode_drift() {
+    let root = protected_root();
+    let source = sample_source();
+    store(root.path(), &source);
+    let verifier = StemArtifactCasVerifierV1::open(root.path(), 4096)
+        .expect("protected CAS fixture");
+    let proof = verifier.verify_selected(&source).expect("original bytes hashed");
+    verifier
+        .verify_pinned_current(&source, &proof)
+        .expect("unchanged metadata of hashed CAS");
+
+    // A same-name replacement containing the same hash-bound bytes is still
+    // a changed physical file; keep the old inode alive to prevent reuse.
+    let file = root.path().join(source.stem_weights_digest.to_string());
+    let retained_old = fs::File::open(&file).expect("pin original inode");
+    let backup = root.path().join("retained-original-inode");
+    fs::rename(&file, &backup).expect("move original CAS inode");
+    fs::write(&file, b"real-weight-blob").expect("create replacement CAS inode");
+    assert!(matches!(
+        verifier.verify_pinned_current(&source, &proof),
+        Err(StemCasError::ArtifactChanged)
+    ));
+    drop(retained_old);
+    fs::remove_file(&backup).expect("remove retained fixture inode");
+
+    // A newly hashed proof is distinct, but does not authorize final-use.
+    let renewed = verifier.verify_selected(&source).expect("rehash current bytes");
+    verifier
+        .verify_pinned_current(&source, &renewed)
+        .expect("freshly pinned same content");
+
+    // Changing bytes after admission must not become a cache hit merely
+    // because the old digest and Model ID still match.
+    fs::write(&file, b"tampered-weights").expect("mutate CAS bytes");
+    assert!(matches!(
+        verifier.verify_pinned_current(&source, &renewed),
+        Err(StemCasError::ArtifactChanged)
+    ));
+
+    // Permission drift on the host-picked root invalidates even valid hashes.
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o755))
+        .expect("simulate unsafe root mode");
+    assert!(matches!(
+        verifier.verify_pinned_current(&source, &renewed),
+        Err(StemCasError::UnprotectedRoot)
+    ));
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
+        .expect("restore private root for cleanup");
+}
+
+#[test]
+fn proof_from_different_cas_owner_cannot_be_used_for_currentness() {
+    let one = protected_root();
+    let two = protected_root();
+    let source = sample_source();
+    store(one.path(), &source);
+    store(two.path(), &source);
+    let first = StemArtifactCasVerifierV1::open(one.path(), 4096)
+        .expect("first CAS owner");
+    let second = StemArtifactCasVerifierV1::open(two.path(), 4096)
+        .expect("second CAS owner");
+    let proof = first.verify_selected(&source).expect("first physical CAS hash");
+    assert!(matches!(
+        second.verify_pinned_current(&source, &proof),
+        Err(StemCasError::InvalidSelection)
+    ));
+}

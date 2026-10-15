@@ -55,6 +55,10 @@ impl StdError for StemCasError {}
 pub struct StemArtifactCasVerifierV1 {
     root: PathBuf,
     maximum_blob_bytes: u64,
+    #[cfg(unix)]
+    root_device: u64,
+    #[cfg(unix)]
+    root_inode: u64,
 }
 
 /// Content verification, not a signed artifact-load or final-use receipt.
@@ -69,6 +73,47 @@ pub struct VerifiedStemCasArtifactsV1 {
     roles: [Digest32; 4],
     observed_role_bytes: [u64; 4],
     cas_directory_digest: Digest32,
+    #[cfg(unix)]
+    root_device: u64,
+    #[cfg(unix)]
+    root_inode: u64,
+    #[cfg(unix)]
+    role_stamps: [CasRoleStamp; 4],
+}
+
+/// Metadata pin for bytes already SHA-256 verified at CAS admission.
+/// A cheap per-use check never substitutes for actual first-load hashing.
+#[cfg(unix)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+struct CasRoleStamp {
+    device: u64,
+    inode: u64,
+    hardlinks: u64,
+    size: u64,
+    mode: u32,
+    mtime: i64,
+    mtime_nsec: i64,
+    ctime: i64,
+    ctime_nsec: i64,
+}
+
+#[cfg(unix)]
+impl CasRoleStamp {
+    fn from_metadata(meta: &std::fs::Metadata) -> Self {
+        use std::os::unix::fs::MetadataExt;
+
+        Self {
+            device: meta.dev(),
+            inode: meta.ino(),
+            hardlinks: meta.nlink(),
+            size: meta.len(),
+            mode: meta.mode(),
+            mtime: meta.mtime(),
+            mtime_nsec: meta.mtime_nsec(),
+            ctime: meta.ctime(),
+            ctime_nsec: meta.ctime_nsec(),
+        }
+    }
 }
 
 impl VerifiedStemCasArtifactsV1 {
@@ -113,6 +158,7 @@ impl StemArtifactCasVerifierV1 {
         }
         #[cfg(unix)]
         {
+            use std::os::unix::fs::MetadataExt;
             use std::os::unix::fs::PermissionsExt;
 
             let meta = root
@@ -125,9 +171,17 @@ impl StemArtifactCasVerifierV1 {
                 return Err(StemCasError::UnprotectedRoot);
             }
             let canonical = root.canonicalize().map_err(|_| StemCasError::InvalidRoot)?;
+            let canonical_meta = canonical
+                .symlink_metadata()
+                .map_err(|_| StemCasError::InvalidRoot)?;
+            if canonical_meta.dev() != meta.dev() || canonical_meta.ino() != meta.ino() {
+                return Err(StemCasError::InvalidRoot);
+            }
             Ok(Self {
                 root: canonical,
                 maximum_blob_bytes,
+                root_device: meta.dev(),
+                root_inode: meta.ino(),
             })
         }
     }
@@ -139,6 +193,7 @@ impl StemArtifactCasVerifierV1 {
         &self,
         source: &StemFeatureRefV1,
     ) -> Result<VerifiedStemCasArtifactsV1, StemCasError> {
+        self.validate_root_current()?;
         if source.authority_epoch == 0 {
             return Err(StemCasError::InvalidSelection);
         }
@@ -152,9 +207,21 @@ impl StemArtifactCasVerifierV1 {
             return Err(StemCasError::InvalidSelection);
         }
         let mut sizes = [0_u64; 4];
+        #[cfg(unix)]
+        let mut stamps = [CasRoleStamp::default(); 4];
         for (index, digest) in roles.iter().enumerate() {
-            sizes[index] = self.read_blob_digest(*digest)?;
+            #[cfg(unix)]
+            {
+                let (size, stamp) = self.read_blob_digest(*digest)?;
+                sizes[index] = size;
+                stamps[index] = stamp;
+            }
+            #[cfg(not(unix))]
+            {
+                sizes[index] = self.read_blob_digest(*digest)?;
+            }
         }
+        self.validate_root_current()?;
         Ok(VerifiedStemCasArtifactsV1 {
             stem_model_id: source.stem_model_id.clone(),
             stem_generation: source.stem_generation,
@@ -162,7 +229,104 @@ impl StemArtifactCasVerifierV1 {
             roles,
             observed_role_bytes: sizes,
             cas_directory_digest: Digest32::of_bytes(self.root.as_os_str().as_encoded_bytes()),
+            #[cfg(unix)]
+            root_device: self.root_device,
+            #[cfg(unix)]
+            root_inode: self.root_inode,
+            #[cfg(unix)]
+            role_stamps: stamps,
         })
+    }
+
+    /// Recheck the same trusted root and exact file identities immediately
+    /// before a previously admitted model effect. This is O(4) file metadata
+    /// reads, not four full weight hashes per Cell. Prior admission MUST
+    /// have SHA-256 hashed every byte through verify_selected.
+    ///
+    /// This does not attest loaded accelerator weights, rule out a privileged
+    /// writer racing after the check, or independently authenticate Final-use.
+    pub fn verify_pinned_current(
+        &self,
+        source: &StemFeatureRefV1,
+        prior: &VerifiedStemCasArtifactsV1,
+    ) -> Result<(), StemCasError> {
+        self.validate_root_current()?;
+        if !prior.matches_source(source)
+            || prior.cas_directory_digest
+                != Digest32::of_bytes(self.root.as_os_str().as_encoded_bytes())
+        {
+            return Err(StemCasError::InvalidSelection);
+        }
+        #[cfg(not(unix))]
+        {
+            return Err(StemCasError::UnsupportedPlatform);
+        }
+        #[cfg(unix)]
+        {
+            use std::fs::OpenOptions;
+            use std::os::unix::fs::MetadataExt;
+            use std::os::unix::fs::OpenOptionsExt;
+
+            if prior.root_device != self.root_device || prior.root_inode != self.root_inode {
+                return Err(StemCasError::InvalidRoot);
+            }
+            for (index, digest) in prior.roles.iter().enumerate() {
+                let path = self.root.join(digest.to_string());
+                let before = path
+                    .symlink_metadata()
+                    .map_err(|_| StemCasError::MissingBlob)?;
+                if !before.file_type().is_file()
+                    || before.file_type().is_symlink()
+                    || before.nlink() != 1
+                    || before.mode() & 0o022 != 0
+                {
+                    return Err(StemCasError::UnsafeBlob);
+                }
+                if before.len() == 0 || before.len() > self.maximum_blob_bytes {
+                    return Err(StemCasError::ArtifactTooLarge);
+                }
+                let file = OpenOptions::new()
+                    .read(true)
+                    .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+                    .open(&path)
+                    .map_err(|_| StemCasError::Io)?;
+                let opened = file.metadata().map_err(|_| StemCasError::Io)?;
+                if !same_file_snapshot(&before, &opened)
+                    || CasRoleStamp::from_metadata(&opened) != prior.role_stamps[index]
+                    || opened.len() != prior.observed_role_bytes[index]
+                {
+                    return Err(StemCasError::ArtifactChanged);
+                }
+            }
+            self.validate_root_current()
+        }
+    }
+
+    #[cfg(unix)]
+    fn validate_root_current(&self) -> Result<(), StemCasError> {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        let current = self
+            .root
+            .symlink_metadata()
+            .map_err(|_| StemCasError::InvalidRoot)?;
+        if !current.is_dir()
+            || current.file_type().is_symlink()
+            || current.dev() != self.root_device
+            || current.ino() != self.root_inode
+        {
+            return Err(StemCasError::InvalidRoot);
+        }
+        if current.permissions().mode() & 0o077 != 0 {
+            return Err(StemCasError::UnprotectedRoot);
+        }
+        Ok(())
+    }
+
+    #[cfg(not(unix))]
+    fn validate_root_current(&self) -> Result<(), StemCasError> {
+        Err(StemCasError::UnsupportedPlatform)
     }
 
     #[cfg(not(unix))]
@@ -171,7 +335,10 @@ impl StemArtifactCasVerifierV1 {
     }
 
     #[cfg(unix)]
-    fn read_blob_digest(&self, expected: Digest32) -> Result<u64, StemCasError> {
+    fn read_blob_digest(
+        &self,
+        expected: Digest32,
+    ) -> Result<(u64, CasRoleStamp), StemCasError> {
         use std::fs::OpenOptions;
         use std::io::Read;
         use std::os::unix::fs::MetadataExt;
@@ -231,22 +398,13 @@ impl StemArtifactCasVerifierV1 {
         if actual != expected {
             return Err(StemCasError::DigestMismatch);
         }
-        Ok(observed)
+        Ok((observed, CasRoleStamp::from_metadata(&after)))
     }
 }
 
 #[cfg(unix)]
 fn same_file_snapshot(left: &std::fs::Metadata, right: &std::fs::Metadata) -> bool {
-    use std::os::unix::fs::MetadataExt;
-
-    left.dev() == right.dev()
-        && left.ino() == right.ino()
-        && left.nlink() == right.nlink()
-        && left.len() == right.len()
-        && left.mtime() == right.mtime()
-        && left.mtime_nsec() == right.mtime_nsec()
-        && left.ctime() == right.ctime()
-        && left.ctime_nsec() == right.ctime_nsec()
+    CasRoleStamp::from_metadata(left) == CasRoleStamp::from_metadata(right)
 }
 
 #[cfg(all(test, unix))]

@@ -746,6 +746,7 @@ fn verified_stem_cas_fixture(
     source: &StemFeatureRefV1,
 ) -> (
     crate::stem_artifact_cas::VerifiedStemCasArtifactsV1,
+    crate::stem_artifact_cas::StemArtifactCasVerifierV1,
     tempfile::TempDir,
 ) {
     use crate::stem_artifact_cas::StemArtifactCasVerifierV1;
@@ -770,7 +771,7 @@ fn verified_stem_cas_fixture(
     let proof = cas
         .verify_selected(source)
         .expect("genuine matched blob hashes");
-    (proof, root)
+    (proof, cas, root)
 }
 
 #[cfg(unix)]
@@ -844,7 +845,7 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
         .load_model(100, manifest())
         .expect("load real Head fixture");
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
-    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
+    let (verified_artifacts, cas_verifier, _cas_root) = verified_stem_cas_fixture(&source);
     let expected = worker
         .expected_stem_final_use_binding_v1(
             100,
@@ -873,6 +874,7 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
                 source: &source,
                 access: &access,
                 verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization,
@@ -907,7 +909,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
     .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
-    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
+    let (verified_artifacts, cas_verifier, _cas_root) = verified_stem_cas_fixture(&source);
     let binding = worker
         .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen request proposal");
@@ -928,6 +930,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
                 source: &source,
                 access: &access,
                 verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
                 selected_head: head.clone(),
                 feature_vector_q24: &features,
                 authorization: amended_auth,
@@ -953,6 +956,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
                 source: &source,
                 access: &access,
                 verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization: auth,
@@ -970,7 +974,7 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
             .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
-    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
+    let (verified_artifacts, cas_verifier, _cas_root) = verified_stem_cas_fixture(&source);
     let binding = worker
         .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen binding");
@@ -994,6 +998,7 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
                 source: &source,
                 access: &access,
                 verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization: auth,
@@ -1020,7 +1025,8 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
     let mut wrong_source = source.clone();
     wrong_source.stem_generation = Generation::new(4).unwrap();
-    let (wrong_artifacts, _cas_root) = verified_stem_cas_fixture(&wrong_source);
+    let (wrong_artifacts, wrong_cas_verifier, _cas_root) =
+        verified_stem_cas_fixture(&wrong_source);
     let expected = worker
         .expected_stem_final_use_binding_v1(
             100,
@@ -1045,6 +1051,7 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
                 source: &source,
                 access: &access,
                 verified_artifacts: &wrong_artifacts,
+                cas_verifier: &wrong_cas_verifier,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization,
@@ -1470,4 +1477,68 @@ fn invalid_post_effect_receipt_poison_prevents_reusing_signed_worker_generation(
         Err(Error::IndeterminateLifecycle)
     );
     assert_eq!(worker.driver.feature_calls, 1);
+}
+
+
+#[cfg(unix)]
+#[test]
+fn signed_final_use_rejects_stale_cas_bytes_before_any_head_driver_effect() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.stale-cas-fence".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("head loaded");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, cas_root) =
+        verified_stem_cas_fixture(&source);
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
+        )
+        .expect("original request proposal");
+    let (authority, signed, _authority_dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("real verified use token");
+
+    // Alter the original hash-addressed file *after* byte proof/claim.
+    // Neither a previously valid CAS proof nor a valid signature may waive
+    // current CAS file pinning when entering the effect fence.
+    std::fs::write(
+        cas_root.path().join(source.stem_weights_digest.to_string()),
+        b"mutated-after-claim-not-original-stem",
+    )
+    .expect("simulated CAS mutation");
+    assert!(matches!(
+        cas_verifier.verify_pinned_current(&source, &verified_artifacts),
+        Err(crate::stem_artifact_cas::StemCasError::ArtifactChanged)
+    ));
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
+        ),
+        Err(Error::FeatureContract)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned, "no physical Head effect took place");
 }
