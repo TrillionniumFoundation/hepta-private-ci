@@ -1141,6 +1141,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 /// active-effect guards nest synchronously and deny concurrent revocation
 /// changes until the innermost callback returns. Failure at any member means
 /// the callback has never started; claimed nonce journal entries are retained.
+#[cfg(test)]
 fn with_verified_stem_batch_tokens_v1<'a, T>(
     authority: &'a FinalUseAuthority,
     signed_members: Vec<(VerifiedUseToken, FinalUseBinding)>,
