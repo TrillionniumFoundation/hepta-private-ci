@@ -50,6 +50,9 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_multirc_candidate_slate.py --output "$RUNNER_TEMP/multirc-native-candidate-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-native-candidate-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_native_training.py --output "$RUNNER_TEMP/multirc-native-training-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-training-tests.log"
           python -m compileall -q qualification/stem-cell-v1
       - uses: actions/upload-artifact@v4
         if: always()
@@ -70,6 +73,8 @@ jobs:
             ${{ runner.temp }}/multirc-factorial-review-tests.log
             ${{ runner.temp }}/multirc-native-candidate-tests.json
             ${{ runner.temp }}/multirc-native-candidate-tests.log
+            ${{ runner.temp }}/multirc-native-training-tests.json
+            ${{ runner.temp }}/multirc-native-training-tests.log
 
   multirc-stock-hf:
     runs-on: ubuntu-24.04
@@ -248,6 +253,29 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --output "$RUNNER_TEMP/multirc-native-candidate-audit" \
             2>&1 | tee "$RUNNER_TEMP/multirc-native-candidates-audit.log"
+      - name: Material owner registers all genuine labeled TRAIN alternatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRAIN_FILE=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-source-lock.json"))["files"]["train"]["path"])')
+          TRAIN_SHA=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-source-lock.json"))["files"]["train"]["sha256"])')
+          python qualification/stem-cell-v1/multirc_native_training.py prepare \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --train-parquet "$TRAIN_FILE" --train-sha256 "$TRAIN_SHA" \
+            --output "$RUNNER_TEMP/multirc-native-training-material" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-training-prepare.log"
+      - name: Fixed-update train on first versus all genuine train alternatives before human dev-label scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/multirc_native_training.py run \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --native-train "$RUNNER_TEMP/multirc-native-training-material/train-native.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --native-eval-slate "$RUNNER_TEMP/multirc-native-candidate-material/blind-candidate-slate.json" \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" --steps 64 \
+            --output "$RUNNER_TEMP/multirc-native-training" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-training.log"
       - name: Join human-annotated dev labels only after prediction seal exists
         shell: bash
         run: |
@@ -273,6 +301,19 @@ jobs:
             --expected-label-sha256 "$LABEL_SHA" \
             --output "$RUNNER_TEMP/multirc-native-candidate-scores" \
             2>&1 | tee "$RUNNER_TEMP/multirc-native-candidates-score.log"
+      - name: Score fixed-update native-training contrast on the same human-labeled candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-native-training/COMMITTED.json"))["seal_id"])')
+          LABEL_SHA=$(python -c 'import hashlib,os; print(hashlib.sha256(open(os.environ["RUNNER_TEMP"]+"/multirc-native-candidate-material/owner-only-candidate-labels.json","rb").read()).hexdigest())')
+          python qualification/stem-cell-v1/multirc_native_training.py score \
+            --run-dir "$RUNNER_TEMP/multirc-native-training" --expected-seal-id "$SEAL" \
+            --native-eval-slate "$RUNNER_TEMP/multirc-native-candidate-material/blind-candidate-slate.json" \
+            --owner-labels "$RUNNER_TEMP/multirc-native-candidate-material/owner-only-candidate-labels.json" \
+            --expected-label-sha256 "$LABEL_SHA" \
+            --output "$RUNNER_TEMP/multirc-native-training-scores" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-training-score.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -316,4 +357,15 @@ jobs:
             ${{ runner.temp }}/multirc-native-candidate-scores/scores.json
             ${{ runner.temp }}/multirc-native-candidate-scores/COMMITTED.json
             ${{ runner.temp }}/multirc-native-candidate-scores/FAILED.json
+            ${{ runner.temp }}/multirc-native-training-prepare.log
+            ${{ runner.temp }}/multirc-native-training-material/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-training-material/FAILED.json
+            ${{ runner.temp }}/multirc-native-training.log
+            ${{ runner.temp }}/multirc-native-training/predictions.json
+            ${{ runner.temp }}/multirc-native-training/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-training/FAILED.json
+            ${{ runner.temp }}/multirc-native-training-score.log
+            ${{ runner.temp }}/multirc-native-training-scores/scores.json
+            ${{ runner.temp }}/multirc-native-training-scores/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-training-scores/FAILED.json
           # Deliberately exclude raw passages, model weights and labels.

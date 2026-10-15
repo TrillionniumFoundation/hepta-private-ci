@@ -116,3 +116,32 @@ class StockHFAllGenuineCandidatesTests(unittest.TestCase):
         self.assertEqual(measured['original_v1_anchors_replayed'],4)
         self.assertEqual(scores['results']['conditioned']['total'],8)
         self.assertFalse(scores['official_multirc_score_established'])
+
+
+class StockHFMatchedNativeTrainingTests(unittest.TestCase):
+    def test_stock_transformers_all_native_train_vs_first_candidate(self):
+        """Installed random stock checkpoint; architecture only, no efficacy."""
+        from multirc_native_training import prepare_train_slate,fit_and_evaluate,score_native_training
+        from multirc_candidate_slate import prepare_candidate_slate
+        sample=InstalledHFTests(methodName='test_full_stock_architecture_roundtrip_and_physical_tie')
+        sample.setUp()
+        self.addCleanup(sample.tmp.cleanup)
+        encoder,query,verify,ckpt,full,_=safe_encoder(sample.root)
+        train_source=fixture_rows(4); eval_source=fixture_rows(3,'val')
+        train,eval_bundle,owner=prepare_panels(train_source,eval_source,
+            train_passages=2,val_passages=2,
+            dataset_sha256_train='a'*64,dataset_sha256_val='b'*64)
+        native=prepare_train_slate(train,train_source)
+        slate,labels=prepare_candidate_slate(train,eval_bundle,eval_source,
+            original_label_receipt=owner)
+        obs,_=fit_and_evaluate(train,native,lambda:(eval_bundle,slate),
+            encoder=encoder,question_encoder=query,checkpoint_sha256=ckpt,steps=2)
+        verify()
+        result=score_native_training(obs,slate,labels,
+            expected_observation_id=obs['observation_id'],
+            expected_label_digest=_digest(labels))
+        self.assertEqual(len(result['results']),4)
+        self.assertEqual(obs['shared_train_encoder_calls'],2)
+        self.assertEqual(obs['train_question_encoder_calls'],8)
+        self.assertEqual(result['results']['all_native_conditioned']['total'],8)
+        self.assertFalse(result['training_all_native_superiority_established'])
