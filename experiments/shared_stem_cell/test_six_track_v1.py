@@ -68,6 +68,8 @@ def make_fixture():
             }
             if stage == "P4":
                 arm["compute_budget_ms"] = 100
+                if name == "ndu_solver":
+                    arm["costs"]["ndu_ms"] = 3.0 * len(cases)
             for c in cases:
                 utility = 0.5
                 if stage == "P0" and not frozen:
@@ -341,8 +343,15 @@ class SixTrackValidation(unittest.TestCase):
     def test_p4_equal_budget(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(compute_budget_ms=101), "compute budgets")
 
-    def test_p4_ndu_overrun(self):
-        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(ndu_ms=101), "compute budget")
+    def test_p4_ndu_total_underreport_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(
+            ndu_ms=101), "NDU aggregate cost underreports")
+
+    def test_p4_total_cost_above_per_case_budget_is_valid(self):
+        out = target.audit(self.doc)["tracks"]["P4"]["arms"]["ndu_solver"]
+        self.assertEqual(self.doc["tracks"]["P4"]["ndu_solver"]["compute_budget_ms"], 100)
+        self.assertEqual(self.doc["tracks"]["P4"]["ndu_solver"]["costs"]["ndu_ms"], 336)
+        self.assertEqual(out["future1"]["case_count"], 16)
 
     def test_p5_wrong_effect(self):
         self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][2].update(
