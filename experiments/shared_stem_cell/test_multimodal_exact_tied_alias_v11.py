@@ -11,6 +11,7 @@ from multimodal_exact_tied_alias_v11 import (
     DECODER, EMBEDDING, MissingTensorError, reconcile_loading_report,
     same_physical_view,
 )
+from multimodal_meta_integrity_v14 import UnmaterializedCheckpoint, require_materialized
 
 
 class TiedAliasContractTests(unittest.TestCase):
@@ -44,6 +45,21 @@ class TiedAliasContractTests(unittest.TestCase):
             reconcile_loading_report(model,{"missing_keys":[],"unexpected_keys":["bad"]},set())
         with self.assertRaisesRegex(MissingTensorError,"inventory"):
             reconcile_loading_report(model,{"missing_keys":None},set())
+
+    def test_meta_weights_reported_without_initializing_or_moving(self):
+        model = nn.Linear(4, 3, device="meta")
+        with self.assertRaisesRegex(UnmaterializedCheckpoint, "meta_tensor_count=2") as caught:
+            require_materialized(model, {"missing_keys": ["decoder.weight"]})
+        self.assertIn("weight", str(caught.exception))
+        self.assertIn("loader_missing_count=1", str(caught.exception))
+        self.assertTrue(model.weight.is_meta)
+
+    def test_meta_buffers_are_rejected_and_real_cpu_weights_allowed(self):
+        model = nn.Linear(2, 2)
+        require_materialized(model, {"missing_keys": []})
+        model.register_buffer("unloaded_buffer", torch.empty(1, device="meta"))
+        with self.assertRaisesRegex(UnmaterializedCheckpoint, "unloaded_buffer"):
+            require_materialized(model, {"missing_keys": []})
 
     def test_no_missing_weights_still_requires_a_complete_report(self):
         self.assertEqual(reconcile_loading_report(nn.Linear(2,2),{"missing_keys":[],

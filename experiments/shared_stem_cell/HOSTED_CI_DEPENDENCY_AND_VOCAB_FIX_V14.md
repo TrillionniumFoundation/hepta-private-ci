@@ -24,3 +24,16 @@ requires all 3 physical tests without skips.
 CI checks must run anew on the exact amended commit. A green contract
 does not certify real pretrained mmBERT/Granite quality, matched training,
 future NDU benefit, Rust data-plane performance or production authority.
+
+## Follow-up: mmBERT historical safetensors physical load
+
+The pinned public mmBERT-small weights passed source and transfer hashing in
+hosted push run 38663153113, but the HF loader failed with
+`NotImplementedError: Cannot copy out of meta tensor; no data!`. That is not
+proof of low model quality. We now check parameter AND buffer materialization
+before `.cpu()` and emit bounded missing/meta tensor names. This diagnostic
+**does not** initialize missing tensors, call `to_empty`, convert `.bin`, or
+relax the saved-weight verification. The next physical run must identify exact
+unmaterialized names before any possible targeted compatibility fix. Granite
+had successful frozen forwards in the same original run. Pair promotion stays
+blocked until both physical arms finish with authentic material.

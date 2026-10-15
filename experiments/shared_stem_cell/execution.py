@@ -287,6 +287,14 @@ class LocalEncoder:
             output_loading_info=True, attn_implementation="eager", **config_kwargs)
         if any(info.get(k) for k in ("unexpected_keys", "mismatched_keys", "error_msgs")):
             raise InputError("incomplete model load")
+        # A pinned safetensors checkpoint must not leave lazy/meta weights.
+        # Diagnose missing material BEFORE .cpu(), without to_empty, random
+        # initialization, or silently accepting incomplete training weights.
+        from multimodal_meta_integrity_v14 import UnmaterializedCheckpoint, require_materialized
+        try:
+            require_materialized(loaded, info)
+        except UnmaterializedCheckpoint as error:
+            raise InputError("unmaterialized frozen checkpoint: " + str(error)) from error
         self.loaded = loaded.cpu().float().eval()
         self.loaded.requires_grad_(False)
         # A clean loading report is not enough: compare every materialized tensor.
