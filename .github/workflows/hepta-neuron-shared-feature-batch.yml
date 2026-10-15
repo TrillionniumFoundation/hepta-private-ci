@@ -11,6 +11,8 @@ on:
       - "codex-rs/Cargo.toml"
       - "codex-rs/rust-toolchain.toml"
       - "codex-rs/.cargo/**"
+      - "codex-rs/clippy.toml"
+      - "codex-rs/rustfmt.toml"
       - "codex-rs/cli/Cargo.toml"
       - "codex-rs/cli/src/main.rs"
       - "codex-rs/cli/src/codex.rs"
