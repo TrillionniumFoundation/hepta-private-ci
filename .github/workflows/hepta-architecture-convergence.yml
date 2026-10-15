@@ -228,6 +228,10 @@ jobs:
           # Cheap exact-source Rustfmt failure before native inference and
           # long Worker/Evidence suites. Later full gates remain mandatory.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -- --check
+          # Catch the real hosted Evidence/Operator/Supervisor Rustfmt blockers
+          # before expending resources on repeated signed native suites.
+          # Never suppress, remove or replace the later full Rustfmt checks.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence -p codex-hepta-operator-acceptance -p codex-hepta-supervisor -- --check
       - name: Early original Control WAL canonical path native regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
