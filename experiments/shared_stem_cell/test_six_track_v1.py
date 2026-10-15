@@ -238,7 +238,11 @@ class SixTrackValidation(unittest.TestCase):
         self.assertIsNone(target.supported_nearest_rank([1, 2], .5, 3))
         self.assertEqual(target.supported_nearest_rank([5, 1, 3], .5, 3), 3)
         self.assertIsNone(target.supported_nearest_rank(list(range(19)), .95, 20))
-        self.assertEqual(target.supported_nearest_rank(list(range(20)), .95, 20), 19)
+        # Nearest-rank p95 is the 19th of 20 sorted observations (0-based 18),
+        # not the maximum; preserve the estimator and its small-n null boundary.
+        self.assertEqual(target.supported_nearest_rank(list(range(20)), .95, 20), 18)
+        self.assertEqual(target.supported_nearest_rank(list(range(40)), .95, 20), 37)
+        self.assertEqual(target.supported_nearest_rank(list(range(100)), .95, 20), 94)
         self.assertIsNone(target.supported_nearest_rank(list(range(99)), .99, 100))
         self.assertEqual(target.supported_nearest_rank(list(range(100)), .99, 100), 98)
 
