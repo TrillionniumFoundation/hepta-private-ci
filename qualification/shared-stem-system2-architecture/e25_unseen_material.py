@@ -83,6 +83,27 @@ def exclude_previous_source_passages(validation_rows: list[dict], original_group
     return result
 
 
+def exhaustive_unused_source_census(remaining_rows: list[dict]) -> tuple[set[str], dict]:
+    """Verify *all* original eligible unused passages, not merely first six.
+
+    This must run on the original label-owner's full SHA-pinned validation
+    table AFTER exact historical four passages are excluded and BEFORE
+    prepare_panels can select or encode any unused passage. The original
+    complete-passage admission policy examines source structure, not scores.
+    """
+    from multirc_materials import _group_inputs
+    from next_round_matrix import _digest
+    eligible, stats = _group_inputs(remaining_rows, 'validation', return_stats=True)
+    if (len(eligible) != 6 or stats['eligible_passages'] != 6 or
+            stats['eligible_distinct_texts'] != 6):
+        raise ValueError('exactly six previously unused eligible source passages required')
+    groups = {sha256(f'validation:passage:{pid}:{_digest(text)}'.encode()).hexdigest()[:32]
+              for pid, text, _ in eligible}
+    if len(groups) != 6:
+        raise ValueError('ambiguous or duplicated original eligible source identity')
+    return groups, stats
+
+
 def build(original_archive, train_rows, val_rows):
     """Calls original frozen source-selection and candidate-slate algorithms.
 
@@ -98,13 +119,15 @@ def build(original_archive, train_rows, val_rows):
     if set(row['source_group'] for row in old_eval['rows']) != historical:
         raise ValueError('previous source cannot be reconstructed from exact parquet')
     remaining = exclude_previous_source_passages(val_rows,historical)
+    remaining_ids, remaining_admission = exhaustive_unused_source_census(remaining)
     train6,eval6,owner6 = prepare_panels(
         train_rows,remaining,dataset_sha256_train=TRAIN_SHA,dataset_sha256_val=VAL_SHA,
         seed=SEED,train_passages=8,val_passages=6)
     if train4['rows'] != train6['rows'] or set(row['source_group'] for row in eval6['rows']) & historical:
         raise ValueError('training source changed or original held group leaked')
-    if len(eval6['rows']) != 6 or len({r['source_group'] for r in eval6['rows']}) != 6:
-        raise ValueError('must exhaust exactly six remaining eligible source passages')
+    if (len(eval6['rows']) != 6 or
+            {r['source_group'] for r in eval6['rows']} != remaining_ids):
+        raise ValueError('actual selected six passages do not exhaust source-admitted identities')
     slate,labels = prepare_candidate_slate(train6,eval6,remaining,original_label_receipt=owner6)
     n = sum(len(q['candidates']) for p in slate['rows'] for q in p['questions'])
     if not 24 <= n <= 96 or len(labels['labels']) != n:
@@ -118,6 +141,12 @@ def build(original_archive, train_rows, val_rows):
         'new_question_count':12,'new_candidate_count':n,
         'seed':SEED,'exhausts_remaining_eligible_passages':True,
         'selection_uses_labels_or_predictions':False,'same_original_data_family':True,
+        'eligible_unused_passage_count_verified':6,
+        'eligible_unused_distinct_text_count_verified':6,
+        'eligible_unused_group_set_sha256':sha256(
+            json.dumps(sorted(remaining_ids),separators=(',',':')).encode()).hexdigest(),
+        'full_unused_source_census_before_model':True,
+        'source_issuer_independently_authenticated':False,
         'future_time_or_independent_family':False,'new_models_yet_executed':False,
         'production_accepted':False,
     }
