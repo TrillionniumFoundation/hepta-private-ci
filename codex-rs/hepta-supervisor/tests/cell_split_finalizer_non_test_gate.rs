@@ -144,7 +144,10 @@ fn product_finalizer_denies_even_when_caller_supplies_allow_all_authority() {
         finalizer.finalize_once(),
         Err(CellSplitFinalizationErrorV1::OriginalControlUnverified)
     ));
-    assert_eq!(finalizer.checkpoint().phase, WriterHandoffPhaseV1::RoutePublished);
+    assert_eq!(
+        finalizer.checkpoint().phase,
+        WriterHandoffPhaseV1::RoutePublished
+    );
     assert_eq!(
         fs::read(&journal_path).expect("durable bytes after denied effect"),
         before,
@@ -160,5 +163,8 @@ fn product_finalizer_denies_even_when_caller_supplies_allow_all_authority() {
         .expect("cold owner reopen");
     let reopened = DurableWriterHandoffJournalV1::recover_at_least(file, &minimum)
         .expect("recovered original bytes");
-    assert_eq!(reopened.checkpoint().phase, WriterHandoffPhaseV1::RoutePublished);
+    assert_eq!(
+        reopened.checkpoint().phase,
+        WriterHandoffPhaseV1::RoutePublished
+    );
 }
