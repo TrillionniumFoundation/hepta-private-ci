@@ -1,0 +1,125 @@
+name: Hepta cosine residual post-hoc shrinkage
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/shared_gate_residual_shrinkage.py"
+      - "scripts/memory_cell/shared_gate_residual_shrinkage_trial.py"
+      - "scripts/memory_cell/test_shared_gate_residual_shrinkage.py"
+      - ".github/workflows/hepta-cosine-residual-shrinkage-posthoc.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: cosine-residual-shrinkage-posthoc-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit-saved-residual-shrinkage:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install fixed no-fit shrinkage worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cosine-residual-shrinkage/checks
+          python3 -m venv /tmp/cosine-residual-shrinkage-env
+          /tmp/cosine-residual-shrinkage-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/cosine-residual-shrinkage/checks/install-torch.log 2>&1
+          /tmp/cosine-residual-shrinkage-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/cosine-residual-shrinkage/checks/install-worker.log 2>&1
+          /tmp/cosine-residual-shrinkage-env/bin/pip check
+          /tmp/cosine-residual-shrinkage-env/bin/pip freeze > /tmp/cosine-residual-shrinkage/checks/environment.txt
+      - name: Require shrinkage and inherited residual regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_shared_gate_residual_shrinkage.py test_shared_gate_cosine_residual.py test_shared_gate_cosine_residual_admission.py test_shared_gate_cosine_residual_receipt.py test_shared_gate_similarity.py test_shared_gate_crossed.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/cosine-residual-shrinkage-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/cosine-residual-shrinkage/checks/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/cosine-residual-shrinkage/checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/cosine-residual-shrinkage/checks/suites.tsv
+            fi
+          done
+          /tmp/cosine-residual-shrinkage-env/bin/python -m py_compile \
+            scripts/memory_cell/shared_gate_residual_shrinkage.py \
+            scripts/memory_cell/shared_gate_residual_shrinkage_trial.py \
+            scripts/memory_cell/test_shared_gate_residual_shrinkage.py
+          /tmp/cosine-residual-shrinkage-env/bin/python \
+            scripts/memory_cell/shared_gate_residual_shrinkage_trial.py --help \
+            > /tmp/cosine-residual-shrinkage/checks/real-cli-help.txt
+          test "$failed" -eq 0
+      - name: Acquire exact completed residual and crossed artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11942057629/zip \
+            > /tmp/cosine-residual-v3.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11878031858/zip \
+            > /tmp/cosine-residual-crossed.zip
+          printf '%s  %s\n' \
+            23d8d35da612a45d99aafcf2f9f09eceae94b08bb3ee61cb853ac71c50d8cd90 \
+            /tmp/cosine-residual-v3.zip | sha256sum -c -
+          printf '%s  %s\n' \
+            bb61d593ed46f3245339ca5a41a4198d3c346823c7b7a091b090274c33ab3b78 \
+            /tmp/cosine-residual-crossed.zip | sha256sum -c -
+      - name: Replay exact checkpoints on the fixed shrinkage grid
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/cosine-residual-shrinkage/checks/process-resources.txt \
+            /tmp/cosine-residual-shrinkage-env/bin/python \
+            scripts/memory_cell/shared_gate_residual_shrinkage_trial.py \
+            --v3-archive /tmp/cosine-residual-v3.zip \
+            --crossed-archive /tmp/cosine-residual-crossed.zip \
+            --work /tmp/cosine-residual-shrinkage-materials \
+            --output /tmp/cosine-residual-shrinkage/study \
+            2>&1 | tee /tmp/cosine-residual-shrinkage/checks/execution.log
+      - name: Preserve exact source and outcome distinction
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cosine-residual-shrinkage/source/memory_cell
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('/tmp/cosine-residual-shrinkage/study/report.json')
+          report=json.loads(path.read_bytes()) if path.is_file() else None
+          value={'analysis_completed':report is not None and report.get('errors')==[],
+                 'posthoc_after_select_observation':True,
+                 'alpha_selection_from_select':False,
+                 'new_model_loads':0,'new_optimizer_updates':0,
+                 'new_reader_calls':0,'semantic_accuracy':None,
+                 'production_accepted':False}
+          Path('/tmp/cosine-residual-shrinkage/execution-disposition.json').write_text(
+              json.dumps(value,sort_keys=True))
+          print('COSINE_RESIDUAL_SHRINKAGE_DISPOSITION',json.dumps(value,sort_keys=True))
+          PY
+          git rev-parse HEAD > /tmp/cosine-residual-shrinkage/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/cosine-residual-shrinkage/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt \
+            /tmp/cosine-residual-shrinkage/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py \
+            .github/workflows/hepta-cosine-residual-shrinkage-posthoc.yml \
+            /tmp/cosine-residual-shrinkage/source/
+          (cd /tmp/cosine-residual-shrinkage && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-cosine-residual-shrinkage-posthoc
+          path: /tmp/cosine-residual-shrinkage
+          if-no-files-found: error
