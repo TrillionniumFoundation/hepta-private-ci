@@ -18,6 +18,11 @@ on:
       - "qualification/stem-cell-v1/P2_COUNTERBALANCED_CPU_COST_REPLAY.md"
       - "qualification/stem-cell-v1/P2_LOCAL_COUNTERBALANCED_3SEED_20261015.json"
       - "qualification/stem-cell-v1/P2_COUNTERBALANCED_SOURCE_TEST_COUNTS_20261015.json"
+      - "qualification/stem-cell-v1/p2_train_budget_frontier.py"
+      - "qualification/stem-cell-v1/p2_train_budget_frontier_review.py"
+      - "qualification/stem-cell-v1/test_p2_train_budget_frontier.py"
+      - "qualification/stem-cell-v1/P2_CPU_BUDGET_FRONTIER_V1.md"
+      - "qualification/stem-cell-v1/P2_LOCAL_CPU_BUDGET_FRONTIER_3SEED_20261015.json"
       - "qualification/stem-cell-v1/P2_BACKWARD_OPERATOR_COST_PROVENANCE_20261015.md"
       - "qualification/stem-cell-v1/P2_LOCAL_BACKWARD_OPERATOR_3SEED_20261015.json"
       - "qualification/stem-cell-v1/P2_TRAINED_TOP1_EQUAL_FORWARD_WORK.md"
@@ -98,6 +103,55 @@ jobs:
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
             qualification/stem-cell-v1/test_p2_real_cell_split.py
+      - name: Run train-only CPU-budget frontier + independent NumPy 28 adversarial and original-replay tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_train_budget_frontier.py -v \
+            2>&1 | tee "$RUNNER_TEMP/p2/budget-frontier-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_train_budget_frontier.py -v \
+            2>&1 | tee "$RUNNER_TEMP/p2/budget-frontier-optimized-tests.log"
+          python -m compileall -q qualification/stem-cell-v1/p2_train_budget_frontier.py \
+            qualification/stem-cell-v1/p2_train_budget_frontier_review.py \
+            qualification/stem-cell-v1/test_p2_train_budget_frontier.py
+      - name: Bind three complete budgeted synthetic mechanisms to EXACT tested source, deny model winners
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('qualification/stem-cell-v1')
+          r=json.loads((p/'P2_LOCAL_CPU_BUDGET_FRONTIER_3SEED_20261015.json').read_text())
+          canonical=lambda x:json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+          if (r.get('schema')!='hepta.p2.cpu-budget-frontier-three-seed-synthetic.v1'
+              or r.get('authority')!='DENY_ALL' or r.get('production_authorized') is not False
+              or r.get('pretrained_granite97_executed') is not False
+              or r.get('prospective_learning_proven') is not False
+              or r.get('complete_flop_parity_verified') is not False
+              or r.get('paid_calibration_does_not_amortize_automatically') is not True
+              or r.get('seeds')!=[41,47,53] or len(r.get('rows',[]))!=3
+              or r.get('receipt_sha256')!=hashlib.sha256(canonical({k:v for k,v in r.items() if k!='receipt_sha256'})).hexdigest()):
+              raise ValueError('false synthetic CPU-budget source/quality certification')
+          required={'p2_train_budget_frontier.py','p2_train_budget_frontier_review.py',
+                    'test_p2_train_budget_frontier.py','P2_CPU_BUDGET_FRONTIER_V1.md'}
+          if set(r.get('source_git_blob_sha1',{}))!=required:
+              raise ValueError('missing original CPU-budget calibration source hashes')
+          for name,old in r['source_git_blob_sha1'].items():
+              now=subprocess.check_output(['git','hash-object',str(p/name)],text=True).strip()
+              if now!=old:raise ValueError('local toy results source changed: '+name)
+          for row,seed in zip(r['rows'],(41,47,53),strict=True):
+              if (row['seed']!=seed or row['synthetic_fake_encoder'] is not True
+                  or row['paid_full_40_step_calibration_runs']!=32
+                  or row['estimated_cpu_not_exact_flops'] is not True
+                  or row['production_authorized'] is not False
+                  or set(row['chosen_training_steps'])!=set(('frozen_single','single_active','fixed_top1','adaptive_top1'))
+                  or row['chosen_training_steps']['single_active']!=40):
+                  raise ValueError('source fixture republished as a qualified pretrained model')
+          print('Three toy only CPU-budget training studies retain source and nonpromotion limits')
+          PYCODE
       - name: Check toy receipt is byte-bound to original tested source and cannot claim efficacy
         shell: bash
         run: |
@@ -391,6 +445,23 @@ jobs:
             --rounds 8 --crossover-seed 20261015 \
             --output "$ROOT/counterbalanced-cpu-unscored.json" \
             2>&1 | tee "$ROOT/counterbalanced-cpu-physical.log"
+      - name: Physically calibrate TRAIN-only CPU budgets and fit new Top-1/frozen controls BEFORE test labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_train_budget_frontier.py \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --compact-source pinned-compact \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --original-counterbalanced-cpu-report "$ROOT/counterbalanced-cpu-unscored.json" \
+            --calibration-seed 20261015 \
+            --output "$ROOT/cpu-budget-frontier-unscored.json" \
+            2>&1 | tee "$ROOT/budget-frontier-prelabel-physical.log"
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -463,6 +534,23 @@ jobs:
             --original-backward-cost-report "$ROOT/backward-operator-profile-unscored.json" \
             --counterbalanced-cost-report "$ROOT/counterbalanced-cpu-unscored.json" \
             --output "$ROOT/counterbalanced-cpu-independent-review.json"
+      - name: Only after predictions sealed, score CPU-budget frozen frontier from original human labels and full FP32 weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_train_budget_frontier_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --original-trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --original-backward-cost-report "$ROOT/backward-operator-profile-unscored.json" \
+            --original-counterbalanced-cpu-report "$ROOT/counterbalanced-cpu-unscored.json" \
+            --budget-frontier-report "$ROOT/cpu-budget-frontier-unscored.json" \
+            --output "$ROOT/cpu-budget-frontier-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -489,3 +577,7 @@ jobs:
             ${{ runner.temp }}/p2/counterbalanced-optimized-tests.log
             ${{ runner.temp }}/p2/counterbalanced-cpu-physical.log
             ${{ runner.temp }}/p2/counterbalanced-cpu-independent-review.json
+            ${{ runner.temp }}/p2/budget-frontier-tests.log
+            ${{ runner.temp }}/p2/budget-frontier-optimized-tests.log
+            ${{ runner.temp }}/p2/budget-frontier-prelabel-physical.log
+            ${{ runner.temp }}/p2/cpu-budget-frontier-independent-review.json

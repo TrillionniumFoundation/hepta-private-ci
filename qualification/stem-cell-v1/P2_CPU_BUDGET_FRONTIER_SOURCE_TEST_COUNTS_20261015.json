@@ -1,0 +1,152 @@
+{
+  "all_completed_suites_executed_in_independent_processes": true,
+  "authority": "DENY_ALL",
+  "exact_full_lifecycle_flops_claimed": false,
+  "methods_per_mode": 287,
+  "modes": {
+    "normal": {
+      "backward": {
+        "log_sha256": "541bfd7a547d6ff9227f86141229f0d6edcb1ea125947dd4886868a286e87482",
+        "observed_test_methods": 31,
+        "pass": true,
+        "seconds": 7.248
+      },
+      "counterbalanced": {
+        "log_sha256": "76d8c8925ba61b780fe98fbe4a16cc21689fd0ec2049ff6cc800dd972f309efa",
+        "observed_test_methods": 31,
+        "pass": true,
+        "seconds": 10.247
+      },
+      "granite_p1": {
+        "log_sha256": "07ccab9eb68f01bb10a1a44f04eac6fca11c16f12b8cbfe7b36310db281fcff2",
+        "observed_test_methods": 27,
+        "pass": true,
+        "seconds": 6.267
+      },
+      "new_budget": {
+        "log_sha256": "1f3ae77dcb465cd5ba80e6338aacee602b4c004eea2a1f6946ad854fff7094df",
+        "observed_test_methods": 28,
+        "pass": true,
+        "seconds": 12.557
+      },
+      "original_p2": {
+        "log_sha256": "6c03e8acf2a11173bb03eb06603a0e8aa2aba7f4a68f70ce6599d8b5f5660a7f",
+        "observed_test_methods": 24,
+        "pass": true,
+        "seconds": 1.536
+      },
+      "postfit_top1": {
+        "log_sha256": "509997ca90cc9a702732174a521af48262029210a4b5f0902295115380393732",
+        "observed_test_methods": 22,
+        "pass": true,
+        "seconds": 1.818
+      },
+      "reader_adapter": {
+        "log_sha256": "3ad763286b8ac5eaa3e00a28e7e853fc1fa90677162249981e99bbf25cf0c03c",
+        "observed_test_methods": 16,
+        "pass": true,
+        "seconds": 0.015
+      },
+      "reader_causal": {
+        "log_sha256": "918852a738599645d14b734349b07b5e38988868371a45c7baf44480425b95a2",
+        "observed_test_methods": 32,
+        "pass": true,
+        "seconds": 0.071
+      },
+      "reader_fanout": {
+        "log_sha256": "f92fd374884e67a927d1c865de9d6c950d7c867825d1039abeb232f66d371706",
+        "observed_test_methods": 11,
+        "pass": true,
+        "seconds": 0.048
+      },
+      "shared_p1": {
+        "log_sha256": "3625f45c528c5229b1c900053ab0af46b01fa66c186be1dea97c4fd1a81429d4",
+        "observed_test_methods": 33,
+        "pass": true,
+        "seconds": 3.586
+      },
+      "trained_top1": {
+        "log_sha256": "df3cde5977d5903090173d75ecb3d3d3abf23ee9a18893a646bebd4d700e2142",
+        "observed_test_methods": 32,
+        "pass": true,
+        "seconds": 2.599
+      }
+    },
+    "optimized": {
+      "backward": {
+        "log_sha256": "7947de53e80af045a982c655f11044563cd7700643a0a3e78bbf187bf163dc00",
+        "observed_test_methods": 31,
+        "pass": true,
+        "seconds": 6.939
+      },
+      "counterbalanced": {
+        "log_sha256": "8d0897e84b1a4b10153919094db3f535077c45a01aa5acab7678c1443227aec3",
+        "observed_test_methods": 31,
+        "pass": true,
+        "seconds": 9.981
+      },
+      "granite_p1": {
+        "log_sha256": "29ed6d02b68a0aca2b2229dfb1c5eacedc5607e5225f3a116249b6098969f080",
+        "observed_test_methods": 27,
+        "pass": true,
+        "seconds": 6.198
+      },
+      "new_budget": {
+        "log_sha256": "e46e090e70e2f8569d12eb5022e417c7c27f02accba4b71074f0e579bc317ca8",
+        "observed_test_methods": 28,
+        "pass": true,
+        "seconds": 11.785
+      },
+      "original_p2": {
+        "log_sha256": "178047e833558632f2034e96407a894a520c60d7c692d78cce167c15874459c8",
+        "observed_test_methods": 24,
+        "pass": true,
+        "seconds": 1.666
+      },
+      "postfit_top1": {
+        "log_sha256": "3bee8afdf2cf4d20f60231580babc2802f87a6898f02f48ccc51f22a1e104227",
+        "observed_test_methods": 22,
+        "pass": true,
+        "seconds": 1.841
+      },
+      "reader_adapter": {
+        "log_sha256": "a00ea3ce7f42f7cf1fd82ad870c75178bfc0fd4300f1203f101d10c6c2a7a9c5",
+        "observed_test_methods": 16,
+        "pass": true,
+        "seconds": 0.016
+      },
+      "reader_causal": {
+        "log_sha256": "44fa1bfb360837ea96ab22617b7da733a2c9f08f15762fa43676cd16619f4dd9",
+        "observed_test_methods": 32,
+        "pass": true,
+        "seconds": 0.079
+      },
+      "reader_fanout": {
+        "log_sha256": "694bf3a0ea3aa3f442903755fd7407076faa0e3cad6536386ade16321cd73772",
+        "observed_test_methods": 11,
+        "pass": true,
+        "seconds": 0.049
+      },
+      "shared_p1": {
+        "log_sha256": "7a398cc18e4c99a277103118d0f136bc90c844005d7f8900dc4d8aa055e4452f",
+        "observed_test_methods": 33,
+        "pass": true,
+        "seconds": 3.876
+      },
+      "trained_top1": {
+        "log_sha256": "be3006e7077bc91660271431dae013033e430351c584dba603609329ce515789",
+        "observed_test_methods": 32,
+        "pass": true,
+        "seconds": 2.734
+      }
+    }
+  },
+  "new_methods_per_mode": 28,
+  "original_combined_attempt_timed_out": true,
+  "original_control_methods_per_mode": 259,
+  "partial_combined_attempt_counted_as_pass": false,
+  "production_promotion_permitted": false,
+  "receipt_sha256": "586517a7ab93dbccfb9ab6c4e4eab78b8e52b63d0c3d7c73ebca6985345c725c",
+  "schema": "hepta.p2.cpu-budget-frontier-local-regression-census.v1",
+  "source_only_not_pretrained": true
+}
