@@ -8,7 +8,8 @@ from budget import CellUse, FeatureIdentity, Profile, estimate, example
 
 
 def identity(*, scope="A", generation=1, source=4, stem=1, tokenizer=2, normalizer=3, options=5):
-    sha = lambda x: f"{x:064x}"
+    def sha(x):
+        return f"{x:064x}"
     return FeatureIdentity(scope, generation, sha(stem), sha(tokenizer),
                            sha(normalizer), sha(source), sha(options))
 
