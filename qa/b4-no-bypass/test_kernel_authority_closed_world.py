@@ -871,6 +871,20 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             body,
             "marker read must use a fixed bounded stack buffer",
         )
+        self.assertIn(
+            "encode_control_owner_marker_v1(device, inode)",
+            body,
+            "live original marker grammar must be encoded without allocation",
+        )
+        self.assertNotIn(
+            "format!(", body,
+            "live owner marker checks may not allocate a new String per tick",
+        )
+        self.assertIn(
+            "recorded[..expected_len] != expected[..expected_len]",
+            body,
+            "the positional original marker must be matched byte-for-byte",
+        )
         recheck = body.rfind(
             "control_owner_file_identity(&self.owner_lock, &self.lock_path)?;"
         )
@@ -886,6 +900,11 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check()",
             native,
             "same-byte different-inode owner marker fault regression is mandatory",
+        )
+        self.assertIn(
+            "fn fixed_stack_control_owner_marker_matches_original_decimal_grammar()",
+            native,
+            "original marker must match the full signed-inode decimal range",
         )
 
     def test_original_control_wal_uses_pinned_dirfd_for_both_children(self) -> None:
