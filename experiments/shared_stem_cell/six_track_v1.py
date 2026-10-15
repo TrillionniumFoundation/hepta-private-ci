@@ -13,7 +13,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-SCHEMA = "hepta.six-track-paired-observation.v1"
+SCHEMA = "hepta.six-track-paired-observation.v2"
 SHA_KEYS = ("source_sha256", "plan_sha256", "dataset_sha256", "evaluator_sha256")
 SPLITS = ("train", "calibration", "test", "future1", "future2", "future3", "ood")
 EVAL_SPLITS = ("test", "future1", "future2", "future3", "ood")
@@ -96,6 +96,11 @@ def nearest_rank(values, p):
     return sorted(values)[max(0, math.ceil(p * len(values)) - 1)]
 
 
+def supported_nearest_rank(values, p, minimum):
+    """Do not publish a tail percentile on an inadequate request sample."""
+    return nearest_rank(values, p) if len(values) >= minimum else None
+
+
 def check_cases(raw):
     if type(raw) is not list or not 1 <= len(raw) <= 50000:
         raise Invalid("missing cohort rows")
@@ -126,12 +131,16 @@ def check_cases(raw):
         for b in SPLITS[i+1:]:
             if groups[a] & groups[b] or sources[a] & sources[b]:
                 raise Invalid("source/input leakage between evaluation cohorts")
+    if not observed["train"] or not observed["calibration"]:
+        raise Invalid("missing train/calibration partition")
     present = [s for s in SPLITS[:-1] if observed[s]]
     if any(max(observed[a]) >= min(observed[b]) for a, b in zip(present, present[1:])):
         raise Invalid("train/future time boundary violated")
     for s in EVAL_SPLITS:
         if not observed[s]:
             raise Invalid("missing prospective/holdout evaluation partition")
+    if min(observed["ood"]) <= max(max(observed["train"]), max(observed["calibration"])):
+        raise Invalid("OOD examples must occur after train/calibration freeze")
     for (split, task), by_condition in reader_by_task.items():
         if split in EVAL_SPLITS:
             if set(by_condition) != set(READER):
@@ -155,8 +164,15 @@ def check_arm(stage, name, arm, cases):
         digest(arm.get(k))
     if type(arm.get("train_steps")) is not int or arm["train_steps"] < 0:
         raise Invalid("missing training step census")
+    if stage in ("P0", "P1"):
+        if name.endswith("_frozen") and arm["train_steps"] != 0:
+            raise Invalid("frozen Head cannot report optimizer steps")
+        if name.endswith("_learned") and arm["train_steps"] == 0:
+            raise Invalid("learned Head has no optimizer steps")
     if type(arm.get("trainable_parameters")) is not int or arm["trainable_parameters"] < 0:
         raise Invalid("missing parameter accounting")
+    if stage in ("P0", "P1") and name.endswith("_learned") and not arm["trainable_parameters"]:
+        raise Invalid("learned Head has zero trainable parameters")
     if type(arm.get("train_cases")) is not int or arm["train_cases"] < 0:
         raise Invalid("missing data-exposure accounting")
     if type(arm.get("physical_forward_claimed")) is not bool:
@@ -211,6 +227,8 @@ def check_arm(stage, name, arm, cases):
                 raise Invalid("unreconciled effect represented as clean failure")
             if row.get("recovery_status") not in ("not_needed", "reconciled", "blocked"):
                 raise Invalid("missing recovery/unknown-effect disposition")
+            if row["completed"] and row["recovery_status"] == "blocked":
+                raise Invalid("blocked effect cannot be reported completed")
         seen.add(cid)
         per_case[cid] = row
         if case["split"] in EVAL_SPLITS:
@@ -223,16 +241,19 @@ def check_arm(stage, name, arm, cases):
         if not data:
             raise Invalid("incomplete future partition")
         correct = sum(int((r["positive_probability"] >= .5) == bool(c["label"])) for c, r in data)
+        latencies = [r["end_to_end_ms"] for _, r in data]
         metrics[split] = {
             "case_count": len(data),
             "source_family_count": len({c["source_group"] for c, _ in data}),
+            "distinct_task_count": len({c["task_id"] for c, _ in data}),
             "accuracy": correct / len(data),
             "brier": sum((r["positive_probability"] - c["label"]) ** 2 for c, r in data) / len(data),
             "mean_observed_utility": sum(r["observed_utility"] for _, r in data) / len(data),
             "completion_rate": sum(r["completed"] for _, r in data) / len(data),
-            "p50_ms": nearest_rank([r["end_to_end_ms"] for _, r in data], .5),
-            "p95_ms": nearest_rank([r["end_to_end_ms"] for _, r in data], .95),
-            "p99_ms": nearest_rank([r["end_to_end_ms"] for _, r in data], .99),
+            "p50_ms": supported_nearest_rank(latencies, .5, 3),
+            "p95_ms": supported_nearest_rank(latencies, .95, 20),
+            "p99_ms": supported_nearest_rank(latencies, .99, 100),
+            "tail_percentiles_are_request_samples_not_independent_families": True,
         }
     # Explicit total-cost accounting. The measured end-to-end request time ALREADY
     # includes Encoder/Reader/Head/NDU/Tool. Only one-time training/load/compile/
@@ -293,10 +314,27 @@ def audit(doc):
                     raise Invalid("Head learning claimed but physical parameter identity unchanged")
                 if b["final_head_sha256"] != b["initial_head_sha256"]:
                     raise Invalid("frozen baseline weight mutated")
-        # The intentionally more-data P2 control is reported separately and never
-        # treated as an equal-data pair. It must be strictly larger, not relabeled.
-        if stage == "P2" and study["parent_more_data"]["train_cases"] <= study["split_children"]["train_cases"]:
-            raise Invalid("more-data control lacks additional independent exposure")
+        # Reject aliased P0 model identities and nonmatched training schedules.
+        if stage == "P0":
+            learned = [study[family + "_learned"] for family in ("granite", "mmbert", "gemma", "laya")]
+            if len({arm["model_sha256"] for arm in learned}) != 4:
+                raise Invalid("P0 model families alias one physical model identity")
+            for field in ("train_data_sha256", "train_cases", "train_steps", "optimizer_sha256"):
+                if len({arm[field] for arm in learned}) != 1:
+                    raise Invalid("P0 encoder comparison changed common training budget")
+        if stage == "P1":
+            a, b = study["shared_learned"], study["replicated_learned"]
+            if a["initial_head_sha256"] != b["initial_head_sha256"]:
+                raise Invalid("P1 shared/replicated Head initialization differs")
+            if a["trainable_parameters"] != b["trainable_parameters"]:
+                raise Invalid("P1 shared/replicated private Head parameter budget differs")
+        # Larger-data control cannot reuse the identical smaller dataset identity;
+        # different hashes alone never authenticate independent real observations.
+        if stage == "P2":
+            if study["parent_more_data"]["train_cases"] <= study["split_children"]["train_cases"]:
+                raise Invalid("more-data control lacks additional independent exposure")
+            if study["parent_more_data"]["train_data_sha256"] == study["split_children"]["train_data_sha256"]:
+                raise Invalid("more-data control reused identical training dataset identity")
         deltas = {}
         for left, right in PAIRS[stage]:
             left_data, right_data = original_rows[left], original_rows[right]
@@ -324,7 +362,7 @@ def audit(doc):
     # Even a complete locally supplied corpus does not authenticate independently
     # observed real labels, weights, exact CPU/GPU execution or FinalUse.
     return {
-        "schema": "hepta.six-track-descriptive-adjudication.v1",
+        "schema": "hepta.six-track-descriptive-adjudication.v2",
         "source_sha256": doc["source_sha256"],
         "cases": len(cases), "track_count": 6,
         "tracks": out,
