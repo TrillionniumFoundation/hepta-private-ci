@@ -912,7 +912,7 @@ mod tests {
             shared.borrow_for_head(&future, &head),
             Err(StemFeatureBindingError::PrincipalMismatch)
         ));
-        future.principal_id = access.principal_id.clone();
+        future.principal_id = access.principal_id;
         future.now_ms = source.lease_expires_at_ms;
         assert!(matches!(
             shared.borrow_for_head(&future, &head),
