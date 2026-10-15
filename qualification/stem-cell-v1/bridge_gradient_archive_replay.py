@@ -121,12 +121,13 @@ class _FloatStorage:
     pass
 
 
-def decode_fp32_checkpoint(binary, shapes=SHAPES):
+def decode_fp32_checkpoint(binary, shapes=SHAPES, *, include_tensor_bytes=False):
     """Independently reconstruct Torch's two model digests, without importing torch.
 
     Refuses arbitrary pickle globals, noncontiguous strides, device storage,
     aliasing/truncation, other dtypes, duplicate entries and non-finite data.
     """
+    require(type(include_tensor_bytes) is bool, "boolean tensor-export policy required")
     require(isinstance(binary, bytes) and 0 < len(binary) <= 8*1024*1024,
             "bounded checkpoint bytes required")
     require(len(shapes) == 22 and sum(math.prod(x) for x in shapes.values()) == 42562,
@@ -191,6 +192,7 @@ def decode_fp32_checkpoint(binary, shapes=SHAPES):
                 "FP32 storage byte count differs")
         training, execution, n_parameters=sha256(),sha256(),0
         storage_intervals=[]
+        tensor_bytes = {} if include_tensor_bytes else None
         for name,tensor in sorted(state.items()):
             require(isinstance(tensor,_Tensor) and tensor.shape==shapes[name],
                     "unregistered tensor dimensions")
@@ -199,6 +201,8 @@ def decode_fp32_checkpoint(binary, shapes=SHAPES):
             require(len(data)==4*count and all(math.isfinite(v) for (v,) in struct.iter_unpack("<f", data)),
                     "truncated or nonfinite tensor values")
             storage_intervals.append((tensor.storage.key,tensor.offset,tensor.offset+count))
+            if include_tensor_bytes:
+                tensor_bytes[name] = data
             header=name.encode()+str(tensor.shape).encode()
             training.update(header+data)
             execution.update(header+b"torch.float32"+data)
@@ -210,10 +214,15 @@ def decode_fp32_checkpoint(binary, shapes=SHAPES):
                         for other,c,d in storage_intervals[ix+1:]),
                     "aliased checkpoint tensor storage forbidden")
         require(n_parameters==42562, "registered parameter count required")
-        return dict(training_parameter_sha256=training.hexdigest(),
+        receipt = dict(training_parameter_sha256=training.hexdigest(),
                     execution_parameter_sha256=execution.hexdigest(),
                     parameter_count=n_parameters, tensor_count=len(state),
                     all_values_finite=True, torch_imported=False)
+        if include_tensor_bytes:
+            # Raw FP32 bytes are a private in-process optional result only. Never
+            # put these weights in review JSON, logs or the repository.
+            receipt["tensor_bytes"] = tensor_bytes
+        return receipt
 
 
 def _case_id(row):
