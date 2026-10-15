@@ -1,0 +1,134 @@
+name: Hepta E19 BF16 question-centered original Reader precision (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e19_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e19_*.py'
+      - 'qualification/shared-stem-system2-architecture/E19_QUESTION_CENTERED_BF16_PRECISION_20261015.md'
+      - '.github/workflows/hepta-e19-bf16-centered-reader.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-fp32-to-bf16-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e19-original-pretrained.zip
+      HEPTA_E18_ORIGINAL_ARCHIVE: /tmp/hepta-e19-original-pretrained.zip
+      HEPTA_E19_ORIGINAL_ARCHIVE: /tmp/hepta-e19-original-pretrained.zip
+      OUTPUT: /tmp/hepta-e19-original-reader-${{ matrix.source_profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze source-head identity and declared numeric code before loading source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/exact-source-head.txt"
+          if [[ '${{ matrix.source_profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          python --version | tee "$OUTPUT/python-version.txt"
+          sha256sum "$ROOT"/e19_*.py "$ROOT"/test_e19_*.py "$ROOT"/e18_*.py \
+            | tee "$OUTPUT/original-code-source-sha256.txt"
+      - name: Install pinned physical CPU dtype implementation (no foundation-model loader)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python - <<'PY'
+          import torch
+          if not torch.__version__.startswith('2.10.0'):
+              raise SystemExit('wrong pinned torch version')
+          if str(torch.tensor([1.0],dtype=torch.float32).to(torch.bfloat16).device) != 'cpu':
+              raise SystemExit('required CPU physical cast unavailable')
+          print('research CPU torch dtype-cast only, never pretrained weights')
+          PY
+      - name: Acquire ORIGINAL successful pretrained logits archive with exact ZIP SHA-256
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E19_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' \
+            "$HEPTA_E19_ORIGINAL_ARCHIVE" | sha256sum -c -
+      - name: Exact original-source independent numeric / adversarial tests in normal and optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e19_*.py' -v \
+            > "$OUTPUT/e19-normal.log" 2>&1 || { cat "$OUTPUT/e19-normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e19_*.py' -v \
+            > "$OUTPUT/e19-optimized.log" 2>&1 || { cat "$OUTPUT/e19-optimized.log"; exit 1; }
+          grep -F 'Ran 25 tests' "$OUTPUT/e19-normal.log"
+          grep -F 'Ran 25 tests' "$OUTPUT/e19-optimized.log"
+          if grep -Ei 'FAILED|ERROR:|skipped' "$OUTPUT/e19-normal.log" "$OUTPUT/e19-optimized.log"; then exit 1; fi
+      - name: Re-run original E18 and E17 exact-source negative controls in both interpreter modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for mode in normal optimized; do
+            for study in e18 e17; do
+              if [[ "$mode" == optimized ]]; then arg='-O'; else arg=''; fi
+              python $arg -W error::ResourceWarning -m unittest discover -s "$ROOT" \
+                -p "test_${study}_*.py" -v > "$OUTPUT/${study}-${mode}.log" 2>&1 \
+                || { cat "$OUTPUT/${study}-${mode}.log"; exit 1; }
+            done
+          done
+          grep -F 'Ran 20 tests' "$OUTPUT/e18-normal.log"
+          grep -F 'Ran 20 tests' "$OUTPUT/e18-optimized.log"
+          grep -F 'Ran 19 tests' "$OUTPUT/e17-normal.log"
+          grep -F 'Ran 19 tests' "$OUTPUT/e17-optimized.log"
+      - name: Create-only ORIGINAL label-blind precision and anchor/centering receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e19_precision_pack.py" --archive "$HEPTA_E19_ORIGINAL_ARCHIVE" \
+            --output "$OUTPUT/original-prelabel-precision.json" | tee "$OUTPUT/proposer.stdout"
+          sha256sum "$OUTPUT/original-prelabel-precision.json" \
+            > "$OUTPUT/create-only-prelabel-source-sha256.txt"
+      - name: Independently rederive every candidate margin before human score, preserve NO-GO
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(cut -d ' ' -f1 "$OUTPUT/create-only-prelabel-source-sha256.txt")"
+          python "$ROOT/e19_independent_review.py" --archive "$HEPTA_E19_ORIGINAL_ARCHIVE" \
+            --blind "$OUTPUT/original-prelabel-precision.json" --blind-sha256 "$expected" \
+            --output "$OUTPUT/independent-original-human-negative-review.json" \
+            | tee "$OUTPUT/independent-review.stdout"
+          sha256sum "$OUTPUT/independent-original-human-negative-review.json" \
+            > "$OUTPUT/independent-review-sha256.txt"
+      - name: Physical CPU Torch FP32-to-BF16/FP16 OUTPUT CASTS, never a BF16 foundation forward
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e19_torch_cast.py" --archive "$HEPTA_E19_ORIGINAL_ARCHIVE" \
+            --output "$OUTPUT/actual-torch-cpu-dtype-cast.json" \
+            | tee "$OUTPUT/physical-cast.stdout"
+          sha256sum "$OUTPUT/actual-torch-cpu-dtype-cast.json" > "$OUTPUT/physical-cast.sha256"
+      - name: Retain exact HEAD, all original receipts and failed attempts; never include human source or pretrained weights
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e19-original-reader-bf16-centered-${{ matrix.source_profile }}
+          path: /tmp/hepta-e19-original-reader-${{ matrix.source_profile }}/
+          retention-days: 14
+          if-no-files-found: warn
