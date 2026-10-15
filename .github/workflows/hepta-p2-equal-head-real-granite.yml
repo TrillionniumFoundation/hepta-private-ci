@@ -6,6 +6,11 @@ on:
       - "qualification/stem-cell-v1/p2_real_cell_split.py"
       - "qualification/stem-cell-v1/p2_real_cell_split_review.py"
       - "qualification/stem-cell-v1/test_p2_real_cell_split.py"
+      - "qualification/stem-cell-v1/p2_train_sparse_equal_compute.py"
+      - "qualification/stem-cell-v1/p2_train_sparse_equal_compute_review.py"
+      - "qualification/stem-cell-v1/test_p2_train_sparse_equal_compute.py"
+      - "qualification/stem-cell-v1/P2_TRAINED_TOP1_EQUAL_FORWARD_WORK.md"
+      - "qualification/stem-cell-v1/P2_LOCAL_TRAINED_TOP1_TOY_20261015.json"
       - "qualification/stem-cell-v1/p2_postfit_sparse_top1.py"
       - "qualification/stem-cell-v1/p2_postfit_sparse_review.py"
       - "qualification/stem-cell-v1/test_p2_postfit_sparse_top1.py"
@@ -58,6 +63,13 @@ jobs:
           python -m compileall -q qualification/stem-cell-v1/p2_postfit_sparse_top1.py \
             qualification/stem-cell-v1/p2_postfit_sparse_review.py \
             qualification/stem-cell-v1/test_p2_postfit_sparse_top1.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_train_sparse_equal_compute.py -v 2>&1 | tee "$RUNNER_TEMP/p2/trained-top1-source-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_train_sparse_equal_compute.py -v 2>&1 | tee "$RUNNER_TEMP/p2/trained-top1-optimized-tests.log"
+          python -m compileall -q qualification/stem-cell-v1/p2_train_sparse_equal_compute.py \
+            qualification/stem-cell-v1/p2_train_sparse_equal_compute_review.py \
+            qualification/stem-cell-v1/test_p2_train_sparse_equal_compute.py
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
             qualification/stem-cell-v1/test_p2_real_cell_split.py
@@ -80,6 +92,32 @@ jobs:
               assert real==expected,(name,'historical toy source digest drift')
           print('source-bound synthetic-only receipt; not independent model efficacy')
           PY
+      - name: Bind complete synthetic-only negative and positive observations to original tested source bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          root=Path('qualification/stem-cell-v1')
+          doc=json.loads((root/'P2_LOCAL_TRAINED_TOP1_TOY_20261015.json').read_text())
+          compact=lambda d:json.dumps(d,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+          digest=hashlib.sha256(compact({k:v for k,v in doc.items() if k!='receipt_sha256'})).hexdigest()
+          if (doc.get('schema')!='hepta.p2.trained-one-active-synthetic-three-seed-receipt.v1'
+              or doc.get('receipt_sha256')!=digest or doc.get('total_seeds')!=3
+              or doc.get('seed_census')!=[41,47,53] or doc.get('pretrained_stem_model_loaded') is not False
+              or doc.get('model_winner_selected') is not False
+              or doc.get('production_promotion_permitted') is not False
+              or doc.get('authority')!='DENY_ALL'):
+              raise ValueError('historical mechanism receipt is altered or falsely authorized')
+          for name,expected in doc['source_git_blob_sha1'].items():
+              if name not in {'p2_train_sparse_equal_compute.py','p2_train_sparse_equal_compute_review.py',
+                               'test_p2_train_sparse_equal_compute.py','P2_TRAINED_TOP1_EQUAL_FORWARD_WORK.md'}:
+                  raise ValueError('unexpected source-bound file')
+              observed=subprocess.check_output(['git','hash-object',str(root/name)],text=True).strip()
+              if observed!=expected:raise ValueError('original local experiment source bytes drifted '+name)
+          print('Three synthetic seed reports are byte-bound and deny model selection; not hosted pretrained efficacy')
+          PYCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -215,6 +253,20 @@ jobs:
             qualification/stem-cell-v1/p2_postfit_sparse_top1.py \
             --p2-report "$ROOT/predictions-unscored.json" \
             --output "$ROOT/postfit-sparse-unscored.json" --repetitions 100
+      - name: Actually TRAIN matched one-active Head, fixed and adaptive physical Top-1 from new supervised gradients
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_train_sparse_equal_compute.py \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --compact-source pinned-compact \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --output "$ROOT/trained-top1-unscored.json" \
+            2>&1 | tee "$ROOT/trained-top1-physical.log"
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -242,6 +294,20 @@ jobs:
             --p2-report "$ROOT/predictions-unscored.json" \
             --sparse-report "$ROOT/postfit-sparse-unscored.json" \
             --output "$ROOT/postfit-sparse-independent-review.json"
+      - name: Independently re-score and audit matched one-active TRAINED Top-1 vs single Head using original human labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_train_sparse_equal_compute_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --original-p2-report "$ROOT/predictions-unscored.json" \
+            --trained-top1-report "$ROOT/trained-top1-unscored.json" \
+            --output "$ROOT/trained-top1-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -256,3 +322,7 @@ jobs:
             ${{ runner.temp }}/p2/postfit-optimized-tests.log
             ${{ runner.temp }}/p2/independent-review.json
             ${{ runner.temp }}/p2/postfit-sparse-independent-review.json
+            ${{ runner.temp }}/p2/trained-top1-source-tests.log
+            ${{ runner.temp }}/p2/trained-top1-optimized-tests.log
+            ${{ runner.temp }}/p2/trained-top1-physical.log
+            ${{ runner.temp }}/p2/trained-top1-independent-review.json
