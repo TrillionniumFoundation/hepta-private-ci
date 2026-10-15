@@ -77,9 +77,13 @@ def fixture(directory):
             parameters_sha256=hashlib.sha256(model_owner.encode()).hexdigest(),
             fit_rows=3, calibration_rows=3)
     training = {}
+    initial_core = hashlib.sha256(b"same-real-core-initialization").hexdigest()
     for arm in DIRECT:
         training[arm] = dict(status="completed", completed_steps=3, seed=17,
             cpu_ns=100, wall_ns=100, parameter_count=112,
+            initial_model_sha256=(initial_core if arm in ("core", "attention")
+                                  else hashlib.sha256(("initial:" + arm).encode()).hexdigest()),
+            trained_model_sha256=hashlib.sha256(arm.encode()).hexdigest(),
             sample_and_depth_sha256="b" * 64,
             attention_supervision_enabled=arm == "attention",
             attention_target_sha256="a" * 64 if arm == "attention" else None)
@@ -132,6 +136,7 @@ def fixture(directory):
         real_system2_callbacks_executed=True,
         heldout_target_stripped_before_system2_callbacks=True,
         same_model_critic_frozen_on_validation_only=True,
+        initial_core_sha256=initial_core,
         encoder_cost=encoder, training=training, summaries=summaries)
     for name, data in (("protocol", protocol), ("teacher", teacher),
                        ("encoder", encoder), ("observations", rows), ("report", report)):
@@ -189,6 +194,17 @@ class PairedReviewTests(unittest.TestCase):
             (root / "report.json").write_text(json.dumps(bad))
             with self.assertRaisesRegex(ValueError, "training schedule"):
                 review(root)
+
+    def test_reject_forged_paired_initial_or_final_weight_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            for bad_field in ("initial_model_sha256", "trained_model_sha256"):
+                changed = copy.deepcopy(files["report"])
+                changed["training"]["attention"][bad_field] = "a" * 64
+                (root / "report.json").write_text(json.dumps(changed))
+                with self.subTest(field=bad_field), self.assertRaises(ValueError):
+                    review(root)
 
     def test_reject_impossible_verifier_success_and_unpaid_callbacks(self):
         with tempfile.TemporaryDirectory() as tmp:
