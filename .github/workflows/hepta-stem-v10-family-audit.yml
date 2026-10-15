@@ -1,0 +1,42 @@
+name: hepta-stem-v10-family-audit
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v10_family_audit.py"
+      - "qualification/stem-cell-v1/test_stem_v10_family_audit.py"
+      - "qualification/stem-cell-v1/STEM_V9_POSTSEAL_WEAK_SCORES_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V10_FAMILY_NEGATIVE_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V10_FAMILY_AUDIT.md"
+      - ".github/workflows/hepta-stem-v10-family-audit.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/stem_v10_family_audit.py"
+      - "qualification/stem-cell-v1/test_stem_v10_family_audit.py"
+      - "qualification/stem-cell-v1/STEM_V10_FAMILY_NEGATIVE_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V10_FAMILY_AUDIT.md"
+      - ".github/workflows/hepta-stem-v10-family-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  independent-negative:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-only family census and negative evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q qualification/stem-cell-v1/stem_v10_family_audit.py qualification/stem-cell-v1/test_stem_v10_family_audit.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v10_family_audit.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v10_family_audit.py' -v
+          python qualification/stem-cell-v1/stem_v10_family_audit.py --source qualification/stem-cell-v1/STEM_V9_POSTSEAL_WEAK_SCORES_20261015.json --output "$RUNNER_TEMP/v10-recount.json"
+          cmp "$RUNNER_TEMP/v10-recount.json" qualification/stem-cell-v1/STEM_V10_FAMILY_NEGATIVE_20261015.json
