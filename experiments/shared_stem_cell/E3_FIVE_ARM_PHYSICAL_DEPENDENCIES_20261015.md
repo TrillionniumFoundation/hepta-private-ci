@@ -71,6 +71,37 @@ synthetic pretrained vectors or unsigned model promotion is allowed.
   exact two-sided McNemar and Holm adjustment. All outputs are
   nonauthorizing.
 
+## Original native shared-context admission (research preflight only)
+
+Before **every** EmbeddingGemma2 text, image or mixed-text/image
+`SentenceTransformer.encode()` call, the separate stdlib-only
+`e3_gemma2_budget.py` validates the model-reported sequence limit and
+executes the original loaded tokenizer with `truncation=False` and
+`add_special_tokens=True`. It includes the registered default model
+prompt, refuses unregistered interleaved `<|image|>` / audio /
+video placeholders, and charges **1,120 image soft tokens** for each
+local original image. This is the upper end of the documented permitted
+image budget and is intentionally conservative. Missing tokenizer,
+untrusted prompt, excess tokens, unseen image or unsupported modality
+blocks encoding instead of silently truncating.
+
+The complete run must account for **1,344 preflighted individual inputs**
+(192 question-only, 192 question+image, 192 image-only, 768 answer options),
+and preserve the largest conservative input-token charge. The independent
+five-arm composer now refuses a native receipt with any missing/different
+preflight census, a changed context or a claim that actual image Token count
+was physically verified. Dedicated **18** source-negative unit tests and
+**six** additional five-arm denial cases run in both ordinary and optimized
+Python; all remain fixture checks until the latest exact-commit Actions
+finishes.
+
+This guard is not an instrumentation of the model's internal multimodal
+processor. The actual image-token count and internal Transformer forwards
+are **not** independently witnessed. Passing a conservative envelope is a
+necessary precondition, not authorization or proof of zero truncation
+inside an uninspected model implementation. No inference is allowed if
+a modified source cannot fit the bounded conservative envelope.
+
 ## Cost and evidence caveats
 
 - Separate physical jobs and CPU environments mean *time/RSS across arms
