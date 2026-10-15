@@ -6,8 +6,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from e2_crossmodal_physical import ARMS, CLASSES, _class_predictions, prepare, rows, sha, canon, _verify_split, GateError
-from e2_crossmodal_independent_score import score, Reject, read_file
+from e2_crossmodal_physical import ARMS, CLASSES, _class_predictions, prepare, rows, sha, canon, _verify_split, target_digest, GateError
+from e2_crossmodal_independent_score import score, Reject, read_file, source_target_pins
 
 HEX=lambda x: hashlib.sha256(x.encode()).hexdigest()
 
@@ -52,6 +52,70 @@ class E2Tests(unittest.TestCase):
         self.assertEqual(len({r["group_id"] for r in tr+fu}),24)
         self.assertFalse(any("class_label" in r or "target_text" in r for r in fu))
         self.assertEqual(self.manifest["authority"],"DENY_ALL")
+
+    def test_future_target_hashes_not_exposed_to_producer(self):
+        self.assertEqual(set(self.manifest["file_sha256s"]), {
+            "train_images.jsonl", "future_images.jsonl", "train_anchors.jsonl", "train_class.jsonl"})
+        withheld_manifest = json.loads((self.withheld / "target-manifest.json").read_text())
+        self.assertEqual(set(withheld_manifest["file_sha256s"]), {
+            "future_caption_targets.jsonl", "future_class_targets.jsonl"})
+        source_bytes = (self.root / "source-manifest.json").read_bytes()
+        self.assertEqual(withheld_manifest["source_manifest_sha256"], sha(source_bytes))
+        for digest in withheld_manifest["file_sha256s"].values():
+            self.assertNotIn(digest.encode(), source_bytes)
+        self.assertEqual(withheld_manifest["authority"], "DENY_ALL")
+
+    def test_evaluator_source_and_target_seal_agreement(self):
+        source_bytes = (self.root / "source-manifest.json").read_bytes()
+        withheld_manifest = json.loads((self.withheld / "target-manifest.json").read_text())
+        source_pins, target_pins = source_target_pins(self.manifest, withheld_manifest, source_bytes)
+        self.assertEqual(source_pins["future_images.jsonl"], sha((self.source / "future_images.jsonl").read_bytes()))
+        self.assertEqual(target_pins["future_class_targets.jsonl"],
+                         target_digest(withheld_manifest, source_bytes, "future_class_targets.jsonl"))
+        self.assertEqual(target_pins["future_caption_targets.jsonl"],
+                         sha((self.withheld / "future_caption_targets.jsonl").read_bytes()))
+
+    def test_old_source_manifest_with_future_labels_fails_closed(self):
+        forged = copy.deepcopy(self.manifest)
+        forged["file_sha256s"]["future_class_targets.jsonl"] = HEX("future-target-known")
+        with self.assertRaises(GateError):
+            _verify_split(self.source, forged)
+        target_manifest = json.loads((self.withheld / "target-manifest.json").read_text())
+        with self.assertRaises(Reject):
+            source_target_pins(forged, target_manifest, canon(forged))
+
+    def test_target_manifest_does_not_accept_wrong_source(self):
+        withheld = json.loads((self.withheld / "target-manifest.json").read_text())
+        withheld["source_manifest_sha256"] = HEX("wrong-parent")
+        source_bytes = (self.root / "source-manifest.json").read_bytes()
+        with self.assertRaises(GateError):
+            target_digest(withheld, source_bytes, "future_class_targets.jsonl")
+        with self.assertRaises(Reject):
+            source_target_pins(self.manifest, withheld, source_bytes)
+
+    def test_missing_or_extra_withheld_fields_rejected(self):
+        base = json.loads((self.withheld / "target-manifest.json").read_text())
+        source_bytes = (self.root / "source-manifest.json").read_bytes()
+        for mutation in ("remove", "insert"):
+            bad = copy.deepcopy(base)
+            if mutation == "remove":
+                del bad["file_sha256s"]["future_caption_targets.jsonl"]
+            else:
+                bad["file_sha256s"]["train_anchors.jsonl"] = HEX("leaked")
+            with self.assertRaises(GateError):
+                target_digest(bad, source_bytes, "future_class_targets.jsonl")
+            with self.assertRaises(Reject):
+                source_target_pins(self.manifest, bad, source_bytes)
+
+    def test_withheld_target_bytes_cannot_be_changed_after_seal(self):
+        m = json.loads((self.withheld / "target-manifest.json").read_text())
+        digest = target_digest(m, (self.root / "source-manifest.json").read_bytes(),
+                               "future_class_targets.jsonl")
+        path = self.withheld / "future_class_targets.jsonl"
+        data = path.read_bytes()
+        path.write_bytes(data.replace(b'red-square', b'blue-circle', 1))
+        with self.assertRaises(Reject):
+            read_file(path, digest, jsonl=True)
 
     def test_all_five_arm_e2_semantic_claims_absent(self):
         x=self.audit()

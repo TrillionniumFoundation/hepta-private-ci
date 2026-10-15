@@ -18,6 +18,8 @@ from pathlib import Path
 CLASSES = ("red-square", "blue-circle", "green-triangle", "yellow-diamond")
 SCHEMA = "hepta.e2.crossmodal-synthetic-physical.v1"
 ARMS = ("fitted", "rotated_target_control", "unaligned_identity")
+SOURCE_FILES = frozenset({"train_images.jsonl", "future_images.jsonl", "train_anchors.jsonl", "train_class.jsonl"})
+TARGET_FILES = frozenset({"future_caption_targets.jsonl", "future_class_targets.jsonl"})
 
 
 class GateError(ValueError):
@@ -147,14 +149,15 @@ def prepare(root: Path):
                                              "target_text": caption})
                     future_class.append({k: record[k] for k in ("case_id", "group_id", "scope", "observed_at", "source_sha256")}
                                         | {"source_input_sha256": img_sha, "class_label": label})
-    output = {}
+    source_files, target_files = {}, {}
     for path, payload in ((source / "train_images.jsonl", train),
                           (source / "future_images.jsonl", future),
                           (source / "train_anchors.jsonl", anchors),
                           (source / "train_class.jsonl", classes),
                           (withheld / "future_caption_targets.jsonl", future_targets),
                           (withheld / "future_class_targets.jsonl", future_class)):
-        output[path.name] = put(path, b"".join(canon(x) for x in payload))
+        pin = put(path, b"".join(canon(x) for x in payload))
+        (source_files if path.parent == source else target_files)[path.name] = pin
     if len(train) != 16 or len(future) != 8:
         raise GateError("wrong synthetic dataset size")
     for t in (train, future):
@@ -166,9 +169,14 @@ def prepare(root: Path):
         raise GateError("literal train/future caption reuse")
     manifest = {"schema": SCHEMA + ".source-plan", "synthetic_data": True,
                 "training_cases": len(train), "future_cases": len(future),
-                "scope": scope, "file_sha256s": output, "production_accepted": False,
+                "scope": scope, "file_sha256s": source_files, "production_accepted": False,
                 "model_selection_permitted": False, "authority": "DENY_ALL"}
-    put(root / "source-manifest.json", canon(manifest))
+    source_pin = put(root / "source-manifest.json", canon(manifest))
+    withheld_manifest = {"schema": SCHEMA + ".withheld-target-plan",
+                         "synthetic_data": True, "source_manifest_sha256": source_pin,
+                         "file_sha256s": target_files, "production_accepted": False,
+                         "authority": "DENY_ALL"}
+    put(withheld / "target-manifest.json", canon(withheld_manifest))
     return manifest
 
 
@@ -178,9 +186,11 @@ def _verify_split(source: Path, manifest: dict):
         or manifest["schema"] != SCHEMA + ".source-plan" or manifest["synthetic_data"] is not True
         or manifest["training_cases"] != 16 or manifest["future_cases"] != 8
         or manifest["production_accepted"] is not False or manifest["model_selection_permitted"] is not False
-        or manifest["authority"] != "DENY_ALL"):
-        raise GateError("unsafe synthetic source manifest")
-    for key in ("train_images.jsonl", "future_images.jsonl", "train_anchors.jsonl", "train_class.jsonl"):
+        or manifest["authority"] != "DENY_ALL"
+        or type(manifest["file_sha256s"]) is not dict
+        or set(manifest["file_sha256s"]) != SOURCE_FILES):
+        raise GateError("unsafe synthetic source manifest or exposed future target digest")
+    for key in SOURCE_FILES:
         p = source / key
         if p.is_symlink() or not p.is_file() or sha(p.read_bytes()) != manifest["file_sha256s"][key]:
             raise GateError("source file was changed")
@@ -309,6 +319,25 @@ def fit_predict(source: Path, output: Path, dino: Path, granite: Path,
     return summary
 
 
+def target_digest(withheld_manifest: dict, source_manifest_bytes: bytes, filename: str) -> str:
+    """Target SHA-256 exists only in evaluator-owned artifact, never model inputs."""
+    if (type(withheld_manifest) is not dict or
+        set(withheld_manifest) != {"schema", "synthetic_data", "source_manifest_sha256",
+                                   "file_sha256s", "production_accepted", "authority"} or
+        withheld_manifest["schema"] != SCHEMA + ".withheld-target-plan" or
+        withheld_manifest["synthetic_data"] is not True or
+        withheld_manifest["production_accepted"] is not False or
+        withheld_manifest["authority"] != "DENY_ALL" or
+        withheld_manifest["source_manifest_sha256"] != sha(source_manifest_bytes) or
+        type(withheld_manifest["file_sha256s"]) is not dict or
+        set(withheld_manifest["file_sha256s"]) != TARGET_FILES or filename not in TARGET_FILES):
+        raise GateError("unbound or exposed withheld target manifest")
+    digest = withheld_manifest["file_sha256s"][filename]
+    if type(digest) is not str or len(digest) != 64 or any(x not in '0123456789abcdef' for x in digest):
+        raise GateError("invalid withheld target digest")
+    return digest
+
+
 def evaluate_geometry(predicted: Path, withheld: Path, output: Path, granite: Path,
                       granite_profile: Path):
     """Independent future-label process; do not run any bridge fitting here."""
@@ -320,9 +349,10 @@ def evaluate_geometry(predicted: Path, withheld: Path, output: Path, granite: Pa
     receipt = get_json(predicted / "producer_receipt.json")
     if prediction_sha != receipt["sealed_geometry_predictions_sha256"] or receipt["future_labels_seen"] is not False:
         raise GateError("unsealed prediction data")
-    manifest = get_json(withheld.parent / "source-manifest.json")
+    source_manifest_bytes = (withheld.parent / "source-manifest.json").read_bytes()
     src = withheld / "future_caption_targets.jsonl"
-    tgt_sha = manifest["file_sha256s"][src.name]
+    withheld_manifest = get_json(withheld / "target-manifest.json")
+    tgt_sha = target_digest(withheld_manifest, source_manifest_bytes, src.name)
     if sha(src.read_bytes()) != tgt_sha:
         raise GateError("withheld future captions modified")
     output.mkdir(parents=True, exist_ok=False)

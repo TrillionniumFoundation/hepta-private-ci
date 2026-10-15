@@ -54,6 +54,40 @@ def read_file(path: Path, expected: str, *, jsonl=False):
     if canonical(obj) != raw: raise Reject("noncanonical JSON")
     return obj
 
+def source_target_pins(source_manifest: dict, withheld_manifest: dict, source_bytes: bytes):
+    """Independent implementation: reject any target digest visible to producer."""
+    source_names = {"train_images.jsonl", "future_images.jsonl", "train_anchors.jsonl", "train_class.jsonl"}
+    target_names = {"future_caption_targets.jsonl", "future_class_targets.jsonl"}
+    if (type(source_manifest) is not dict or
+        set(source_manifest) != {"schema", "synthetic_data", "training_cases", "future_cases",
+                                 "scope", "file_sha256s", "production_accepted",
+                                 "model_selection_permitted", "authority"} or
+        source_manifest.get("schema") != SCHEMA + ".source-plan" or
+        source_manifest["synthetic_data"] is not True or
+        source_manifest["training_cases"] != 16 or source_manifest["future_cases"] != 8 or
+        source_manifest["production_accepted"] is not False or
+        source_manifest["model_selection_permitted"] is not False or
+        source_manifest["authority"] != "DENY_ALL" or
+        type(source_manifest["file_sha256s"]) is not dict or
+        set(source_manifest["file_sha256s"]) != source_names):
+        raise Reject("source archive contains future-target material or unauthorized schema")
+    if (type(withheld_manifest) is not dict or
+        set(withheld_manifest) != {"schema", "synthetic_data", "source_manifest_sha256",
+                                  "file_sha256s", "production_accepted", "authority"} or
+        withheld_manifest["schema"] != SCHEMA + ".withheld-target-plan" or
+        withheld_manifest["synthetic_data"] is not True or
+        withheld_manifest["source_manifest_sha256"] != sha(source_bytes) or
+        withheld_manifest["production_accepted"] is not False or
+        withheld_manifest["authority"] != "DENY_ALL" or
+        type(withheld_manifest["file_sha256s"]) is not dict or
+        set(withheld_manifest["file_sha256s"]) != target_names):
+        raise Reject("withheld target manifest missing or not bound to source")
+    for pin in list(source_manifest["file_sha256s"].values())+list(withheld_manifest["file_sha256s"].values()):
+        if type(pin) is not str or len(pin) != 64 or any(c not in '0123456789abcdef' for c in pin):
+            raise Reject("invalid manifest digest")
+    return source_manifest["file_sha256s"], withheld_manifest["file_sha256s"]
+
+
 def score(prediction, targets, future_sources, train_sources, producer):
     if (type(prediction) is not dict or set(prediction) != {
             "schema", "synthetic_data", "arms", "geometry_pred_sha256", "class_names",
@@ -165,14 +199,16 @@ def main():
     receipt=read_file(rcp,sha(rcp.read_bytes()))
     if sha(predp.read_bytes())!=receipt["sealed_class_predictions_sha256"]:
         raise Reject("class predictions changed after seal")
-    manifest_p=a.source.parent/"source-manifest.json"
-    manifest=read_file(manifest_p,sha(manifest_p.read_bytes()))
-    if manifest.get("synthetic_data") is not True or manifest.get("production_accepted") is not False:
-        raise Reject("not the declared synthetic research panel")
-    paths=[(a.withheld/"future_class_targets.jsonl", "future_class_targets.jsonl"),
-           (a.source/"future_images.jsonl", "future_images.jsonl"),
-           (a.source/"train_images.jsonl", "train_images.jsonl")]
-    data=[read_file(path,manifest["file_sha256s"][name],jsonl=True) for path,name in paths]
+    manifest_p = a.source.parent/"source-manifest.json"
+    manifest_bytes = manifest_p.read_bytes()
+    manifest = read_file(manifest_p, sha(manifest_bytes))
+    targets_meta_p = a.withheld/"target-manifest.json"
+    target_meta = read_file(targets_meta_p, sha(targets_meta_p.read_bytes()))
+    source_pins, target_pins = source_target_pins(manifest, target_meta, manifest_bytes)
+    paths = [(a.withheld/"future_class_targets.jsonl", target_pins["future_class_targets.jsonl"]),
+             (a.source/"future_images.jsonl", source_pins["future_images.jsonl"]),
+             (a.source/"train_images.jsonl", source_pins["train_images.jsonl"])]
+    data = [read_file(path, digest, jsonl=True) for path, digest in paths]
     result=score(pred,*data,receipt)
     from os import fsync
     if a.output.exists(): raise Reject("refuse to replace result")
