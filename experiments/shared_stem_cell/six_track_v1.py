@@ -165,10 +165,16 @@ def check_arm(stage, name, arm, cases):
     if type(arm.get("train_steps")) is not int or arm["train_steps"] < 0:
         raise Invalid("missing training step census")
     if stage in ("P0", "P1"):
-        if name.endswith("_frozen") and arm["train_steps"] != 0:
-            raise Invalid("frozen Head cannot report optimizer steps")
-        if name.endswith("_learned") and arm["train_steps"] == 0:
-            raise Invalid("learned Head has no optimizer steps")
+        if name.endswith("_frozen"):
+            if arm["train_steps"] != 0:
+                raise Invalid("frozen Head cannot report optimizer steps")
+            if arm["initial_head_sha256"] != arm["final_head_sha256"]:
+                raise Invalid("frozen Head changed weights without training")
+        if name.endswith("_learned"):
+            if arm["train_steps"] == 0:
+                raise Invalid("learned Head has no optimizer steps")
+            if arm["initial_head_sha256"] == arm["final_head_sha256"]:
+                raise Invalid("learned Head weights did not change")
     if type(arm.get("trainable_parameters")) is not int or arm["trainable_parameters"] < 0:
         raise Invalid("missing parameter accounting")
     if stage in ("P0", "P1") and name.endswith("_learned") and not arm["trainable_parameters"]:
