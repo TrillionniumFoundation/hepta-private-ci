@@ -121,6 +121,30 @@ the already measured final token cache:
 
 ## Audit, cost and interpretation
 
+The historical native CLI rejects its first evaluation before inference:
+its document schema replaced the membership schema, but its guard compares both.
+Retain that failed command receipt and log. The separately versioned
+`native_token_schema_recovery.py` validates both namespaces and every remaining
+membership field, repeats the original full source checks, and maps only the
+returned membership copy's schema. It leaves the original forty runtime files,
+models, verifier, critic and cost policy unchanged. It refuses any existing
+native final directory. The recorded campaign continued using:
+
+```bash
+"$python" qualification/stem-cell-v1/native_token_schema_recovery.py \
+  --campaign "$work/main" --prepared "$work/prepared" \
+  --source "$source" --snapshot "$snapshot" --previous-design "$previous" \
+  --native-binary "$native" --output "$work/native" \
+  --failed-command-receipt "$failed_receipt"
+```
+
+`$failed_receipt` is the original supervisor JSON: its two `commands` record
+main exit 0 and native exit 1, with the rejected native command's `log` path.
+The recovery entry point and its start/completion attestations are additional
+execution provenance created after main evaluation. Fitted artifacts and
+numerical policies remain those frozen before main evaluation. Never overwrite
+the original failure or count it as a successful native evaluation.
+
 Run `token_review.py --help` for official-label, paragraph isolation and physical
 batch review, and `token_binding_review.py --help` for independently solved
 ownership/storage worlds. The natural reviewer also replays internal threshold
