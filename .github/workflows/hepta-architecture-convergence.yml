@@ -253,6 +253,10 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -- --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-public-non-test-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-public-ndu-non-test-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
+          # External integration binary links non-test Agentd and proves
+          # its signed NDU Frontier/Verifier/FinalUse port can be named by
+          # product callers without minting or performing an effect.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-external-signed-api.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test signed_neuron_public_contract -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-original-evidence-bootstrap.json" --minimum-tests 8 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-evidence-fsync-gates.json" --minimum-tests 3 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib agentd_ -- --nocapture --test-threads=1
           cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings

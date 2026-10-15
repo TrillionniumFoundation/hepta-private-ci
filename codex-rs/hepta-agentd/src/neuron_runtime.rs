@@ -226,6 +226,15 @@ where
         signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // The installed non-test Agentd still lacks independent ORIGINAL
+        // Control Begin/CNS signed effect/Commit custody. Refuse before
+        // writing even a negative Evidence row: otherwise an untrusted call
+        // would persist telemetry without an Effect Intent, making the
+        // next legitimate cold restart look like torn execution history.
+        // This is a deny-only hold, NOT a route to mint Control authority.
+        if !cfg!(test) {
+            return Err(NeuronRuntimeError::OriginalEffectOwnerUnverified);
+        }
         let operation_digest = input.semantic_digest()?;
         begin_signed_tick_v1(
             self.metric_sink.as_deref(),
