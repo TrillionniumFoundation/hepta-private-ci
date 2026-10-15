@@ -1,0 +1,88 @@
+name: Hepta E26 frozen six passage statistical qualification (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e26_*'
+      - 'qualification/shared-stem-system2-architecture/test_e26_*.py'
+      - 'qualification/shared-stem-system2-architecture/E26_*.md'
+      - 'qualification/shared-stem-system2-architecture/E26_*.json'
+      - '.github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-source-pre-outcome-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: '1'
+      OUT: /tmp/hepta-e26-statistical
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Seal exact source and original E24 human-summary bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          git rev-parse HEAD | tee "$OUT/research-source-head.txt"
+          if [[ '${{ matrix.source_profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e26_*.py "$ROOT"/test_e26_*.py "$ROOT"/E26_*.json > "$OUT/exact-source-sha256.txt"
+          printf '%s  %s\n' 'b88af557b4fd2aa50a26f523aee452fb7a08bbe659b3f0fc4c0aaf325f8c9b59' \
+            "$ROOT/E26_ORIGINAL_E24_HUMAN_CONTROL_20261015.json" | sha256sum -c -
+          printf '%s  %s\n' 'dec01b016354733183d6feac374e6a333a22b08af8ef2d48196480064ff36a88' \
+            "$ROOT/e25_frozen_policy.json" | sha256sum -c -
+      - name: Execute model-free original human source & adversarial arithmetic tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e26_*.py' -v \
+            > "$OUT/normal-tests.txt" 2>&1 || { cat "$OUT/normal-tests.txt"; exit 1; }
+          grep -F 'Ran 20 tests' "$OUT/normal-tests.txt"
+          if grep -E '^FAILED |^ERROR|skipped=' "$OUT/normal-tests.txt"; then exit 1; fi
+      - name: Re-execute every test with optimized Python interpreter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e26_*.py' -v \
+            > "$OUT/optimized-tests.txt" 2>&1 || { cat "$OUT/optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 20 tests' "$OUT/optimized-tests.txt"
+          if grep -E '^FAILED |^ERROR|skipped=' "$OUT/optimized-tests.txt"; then exit 1; fi
+      - name: Produce source-bound old-human negative study and six-source power floor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e26_frozen_admission.py" precheck --output "$OUT/frozen-pre-outcome-review.json"
+          sha256sum "$OUT/frozen-pre-outcome-review.json" > "$OUT/frozen-pre-outcome-review.sha256"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['OUT'])/'frozen-pre-outcome-review.json'
+          result=json.loads(p.read_text())
+          assert result['authority']=='DENY_ALL'
+          assert result['old_e24_negative_control']['old_two_sided_source_sign_flip_p']=='1/2'
+          assert result['six_passage_two_sided_p_floor']=='1/32'
+          assert result['two_primary_hypotheses_Holm_min_adjusted_p']=='1/16'
+          assert result['new_six_passage_model_outcome_observed'] is False
+          assert result['production_admitted'] is False
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e26-source-blind-exact-power-${{ matrix.source_profile }}
+          path: /tmp/hepta-e26-statistical/
+          retention-days: 14
+          if-no-files-found: warn
