@@ -15,7 +15,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-use crate::PromptPricingReceiptV1;
+use crate::canonical::{PricedPromptCandidatesV1, PromptPricingReceiptV1};
 
 pub const MAX_ACTIONS_V1: usize = 32;
 pub const MAX_COVARIANCE_EDGES_V1: usize = (MAX_ACTIONS_V1 * (MAX_ACTIONS_V1 - 1)) / 2;
@@ -146,7 +146,7 @@ pub struct ResourcePortfolioInputV1 {
     pub candidate_set_digest: Digest32,
     pub profile: ActionRiskProfileV1,
     pub pricing_batch_digest: Digest32,
-    pub priced_candidates: Vec<PromptPricingReceiptV1>,
+    pub priced_candidates: PricedPromptCandidatesV1,
     pub actions: Vec<ResourceActionSpecV1>,
     pub budget: ResourceBudgetV1,
     pub now_unix_ms: u64,
@@ -353,6 +353,10 @@ pub fn select_resource_portfolio_shadow_v1(
     }
     if input.candidate_set_digest != input.profile.candidate_set_digest
         || input.pricing_batch_digest != input.profile.pricing_batch_digest
+        || input.priced_candidates.pricing_set_digest != input.profile.pricing_batch_digest
+        || input.priced_candidates.candidates.candidates_digest != input.profile.candidate_set_digest
+        || input.priced_candidates.candidates.receipt.state_digest != input.state_digest
+        || input.priced_candidates.candidates.model_tuple.digest() != input.model_tuple_digest
     {
         return Err(ResourcePortfolioError::PricingBatchMismatch);
     }
@@ -371,7 +375,8 @@ pub fn select_resource_portfolio_shadow_v1(
         }
     }
     let mut prices = BTreeMap::new();
-    for price in input.priced_candidates {
+    for row in input.priced_candidates.rows {
+        let price = row.pricing;
         if price.state_digest != input.state_digest {
             return Err(ResourcePortfolioError::ScopeMismatch("pricing state"));
         }
@@ -594,6 +599,14 @@ fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::canonical::{
+        EnumeratedPromptCandidatesV1, PricedPromptCandidateV1, PromptCandidateBindingV1,
+        PromptCandidateSetReceiptV1, PromptConfidenceIntervalV1,
+    };
+    use codex_hepta_prompt_registry::PromptModelTupleV2;
+    use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+    use codex_hepta_prompt_registry::PromptRoleV2;
+    use codex_hepta_types::AuthorityPosture;
 
     fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|_| panic!("invalid id"))
@@ -603,12 +616,26 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
+    fn model_tuple_digest() -> Digest32 {
+        PromptModelTupleV2 {
+            model_id: id("model"),
+            model_version: "v1".to_owned(),
+            model_digest: digest("model-digest"),
+            tokenizer_digest: digest("tokenizer"),
+            template_digest: digest("template"),
+            tool_schema_digest: digest("tools"),
+            context_profile_digest: digest("context"),
+            locale_id: id("locale"),
+        }
+        .digest()
+    }
+
     fn profile() -> ActionRiskProfileV1 {
         let mut value = ActionRiskProfileV1 {
             profile_id: id("risk-profile"),
             objective_digest: digest("objective"),
             state_digest: digest("state"),
-            model_tuple_digest: digest("model"),
+            model_tuple_digest: model_tuple_digest(),
             candidate_set_digest: digest("candidates"),
             pricing_batch_digest: digest("pricing"),
             baseline_id: id("no-change"),
@@ -645,48 +672,171 @@ mod tests {
         value
     }
 
+    fn priced_candidates() -> PricedPromptCandidatesV1 {
+        let model = PromptModelTupleV2 {
+            model_id: id("model"),
+            model_version: "v1".to_owned(),
+            model_digest: digest("model-digest"),
+            tokenizer_digest: digest("tokenizer"),
+            template_digest: digest("template"),
+            tool_schema_digest: digest("tools"),
+            context_profile_digest: digest("context"),
+            locale_id: id("locale"),
+        };
+        let candidate_set = EnumeratedPromptCandidatesV1 {
+            registry_snapshot: codex_hepta_prompt_registry::PromptRegistrySnapshotV2 {
+                revision: codex_hepta_types::Revision::new(1).unwrap(),
+                registry_digest: digest("registry"),
+                lifecycle_frontier: 1,
+                revocation_frontier: 0,
+                generation_vector_digest: digest("generation"),
+                model_tuple_digest: model.digest(),
+                snapshot_digest: digest("snapshot"),
+                authority: AuthorityPosture::DENY_ALL,
+            },
+            model_tuple: model,
+            generation_vector_digest: digest("generation"),
+            candidates_digest: digest("candidates"),
+            canonical_order_digest: digest("order"),
+            omitted_count: 0,
+            candidates: vec![
+                PromptCandidateBindingV1 {
+                    factor_id: id("factor:a"),
+                    realization: codex_hepta_prompt_registry::PromptRealizationBindingV2 {
+                        realization_id: id("realization:a"),
+                        factor_id: id("factor:a"),
+                        model_id: id("model"),
+                        model_version: "v1".to_owned(),
+                        model_digest: digest("model-digest"),
+                        tokenizer_digest: digest("tokenizer"),
+                        template_digest: digest("template"),
+                        tool_schema_digest: digest("tools"),
+                        context_profile_digest: digest("context"),
+                        locale_id: id("locale"),
+                        role: codex_hepta_prompt_registry::PromptRoleV2::DeveloperInstruction,
+                        payload_digest: digest("payload:a"),
+                        token_cost: 4,
+                        expires_unix_ms: Some(100),
+                    },
+                    binding_digest: digest("binding:a"),
+                },
+                PromptCandidateBindingV1 {
+                    factor_id: id("factor:b"),
+                    realization: codex_hepta_prompt_registry::PromptRealizationBindingV2 {
+                        realization_id: id("realization:b"),
+                        factor_id: id("factor:b"),
+                        model_id: id("model"),
+                        model_version: "v1".to_owned(),
+                        model_digest: digest("model-digest"),
+                        tokenizer_digest: digest("tokenizer"),
+                        template_digest: digest("template"),
+                        tool_schema_digest: digest("tools"),
+                        context_profile_digest: digest("context"),
+                        locale_id: id("locale"),
+                        role: codex_hepta_prompt_registry::PromptRoleV2::DeveloperInstruction,
+                        payload_digest: digest("payload:b"),
+                        token_cost: 4,
+                        expires_unix_ms: Some(100),
+                    },
+                    binding_digest: digest("binding:b"),
+                },
+            ],
+            receipt: PromptCandidateSetReceiptV1 {
+                set_id: id("candidate-set"),
+                objective_digest: digest("objective"),
+                state_digest: digest("state"),
+                registry_digest: digest("registry"),
+                candidate_factor_ids: vec![id("factor:a"), id("factor:b")],
+                selection_grammar_digest: digest("grammar"),
+                receipt_digest: digest("candidate-receipt"),
+                authority: AuthorityPosture::DENY_ALL,
+            },
+        };
+        let price = |factor: &str, gain: i64, receipt: &str| PromptPricingReceiptV1 {
+            factor_id: id(factor),
+            state_digest: digest("state"),
+            expected_utility_q32: FixedQ32::from_raw(gain << 32),
+            downside_q32: FixedQ32::ZERO,
+            token_cost: 4,
+            latency_cost_micros: 1,
+            interference_ppm: 0,
+            confidence_interval: PromptConfidenceIntervalV1 {
+                lower_q32: FixedQ32::ZERO,
+                upper_q32: FixedQ32::from_raw(gain << 32),
+                support_count: 2,
+                support_audit_digest: digest("support"),
+            },
+            receipt_digest: digest(receipt),
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        PricedPromptCandidatesV1 {
+            candidates: candidate_set,
+            completeness_digest: digest("completeness"),
+            pricing_policy_digest: digest("pricing-policy"),
+            rows: vec![
+                PricedPromptCandidateV1 {
+                    binding: PromptCandidateBindingV1 {
+                        factor_id: id("factor:a"),
+                        realization: PromptRealizationBindingV2 {
+                            realization_id: id("realization:a"),
+                            factor_id: id("factor:a"),
+                            model_id: id("model"),
+                            model_version: "v1".to_owned(),
+                            model_digest: digest("model-digest"),
+                            tokenizer_digest: digest("tokenizer"),
+                            template_digest: digest("template"),
+                            tool_schema_digest: digest("tools"),
+                            context_profile_digest: digest("context"),
+                            locale_id: id("locale"),
+                            role: PromptRoleV2::DeveloperInstruction,
+                            payload_digest: digest("payload:a"),
+                            token_cost: 4,
+                            expires_unix_ms: Some(100),
+                        },
+                        binding_digest: digest("binding:a"),
+                    },
+                    pricing: price("factor:a", 8, "price:a"),
+                    net_utility_q32: FixedQ32::from_raw(8_i64 << 32),
+                },
+                PricedPromptCandidateV1 {
+                    binding: PromptCandidateBindingV1 {
+                        factor_id: id("factor:b"),
+                        realization: PromptRealizationBindingV2 {
+                            realization_id: id("realization:b"),
+                            factor_id: id("factor:b"),
+                            model_id: id("model"),
+                            model_version: "v1".to_owned(),
+                            model_digest: digest("model-digest"),
+                            tokenizer_digest: digest("tokenizer"),
+                            template_digest: digest("template"),
+                            tool_schema_digest: digest("tools"),
+                            context_profile_digest: digest("context"),
+                            locale_id: id("locale"),
+                            role: PromptRoleV2::DeveloperInstruction,
+                            payload_digest: digest("payload:b"),
+                            token_cost: 4,
+                            expires_unix_ms: Some(100),
+                        },
+                        binding_digest: digest("binding:b"),
+                    },
+                    pricing: price("factor:b", 7, "price:b"),
+                    net_utility_q32: FixedQ32::from_raw(7_i64 << 32),
+                },
+            ],
+            pricing_set_digest: digest("pricing"),
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
     fn input() -> ResourcePortfolioInputV1 {
         ResourcePortfolioInputV1 {
             objective_digest: digest("objective"),
             state_digest: digest("state"),
-            model_tuple_digest: digest("model"),
+            model_tuple_digest: model_tuple_digest(),
             candidate_set_digest: digest("candidates"),
             pricing_batch_digest: digest("pricing"),
             profile: profile(),
-            priced_candidates: vec![
-                PromptPricingReceiptV1 {
-                    factor_id: id("factor:a"),
-                    state_digest: digest("state"),
-                    expected_utility_q32: FixedQ32::from_raw(8_i64 << 32),
-                    downside_q32: FixedQ32::ZERO,
-                    token_cost: 4,
-                    latency_cost_micros: 1,
-                    interference_ppm: 0,
-                    confidence_interval: crate::PromptConfidenceIntervalV1 {
-                        lower_q32: FixedQ32::ZERO,
-                        upper_q32: FixedQ32::from_raw(8_i64 << 32),
-                        confidence_ppm: 900_000,
-                        support_digest: digest("ci:a"),
-                        scope_digest: digest("scope"),
-                    },
-                },
-                PromptPricingReceiptV1 {
-                    factor_id: id("factor:b"),
-                    state_digest: digest("state"),
-                    expected_utility_q32: FixedQ32::from_raw(7_i64 << 32),
-                    downside_q32: FixedQ32::ZERO,
-                    token_cost: 4,
-                    latency_cost_micros: 1,
-                    interference_ppm: 0,
-                    confidence_interval: crate::PromptConfidenceIntervalV1 {
-                        lower_q32: FixedQ32::ZERO,
-                        upper_q32: FixedQ32::from_raw(7_i64 << 32),
-                        confidence_ppm: 900_000,
-                        support_digest: digest("ci:b"),
-                        scope_digest: digest("scope"),
-                    },
-                },
-            ],
+            priced_candidates: priced_candidates(),
             actions: vec![
                 ResourceActionSpecV1 {
                     action_id: id("action:a"),
@@ -746,8 +896,8 @@ mod tests {
     #[test]
     fn no_change_is_explicit_when_all_candidates_are_non_positive() {
         let mut request = input();
-        request.priced_candidates[0].expected_utility_q32 = FixedQ32::ZERO;
-        request.priced_candidates[1].expected_utility_q32 = FixedQ32::ZERO;
+        request.priced_candidates.rows[0].pricing.expected_utility_q32 = FixedQ32::ZERO;
+        request.priced_candidates.rows[1].pricing.expected_utility_q32 = FixedQ32::ZERO;
         let result = select_resource_portfolio_shadow_v1(request).unwrap();
         assert!(result.selected_action_ids.is_empty());
         assert_eq!(result.disposition, ResourcePortfolioDispositionV1::NoChange);
