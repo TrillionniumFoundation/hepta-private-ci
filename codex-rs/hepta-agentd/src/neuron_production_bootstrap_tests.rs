@@ -382,7 +382,10 @@ fn actual_pending_original_prepare_stays_quarantined_after_cold_replay() {
     let operation = Digest32::of_bytes(b"durably-prepared-tick");
     {
         let mut intent = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
-            &intent_path, scope, generation, 32,
+            &intent_path,
+            scope,
+            generation,
+            32,
         )
         .expect("protected business WAL");
         intent
@@ -407,12 +410,17 @@ fn actual_pending_original_prepare_stays_quarantined_after_cold_replay() {
 
     {
         let recovered = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
-            &intent_path, scope, generation, 32,
+            &intent_path,
+            scope,
+            generation,
+            32,
         )
         .expect("real original intent replay");
         let evidence = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
             .expect("real original Evidence replay");
-        let frontier = evidence.read_local_frontier().expect("verified Evidence frontier");
+        let frontier = evidence
+            .read_local_frontier()
+            .expect("verified Evidence frontier");
         assert_eq!(frontier.committed_rows, 1);
         assert_eq!(recovered.status().unresolved_tick, Some(operation));
         assert_eq!(recovered.status().durable_records, 1);
@@ -526,7 +534,9 @@ fn resolved_original_tick_requires_exact_fsynchronized_neuron_evidence_membershi
     let identities = recovered
         .completed_tick_digests_v1()
         .expect("read-only completed ID replay");
-    let frontier = evidence.read_local_frontier().expect("original marker readback");
+    let frontier = evidence
+        .read_local_frontier()
+        .expect("original marker readback");
     require_completed_effect_evidence_membership_v1(&evidence, scope, frontier, &identities)
         .expect("exact membership survives actual cold reopening");
 
@@ -543,12 +553,7 @@ fn resolved_original_tick_requires_exact_fsynchronized_neuron_evidence_membershi
     evidence.flush().expect("fsynced duplicate fixture");
     let duplicated = evidence.read_local_frontier().expect("new frontier");
     assert!(matches!(
-        require_completed_effect_evidence_membership_v1(
-            &evidence,
-            scope,
-            duplicated,
-            &identities
-        ),
+        require_completed_effect_evidence_membership_v1(&evidence, scope, duplicated, &identities),
         Err(NeuronProductionBootstrapErrorV1::NotReady)
     ));
 }

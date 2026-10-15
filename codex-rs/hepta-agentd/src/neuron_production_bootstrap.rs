@@ -13,11 +13,11 @@ use std::path::Path;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
-#[cfg(unix)]
-use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+#[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 #[cfg(unix)]
@@ -164,7 +164,6 @@ fn require_recovered_effect_metrics_floor_v1(
     }
     Ok(())
 }
-
 
 #[cfg(unix)]
 fn require_completed_effect_evidence_membership_v1(
