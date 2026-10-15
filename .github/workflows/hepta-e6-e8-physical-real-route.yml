@@ -71,7 +71,37 @@ jobs:
             --out /tmp/hepta-e6-e8-complete-original-evidence --github-env "$GITHUB_ENV" \
             | tee "$OUTPUT/complete-inherited-original-source-inventory.txt"
           test -s "$OUTPUT/complete-inherited-original-source-inventory.txt"
-      - name: Run fail-closed E0/E6/E7/E8 plus ALL inherited research contracts normally and with -O
+      - name: Bind E23 original blind and restore exact post-seal owner labels for full inherited discovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Original model/fold sources from previous E22 full-source restore.
+          args=()
+          for i in 0 1 2 3; do
+            a="HEPTA_E22_E15_FOLD_${i}"
+            b="HEPTA_E22_E16_FOLD_${i}"
+            args+=("--e15-$i" "${!a}" "--e16-$i" "${!b}")
+            printf 'HEPTA_E23_E15_FOLD_%s=%s\n' "$i" "${!a}" >> "$GITHUB_ENV"
+            printf 'HEPTA_E23_E16_FOLD_%s=%s\n' "$i" "${!b}" >> "$GITHUB_ENV"
+          done
+          # E23 mixed full-source regression has no labelblind experiment claim.
+          # A source-bound blind file is still sealed before opening label-owner ZIPs.
+          python qualification/shared-stem-system2-architecture/e22_e16_question_gate.py \
+            --original "$HEPTA_E16_ARCHIVE" "${args[@]}" \
+            --out "$OUTPUT/e23-inherited-original-blind.json"
+          sha256sum "$OUTPUT/e23-inherited-original-blind.json" \
+            > "$OUTPUT/e23-inherited-original-blind.sha256"
+          printf 'HEPTA_E23_ORIGINAL=%s\n' "$HEPTA_E16_ARCHIVE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_BLIND=%s\n' "$OUTPUT/e23-inherited-original-blind.json" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E15_SCORE_SOURCE=%s\n' "$HEPTA_E22_E15_SCORE_SOURCE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E15_SCORE_MERGE=%s\n' "$HEPTA_E22_E15_SCORE_MERGE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E16_SCORE_SOURCE=%s\n' "$HEPTA_E22_E16_SCORE_SOURCE" >> "$GITHUB_ENV"
+          printf 'HEPTA_E23_E16_SCORE_MERGE=%s\n' "$HEPTA_E22_E16_SCORE_MERGE" >> "$GITHUB_ENV"
+          python qualification/shared-stem-system2-architecture/e23_historical_owner_fetch.py \
+            --out /tmp/hepta-e6-e8-original-E23-owner-inputs --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/e23-inherited-original-owner-acquisition.txt"      - name: Run fail-closed E0/E6/E7/E8 plus ALL inherited research contracts normally and with -O
         shell: bash
         run: |
           set -euo pipefail
