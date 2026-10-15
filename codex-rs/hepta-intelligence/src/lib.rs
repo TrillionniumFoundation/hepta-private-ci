@@ -141,9 +141,11 @@ pub use prompt_pipeline::compile_exercised_prompt_context_v1;
 pub use prompt_pipeline::observe_prompt_delivery_v1;
 pub use prompt_pipeline::prepare_prompt_delivery_v1;
 
+mod ndu_snapshot;
 mod pipeline_v2;
 mod prompt_delivery;
 
+pub use ndu_snapshot::{NduSnapshotRefError, NduSnapshotRefV1};
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
