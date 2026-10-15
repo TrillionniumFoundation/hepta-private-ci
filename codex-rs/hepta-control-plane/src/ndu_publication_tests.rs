@@ -491,13 +491,18 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
         .expect("Control owner");
-    {
+    // The capacity fixture deliberately changes an in-memory length but
+    // does NOT append that many bytes to the real fsynced original WAL.
+    // Restore this test-only override before using a live public readback:
+    // production correctly refuses a fabricated length as Indeterminate.
+    let authentic_bytes = {
         let mut state = owner.state.lock().expect("fixture owner");
-        // Simulate a nearly exhausted bounded WAL without writing 64 MiB of
-        // irrelevant records; test only the exact pre-effect admission check.
+        let actual = state.bytes;
         state.bytes = MAX_BYTES - MAX_ROW as u64;
-    }
+        actual
+    };
     let before = std::fs::read(&path).expect("authentic Control history");
+    assert_eq!(authentic_bytes, before.len() as u64);
     let mut external_calls = 0;
     assert!(matches!(
         owner.publish_cutover_with_external_effect(
@@ -514,7 +519,45 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
     ));
     assert_eq!(external_calls, 0, "do not enter the external effect");
     assert_eq!(std::fs::read(&path).unwrap(), before);
+    {
+        let mut state = owner.state.lock().expect("fixture owner");
+        assert_eq!(state.bytes, MAX_BYTES - MAX_ROW as u64);
+        assert!(!state.pending_cutover, "capacity denial may not stage Begin");
+        assert!(!state.poisoned, "no disk IO or ambiguous effect has occurred");
+        // Restore the original physical length, not a fabricated success.
+        state.bytes = authentic_bytes;
+    }
     assert_eq!(owner.current().unwrap(), (original, Digest32::ZERO));
+}
+
+#[cfg(unix)]
+#[test]
+fn fabricated_control_wal_length_poisoned_by_real_owner_readback() {
+    let dir = private_control_dir();
+    let path = dir.path().join("mismatched-original-length.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original fsynced Control WAL");
+    let authentic = std::fs::read(&path).expect("original Control data");
+    {
+        let mut state = owner.state.lock().expect("fault injection only");
+        state.bytes = state.bytes.checked_add(1).expect("small fixture WAL");
+    }
+    assert_eq!(
+        owner.current(),
+        Err(NduPublicationErrorV1::Indeterminate),
+        "fabricated in-memory length is not a valid original WAL frontier",
+    );
+    assert_eq!(
+        owner.current(),
+        Err(NduPublicationErrorV1::Poisoned),
+        "an integrity mismatch is sticky within the serving owner",
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), authentic);
+    drop(owner);
+    let recovered = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("cold replay may revalidate the untouched original WAL");
+    assert_eq!(recovered.current().unwrap(), (original, Digest32::ZERO));
 }
 
 #[cfg(unix)]
