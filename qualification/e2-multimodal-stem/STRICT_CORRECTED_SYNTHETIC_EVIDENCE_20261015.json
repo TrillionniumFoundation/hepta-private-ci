@@ -1,0 +1,65 @@
+{
+  "actual_model_receipts_consistent": true,
+  "artifact_ids": {
+    "evaluator": 11947478704,
+    "producer": 11947132197,
+    "source": 11947732301,
+    "target": 11947357523
+  },
+  "auditor_blob_sha": "0347900f1055c908df91e67592abbca601b40af5",
+  "auditor_commit_sha": "273eb653fd4d0e7fc5fc5b8d302c8ba2591036db",
+  "authority": "DENY_ALL",
+  "evaluator_sha256": "aa46188dc8cddd11965133a7c8386ad6dffc37ebdde06eda68a710f62187bdd5",
+  "evidence_level": "strict_original_archive_consistency_only",
+  "final_use_permitted": false,
+  "future_three_windows_proven": false,
+  "geometry": {
+    "fitted": {
+      "mean_cosine": 0.9430492161234949,
+      "mean_squared_error": 0.00028874319893081875,
+      "within_cohort_retrieval_top1": 0.5
+    },
+    "rotated_target_control": {
+      "mean_cosine": 0.8844332553854257,
+      "mean_squared_error": 0.0005816251190793138,
+      "within_cohort_retrieval_top1": 0.0
+    },
+    "unaligned_identity": {
+      "mean_cosine": 0.014649690886580777,
+      "mean_squared_error": 0.005132032987467137,
+      "within_cohort_retrieval_top1": 0.125
+    }
+  },
+  "independently_attested_execution": false,
+  "natural_image_benefit_proven": false,
+  "paired_against_unaligned": {
+    "fitted": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "harmed": 0,
+      "rescued": 6
+    },
+    "rotated_target_control": {
+      "both_correct": 0,
+      "both_wrong": 6,
+      "harmed": 2,
+      "rescued": 0
+    }
+  },
+  "pre_fix_target_hash_leak_rejected": true,
+  "producer_sha256": "c5fd687ecb7a79a6fd1ca115eb4e71fe06543dcf29fdde4cf625bb5f462324cc",
+  "production_accepted": false,
+  "reference_source_sha": "c202f9ccf8b32c4843442724156527ae34c0df80",
+  "schema": "hepta.e2.crossmodal-synthetic-physical.v1.independent-archive-audit.v1",
+  "source_run_id": 38678884648,
+  "source_sha256": "e210e0de5e602de67e5a401bfb425f3e45bd71e13b88db9f8e8cc3de6799a234",
+  "source_target_hash_isolated": true,
+  "stem_selection_permitted": false,
+  "synthetic_classes_correct": {
+    "fitted": 8,
+    "rotated_target_control": 0,
+    "unaligned_identity": 2
+  },
+  "target_sha256": "4e8b7840978a89a17a29996889f70ef3c185e57ea7ca28eca4f7fddc62b436df",
+  "true_natural_image_ability_proven": false
+}
