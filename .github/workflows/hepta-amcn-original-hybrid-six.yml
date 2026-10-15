@@ -1,0 +1,193 @@
+name: Hepta original pretrained MiniLM-BM25 vs BM25 six Reader tasks (SHADOW / NO-GO)
+
+on:
+  push:
+    branches: ['research/amcn-causal-three-axis-20261015']
+    paths:
+      - 'qualification/amcn-v1/amcn_original_hybrid_floor.py'
+      - 'qualification/amcn-v1/test_amcn_original_hybrid_floor.py'
+      - 'qualification/amcn-v1/ORIGINAL_MINILM_HYBRID_SIX_NEGATIVE.md'
+      - 'qualification/amcn-v1/ORIGINAL_MINILM_HYBRID_SIX_NEGATIVE_20261015.json'
+      - '.github/workflows/hepta-amcn-original-hybrid-six.yml'
+  pull_request:
+    branches: ['research/amcn-typed-budget-20261014']
+    paths:
+      - 'qualification/amcn-v1/amcn_original_hybrid_floor.py'
+      - 'qualification/amcn-v1/test_amcn_original_hybrid_floor.py'
+      - 'qualification/amcn-v1/ORIGINAL_MINILM_HYBRID_SIX_NEGATIVE.md'
+      - 'qualification/amcn-v1/ORIGINAL_MINILM_HYBRID_SIX_NEGATIVE_20261015.json'
+      - '.github/workflows/hepta-amcn-original-hybrid-six.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: amcn-original-pretrained-hybrid-six-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  physical-minilm-reader-six-matched-evidence-slot:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONPATH: qualification/amcn-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install isolated pinned PyTorch/WordPiece research runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/amcn-original-hybrid-venv
+          P=/tmp/amcn-original-hybrid-venv/bin
+          "$P/pip" install numpy==1.26.4
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install safetensors==0.7.0 regex==2024.11.6
+          "$P/pip" check
+          mkdir -p /tmp/amcn-original-hybrid-evidence
+          "$P/pip" freeze > /tmp/amcn-original-hybrid-evidence/environment.txt
+      - name: Acquire exact original LoCoMo archive and safely select original models
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PRIV=/tmp/amcn-original-hybrid-private
+          mkdir -p "$PRIV"
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output "$PRIV/original.zip"
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            "$PRIV/original.zip" | sha256sum --check -
+          unzip -p "$PRIV/original.zip" memory-inputs.tar.gz > "$PRIV/original.tar.gz"
+          python3 - <<'PY'
+          from pathlib import Path
+          import tarfile
+          allowed={
+              'locomo.json',
+              'reader/model.safetensors', 'reader/config.json',
+              'reader/tokenizer.json', 'reader/tokenizer_config.json',
+              'reader/special_tokens_map.json', 'reader/vocab.json',
+              'reader/merges.txt', 'reader/generation_config.json',
+              'encoder/model.safetensors', 'encoder/config.json',
+              'encoder/tokenizer.json', 'encoder/vocab.txt',
+          }
+          base=Path('/tmp/amcn-original-hybrid-private/original')
+          seen=set()
+          with tarfile.open('/tmp/amcn-original-hybrid-private/original.tar.gz','r:gz') as archive:
+              for item in archive:
+                  if not item.isfile(): continue
+                  name=item.name.removeprefix('memory-inputs/')
+                  if name not in allowed:continue
+                  if name in seen or item.size > 310*1024*1024:
+                      raise RuntimeError('duplicate or oversized original member')
+                  seen.add(name)
+                  path=base/name
+                  path.parent.mkdir(parents=True,exist_ok=True)
+                  with archive.extractfile(item) as src, path.open('xb') as dst:
+                      while block := src.read(1048576): dst.write(block)
+          if seen!=allowed:raise RuntimeError('original source/reader/encoder inventory incomplete')
+          PY
+      - name: Physically execute paired six-question original pretrained retrieval and Reader
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-original-hybrid-venv/bin/python
+          PRIV=/tmp/amcn-original-hybrid-private
+          ROOT="$PRIV/original"
+          mkdir -p "$PRIV/paired" "$PRIV/evaluator"
+          "$P" -m compileall -q \
+            qualification/amcn-v1/amcn_original_hybrid_floor.py \
+            qualification/amcn-v1/test_amcn_original_hybrid_floor.py
+          "$P" qualification/amcn-v1/amcn_original_locomo_trial.py prepare \
+            --source-root "$ROOT" \
+            --public "$PRIV/paired/old_public.json" \
+            --withheld "$PRIV/paired/withheld.json" \
+            --question-indices 0,1,2
+          BASE=$(sha256sum "$PRIV/paired/old_public.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_hybrid_floor.py prepare \
+            --original-root "$ROOT" \
+            --original-public "$PRIV/paired/old_public.json" \
+            --original-public-sha256 "$BASE" \
+            --output "$PRIV/paired/source-only.json"
+          SOURCE=$(sha256sum "$PRIV/paired/source-only.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_hybrid_floor.py rank \
+            --source "$PRIV/paired/source-only.json" --source-sha256 "$SOURCE" \
+            --encoder "$ROOT/encoder" \
+            --output-public "$PRIV/paired/hybrid_public.json" \
+            --output-receipt "$PRIV/paired/hybrid_receipt.json"
+          HYBRID=$(sha256sum "$PRIV/paired/hybrid_public.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_locomo_trial.py generate \
+            --public "$PRIV/paired/old_public.json" --public-sha256 "$BASE" \
+            --reader "$ROOT/reader" --output "$PRIV/paired/old_answers.json" \
+            --max-new-tokens 24
+          "$P" qualification/amcn-v1/amcn_original_locomo_trial.py generate \
+            --public "$PRIV/paired/hybrid_public.json" --public-sha256 "$HYBRID" \
+            --reader "$ROOT/reader" --output "$PRIV/paired/hybrid_answers.json" \
+            --max-new-tokens 24
+          ORIGINAL_A=$(sha256sum "$PRIV/paired/old_answers.json" | cut -d' ' -f1)
+          HYBRID_A=$(sha256sum "$PRIV/paired/hybrid_answers.json" | cut -d' ' -f1)
+          GOLD=$(sha256sum "$PRIV/paired/withheld.json" | cut -d' ' -f1)
+          RANK=$(sha256sum "$PRIV/paired/hybrid_receipt.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_hybrid_floor.py score \
+            --original-public "$PRIV/paired/old_public.json" --original-public-sha256 "$BASE" \
+            --original-answers "$PRIV/paired/old_answers.json" --original-answers-sha256 "$ORIGINAL_A" \
+            --hybrid-public "$PRIV/paired/hybrid_public.json" --hybrid-public-sha256 "$HYBRID" \
+            --hybrid-answers "$PRIV/paired/hybrid_answers.json" --hybrid-answers-sha256 "$HYBRID_A" \
+            --withheld "$PRIV/paired/withheld.json" --withheld-sha256 "$GOLD" \
+            --hybrid-retrieval-receipt "$PRIV/paired/hybrid_receipt.json" \
+            --hybrid-retrieval-receipt-sha256 "$RANK" \
+            --output /tmp/amcn-original-hybrid-evidence/paired-postseal-score.json
+          HEPTA_AMCN_ORIGINAL_ROOT="$ROOT" \
+          HEPTA_AMCN_PAIR_ROOT="$PRIV/paired" \
+            "$P" -m unittest discover -s qualification/amcn-v1 \
+              -p 'test_amcn_original_hybrid_floor.py' -v \
+              2>&1 | tee /tmp/amcn-original-hybrid-evidence/tests.txt
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/amcn-original-hybrid-evidence/paired-postseal-score.json')
+          r=json.loads(p.read_text())
+          assert r['questions']==6 and r['independent_source_families_upper_bound']==2
+          assert r['same_final_source_slots_and_output_ceiling'] is True
+          assert r['independent_semantic_success'] is None
+          assert r['new_future_calendar_windows']==0 and r['production_accepted'] is False
+          PY
+      - name: Retain only source hashes and independently scored negative capability
+        if: always()
+        run: |
+          set -euo pipefail
+          BASE=/tmp/amcn-original-hybrid-evidence
+          mkdir -p "$BASE/source"
+          git rev-parse HEAD > "$BASE/source/exact-head.txt"
+          git rev-parse HEAD^{tree} > "$BASE/source/exact-tree.txt"
+          cp qualification/amcn-v1/amcn_original_hybrid_floor.py \
+             qualification/amcn-v1/test_amcn_original_hybrid_floor.py \
+             qualification/amcn-v1/ORIGINAL_MINILM_HYBRID_SIX_NEGATIVE.md \
+             .github/workflows/hepta-amcn-original-hybrid-six.yml \
+             "$BASE/source/"
+          printf '%s\n' 'real_original_pretrained_encoder_forward=true_only_if_complete' \
+            'real_original_pretrained_reader_forward=true_only_if_complete' \
+            'official_HF_forward_or_tokenizer_parity_verified=false' \
+            'strong_RAG_nine_arm_and_Cell_parameter_gain_unverified=true' \
+            'independent_future_calendar_windows=0' \
+            'publisher_gold_and_raw_answers_not_uploaded=true' \
+            'no_production_authority=true' 'production_accepted=false' \
+            > "$BASE/negative-authority.txt"
+          (cd "$BASE" && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-original-minilm-hybrid-six-paired-source-only-negative
+          path: /tmp/amcn-original-hybrid-evidence
+          if-no-files-found: error
