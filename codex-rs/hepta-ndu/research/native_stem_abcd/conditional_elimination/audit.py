@@ -10,6 +10,7 @@ from fractions import Fraction as F
 from pathlib import Path
 import eliminate as e
 old=e.old
+c=e.c
 
 def digest(b):return hashlib.sha256(b).hexdigest()
 def validate(base,selected=(2,3,4),sample_size=120):
@@ -25,6 +26,17 @@ def validate(base,selected=(2,3,4),sample_size=120):
         frontier=(root/'FRONTIER.jsonl').read_bytes()
         if digest(splits)!=raw['splits_sha256'] or digest(frontier)!=raw['frontier_sha256']:
             raise ValueError('evidence hash mismatch')
+        import hashlib
+        source_root=Path(__file__).resolve().parent
+        saved_source=raw.get('source_sha256',{})
+        for name in ('eliminate.py','bnb.py','test_eliminate.py'):
+            if saved_source.get(name)!=digest((source_root/name).read_bytes()):
+                raise ValueError('source hash mismatch: '+name)
+        # Bind inherited math helpers to their original R21/R22 executed bytes.
+        if digest(Path(c.old.__file__).read_bytes())!='e70902d28993272c89330e96d846801e3b6d76623697b92a7d6867867bfa7dd1':
+            raise ValueError('inherited R21 math source changed')
+        if digest(Path(e.c.__file__).read_bytes())!='bfa9b84b807f78970c10680ebbc0be9c46136daaf277a99125fc219648b39899':
+            raise ValueError('inherited R22 math source changed')
         original_candidate=tuple((F(x),F(x)) for x in old.CANDIDATES[n])
         cl,cu=old.cost_bounds(original_candidate)
         if F(raw['candidate_upper'])!=cu or F(raw['candidate_lower'])!=cl or cu>=F(9,4):
