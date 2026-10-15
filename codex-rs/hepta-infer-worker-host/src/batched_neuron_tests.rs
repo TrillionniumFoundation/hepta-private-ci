@@ -3602,3 +3602,129 @@ fn original_pending_group_rejects_failed_fsync_without_claiming_or_dispatching()
     ));
     assert_eq!(calls.load(Ordering::SeqCst), 0);
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn original_pending_group_real_original_evidence_fsync_before_signing_and_cold_readback() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
+
+    let dir = tempfile::tempdir().expect("private original WAL source");
+    let wal = dir.path().join("original-cohort-presign-admission.wal");
+    let signer = SigningKey::from_bytes(&[111; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let operations = [
+        Digest32::of_bytes(first.authorization.request_id.as_bytes()),
+        Digest32::of_bytes(second.authorization.request_id.as_bytes()),
+    ];
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut owner = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        manifest,
+        backend,
+        2,
+        wal.clone(),
+    );
+    for (i, request) in [first, second].into_iter().enumerate() {
+        let exact = neuron_batch_final_use_binding_v1("worker-one", &key, &request)
+            .expect("independently signed original member");
+        owner.enqueue(
+            100,
+            "model".to_string(),
+            request,
+            key.clone(),
+            signed_member(
+                &signer,
+                exact,
+                &format!("cohort-presign-member-{i}"),
+                u8::try_from(i).expect("2 bounded members") + 111,
+            ),
+        ).expect("original Evidence accepted an unsynced Admission");
+    }
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let before = owner.observe_original_frontier().expect("read-only original WAL");
+    assert_eq!(before.committed_rows, 0);
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest: operations[0],
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    assert_eq!(
+        owner.observe_exact_committed_sample(query).expect("exact pre-fsync read"),
+        None,
+        "successful async Admission is NOT a durable original Evidence row"
+    );
+
+    // Only the original Evidence-bound wrapper may flush that original WAL
+    // before forwarding a signable (still DENY_ALL) cohort snapshot.
+    let ordered = [(first_id, key.clone()), (second_id, key)];
+    let candidate = owner
+        .prepare_pending_native_group_signature_v1(100, &ordered)
+        .expect("the original WAL fsync precedes exposure of cohort signature bytes");
+    assert_eq!(candidate.member_bindings.len(), 2);
+    assert!(!candidate.authority.grants_any());
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let fsynced = owner
+        .observe_original_frontier()
+        .expect("read original fsynced sample marker");
+    assert_eq!(fsynced.sequence, 1);
+    assert_eq!(fsynced.committed_rows, 2);
+    for operation_digest in operations {
+        let sample = owner
+            .observe_exact_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                ..query
+            })
+            .expect("original Evidence committed membership")
+            .expect("exact committed Admission row exists");
+        assert_eq!(sample.matching_rows, 1);
+        assert_eq!(sample.frontier, fsynced);
+    }
+
+    // Reopen the ACTUAL previous WAL/marker, not an in-memory fixture.
+    // A proposal alone neither consumed original nonces nor performed a
+    // model effect; thus zero terminal model records may be fabricated.
+    drop(owner);
+    let cold = DurablePhaseMetricSinkV1::open(&wal, 128, 64, 60_000)
+        .expect("reopen original protected WAL and fsynced marker");
+    assert_eq!(cold.read_local_frontier().expect("cold WAL replay"), fsynced);
+    for operation_digest in operations {
+        assert_eq!(
+            cold.read_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                ..query
+            })
+            .expect("cold exact operation membership")
+            .expect("durable pre-sign original Admission")
+            .matching_rows,
+            1
+        );
+        assert_eq!(
+            cold.read_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                phase: MetricPhaseV1::NeuronFeature,
+                ..query
+            })
+            .expect("cold exact terminal lookup"),
+            None,
+            "a non-authorizing signature proposal is not a model effect receipt"
+        );
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
