@@ -1634,7 +1634,7 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
             &mut current,
         ),
         Err(crate::CellSplitObserverJoinErrorV1::Invalid(
-            "signed original Supervisor checkpoint is not a terminal handoff"
+            "signed original Supervisor checkpoint is not a canonical terminal journal record"
         ))
     ));
     assert_eq!(current.verification_count, 0);
