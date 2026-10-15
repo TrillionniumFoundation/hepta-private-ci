@@ -5,6 +5,12 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      # Changes to the direct inference contract and build inputs must never
+      # inherit an old exact-SHA native qualification check.
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.cargo/**"
       - "codex-rs/cli/Cargo.toml"
       - "codex-rs/cli/src/main.rs"
       - "codex-rs/cli/src/codex.rs"
