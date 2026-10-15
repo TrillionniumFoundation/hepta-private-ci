@@ -92,9 +92,9 @@ impl HeptaEvidenceStore {
         intent: &ExecutionIntentV1,
         payload: &[u8],
     ) -> Result<ExecutionPreparationReceiptV1, EvidenceError> {
-        intent.verify_payload(payload).map_err(|error| {
-            EvidenceError::InvalidRecord(format!("execution payload: {error}"))
-        })?;
+        intent
+            .verify_payload(payload)
+            .map_err(|error| EvidenceError::InvalidRecord(format!("execution payload: {error}")))?;
 
         let prepared = validate_preparation(intent)?;
         let disposition = self

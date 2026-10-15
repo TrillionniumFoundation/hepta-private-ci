@@ -39,7 +39,9 @@ fn intent() -> ExecutionIntentV1 {
 #[tokio::test]
 async fn original_sqlite_owner_persists_exact_envelope_without_any_tool_effect() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let source = intent();
     let receipt = store
         .prepare_execution_intent_v1(&source, PAYLOAD)
@@ -66,8 +68,7 @@ async fn original_sqlite_owner_persists_exact_envelope_without_any_tool_effect()
         Sha256Digest::for_bytes(&serde_json::to_vec(&source).expect("serialized envelope"))
     );
     assert_ne!(
-        original.intent.intent.payload_sha256,
-        source.payload_sha256,
+        original.intent.intent.payload_sha256, source.payload_sha256,
         "control envelope must not masquerade as external payload"
     );
 }
@@ -83,7 +84,9 @@ async fn cold_restart_reads_original_then_identical_stage_is_idempotent() {
         .await
         .expect("first write");
     store.close().await;
-    let reopened = HeptaEvidenceStore::open(&config).await.expect("cold reopen");
+    let reopened = HeptaEvidenceStore::open(&config)
+        .await
+        .expect("cold reopen");
     let read = reopened
         .read_execution_preparation_v1(&source)
         .await
@@ -103,7 +106,9 @@ async fn read_only_cold_reader_can_verify_prepare_but_cannot_stage_a_new_intent(
     let temp = TempDir::new().expect("temp");
     let config = sqlite(&temp);
     let source = intent();
-    let writer = HeptaEvidenceStore::open(&config).await.expect("original writer");
+    let writer = HeptaEvidenceStore::open(&config)
+        .await
+        .expect("original writer");
     let saved = writer
         .prepare_execution_intent_v1(&source, PAYLOAD)
         .await
@@ -125,7 +130,10 @@ async fn read_only_cold_reader_can_verify_prepare_but_cannot_stage_a_new_intent(
         ..source
     };
     assert!(
-        reader.prepare_execution_intent_v1(&changed, PAYLOAD).await.is_err(),
+        reader
+            .prepare_execution_intent_v1(&changed, PAYLOAD)
+            .await
+            .is_err(),
         "read-only Evidence access must not create any preparation record"
     );
     assert_eq!(
@@ -141,7 +149,9 @@ async fn read_only_cold_reader_can_verify_prepare_but_cannot_stage_a_new_intent(
 #[tokio::test]
 async fn missing_preparation_never_reports_success() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     assert_eq!(
         store
             .read_execution_preparation_v1(&intent())
@@ -155,7 +165,9 @@ async fn missing_preparation_never_reports_success() {
 #[tokio::test]
 async fn same_operation_changed_generation_fence_target_and_deadline_conflict() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let original = intent();
     store
         .prepare_execution_intent_v1(&original, PAYLOAD)
@@ -215,16 +227,22 @@ async fn same_operation_changed_generation_fence_target_and_deadline_conflict() 
 #[tokio::test]
 async fn payload_byte_or_digest_tamper_never_creates_an_original_record() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let original = intent();
     assert!(matches!(
-        store.prepare_execution_intent_v1(&original, b"changed bytes").await,
+        store
+            .prepare_execution_intent_v1(&original, b"changed bytes")
+            .await,
         Err(EvidenceError::InvalidRecord(_))
     ));
     let mut substituted = original.clone();
     substituted.payload_sha256 = Sha256Digest::for_bytes(b"changed bytes");
     assert!(matches!(
-        store.prepare_execution_intent_v1(&substituted, PAYLOAD).await,
+        store
+            .prepare_execution_intent_v1(&substituted, PAYLOAD)
+            .await,
         Err(EvidenceError::InvalidRecord(_))
     ));
     assert_eq!(
@@ -240,7 +258,9 @@ async fn payload_byte_or_digest_tamper_never_creates_an_original_record() {
 #[tokio::test]
 async fn distinct_scope_and_principal_never_reuse_the_same_effect_key() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let original = intent();
     let other_scope = ExecutionIntentV1 {
         scope_id: "scope:other".into(),
@@ -262,15 +282,26 @@ async fn distinct_scope_and_principal_never_reuse_the_same_effect_key() {
         .prepare_execution_intent_v1(&other_principal, PAYLOAD)
         .await
         .expect("separate subject");
-    assert_ne!(a.readback.provider_effect_key, b.readback.provider_effect_key);
-    assert_ne!(a.readback.provider_effect_key, c.readback.provider_effect_key);
-    assert_ne!(b.readback.provider_effect_key, c.readback.provider_effect_key);
+    assert_ne!(
+        a.readback.provider_effect_key,
+        b.readback.provider_effect_key
+    );
+    assert_ne!(
+        a.readback.provider_effect_key,
+        c.readback.provider_effect_key
+    );
+    assert_ne!(
+        b.readback.provider_effect_key,
+        c.readback.provider_effect_key
+    );
 }
 
 #[tokio::test]
 async fn quarantine_mutation_never_looks_like_authorized_prepare_or_completion() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let source = intent();
     let receipt = store
         .prepare_execution_intent_v1(&source, PAYLOAD)
@@ -305,7 +336,9 @@ async fn quarantine_mutation_never_looks_like_authorized_prepare_or_completion()
 #[tokio::test]
 async fn simultaneous_identical_prepare_uses_one_original_sqlite_row() {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let a = store.clone();
     let b = store.clone();
     let request_a = intent();
@@ -339,12 +372,20 @@ async fn reserved_prepare_namespace_is_not_a_production_execution_grant() {
     assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
     assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
+    let store = HeptaEvidenceStore::open(&sqlite(&temp))
+        .await
+        .expect("store");
     let receipt = store
         .prepare_execution_intent_v1(&intent(), PAYLOAD)
         .await
         .expect("stage");
-    assert!(receipt.readback.provider_effect_key.as_str().starts_with("provider-effect:v1:"));
+    assert!(
+        receipt
+            .readback
+            .provider_effect_key
+            .as_str()
+            .starts_with("provider-effect:v1:")
+    );
     assert_eq!(
         receipt.readback.status,
         ExecutionPreparationReadbackStatusV1::RecordedOnly

@@ -166,7 +166,7 @@ fn every_sensitive_request_field_is_in_request_hash() {
     let mut next = value.clone();
     next.payload_bytes += 1;
     variants.push(next);
-    let mut next = value.clone();
+    let mut next = value;
     next.payload_sha256 = Sha256Digest::for_bytes(b"other physical bytes");
     variants.push(next);
     for variant in variants {
@@ -200,7 +200,7 @@ fn scope_hash_changes_with_principal_destination_generation_fence_and_epoch() {
     let mut next = value.clone();
     next.fence += 1;
     variants.push(next);
-    let mut next = value.clone();
+    let mut next = value;
     next.authority_epoch += 1;
     variants.push(next);
     for variant in variants {
