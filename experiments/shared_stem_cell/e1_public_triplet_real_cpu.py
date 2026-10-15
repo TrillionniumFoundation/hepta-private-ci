@@ -110,10 +110,13 @@ def encode_pretrained(cases,model,compact_dir,gemma_dir,manifest):
      'mmbert_verified_source_tensor_count':(
        backend.complete_weight_receipt['source_tensor_count']
        if model=='mmbert_small' else None)}
-def fit_heads(panel,model,vectors,*,seed=20261014,steps=40,lr=.15):
+def fit_heads(panel,model,vectors,*,seed=20261014,steps=40,lr=.15,feature_width=None):
  import torch
  import torch.nn.functional as F
- width=MODELS[model][2];cases=panel['cases']
+ width=MODELS[model][2] if feature_width is None else feature_width
+ if width not in (256,384,768) or (feature_width is not None and (model != 'modernbert_base' or width != 768)):
+  raise Invalid('unregistered explicit core feature width')
+ cases=panel['cases']
  if set(vectors)!={c['case_id'] for c in cases} or any(
     len(vectors[c['case_id']])!=width or not all(math.isfinite(float(x)) for x in vectors[c['case_id']])
     for c in cases):raise Invalid('incomplete or wrong-width feature bank')
