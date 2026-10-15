@@ -21,7 +21,6 @@ jobs:
       matrix:
         profile: ${{ fromJSON(github.event_name == 'pull_request' && '["source_head","synthetic_merge"]' || '["source_head"]') }}
     env:
-      EVIDENCE_DIR: ${{ runner.temp }}/p5-source-${{ matrix.profile }}
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/stem_scaling_v1
     steps:
@@ -34,6 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           mkdir -p "$EVIDENCE_DIR"
           if [[ '${{ github.event_name }}' == pull_request && '${{ matrix.profile }}' == source_head ]]; then
             expected='${{ github.event.pull_request.head.sha }}'
@@ -54,11 +54,13 @@ jobs:
       - name: Compile actual P5 research/auditor sources
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 -m py_compile qualification/stem_scaling_v1/scaling_frontier.py qualification/stem_scaling_v1/test_scaling_frontier.py qualification/stem_scaling_v1/p5_cluster_replay.py qualification/stem_scaling_v1/test_p5_cluster_replay.py
           echo 'Source-only Python compile PASS; no model execution' | tee "$EVIDENCE_DIR/compile.txt"
       - name: Run genuine contract, corruption and five-axis tests
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v 2>&1 | tee "$EVIDENCE_DIR/normal-parent.txt"
           python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v 2>&1 | tee "$EVIDENCE_DIR/normal-child.txt"
           grep -F 'Ran 12 tests' "$EVIDENCE_DIR/normal-parent.txt"
@@ -66,6 +68,7 @@ jobs:
       - name: Test same contracts with Python optimized mode
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v 2>&1 | tee "$EVIDENCE_DIR/optimized-parent.txt"
           python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_p5_cluster_replay.py' -v 2>&1 | tee "$EVIDENCE_DIR/optimized-child.txt"
           grep -F 'Ran 12 tests' "$EVIDENCE_DIR/optimized-parent.txt"
@@ -73,6 +76,7 @@ jobs:
       - name: No false physically observed real-model or 10T/100T inference
         run: |
           set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/p5-source-${{ matrix.profile }}"
           python3 - <<'PY'
           import sys
           sys.path.insert(0, "qualification/stem_scaling_v1")
@@ -90,6 +94,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-p5-source-only-${{ matrix.profile }}
-          path: ${{ env.EVIDENCE_DIR }}/
+          path: ${{ runner.temp }}/p5-source-${{ matrix.profile }}/
           retention-days: 14
           if-no-files-found: warn
