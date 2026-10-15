@@ -24,6 +24,13 @@ class Q24BankTests(unittest.TestCase):
     def test_384_width(self):
         ids,features=fixture()
         self.assertEqual(q.feature_inventory(ids,features)['feature_width'],384)
+    def test_modernbert_768_width_with_distinct_complete_bank(self):
+        ids,features=fixture(768)
+        a=q.feature_inventory(ids,features)
+        self.assertEqual(a['feature_width'],768)
+        self.assertEqual(a['case_count'],3)
+        self.assertEqual(len(a['case_q24_sha256']),3)
+        self.assertNotEqual(a['bank_q24_sha256'],q.feature_inventory(*fixture(384))['bank_q24_sha256'])
     def test_reordered_requests_same_hash(self):
         ids,features=fixture()
         self.assertEqual(q.feature_inventory(ids,features)['bank_q24_sha256'],
