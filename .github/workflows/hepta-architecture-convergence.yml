@@ -284,6 +284,12 @@ jobs:
           # cannot satisfy its production bootstrap preflight.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/production-control-preflight-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --test original_control_non_test_gate -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-worker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib batched_neuron -- --nocapture
+          # Original signed Worker's shared Stem Arc queue: one immutable Q24
+          # allocation across two independently signed Cell identities.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-shared-arc.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_ -- --nocapture --test-threads=1
+          # The original NativeTestDriver counts one backend invocation,
+          # not one physical pretrained Encoder forward or serving authority.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/typed-stem-original-physical-batch.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --nocapture --test-threads=1
           # Test the signed Worker against the ACTUAL original Evidence
           # WAL actor and fsynced marker, including cold restart readback.
           # These tests must run; unrelated fixture-only tests cannot pass

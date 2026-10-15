@@ -12,6 +12,7 @@ on:
       - "codex-rs/hepta-agentd/src/neuron_production_bootstrap_tests.rs"
       - "codex-rs/hepta-agentd/src/lib.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
+      - "codex-rs/hepta-infer-worker-host/src/batched_neuron_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
       - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview.rs"
@@ -43,8 +44,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           # Exact original #2145 source blobs, not newly substituted owners.
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "6b8db0f4887c5ab2357cfe4fd14919e13648b407"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "9fa5e8c72595dd52a51ec9bfbb60e3a2f79c9af5"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "9fe42424b3fd63a91705ddb42559f29c69bd1c89"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
@@ -80,6 +81,8 @@ jobs:
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Verify old and integrated Stem Core Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-infer-core -- --check
+      - name: Require original signed Worker Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-infer-worker-host -- --check
       - name: Test genuine original/new source digests and borrowed Arc contracts
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
       - name: Strict inference-core Clippy without ignored warnings
@@ -88,6 +91,10 @@ jobs:
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Run typed Stem to original signed Batch ABI parity tests
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
+      - name: Verify signed shared Arc queue keeps one immutable allocation
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
+      - name: Verify two typed Stem Cells invoke exactly one native Worker batch
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Verify Neuron external signed-NDU gate Rust formatting
