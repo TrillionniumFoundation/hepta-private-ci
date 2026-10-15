@@ -496,10 +496,13 @@ fn validate_evidence_metric_binding_v1(
     candidate: &CellSplitEvidenceMetricBindingV1,
 ) -> Result<(), CellSplitObserverJoinErrorV1> {
     let plan = &transcript.plan;
-    let receipt = transcript
-        .receipts
-        .get(step_index)
-        .ok_or(CellSplitObserverJoinErrorV1::Invalid("Evidence effect index"))?;
+    let receipt =
+        transcript
+            .receipts
+            .get(step_index)
+            .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+                "Evidence effect index",
+            ))?;
     let expected_phase = match receipt.intent.step {
         crate::CellSplitExecutionStepV1::ArtifactCas => 3,
         crate::CellSplitExecutionStepV1::ChildStateMigration => 4,

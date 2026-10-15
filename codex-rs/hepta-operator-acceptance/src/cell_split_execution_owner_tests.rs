@@ -2643,7 +2643,10 @@ fn read_only_ledger_never_accepts_unsigned_or_absent_original_metrics_ack() {
         "an old unsigned effect transcript can NEVER mint a metrics ACK"
     );
     assert!(
-        !root.path().join("cell-split-00-metrics-acked.json").exists(),
+        !root
+            .path()
+            .join("cell-split-00-metrics-acked.json")
+            .exists(),
         "forensic Observer must never synthesize a missing frame"
     );
     assert_eq!(state.borrow().executions, 4);

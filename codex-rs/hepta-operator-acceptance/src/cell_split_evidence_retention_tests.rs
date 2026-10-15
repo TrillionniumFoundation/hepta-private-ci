@@ -55,7 +55,12 @@ fn transcript() -> CellSplitExecutionTranscriptV1 {
     }
 }
 
-fn candidate(step: usize) -> (CellSplitExecutionTranscriptV1, CellSplitEvidenceMetricBindingV1) {
+fn candidate(
+    step: usize,
+) -> (
+    CellSplitExecutionTranscriptV1,
+    CellSplitEvidenceMetricBindingV1,
+) {
     let source = transcript();
     let receipt = &source.receipts[step];
     let phase = match receipt.intent.step {
@@ -243,8 +248,7 @@ fn local_binding_is_non_authorizing_even_when_retained_readback_is_valid() {
     let proof = signed_retained(&local, &nonce, &key);
     assert_eq!(proof.minimum_sequence, local.terminal_group_sequence);
     assert_ne!(
-        proof.retained_binding_digest,
-        local.operation_digest,
+        proof.retained_binding_digest, local.operation_digest,
         "the retained minimum commits a complete typed observation"
     );
     assert!(
@@ -270,14 +274,16 @@ fn fixture_metrics_ledger(
             .receipts
             .iter()
             .enumerate()
-            .map(|(index, receipt)| crate::CellSplitMetricsAcknowledgedStepV1 {
-                index,
-                step: receipt.intent.step,
-                owner_id: receipt.intent.owner_id.clone(),
-                idempotency_key: receipt.intent.idempotency_key.clone(),
-                committed_owner_receipt_digest: receipt.receipt_digest.clone(),
-                original_metrics_ack_frame_digest: "ae".repeat(32),
-            })
+            .map(
+                |(index, receipt)| crate::CellSplitMetricsAcknowledgedStepV1 {
+                    index,
+                    step: receipt.intent.step,
+                    owner_id: receipt.intent.owner_id.clone(),
+                    idempotency_key: receipt.intent.idempotency_key.clone(),
+                    committed_owner_receipt_digest: receipt.receipt_digest.clone(),
+                    original_metrics_ack_frame_digest: "ae".repeat(32),
+                },
+            )
             .collect(),
         all_four_original_signed_owner_readbacks: true,
         all_four_original_metrics_ack_frames: true,
@@ -303,12 +309,12 @@ fn forensic_metrics_ack_binding_requires_all_four_original_commits() {
             3 => altered.acknowledged_steps.swap(1, 2),
             4 => altered.acknowledged_steps[0].owner_id = "other.owner".into(),
             5 => altered.acknowledged_steps[1].idempotency_key = "be".repeat(32),
-            6 => altered.acknowledged_steps[2].committed_owner_receipt_digest =
-                "cc".repeat(32),
-            7 => altered.acknowledged_steps[3].original_metrics_ack_frame_digest =
-                "00".repeat(32),
-            8 => altered.acknowledged_steps[2].original_metrics_ack_frame_digest =
-                "not-a-canonical-digest".into(),
+            6 => altered.acknowledged_steps[2].committed_owner_receipt_digest = "cc".repeat(32),
+            7 => altered.acknowledged_steps[3].original_metrics_ack_frame_digest = "00".repeat(32),
+            8 => {
+                altered.acknowledged_steps[2].original_metrics_ack_frame_digest =
+                    "not-a-canonical-digest".into()
+            }
             9 => altered.all_four_original_signed_owner_readbacks = false,
             10 => altered.all_four_original_metrics_ack_frames = false,
             11 => altered.production_activation_authorized = true,
