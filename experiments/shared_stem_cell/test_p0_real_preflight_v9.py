@@ -186,6 +186,7 @@ class OriginalPhysicalWorkflowTests(unittest.TestCase):
         cls.path=Path(__file__).resolve().parents[2]/'.github/workflows/hepta-p0-multirc-semantic-four.yml'
         cls.text=cls.path.read_text()
         cls.physical=cls.text.split('  physical-four-models:\n',1)[1].split('  partial-original-model-diagnostic:\n',1)[0]
+        cls.matrix=cls.text.split('  physical-single-model:\n',1)[1].split('  physical-four-models:\n',1)[0]
 
     def test_v7_original_40_step_command_has_only_declared_flags(self):
         v7=self.text.split('  independent-original-head-training:\n',1)[1].split('  independent-human-score:\n',1)[0]
@@ -222,21 +223,28 @@ class OriginalPhysicalWorkflowTests(unittest.TestCase):
             self.assertIn('unrecognized arguments',old.stderr)
 
     def test_independent_model_preflight_failures_do_not_cancel_other_model(self):
-        a=self.physical
-        self.assertIn('p0_pretrained_checkpoint_preflight_v9.py',a)
-        self.assertIn('if [ -s "$ROOT/$model.failed.txt" ]; then',a)
-        self.assertIn('continue independent arms',a)
-        self.assertIn('Gemma pinned model preparation failed or timed out',a)
-        self.assertIn('Laya pinned native dependency installation failed',a)
-        self.assertLess(a.index('for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do'),
-                        a.index("'laya==0.3.20'"))
+        matrix=self.matrix
+        self.assertIn('fail-fast: false',matrix)
+        self.assertIn('model: [granite_97m_r2, mmbert_small, embeddinggemma_2_text, laya421_nochange]',matrix)
+        self.assertIn('--model "$MODEL" --output-root "$ROOT"',matrix)
+        self.assertIn('p0_pretrained_checkpoint_preflight_v9.py',matrix)
+        self.assertIn('Gemma pinned checkpoint preparation failed',matrix)
+        self.assertIn("'laya==0.3.20'",matrix)
+        self.assertIn('if [ -s "$ROOT/$MODEL.failed.txt" ]; then',matrix)
+        self.assertIn('attempt-{model}.json',matrix)
+        self.assertIn('hepta-human-original-arm-${{ matrix.model }}-${{ github.run_id }}',matrix)
+        self.assertIn('original pinned pretrained inference failed or timed out',matrix)
 
     def test_real_four_model_acceptance_remains_all_or_nothing(self):
-        a=self.physical
-        self.assertIn('test -s "$ROOT/$model.json" ||',a)
-        self.assertIn('if: always()',a)
+        collector=self.physical
+        self.assertIn('needs: [original-human-materials, physical-single-model]',collector)
+        self.assertIn('merge-multiple: true',collector)
+        self.assertIn('p0_parallel_model_collector_v10.py',collector)
+        self.assertIn('original-arm-*-${{ github.run_id }}',collector)
+        self.assertIn('if: always()',collector)
         scorer=self.text.split('  independent-human-score:\n',1)[1]
         self.assertNotIn('partial-original-model-diagnostic',scorer.split('    runs-on:',1)[0])
+        self.assertIn('physical-four-models',scorer)
         self.assertIn('independent-original-head-training',scorer)
         self.assertIn('independent-cold-pretrained-encoder',scorer)
         self.assertIn('independent-pretrained-replay',scorer)
@@ -249,9 +257,12 @@ class OriginalPhysicalWorkflowTests(unittest.TestCase):
     def test_four_model_producer_and_partial_diagnostic_retain_scoped_research_only_mode(self):
         self.assertIn('partial-original-model-diagnostic:',self.text)
         self.assertIn("always() && needs['original-human-materials'].result == 'success'",self.text)
-        self.assertIn('test ! -e "$OUT/gemma-snapshot"',self.physical)
+        self.assertIn('test ! -e "$OUT/gemma-snapshot"',self.matrix)
+        self.assertNotIn('owner-only-human-labels',self.matrix)
         self.assertNotIn('owner-only-human-labels',self.physical)
+        self.assertNotIn('tool-dispatch',self.matrix)
         self.assertNotIn('tool-dispatch',self.physical)
+        self.assertIn('held_test_labels_accessed',self.matrix)
 
 
 if __name__=='__main__':

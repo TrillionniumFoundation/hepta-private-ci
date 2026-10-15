@@ -73,14 +73,18 @@ def verify_snapshot(repo, revision, *, model_info, download):
             'complete_model_parameter_loading_verified_by_this_preflight':False}
 
 
-def preflight(root, *, model_info, download):
+def preflight(root, *, model_info, download, only_model=None):
     """Try BOTH registered models even when one fails; never report acceptance."""
     root = Path(root)
     if root.is_symlink() or (root.exists() and not root.is_dir()):
         raise Invalid('untrusted artifact output directory')
     root.mkdir(parents=True, exist_ok=True)
+    if only_model is not None and only_model not in CANDIDATES:
+        raise Invalid('unknown fixed candidate in scoped preflight')
     observations = {}
     for model,(repo,revision) in CANDIDATES.items():
+        if only_model is not None and model != only_model:
+            continue
         failure = root / (model + '.failed.txt')
         existing_success = root / (model + '.json')
         if failure.exists() or failure.is_symlink() or existing_success.exists():
@@ -97,8 +101,15 @@ def preflight(root, *, model_info, download):
         else:
             observations[model] = {'status':'source_materialized_not_model_qualified', **receipt}
     result = {'schema':SCHEMA,'models':observations,
-              'all_compact_source_preflight_completed':all(
-                  x['status']=='source_materialized_not_model_qualified' for x in observations.values()),
+              'requested_models':sorted(observations),
+              'scoped_single_candidate':only_model is not None,
+              # One successfully checked model NEVER implies that BOTH compact
+              # model snapshots have been checked. Original v9 combined mode
+              # retains the prior precise all-compact meaning.
+              'all_compact_source_preflight_completed':(
+                  set(observations)==set(CANDIDATES) and all(
+                      x['status']=='source_materialized_not_model_qualified'
+                      for x in observations.values())),
               'whole_four_model_success':False,'human_labels_accessed':False,
               'original_checkpoint_publisher_independently_authenticated':False,
               'model_selected':False,'production_promotion_permitted':False,'authority':'DENY_ALL'}
@@ -114,9 +125,11 @@ def preflight(root, *, model_info, download):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-root', required=True, type=Path)
+    parser.add_argument('--model', choices=sorted(CANDIDATES))
     args=parser.parse_args()
     from huggingface_hub import HfApi, snapshot_download
-    result=preflight(args.output_root, model_info=HfApi().model_info, download=snapshot_download)
+    result=preflight(args.output_root, model_info=HfApi().model_info,
+                     download=snapshot_download, only_model=args.model)
     print(json.dumps({'schema':SCHEMA,'model_statuses':{
         k:v['status'] for k,v in result['models'].items()},
         'production_promotion_permitted':False,'authority':'DENY_ALL'}, sort_keys=True))
