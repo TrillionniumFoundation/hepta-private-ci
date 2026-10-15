@@ -1,0 +1,82 @@
+name: Hepta NDU Merton original-source science gate (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/qualification/**'
+      - '.github/workflows/hepta-ndu-merton-science-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-and-merge:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Execute stdlib-only scientific rejection contracts, ordinary and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/qualification
+          mkdir -p "$RUNNER_TEMP/ndu-science"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/ndu-science/exact-source.txt"
+          python -m compileall -q "$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/ndu-science/ordinary.log"
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/ndu-science/optimized.log"
+          grep -F 'Ran 52 tests' "$RUNNER_TEMP/ndu-science/ordinary.log"
+          grep -F 'Ran 52 tests' "$RUNNER_TEMP/ndu-science/optimized.log"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=Path('experiments/ndu_tree_fbsde_gates/merton/qualification/local_observation.json')
+          o=json.loads(d.read_text())
+          assert o['posture']=='RESEARCH_ONLY_DENY_ALL'
+          assert o['production_accepted'] is False
+          assert o['scientific_gain_established'] is False
+          assert o['fresh_encoder_calls']==0 and o['future_source_groups']==0
+          assert o['retrospective_cases']==32 and o['paired_ndu_wins']==0
+          PY
+      - name: Fetch original archived public material only to pin its identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11870475540/zip' \
+            -o "$RUNNER_TEMP/source-original.zip"
+          echo '195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7  '"$RUNNER_TEMP/source-original.zip" | sha256sum --check
+          python - "$RUNNER_TEMP/source-original.zip" <<'PY'
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          p=Path(sys.argv[1]); d=p.read_bytes()
+          assert hashlib.sha256(d).hexdigest()=='195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              rows=[json.loads(x) for x in z.read('hepta-public-study/dataset.jsonl').splitlines()]
+              assert len(rows)==128
+              assert {x['split'] for x in rows}=={'train','calibration','holdout'}
+          print('Pinned original archival input only. No fresh model or future-source result.')
+          PY
+          # Deliberately do NOT upload original source text or pretend this
+          # reconstructs the separately pinned local trial archive.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ndu-science-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/ndu-science/
+          retention-days: 7
+          if-no-files-found: warn
