@@ -40,6 +40,11 @@ class NeuronQualificationTriggerTests(unittest.TestCase):
             coverage.missing_trigger_paths(ROOT, changed),
         )
 
+    def test_registry_workspace_dependencies_do_not_require_local_paths(self) -> None:
+        # serde_json is inherited from the workspace as a registry version
+        # string, unlike local workspace path dependencies such as Agentd.
+        self.assertEqual(coverage.missing_trigger_paths(ROOT, self.workflow), [])
+
     def test_duplicate_or_negated_filter_fails_closed(self) -> None:
         rule = '      - "codex-rs/Cargo.toml"\n'
         self.assertEqual(self.workflow.count(rule), 1)
