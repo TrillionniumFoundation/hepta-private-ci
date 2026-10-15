@@ -65,6 +65,14 @@ def review_pair(sgd_root, adam_root):
                       "parameter_count", "actual_completed_training_exposures"):
             if fit[0].get(field) != fit[1].get(field):
                 raise ValueError("optimizer fitting inventory drift: " + field)
+    teachers = [strict_json_file(root / "teacher.json") for root in roots]
+    for field in ("schema", "teacher_tensor_sha256", "trace_hashes_sha256",
+                  "feature_hashes_sha256", "slot_assignment_sha256",
+                  "supervised_steps", "total_teacher_steps",
+                  "coalesced_teacher_steps",
+                  "terminal_evidence_supervised_cases"):
+        if teachers[0].get(field) != teachers[1].get(field):
+            raise ValueError("paired optimizer teacher operation alignment drift: " + field)
     encoders = [strict_json_file(root / "encoder.json") for root in roots]
     for field in ("model_material", "actual_forward_calls"):
         if encoders[0].get(field) != encoders[1].get(field):

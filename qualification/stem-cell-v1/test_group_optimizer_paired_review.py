@@ -60,6 +60,19 @@ class PairTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"optimization"):
                 review_pair(a,b)
 
+
+    def test_reject_reassigned_teacher_attention_slots_across_optimizer_arms(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            a, b = materials(temporary)
+            original = json.loads((b / "teacher.json").read_text())
+            report = json.loads((b / "report.json").read_text())
+            original["slot_assignment_sha256"] = "c" * 64
+            report["teacher"] = original
+            (b / "teacher.json").write_text(json.dumps(original))
+            (b / "report.json").write_text(json.dumps(report))
+            with self.assertRaisesRegex(ValueError, "teacher operation alignment"):
+                review_pair(a, b)
+
     def test_reject_source_or_feature_substitution(self):
         with tempfile.TemporaryDirectory() as temporary:
             a,b=materials(temporary)

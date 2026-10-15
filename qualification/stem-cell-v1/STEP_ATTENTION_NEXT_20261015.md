@@ -148,3 +148,18 @@ The research output remains DENY_ALL.
 ## Full per-step proposal and verifier semantics (research V2)
 
 The research-only System2 trace V2 now stores the bounded actual A–H candidate sequence. A separate stdlib module recomputes proposer and verifier output digests from each public symbolic fact, validates fixed-depth forced rejection, checks NDU continuation estimate hashes and terminal reasons, and rejects rehashed false candidates. This verifies semantic internal consistency only; it does not attest external model execution, task source authenticity or real-world reasoning efficacy. Production remains DENY_ALL.
+
+## No silent truncation of terminal evidence
+
+The original TRAIN-only attention curriculum used `steps[:max_depth]`, which
+silently omitted the terminal `read_terminal_label` for a legal four-edge
+dependency path (five necessary operations versus four recurrent steps).
+The research V2 curriculum now packs **all** canonical public operations into
+up to four ordered attention stages; multi-operation stages share token masks,
+and the final terminal evidence always remains included. The receipt records
+`coalesced_teacher_steps`, `supervised_slots`,
+`terminal_evidence_supervised_cases` and a source-bound slot mapping digest.
+Both individual and cross-optimizer reviewers deny truncated evidence or
+divergent attention slot identities. Packing operations does **not** prove
+that the learned recurrent Core can execute each logical operation; downstream
+heldout accuracy and work must still demonstrate that ability.

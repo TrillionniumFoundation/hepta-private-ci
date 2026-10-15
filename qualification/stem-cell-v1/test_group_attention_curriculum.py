@@ -7,8 +7,9 @@ from types import SimpleNamespace
 
 import torch
 
-from group_attention_curriculum import build_train_attention
+from group_attention_curriculum import build_train_attention, grouped_slots
 from group_tasks import make_tasks
+from group_step_supervision import training_trace
 
 
 class WordOffsets:
@@ -55,6 +56,49 @@ class AttentionCurriculumTests(unittest.TestCase):
         self.assertTrue((targets.sum(2) > 0).any())
         for i, task in enumerate(self.tasks):
             self.assertEqual(targets[i].shape[1] >= len(self.tokens[i].mask), True)
+
+
+    def test_bounded_mapping_retains_all_operations_and_terminal(self):
+        for depth in range(1, 9):
+            for operations in range(1, 65):
+                mapping = grouped_slots(operations, depth)
+                self.assertEqual(len(mapping), operations)
+                self.assertEqual(mapping[0], 0)
+                self.assertEqual(mapping[-1], min(operations, depth)-1)
+                self.assertEqual(set(mapping), set(range(min(operations, depth))))
+                self.assertEqual(tuple(sorted(mapping)), mapping)
+        self.assertEqual(grouped_slots(5, 4), (0, 0, 1, 2, 3))
+        for invalid in (0, -1, 65, True, 1.0, "4"):
+            with self.assertRaises(ValueError):
+                grouped_slots(invalid, 4)
+
+    def test_four_edge_terminal_label_survives_four_step_budget(self):
+        examples = make_tasks("train", count=120, seed=53)
+        selected = next(t for t in examples
+                        if t.family == "dependency" and t.depth == 4)
+        operations = training_trace(selected)["operation_steps"]
+        self.assertEqual(len(operations), 5)
+        self.assertEqual(operations[-1]["operation"], "read_terminal_label")
+        feature = snapshots([selected])
+        targets, manifest = build_train_attention(
+            [selected], feature, self.tokenizer, max_depth=4)
+        facts = selected.text.splitlines(keepends=True)
+        terminal = operations[-1]["evidence_index"] + 1
+        start = sum(len(line) for line in facts[:terminal])
+        end = start + len(facts[terminal].rstrip("\r\n"))
+        offsets = self.tokenizer(selected.text, return_tensors="pt",
+                                 return_offsets_mapping=True,
+                                 truncation=False)["offset_mapping"][0].tolist()
+        terminal_tokens = [i for i, (a,b) in enumerate(offsets)
+                           if a < b and start <= a and b <= end]
+        self.assertTrue(terminal_tokens)
+        self.assertTrue(all(targets[0, 3, i].item() == 1.
+                            for i in terminal_tokens))
+        self.assertEqual(manifest["truncated_teacher_steps"], 0)
+        self.assertEqual(manifest["coalesced_teacher_steps"], 1)
+        self.assertEqual(manifest["supervised_steps"], 5)
+        self.assertEqual(manifest["terminal_evidence_supervised_cases"], 1)
+        self.assertEqual(manifest["schema"], "hepta.group.train-attention-binding.v2")
 
     def test_test_selection_and_validation_never_supervise(self):
         for split in ("test", "selection", "validation"):

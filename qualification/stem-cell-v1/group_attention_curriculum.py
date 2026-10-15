@@ -18,6 +18,24 @@ def digest(value):
                                      allow_nan=False).encode()).hexdigest()
 
 
+
+def grouped_slots(operations, max_depth):
+    """Compress ordered public operations into a bounded number of slots.
+
+    No operation or terminal evidence is dropped. Multiple adjacent facts
+    share one attention target when the trace is longer than the recurrent
+    budget. This is a teacher compression, not a claim that a Core step can
+    perform several logical operations at inference.
+    """
+    if (type(operations) is not int or not 1 <= operations <= 64
+            or type(max_depth) is not int or not 1 <= max_depth <= 8):
+        raise ValueError("bounded operation and recurrent-step counts required")
+    if operations <= max_depth:
+        return tuple(range(operations))
+    return tuple(min(max_depth - 1, (index * max_depth) // operations)
+                 for index in range(operations))
+
+
 def _fact_spans(text, expected):
     if not isinstance(text, str) or not text:
         raise ValueError("bounded public text required")
@@ -49,7 +67,8 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
         raise ValueError("invalid frozen token snapshot length")
     targets = torch.zeros((len(tasks), max_depth, max(widths)), dtype=torch.float32)
     trace_hashes, feature_hashes = [], []
-    truncated, supervised, total = 0, 0, 0
+    coalesced, supervised, total, supervised_slots, terminal_cases = 0, 0, 0, 0, 0
+    slot_assignments = []
     unique_groups = set()
     for i, (task, snapshot) in enumerate(zip(tasks, snapshots)):
         teacher = training_trace(task)
@@ -84,8 +103,11 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
                 raise ValueError("overlapping fact/token alignment")
         steps = teacher["operation_steps"]
         total += len(steps)
-        truncated += max(0, len(steps) - max_depth)
-        for depth, step in enumerate(steps[:max_depth]):
+        slots = grouped_slots(len(steps), max_depth)
+        coalesced += max(0, len(steps) - max_depth)
+        supervised_slots += len(set(slots))
+        for operation_index, step in enumerate(steps):
+            depth = slots[operation_index]
             idx = step["evidence_index"]
             a, b = spans[idx]
             positions = [j for j, (start, end) in enumerate(offsets)
@@ -94,19 +116,28 @@ def build_train_attention(tasks, snapshots, tokenizer, *, max_depth=4):
                 raise ValueError("teacher fact lost during tokenization or truncation")
             targets[i, depth, positions] = 1.0
             supervised += 1
+        if not targets[i, slots[-1]].any():
+            raise ValueError("terminal public evidence was not retained")
+        terminal_cases += 1
+        slot_assignments.append((task.source_group, list(slots),
+                                 [step["evidence_index"] for step in steps]))
         trace_hashes.append(teacher["trace_sha256"])
         feature_hashes.append(snapshot.digest)
     if not supervised:
         raise ValueError("zero aligned intermediate steps")
     return targets, {
-        "schema": "hepta.group.train-attention-binding.v1",
+        "schema": "hepta.group.train-attention-binding.v2",
         "authority": "DENY_ALL", "train_only": True,
         "source_groups_sha256": digest(sorted(unique_groups)),
         "trace_hashes_sha256": digest(trace_hashes),
         "feature_hashes_sha256": digest(feature_hashes),
         "teacher_tensor_sha256": hashlib.sha256(targets.numpy().tobytes()).hexdigest(),
         "tokenizer_identity_attested_independently": False,
-        "supervised_steps": supervised, "truncated_teacher_steps": truncated,
+        "supervised_steps": supervised, "truncated_teacher_steps": 0,
+        "coalesced_teacher_steps": coalesced,
+        "supervised_slots": supervised_slots,
+        "terminal_evidence_supervised_cases": terminal_cases,
+        "slot_assignment_sha256": digest(slot_assignments),
         "total_teacher_steps": total, "tokenizer_calls": len(tasks),
         "teacher_does_not_run_at_inference": True,
     }

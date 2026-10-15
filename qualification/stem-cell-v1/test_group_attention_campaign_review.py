@@ -127,8 +127,13 @@ def fixture(directory):
         optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",
         critic_fit_splits=["validation_fit", "validation_calibration"],
         live_system2_modes=["fixed", "ndu"])
-    teacher = dict(source_groups_sha256=_digest([train["source_group"]]),
+    teacher = dict(schema="hepta.group.train-attention-binding.v2",
+        source_groups_sha256=_digest([train["source_group"]]),
         authority="DENY_ALL", train_only=True, supervised_steps=2,
+        total_teacher_steps=2, truncated_teacher_steps=0,
+        coalesced_teacher_steps=0, supervised_slots=2,
+        terminal_evidence_supervised_cases=1,
+        slot_assignment_sha256="b" * 64,
         tokenizer_calls=1, teacher_tensor_sha256="a" * 64)
     encoder = dict(actual_forward_calls=8)
     critic = dict(cpu_ns=200, wall_ns=250, separate_fits_charged=True,
@@ -313,6 +318,25 @@ class PairedReviewTests(unittest.TestCase):
                 mutate(rows)
                 (root / "observations.json").write_text(json.dumps(rows))
                 with self.subTest(mutation=repr(mutate)), self.assertRaises(ValueError):
+                    review(root)
+
+
+    def test_reject_truncated_teacher_or_missing_terminal_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            originals = fixture(root)
+            for attr, value in (("truncated_teacher_steps", 1),
+                                ("terminal_evidence_supervised_cases", 0),
+                                ("supervised_steps", 1),
+                                ("supervised_slots", 0)):
+                teacher = copy.deepcopy(originals["teacher"])
+                report = copy.deepcopy(originals["report"])
+                teacher[attr] = value
+                report["teacher"] = teacher
+                (root / "teacher.json").write_text(json.dumps(teacher))
+                (root / "report.json").write_text(json.dumps(report))
+                with self.subTest(attr=attr), self.assertRaisesRegex(
+                        ValueError, "lossless bounded"):
                     review(root)
 
     def test_reject_teacher_and_unequal_schedule_forgery(self):

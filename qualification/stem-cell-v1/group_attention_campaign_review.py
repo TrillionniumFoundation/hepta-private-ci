@@ -235,6 +235,17 @@ def review(root):
                 or metadata["future_support_guaranteed"]
                 or metadata["confidence_bound_established"]):
             raise ValueError("critic source-bound validation provenance mismatch")
+    if (teacher.get("schema") != "hepta.group.train-attention-binding.v2"
+            or teacher.get("truncated_teacher_steps") != 0
+            or teacher.get("supervised_steps") != teacher.get("total_teacher_steps")
+            or teacher.get("terminal_evidence_supervised_cases") != len(public["train"])
+            or type(teacher.get("coalesced_teacher_steps")) is not int
+            or not 0 <= teacher["coalesced_teacher_steps"] <= teacher["total_teacher_steps"]
+            or type(teacher.get("supervised_slots")) is not int
+            or not len(public["train"]) <= teacher["supervised_slots"] <= 4 * len(public["train"])
+            or type(teacher.get("slot_assignment_sha256")) is not str
+            or len(teacher["slot_assignment_sha256"]) != 64):
+        raise ValueError("lossless bounded intermediate evidence supervision required")
     if (teacher["source_groups_sha256"] != _digest(sorted(seen_groups["train"]))
             or teacher["authority"] != "DENY_ALL" or not teacher["train_only"]
             or teacher["supervised_steps"] < len(public["train"])
