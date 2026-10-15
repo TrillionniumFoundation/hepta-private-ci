@@ -38,6 +38,7 @@ class EncoderProfile:
     expected_width: int
     maximum_tokens: int
     batch_size: int
+    pooling: str
     normalization: str
 
 
@@ -67,11 +68,11 @@ def validated_profile(raw: dict, digest: str) -> EncoderProfile:
     if (type(width) is not int or not 1 <= width <= 512
             or type(tokens) is not int or not 8 <= tokens <= 8192
             or type(batch) is not int or not 1 <= batch <= 32
-            or raw["pooling"] != "attention-mask-mean"
+            or raw["pooling"] not in ("attention-mask-mean", "cls-first-token")
             or raw["normalization"] not in ("none", "unit_l2")):
         raise ContractError("explicit supported width, pooling, normalization and budget required")
     return EncoderProfile(candidate, snapshot, sha(canonical(snapshot)), digest,
-                          width, tokens, batch, raw["normalization"])
+                          width, tokens, batch, raw["pooling"], raw["normalization"])
 
 
 def _input_digest(text: str) -> str:
@@ -137,7 +138,7 @@ def feature_rows(rows: list[dict], phase: str, backend,
         raise ContractError("profile snapshot mutated after admission")
     full_identity = sha(canonical([PROFILE_SCHEMA, profile.profile_digest,
                                    profile.snapshot_digest, identity,
-                                   "attention-mask-mean", profile.normalization]))
+                                   profile.pooling, profile.normalization]))
     produced = []
     start_calls = getattr(backend, "forward_calls", None)
     if type(start_calls) is not int or start_calls < 0:
@@ -146,7 +147,10 @@ def feature_rows(rows: list[dict], phase: str, backend,
     forward_batches = 0
     for i in range(0, len(prepared), profile.batch_size):
         selection = prepared[i:i + profile.batch_size]
-        vectors = backend.encode([x["row"]["target_text"] for x in selection])
+        texts = [x["row"]["target_text"] for x in selection]
+        # A mean-only backend must not claim to have performed a CLS forward.
+        vectors = (backend.encode(texts) if profile.pooling == "attention-mask-mean"
+                   else backend.encode(texts, pooling=profile.pooling))
         if (not isinstance(vectors, torch.Tensor) or vectors.device.type != "cpu"
                 or vectors.dtype != torch.float32 or vectors.ndim != 2
                 or tuple(vectors.shape) != (len(selection), profile.expected_width)
@@ -184,7 +188,7 @@ def feature_rows(rows: list[dict], phase: str, backend,
                "snapshot_digest": profile.snapshot_digest,
                "profile_digest": profile.profile_digest, "backend_identity": identity,
                "feature_encoder_identity": full_identity,
-               "pooling": "attention-mask-mean", "normalization": profile.normalization,
+               "pooling": profile.pooling, "normalization": profile.normalization,
                "output_width": profile.expected_width, "examples": len(produced),
                "batches": forward_batches, "backend_forward_calls_observed": forward_batches, "physical_forwards": None,
                "measured_wall_ns": duration, "process_rss_bytes": None,

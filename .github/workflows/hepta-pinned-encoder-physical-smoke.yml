@@ -61,7 +61,7 @@ jobs:
             echo 'Physical integration test skipped, refuse qualification' >&2
             exit 1
           fi
-          grep -q 'Ran 6 tests' /tmp/hepta-physical-smoke/actual-local-material-tests.log
+          grep -q 'Ran 7 tests' /tmp/hepta-physical-smoke/actual-local-material-tests.log
           grep -q '^OK$' /tmp/hepta-physical-smoke/actual-local-material-tests.log
       - name: Record exact source identity and disposition
         if: always()
