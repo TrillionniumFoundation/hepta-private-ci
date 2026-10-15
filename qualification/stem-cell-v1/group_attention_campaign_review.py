@@ -17,6 +17,7 @@ from group_checkpoint_audit import verify_checkpoint_file, strict_json_file
 from group_trace_semantic_audit import verify_trace_semantics
 from group_attention_slot_review import review_train_slots
 from group_abort_trace_audit import ABORTS, audit_abort
+from group_terminal_receipt_review import replay_terminal_guard
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -46,7 +47,7 @@ REQUIRED_SOURCES = (
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
     "group_attention_slot_review.py", "group_token_id_binding.py",
     "group_abort_trace_audit.py", "group_attention_coverage.py",
-    "group_terminal_evidence.py",
+    "group_terminal_evidence.py", "group_terminal_receipt_review.py",
 )
 
 
@@ -324,6 +325,7 @@ def review(root):
                 or eligible <= 0 or suppressed <= 0
                 or eligible + suppressed > upper):
             raise ValueError("missing real prefix-guarded TRAIN label withholding receipts")
+        replay_terminal_guard(protocol, teacher, learned)
     elif learned.get("terminal_guard_enabled", False) is not False:
         raise ValueError("terminal-guard policy and training evidence disagree")
     if any(training[name].get("terminal_guard_enabled", False) is not False
