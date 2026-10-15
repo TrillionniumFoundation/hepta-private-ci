@@ -182,7 +182,7 @@ pub fn neuron_batch_final_use_binding_v1(
 
 /// Revalidate final-use using the identical, immutable Arc-backed Q24 slice
 /// that was sealed at admission. Never rematerialize an owned request to hash.
-fn neuron_batch_final_use_binding_with_slice_v1(
+pub(crate) fn neuron_batch_final_use_binding_with_slice_v1(
     worker_id: &str,
     key: &MicrobatchKeyV1,
     request: &NeuronFeatureRequest,
