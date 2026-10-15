@@ -113,7 +113,7 @@ Aligned8 and shuffled8 each emitted the prescribed refusal on4/4 empty inputs,
 and0/4 own-source or0/3 available donor-source inputs. The frozen Reader had
 no prescribed refusals. All registered exact-body and citation-syntax counts
 remain0. This is not independent semantic accuracy: no raw answer was edited
-or automatically regraded into correctness, and missing targets are not judged
+or automatically re-scored into correctness, and missing targets are not judged
 errors. The stronger content interaction has not yet translated into a proven
 improvement in grounded final answers. Neither adapter is adopted or admitted.
 
