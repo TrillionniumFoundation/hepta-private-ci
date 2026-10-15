@@ -46,6 +46,7 @@ REQUIRED_SOURCES = (
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
     "group_attention_slot_review.py", "group_token_id_binding.py",
     "group_abort_trace_audit.py", "group_attention_coverage.py",
+    "group_terminal_evidence.py",
 )
 
 
@@ -167,6 +168,8 @@ def review(root):
         "adam_v1": {"core_optimizer_kind": "adam", "core_learning_rate": 0.008},
     }
     selected_profile = protocol.get("training_profile")
+    if type(protocol.get("terminal_guard", False)) is not bool:
+        raise ValueError("malformed terminal-guard experiment policy")
     if (selected_profile not in registered_optimizer
             or protocol.get("optimizer_policy") != registered_optimizer[selected_profile]
             or protocol.get("optimizer_comparison_scope") !=
@@ -300,6 +303,32 @@ def review(root):
             or training["core"].get("operation_coverage_enabled") is not False):
 
         raise ValueError("paired training schedule or teacher digest mismatch")
+    guarded = protocol.get("terminal_guard", False)
+    learned = training["attention"]
+    if guarded:
+        identity = learned.get("terminal_eligibility_sha256")
+        upper = protocol["steps"] * min(32, len(public["train"])) * protocol["max_depth"]
+        eligible = learned.get("terminal_eligible_step_examples")
+        suppressed = learned.get("terminal_suppressed_step_examples")
+        if (learned.get("terminal_guard_enabled") is not True
+                or learned.get("terminal_label_contract") !=
+                   "train_evidence_completed_before_final_ce.v1"
+                or learned.get("depth_supervision") !=
+                   "terminal_ce_only_after_required_train_evidence"
+                or type(identity) is not str or len(identity) != 64
+                or identity == "0" * 64
+                or any(ch not in "0123456789abcdef" for ch in identity)
+                or type(learned.get("terminal_eligibility_bytes")) is not int
+                or learned["terminal_eligibility_bytes"] <= 0
+                or type(eligible) is not int or type(suppressed) is not int
+                or eligible <= 0 or suppressed <= 0
+                or eligible + suppressed > upper):
+            raise ValueError("missing real prefix-guarded TRAIN label withholding receipts")
+    elif learned.get("terminal_guard_enabled", False) is not False:
+        raise ValueError("terminal-guard policy and training evidence disagree")
+    if any(training[name].get("terminal_guard_enabled", False) is not False
+           for name in ("static", "wide", "core")):
+        raise ValueError("control arms unexpectedly use terminal-guard labels")
     def valid_sha(value):
         return (type(value) is str and len(value) == 64
                 and value != "0" * 64
