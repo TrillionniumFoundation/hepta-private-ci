@@ -13,7 +13,6 @@ use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
-use sha2::Digest as _;
 use sha2::Sha256;
 
 use crate::RuntimeStateAdapter;

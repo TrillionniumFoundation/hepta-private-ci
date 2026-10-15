@@ -753,12 +753,12 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     Ok(())
 }
 
-/// The first-party split CNS port must invoke the real runtime topology
-/// executor with a signed single-use grant, not mutate an imitation route
-/// map. This intentionally uses only test-owned keys, candidate and storage.
+/// Even a valid first-party governed successor, signed route and Final-use
+/// fixture MUST NOT mutate the real runtime without an original shared
+/// Control/Neuron durable Begin/Commit owner. No imitation route is used.
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 #[test]
-fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
+fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() -> Result<()> {
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
@@ -1013,36 +1013,50 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         witness,
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
-    port.publish_once(&plan, &binding, &intent)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(runtime.topology_snapshot()?, expected);
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
-    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
-    let original = port
-        .read_original_commit(&intent.idempotency_key)?
-        .expect("fsynced original runtime receipt");
-    port.verify_original_commit(&original)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(
-        original.committed_sequence,
-        port.committed_sequence(&binding.cns_id)?
+    // This is a REAL serving Runtime host and a valid signed predecessor,
+    // signed one-use grant, and admitted successor candidate, but NONE is a
+    // substitute for original Control's durable same-owner B/C transaction.
+    port.verify_preconditions(&plan, &intent)
+        .map_err(anyhow::Error::msg)?;
+    let live = port
+        .inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))
+        .map_err(anyhow::Error::msg)?;
+    port.verify_live(&live).map_err(anyhow::Error::msg)?;
+    assert_eq!(live.generation, plan.parent_generation);
+    let denied = port
+        .publish_once(&plan, &binding, &intent)
+        .expect_err("missing durable Control Begin/Commit must deny real CNS mutation");
+    assert!(
+        denied.contains("no shared durable Control/Neuron cutover transaction"),
+        "denial must be the first original Control safety fence"
     );
-    let live = port.inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))?;
-    port.verify_live(&live)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(live.generation, plan.child_generation);
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert!(
+        port.read_original_commit(&intent.idempotency_key)
+            .map_err(anyhow::Error::msg)?
+            .is_none(),
+        "denied cutover cannot mint an original signed runtime receipt"
+    );
+    assert_eq!(
+        port.committed_sequence(&binding.cns_id)
+            .map_err(anyhow::Error::msg)?,
+        1,
+        "no durable successor sequence is permitted"
+    );
+    assert!(!original_path.exists(), "denied cutover has no durable effect");
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
 
-    // Process-local CNS hosts are NOT a durable restart registry. A fresh
-    // default host must never be mistaken for the already-committed successor
-    // simply because the original signed runtime receipt survived on disk.
+    // Restart must not manufacture a successor or a positive commit from a
+    // signed candidate which never crossed the durable Control transaction.
     drop(port);
     let after_restart = crate::HeptaRuntime::from_adapter(root, state);
     assert_eq!(after_restart.topology_snapshot()?, before);
     let restarted_witness = DurableTestCnsWitness {
         signer: runtime_signer.clone(),
-        original_path,
+        original_path: original_path.clone(),
         _authority_dir: tempfile::tempdir()?,
         successor: None,
     };
@@ -1067,7 +1081,8 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
         owner.read_committed(&intent).is_err(),
-        "committed runtime receipt cannot activate a fresh old-generation host",
+        "missing original Control handoff cannot promote a fresh runtime host",
     );
+    assert!(!original_path.exists(), "restart may not manufacture a CNS commit");
     Ok(())
 }
