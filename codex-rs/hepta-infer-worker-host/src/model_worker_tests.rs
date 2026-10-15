@@ -6,14 +6,33 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     excessive_neuron_transient: bool,
+    invalid_handle: bool,
+    reuse_loaded_handle: bool,
+    fail_unload: bool,
+    fail_load_after_allocation: bool,
+    fail_run_after_execution: bool,
+    fail_feature_after_execution: bool,
+    reported_run_memory_bytes: Option<u64>,
+    reported_feature_memory_bytes: Option<u64>,
     loaded: usize,
+    run_calls: usize,
+    feature_calls: usize,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load_after_allocation {
+            return Err(Error::DriverFailure("load might have allocated".into()));
+        }
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
+            opaque_id: if self.invalid_handle {
+                "invalid handle".to_string()
+            } else if self.reuse_loaded_handle {
+                "handle.shared-alias".to_string()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
             observed_memory_bytes: 1_024,
         })
     }
@@ -23,13 +42,17 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.run_calls += 1;
+        if self.fail_run_after_execution {
+            return Err(Error::DriverFailure("run may have taken effect".into()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
                 succeeded: false,
                 output_digest: None,
                 consumed_tokens: 4,
-                observed_memory_bytes: 1_024,
+                observed_memory_bytes: self.reported_run_memory_bytes.unwrap_or(1_024),
             });
         }
         Ok(DriverRunObservation {
@@ -37,11 +60,14 @@ impl ModelDriver for Driver {
             succeeded: !self.fail_terminal,
             output_digest: Some("9".repeat(64)),
             consumed_tokens: 16,
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.reported_run_memory_bytes.unwrap_or(1_024),
         })
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unknown physical unload".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -53,6 +79,10 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.feature_calls += 1;
+        if self.fail_feature_after_execution {
+            return Err(Error::DriverFailure("Head may have executed".into()));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -61,7 +91,7 @@ impl NeuronFeatureDriver for Driver {
                 head_digest: request.head_digest.clone(),
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
-                observed_memory_bytes: 1_024,
+                observed_memory_bytes: self.reported_feature_memory_bytes.unwrap_or(1_024),
                 transient_allocation_bytes: 2_048,
                 queue_age_micros: 11,
                 latency_micros: 17,
@@ -78,7 +108,7 @@ impl NeuronFeatureDriver for Driver {
             },
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.reported_feature_memory_bytes.unwrap_or(1_024),
             transient_allocation_bytes: if self.excessive_neuron_transient {
                 4_096
             } else {
