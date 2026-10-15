@@ -16,6 +16,7 @@ from torch.nn import functional as F
 from execution_meter import BudgetStop, POLICY_SCHEMA, WorkLedger
 from group_core import Core
 from group_attention_coverage import per_operation_mass_loss
+from group_terminal_evidence import terminal_label_eligibility, guarded_terminal_cross_entropy
 from paired_execution import PHASES
 
 
@@ -118,7 +119,7 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
               route_targets=None, max_depth=4, learning_rate=.05, batch_size=32,
               feedback_fn=None, attention_targets=None, operation_targets=None,
               attention_weight=0.1,
-              optimizer_kind="sgd"):
+              optimizer_kind="sgd", terminal_guard=False):
     """Train only supplied fitting labels, then freeze an independent model.
 
     Route labels are optional, train-only family supervision. They never enter
@@ -166,7 +167,10 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                 or (operation_targets * (~masks).unsqueeze(1).unsqueeze(1)).any()
                 or not torch.equal(operation_targets.amax(dim=2), attention_targets)):
             raise ValueError("complete binary per-operation evidence masks required")
+    if type(terminal_guard) is not bool or (terminal_guard and operation_targets is None):
+        raise ValueError("terminal guard requires complete TRAIN per-operation evidence")
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
+    completion = terminal_label_eligibility(operation_targets) if terminal_guard else None
     initial_model_sha256 = model_parameter_digest(model)
     trained = copy.deepcopy(model).train()
     for parameter in trained.parameters():
@@ -184,6 +188,7 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
     feedback_calls, nonzero_feedback_batches = 0, 0
     attention_supervised_examples = 0
     operation_supervised_examples = 0
+    terminal_eligible_step_examples, terminal_suppressed_step_examples = 0, 0
 
     def diagnostic():
         with meter.scope("evaluation", "bank"), torch.no_grad():
@@ -219,7 +224,14 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                             else:
                                 mass = (attention * chosen).sum(dim=1)
                                 pointer_loss = (-(mass.clamp_min(1e-8).log()) * active).sum() / active.sum().clamp_min(1)
-                            step_loss = F.cross_entropy(logits, y) + attention_weight * pointer_loss
+                            if terminal_guard:
+                                terminal_loss, admitted = guarded_terminal_cross_entropy(
+                                    logits, y, completion[batch, level])
+                                terminal_eligible_step_examples += admitted
+                                terminal_suppressed_step_examples += len(indices) - admitted
+                            else:
+                                terminal_loss = F.cross_entropy(logits, y)
+                            step_loss = terminal_loss + attention_weight * pointer_loss
                             attention_supervised_examples += int(active.sum().item())
                         else:
                             state, logits = trained.step(x, state, fb, mask)
@@ -286,6 +298,16 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                                            if operation_targets is not None
                                            else "union_log_mass_legacy"
                                            if attention_targets is not None else "none"),
+               "terminal_guard_enabled": terminal_guard,
+               "terminal_label_contract": ("train_evidence_completed_before_final_ce.v1"
+                                           if terminal_guard else "legacy_all_steps"),
+               "terminal_eligible_step_examples": terminal_eligible_step_examples,
+               "terminal_suppressed_step_examples": terminal_suppressed_step_examples,
+               "terminal_eligibility_sha256": (
+                   hashlib.sha256(completion.contiguous().numpy().tobytes()).hexdigest()
+                   if completion is not None else None),
+               "terminal_eligibility_bytes": (
+                   completion.numel() * completion.element_size() if completion is not None else 0),
                "operation_target_sha256": (
                    hashlib.sha256(operation_targets.contiguous().numpy().tobytes()).hexdigest()
                    if operation_targets is not None else None),
@@ -298,7 +320,10 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "training_feedback_calls": feedback_calls,
                "nonzero_feedback_batches": nonzero_feedback_batches,
                "feedback_interface": "fitting_batch_indices_and_detached_guesses_only",
-               "depth_supervision": "mean_all_steps" if (feedback_fn is not None or attention_targets is not None) and not isinstance(trained, StaticHead) else "final_step",
+               "depth_supervision": ("terminal_ce_only_after_required_train_evidence"
+                                      if terminal_guard else "mean_all_steps"
+                                      if (feedback_fn is not None or attention_targets is not None)
+                                      and not isinstance(trained, StaticHead) else "final_step"),
                "diagnostic_loss_profile": "fitting_labels_max_depth_without_dynamic_feedback",
                "budget_comparison": "actual_consumption_reported_unequal_budgets",
                "excluded_formula_work": ["caller_initialization", "feature_production", "Python_integer_sampling",
