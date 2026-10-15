@@ -643,7 +643,9 @@ impl NduPublicationOwnerV1 {
         let mut owner_lock = File::from(
             unixfs::openat(
                 &parent_dir,
-                lock_path.file_name().ok_or(NduPublicationErrorV1::UnsafePath)?,
+                lock_path
+                    .file_name()
+                    .ok_or(NduPublicationErrorV1::UnsafePath)?,
                 lock_flags,
                 private_mode,
             )
