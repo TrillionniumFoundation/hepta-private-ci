@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from group_attention_campaign_review import ARMS, COHORTS, REQUIRED_SOURCES, _digest, review
+from group_attention_campaign_review import ARMS, COHORTS, REQUIRED_SOURCES, MODES, MODELS, _digest, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
 
 
@@ -31,6 +31,10 @@ def _case(family, query, facts, prefix):
 def fixture(directory):
     train = _case("dependency", ("follow", "n0"),
                   [("link", "n0", "n9"), ("label", "n9", "A")], "train")
+    valid_a = _case("dependency", ("follow", "n0"),
+                    [("link", "n0", "n5"), ("label", "n5", "F")], "validation")
+    valid_b = _case("dependency", ("follow", "n0"),
+                    [("link", "n0", "n6"), ("label", "n6", "G")], "validation")
     first = _case("dependency", ("follow", "n0"),
                   [("link", "n0", "n2"), ("label", "n2", "B")], "test")
     second = _case("constraint", ("intersection",), [("allow", "0", ("C",))], "test")
@@ -43,7 +47,7 @@ def fixture(directory):
         text=COMPOSITION_PROMPT + "\n[LEFT]\n" + first["text"]
         + "\n[RIGHT]\n" + second["text"])
     deleted = [dict(c, text=c["text"].splitlines()[0]) for c in (first, second)]
-    cases = dict(train=[train], test=[first, second], long=[long],
+    cases = dict(train=[train], validation=[valid_a, valid_b], test=[first, second], long=[long],
                  deleted=deleted, composition=[composition])
     source_dir = Path(__file__).parent
     source_hashes = {
@@ -54,11 +58,24 @@ def fixture(directory):
         source_sha256=source_hashes,
         frozen_candidate_arms=list(ARMS), evaluation_cohorts=list(COHORTS),
         train_source_groups=[train["source_group"]], public_cases=cases,
-        steps=3, seed=17)
+        steps=3, seed=17,
+        critic_fit_splits=["validation_fit", "validation_calibration"],
+        live_system2_modes=["fixed", "ndu"])
     teacher = dict(source_groups_sha256=_digest([train["source_group"]]),
         authority="DENY_ALL", train_only=True, supervised_steps=2,
         tokenizer_calls=1, teacher_tensor_sha256="a" * 64)
     encoder = dict(actual_forward_calls=8)
+    critic = dict(cpu_ns=200, wall_ns=250, separate_fits_charged=True,
+                  source_group_independence_claimed=False, receipts={})
+    for model_owner in ("core", "attention"):
+        critic["receipts"][model_owner] = dict(
+            metadata=dict(source_groups={
+                "fit": [valid_a["source_group"]],
+                "calibration": [valid_b["source_group"]]},
+                future_support_guaranteed=False,
+                confidence_bound_established=False),
+            parameters_sha256=hashlib.sha256(model_owner.encode()).hexdigest(),
+            fit_rows=3, calibration_rows=3)
     training = {}
     for arm in ARMS:
         training[arm] = dict(status="completed", completed_steps=3, seed=17,
@@ -72,27 +89,47 @@ def fixture(directory):
             group_rows = []
             for case in cases[cohort]:
                 correct, _, _ = _parse(case, missing=cohort == "deleted")
+                mode = MODES[arm]
+                depth = 1 if arm in ("static", "wide") else 4
+                if mode == "ndu":
+                    depth = 1
                 row = dict(cohort=cohort, arm=arm, case_id=case["case_id"],
                     source_group=case["source_group"],
                     feature_sha256=hashlib.sha256(
                         (cohort + case["text"]).encode()).hexdigest(),
-                    model_sha256=hashlib.sha256(arm.encode()).hexdigest(),
+                    model_sha256=hashlib.sha256(MODELS[arm].encode()).hexdigest(),
                     prediction=0 if correct is None else correct,
                     evidence_supported=correct is not None,
                     success=correct is not None, unsupported_attempt=correct is None,
+                    valid_execution=True, steps=depth,
+                    verifier_calls=0 if mode == "direct" else depth,
+                    search_formula_work=None if mode == "direct" else 100,
+                    execution_mode=mode,
+                    execution_status=("direct_forward" if mode == "direct"
+                        else "depth_exhausted" if mode == "fixed"
+                        else "ndu_stop:no_supported_net_gain"),
                     wall_ns=20, cpu_ns=10)
                 rows.append(row)
                 group_rows.append(row)
+            status_counts = {}
+            for row in group_rows:
+                status = row["execution_status"]
+                status_counts[status] = status_counts.get(status, 0) + 1
             summaries[f"{cohort}.{arm}"] = dict(n=len(group_rows),
                 correct=sum(r["success"] for r in group_rows),
                 unsupported_attempts=sum(r["unsupported_attempt"] for r in group_rows),
+                steps=sum(r["steps"] for r in group_rows),
+                verifier_calls=sum(r["verifier_calls"] for r in group_rows),
+                execution_statuses=status_counts,
                 cpu_ns=sum(r["cpu_ns"] for r in group_rows),
                 wall_ns=sum(r["wall_ns"] for r in group_rows),
                 p50_ns=20, p95_ns=20)
     report = dict(schema="hepta.group.paired-step-observation.v1",
         protocol_sha256=_digest(protocol), authority="DENY_ALL",
         production_authorized=False, natural_future_win_established=False,
-        equal_actual_training_work=False, teacher=teacher,
+        equal_actual_training_work=False, teacher=teacher, critic_cost=critic,
+        real_system2_callbacks_executed=True,
+        same_model_critic_frozen_on_validation_only=True,
         encoder_cost=encoder, training=training, summaries=summaries)
     for name, data in (("protocol", protocol), ("teacher", teacher),
                        ("encoder", encoder), ("observations", rows), ("report", report)):
