@@ -35,6 +35,7 @@ def receipts(seed, completed=8):
                             pair_weight=.5, finite_gradients=True,
                             inference_feature_arguments=6, cpu_ns=5, wall_ns=6))
     return cohort,dict(schedule_sha256=_hash(schedule), updates=updates,
+                       cpu_ns=completed*5+10, wall_ns=completed*6+10,
                        completed_steps=completed, actual_training_exposures=completed*8,
                        case_exposures=dict(counter))
 
@@ -77,6 +78,12 @@ class OracleTests(unittest.TestCase):
         tampered['case_exposures'].pop(next(iter(tampered['case_exposures'])))
         with self.assertRaisesRegex(ValueError,'source exposures'):
             verify_observed_training(source,47,tampered,steps=16,batch_size=8)
+
+    def test_underreported_full_lifecycle_cost_denied(self):
+        source,receipt=receipts(47)
+        receipt['cpu_ns']=1
+        with self.assertRaisesRegex(ValueError,'lifecycle cost'):
+            verify_observed_training(source,47,receipt,steps=16,batch_size=8)
 
     def test_duplicate_group_member_rejected(self):
         source=cases()
