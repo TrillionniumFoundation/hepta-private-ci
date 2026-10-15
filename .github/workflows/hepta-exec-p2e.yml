@@ -1,0 +1,159 @@
+name: Hepta Exec P2e three-way native protocol conformance
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/codex-exec-p2e/**'
+      - 'scripts/hepta_exec_p2e.py'
+      - 'scripts/tests/test_hepta_exec_p2e.py'
+      - 'codex-rs/hepta-contracts/tests/exec_upstream_p2e.rs'
+      - 'codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs'
+      - 'codex-rs/hepta-contracts/src/exec_server_start_p2c*'
+      - 'codex-rs/exec-server-protocol/src/**'
+      - '.github/workflows/hepta-exec-p2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exec-p2e-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: P2e actual parsers (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      UPSTREAM_SHA: 092d3acd6bec3e3a14bdc7e7a2810ab628ab759d
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact Hepta source without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify source or create exact prospective two-parent merge
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor a2d9d5ef229e5dc2ea3baee4e60195b40b3ff056 HEAD
+          if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'P2e qualification only; no effect authority' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            test "$(git show -s --format=%P "$merge")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$merge"
+          fi
+          printf 'source=%s base=%s tested=%s tree=%s\n' "$SOURCE_SHA" "$BASE_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          test "$(git rev-parse HEAD:codex-rs/exec-server-protocol/src/protocol.rs)" = 055bf57ab6c4f49496c40581872a3f0b331d0610
+          git diff --exit-code HEAD
+
+      - name: Checkout reviewed upstream commit, not a moving tag
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: openai/codex
+          ref: ${{ env.UPSTREAM_SHA }}
+          path: upstream
+          persist-credentials: false
+
+      - name: Verify upstream source and install test-only corpus/probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream rev-parse HEAD)" = "$UPSTREAM_SHA"
+          test "$(git -C upstream rev-parse HEAD:codex-rs/exec-server-protocol/src/protocol.rs)" = 62d901e0f41209424523e817166441ce4265f5f9
+          test "$(git -C upstream rev-parse HEAD:codex-rs/exec-server-protocol/src/rpc.rs)" = 1d79b2b6f343b7f2045b0aeb11e684799d1db37c
+          test ! -e upstream/qualification/codex-exec-p2e
+          test ! -e upstream/codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs
+          mkdir -p upstream/qualification/codex-exec-p2e upstream/codex-rs/exec-server-protocol/tests
+          cp source/qualification/codex-exec-p2e/{corpus.json,native_probe.rs} upstream/qualification/codex-exec-p2e/
+          cp source/qualification/codex-exec-p2e/upstream_probe.rs upstream/codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs
+          cmp source/qualification/codex-exec-p2e/corpus.json upstream/qualification/codex-exec-p2e/corpus.json
+          cmp source/qualification/codex-exec-p2e/native_probe.rs upstream/qualification/codex-exec-p2e/native_probe.rs
+          mkdir -p "$RUNNER_TEMP/p2e"
+
+      - name: Auditor adversarial tests and original lock integrity
+        working-directory: source
+        run: |
+          python3 -m unittest discover -s scripts/tests -p test_hepta_exec_p2e.py -v
+          python3 scripts/hepta_exec_p2e.py --corpus qualification/codex-exec-p2e/corpus.json --validate-only
+          python3 scripts/verify_cargo_lock.py
+
+      - name: Native Hepta formatting, build, original regression and strict lint
+        working-directory: source/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version --verbose
+          cargo fmt -p codex-hepta-contracts -p codex-exec-server-protocol -- --check
+          cargo check --locked -p codex-hepta-contracts -p codex-exec-server-protocol --all-targets
+          cargo test --locked -p codex-hepta-contracts -p codex-hepta-evidence --lib
+          cargo test --locked -p codex-exec-server-protocol --lib
+          cargo clippy --locked -p codex-hepta-contracts -p codex-exec-server-protocol --all-targets -- -D warnings
+
+      - name: Run actual Hepta inspector and repository native parser
+        working-directory: source/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-contracts --test exec_upstream_p2e -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/p2e/hepta.log"
+          cargo test --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/p2e/local.log"
+
+      - name: Run pinned upstream actual WireExecParams ingress
+        working-directory: upstream/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version --verbose
+          cargo fmt -p codex-exec-server-protocol -- --check
+          cargo test --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/p2e/upstream.log"
+          cargo clippy --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- -D warnings
+
+      - name: Strict three-way semantic audit, never a production receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 source/scripts/hepta_exec_p2e.py \
+            --corpus source/qualification/codex-exec-p2e/corpus.json \
+            --hepta-log "$RUNNER_TEMP/p2e/hepta.log" \
+            --local-log "$RUNNER_TEMP/p2e/local.log" \
+            --upstream-log "$RUNNER_TEMP/p2e/upstream.log" \
+            --source-root source --upstream-root upstream --output "$RUNNER_TEMP/p2e/report.json"
+          git -C source diff --exit-code HEAD
+          test -z "$(git -C source ls-files --others --exclude-standard)"
+          git -C upstream diff --exit-code HEAD
+          printf '%s\n' codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs \
+            qualification/codex-exec-p2e/corpus.json qualification/codex-exec-p2e/native_probe.rs \
+            | sort > "$RUNNER_TEMP/p2e/expected-untracked"
+          git -C upstream ls-files --others --exclude-standard | sort > "$RUNNER_TEMP/p2e/actual-untracked"
+          diff -u "$RUNNER_TEMP/p2e/expected-untracked" "$RUNNER_TEMP/p2e/actual-untracked"
+
+      - name: Retain raw native logs including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p2e-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/p2e
+          if-no-files-found: warn
+          retention-days: 14
