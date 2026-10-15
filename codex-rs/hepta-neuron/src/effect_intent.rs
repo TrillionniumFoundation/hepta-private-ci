@@ -203,6 +203,26 @@ impl DurableNeuronEffectIntentV1 {
         Err(NeuronEffectIntentErrorV1::UnsupportedPlatform)
     }
 
+    /// Read-only completed effect IDs from this already locked and replayed
+    /// original WAL. This local list is not a signed Control decision or a
+    /// model-effect receipt; Agentd must verify exact original Evidence
+    /// membership and an independent authority before considering recovery.
+    pub fn completed_tick_digests_v1(
+        &self,
+    ) -> Result<Vec<Digest32>, NeuronEffectIntentErrorV1> {
+        #[cfg(unix)]
+        if self.owner_path.is_some() {
+            self.verify_bound_owner_path()?;
+        }
+        if self.poisoned {
+            return Err(NeuronEffectIntentErrorV1::Poisoned);
+        }
+        if self.pending.is_some() || self.recovered_pending {
+            return Err(NeuronEffectIntentErrorV1::PendingReconciliation);
+        }
+        Ok(self.attempted.iter().copied().collect())
+    }
+
     pub fn status(&self) -> NeuronEffectIntentStatusV1 {
         NeuronEffectIntentStatusV1 {
             attempted_ticks: self.attempted.len(),

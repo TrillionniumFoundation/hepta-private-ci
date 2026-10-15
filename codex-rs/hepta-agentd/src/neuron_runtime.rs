@@ -216,6 +216,15 @@ where
             .map(DurableNeuronEffectIntentV1::status)
     }
 
+    /// Boot-only readback from the ORIGINAL locked business-effect WAL;
+    /// never a public authority or a new model invocation path.
+    pub(crate) fn recovered_completed_effect_ids_v1(&self) -> Option<Vec<Digest32>> {
+        self.effect_intent
+            .as_ref()?
+            .completed_tick_digests_v1()
+            .ok()
+    }
+
     /// The old unsigned entry is not a serving path.
     #[deprecated(note = "unsigned Agentd neuron ticks are denied; use tick_bound")]
     pub fn tick(
