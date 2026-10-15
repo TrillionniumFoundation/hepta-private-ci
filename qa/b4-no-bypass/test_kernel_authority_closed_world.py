@@ -846,7 +846,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertRegex(
             live,
             r"unixfs::openat\(\s*&parent_dir,\s*"
-            r"lock_path\.file_name\(\)",
+            r"lock_path\s*\.file_name\(\)",
             "owner-lock must be opened relative to the original dirfd",
         )
         self.assertRegex(
