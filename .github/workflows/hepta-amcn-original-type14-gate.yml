@@ -1,0 +1,63 @@
+name: Hepta AMCN original 42 Reader E2 scientific denial (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_type_divergence_reader.py"
+      - "qualification/amcn-v1/test_amcn_original_type_divergence_reader.py"
+      - "qualification/amcn-v1/amcn_original_type14_receipt_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_type14_receipt_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TYPE14_READER_20261015.json"
+      - "qualification/amcn-v1/ORIGINAL_TYPE14_REAL_READER.md"
+      - ".github/workflows/hepta-amcn-original-type14-gate.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_type_divergence_reader.py"
+      - "qualification/amcn-v1/test_amcn_original_type_divergence_reader.py"
+      - "qualification/amcn-v1/amcn_original_type14_receipt_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_type14_receipt_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TYPE14_READER_20261015.json"
+      - "qualification/amcn-v1/ORIGINAL_TYPE14_REAL_READER.md"
+      - ".github/workflows/hepta-amcn-original-type14-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  original-e2-research-denial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Original E2 source-integrity and negative-authority audit (NO model claim)
+        run: |
+          set -euo pipefail
+          sha256sum qualification/amcn-v1/ORIGINAL_TYPE14_READER_20261015.json
+          printf '%s  %s\n' \
+            3e03f0f4f7e6135e4ce2372df4c107a683e3f300cb3af998f943120f040fef5b \
+            qualification/amcn-v1/ORIGINAL_TYPE14_READER_20261015.json | sha256sum -c -
+          python3 -m py_compile \
+            qualification/amcn-v1/amcn_original_type_divergence_reader.py \
+            qualification/amcn-v1/test_amcn_original_type_divergence_reader.py \
+            qualification/amcn-v1/amcn_original_type14_receipt_gate.py \
+            qualification/amcn-v1/test_amcn_original_type14_receipt_gate.py
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 \
+            -p 'test_amcn_original_type14_receipt_gate.py' -v
+          python3 qualification/amcn-v1/amcn_original_type14_receipt_gate.py \
+            qualification/amcn-v1/ORIGINAL_TYPE14_READER_20261015.json \
+            --output /tmp/hepta-amcn-e2-no-go.json
+          python3 - <<'PY'
+          import json
+          v=json.load(open('/tmp/hepta-amcn-e2-no-go.json'))
+          assert v['actual_reader_model_calls']==42
+          assert v['typed_specific_task_superiority_verified'] is False
+          assert v['full_task_semantic_utility_verified'] is False
+          assert v['automatic_cell_fission_or_promotion_eligible'] is False
+          assert v['production_accepted'] is False
+          PY
