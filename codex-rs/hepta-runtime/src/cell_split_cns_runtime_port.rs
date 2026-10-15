@@ -16,6 +16,7 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(test)]
 use codex_hepta_control_plane::NduPublicationLocalFrontierV1;
 use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
