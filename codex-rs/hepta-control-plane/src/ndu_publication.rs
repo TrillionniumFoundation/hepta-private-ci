@@ -528,7 +528,11 @@ impl NduPublicationOwnerV1 {
         // A symlinked ancestor can alias a private original WAL and its
         // persistent sidecar lock under a second owner path spelling.
         // This bootstrap guard does not replace dirfd-anchored openat safety.
-        if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
+        if parent
+            .canonicalize()
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+            != parent
+        {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let dir = fs::symlink_metadata(parent)?;
