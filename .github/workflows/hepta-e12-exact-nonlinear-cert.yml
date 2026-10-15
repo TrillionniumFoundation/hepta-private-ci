@@ -1,0 +1,92 @@
+name: Hepta E12 nonlinear exact discrete FBSDE and controls (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e12_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e12_*.py'
+      - 'qualification/shared-stem-system2-architecture/E12_NONLINEAR_EXACT_CERT_20261015.md'
+      - '.github/workflows/hepta-e12-exact-nonlinear-cert.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nonlinear-source-and-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ROOT: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e12-independent
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Record and assert exact tested tree identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/tested-head.txt"
+          if [[ "${{ matrix.source_profile }}" == "source_head" && "${{ github.event_name }}" == "pull_request" ]]; then
+            test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          fi
+          python --version | tee "$OUTPUT/python-version.txt"
+          sha256sum "$ROOT"/e12_*.py "$ROOT"/test_e12_*.py \
+            | tee "$OUTPUT/research-source-sha256.txt"
+          sha256sum "$ROOT"/e11_stochastic_tree.py \
+            | tee "$OUTPUT/inherited-e11-original-sha256.txt"
+      - name: E12 nonlinear global tests, no asserts as gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/e12-normal.log" 2>&1 || { cat "$OUTPUT/e12-normal.log"; exit 1; }
+          tail -12 "$OUTPUT/e12-normal.log"
+      - name: Re-run E12 tests under optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/e12-optimized.log" 2>&1 || { cat "$OUTPUT/e12-optimized.log"; exit 1; }
+          tail -12 "$OUTPUT/e12-optimized.log"
+      - name: Recheck E11 inherited stochastic and original-covariance controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e11_*.py' -q \
+            > "$OUTPUT/e11-regression.log" 2>&1 || { cat "$OUTPUT/e11-regression.log"; exit 1; }
+          tail -10 "$OUTPUT/e11-regression.log"
+      - name: Six preregistered nonlinear laws with real Python paid measurements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e12_study.py" execute \
+            --output "$OUTPUT/sealed-create-only.json" | tee "$OUTPUT/executor.log"
+          sha256sum "$OUTPUT/sealed-create-only.json" \
+            | tee "$OUTPUT/pre-review-seal-sha256.txt"
+      - name: Independently replay all full trees, iterations, action and cost controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEALED_SHA="$(cut -d ' ' -f1 "$OUTPUT/pre-review-seal-sha256.txt")"
+          python "$ROOT/e12_study.py" audit --source "$OUTPUT/sealed-create-only.json" \
+            --sha256 "$SEALED_SHA" --output "$OUTPUT/independent-review.json" \
+            | tee "$OUTPUT/reviewer.log"
+          sha256sum "$OUTPUT/independent-review.json" \
+            | tee "$OUTPUT/independent-review-sha256.txt"
+      - name: Retain exact source and all available failures as research evidence only
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e12-nonlinear-stochastic-${{ matrix.source_profile }}
+          path: /tmp/hepta-e12-independent/
+          retention-days: 14
+          if-no-files-found: warn
