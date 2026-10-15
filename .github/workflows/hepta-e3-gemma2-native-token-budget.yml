@@ -1,7 +1,7 @@
 name: Hepta E3 native Gemma2 no-truncation contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-byte-ledger-gemma2-no-truncation-convergence-20261015"]
+    branches: ["research/e3-byte-ledger-gemma2-no-truncation-convergence-20261015", "fix/e3-advanced-converged-ci-python-syntax-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_gemma2_native_budget.py"
       - "experiments/shared_stem_cell/test_e3_gemma2_native_budget.py"

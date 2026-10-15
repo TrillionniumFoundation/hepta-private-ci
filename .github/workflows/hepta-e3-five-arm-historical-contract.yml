@@ -1,7 +1,7 @@
 name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015", "fix/e3-advanced-byte-ledger-native-gemma-physical-arity-20261015", "research/e3-byte-ledger-gemma2-no-truncation-convergence-20261015"]
+    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015", "fix/e3-advanced-byte-ledger-native-gemma-physical-arity-20261015", "research/e3-byte-ledger-gemma2-no-truncation-convergence-20261015", "fix/e3-advanced-converged-ci-python-syntax-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
@@ -60,6 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile experiments/shared_stem_cell/e3_five_arm_historical.py experiments/shared_stem_cell/test_e3_five_arm_historical.py
+          python3 -m py_compile experiments/shared_stem_cell/test_e3_converged_ci_gates.py
           python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_five_arm_historical.py' -v
       - name: Independently re-run optimized Python, no asserts disabled
         run: |
