@@ -110,6 +110,23 @@ class BindingReviewTests(unittest.TestCase):
         zeros = audit_scores(self.cases, [.5] * len(self.cases))
         self.assertEqual((zeros["accuracy"], zeros["both_worlds_correct"]), (.5, 0.))
 
+    def test_saved_fp32_probabilities_do_not_reconstruct_logit_space_cross_entropy(self):
+        # FP32 softmax can round a positive probability to one although its
+        # negative-class logit loss remains finite. The two CE definitions must
+        # remain separate rather than relaxing canonical probability_CE checks.
+        probabilities = list(self.probabilities)
+        negative = next(i for i, case in enumerate(self.cases) if not case.label)
+        probabilities[negative] = 1.
+        expected = audit_scores(self.cases, probabilities)
+        logit_record = dict(n=128, accuracy=expected["accuracy"], binary_cross_entropy=.2)
+        audited = audit_scores(self.cases, probabilities, logit_record)
+        self.assertEqual(audited["probability_CE"], expected["probability_CE"])
+        self.assertNotAlmostEqual(audited["probability_CE"], logit_record["binary_cross_entropy"])
+        with self.assertRaisesRegex(ValueError, "metric mismatch: probability_CE"):
+            audit_scores(self.cases, probabilities, dict(logit_record, probability_CE=.2))
+        with self.assertRaisesRegex(ValueError, "logit-space CE"):
+            audit_scores(self.cases, probabilities, dict(logit_record, binary_cross_entropy=float("nan")))
+
     def test_warmup_recounts_complete_updates_gate_and_nested_costs(self):
         receipt = self.warmup()
         report = audit_warmup(receipt, self.cases, self.metrics)

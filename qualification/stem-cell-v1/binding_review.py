@@ -159,7 +159,10 @@ def audit_scores(cases, probabilities, reported=None):
         mean_absolute_world_probability_gap=sum(absolute) / len(absolute),
         positive_truth_gap_rate=sum(value > 0 for value in signed) / len(signed))
     if reported is not None:
-        aliases = dict(n="cases", binary_cross_entropy="probability_CE")
+        # Training CE was computed directly from logits. Saved FP32 softmax
+        # probabilities can round near 0/1 and cannot reconstruct that value.
+        # Canonical panel probability_CE is instead recomputed from saved p.
+        aliases = dict(n="cases")
         for key, expected in metrics.items():
             name = key if key in reported else next((alias for alias, target in aliases.items() if target == key and alias in reported), None)
             if name is not None:
@@ -168,6 +171,10 @@ def audit_scores(cases, probabilities, reported=None):
                        and math.isclose(value, expected, abs_tol=2e-6, rel_tol=1e-6), "reported metric mismatch: " + key)
         if "predictions" in reported:
             _check(reported["predictions"] == predictions, "reported predictions differ from raw p>0.5")
+        if "binary_cross_entropy" in reported:
+            value = reported["binary_cross_entropy"]
+            _check(type(value) in (int, float) and math.isfinite(value) and value >= 0,
+                   "training logit-space CE must be finite and nonnegative")
     return metrics
 
 
@@ -245,8 +252,12 @@ def audit_warmup(receipt, cases, scored_metrics=None):
     _check(receipt["completed_steps"] == count and receipt["actual_training_exposures"] == count * receipt["batch_size"], "warmup exposure count mismatch")
     diagnostics = receipt["diagnostics"]
     _check(bool(diagnostics), "complete diagnostics required")
+    diagnostic_ce = []
     for diagnostic in diagnostics:
-        audit_scores(rows, diagnostic["binding"]["probabilities"], diagnostic["binding"])
+        measured = diagnostic["binding"]
+        rescored = audit_scores(rows, measured["probabilities"], measured)
+        diagnostic_ce.append(dict(optimizer_step=diagnostic["optimizer_step"],
+            probability_CE=rescored["probability_CE"], reported_logit_space_CE=measured["binary_cross_entropy"]))
     last = audit_scores(rows, diagnostics[-1]["binding"]["probabilities"], diagnostics[-1]["binding"])
     qualified = _gate(last)
     _check(bool(receipt["train_gate_passed"]) == qualified, "warmup pass flag conflicts with independent scores")
@@ -257,7 +268,10 @@ def audit_warmup(receipt, cases, scored_metrics=None):
                    for key in ("accuracy", "both_worlds_correct", "probability_CE")), "saved checkpoint panel differs from final training diagnostic")
     _check(set(receipt["training_source_groups"]) == {r["source_hash"] for r in rows}, "warmup training sources mismatch")
     return dict(passed=True, qualified=qualified, independently_recomputed_metrics=last,
-                costs=_nested_costs(receipt, nested), model_sha256=receipt["model_sha256"])
+                costs=_nested_costs(receipt, nested), model_sha256=receipt["model_sha256"], diagnostic_CE=diagnostic_ce,
+                CE_definitions=dict(probability_CE="negative_log_of_saved_FP32_probability_with_1e-12_floor",
+                    reported_logit_space_CE="recorded_torch_cross_entropy_from_logits_not_independently_reconstructed",
+                    interchangeable=False), qualification_uses_saved_probability_CE=True)
 
 
 def audit_continuation(receipt, plan, natural_cases, binding_cases, warmup_receipt):
