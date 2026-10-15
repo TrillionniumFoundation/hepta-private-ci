@@ -23,7 +23,30 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  p0_rustfmt:
+    name: P0 exact-source Rustfmt (x86)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out immutable source HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Install pinned minimal Rustfmt toolchain
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Refuse any original Neuron, Agentd, Core or Worker Rustfmt drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
+          git diff --check
+          git diff --exit-code
+
   qualification:
+    needs: p0_rustfmt
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
@@ -442,13 +465,15 @@ jobs:
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs: [p0_rustfmt, qualification]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Require both exact-candidate lanes
         env:
+          FORMAT_RESULT: ${{ needs.p0_rustfmt.result }}
           RESULT: ${{ needs.qualification.result }}
         run: |
+          test "$FORMAT_RESULT" = success
           test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          echo "Pinned x86 Rustfmt and all applicable exact-candidate lanes succeeded; identical-tree reuse requires source-head success."
