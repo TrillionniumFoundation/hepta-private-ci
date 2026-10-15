@@ -56,6 +56,13 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
     start_wall, start_cpu = time.perf_counter_ns(), time.process_time_ns()
+    # Initialize Torch's lazy framework registrations before entering any
+    # strict per-operator metering scope. This is lifecycle-paid (the clocks
+    # start above), not silently attributed to one SGD or search operation.
+    lazy_start_wall, lazy_start_cpu = time.perf_counter_ns(), time.process_time_ns()
+    import torch._dynamo  # noqa: F401
+    lazy_setup_cost = dict(wall_ns=time.perf_counter_ns() - lazy_start_wall,
+                           cpu_ns=time.process_time_ns() - lazy_start_cpu)
     torch.set_num_threads(1)
     torch.manual_seed(seed)
     tasks = {"train": make_tasks("train", train_count, seed=seed),
@@ -283,6 +290,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         wide_parameter_match=geometry, encoder_cost=encoder_cost,
         final_loaded_tensor_verification=final_loaded_tensor_verification,
         teacher=teacher_receipt, summaries=summaries, critic_cost=critic_cost,
+        torch_lazy_setup_cost=lazy_setup_cost,
         real_system2_callbacks_executed=True,
         heldout_target_stripped_before_system2_callbacks=True,
         same_model_critic_frozen_on_validation_only=True,
