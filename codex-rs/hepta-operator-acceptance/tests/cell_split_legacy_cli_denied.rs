@@ -59,10 +59,19 @@ fn compiled_operator_binary_rejects_write_actions_before_io() {
             .output()
             .expect("real operator binary must execute");
         assert!(!output.status.success(), "{action} must be rejected");
-        assert!(output.stdout.is_empty(), "{action} must return no positive receipt");
+        assert!(
+            output.stdout.is_empty(),
+            "{action} must return no positive receipt"
+        );
         let diagnostic = String::from_utf8_lossy(&output.stderr);
-        assert!(diagnostic.contains(expected), "{action} denied unexpectedly: {diagnostic}");
-        assert!(!absent.exists(), "{action} must not materialize config or ledger");
+        assert!(
+            diagnostic.contains(expected),
+            "{action} denied unexpectedly: {diagnostic}"
+        );
+        assert!(
+            !absent.exists(),
+            "{action} must not materialize config or ledger"
+        );
     }
     assert!(
         root.path().read_dir().expect("directory").next().is_none(),
