@@ -1091,7 +1091,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
             ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
         };
-        build_neuron_feature_receipt_v1(
+        let receipt = build_neuron_feature_receipt_v1(
             &control_request,
             runtime_tuple,
             NeuronFeatureObservationV1 {
@@ -1106,7 +1106,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 status,
             },
         )
-        .map_err(|_| Error::FeatureContract)
+        .map_err(|_| Error::FeatureContract);
+        if receipt.is_err() {
+            // The driver may have physically executed before its terminal
+            // envelope was rejected. Do not reuse the same generation.
+            self.poisoned = true;
+        }
+        receipt
     }
 }
 
