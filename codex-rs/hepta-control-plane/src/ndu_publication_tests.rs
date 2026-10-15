@@ -1390,9 +1390,8 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
     std::fs::remove_file(&marker).expect("delete impostor marker only");
     std::fs::remove_dir(&parent).expect("empty substitute directory");
     std::fs::rename(&detached, &parent).expect("restore original name");
-    let reopened =
-        NduPublicationOwnerV1::open_production(&journal, original.clone(), checkpoint)
-            .expect("unchanged original Control must recover");
+    let reopened = NduPublicationOwnerV1::open_production(&journal, original.clone(), checkpoint)
+        .expect("unchanged original Control must recover");
     assert_eq!(
         reopened.read_original_local_frontier_v1().unwrap(),
         original_frontier,
