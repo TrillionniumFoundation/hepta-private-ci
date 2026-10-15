@@ -31,7 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Verify actual source checkout before numerical tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -120,8 +129,11 @@ jobs:
           persist-credentials: false
       - name: Verify exact reviewed source commits
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
           test "$(git -C pinned-e1 rev-parse HEAD)" = 09bb40d8bf3a058a34607179d4e0fbdf11a41277
           test "$(git -C pinned-public-source rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
