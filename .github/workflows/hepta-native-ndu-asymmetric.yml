@@ -1,0 +1,53 @@
+name: Native NDU asymmetric 2D certificate research
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/asymmetric_2d/**'
+      - '.github/workflows/hepta-native-ndu-asymmetric.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  globally-certified-quotient:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python 3.13
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Pinned independent numerical tools
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Prove both global references and rerun all 64 fits
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd/asymmetric_2d"
+          OUT="$RUNNER_TEMP/ndu-asymmetric-r18"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/HEAD.txt"
+          python -m pip freeze > "$OUT/ENVIRONMENT.txt"
+          python -m unittest discover -s "$SRC" -p test_math.py -v 2>&1 | tee "$OUT/MATH_TESTS.log"
+          (cd "$SRC" && python certificate.py) > "$OUT/CERTIFICATE.json"
+          (cd "$SRC" && python -c 'import json;from certificate import ablation_certificate;print(json.dumps(ablation_certificate(),indent=2,sort_keys=True))') > "$OUT/ABLATION_CERTIFICATE.json"
+          python "$SRC/run.py" sweep --out "$OUT/runs" 2>&1 | tee "$OUT/SWEEP.log"
+          python "$SRC/audit/verify.py" --source "$SRC" --runs "$OUT/runs" --out "$OUT/verified" 2>&1 | tee "$OUT/AUDIT.log"
+          NDU_R18_SOURCE="$SRC" NDU_R18_RUNS="$OUT/runs" python -m unittest discover -s "$SRC/audit" -p test_tamper.py -v 2>&1 | tee "$OUT/TAMPER.log"
+          sha256sum "$SRC/certificate.py" "$SRC/problem.py" "$SRC/solver.py" "$SRC/run.py" > "$OUT/SOURCE_SHA256.txt"
+      - name: Retain failures as well as passes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-asymmetric-r18-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-asymmetric-r18
+          if-no-files-found: error
+          retention-days: 14
