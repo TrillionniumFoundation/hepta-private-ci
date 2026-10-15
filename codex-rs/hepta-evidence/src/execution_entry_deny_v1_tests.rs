@@ -44,11 +44,18 @@ async fn no_record_denies_without_creating_one() {
         .audit_execution_effect_entry_denied_v1(&intent, PAYLOAD)
         .await
         .expect("deny-only audit");
-    assert_eq!(result.denied, ExecutionEffectEntryDeniedV1::NoOriginalPreparation);
+    assert_eq!(
+        result.denied,
+        ExecutionEffectEntryDeniedV1::NoOriginalPreparation
+    );
     assert_eq!(result.generation, intent.generation);
     assert_eq!(result.fence, intent.fence);
     assert_eq!(
-        store.read_execution_preparation_v1(&intent).await.expect("read").status,
+        store
+            .read_execution_preparation_v1(&intent)
+            .await
+            .expect("read")
+            .status,
         crate::ExecutionPreparationReadbackStatusV1::Absent
     );
 }
@@ -58,7 +65,10 @@ async fn even_a_real_durable_prepare_cannot_mint_a_tool_grant() {
     let tmp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&tmp)).await.expect("open");
     let intent = input();
-    store.prepare_execution_intent_v1(&intent, PAYLOAD).await.expect("prepare");
+    store
+        .prepare_execution_intent_v1(&intent, PAYLOAD)
+        .await
+        .expect("prepare");
     let denial = store
         .audit_execution_effect_entry_denied_v1(&intent, PAYLOAD)
         .await
@@ -80,7 +90,9 @@ async fn quarantined_original_never_reuses_or_resends() {
     let store = HeptaEvidenceStore::open(&config(&tmp)).await.expect("open");
     let intent = input();
     let receipt = store
-        .prepare_execution_intent_v1(&intent, PAYLOAD).await.expect("prepare");
+        .prepare_execution_intent_v1(&intent, PAYLOAD)
+        .await
+        .expect("prepare");
     store
         .mark_provider_effect_indeterminate(
             &receipt.readback.provider_effect_key,
@@ -90,7 +102,8 @@ async fn quarantined_original_never_reuses_or_resends() {
         .expect("quarantine");
     let denial = store
         .audit_execution_effect_entry_denied_v1(&intent, PAYLOAD)
-        .await.expect("deny");
+        .await
+        .expect("deny");
     assert_eq!(
         denial.denied,
         ExecutionEffectEntryDeniedV1::OriginalOwnerReconciliationRequired
@@ -102,14 +115,24 @@ async fn stale_generation_and_wrong_payload_reject_before_entry() {
     let tmp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&tmp)).await.expect("open");
     let intent = input();
-    store.prepare_execution_intent_v1(&intent, PAYLOAD).await.expect("prepare");
-    let stale = ExecutionIntentV1 { generation: 99, ..intent.clone() };
+    store
+        .prepare_execution_intent_v1(&intent, PAYLOAD)
+        .await
+        .expect("prepare");
+    let stale = ExecutionIntentV1 {
+        generation: 99,
+        ..intent.clone()
+    };
     assert!(matches!(
-        store.audit_execution_effect_entry_denied_v1(&stale, PAYLOAD).await,
+        store
+            .audit_execution_effect_entry_denied_v1(&stale, PAYLOAD)
+            .await,
         Err(EvidenceError::IdempotencyConflict { .. })
     ));
     assert!(matches!(
-        store.audit_execution_effect_entry_denied_v1(&intent, b"forged").await,
+        store
+            .audit_execution_effect_entry_denied_v1(&intent, b"forged")
+            .await,
         Err(EvidenceError::InvalidRecord(_))
     ));
 }
@@ -120,12 +143,18 @@ async fn read_only_reopen_can_deny_without_write_authority() {
     let cfg = config(&tmp);
     let writer = HeptaEvidenceStore::open(&cfg).await.expect("open");
     let intent = input();
-    writer.prepare_execution_intent_v1(&intent, PAYLOAD).await.expect("prepare");
+    writer
+        .prepare_execution_intent_v1(&intent, PAYLOAD)
+        .await
+        .expect("prepare");
     writer.close().await;
-    let reader = HeptaEvidenceStore::open_existing_read_only(&cfg).await.expect("read-only");
+    let reader = HeptaEvidenceStore::open_existing_read_only(&cfg)
+        .await
+        .expect("read-only");
     let denial = reader
         .audit_execution_effect_entry_denied_v1(&intent, PAYLOAD)
-        .await.expect("read-only deny");
+        .await
+        .expect("read-only deny");
     assert_eq!(
         denial.denied,
         ExecutionEffectEntryDeniedV1::IndependentFinalUseAndPhysicalOwnerUnavailable
