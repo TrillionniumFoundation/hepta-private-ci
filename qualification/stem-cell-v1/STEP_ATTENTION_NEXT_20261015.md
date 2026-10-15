@@ -144,3 +144,7 @@ and separately observed training, Encoder, teacher, Critic, online and
 checkpoint costs. It deliberately does **not** certify equal compute,
 same physical host, prospective independent cases, or any optimizer winner.
 The research output remains DENY_ALL.
+
+## Full per-step proposal and verifier semantics (research V2)
+
+The research-only System2 trace V2 now stores the bounded actual A–H candidate sequence. A separate stdlib module recomputes proposer and verifier output digests from each public symbolic fact, validates fixed-depth forced rejection, checks NDU continuation estimate hashes and terminal reasons, and rejects rehashed false candidates. This verifies semantic internal consistency only; it does not attest external model execution, task source authenticity or real-world reasoning efficacy. Production remains DENY_ALL.

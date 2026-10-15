@@ -14,6 +14,7 @@ from pathlib import Path
 
 from group_campaign_review import _parse
 from group_checkpoint_audit import verify_checkpoint_file, strict_json_file
+from group_trace_semantic_audit import verify_trace_semantics
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -40,7 +41,7 @@ REQUIRED_SOURCES = (
     "group_campaign.py", "group_loop.py", "group_critic.py",
     "system2_execution.py", "ndu_continuation.py",
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
-    "group_checkpoint_audit.py",
+    "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
 )
 
 
@@ -61,7 +62,7 @@ def _summarize(rows):
                 p95_ns=times[min(len(times) - 1, int(.95 * len(times)))])
 
 
-def _verify_system2_trace(row, record, critic_sha):
+def _verify_system2_trace(row, record, critic_sha, public_answer, family):
     """Strict callback-order and workspace replay from the retained raw trace.
 
     Digests and self-reported work are structural checks, NOT execution
@@ -71,11 +72,12 @@ def _verify_system2_trace(row, record, critic_sha):
         "schema", "authority", "cohort", "arm", "case_id", "mode", "status",
         "feature_sha256", "model_sha256", "critic_sha256", "final_candidate",
         "calls", "trace", "workspace_bindings", "verifier_statuses",
+        "proposed_candidates",
         "ndu_decisions", "independent_success_established",
         "production_authorized",
     }
     if (type(record) is not dict or set(record) != fields
-            or record["schema"] != "hepta.group.system2-full-trace.v1"
+            or record["schema"] != "hepta.group.system2-full-trace.v2"
             or record["authority"] != "DENY_ALL"
             or record["production_authorized"] is not False
             or record["independent_success_established"] is not False
@@ -141,6 +143,7 @@ def _verify_system2_trace(row, record, critic_sha):
             raise ValueError("unreplayed or malformed NDU decisions")
     elif record["ndu_decisions"] != []:
         raise ValueError("fixed-depth control cannot emit NDU decisions")
+    verify_trace_semantics(row, record, public_answer, family)
     return True
 
 
@@ -382,7 +385,8 @@ def review(root):
         if arm in SYSTEM2:
             owner = MODELS[arm]
             _verify_system2_trace(row, traces.get(key),
-                                  critic["receipts"][owner]["parameters_sha256"])
+                                  critic["receipts"][owner]["parameters_sha256"],
+                                  label, case["family"])
         elif row.get("full_trace_sha256") is not None:
             raise ValueError("direct control must not claim an executed System2 trace")
         feature_hashes[(cohort, cid)].add(row["feature_sha256"])

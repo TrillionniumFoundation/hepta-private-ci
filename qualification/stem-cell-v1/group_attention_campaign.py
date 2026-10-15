@@ -97,7 +97,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "group_campaign.py", "group_loop.py", "group_critic.py",
                     "system2_execution.py", "ndu_continuation.py",
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
-                    "group_checkpoint_audit.py")
+                    "group_checkpoint_audit.py", "group_trace_semantic_audit.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
@@ -292,7 +292,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                 trace_sha256 = None
                 if execution_mode != "direct":
                     trace_payload = dict(
-                        schema="hepta.group.system2-full-trace.v1",
+                        schema="hepta.group.system2-full-trace.v2",
                         authority="DENY_ALL",
                         cohort=cohort, arm=name, case_id=task.task_id,
                         mode=execution_mode, status=status,
@@ -304,6 +304,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                         trace=result["trace"],
                         workspace_bindings=result["workspace_bindings"],
                         verifier_statuses=result["verifier_statuses"],
+                        proposed_candidates=result["proposed_candidates"],
                         ndu_decisions=result.get("ndu_decisions", []),
                         independent_success_established=False,
                         production_authorized=False)

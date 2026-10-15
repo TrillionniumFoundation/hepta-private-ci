@@ -40,11 +40,22 @@ def fake_system2_trace(row, critic_sha):
         kinds.extend(("propose", "verify"))
         if step < steps - 1 or trailing_value:
             kinds.append("value")
-    trace = [
-        dict(kind=kind, call=idx, elapsed_ns=1, status="completed",
-             output_digest=hashlib.sha256(f"{row['case_id']}/{idx}/{kind}".encode()).hexdigest())
-        for idx, kind in enumerate(kinds, start=1)
-    ]
+    proposed = [chr(65 + row["prediction"])] * steps
+    feedback = "missing_evidence" if not row["evidence_supported"] else "supported"
+    trace = []
+    step_index = 0
+    for idx, kind in enumerate(kinds, start=1):
+        if kind == "propose":
+            output_digest = _digest(proposed[step_index])
+        elif kind == "verify":
+            accepted = feedback == "supported" and (
+                mode == "ndu" or step_index == steps-1)
+            output_digest = _digest([accepted, feedback])
+            step_index += 1
+        else:
+            output_digest = _digest({"synthetic": idx})
+        trace.append(dict(kind=kind, call=idx, elapsed_ns=1,
+                          status="completed", output_digest=output_digest))
     workspaces = [
         dict(step=idx, feature_sha256=row["feature_sha256"],
              model_sha256=row["model_sha256"],
@@ -53,9 +64,11 @@ def fake_system2_trace(row, critic_sha):
     ]
     statuses = (["missing_evidence"] * steps if not row["evidence_supported"]
                 else ["supported"] * steps)
-    decisions = ([dict(continue_computation=False, reason="synthetic-stop")
-                  for _ in kinds if _ == "value"] if mode == "ndu" else [])
-    return dict(schema="hepta.group.system2-full-trace.v1",
+    decisions = ([dict(continue_computation=False,
+                       reason=row["execution_status"].removeprefix("ndu_stop:"),
+                       estimate_id=item["output_digest"])
+                  for item in trace if item["kind"] == "value"] if mode == "ndu" else [])
+    return dict(schema="hepta.group.system2-full-trace.v2",
                 authority="DENY_ALL", cohort=row["cohort"], arm=row["arm"],
                 case_id=row["case_id"], mode=mode, status=row["execution_status"],
                 feature_sha256=row["feature_sha256"],
@@ -63,7 +76,8 @@ def fake_system2_trace(row, critic_sha):
                 critic_sha256=critic_sha,
                 final_candidate=chr(65 + row["prediction"]), calls=len(trace),
                 trace=trace, workspace_bindings=workspaces,
-                verifier_statuses=statuses, ndu_decisions=decisions,
+                verifier_statuses=statuses, proposed_candidates=proposed,
+                ndu_decisions=decisions,
                 independent_success_established=False, production_authorized=False)
 
 
@@ -353,6 +367,27 @@ class PairedReviewTests(unittest.TestCase):
             (root / "observations.json").write_text(json.dumps(changed_rows))
             (root / "report.json").write_text(json.dumps(changed_report))
             with self.assertRaisesRegex(ValueError, "causal propose"):
+                review(root)
+
+
+    def test_independent_public_verifier_refuses_rehashed_false_candidate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            original = fixture(root)
+            traces = copy.deepcopy(original["system2-traces"])
+            rows = copy.deepcopy(original["observations"])
+            report = copy.deepcopy(original["report"])
+            target = next(t for t in traces if t["cohort"] == "test" and t["arm"] == "core_fixed")
+            target["proposed_candidates"][0] = "H"
+            target["trace"][0]["output_digest"] = _digest("H")
+            row = next(r for r in rows if (r["cohort"], r["arm"], r["case_id"]) ==
+                       (target["cohort"], target["arm"], target["case_id"]))
+            row["full_trace_sha256"] = _digest(target)
+            report["full_system2_trace_manifest_sha256"] = _digest(traces)
+            (root / "system2-traces.json").write_text(json.dumps(traces))
+            (root / "observations.json").write_text(json.dumps(rows))
+            (root / "report.json").write_text(json.dumps(report))
+            with self.assertRaisesRegex(ValueError, "verifier feedback"):
                 review(root)
 
     def test_reject_missing_system2_trajectory(self):
