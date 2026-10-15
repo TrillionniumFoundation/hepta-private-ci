@@ -6,6 +6,8 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py'
       - 'qualification/cell_meta_execution_af/GRANITE_FROZEN_PARENT_JOIN.md'
       - 'qualification/cell_meta_execution_af/physical_router_frozen_old*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_seed_independence*.py'
+      - 'qualification/cell_meta_execution_af/SEED_INDEPENDENCE_E3A.md'
       - '.github/workflows/hepta-cell-meta-granite-real.yml'
       - '.github/workflows/hepta-cell-meta-granite-frozen-convergence.yml'
   workflow_dispatch:
@@ -74,7 +76,16 @@ jobs:
           set -euo pipefail
           python -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          # The physical FP32 weight sealing calls Tensor.numpy(); torch's
+          # CPU wheel alone does not guarantee NumPy is present in CI.
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
+          python - <<'PY'
+          import numpy
+          import torch
+          assert numpy.__version__ == '2.2.6'
+          assert torch.tensor([1.25], dtype=torch.float32).numpy().dtype == numpy.float32
+          PY
       - name: Run original and two-parent exact source tests
         run: |
           set -euo pipefail
@@ -85,10 +96,13 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_real_review.py \
             qualification/cell_meta_execution_af/physical_router_frozen_old.py \
             qualification/cell_meta_execution_af/physical_router_frozen_old_audit.py \
-            qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py
+            qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py \
+            qualification/cell_meta_execution_af/physical_router_seed_independence.py \
+            qualification/cell_meta_execution_af/physical_router_seed_independence_tests.py
           python -m unittest qualification.cell_meta_execution_af.physical_router_trial_tests -v
           python -m unittest qualification.cell_meta_execution_af.physical_router_real_tests -v
           python -m unittest qualification.cell_meta_execution_af.physical_router_frozen_old_tests -v
           python -m unittest qualification.cell_meta_execution_af.physical_router_real_frozen_tests -v
+          python -m unittest qualification.cell_meta_execution_af.physical_router_seed_independence_tests -v
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
