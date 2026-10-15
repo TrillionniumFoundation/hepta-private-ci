@@ -171,3 +171,21 @@ plan before releasing evaluation tasks, and keep the protected file outside
 Reader/encoder/index/optimizer visibility. File timestamps and SHA hashes
 alone do not prove a historical GitHub preregistration or an authenticated
 human review; that authority remains a separate required gate.
+
+## Independent controlled-program subprocess replay (2026-10-15)
+
+An additional fail-closed `memory_trial_program_replay.py` verifies the
+original program-call SHA population, frozen source-before-task worker and
+recipe digests, original requests/stdout/stderr/exit codes, and the matching
+original model answer and program counters. It REEXECUTES the pinned existing
+`event_probe.py` in an isolated Python subprocess (bounded sort/reverse
+only), without invoking a pretrained model or arbitrary repository code.
+
+The strict scorer optionally accepts all four flags together:
+`--program-spec`, `--program-spec-sha256`, `--program-receipts`,
+`--program-receipts-sha256`. The original trial preflight and fixed-workload
+replay MUST pass before the scorer opens private labels. Without a pinned
+program receipt the independent replay status remains false. The new CI runs
+real subprocess replay regressions and a fully synthetic 160-row scoring CLI
+roundtrip. A controlled worker test is NOT real-world coding, parameter
+memory benefit, independent human certification, or production qualification.

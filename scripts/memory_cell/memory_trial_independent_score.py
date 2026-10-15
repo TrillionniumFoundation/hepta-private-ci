@@ -199,6 +199,10 @@ def main():
         p.add_argument("--" + name, type=Path, required=True)
     for name in ("plan", "original", "labels"):
         p.add_argument("--" + name + "-sha256", required=True)
+    p.add_argument("--program-spec", type=Path)
+    p.add_argument("--program-spec-sha256")
+    p.add_argument("--program-receipts", type=Path)
+    p.add_argument("--program-receipts-sha256")
     args = p.parse_args()
     ensure(not args.scored.exists() and not args.report.exists(), "never overwrite existing evidence")
     # Original journal is validated before opening protected labels.
@@ -207,11 +211,27 @@ def main():
     ensure(sha(plan) and sha(originals), "canonical original journal required")
     # The CLI must not OPEN the protected file before completing raw preflight.
     preflight_originals(plan, originals)
+    # Reexecute fixed program traces before private gold can be opened.
+    supplied = (args.program_spec, args.program_spec_sha256,
+                args.program_receipts, args.program_receipts_sha256)
+    ensure(all(v is None for v in supplied) or all(v is not None for v in supplied),
+           "program manifest and original receipt pins must be supplied together")
+    if all(v is not None for v in supplied):
+        from memory_trial_program_replay import audit as replay_program
+
+        spec = bound_read(args.program_spec, args.program_spec_sha256)
+        original_receipts = bound_read(args.program_receipts, args.program_receipts_sha256)
+        replay = replay_program(plan, originals, spec, original_receipts)
+    else:
+        replay = None
     labels = bound_read(args.labels, args.labels_sha256)
     rows, audit = score(plan, originals, labels)
     audit["external_byte_pins"] = dict(plan=args.plan_sha256,
                                        original=args.original_sha256,
                                        labels=args.labels_sha256)
+    audit["controlled_program_replay"] = replay
+    audit["program_execution_independently_replayed"] = replay is not None
+    audit["general_project_program_skill_qualified"] = False
     with args.scored.open("x", encoding="utf-8") as dest:
         json.dump(rows, dest, sort_keys=True, ensure_ascii=False, allow_nan=False)
         dest.write("\n")

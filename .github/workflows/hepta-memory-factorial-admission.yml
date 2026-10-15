@@ -10,6 +10,8 @@ on:
       - "scripts/memory_cell/test_memory_trial_independent_score.py"
       - "scripts/memory_cell/memory_trial_preexposure_freeze.py"
       - "scripts/memory_cell/test_memory_trial_preexposure_freeze.py"
+      - "scripts/memory_cell/memory_trial_program_replay.py"
+      - "scripts/memory_cell/test_memory_trial_program_replay.py"
       - "scripts/memory_cell/test_factorial_evidence_gate.py"
   push:
     branches:
@@ -22,6 +24,8 @@ on:
       - "scripts/memory_cell/test_memory_trial_independent_score.py"
       - "scripts/memory_cell/memory_trial_preexposure_freeze.py"
       - "scripts/memory_cell/test_memory_trial_preexposure_freeze.py"
+      - "scripts/memory_cell/memory_trial_program_replay.py"
+      - "scripts/memory_cell/test_memory_trial_program_replay.py"
 permissions:
   contents: read
 jobs:
@@ -43,6 +47,7 @@ jobs:
           python3 -m py_compile scripts/memory_cell/factorial_evidence_gate.py
           python3 -m py_compile scripts/memory_cell/memory_trial_independent_score.py
           python3 -m py_compile scripts/memory_cell/memory_trial_preexposure_freeze.py
+          python3 -m py_compile scripts/memory_cell/memory_trial_program_replay.py
       - name: Run deterministic fail-closed regressions (no model calls)
         run: |
           set -euo pipefail
@@ -51,3 +56,4 @@ jobs:
           python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_admission.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_independent_score.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_preexposure_freeze.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_program_replay.py' -v
