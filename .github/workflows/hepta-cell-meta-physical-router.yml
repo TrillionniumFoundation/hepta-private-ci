@@ -48,7 +48,16 @@ jobs:
           set -euo pipefail
           python -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          # The original FP32 tensor->byte sealing path calls .numpy();
+          # Torch's CPU wheel does not guarantee NumPy is installed.
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
+          python - <<'PY'
+          import numpy
+          import torch
+          assert numpy.__version__ == '2.2.6'
+          assert torch.tensor([1.25], dtype=torch.float32).numpy().dtype == numpy.float32
+          PY
           python -m pip freeze > "$RUNNER_TEMP/router-cpu-package-versions.txt"
       - name: Physical optimizer, isolation and negative test suite
         run: |
