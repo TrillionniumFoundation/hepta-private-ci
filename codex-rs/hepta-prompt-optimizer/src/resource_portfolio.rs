@@ -15,7 +15,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-use crate::canonical::{PricedPromptCandidatesV1, PromptPricingReceiptV1};
+use crate::canonical::PricedPromptCandidatesV1;
 
 pub const MAX_ACTIONS_V1: usize = 32;
 pub const MAX_COVARIANCE_EDGES_V1: usize = (MAX_ACTIONS_V1 * (MAX_ACTIONS_V1 - 1)) / 2;
@@ -601,7 +601,7 @@ mod tests {
     use super::*;
     use crate::canonical::{
         EnumeratedPromptCandidatesV1, PricedPromptCandidateV1, PromptCandidateBindingV1,
-        PromptCandidateSetReceiptV1, PromptConfidenceIntervalV1,
+        PromptCandidateSetReceiptV1, PromptConfidenceIntervalV1, PromptPricingReceiptV1,
     };
     use codex_hepta_prompt_registry::PromptModelTupleV2;
     use codex_hepta_prompt_registry::PromptRealizationBindingV2;
@@ -685,7 +685,7 @@ mod tests {
         };
         let candidate_set = EnumeratedPromptCandidatesV1 {
             registry_snapshot: codex_hepta_prompt_registry::PromptRegistrySnapshotV2 {
-                revision: codex_hepta_types::Revision::new(1).unwrap(),
+                revision: codex_hepta_types::Revision::new(1).unwrap_or_else(|_| panic!("revision")),
                 registry_digest: digest("registry"),
                 lifecycle_frontier: 1,
                 revocation_frontier: 0,
@@ -876,7 +876,7 @@ mod tests {
 
     #[test]
     fn selects_one_action_under_incremental_budget_and_denies_authority() {
-        let result = select_resource_portfolio_shadow_v1(input()).unwrap();
+        let result = select_resource_portfolio_shadow_v1(input()).unwrap_or_else(|error| panic!("selection: {error}"));
         assert_eq!(result.selected_action_ids, vec![id("action:a")]);
         assert_eq!(result.aggregate_resources.tokens, 4);
         assert_eq!(result.disposition, ResourcePortfolioDispositionV1::Selected);
@@ -889,7 +889,7 @@ mod tests {
         request.budget.limits.tokens = 8;
         request.profile.covariance[0].covariance_q32 = FixedQ32::from_raw(8_i64 << 32);
         request.profile.profile_digest = canonical_action_risk_profile_digest(&request.profile);
-        let result = select_resource_portfolio_shadow_v1(request).unwrap();
+        let result = select_resource_portfolio_shadow_v1(request).unwrap_or_else(|error| panic!("selection: {error}"));
         assert_eq!(result.selected_action_ids, vec![id("action:a")]);
     }
 
@@ -898,7 +898,7 @@ mod tests {
         let mut request = input();
         request.priced_candidates.rows[0].pricing.expected_utility_q32 = FixedQ32::ZERO;
         request.priced_candidates.rows[1].pricing.expected_utility_q32 = FixedQ32::ZERO;
-        let result = select_resource_portfolio_shadow_v1(request).unwrap();
+        let result = select_resource_portfolio_shadow_v1(request).unwrap_or_else(|error| panic!("selection: {error}"));
         assert!(result.selected_action_ids.is_empty());
         assert_eq!(result.disposition, ResourcePortfolioDispositionV1::NoChange);
         assert_eq!(result.baseline_id, id("no-change"));
