@@ -359,3 +359,72 @@ fn preview_refuses_unfenced_or_cancelled_original_batch_requests() {
         Err(StemOriginalBatchPreviewErrorV1::InvalidIdentity)
     ));
 }
+
+
+
+#[test]
+fn two_logical_cells_retain_one_stem_source_but_distinct_original_signed_bindings() {
+    let fx = fixture(512);
+    let mut second_head = fx.head.clone();
+    second_head.request_id = id("request.cell.two");
+    let mut second_authorization = fx.authorization.clone();
+    second_authorization.request_id = second_head.request_id.to_string();
+    second_authorization.reservation_id = "reservation.cell.two".to_string();
+
+    // Both logical Cells use the SAME frozen Stem bytes and physical Head
+    // model identity. This remains only a prospective signed batch request,
+    // not a proof that the backend physically executed both in one call.
+    let first = prepare_stem_original_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("first logical Cell admission preview");
+    let second = prepare_stem_original_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &second_head,
+        &fx.stem,
+        &fx.key,
+        &second_authorization,
+    )
+    .expect("second logical Cell admission preview");
+
+    assert_eq!(first.model_id, second.model_id);
+    assert_eq!(first.request.feature_vector_q24, second.request.feature_vector_q24);
+    assert_eq!(first.request.input_digest, second.request.input_digest);
+    assert_ne!(first.request.authorization.request_id, second.request.authorization.request_id);
+    assert_ne!(
+        first.exact_final_use_binding.request_sha256,
+        second.exact_final_use_binding.request_sha256,
+        "original signed Final-use also binds each independent request/reservation"
+    );
+    assert_eq!(
+        first.exact_final_use_binding.scope_sha256,
+        second.exact_final_use_binding.scope_sha256
+    );
+    assert!(!first.authority.grants_any());
+    assert!(!second.authority.grants_any());
+
+    let first_view = fx
+        .stem
+        .borrow_for_head(&fx.access, &fx.head)
+        .expect("source still current for first logical Cell");
+    let second_view = fx
+        .stem
+        .borrow_for_head(&fx.access, &second_head)
+        .expect("source still current for second logical Cell");
+    assert_eq!(
+        first_view.feature_vector_q24().as_ptr(),
+        second_view.feature_vector_q24().as_ptr()
+    );
+    assert_eq!(
+        first_view.feature_vector_q24().as_ptr(),
+        fx.generic.as_slice().as_ptr()
+    );
+}
