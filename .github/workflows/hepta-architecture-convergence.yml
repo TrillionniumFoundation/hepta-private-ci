@@ -290,14 +290,14 @@ jobs:
           # the original CNS/Control Begin/Commit and live Final-use can agree.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/generic-typed-split-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --lib topology_execution::split_control_fence_tests -- --nocapture
       - name: Early original Deep Observer canonical terminal and signer regressions
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
         run: |
           set -euo pipefail
           # Genuine signed original Supervisor nonterminal checkpoint refuses.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/deep-observer-early-negative.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib deep_observer_rejects_signed_nonterminal_supervisor_checkpoint -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/deep-observer-early-full.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib deep_observer -- --nocapture --test-threads=1
       - name: Early original signed monotonic custody RPC and no-replay tests
-        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
         run: |
           set -euo pipefail
           # Private test-owned 0700 store and 19 real signed Unix RPC cases.
