@@ -124,3 +124,43 @@ false and citation precision `null`. Those must come from independently
 executed existing owners before any future claim. The tests use six fully
 synthetic question envelopes and synthetic reply strings for **contracts only**,
 not new language-model inference.
+
+## Physical frozen Reader-generation entry point (candidate only)
+
+`amcn_causal_reader_generation.py` is a **real** opt-in local
+`AutoModelForCausalLM` dispatch adapter, not an automatic benchmark launcher.
+Given all nine externally frozen label-blind source/Head/graph choices, a
+previously staged exact local safetensors Reader model inventory and all three
+external SHA pins, it validates every original source text/revision, verifies
+full Reader model and tokenizer bytes, loads weights without remote code or
+network/model substitutions, and actually generates each nine-arm answer with
+the same Reader, prompt, source-envelope and token ceilings. The `answers.jsonl`
+append-only fsynced journal retains all raw model outputs, citations and token /
+wall resource counts. `starts.jsonl` precedes each attempt; incomplete and
+interrupted runs are never falsely sealed. Deliberate insufficient-input, model
+and generation failures remain failed attempts, not reconstructed answer text.
+The final `answers.json` is directly consumable by the independent nine-arm
+`amcn_causal_task_audit.py` once a separately authenticated, independently
+scored `judgments.json` exists. A local self-hash over execution receipts is
+**not** a Worker signature or evidence of independently witnessed model execution.
+
+```
+python3 qualification/amcn-v1/amcn_causal_reader_generation.py \
+  --plan /approved/plan.json --plan-sha256 <EXTERNAL_PLAN_SHA256> \
+  --reader-model-dir /approved/pinned-safetensors-model \
+  --model-inventory /approved/reader-model-inventory.json \
+  --model-inventory-sha256 <EXTERNAL_MODEL_INVENTORY_SHA256> \
+  --output /create-only/original-reader-run
+```
+
+The separate `test_amcn_causal_reader_generation.py` injects explicitly fake
+model responses in 11 fault tests: source/prompt/Reader byte drift, invalid
+model/symlink inventory, unlisted weights, excess tokens, wrong citations,
+failure/cancellation journals and overwrite refusal. These tests execute **no
+pretrained weights or Reader calls**. The actual pinned public pretrained Reader
+model files, original source-first nine-arm plan, real physical Head/graph
+coefficients, qualified strong hybrid RAG, independently adjudicated answers,
+and prospective task windows are **not supplied** by this increment. The new
+opt-in Runner must refuse those missing inputs; it may not silently substitute
+mock parameters or a different Reader. `production_accepted=false` remains
+mandatory regardless of local execution.
