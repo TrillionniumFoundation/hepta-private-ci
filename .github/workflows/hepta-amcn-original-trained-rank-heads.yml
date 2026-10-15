@@ -1,0 +1,249 @@
+name: Hepta original TRAIN-only two-Head physical rank contrast (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_trained_rank_heads.py"
+      - "qualification/amcn-v1/test_amcn_original_trained_rank_heads.py"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS.md"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json"
+      - ".github/workflows/hepta-amcn-original-trained-rank-heads.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_trained_rank_heads.py"
+      - "qualification/amcn-v1/test_amcn_original_trained_rank_heads.py"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS.md"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json"
+      - ".github/workflows/hepta-amcn-original-trained-rank-heads.yml"
+
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: original-ten-rank-heads-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-physical-train-readback:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      PYTHONPATH: qualification/amcn-v1
+      PRIVATE: /tmp/hepta-amcn-original-ten-physical
+      RESULTS: /tmp/hepta-amcn-original-head-evidence
+      HEPTA_AMCN_ORIGINAL_RANK_ROOT: /tmp/hepta-amcn-original-ten-physical/staged
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU model dependencies and original source-code contracts
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE" "$RESULTS" "$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
+          python3 -m venv /tmp/hepta-amcn-original-head-venv
+          P=/tmp/hepta-amcn-original-head-venv/bin
+          "$P/pip" install numpy==1.26.4
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install safetensors==0.7.0 regex==2024.11.6
+          "$P/pip" check
+          "$P/pip" freeze > "$RESULTS/environment.txt"
+          "$P/python" -m compileall -q \
+            qualification/amcn-v1/amcn_original_full_family_retrieval.py \
+            qualification/amcn-v1/amcn_original_trained_rank_heads.py \
+            qualification/amcn-v1/test_amcn_original_trained_rank_heads.py
+      - name: Download exact original SHA archive and extract enumerated files only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output "$PRIVATE/original-archive.zip"
+          printf '%s  %s\n' \
+            07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            "$PRIVATE/original-archive.zip" | sha256sum -c -
+          unzip -p "$PRIVATE/original-archive.zip" memory-inputs.tar.gz > "$PRIVATE/original.tar.gz"
+          python3 - <<'PY'
+          from pathlib import Path
+          import tarfile,os
+          root=Path(os.environ['PRIVATE'])/'original'
+          files={'locomo.json','encoder/model.safetensors','encoder/config.json',
+                 'encoder/tokenizer.json','encoder/vocab.txt'}
+          seen=set()
+          with tarfile.open(Path(os.environ['PRIVATE'])/'original.tar.gz','r:gz') as tar:
+              for f in tar:
+                  if not f.isfile():continue
+                  key=f.name.removeprefix('memory-inputs/')
+                  if key not in files:continue
+                  if key in seen or not (1<=f.size<=150_000_000):
+                      raise ValueError('unsafe original source object')
+                  seen.add(key)
+                  dst=root/key;dst.parent.mkdir(parents=True,exist_ok=True)
+                  with tar.extractfile(f) as inp,dst.open('xb') as out:
+                      for b in iter(lambda:inp.read(1048576),b''):out.write(b)
+          assert seen==files,(seen,files)
+          PY
+          (cd "$PRIVATE/original" && printf '%s  %s\n' \
+             79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4 locomo.json \
+             53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db encoder/model.safetensors \
+             07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3 encoder/vocab.txt \
+             be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037 encoder/tokenizer.json \
+             953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab05e5aa30f411572037 encoder/config.json \
+             | sha256sum -c -)
+      - name: Full real MiniLM/BM25 frozen source-only rank and immutable TRAIN label extraction
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-original-head-venv/bin/python
+          ROOT="$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
+          "$P" qualification/amcn-v1/amcn_original_full_family_retrieval.py prepare \
+            --archive-root "$PRIVATE/original" \
+            --public "$ROOT/public-sources-only.json" \
+            --withheld "$PRIVATE/withheld-publisher-weak-labels.json"
+          test "$(sha256sum "$ROOT/public-sources-only.json" | cut -d' ' -f1)" = \
+            ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633
+          "$P" qualification/amcn-v1/amcn_original_full_family_retrieval.py rank \
+            --public "$ROOT/public-sources-only.json" \
+            --public-sha ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633 \
+            --encoder "$PRIVATE/original/encoder" \
+            --output "$ROOT/ten-family-real-original-minilm-rank.json" \
+            --batch 32 > "$RESULTS/original-encoder-log.txt"
+          # Encoder elapsed wall seconds cannot have a cross-run fixed RAW SHA.
+          # Pin the COMPLETE original model/source/candidate ranking decision
+          # contents, retaining the new run's exact rank byte SHA separately.
+          "$P" - <<'PY_CHECK'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'qualification/amcn-v1')
+          from amcn_original_trained_rank_heads import stable_rank_digest,RANK_DECISION_SHA
+          rank=Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'ten-family-real-original-minilm-rank.json'
+          assert stable_rank_digest(json.loads(rank.read_bytes()))==RANK_DECISION_SHA, 'original full rank drift'
+          PY_CHECK
+          test "$(sha256sum "$PRIVATE/withheld-publisher-weak-labels.json"|cut -d' ' -f1)" = \
+            758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06
+          RANK_SHA=$(sha256sum "$ROOT/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py prepare-train \
+            --public "$ROOT/public-sources-only.json" \
+            --public-sha ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633 \
+            --rank "$ROOT/ten-family-real-original-minilm-rank.json" \
+            --rank-sha "$RANK_SHA" \
+            --publisher-gold "$PRIVATE/withheld-publisher-weak-labels.json" \
+            --gold-sha 758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06 \
+            --output "$ROOT/train_only_labels.json"
+          "$P" - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'train_only_labels.json').read_bytes())
+          assert len(r['labels'])==1157 and r['public_heldout_labels_present'] is False
+          assert r['production_accepted'] is False
+          PY_CHECK
+      - name: Physical AdamW two-Head banks TRAIN-only and label-blind independent forwards
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-original-head-venv/bin/python
+          R="$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
+          S=ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633
+          K=$(sha256sum "$R/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
+          TRAIN_SHA=$(sha256sum "$R/train_only_labels.json"|cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py train \
+            --public "$R/public-sources-only.json" --public-sha "$S" \
+            --rank "$R/ten-family-real-original-minilm-rank.json" --rank-sha "$K" \
+            --train-labels "$R/train_only_labels.json" \
+            --train-labels-sha "$TRAIN_SHA" \
+            --bank-directory "$R/physical_banks" --steps 160 > "$RESULTS/train-receipt.txt"
+          MANIFEST=$(sha256sum "$R/physical_banks/manifest.json"|cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py infer \
+            --public "$R/public-sources-only.json" --public-sha "$S" \
+            --rank "$R/ten-family-real-original-minilm-rank.json" --rank-sha "$K" \
+            --bank-directory "$R/physical_banks" --manifest-sha "$MANIFEST" \
+            --output "$R/sealed_heldout_predictions_recounted.json" > "$RESULTS/infer-receipt.txt"
+          "$P" - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'sealed_heldout_predictions_recounted.json').read_bytes())
+          assert len(r['complete_predictions'])==829
+          assert r['original_physical_trained_head_forwards']==3316
+          assert r['new_reader_answers']==0 and r['production_accepted'] is False
+          PY_CHECK
+      - name: Independent 3,316 physical saved-Head replays BEFORE heldout gold and negative scoring
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-original-head-venv/bin/python
+          R="$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
+          S=ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633
+          K=$(sha256sum "$R/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
+          MANIFEST=$(sha256sum "$R/physical_banks/manifest.json"|cut -d' ' -f1)
+          PRED=$(sha256sum "$R/sealed_heldout_predictions_recounted.json"|cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py score \
+            --public "$R/public-sources-only.json" --public-sha "$S" \
+            --rank "$R/ten-family-real-original-minilm-rank.json" --rank-sha "$K" \
+            --predictions "$R/sealed_heldout_predictions_recounted.json" --predictions-sha "$PRED" \
+            --publisher-gold "$PRIVATE/withheld-publisher-weak-labels.json" \
+            --gold-sha 758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06 \
+            --bank-directory "$R/physical_banks" --manifest-sha "$MANIFEST" \
+            --output "$RESULTS/verified-original-trained-Head-score.json"
+          HEPTA_AMCN_ORIGINAL_RANK_ROOT="$R" \
+            "$P" -m unittest discover -s qualification/amcn-v1 \
+            -p 'test_amcn_original_trained_rank_heads.py' -v \
+            > "$RESULTS/original-head-tests.txt" 2>&1
+          cat "$RESULTS/original-head-tests.txt"
+          "$P" - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RESULTS'])/'verified-original-trained-Head-score.json').read_bytes())
+          assert r['heldout_questions']==400 and r['heldout_source_families']==2
+          assert r['independent_physical_Head_forwards_replayed']==3316
+          a=r['per_split']['retrospective_heldout_a']
+          b=r['per_split']['retrospective_heldout_b']
+          bm25=a['bm25']['hit3']+b['bm25']['hit3']
+          learned=a['typed_equal_budget']['hit3']+b['typed_equal_budget']['hit3']
+          assert bm25==182 and learned==192, (bm25,learned)
+          assert r['real_reader_answers']==0 and r['calendar_future_windows']==0
+          assert r['production_accepted'] is False and r['official_hf_model_parity_verified'] is False
+          tests=(Path(os.environ['RESULTS'])/'original-head-tests.txt').read_text()
+          assert 'Ran 13 tests' in tests and 'skipped=' not in tests and '\nOK\n' in tests
+          PY
+      - name: Preserve source SHA / sanitized artifact only, no dialogue or tensor bytes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RESULTS/source"
+          git rev-parse HEAD > "$RESULTS/source/checkout.sha"
+          git rev-parse HEAD^{tree} > "$RESULTS/source/checkout-tree.sha"
+          cp qualification/amcn-v1/amcn_original_trained_rank_heads.py \
+             qualification/amcn-v1/test_amcn_original_trained_rank_heads.py \
+             qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS.md \
+             qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json \
+             .github/workflows/hepta-amcn-original-trained-rank-heads.yml \
+             "$RESULTS/source/"
+          printf '%s\n' 'original_physical_AdamW_train_only=true' \
+            'task_success_independently_verified=false' \
+            'original_weak_hit_at3_experiment_only=true' \
+            'true_future_calendar_windows=0' \
+            'original_reader_answers_this_study=0' \
+            'equal_total_compute_against_BM25=false' \
+            'typed_specialization_superiority=false' \
+            'independent_source_groups_for_heldout=2' \
+            'official_HF_parity_unverified=true' \
+            'publication_or_finaluse_authorized=false' \
+            'source_dialogues_publisher_gold_head_tensors_not_uploaded=true' \
+            'production_accepted=false' > "$RESULTS/negative-capability.txt"
+          (cd "$RESULTS" && find . -type f ! -name SHA256SUMS -print0 \
+             | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-original-rank-head-physical-train-sha-negative-receipt
+          path: /tmp/hepta-amcn-original-head-evidence
+          if-no-files-found: error

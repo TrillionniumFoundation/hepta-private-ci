@@ -1,0 +1,172 @@
+name: Hepta original LoCoMo natural language Reader diagnostic (single arm / NO-GO)
+
+on:
+  push:
+    branches: ['research/amcn-causal-three-axis-20261015']
+    paths:
+      - 'qualification/amcn-v1/amcn_original_locomo_trial.py'
+      - 'qualification/amcn-v1/amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/test_amcn_original_locomo_trial.py'
+      - 'qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md'
+      - '.github/workflows/hepta-amcn-original-locomo-trial.yml'
+  pull_request:
+    branches: ['research/amcn-typed-budget-20261014']
+    paths:
+      - 'qualification/amcn-v1/amcn_original_locomo_trial.py'
+      - 'qualification/amcn-v1/amcn_original_text_reader.py'
+      - 'qualification/amcn-v1/test_amcn_original_locomo_trial.py'
+      - 'qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md'
+      - '.github/workflows/hepta-amcn-original-locomo-trial.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: original-locomo-reader-single-arm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  natural-reader-six-original-questions:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install isolated original CPU model runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/amcn-original-reader-cpu
+          /tmp/amcn-original-reader-cpu/bin/pip install numpy==1.26.4
+          /tmp/amcn-original-reader-cpu/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/amcn-original-reader-cpu/bin/pip install safetensors==0.7.0 regex==2024.11.6
+          /tmp/amcn-original-reader-cpu/bin/pip check
+          mkdir -p /tmp/amcn-original-reader-evidence
+          /tmp/amcn-original-reader-cpu/bin/pip freeze > /tmp/amcn-original-reader-evidence/environment.txt
+      - name: Fetch unchanged 376MB archived original model / corpus bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-original-reader-private
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output /tmp/amcn-original-reader-private/archive.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            /tmp/amcn-original-reader-private/archive.zip | sha256sum --check -
+          unzip -p /tmp/amcn-original-reader-private/archive.zip memory-inputs.tar.gz \
+            > /tmp/amcn-original-reader-private/original.tar.gz
+          python3 - <<'PY'
+          from pathlib import Path
+          import tarfile
+          allowed={
+              'locomo.json', 'reader/model.safetensors', 'reader/config.json',
+              'reader/tokenizer.json', 'reader/tokenizer_config.json',
+              'reader/special_tokens_map.json', 'reader/vocab.json',
+              'reader/merges.txt', 'reader/generation_config.json',
+          }
+          base=Path('/tmp/amcn-original-reader-private/original')
+          seen=set()
+          with tarfile.open('/tmp/amcn-original-reader-private/original.tar.gz','r:gz') as archive:
+              for item in archive:
+                  if not item.isfile():continue
+                  name=item.name.removeprefix('memory-inputs/')
+                  if name not in allowed:continue
+                  if name in seen or item.size > 310*1024*1024:
+                      raise RuntimeError('unknown or duplicate original source input')
+                  seen.add(name)
+                  path=base/name
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.extractfile(item) as src, path.open('xb') as dst:
+                      while block := src.read(1048576):dst.write(block)
+          if seen != allowed:raise RuntimeError('missing original model source file inventory')
+          PY
+      - name: Original source-only controls and physical tests
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-original-reader-cpu/bin/python
+          "$P" -m compileall -q qualification/amcn-v1/amcn_original_*.py qualification/amcn-v1/test_amcn_original_locomo_trial.py
+          PYTHONPATH=qualification/amcn-v1 "$P" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_original_locomo_trial.py' -v \
+            2>&1 | tee /tmp/amcn-original-reader-evidence/contract-tests.txt
+      - name: Physically generate SIX original pretrained Reader answers from public-only source
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-original-reader-cpu/bin/python
+          mkdir -p /tmp/amcn-original-reader-evidence/real-model \
+            /tmp/amcn-original-reader-private/score-only
+          PYTHONPATH=qualification/amcn-v1 "$P" qualification/amcn-v1/amcn_original_locomo_trial.py prepare \
+            --source-root /tmp/amcn-original-reader-private/original \
+            --public /tmp/amcn-original-reader-evidence/real-model/public.json \
+            --withheld /tmp/amcn-original-reader-private/score-only/withheld.json \
+            --question-indices 0,1,2
+          PUBLIC_SHA=$(sha256sum /tmp/amcn-original-reader-evidence/real-model/public.json | cut -d' ' -f1)
+          PYTHONPATH=qualification/amcn-v1 "$P" qualification/amcn-v1/amcn_original_locomo_trial.py generate \
+            --public /tmp/amcn-original-reader-evidence/real-model/public.json \
+            --public-sha256 "$PUBLIC_SHA" \
+            --reader /tmp/amcn-original-reader-private/original/reader \
+            --output /tmp/amcn-original-reader-evidence/real-model/original-answers.json \
+            --max-new-tokens 24
+          ANSWERS_SHA=$(sha256sum /tmp/amcn-original-reader-evidence/real-model/original-answers.json | cut -d' ' -f1)
+          WITHHELD_SHA=$(sha256sum /tmp/amcn-original-reader-private/score-only/withheld.json | cut -d' ' -f1)
+          PYTHONPATH=qualification/amcn-v1 "$P" qualification/amcn-v1/amcn_original_locomo_trial.py score \
+            --answers /tmp/amcn-original-reader-evidence/real-model/original-answers.json \
+            --answers-sha256 "$ANSWERS_SHA" \
+            --withheld /tmp/amcn-original-reader-private/score-only/withheld.json \
+            --withheld-sha256 "$WITHHELD_SHA" \
+            --output /tmp/amcn-original-reader-evidence/real-model/publisher-weak-score.json
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/amcn-original-reader-evidence/real-model')
+          raw=json.loads((p/'original-answers.json').read_text())
+          score=json.loads((p/'publisher-weak-score.json').read_text())
+          assert raw['model_answers_generated']==len(raw['cases'])==6
+          assert len({x['family'] for x in raw['cases']})==2
+          assert raw['gold_opened_during_model_execution'] is False
+          assert score['questions']==6
+          assert score['independent_semantic_success_metric'] is None
+          assert score['production_accepted'] is False
+          PY
+      - name: Seal exact origin and DENY_ALL controls without publisher-gold or weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-original-reader-evidence/source
+          git rev-parse HEAD > /tmp/amcn-original-reader-evidence/source/head.sha
+          git rev-parse HEAD^{tree} > /tmp/amcn-original-reader-evidence/source/tree.sha
+          cp qualification/amcn-v1/amcn_original_text_reader.py \
+             qualification/amcn-v1/amcn_original_locomo_trial.py \
+             qualification/amcn-v1/test_amcn_original_locomo_trial.py \
+             qualification/amcn-v1/ORIGINAL_HF_PARITY_HANDOFF.md \
+             .github/workflows/hepta-amcn-original-locomo-trial.yml \
+             /tmp/amcn-original-reader-evidence/source/
+          printf '%s\n' 'original_pretrained_reader_forward=true_if_complete_answer_file_exists' \
+            'hf_parity_with_official_transformers_verified=false' \
+            'original_strong_hybrid_rag_comparison=false' \
+            'publisher_gold_not_uploaded=true' \
+            'zero_independent_future_calendar_windows=true' \
+            'no_nine_arm_superiority_result=true' \
+            'no_model_promotion=true' 'production_accepted=false' \
+            'original_weight_files_not_uploaded=true' \
+            > /tmp/amcn-original-reader-evidence/negative-authority.txt
+          (cd /tmp/amcn-original-reader-evidence && find . -type f ! -name SHA256SUMS \
+             -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-locomo-real-pretrained-single-arm-negative-diagnostic
+          path: /tmp/amcn-original-reader-evidence
+          if-no-files-found: error

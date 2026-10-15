@@ -1,0 +1,48 @@
+name: Hepta AMCN original evidence qualification denial (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_research_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_research_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json"
+      - ".github/workflows/hepta-amcn-original-research-gate.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_research_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_research_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json"
+      - ".github/workflows/hepta-amcn-original-research-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  original-evidence-no-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify immutable original weak-support aggregate and fail-closed gate
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q qualification/amcn-v1/amcn_original_research_gate.py qualification/amcn-v1/test_amcn_original_research_gate.py
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover -s qualification/amcn-v1 -p test_amcn_original_research_gate.py -v
+          python3 qualification/amcn-v1/amcn_original_research_gate.py qualification/amcn-v1/ORIGINAL_TRAINED_RANK_HEADS_20261015.json /tmp/amcn-original-denial.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/amcn-original-denial.json'))
+          assert r['original_heldout_questions']==400
+          assert r['typed_gain_over_bm25_proxy_only']==10
+          assert r['typed_vs_untyped_tie'] is True
+          assert r['parameter_learning_full_task_win_verified'] is False
+          assert r['type_specialization_task_win_verified'] is False
+          assert r['network_incremental_task_win_verified'] is False
+          assert r['automatic_fission_fusion_eligible'] is False
+          assert r['production_accepted'] is False
+          PY

@@ -1,0 +1,53 @@
+{
+  "archive_sha256": "07b357cbb3362f484ac4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+  "evidence_signature": null,
+  "execution_host": "isolated_analysis_container_not_user_dot",
+  "future_calendar_windows": 0,
+  "model_file_sha256": {
+    "encoder/model.safetensors": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+    "reader/model.safetensors": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+  },
+  "new_natural_language_answers": 0,
+  "numeric_inputs": {
+    "encoder": [
+      101,
+      2023,
+      2003,
+      1037,
+      3231,
+      102
+    ],
+    "reader": [
+      1,
+      420,
+      35,
+      177
+    ]
+  },
+  "original_model_issuer_authenticated": false,
+  "original_strong_rag_trial": false,
+  "production_accepted": false,
+  "reader_hf_tokenizer_parity": false,
+  "replay_equal": true,
+  "replay_processes": 2,
+  "run_file_sha256": [
+    "2b3256f3144ec10c83e886d1054f581f030fa69c702040c5ddd1b64da098637e",
+    "149d228ae047ceebcee903f41927881cf9a0f4560da930ed9962bd57d5816173"
+  ],
+  "schema": "hepta.amcn.original-bf16-numeric-forward-local-evidence.v1",
+  "sha256_outputs": {
+    "encoder_cls": "8bf8f3919fa6bf315043cca6473f133e98879efd14d4b7a1d54dc8c5ccd3ca78",
+    "encoder_pooler": "05e1a97b267a136d176a1503222666d70b5ddf20ee1fcf00ceeec8229aca23d3",
+    "reader_hidden": "f4c888f54305f07086819670c046e791e0e7bc5c8fb3b43aed5906d1b7a22055",
+    "reader_logits": "0e213cba29020f3140dee7e72d5b8737ebcb2ce0e0189e5662b8415a09f71776"
+  },
+  "source_sha256": "ff078004f56e7b5f2d317627dc75ca6427dc5e11af31cfea961701ae0ef65e14",
+  "superiority_claim": false,
+  "top5_token_ids": [
+    122,
+    123,
+    237,
+    113,
+    133
+  ]
+}

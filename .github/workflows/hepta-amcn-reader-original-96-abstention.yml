@@ -1,0 +1,61 @@
+name: Hepta AMCN original Reader 96-call abstention source audit (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_reader_private_recount.py"
+      - "qualification/amcn-v1/test_amcn_original_reader_private_recount.py"
+      - "qualification/amcn-v1/amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/amcn_reader_96_negative_gate.py"
+      - "qualification/amcn-v1/test_amcn_reader_96_negative_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_READER_96_PRIVATE_RECOUNT.json"
+      - "qualification/amcn-v1/ORIGINAL_READER_ABSTENTION_AUDIT.md"
+      - ".github/workflows/hepta-amcn-reader-original-96-abstention.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_reader_private_recount.py"
+      - "qualification/amcn-v1/test_amcn_original_reader_private_recount.py"
+      - "qualification/amcn-v1/amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/amcn_reader_96_negative_gate.py"
+      - "qualification/amcn-v1/test_amcn_reader_96_negative_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_READER_96_PRIVATE_RECOUNT.json"
+      - "qualification/amcn-v1/ORIGINAL_READER_ABSTENTION_AUDIT.md"
+      - ".github/workflows/hepta-amcn-reader-original-96-abstention.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  original-research-abstention-source-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fail-closed source-only controls, NOT physical Reader re-execution
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            qualification/amcn-v1/amcn_original_reader_private_recount.py \
+            qualification/amcn-v1/test_amcn_original_reader_private_recount.py \
+            qualification/amcn-v1/amcn_research_empty_evidence_guard.py \
+            qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py \
+            qualification/amcn-v1/amcn_reader_96_negative_gate.py \
+            qualification/amcn-v1/test_amcn_reader_96_negative_gate.py
+          # 30 source-only cases; the private physical journal class SKIPS.
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_original_reader_private_recount.py' -v
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_research_empty_evidence_guard.py' -v
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_reader_96_negative_gate.py' -v
+          PYTHONPATH=qualification/amcn-v1 python3 \
+            qualification/amcn-v1/amcn_reader_96_negative_gate.py \
+            qualification/amcn-v1/ORIGINAL_READER_96_PRIVATE_RECOUNT.json
