@@ -116,6 +116,11 @@ def review(panel):
             raise Invalid('Head training mismatch/ceiling exceeded')
         if finite(t['learning_rate']) <= 0:
             raise Invalid('invalid learning rate')
+        # Full two-class linear Head weights and biases are private. A 768D
+        # arm cannot pretend it has the 384D Head parameter count.
+        if (panel['schema'] == CORE_SCHEMA and t['head_kind'] == 'linear' and
+                t['trainable_head_parameters'] != 2 * E1_PROFILES[model][0] + 2):
+            raise Invalid('incorrect complete two-class linear Head count')
         for k in ('train_case_sha256','minibatch_sha256'):d256(t[k])
         comparable=tuple((k,t[k]) for k in ('seed','steps','batch_size','learning_rate','head_kind','head_ceiling','optimizer','train_case_sha256','minibatch_sha256'))
         if shared_training is None:shared_training=comparable
@@ -170,7 +175,8 @@ def review(panel):
             'production_no_change_source_independently_authenticated':False,
             'independent_reader_and_future_outcome_authority':False,
             'matched_training_ceiling_and_schedule':True,
-            'unchanged_production_baseline_predictions_reused':True,
+            'matched_claimed_no_change_predictions_across_models':True,
+            'unchanged_production_baseline_predictions_reused':False,
             'descriptive_split_metrics':descriptive,
             'reader_sufficient_accuracy_independently_verified':False,
             'model_weight_origin_and_physical_execution_verified':False,

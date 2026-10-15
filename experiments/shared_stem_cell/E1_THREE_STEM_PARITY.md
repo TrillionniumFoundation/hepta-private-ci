@@ -76,3 +76,7 @@ transfer, E5 modalities, and E6 signed native 64/256/1024/4096 physical
 measurements must be completed before any Stem selection. Any real run
 must use the same independently frozen source, pinned model weights,
 full lifecycle receipts and a separate blinded evaluator.
+
+## Full private Head accounting and untrusted no-change claims
+
+For the new core trio, binary **linear** Head private parameter counts must be exactly `2*feature_width+2`: Granite **770**, mmBERT **770**, and ModernBERT **1,538**, all below the matched 2K ceiling. This protects against reporting the 384D/770-weight bill for a 768D classifier. Other Head kinds still report their entire privately trained tensors and share the same ceiling, with physical proof pending. The observational receipt now distinguishes `matched_claimed_no_change_predictions_across_models=true` from `unchanged_production_baseline_predictions_reused=false`. Matching untrusted probabilities is not authentication of a deployed, frozen no-change baseline.

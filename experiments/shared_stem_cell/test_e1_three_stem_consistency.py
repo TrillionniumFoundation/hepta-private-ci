@@ -85,6 +85,7 @@ def core_fixture():
     modern['study']['pooling_profile']='mean_l2'
     for item in panel['candidates']:
         item['study']['upstream_revision']=m.CORE_REVISIONS[item['model']]
+        item['training']['trainable_head_parameters']=2*E1_PROFILES[item['model']][0]+2
     return panel
 
 class CoreStemTests(unittest.TestCase):
@@ -101,6 +102,9 @@ class CoreStemTests(unittest.TestCase):
         self.assertEqual(output['models']['modernbert_base']['feature_width'],768)
         self.assertTrue(output['matched_training_ceiling_and_schedule'])
         self.assertFalse(output['production_no_change_source_independently_authenticated'])
+        self.assertFalse(output['unchanged_production_baseline_predictions_reused'])
+        self.assertTrue(output['matched_claimed_no_change_predictions_across_models'])
+        self.assertEqual(output['models']['modernbert_base']['trained_head_parameters_claimed'],1538)
         self.assertFalse(output['independent_reader_and_future_outcome_authority'])
         self.assertFalse(output['stem_winner_selected'])
         self.assertFalse(output['production_promotion_permitted'])
@@ -116,6 +120,9 @@ class CoreStemTests(unittest.TestCase):
 
     def test_unpinned_modernbert_revision(self):
         self.deny(lambda x:x['candidates'][2]['study'].update(upstream_revision='b'*40))
+
+    def test_modernbert_incomplete_full_linear_head_count_rejected(self):
+        self.deny(lambda x:x['candidates'][2]['training'].update(trainable_head_parameters=770))
 
     def test_modernbert_width_drift(self):
         self.deny(lambda x:x['candidates'][2]['study'].update(feature_width=384))
