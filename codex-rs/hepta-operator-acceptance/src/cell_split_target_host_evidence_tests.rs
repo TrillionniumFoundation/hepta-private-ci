@@ -1567,8 +1567,21 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
         serde_json::from_slice(&journal.original_checkpoint_bytes)
             .expect("signed journal checkpoint");
     checkpoint["phase"] = serde_json::json!("route_published");
+    let preserved_digest = checkpoint["receiptDigest"]
+        .as_str()
+        .expect("original signed checkpoint digest")
+        .to_owned();
     let mutated: crate::cell_split_observer_join::OriginalSupervisorCheckpointV1 =
         serde_json::from_value(checkpoint).expect("valid nonterminal shape");
+    // The original checksum is still valid for this fixture's signed bytes:
+    // the test must deny the nonterminal phase itself, not digest drift.
+    assert_eq!(
+        preserved_digest,
+        mutated
+            .content_digest_v1()
+            .expect("unchanged canonical original checkpoint digest"),
+        "the nonterminal rejection must be independent of digest corruption"
+    );
     journal.original_checkpoint_bytes = serde_json::to_vec(&mutated).expect("nonterminal journal");
     let mut payload = b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
     payload.extend_from_slice(&(journal.idempotency_key.len() as u64).to_be_bytes());
@@ -1634,7 +1647,7 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
             &mut current,
         ),
         Err(crate::CellSplitObserverJoinErrorV1::Invalid(
-            "signed original Supervisor checkpoint is not a terminal handoff"
+            "signed original Supervisor checkpoint is not a canonical terminal journal record"
         ))
     ));
     assert_eq!(current.verification_count, 0);

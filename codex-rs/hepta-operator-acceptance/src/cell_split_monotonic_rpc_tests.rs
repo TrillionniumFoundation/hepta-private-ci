@@ -371,6 +371,12 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    // Original file creation requires a private, test-owned 0700 directory.
+    // Never relax the production durable sidecar permissions policy.
+    std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))
+        .expect("private original signed registry fixture directory");
     let path = root.join("external-domain-highwater.json");
     let record = CellSplitMonotonicDurableFrontierV1 {
         journal_domain_id: DOMAIN.to_owned(),
@@ -557,6 +563,25 @@ fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFronti
     .expect("external domain source mutation");
 }
 
+/// Test-only representation of a SEPARATELY retained custody owner advancing
+/// its original disk record. The production RPC service is unchanged and
+/// still requires a fresh independent signed proof of exactly this state.
+/// Use the real private atomic-replace + fsync protocol rather than a bare
+/// overwrite, and do not update the custody floor on negative source probes.
+fn advance_test_independent_custody_floor(
+    source_path: &Path,
+    frontier: &CellSplitMonotonicDurableFrontierV1,
+) {
+    let retained = source_path.with_file_name("independently-retained-floor.json");
+    let pending = source_path.with_file_name("independently-retained-floor.pending.json");
+    crate::durable::write_private_atomic_replace(
+        &retained,
+        &pending,
+        &crate::durable::canonical_json(frontier).expect("canonical retained custody floor"),
+    )
+    .expect("independent test custody floor must atomically fsync");
+}
+
 #[test]
 fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let root = tempfile::tempdir().expect("private registry");
@@ -604,6 +629,11 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
 
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
+    assert!(
+        read_through_signed_service(&mut service, &"ed".repeat(32)).is_err(),
+        "advanced registry alone cannot bypass stale independently retained custody"
+    );
+    advance_test_independent_custody_floor(&file, &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
 
     // The previous epoch/revision cannot be accepted again, even if it
@@ -641,6 +671,11 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
     stale_rollover.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &stale_rollover);
+    assert!(
+        read_through_signed_service(&mut service, &"cf".repeat(32)).is_err(),
+        "authority-epoch rollover cannot outrun independent custody"
+    );
+    advance_test_independent_custody_floor(&file, &stale_rollover);
     assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
