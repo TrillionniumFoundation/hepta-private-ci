@@ -12,6 +12,8 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_ablation.py"
       - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
       - "experiments/shared_stem_cell/e2_token_query_review.py"
+      - "experiments/shared_stem_cell/e2_head_replay.py"
+      - "experiments/shared_stem_cell/test_e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
       - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
       - "experiments/shared_stem_cell/test_e2_token_query_ablation.py"
@@ -82,6 +84,7 @@ jobs:
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_public_triplet_review.py' -v
           "$PY" -m py_compile experiments/shared_stem_cell/e2_token_query_ablation.py experiments/shared_stem_cell/e2_token_query_real_cpu.py experiments/shared_stem_cell/e2_token_query_review.py
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_token_query_*.py' -v
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_head_replay.py' -v
       - name: Independently reconstruct SHA-bound original 224-case AG News panel
         run: |
           set -euo pipefail
@@ -153,7 +156,8 @@ jobs:
                 experiments/shared_stem_cell/e2_token_query_real_cpu.py \
                 --panel "$ROOT/panel.json" --model "$model" \
                 --stage "$ROOT/stage-$model" --e1 "$ROOT/$model.json" \
-                --output "$ROOT/$model.e2-query.json"; then
+                --output "$ROOT/$model.e2-query.json" \
+                --replay-bundle "$ROOT/$model.e2-replay"; then
               echo "completed SAME-forward frozen Token Matrix and matched 2K Heads: $model"
             else
               printf '%s\n' "$model actual E2 model or pooled/query Head failed, no synthetic fallback" \
@@ -162,6 +166,30 @@ jobs:
             fi
           done
           test "$failed" -eq 0
+      - name: E2 independent safe Head and frozen-feature numerical replay
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          ROOT="$RUNNER_TEMP/hepta-core"
+          for model in granite_97m_r2 mmbert_small modernbert_base; do
+            "$PY" experiments/shared_stem_cell/e2_head_replay.py \
+              --panel "$ROOT/panel.json" \
+              --producer "$ROOT/$model.e2-query.json" \
+              --bundle "$ROOT/$model.e2-replay" \
+              --output "$ROOT/$model.e2-replay-audit.json"
+          done
+          "$PY" - "$ROOT" <<'PY'
+          import json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          for model in ('granite_97m_r2','mmbert_small','modernbert_base'):
+              r=json.loads((root/f'{model}.e2-replay-audit.json').read_bytes())
+              assert r['heads_replayed']==6 and r['predictions_replayed']==576
+              assert r['max_probability_absolute_error'] < 1e-5
+              assert r['real_pretrained_execution_independently_verified'] is False
+              assert r['production_promotion_permitted'] is False
+              assert r['authority']=='DENY_ALL'
+          PY
       - name: E2 independent paired score and authority denial
         run: |
           set -euo pipefail
@@ -206,5 +234,8 @@ jobs:
             ${{ runner.temp }}/hepta-core/mmbert_small.e2-query.json
             ${{ runner.temp }}/hepta-core/modernbert_base.e2-query.json
             ${{ runner.temp }}/hepta-core/independent-e2-query-review.json
+            ${{ runner.temp }}/hepta-core/granite_97m_r2.e2-replay-audit.json
+            ${{ runner.temp }}/hepta-core/mmbert_small.e2-replay-audit.json
+            ${{ runner.temp }}/hepta-core/modernbert_base.e2-replay-audit.json
             ${{ runner.temp }}/hepta-core/*.failed.txt
           retention-days: 14

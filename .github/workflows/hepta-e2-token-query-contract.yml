@@ -6,6 +6,8 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_ablation.py"
       - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
       - "experiments/shared_stem_cell/e2_token_query_review.py"
+      - "experiments/shared_stem_cell/e2_head_replay.py"
+      - "experiments/shared_stem_cell/test_e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
       - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
       - "experiments/shared_stem_cell/test_e2_token_query_ablation.py"
@@ -34,7 +36,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/hepta-e2-contract-venv"
           PY="$RUNNER_TEMP/hepta-e2-contract-venv/bin/python"
           "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
-          "$PY" -m pip install --only-binary=:all: 'numpy==2.2.6'
+          "$PY" -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.7.0'
           "$PY" -m pip check
           "$PY" -c 'import torch; assert torch.__version__.startswith("2.10.0")'
           "$PY" -m pip freeze > "$RUNNER_TEMP/hepta-e2-contract-runtime.txt"
@@ -45,10 +47,13 @@ jobs:
           "$PY" -m py_compile \
             experiments/shared_stem_cell/e2_token_query_ablation.py \
             experiments/shared_stem_cell/e2_token_query_real_cpu.py \
-            experiments/shared_stem_cell/e2_token_query_review.py             experiments/shared_stem_cell/e2_pairwise_evidence.py
+            experiments/shared_stem_cell/e2_token_query_review.py \
+            experiments/shared_stem_cell/e2_head_replay.py             experiments/shared_stem_cell/e2_pairwise_evidence.py
           "$PY" -m unittest discover -s experiments/shared_stem_cell \
             -p 'test_e2_token_query_*.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hepta-e2-contract-tests.txt"
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_head_replay.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hepta-e2-head-replay-tests.txt"
           git diff --check
       - name: Preserve test source and errors without any weight artifacts
         if: always()
@@ -59,4 +64,5 @@ jobs:
           path: |
             ${{ runner.temp }}/hepta-e2-contract-runtime.txt
             ${{ runner.temp }}/hepta-e2-contract-tests.txt
+            ${{ runner.temp }}/hepta-e2-head-replay-tests.txt
           retention-days: 7

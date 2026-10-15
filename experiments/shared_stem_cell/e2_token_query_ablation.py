@@ -148,10 +148,13 @@ def _train(module, tokens, mask, pooled, y, *, steps: int, lr: float):
 
 
 def study(cases: list[dict], snapshots: dict, *, width: int,
-          seed: int = 20261015, steps: int = 40, lr: float = 0.15):
+          seed: int = 20261015, steps: int = 40, lr: float = 0.15,
+          replay_head_states: dict | None = None):
     if (type(seed) is not int or type(steps) is not int or not 1 <= steps <= 128
             or type(lr) not in (int, float) or not math.isfinite(lr) or not 0 < lr <= 1):
         raise Invalid("unregistered E2 Head optimizer schedule")
+    if replay_head_states is not None and (type(replay_head_states) is not dict or replay_head_states):
+        raise Invalid("replay witness must start with an empty mutable inventory")
     original = frozen_bank(cases, snapshots, width=width)
     per_split = {split: [r for r in cases if r["split"] == split] for split in SPLITS}
     train, calibration, test = [per_split[k] for k in SPLITS]
@@ -173,6 +176,7 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
         if sum(p.numel() for p in head.parameters()) != expected or expected > CAP:
             raise Invalid("incorrect exact private Head parameter accounting")
         frozen_digest = _digest_module(head)
+        frozen_state = {k: v.detach().cpu().clone().contiguous() for k, v in head.state_dict().items()}
         with torch.no_grad():
             frozen_scores = head(scored_tokens, scored_mask, scored_pooled)
             frozen_cal_logits = head(cal_tokens, cal_mask, cal_pooled)
@@ -183,6 +187,11 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
                          steps=steps, lr=lr)
         if _digest_module(head) != receipt["final_head_sha256"]:
             raise Invalid("saved Head changed after training")
+        if replay_head_states is not None:
+            replay_head_states[kind] = {
+                "frozen": frozen_state,
+                "learned": {k: v.detach().cpu().clone().contiguous() for k, v in head.state_dict().items()},
+            }
         with torch.no_grad():
             cal_logits = head(cal_tokens, cal_mask, cal_pooled)
             temperature = min(TEMPERATURES, key=lambda t: float(F.cross_entropy(cal_logits / t, cy)))

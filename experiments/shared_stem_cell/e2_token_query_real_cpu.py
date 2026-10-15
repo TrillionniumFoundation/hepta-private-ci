@@ -154,7 +154,7 @@ def extract(cases: list[dict], backend, *, pooling: str, width: int,
 
 
 def execute(panel: dict, panel_sha: str, model: str, stage: Path,
-            parent: dict, parent_sha: str):
+            parent: dict, parent_sha: str, replay_capture: dict | None = None):
     from e1_core_real_cpu import PANEL_SHA256,MODELS
     from experiments.shared_stem_cell.execution import LocalEncoder
     if (panel_sha!=PANEL_SHA256 or parent.get('public_panel_sha256')!=panel_sha
@@ -172,9 +172,14 @@ def execute(panel: dict, panel_sha: str, model: str, stage: Path,
     bank,physical=extract(cases,backend,pooling=pooling,width=width)
     backend.close()
     pre=frozen_bank(cases,bank,width=width)
-    training=study(cases,bank,width=width)
+    heads = {} if replay_capture is not None else None
+    training=study(cases,bank,width=width,replay_head_states=heads)
     if training['feature_bank']!=pre or frozen_bank(cases,bank,width=width)!=pre:
         raise Invalid('physical frozen feature bank modified by learning')
+    if replay_capture is not None:
+        if type(replay_capture) is not dict or replay_capture:
+            raise Invalid('replay capture must start empty')
+        replay_capture.update(cases=cases,snapshots=bank,head_states=heads)
     return {'schema':'hepta.stem.e2-paired-actual-encoder-heads.v1',
         'model':model,'model_revision':manifest['revision'],
         'parent_e1_report_sha256':parent_sha,'panel_sha256':panel_sha,
@@ -201,14 +206,20 @@ def main():
     parser.add_argument('--stage',type=Path,required=True)
     parser.add_argument('--e1',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--replay-bundle',type=Path,required=True)
     args=parser.parse_args()
-    if args.output.exists():raise FileExistsError('cannot overwrite E2 research receipt')
+    if args.output.exists() or args.replay_bundle.exists():
+        raise FileExistsError('cannot overwrite E2 research or replay receipt')
     panel,panel_sha=load_panel(args.panel)
     raw=args.e1.read_bytes()
     parent=json.loads(raw,parse_constant=lambda x:(_ for _ in ()).throw(Invalid('nonfinite E1')))
-    result=execute(panel,panel_sha,args.model,args.stage,parent,sha(raw))
+    capture={}
+    result=execute(panel,panel_sha,args.model,args.stage,parent,sha(raw),replay_capture=capture)
     with args.output.open('x',encoding='utf8') as target:
         json.dump(result,target,sort_keys=True,allow_nan=False)
         target.write('\n')
+    from e2_head_replay import write_bundle
+    write_bundle(args.replay_bundle,capture['cases'],capture['snapshots'],
+                 capture['head_states'],result,sha(args.output.read_bytes()))
 
 if __name__=='__main__':main()
