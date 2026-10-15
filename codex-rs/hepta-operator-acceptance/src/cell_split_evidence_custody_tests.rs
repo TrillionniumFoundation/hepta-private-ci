@@ -55,7 +55,10 @@ impl CellSplitEvidenceCustodyPortV1 for Fixture {
         challenge_nonce: &str,
     ) -> Result<CellSplitEvidenceSignedCustodyV1, Self::Error> {
         self.calls += 1;
-        assert_eq!(journal_domain_id, DOMAIN, "no proposed local fields in request");
+        assert_eq!(
+            journal_domain_id, DOMAIN,
+            "no proposed local fields in request"
+        );
         assert_eq!(challenge_nonce.len(), 64);
         assert!(
             challenge_nonce
@@ -236,7 +239,10 @@ fn no_uncommitted_genesis_or_caller_domain_can_create_positive_custody() {
             ),
             Err(CellSplitEvidenceCustodyErrorV1::Invalid)
         ));
-        assert_eq!(port.calls, 0, "invalid local evidence never queries custody");
+        assert_eq!(
+            port.calls, 0,
+            "invalid local evidence never queries custody"
+        );
     }
 }
 

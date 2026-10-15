@@ -143,7 +143,10 @@ pub fn verify_cell_split_evidence_custody_v1<P: CellSplitEvidenceCustodyPortV1>(
     let signature = Signature::from_slice(&proof.signature_bytes)
         .map_err(|_| CellSplitEvidenceCustodyErrorV1::Invalid)?;
     pinned_custody_key
-        .verify_strict(&cell_split_evidence_custody_signing_payload_v1(&proof)?, &signature)
+        .verify_strict(
+            &cell_split_evidence_custody_signing_payload_v1(&proof)?,
+            &signature,
+        )
         .map_err(|_| CellSplitEvidenceCustodyErrorV1::Untrusted)?;
     let signed_proof_digest = crate::durable::sha256(&crate::durable::canonical_json(&proof)?);
     Ok(CellSplitEvidenceCustodyComparisonV1 {
