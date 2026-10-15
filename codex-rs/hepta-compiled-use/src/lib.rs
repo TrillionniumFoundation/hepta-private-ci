@@ -14,7 +14,6 @@ pub use action::{
     ActionArgumentsV1, ActionErrorV1, ActionFrameV1, ActionOpcodeV1, CapabilityGrantV1,
     CapabilityV1, ACTION_ABI_VERSION_V1, ACTION_FRAME_BYTES_V1,
 };
-pub(crate) use action::ACTION_PAYLOAD_OFFSET;
 
 use std::collections::VecDeque;
 use std::error::Error as StdError;
