@@ -30,3 +30,10 @@ PYTHONPATH=qualification/stem_scaling_v1 python3 qualification/stem_scaling_v1/p
 ```
 
 The first input is the strict P5 `hepta.stem-cell-one-axis-scale.v1` observation bundle; the second is `hepta.stem-scaling-original-group-outcomes.v1` with the exact full-byte SHA of the original input. A missing source-score artifact must fail rather than being replaced by synthetic examples. Do not merge to main, promote a selected Stem, re-enable NDU or make a 10T/100T comparison from source-only tests.
+
+
+## P5 completeness failure (2026-10-15)
+
+Previously a structurally valid three-level sidecar with zero complete four-level comparisons could produce a zero-sweep descriptive review. This did **not** certify a model win, but would leave a missing experiment indistinguishable from a completed negative result to an inattentive caller. The current child source now **raises `ClusterDenied` whenever no complete source-matched four-level sweep exists**. It still rejects missing/altered groups within any present complete series.
+
+A new test removes the entire 4,096-Cell highest-scale trial and its group ledger, rebinds the exact source digest, and proves the missing fourth level is denied instead of counted as a valid empty review. **11/11** normal and **11/11** `python -O` local tests passed on the original test fixtures, with the clearly declared minimal `scaling_frontier` stub used only for local contract execution; exact Git blobs of the updated source/test match the local tested bytes. The full native original parent `scaling_frontier` integration and the exact-head hosted CI still have to finish.
