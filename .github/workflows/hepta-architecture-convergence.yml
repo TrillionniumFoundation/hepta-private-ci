@@ -300,6 +300,9 @@ jobs:
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor -- --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-prod-feature-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features cell-split-supervisor-port --lib
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-original-control-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --test cell_split_finalizer_non_test_gate -- --nocapture --test-threads=1
+          # Five actual signed/typed original journal-port tests, including a
+          # duplicate Execute that MUST be Ambiguous and reconciled read-only.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-original-journal-replay.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features cell-split-supervisor-port --lib real_journal_port -- --nocapture --test-threads=1
       - name: Early original Deep Observer canonical terminal and signer regressions
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
         run: |
