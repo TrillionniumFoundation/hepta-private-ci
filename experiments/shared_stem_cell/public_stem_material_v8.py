@@ -42,6 +42,14 @@ REQUIRED_META = frozenset({"config.json", "tokenizer.json", "tokenizer_config.js
 MAX_BYTES = 2 * 1024**3
 MAX_FILES = 32
 MAX_ONE_FILE = 1200 * 1024**2
+# Research-only provenance: both releases are immutable, not moving main.
+# mmBERT's current main advertises only a pickle .bin, which this loader
+# intentionally rejects. This published historical commit has safetensors.
+# Granite's revision was physically executed in hosted run 38579723204.
+PINNED_RELEASES = {
+    "mmbert-small": "0eb3d056ec1d6333cf4e19b0966dfde342a41a3a",
+    "granite-97m-r2": "835ad14087e140460703cf0fae09f97d469d65c2",
+}
 CATALOG = {
     "mmbert-small": {
         "repo_id": "jhu-clsp/mmBERT-small", "kind": "masked_lm",
@@ -131,6 +139,18 @@ def make_plan(candidate: str, model_info) -> dict:
             "files": _metadata_files(model_info),
             "source_authority": "untrusted_public_hub_metadata_no_publisher_attestation",
             "production_accepted": False}
+
+
+def plan_from_reviewed_release(candidate: str, model_info) -> dict:
+    """Reject moving Hub main, unreviewed SHAs and unsafe .bin-only releases.
+
+    Unit fixtures can still use make_plan for synthetic source-inventory tests;
+    the real hosted prepare CLI must use this reviewed immutable source map.
+    """
+    _require(candidate in PINNED_RELEASES, "unknown reviewed public Stem")
+    _require(getattr(model_info, "sha", None) == PINNED_RELEASES[candidate],
+             "Hub revision differs from registered immutable public release")
+    return make_plan(candidate, model_info)
 
 
 def validate_plan(plan: object) -> dict:
@@ -340,8 +360,9 @@ def main(args=None) -> int:
         from huggingface_hub import HfApi, hf_hub_download
         api=HfApi(token=False)
         if opts.phase=="prepare":
-            model_info=_hub_info(api,CATALOG[opts.candidate]["repo_id"],"main")
-            plan=make_plan(opts.candidate,model_info)
+            release = PINNED_RELEASES[opts.candidate]
+            model_info=_hub_info(api,CATALOG[opts.candidate]["repo_id"],release)
+            plan=plan_from_reviewed_release(opts.candidate,model_info)
             _write_new(opts.out,plan) # Must persist immutable revision BEFORE transfer.
             print(f"PINNED_NO_WEIGHTS_TRANSFERRED {plan['repo_id']}@{plan['revision']}")
             return 0

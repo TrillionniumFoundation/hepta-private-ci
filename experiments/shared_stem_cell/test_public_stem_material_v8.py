@@ -9,7 +9,7 @@ import unittest
 from public_stem_material_v8 import (
     AdmissionError, CATALOG, SCHEMA, acquire, canonical, make_plan,
     strict_json, validate_plan, verify_hub_against_plan,
-    PROBE_TEXTS, probe_input_digest,
+    PROBE_TEXTS, probe_input_digest, PINNED_RELEASES, plan_from_reviewed_release,
 )
 
 REV = "1"*40
@@ -52,6 +52,24 @@ class PublicStemMaterialTests(unittest.TestCase):
             self.assertIs(plan["production_accepted"],False)
         self.assertEqual(CATALOG["mmbert-small"]["pooling"],"attention-mask-mean")
         self.assertEqual(CATALOG["granite-97m-r2"]["pooling"],"cls-first-token")
+
+    def test_real_preparation_requires_reviewed_safe_revision_and_stock_files(self):
+        for candidate, fixed_revision in PINNED_RELEASES.items():
+            with self.subTest(candidate=candidate):
+                info, _ = fixture(candidate)
+                info.sha = fixed_revision
+                self.assertEqual(plan_from_reviewed_release(candidate, info)["revision"],
+                                 fixed_revision)
+                info.sha = REV
+                with self.assertRaisesRegex(AdmissionError, "registered immutable"):
+                    plan_from_reviewed_release(candidate, info)
+                # Even at the pinned commit, a .bin-only or missing
+                # safetensors release must be rejected without conversion.
+                info.sha = fixed_revision
+                info.siblings = [row for row in info.siblings
+                                 if row.rfilename != "model.safetensors"]
+                with self.assertRaisesRegex(AdmissionError, "safe model weights"):
+                    plan_from_reviewed_release(candidate, info)
 
     def test_never_accept_moving_tag_as_run_revision(self):
         info,_=fixture()
