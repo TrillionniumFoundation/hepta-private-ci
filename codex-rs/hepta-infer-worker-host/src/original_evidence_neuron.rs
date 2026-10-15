@@ -20,6 +20,7 @@ use codex_hepta_agentd::MetricsCommittedSampleReadbackV1;
 use codex_hepta_agentd::MetricsLocalFrontierV1;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_infer_core::SharedFeatureBufferV1;
 use codex_hepta_infer_core::microbatch::MicrobatchKeyV1;
 use codex_hepta_infer_core::microbatch::MicrobatchLimitsV1;
 use codex_hepta_types::Generation;
@@ -202,6 +203,29 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
         self.owner.enqueue(now_ms, model_id, request, key, signed)
+    }
+
+    /// Original-Evidence-only Arc-backed admission. Same original locked
+    /// WAL owner, live Control/CNS and independent signed grant as enqueue.
+    ///
+    /// The preview never issues Final-use or makes an unavailable Evidence
+    /// owner usable; queued identities still require admission fsync before
+    /// any physical model effect in poll_and_execute.
+    pub fn enqueue_shared_features(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
+        request: NeuronFeatureRequest,
+        shared_features: SharedFeatureBufferV1,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        if !self.original_evidence.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        self.owner.enqueue_shared_features(
+            now_ms, model_id, request, shared_features, key, signed,
+        )
     }
 
     /// First commit ALL preceding Admission Evidence, only then dequeue and
