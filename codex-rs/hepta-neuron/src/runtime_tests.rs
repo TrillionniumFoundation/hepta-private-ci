@@ -346,8 +346,14 @@ fn invalid_successor_sequence_or_clock_never_reaches_model_port() {
         )))
     ));
     assert_eq!(model.calls, 1, "stale clock invoked model");
-    assert_eq!(checked(runtime.current_anchor()).unwrap().checkpoint_digest, predecessor);
-    assert_eq!(checked(witness.current()).unwrap().checkpoint_digest, predecessor);
+    assert_eq!(
+        checked(runtime.current_anchor()).unwrap().checkpoint_digest,
+        predecessor
+    );
+    assert_eq!(
+        checked(witness.current()).unwrap().checkpoint_digest,
+        predecessor
+    );
 
     // Neither rejection poisoned the journal or consumed a request slot.
     let second = checked(runtime.tick(&mut model, input(2, predecessor)));
