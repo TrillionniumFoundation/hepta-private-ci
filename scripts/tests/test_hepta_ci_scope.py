@@ -124,6 +124,47 @@ class ScopeTests(unittest.TestCase):
                 for minimum in minimums:
                     self.assertIn(minimum, gate)
 
+    def test_supervisor_original_control_non_test_retirement_gate(self):
+        # The non-test library denies an unverified Supervisor Retired write.
+        # A cfg(test) unit fixture cannot substitute for this linked test.
+        for path in [
+            "codex-rs/hepta-supervisor/src/cell_split_finalization.rs",
+            "codex-rs/hepta-supervisor/tests/cell_split_finalizer_non_test_gate.rs",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["native"])
+                self.assertTrue(scope["effects"])
+                self.assertTrue(scope["lifecycle"])
+                self.assertFalse(scope["learning"])
+
+        root = Path(__file__).resolve().parents[2]
+        workflow = (
+            root / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        title = (
+            "      - name: Early Supervisor original-Control "
+            "non-test retirement denial\n"
+        )
+        next_title = (
+            "      - name: Early original Deep Observer "
+            "canonical terminal and signer regressions\n"
+        )
+        self.assertEqual(workflow.count(title), 1)
+        self.assertEqual(workflow.count(next_title), 1)
+        gate = workflow.split(title, 1)[1].split(next_title, 1)[0]
+        self.assertIn(
+            "if: steps.execution.outputs.run_native == 'true' && "
+            "(steps.scope.outputs.effects == 'true' || "
+            "steps.scope.outputs.lifecycle == 'true' || "
+            "steps.scope.outputs.learning == 'true')",
+            gate,
+        )
+        self.assertIn("--features cell-split-supervisor-port --lib", gate)
+        self.assertIn("--test cell_split_finalizer_non_test_gate", gate)
+        self.assertIn("--minimum-tests 1", gate)
+        self.assertIn("supervisor-original-control-non-test-deny.json", gate)
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
             "codex-rs/hepta-types/src/lib.rs",
