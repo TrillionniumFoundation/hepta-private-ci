@@ -80,7 +80,8 @@ class OriginalGroupCurveTests(unittest.TestCase):
             if row['split']=='train':
                 row['label']=1-row['label']
         changed_labels=group_plan(altered,self.held,self.panel)
-        assert base['selection']=='sha256(fixed-domain:source_group)-ascending-label-independent-v2'
+        self.assertEqual(base['selection'],
+                         'sha256(fixed-domain:source_group)-ascending-label-independent-v2')
         for current in (changed_panel,changed_labels):
             self.assertEqual(current['source_group_order'],base['source_group_order'])
             for budget in BUDGETS:
