@@ -134,6 +134,8 @@ pub enum CellSplitSupervisorFenceErrorV1 {
     External(String),
     #[error("Supervisor retired without an original committed handoff receipt")]
     Ambiguous,
+    #[error("original same-owner Control B/effect/C is not production-composed")]
+    OriginalControlUnverified,
     #[error(transparent)]
     Durable(#[from] crate::AcceptanceError),
     #[error(transparent)]
@@ -357,11 +359,23 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // A caller-selected Supervisor port cannot supply authentic original
+        // Control Begin/CNS effect/Commit, even if its live route looks signed.
+        // Product admission must deny before invoking ANY generic port method.
+        if !cfg!(test) {
+            return Err(CellSplitSupervisorFenceErrorV1::OriginalControlUnverified);
+        }
         let _ = self.actual_effect(intent)?;
         Ok(())
     }
 
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
+        // The concrete journal finalizer is already sealed in production,
+        // but another implementation of this public trait could skip it.
+        // Deny BEFORE preconditions, CNS readback or the forged finalizer.
+        if !cfg!(test) {
+            return Err(CellSplitSupervisorFenceErrorV1::OriginalControlUnverified);
+        }
         if self.actual_effect(intent)?.is_some() {
             // Finalization already exists; only a fresh signed ReadBack may
             // reconcile it. It is not evidence caused by this new Execute.
