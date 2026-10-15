@@ -1,0 +1,84 @@
+name: Hepta P5 exact-integer outward roundoff re-audit (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-p5-roundoff/**'
+      - '.github/workflows/hepta-p5-outward-roundoff.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: research-p5-roundoff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  independent-discrete-boundary-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONHASHSEED: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin independent high-precision test oracle
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check mpmath==1.3.0
+          python -m pip check
+      - name: Record immutable checkout and physical source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/p5-roundoff
+          git rev-parse HEAD | tee /tmp/p5-roundoff/exact-source-head.txt
+          python --version | tee /tmp/p5-roundoff/python-version.txt
+          python -m pip freeze | tee /tmp/p5-roundoff/runtime-freeze.txt
+          sha256sum qualification/ndu-p5-roundoff/*.py | tee /tmp/p5-roundoff/source-files.sha256
+      - name: Test rigorous intervals against independent high precision (normal and optimized)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/ndu-p5-roundoff -p 'test_roundoff.py' -v 2>&1 | tee /tmp/p5-roundoff/regular-tests.log
+          python -O -m unittest discover -s qualification/ndu-p5-roundoff -p 'test_roundoff.py' -v 2>&1 | tee /tmp/p5-roundoff/optimized-tests.log
+      - name: Fresh source seal and full independent cost/reference scoring
+        run: |
+          set -euo pipefail
+          python qualification/ndu-p5-decision-cert/study.py plan --output /tmp/p5-roundoff/plan.json
+          PLAN_SHA=$(sha256sum /tmp/p5-roundoff/plan.json | awk '{print $1}')
+          test "$PLAN_SHA" = 92c568e9694c259b64ac1f8bb1f6db9d9214dd14ca13c81ff7d1f75bbea7a607
+          python qualification/ndu-p5-decision-cert/study.py predict \
+            --source /tmp/p5-roundoff/plan.json --source-sha256 "$PLAN_SHA" \
+            --output /tmp/p5-roundoff/sealed-predictions.json
+          SEAL_SHA=$(sha256sum /tmp/p5-roundoff/sealed-predictions.json | awk '{print $1}')
+          python qualification/ndu-p5-decision-cert/independent_score.py \
+            --source /tmp/p5-roundoff/plan.json --source-sha256 "$PLAN_SHA" \
+            --sealed /tmp/p5-roundoff/sealed-predictions.json --sealed-sha256 "$SEAL_SHA" \
+            --output /tmp/p5-roundoff/independent-score.json \
+            > /tmp/p5-roundoff/prior-score.stdout.log
+          SCORE_SHA=$(sha256sum /tmp/p5-roundoff/independent-score.json | awk '{print $1}')
+          python qualification/ndu-p5-roundoff/audit.py \
+            --source /tmp/p5-roundoff/plan.json --source-sha256 "$PLAN_SHA" \
+            --sealed /tmp/p5-roundoff/sealed-predictions.json --sealed-sha256 "$SEAL_SHA" \
+            --independent-score /tmp/p5-roundoff/independent-score.json --independent-score-sha256 "$SCORE_SHA" \
+            --output /tmp/p5-roundoff/outward-replay.json \
+            > /tmp/p5-roundoff/outward-replay.stdout.log
+          python - <<'PY'
+          import json
+          path='/tmp/p5-roundoff/outward-replay.json'
+          report=json.load(open(path))
+          if (report['roundoff_enclosed_action_count']!=192 or
+                  report['nominal_map_calls_charged']!=1511 or
+                  report['production_accepted'] is not False or
+                  report['authority']!='DENY_ALL' or
+                  report['continuous_time_FBSDE_certified'] is not False):
+              raise SystemExit('independent outward-rounded study failed closed')
+          print('Registered discrete outward-rounding coverage: 192/192; NO production authority')
+          PY
+      - name: Retain all completed, failed and partial attempts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p5-discrete-outward-bounds-${{ github.run_id }}
+          path: /tmp/p5-roundoff/
+          retention-days: 14
+          if-no-files-found: warn
