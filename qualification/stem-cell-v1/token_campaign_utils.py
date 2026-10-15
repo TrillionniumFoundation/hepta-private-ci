@@ -6,10 +6,11 @@ import time
 
 import torch
 
-from execution_meter import POLICY_SCHEMA, WorkLedger
+from execution_meter import TRANSFORMER_POLICY_SCHEMA, WorkLedger
 from group_encoder import digest_json
 from multirc_data import score_multirc
 from paired_execution import PHASES
+from transformer_work import PROFILE
 
 
 ARMS = ("pooled", "token", "intervention", "recurrent", "one_step", "reset_state", "query_only")
@@ -51,7 +52,8 @@ def infer(model, cases, bank, *, depth=1, deleted=False, batch_size=8, prefix="e
         for start in range(0, len(cases), batch_size):
             selected = cases[start:start + batch_size]
             wall, cpu = time.perf_counter_ns(), time.process_time_ns()
-            policy = dict(schema=POLICY_SCHEMA, mode="observe", wall_time_ns=600_000_000_000,
+            policy = dict(schema=TRANSFORMER_POLICY_SCHEMA, arithmetic_profile=PROFILE,
+                          mode="observe", wall_time_ns=600_000_000_000,
                           max_process_rss_bytes=None, rapl_zone=None, rapl_max_power_watts=None)
             meter = WorkLedger(policy, dict.fromkeys(PHASES, 10**18))
             batch = bank.batch(selected)

@@ -65,14 +65,14 @@ def gate(args):
         prepared_membership_sha256=file_digest(args.prepared / "membership.json"),
         model_source_sha256={name: file_digest(Path(__file__).parent / name) for name in
                             ("token_reader.py", "token_reader_training.py", "token_features.py")},
-        hidden_dim=32, learning_rate=.003, steps=args.steps, depth=3,
-        training_recipe="alternating_natural_and_synthetic_minibatches", intervention_probability=.25,
+        hidden_dim=32, learning_rate=.001, steps=args.steps, depth=3,
+        training_recipe="alternating_natural_and_synthetic_minibatches", intervention_probability=.5,
         official_validation_evaluated=False, gate_scope="tiny_train_fit_only")
     write_json(root, "protocol.json", protocol)
     torch.manual_seed(41)
     model, training = fit_token_reader(TokenReader(384, 32), bank.dataset(natural),
-        steps=args.steps, seed=41, batch_size=16, max_depth=3, learning_rate=.003,
-        counterfactual_train=bank.dataset(synthetic), counterfactual_fraction=.25,
+        steps=args.steps, seed=41, batch_size=16, max_depth=3, learning_rate=.001,
+        counterfactual_train=bank.dataset(synthetic), counterfactual_fraction=.5,
         evidence_weight=.2, diagnostic_interval=args.steps, wall_time_ns=900_000_000_000,
         failure_receipt_fn=lambda receipt: write_json(root, "failed-training.json", receipt))
     write_json(root, "training.json", training)
