@@ -1,0 +1,14 @@
+# R25: frozen candidate repair and residual-tangent global certification
+
+Exact parent R24 `aa1a1b3c1ebe5477ef3109db49065453c6459642`. An exploratory sequential design informed by R24's historical feasible witness, NOT blind preregistration. Push this BEFORE R25 efficacy runs; keep all historic statuses untouched.
+
+Use the original finite two-step positive entropic-risk NDU population, 16 exact branches and original 2/3/4-weight Stem; no changes to probability/preferences/recursive objective. Every run retains root cube [-3,3]^n, **4000 maximum outer B&B splits** and **cost gap <=0.01**. Fraction for all proof/prune predicates, float only to prioritize boxes. Original full nonlinear objective, no global convexity assumption.
+
+Three prespecified, distinct certificate trials:
+1. W3 candidate **repair** with unchanged R24 `hybrid_lower`: original archived R21 `w3-s6-bfgs`, exact binary64 hex `-0x1.5f9cdbe52ec1ap-1|-0x1.1c8e673797689p+0|-0x1.575748e5d4b19p-1`, tensor SHA256 `3b93b227b433cd15a8c622a3eed07886dbff3b009aac8667cabf2e4fe987f5c9`. The witness was chosen post hoc in R24 and frozen here before the new sweep. Do NOT claim new weights trained.
+2. W4 original candidate unchanged, enhanced proof envelope from 2 fixed extra scalar tangents at residuals of ORIGINAL R21 W4 candidate. For X=±1, compute exact residual, round to 1/8 (nearest, exact rational), and add those two anchors to the R24 33-anchor global scalar lower; bound is `max(R24 hybrid, expanded fixed-grid conditional lower)`. This remains globally valid and no weaker per same box. No anchor tuning after efficacy.
+3. W4 historical R21 witness `w4-s2-bfgs`, `-0x1.66683e0169ed7p-1|-0x1.048e59aa2dde9p+0|-0x1.66cefff0ca02cp-1|0x1.3ad9bd112edafp-2`, SHA256 `1fe54d7dc88fd92f3dcd86a9f8784481b5584fc183f3e2fe58e8f11cbb8fa47e`, with **same additional anchors fixed from original W4**, to separate candidate change from bound change.
+
+Before runs independently hash original R21 archive `75b7f84db4fa749c48b502c4ff1fe23af02e8b7fa5fd045f99c487e80c1f1d99` and weight index `cb548fed6aa074b8494cc47d4860d6f18ba82c40810f4279429d8936559148c5`; exactly reconstruct original dyadic weights. Retain every proof split, children, prunes, frontier and exact rational candidate gap, plus wall/CPU/RSS and negative outcomes. Audit all root coverage, hashes, checkpoint-free/no new training state, and >=100 sampled exact split recomputations per proof; include adversarial tamper checks. Do not change R21/R22/R23/R24 successful/unsuccessful historical counts or relax the split threshold.
+
+Claims limited to certified global **cost** regret for this finite discrete two-step model; no generic network optimum, multistep unknown dynamics, LLM superiority, native runtime, first-party cloud or production activation. CI status must be verified independently.
