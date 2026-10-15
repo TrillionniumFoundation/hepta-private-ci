@@ -229,6 +229,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-canonical-ancestor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-pinned-dirfd-rebind.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-existing-rebound-reopen.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontier -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-live-marker-rebind.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check -- --nocapture --test-threads=1
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
