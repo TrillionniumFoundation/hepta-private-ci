@@ -70,8 +70,10 @@ def check_batch(model, rows):
             check(type(image) is str and image and "://" not in image
                   and not image.startswith("//"), "remote or invalid image path")
             path = Path(image)
-            check(path.is_absolute() and path.is_file() and not path.is_symlink(),
-                  "uninspected native image is forbidden")
+            check(path.is_absolute() and ".." not in path.parts and
+                  path.is_file() and not path.is_symlink() and
+                  not any(parent.is_symlink() for parent in path.parents),
+                  "uninspected or symlink-traversed native image is forbidden")
         media_cost = MAX_IMAGE_SOFT_TOKENS if image is not None else 0
         check(media_cost < max_seq, "native context smaller than image envelope")
         observed = (validate_text(text, tokenizer=tokenizer, prefix=prefix,
