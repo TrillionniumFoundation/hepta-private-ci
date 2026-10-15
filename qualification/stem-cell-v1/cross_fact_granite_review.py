@@ -123,6 +123,17 @@ def review(root):
                     'model file digest disagrees')
             require(_digest(folder / manifest['training_receipt_file']) == manifest['training_receipt_sha256'],
                     'training receipt digest disagrees')
+            internal_path = folder / f'{arm}-natural-internal.json'
+            require(not internal_path.is_symlink()
+                    and _digest(internal_path) == row['natural_internal_file_sha256'],
+                    'old-task internal-tune receipt changed')
+            internal = read(internal_path)
+            require(internal['scope'] == 'old_training_source_internal_tune_not_fresh'
+                    and internal['threshold_selected'] is False
+                    and row['old_task_internal_not_selection'] is True
+                    and internal['metrics'] == row['natural_internal_tune']
+                    and internal['model_execution_parameter_sha256'] == manifest['execution_parameter_sha256'],
+                    'old-task retention was relabeled or linked to another model')
             require(receipt['seed'] == seed and receipt['requested_steps'] == 8000
                     and receipt['initial_model_sha256'] == row['original_parameter_digest']
                     and receipt['model_sha256'] == row['trained_parameter_digest']
