@@ -28,10 +28,14 @@ class FactInteractionBlock(nn.Module):
         self.d = nn.Linear(width, width, bias=False)
 
     def forward(self, facts: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
-        if (facts.ndim != 3 or facts.shape[-1] != self.width or valid.shape != facts.shape[:2]
+        if (facts.ndim != 3 or not 1 <= facts.shape[0] <= 4096
+                or not 1 <= facts.shape[1] <= 1024 or facts.shape[-1] != self.width
+                or valid.shape != facts.shape[:2]
                 or valid.dtype != torch.bool or not valid.any(-1).all()
                 or not torch.isfinite(facts).all()):
             raise ValueError('valid bounded fact vectors and nonempty masks required')
+        if facts.shape[0] * facts.shape[1] * facts.shape[1] > 2_000_000:
+            raise ValueError('bounded fact attention work required')
         if self.mode == 'cross_fact':
             queries, keys, values = self.a(facts), self.b(facts), self.c(facts)
             scores = torch.bmm(queries, keys.transpose(1, 2)) / math.sqrt(self.width)
@@ -80,7 +84,8 @@ def matched_reader_pair(input_dim=8, hidden_dim=32, *, seed=41):
         cross = CrossFactTokenReader(input_dim, hidden_dim, mode='cross_fact')
         torch.manual_seed(seed)
         local = CrossFactTokenReader(input_dim, hidden_dim, mode='local')
-    assert sum(p.numel() for p in cross.parameters()) == sum(p.numel() for p in local.parameters())
+    if sum(p.numel() for p in cross.parameters()) != sum(p.numel() for p in local.parameters()):
+        raise RuntimeError('unequal matched Reader parameters')
     for key, tensor in cross.state_dict().items():
         if not key.startswith('fact_block.'):
             if not torch.equal(tensor, local.state_dict()[key]):
