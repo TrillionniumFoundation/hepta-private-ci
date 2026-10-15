@@ -1,0 +1,86 @@
+name: Hepta E2 independent original DINO receipt audit (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-dino-independent-receipt-audit-20261015
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exact independent negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_original_vision_receipt_audit.py' -v
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_original_vision_receipt_audit.py' -v
+          python -m compileall -q experiments/shared_stem_cell/e2_original_vision_receipt_audit.py
+      - name: Verify committed observational claims are explicitly non-promoting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          obs = json.loads(Path("qualification/shared-stem-e2-vision/OBSERVED_PINNED_DINO_V1_20261015.json").read_bytes())
+          assert obs["source_pr"] == 2146
+          assert obs["exact_source_sha"] == "d03d91fb0894b5fb85da294a7a5b85d40c227be7"
+          assert obs["github_actions_run_id"] == 38675401089
+          assert obs["github_artifact_zip_sha256"] == "4466690390c7b0dfc511558a2f7f4baa23bb6c96ba7ac5d3193e0bb47b6118b3"
+          assert obs["natural_image_task_success_proven"] is False
+          assert obs["full_five_arm_semantic_gate_completed"] is False
+          assert obs["production_accepted"] is False
+          assert obs["authority"] == "DENY_ALL"
+          PY
+
+  independently-replay-original-archive:
+    needs: independent-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require exact historical original physical Actions run to have succeeded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38675401089 \
+            --jq '.head_sha+" "+.status+" "+.conclusion' > /tmp/original-run.identity
+          read -r source_sha status result < /tmp/original-run.identity
+          test "$source_sha" = "d03d91fb0894b5fb85da294a7a5b85d40c227be7"
+          test "$status" = "completed"
+          test "$result" = "success"
+      - name: Download exact source-run artifact by immutable ID and rehash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946565744/zip > /tmp/original-dino-artifact.zip
+          echo '4466690390c7b0dfc511558a2f7f4baa23bb6c96ba7ac5d3193e0bb47b6118b3  /tmp/original-dino-artifact.zip' | sha256sum -c -
+          python experiments/shared_stem_cell/e2_original_vision_receipt_audit.py \
+            --archive /tmp/original-dino-artifact.zip \
+            --archive-sha256 4466690390c7b0dfc511558a2f7f4baa23bb6c96ba7ac5d3193e0bb47b6118b3 \
+            > /tmp/e2-independent-readout.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path("/tmp/e2-independent-readout.json").read_text())
+          assert r["cases"] == 2 and r["independent_archive_consistency"] is True
+          assert r["physical_execution_independently_attested"] is False
+          assert r["natural_image_task_success_measured"] is False
+          assert r["production_accepted"] is False and r["authority"] == "DENY_ALL"
+          print(json.dumps(r, sort_keys=True))
+          PY
