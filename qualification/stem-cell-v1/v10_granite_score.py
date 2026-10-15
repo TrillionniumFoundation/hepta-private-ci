@@ -14,6 +14,7 @@ from v9_typed_graph import digest, solve, verify_proof
 from v9_independent_review import reference_semantics
 from v10_granite_features import load, save_new, validate_public, MODEL, REVISION
 from v10_granite_reader import ARMS, SEEDS, sha_file
+from v10_training_audit import verify_trace
 
 
 def review(public_path, source_seal_path, held_truth_path, blind_path,
@@ -55,6 +56,7 @@ def review(public_path, source_seal_path, held_truth_path, blind_path,
         raise ValueError('physically recorded real Granite Encoder evidence missing')
     # Independent reviewer re-opens EVERY actual selected source artifact. A
     # textual claim of nine trained models is not sufficient for admission.
+    training_trace_audits={}
     for name, recorded in blind['training_commitments'].items():
         seed, arm=name.split('/')
         folder=Path(model_root)/f'{seed}-{arm}'
@@ -77,6 +79,8 @@ def review(public_path, source_seal_path, held_truth_path, blind_path,
                 or actual.get('feature_receipt_sha256')!=sha_file(feature_receipt_path)
                 or actual.get('held_labels_seen') is not False):
             raise ValueError('original complete Reader weights, physical work or frozen source mismatched')
+        training_trace_audits[name]=verify_trace(public, seal, actual,
+            load(folder/'schedule.json'), seed=int(seed), arm=arm)
     groups=defaultdict(list)
     for row in public:
         ident=row['case_id'].split('/')
@@ -158,6 +162,7 @@ def review(public_path, source_seal_path, held_truth_path, blind_path,
         blind_probability_sha256=blind['probabilities_sha256'],
         held_independent_groups=240, held_distinct_candidates=960,
         repeated_seed_cases_not_independent=True, neural_observations=observations,
+        independent_training_trace_audits=training_trace_audits,
         symbolic_observations=symbolic,cheap_symbolic_cpu_ns=null_cpu_ns,
         exploratory_held_gate_three_seed=admitted,
         real_granite_model_calls_credited_only_to_encoder_receipt=True,
