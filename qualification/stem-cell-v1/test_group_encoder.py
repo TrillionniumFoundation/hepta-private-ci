@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 
 import group_encoder as encoder
 from group_features import FeatureCache, content_digest
+from group_token_id_binding import token_ids_sha256
 
 
 class Tensor:
@@ -91,7 +92,20 @@ class OfflineEncoderTests(unittest.TestCase):
         self.assertIs(first, second)
         self.assertEqual((first.shape, first.positions, loaded.calls), ((2, 384), ((0.0,), (1.0,)), 1))
         self.model.assert_called_once()
+        self.assertEqual(loaded.token_id_witnesses[ref], token_ids_sha256([1, 2]))
         self.tokenizer.assert_called_once_with("real input", return_tensors="pt", truncation=False)
+
+    def test_same_length_changed_ids_produce_distinct_forward_witnesses(self):
+        loaded = encoder.FrozenTokenEncoder(self.root)
+        first = loaded.identity("source A", scope="episode", generation=1)
+        loaded.encode("source A", first)
+        self.tokenizer.return_value = {
+            "input_ids": Tensor([[1, 3]]), "attention_mask": Tensor([[1, 1]])}
+        second = loaded.identity("source B", scope="episode", generation=1)
+        loaded.encode("source B", second)
+        self.assertNotEqual(loaded.token_id_witnesses[first],
+                            loaded.token_id_witnesses[second])
+        self.assertEqual(loaded.calls, 2)
 
     def test_rejects_partial_load_without_fallback(self):
         self.info["missing_keys"].append("randomly_initialized.weight")

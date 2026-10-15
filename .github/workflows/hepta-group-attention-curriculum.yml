@@ -1,0 +1,153 @@
+name: Hepta Group Step-Supervision Pairing (Research)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/group_attention*.py'
+      - 'qualification/stem-cell-v1/group_step_supervision.py'
+      - 'qualification/stem-cell-v1/group_training.py'
+      - 'qualification/stem-cell-v1/group_core.py'
+      - 'qualification/stem-cell-v1/test_group_training_attention.py'
+      - '.github/workflows/hepta-group-attention-curriculum.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: group-step-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install real CPU numerical execution dependencies
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0'
+      - name: Run new and original Core/teacher/reviewer CPU checks
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python - <<'PY'
+          import torch._dynamo
+          import unittest
+          names = (
+              "test_group_training_attention",
+              "test_group_attention_curriculum",
+              "test_group_attention_coverage",
+              "test_group_attention_campaign_review",
+              "test_group_checkpoint_audit",
+              "test_group_training_optimizer",
+              "test_group_optimizer_paired_review",
+              "test_group_trace_semantic_audit",
+              "test_group_attention_slot_review",
+              "test_group_token_id_binding",
+              "test_group_abort_trace_audit",
+              "test_group_step_supervision",
+              "test_group_training",
+          )
+          import sys
+          sys.path.insert(0, "qualification/stem-cell-v1")
+          suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(x) for x in names)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+
+  physical-pretrained:
+    needs: cpu-regressions
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [41, 47, 53]
+        optimizer: [sgd_v1, adam_v1]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install pinned pretrained CPU stack
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0'
+      - name: Execute and independently audit paired same-init Group training
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python qualification/stem-cell-v1/group_attention_campaign.py --acquire --snapshot "${{ runner.temp }}/granite-step" --output "${{ runner.temp }}/paired-step" --seed "${{ matrix.seed }}" --training-profile "${{ matrix.optimizer }}"
+          python -S qualification/stem-cell-v1/group_attention_campaign_review.py "${{ runner.temp }}/paired-step" --output "${{ runner.temp }}/paired-step/independent-review.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: group-step-pretrained-${{ matrix.seed }}-${{ matrix.optimizer }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/paired-step/*.json
+            ${{ runner.temp }}/paired-step/*.safetensors
+          if-no-files-found: warn
+
+
+  optimizer-paired-review:
+    needs: physical-pretrained
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Fetch exactly this run's source, trace, and weight artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download '${{ github.run_id }}' --dir '${{ runner.temp }}/optimizer-paired'
+      - name: Independently review all three SGD/Adam pairs without Torch
+        run: |
+          python -S - <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+          import sys
+          root = Path('${{ runner.temp }}/optimizer-paired')
+          for seed in (41, 47, 53):
+              folders = []
+              for name in ('sgd_v1', 'adam_v1'):
+                  found = list(root.glob(f'group-step-pretrained-{seed}-{name}-*'))
+                  if len(found) != 1:
+                      raise SystemExit(f'expected one same-run artifact for {seed}/{name}')
+                  folders.append(found[0])
+              output = root / f'optimizer-pair-{seed}.json'
+              subprocess.run([
+                  sys.executable, '-S',
+                  'qualification/stem-cell-v1/group_optimizer_paired_review.py',
+                  str(folders[0]), str(folders[1]), '--output', str(output),
+              ], check=True)
+              data = json.loads(output.read_text())
+              if not data['paired_structure_passed'] or data['production_promotion_permitted']:
+                  raise SystemExit('optimizer evidence cannot authorize production')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: optimizer-paired-${{ github.run_id }}
+          path: ${{ runner.temp }}/optimizer-paired/optimizer-pair-*.json
+          if-no-files-found: warn

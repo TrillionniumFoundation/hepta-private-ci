@@ -31,7 +31,7 @@ class Core(nn.Module):
         # Explicit arithmetic remains visible to the eager operator work meter.
         return (1 + (-value).exp()).reciprocal()
 
-    def step(self, tokens, state=None, feedback=None, mask=None):
+    def step(self, tokens, state=None, feedback=None, mask=None, *, return_attention=False):
         """Consume [batch, tokens, features], return ([batch, state], logits)."""
         if tokens.ndim != 3 or tokens.shape[2] != self.input_dim or not 1 <= tokens.shape[1] <= 1024:
             raise ValueError("bounded batch of token features required")
@@ -52,12 +52,14 @@ class Core(nn.Module):
             if mask.shape != (batch, length) or mask.dtype != torch.bool or not mask.any(dim=1).all():
                 raise ValueError("mask must retain at least one token per example")
             scores = scores.masked_fill(mask.eq(False), -torch.inf)
-        context = torch.einsum("bt,bth->bh", scores.softmax(dim=1), keys)
+        attention = scores.softmax(dim=1)
+        context = torch.einsum("bt,bth->bh", attention, keys)
         update_input = torch.cat((context, state, feedback), dim=-1)
         gate = self._sigmoid(self.update_gate(update_input))
         candidate = self._sigmoid(self.proposal(update_input)) * 2 - 1
         state = (torch.ones_like(gate) - gate) * state + gate * candidate
-        return state, self.head(state)
+        logits = self.head(state)
+        return (state, logits, attention) if return_attention else (state, logits)
 
     def forward(self, tokens, steps=1, mask=None, feedback=None, reset_state=False):
         if type(steps) is not int or not 1 <= steps <= 64:
