@@ -25,6 +25,7 @@ use super::MAX_ACTIVE_REQUESTS;
 use super::ModelDriver;
 use super::NeuronFeatureDriver;
 use super::WorkerRequest;
+use super::with_verified_stem_batch_tokens_v1;
 
 const MAX_BATCH_MEMBERS: usize = 32;
 
@@ -264,20 +265,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             }
         };
 
-        // The nested original authority calls are deliberate. Each entry
-        // validates one independently signed token; their active-effect guards
-        // remain alive together until the innermost callback completes.
-        // This uses ONE existing authority owner, not a new batch signer.
-        let mut all_fenced: Box<dyn FnOnce() -> Result<T, Error> + '_> = Box::new(run);
-        for (token, binding) in signed_members.into_iter().rev() {
-            let next = all_fenced;
-            all_fenced = Box::new(move || {
-                authority
-                    .with_verified_effect(token, &binding, next)
-                    .map_err(|_| Error::FinalUseDenied)?
-            });
-        }
-        all_fenced()
+        // No new source-visible privileged boundary: the original signed
+        // Worker caller owns the multi-token nested final-use effect fence.
+        with_verified_stem_batch_tokens_v1(authority, signed_members, Box::new(run))
     }
 }
 
