@@ -65,7 +65,7 @@ class Tests(unittest.TestCase):
                 h=1e-5
                 fd=(full(v+h*axis,eta)[1]-full(v-h*axis,eta)[1])/(2*h)
                 np.testing.assert_allclose(fd,H@axis,atol=2e-8,rtol=1e-6)
-    def test_11_stationary_origin_not_global(self):
+    def test_11_original_saddle_unpinned_by_parameter_channel(self):
         self.assertAlmostEqual(full((0,0),ETA)[0],full((0,0),0)[0])
         self.assertGreater(full((0,0),ETA)[0],full((1.64,.423),ETA)[0])
     def test_12_parent_convexity_constant(self):
