@@ -1,4 +1,5 @@
 """Fail-closed original archive and matched prompt parity tests."""
+
 import hashlib
 import io
 from pathlib import Path
@@ -65,7 +66,11 @@ class OriginalParityCensusTests(unittest.TestCase):
 
             def apply_chat_template(self, messages, *, tokenize, add_generation_prompt):
                 value = messages[0]["content"]
-                return list(value.encode()) + ([9] if self.drift else []) if tokenize else value
+                return (
+                    list(value.encode()) + ([9] if self.drift else [])
+                    if tokenize
+                    else value
+                )
 
             def encode(self, text, *, add_special_tokens):
                 return list(text.encode())
@@ -74,7 +79,8 @@ class OriginalParityCensusTests(unittest.TestCase):
         plan = {"cases": [{"query": {"identity": f"q{i}"}} for i in range(8)]}
         with patch("hf_original_parity.build_messages") as messages:
             messages.side_effect = lambda case, arm, style, sources: (
-                [{"content": case["query"]["identity"] + arm + style}], ["source"]
+                [{"content": case["query"]["identity"] + arm + style}],
+                ["source"],
             )
             rows, mismatches = census(plan, {}, reader, Official())
             self.assertEqual((len(rows), len(mismatches)), (64, 0))
