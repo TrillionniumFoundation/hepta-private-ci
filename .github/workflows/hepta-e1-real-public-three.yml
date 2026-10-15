@@ -78,13 +78,18 @@ jobs:
           set -euo pipefail
           python -m venv "$RUNNER_TEMP/e1-real-venv"
           PY="$RUNNER_TEMP/e1-real-venv/bin/python"
-          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
           "$PY" -m pip install --only-binary=:all: \
             'transformers==5.19.0' 'sentence-transformers==6.1.0' \
             'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
             'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
             'pyarrow==21.0.0' 'pillow==11.3.0' 'soundfile==0.13.1'
           "$PY" -m pip check
+          "$PY" - <<'PY'
+          import numpy,torch,torchvision,torchcodec
+          assert torch.__version__.startswith('2.10.0')
+          assert torchvision.__version__.startswith('0.25.0')
+          PY
           "$PY" -m pip freeze > "$RUNNER_TEMP/e1-pinned-runtime.txt"
       - name: Run model-free and actual CPU optimizer integrity tests
         run: |
