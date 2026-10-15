@@ -959,6 +959,13 @@ pub use reviewed_granite_v6::ReviewedGraniteBatchV6;
 pub use reviewed_granite_v6::ReviewedGraniteErrorV6;
 pub use reviewed_granite_v6::read_independently_reviewed_granite_v6;
 
+#[path = "model_worker_granite_v7.rs"]
+mod granite_shadow_v7;
+pub use granite_shadow_v7::GraniteShadowSummaryV7;
+pub use granite_shadow_v7::ShadowAdmissionErrorV7;
+pub use granite_shadow_v7::ShadowCellSummaryV7;
+pub use granite_shadow_v7::read_shadow_granite_v3_v7;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
