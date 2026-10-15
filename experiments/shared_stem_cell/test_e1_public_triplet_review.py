@@ -23,7 +23,10 @@ def fixture():
    'physical_observations':{'load_ms':1.0,'encode_ms_by_case':{c['case_id']:.01 for c in p['cases']},
       'local_model_api_requests':224,'physical_transformer_forward_count_attested':False,
       'mmbert_pretrained_complete_tied_table_verified':True if model=='mmbert_small' else None,
-      'mmbert_local_complete_table_sha256':'b'*64 if model=='mmbert_small' else None},
+      'mmbert_local_complete_table_sha256':'b'*64 if model=='mmbert_small' else None,
+      'mmbert_all_serialized_weights_byte_verified':True if model=='mmbert_small' else None,
+      'mmbert_whole_pretrained_checkpoint_sha256':'c'*64 if model=='mmbert_small' else None,
+      'mmbert_verified_source_tensor_count':133 if model=='mmbert_small' else None},
    'wall_ms':fitted['train_time_ms']+10.,'cpu_process_ms':fitted['train_time_ms']+1.,
    'process_lifetime_peak_rss_bytes':12345678}
  return p,reports
@@ -56,6 +59,10 @@ class Checks(unittest.TestCase):
  def test_missing_rss(self):self.deny(lambda p,a:a['mmbert_small'].pop('process_lifetime_peak_rss_bytes'))
  def test_fabricated_physical_forward_attestation(self):self.deny(lambda p,a:a['mmbert_small'].update(physical_transformer_forward_count_attested=True))
  def test_total_wall_undercount(self):self.deny(lambda p,a:a['embeddinggemma_2_text'].update(wall_ms=0.001))
+ def test_missing_complete_mmbert_model_weight_evidence(self):
+  self.deny(lambda p,a:a['mmbert_small']['physical_observations'].update(mmbert_all_serialized_weights_byte_verified=False))
+ def test_too_few_verified_mmbert_tensors(self):
+  self.deny(lambda p,a:a['mmbert_small']['physical_observations'].update(mmbert_verified_source_tensor_count=1))
  def test_missing_pretrained_mmbert_tie_evidence(self):
   self.deny(lambda p,a:a['mmbert_small']['physical_observations'].update(mmbert_pretrained_complete_tied_table_verified=False))
  def test_fake_tie_evidence_on_granite(self):
