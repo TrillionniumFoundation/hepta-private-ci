@@ -38,6 +38,7 @@ jobs:
           python -m pip freeze > "$OUT/ENVIRONMENT.txt"
           python -m unittest discover -s "$SRC" -p test_math.py -v 2>&1 | tee "$OUT/MATH_TESTS.log"
           (cd "$SRC" && python certificate.py) > "$OUT/CERTIFICATE.json"
+          cmp "$SRC/CERTIFICATE.json" "$OUT/CERTIFICATE.json"
           (cd "$SRC" && python -c 'import json;from certificate import ablation_certificate;print(json.dumps(ablation_certificate(),indent=2,sort_keys=True))') > "$OUT/ABLATION_CERTIFICATE.json"
           python "$SRC/run.py" sweep --out "$OUT/runs" 2>&1 | tee "$OUT/SWEEP.log"
           python "$SRC/audit/verify.py" --source "$SRC" --runs "$OUT/runs" --out "$OUT/verified" 2>&1 | tee "$OUT/AUDIT.log"
