@@ -1392,3 +1392,51 @@ fn single_neuron_feature_counts_other_model_plus_reported_resident_and_scratch()
         Err(Error::IndeterminateLifecycle)
     );
 }
+
+
+#[test]
+fn uncertain_head_effect_fences_subsequent_signed_stem_binding_without_retry() {
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.signed-poison-fence".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_feature_after_execution: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            authorization.clone(),
+        ),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+
+    // Never propose a new signed Final-use binding on a poisoned generation,
+    // even if the source, Head, and caller claims are otherwise unchanged.
+    assert_eq!(
+        worker.expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head,
+            &features,
+            &authorization,
+        ),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
+}
