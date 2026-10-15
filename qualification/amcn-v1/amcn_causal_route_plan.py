@@ -420,7 +420,10 @@ def build_original_plan(source_packet, original_predictions, bank, rag_receipt,
             graph, case, source_ids, original_inventory_sha)
         edges = [e for e in graph["edges"] if
                  e["source_id"] in frontier and e["target_id"] in frontier]
-        graph_fixed = {kind: 0.5 for kind in RELATIONS}
+        # The frozen same-topology baseline must preserve inhibitory signs.
+        # Treating 'contradicts' as excitatory creates artificial learned gain.
+        graph_fixed = {kind: (-0.5 if kind == "contradicts" else 0.5)
+                       for kind in RELATIONS}
         typed_scores = {sid: by_id[sid]["typed_equal_budget"] for sid in source_ids}
         shared_scores = {sid: by_id[sid]["untyped_equal_budget"] for sid in source_ids}
         selected = {
@@ -530,8 +533,43 @@ def build_with_original_trained_graph(source_packet, original_predictions,
     require(len({c["question_id"] for c in cases}) == len(cases)
             and set(graph_training_inputs) == {c["question_id"] for c in cases},
             "unregistered or incomplete original physical graph case census")
-    future = sorted({c["family"] for c in cases
-                     if c["split"] in ("select", "future_a", "future_b")})
+    # Future/RETENTION queries may share several transitive source roots;
+    # direct family display labels cannot qualify as distinct TRAIN families.
+    aliases = source_packet.get("lineage_alias_edges")
+    require(isinstance(aliases, list) and len(aliases) <= 32768,
+            "original lineage alias inventory unavailable")
+    parents = {}
+
+    def find(x):
+        parents.setdefault(x, x)
+        while parents[x] != x:
+            parents[x] = parents[parents[x]]
+            x = parents[x]
+        return x
+
+    def link(x, y):
+        require(isinstance(x, str) and x and isinstance(y, str) and y,
+                "invalid original source-family alias")
+        parents[find(x)] = find(y)
+
+    for case in cases:
+        require(case["split"] in ("select", "future_a", "future_b", "retention")
+                and isinstance(case["source_root"], str)
+                and isinstance(case["family"], str),
+                "original prospective family/root inventory incomplete")
+        link(case["family"], case["source_root"])
+        for source in case["eligible_sources"]:
+            link(case["source_root"], source["source_root"])
+    admitted_roots = {c["source_root"] for c in cases}
+    admitted_roots.update(source["source_root"] for case in cases
+                          for source in case["eligible_sources"])
+    for alias in aliases:
+        require(isinstance(alias, list) and len(alias) == 2
+                and set(alias) <= admitted_roots,
+                "lineage alias references unknown source root")
+        link(*alias)
+    involved = {find(c["family"]) for c in cases}
+    future = sorted(k for k in parents if find(k) in involved)
     actual = {}
     for case in cases:
         record = graph_training_inputs[case["question_id"]]

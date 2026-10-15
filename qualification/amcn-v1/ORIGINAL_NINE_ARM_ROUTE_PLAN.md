@@ -94,3 +94,26 @@ stdlib-only nine-arm source/provenance workflow. Source-only CI must not
 silently import Torch by discovering all test files under a broad glob.
 Until the exact GitHub runner successfully completes, local scalar tests
 must not be relabelled an exact-source hosted Torch/graph run.
+
+
+## Baseline-sign and graph TRAIN source-family hardening
+
+The fixed graph arm's baseline coefficients retain the HNMF inhibitory sign:
+`contradicts=-0.5`, while registered non-inhibitory relations retain `+0.5`.
+Previously giving every relation `+0.5` would have made the learned graph's
+negative coefficients look beneficial simply because the fixed graph had the
+wrong sign. This is a hypothesis/control correction, not a measured improvement.
+
+TRAIN-only edge-label admission now also excludes original RETENTION,
+prospective question families, their case source roots and all actual eligible
+source roots, closed over admitted transitive source aliases. Unknown
+alias endpoints fail **before** any Torch optimizer call. Each graph physical
+training request must declare that entire derived exclusion roster, not just
+the public FUTURE_A/FUTURE_B family names. This guards an avoidable
+old-source/future-source contamination route; an independently authenticated
+original-source/label owner is still a prerequisite for causal inference.
+
+The exact-source local stdlib-only suite covered these new controls. Only the
+separate original-Torch graph workflow can prove the original owner was
+executed against this new exact HEAD; no answer-level outcome, independent
+future window, or production authority follows from passing source tests.

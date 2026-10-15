@@ -249,8 +249,8 @@ class OriginalRouteBuilder(unittest.TestCase):
         import amcn_causal_graph_training as original_graph
 
         cases = self.packet["cases"]
-        future = sorted({case["family"] for case in cases
-                         if case["split"] in ("select", "future_a", "future_b")})
+        future = sorted({v for case in cases for v in
+                         (case["family"], case["source_root"])})
         inputs = {case["question_id"]: {
             "edges": [], "train_rows": [],
             "expected_train_sha256": pin("source-TRAIN"),
@@ -285,6 +285,36 @@ class OriginalRouteBuilder(unittest.TestCase):
                     expected_bank_manifest_sha256=pin("missing"),
                     expected_source_binding_sha256=pin("source"),
                     expected_predictions_sha256=pin("predictions"))
+
+    def test_fixed_graph_control_preserves_inhibitory_relation(self):
+        from unittest.mock import patch
+        original = route.graph_rank
+        with patch.object(route, "graph_rank", wraps=original) as training:
+            self.run_plan()
+        calls = training.call_args_list
+        self.assertGreaterEqual(len(calls), 4)
+        fixed = calls[0]
+        self.assertLess(fixed.args[3]["contradicts"], 0)
+        self.assertTrue(all(v == 0.5 for relation, v in fixed.args[3].items()
+                            if relation != "contradicts"))
+        expected_seeds = route.source_first(
+            self.packet["cases"][0]["question"],
+            self.packet["cases"][0]["eligible_sources"])
+        self.assertEqual(fixed.kwargs["seed_ids"], expected_seeds)
+
+    def test_unknown_source_root_alias_denied_before_graph_training(self):
+        from unittest.mock import patch
+        import amcn_causal_graph_training as graph
+
+        cases = self.packet["cases"]
+        self.packet["lineage_alias_edges"] = [["undocumented-train", "root-0"]]
+        data = {case["question_id"]: {} for case in cases}
+        with patch.object(graph, "physical_relation_packet") as torch_owner:
+            with self.assertRaisesRegex(Refused, "alias references unknown"):
+                route.build_with_original_trained_graph(
+                    self.packet, self.predictions, self.bank, self.rag,
+                    data, self.reader, final_k=2)
+            torch_owner.assert_not_called()
 
     def test_builds_original_whole_question_nine_arm_pairs(self):
         result = self.run_plan()
