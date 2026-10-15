@@ -17,9 +17,18 @@ use codex_hepta_types::StableId;
 pub mod canonical;
 mod graph;
 pub mod local_shadow;
+pub mod resource_portfolio;
 
 pub use graph::GraphBoundPromptPortfolioReceipt;
 pub use graph::optimize_with_factor_graph;
+pub use resource_portfolio::{
+    canonical_action_risk_profile_digest, select_resource_portfolio_shadow_v1,
+    validate_action_risk_profile_v1, ActionCovarianceEntryV1, ActionRiskEntryV1,
+    ActionRiskPolicyV1, ActionRiskProfileV1, CovarianceMissingPolicyV1,
+    ResourceActionSpecV1, ResourceBudgetV1, ResourceCostBasisV1, ResourcePortfolioDispositionV1,
+    ResourcePortfolioError, ResourcePortfolioInputV1, ResourcePortfolioShadowProposalV1,
+    ResourceVectorV1,
+};
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
