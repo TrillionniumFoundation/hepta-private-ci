@@ -160,6 +160,7 @@ def replay(source: Any, raw_source: bytes, sidecar: Any) -> dict[str, Any]:
         })
     need(len(reviews) == len(base_review['matched_one_axis_sweeps']),
          'not all original scaling comparisons survived independent source matching')
+    need(len(reviews) > 0, 'missing complete four-level original-source-paired scaling experiment')
     return {
         'schema': 'hepta.stem-scaling-group-paired-review.v1',
         'original_input_sha256': sha(raw_source),
