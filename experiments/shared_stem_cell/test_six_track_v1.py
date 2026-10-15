@@ -45,7 +45,7 @@ def make_fixture():
             elif stage == "P1":
                 family = name.split("_")[0]
                 frozen = name.endswith("_frozen")
-                initial = sha(stage + family + "-initial")
+                initial = sha(stage + "-common-initial")
             else:
                 family, frozen = stage, False
                 initial = sha(stage + "-initial-" + name)
@@ -55,19 +55,21 @@ def make_fixture():
                 "model_sha256": sha("one-base-" + (family if stage == "P0" else stage)),
                 "initial_head_sha256": initial,
                 "final_head_sha256": initial if frozen else sha(stage + name + "-final"),
-                "train_data_sha256": sha(stage + "-same-data"),
+                "train_data_sha256": sha(stage + "-more-data") if stage == "P2" and name == "parent_more_data" else sha(stage + "-same-data"),
                 "optimizer_sha256": sha(stage + "-same-optimizer"),
                 "train_cases": 128 if stage == "P2" and name == "parent_more_data" else 64,
-                "train_steps": 24,
+                "train_steps": 0 if frozen else 24,
                 "trainable_parameters": 9744,
                 "physical_forward_claimed": False,
-                "e2e_includes_one_time": False,
+                "one_time_in_e2e": {k: False for k in target.ONE_TIME},
                 "costs": {k: (40000000 if k == "peak_rss_bytes" else 2.0)
                           for k in target.COSTS},
                 "results": [],
             }
             if stage == "P4":
                 arm["compute_budget_ms"] = 100
+                if name == "ndu_solver":
+                    arm["costs"]["ndu_ms"] = 3.0 * len(cases)
             for c in cases:
                 utility = 0.5
                 if stage == "P0" and not frozen:
@@ -131,9 +133,83 @@ class SixTrackValidation(unittest.TestCase):
 
     def test_e2e_nearest_rank_and_amortized_once(self):
         out = target.audit(self.doc)["tracks"]["P5"]["arms"]["typed"]
-        self.assertEqual(out["future1"]["p99_ms"], 10.0)
-        # 5 one-time columns at 2ms, over 28 requests, not summed twice.
-        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 112)
+        self.assertEqual(out["future1"]["p50_ms"], 10.0)
+        self.assertIsNone(out["future1"]["p95_ms"])
+        self.assertIsNone(out["future1"]["p99_ms"])
+        self.assertEqual(out["future1"]["distinct_task_count"], 4)
+        # 5 one-time columns at 2ms, over 112 requests, not summed twice.
+        self.assertEqual(out["lifecycle"]["observed_evaluation_requests"], 80)
+        self.assertEqual(out["lifecycle"]["excluded_training_calibration_requests"], 32)
+        self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 80)
+
+    def test_frozen_head_cannot_claim_optimizer_steps(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["granite_frozen"].update(
+            train_steps=12), "frozen Head")
+
+    def test_other_frozen_head_cannot_mutate_even_if_unpaired(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["replicated_frozen"].update(
+            final_head_sha256=sha("changed-without-train")), "frozen Head changed weights")
+
+    def test_other_learned_head_cannot_fake_training_with_unchanged_bytes(self):
+        def unchanged(d):
+            a = d["tracks"]["P1"]["replicated_learned"]
+            a["final_head_sha256"] = a["initial_head_sha256"]
+        self.rejected(unchanged, "learned Head weights did not change")
+
+    def test_learned_head_requires_real_update_steps(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_learned"].update(
+            train_steps=0), "learned Head has no optimizer")
+
+    def test_learned_head_requires_nonzero_trainable_parameters(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_learned"].update(
+            trainable_parameters=0), "zero trainable")
+
+    def test_p0_four_names_cannot_alias_one_model(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_frozen"].update(
+            model_sha256=d["tracks"]["P0"]["granite_frozen"]["model_sha256"]), "model")
+        def make_alias(d):
+            for role in ("frozen", "learned"):
+                d["tracks"]["P0"]["laya_" + role]["model_sha256"] = (
+                    d["tracks"]["P0"]["granite_" + role]["model_sha256"]
+                )
+        self.rejected(make_alias, "alias")
+
+    def test_p0_model_comparison_same_training_schedule(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_learned"].update(
+            train_steps=48), "common training budget")
+        self.rejected(lambda d: d["tracks"]["P0"]["mmbert_learned"].update(
+            optimizer_sha256=sha("other-optimizer")), "common training budget")
+
+    def test_p1_shared_vs_replicated_head_same_initialization(self):
+        def alter(d):
+            for name in ("replicated_frozen", "replicated_learned"):
+                d["tracks"]["P1"][name]["initial_head_sha256"] = sha("different-initial")
+            d["tracks"]["P1"]["replicated_frozen"]["final_head_sha256"] = sha("different-initial")
+        self.rejected(alter, "initialization differs")
+
+    def test_p1_shared_vs_replicated_head_capacity(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["replicated_learned"].update(
+            trainable_parameters=9750), "parameter budget differs")
+
+    def test_p2_more_data_cannot_reuse_smaller_dataset_sha(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["parent_more_data"].update(
+            train_data_sha256=d["tracks"]["P2"]["split_children"]["train_data_sha256"]), "identical training dataset")
+
+    def test_ood_before_training_freeze_rejected(self):
+        self.rejected(lambda d: [c.update(observed_at=99) for c in d["cases"]
+                                 if c["split"] == "ood"], "OOD examples")
+
+    def test_p5_blocked_effect_cannot_be_success(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][0].update(
+            recovery_status="blocked"), "blocked effect")
+
+    def test_minimum_percentile_request_census(self):
+        self.assertIsNone(target.supported_nearest_rank([1, 2], .5, 3))
+        self.assertEqual(target.supported_nearest_rank([5, 1, 3], .5, 3), 3)
+        self.assertIsNone(target.supported_nearest_rank(list(range(19)), .95, 20))
+        self.assertEqual(target.supported_nearest_rank(list(range(20)), .95, 20), 19)
+        self.assertIsNone(target.supported_nearest_rank(list(range(99)), .99, 100))
+        self.assertEqual(target.supported_nearest_rank(list(range(100)), .99, 100), 98)
 
     def test_wrong_authority(self):
         self.rejected(lambda d: d.update(authority="GRANT"), "non-authorizing")
@@ -150,6 +226,31 @@ class SixTrackValidation(unittest.TestCase):
     def test_chronology_violation(self):
         self.rejected(lambda d: d["cases"][32].update(observed_at=2), "time boundary")
 
+    def test_exact_input_cannot_create_second_independent_source_group(self):
+        # Same split, two apparently distinct provenance groups, identical bytes.
+        # Without this check the family-count estimate can be inflated.
+        self.rejected(lambda d: d["cases"][4].update(
+            input_sha256=d["cases"][0]["input_sha256"]),
+            "identical input reused across distinct source families")
+
+    def test_reader_sufficient_vs_removed_premise_must_change_input(self):
+        # A label saying "premise_removed" is not a causal intervention when
+        # the bytes seen by the model are identical to the sufficient condition.
+        self.rejected(lambda d: d["cases"][35].update(
+            input_sha256=d["cases"][34]["input_sha256"]),
+            "Reader sufficient/premise-removed intervention")
+
+    def test_same_source_can_reuse_input_for_noop_retrieval(self):
+        doc = copy.deepcopy(self.doc)
+        doc["cases"][33]["input_sha256"] = doc["cases"][32]["input_sha256"]
+        for arms in doc["tracks"].values():
+            for arm in arms.values():
+                arm["results"][33]["input_sha256"] = doc["cases"][32]["input_sha256"]
+        out = target.audit(doc)
+        self.assertEqual(out["distinct_input_sha256_count"], 111)
+        self.assertIs(out["independent_source_groups_not_cryptographically_attested"], True)
+        self.assertIs(out["production_promotion_permitted"], False)
+
     def test_reader_counterfactual_missing(self):
         self.rejected(lambda d: d["cases"][33].update(reader_condition="none"), "repeated Reader")
 
@@ -162,15 +263,34 @@ class SixTrackValidation(unittest.TestCase):
     def test_reader_does_not_change_source(self):
         self.rejected(lambda d: d["cases"][33].update(source_group="different-family"), "Reader intervention changed original task media")
 
-    def test_one_time_accounting_flag_required(self):
-        self.rejected(lambda d: d["tracks"]["P5"]["typed"].pop("e2e_includes_one_time"), "one-time/e2e")
+    def test_one_time_component_census_required(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"].pop("one_time_in_e2e"),
+                      "per-component one-time")
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"]["one_time_in_e2e"].pop("training_ms"),
+                      "per-component one-time")
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"]["one_time_in_e2e"].update(
+            training_ms=1), "per-component one-time")
 
-    def test_no_double_count_when_first_request_includes_load(self):
+    def test_obsolete_global_cost_flag_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["typed"].update(
+            e2e_includes_one_time=True), "obsolete")
+
+    def test_all_one_time_components_already_in_e2e(self):
         doc = copy.deepcopy(self.doc)
-        doc["tracks"]["P5"]["typed"]["e2e_includes_one_time"] = True
+        doc["tracks"]["P5"]["typed"]["one_time_in_e2e"] = {
+            k: True for k in target.ONE_TIME
+        }
         life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
+        self.assertEqual(life["one_time_not_in_e2e_ms"], 0)
         self.assertEqual(life["amortized_one_time_ms_per_request"], 0)
         self.assertEqual(life["mean_e2e_plus_amortized_ms"], 10)
+
+    def test_mixed_one_time_costs_count_missing_training_and_jit(self):
+        doc = copy.deepcopy(self.doc)
+        doc["tracks"]["P5"]["typed"]["one_time_in_e2e"]["load_ms"] = True
+        life = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["lifecycle"]
+        self.assertEqual(life["one_time_not_in_e2e_ms"], 8)
+        self.assertAlmostEqual(life["mean_e2e_plus_amortized_ms"], 10 + 8 / 80)
 
     def test_p4_per_case_solver_overrun(self):
         self.rejected(lambda d: d["tracks"]["P4"]["tree_search"]["results"][0].update(
@@ -183,6 +303,46 @@ class SixTrackValidation(unittest.TestCase):
     def test_cross_case_prediction_swap(self):
         self.rejected(lambda d: d["tracks"]["P0"]["granite_learned"]["results"][16].update(
             input_sha256=d["cases"][0]["input_sha256"]), "swapped input")
+
+    def test_negative_future_net_utility_is_not_clamped_to_zero(self):
+        doc = copy.deepcopy(self.doc)
+        index = next(i for i, case in enumerate(doc["cases"])
+                     if case["split"] == "future1")
+        doc["tracks"]["P4"]["ndu_solver"]["results"][index]["observed_utility"] = -0.4
+        output = target.audit(doc)
+        future = output["tracks"]["P4"]["arms"]["ndu_solver"]["future1"]
+        self.assertEqual(future["negative_utility_count"], 1)
+        self.assertAlmostEqual(future["mean_observed_utility"], (15 * 0.6 - 0.4) / 16)
+        self.assertLess(output["tracks"]["P4"]["paired_family_differences"]
+                        ["ndu_solver__vs__bellman"]["future1"]
+                        ["mean_paired_utility_difference"], -0.15)
+
+    def test_failed_case_can_record_negative_penalty_without_success(self):
+        doc = copy.deepcopy(self.doc)
+        index = next(i for i, case in enumerate(doc["cases"])
+                     if case["split"] == "future1")
+        row = doc["tracks"]["P5"]["typed"]["results"][index]
+        row.update(completed=False, observed_utility=-0.2,
+                   observed_effect_sha256=None, recovery_status="blocked")
+        future = target.audit(doc)["tracks"]["P5"]["arms"]["typed"]["future1"]
+        self.assertAlmostEqual(future["accuracy"], 1)
+        self.assertAlmostEqual(future["completed_and_correct_fraction"], 15 / 16)
+        self.assertEqual(future["negative_utility_count"], 1)
+
+    def test_negative_utility_outside_frozen_range_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=-1.0001), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=1.0001), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=True), "signed utility")
+
+    def test_failed_case_cannot_claim_positive_net_utility(self):
+        def fail_with_positive_utility(d):
+            row = d["tracks"]["P5"]["typed"]["results"][0]
+            row.update(completed=False, observed_utility=0.2,
+                       observed_effect_sha256=None, recovery_status="blocked")
+        self.rejected(fail_with_positive_utility, "failed task assigned positive utility")
 
     def test_no_result_deletion(self):
         self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"].pop(), "paired")
@@ -208,8 +368,15 @@ class SixTrackValidation(unittest.TestCase):
     def test_p4_equal_budget(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(compute_budget_ms=101), "compute budgets")
 
-    def test_p4_ndu_overrun(self):
-        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(ndu_ms=101), "compute budget")
+    def test_p4_ndu_total_underreport_is_rejected(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(
+            ndu_ms=101), "NDU aggregate cost underreports")
+
+    def test_p4_total_cost_above_per_case_budget_is_valid(self):
+        out = target.audit(self.doc)["tracks"]["P4"]["arms"]["ndu_solver"]
+        self.assertEqual(self.doc["tracks"]["P4"]["ndu_solver"]["compute_budget_ms"], 100)
+        self.assertEqual(self.doc["tracks"]["P4"]["ndu_solver"]["costs"]["ndu_ms"], 336)
+        self.assertEqual(out["future1"]["case_count"], 16)
 
     def test_p5_wrong_effect(self):
         self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][2].update(
@@ -223,6 +390,20 @@ class SixTrackValidation(unittest.TestCase):
     def test_p3_requires_output_artifact(self):
         self.rejected(lambda d: d["tracks"]["P3"]["multimodal_generator"]["results"][0].pop(
             "generated_artifact_sha256"), "SHA256")
+
+    def test_extreme_scalar_must_not_overflow_or_poison_accounting(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["costs"].update(
+            training_ms=10**350), "physical measurement")
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["costs"].update(
+            training_ms=10**19), "physical measurement")
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][0].update(
+            end_to_end_ms=10**350), "physical measurement")
+
+    def test_extreme_negative_utility_must_not_overflow(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=-(10**350)), "signed utility")
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["results"][0].update(
+            observed_utility=float("inf")), "signed utility")
 
     def test_bool_cannot_be_a_numeric_metric(self):
         self.rejected(lambda d: d["tracks"]["P5"]["typed"]["costs"].update(cpu_ms=True), "measurement")
@@ -247,7 +428,7 @@ class SixTrackValidation(unittest.TestCase):
             p.write_text(json.dumps(self.doc, allow_nan=False), encoding="utf-8")
             obj, digest = target.load_json(p)
             self.assertEqual(digest, hashlib.sha256(p.read_bytes()).hexdigest())
-            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v1")
+            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v2")
 
 
 if __name__ == "__main__":
