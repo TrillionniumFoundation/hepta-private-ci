@@ -939,7 +939,9 @@ fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
             Err(codex_hepta_operator_acceptance::CellSplitSupervisorFenceErrorV1::Ambiguous)
         ));
         assert_eq!(
-            owner.read_committed(&intent).expect("existing durable effect"),
+            owner
+                .read_committed(&intent)
+                .expect("existing durable effect"),
             Some(original.clone()),
             "rejected replay must preserve the exact original signed receipt"
         );
