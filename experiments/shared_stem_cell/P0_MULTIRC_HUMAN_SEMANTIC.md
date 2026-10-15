@@ -120,3 +120,27 @@ sufficient-evidence semantics and original independent model no-change;
 longitudinal retention, NDU and signed original Worker/CAS/Evidence WAL/FinalUse
 qualification. No policy, graph, selected Stem, CUDA/native Computer Use,
 `main` or release settings are modified here.
+
+## 2026-10-15 original-label paired evidence audit (additive v2)
+
+The independent scorer retains the unchanged full-original human-label score and
+reports a strictly named **no-evidence predictor of the ORIGINAL human label**.
+It pairs the same frozen or learned Head's original and no-evidence observations,
+scoring the actual original answer label in both cases. The no-evidence
+intervention receives **no new human entailment label** and is not an admitted
+re-labeling of an edited passage. Group-average differences in Brier against the
+original target include all positive, negative, and zero gains. Eight selected
+passage groups are not sufficient to claim statistical/cost-adjusted causal
+semantic superiority. This is a prior-only diagnostic, not an equally trained
+question-only expert; that stronger control remains necessary.
+
+The scorer now checks physical training lineage against the original exact
+train/calibration IDs (not self-reported hashes), original frozen tensor ID,
+trained-vs-frozen difference, 40 genuine update metadata, and the original
+model's control inventory. Sum of actually metered Head/native request durations
+may not exceed the complete model process lifetime. No historical study is
+rescored or re-labeled without the source data and original receipts.
+
+Source-only normal/optimized tests and hosted exact-head CI are separately
+required; none of these mechanisms claim verified weights or independent
+model-origin signatures. `DENY_ALL`, no model winner, no release.
