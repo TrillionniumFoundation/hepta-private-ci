@@ -297,5 +297,4 @@ def main():
             raise ValueError('blind inference must not accept any label path')
         scoreblind(store,args.models,args.output)
 
-
 if __name__=='__main__':main()
