@@ -522,8 +522,14 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
     {
         let mut state = owner.state.lock().expect("fixture owner");
         assert_eq!(state.bytes, MAX_BYTES - MAX_ROW as u64);
-        assert!(!state.pending_cutover, "capacity denial may not stage Begin");
-        assert!(!state.poisoned, "no disk IO or ambiguous effect has occurred");
+        assert!(
+            !state.pending_cutover,
+            "capacity denial may not stage Begin"
+        );
+        assert!(
+            !state.poisoned,
+            "no disk IO or ambiguous effect has occurred"
+        );
         // Restore the original physical length, not a fabricated success.
         state.bytes = authentic_bytes;
     }
