@@ -1,0 +1,133 @@
+name: Hepta E3 independent physical archive and outcome audit (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-independent-archived-outcomes-20261015"]
+    paths:
+      - "experiments/shared_stem_cell/e3_archived_outcome_audit.py"
+      - "experiments/shared_stem_cell/E3_INDEPENDENT_ARCHIVED_OUTCOMES_20261015.md"
+      - ".github/workflows/hepta-e3-independent-archived-outcomes.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_archived_outcome_audit.py"
+      - "experiments/shared_stem_cell/E3_INDEPENDENT_ARCHIVED_OUTCOMES_20261015.md"
+      - ".github/workflows/hepta-e3-independent-archived-outcomes.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-e3-independent-archive-{{ github.sha }}
+  cancel-in-progress: true
+jobs:
+  independent-original-archive:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == 'TrillionniumFoundation/hepta-private-ci'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: {{ github.sha }}
+          persist-credentials: false
+      - name: Compile read-only independent auditor and its exact arithmetic
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_archived_outcome_audit.py
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e3_archived_outcome_audit import exact_p, AuditError
+          assert exact_p(7,14) == 0.18924713134765625
+          assert exact_p(0,0) == 1.0
+          assert issubclass(AuditError, ValueError)
+          print('INDEPENDENT E3 MATH/IMPORT CONTRACT PASS; no original pretrained claim')
+          PY
+      - name: Obtain original, pinned Actions run and Git commit metadata
+        env:
+          GH_TOKEN: {{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -m 700 -p /tmp/e3-independent
+          gh api /repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38678847948 > /tmp/e3-independent/run.json
+          gh api /repos/TrillionniumFoundation/hepta-private-ci/commits/095769f27c6b2861460b385e297540081a26af05 > /tmp/e3-independent/merge.json
+          gh api /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496 > /tmp/e3-independent/artifact.json
+      - name: Fetch pinned archived original ZIP without forwarding token to storage redirect
+        env:
+          GH_TOKEN: {{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, request, fp, code, msg, headers, newurl):
+                  return None
+          api = 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip'
+          request = urllib.request.Request(api, headers={
+              'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+          })
+          try:
+              urllib.request.build_opener(NoRedirect()).open(request, timeout=40)
+              raise RuntimeError('expected authenticated artifact redirect')
+          except urllib.error.HTTPError as e:
+              if e.code not in (302, 307):
+                  raise
+              destination = e.headers.get('Location', '')
+          parsed = urllib.parse.urlsplit(destination)
+          host = parsed.hostname or ''
+          trusted = ('blob.core.windows.net', 'actions.githubusercontent.com', 's3.amazonaws.com')
+          if (parsed.scheme != 'https' or parsed.username or parsed.password or
+                  not any(host.endswith('.' + h) for h in trusted)):
+              raise RuntimeError('untrusted Actions artifact redirect host')
+          # Signed second request has NO authorization header.
+          out = Path('/tmp/e3-independent/original.zip')
+          hasher = hashlib.sha256()
+          size = 0
+          with urllib.request.urlopen(urllib.request.Request(destination), timeout=50) as stream, out.open('xb') as f:
+              while True:
+                  chunk = stream.read(65536)
+                  if not chunk:
+                      break
+                  size += len(chunk)
+                  if size > 1024*1024:
+                      raise RuntimeError('original ZIP oversized')
+                  f.write(chunk)
+                  hasher.update(chunk)
+          if hasher.hexdigest() != 'f421f20cdb5d35becf5e93ed63e58996d48701c2b27b979d608e2b05b6b61f30':
+              raise RuntimeError('not the pinned original Actions ZIP')
+          print('PINNED ORIGINAL ZIP VERIFIED; bytes:', size)
+          PY
+      - name: Independently recompute six-arm paired statistics and enforce DENY_ALL
+        run: |
+          set -euo pipefail
+          python3 experiments/shared_stem_cell/e3_archived_outcome_audit.py \
+            --zip /tmp/e3-independent/original.zip \
+            --run /tmp/e3-independent/run.json \
+            --merge /tmp/e3-independent/merge.json \
+            --artifact /tmp/e3-independent/artifact.json \
+            --out /tmp/e3-independent/original-independent-outcomes.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          z=json.loads(Path('/tmp/e3-independent/original-independent-outcomes.json').read_text())
+          assert z['authority']=='DENY_ALL'
+          assert z['stem_selected'] is False
+          assert z['gate_gain_percentage_points']==10.9375
+          assert z['gate_six_arm_bonferroni_p']==1.0
+          assert z['original_calibrated_visual_weight']==0.0
+          assert z['visual_necessity_adjudicated'] is False
+          print('REAL ORIGINAL ARCHIVE DESCRIPTIVE AUDIT COMPLETED; NOT A STEM WINNER')
+          PY
+      - name: Upload only small audited numeric research result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-e3-independent-original-archive-audit
+          path: /tmp/e3-independent/original-independent-outcomes.json
+          if-no-files-found: warn
