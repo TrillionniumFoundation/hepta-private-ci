@@ -844,6 +844,47 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "original Unix symlink-ancestor regression must remain present",
         )
 
+    def test_original_control_wal_custody_requires_effective_unix_uid(self) -> None:
+        # 0700/0600 permissions and matching inode do not prove ownership
+        # by the current execution principal when a privileged service can
+        # open another UID's private directory. Freeze the real euid bound.
+        source = self.lexical_code(
+            "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        )
+        self.assertIn(
+            "rustix::process::geteuid().as_raw()",
+            source,
+            "Control must bind original ownership to the effective Unix UID",
+        )
+        self.assertIn(
+            "fn control_original_owner_uid_matches_euid(",
+            source,
+            "original Control UID check must be a single reviewed predicate",
+        )
+        self.assertEqual(
+            source.count(
+                "!control_original_owner_uid_matches_euid(opened.uid(), named.uid())"
+            ),
+            2,
+            "both the original WAL/marker and pinned parent require current owner UID",
+        )
+        manifest = (
+            ROOT / "codex-rs/hepta-control-plane/Cargo.toml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            'rustix = { workspace = true, features = ["fs", "process"] }',
+            manifest,
+            "safe Unix process UID lookup must compile without unsafe code",
+        )
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen()",
+            native,
+            "real original WAL and foreign-UID negative test must remain executable",
+        )
+
     def test_original_control_marker_read_is_pinned_and_postchecked(self) -> None:
         # A path-based marker read after inode preflight can accept data
         # from a different file. This Audit protects the original locked FD
