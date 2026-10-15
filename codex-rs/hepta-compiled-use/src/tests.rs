@@ -168,3 +168,44 @@
         );
         assert!(queue.is_empty());
     }
+
+    #[test]
+    fn malformed_front_frame_does_not_disappear_on_failed_pop() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("batch");
+        let intact_second = *queue.frames.get(1).expect("second");
+        queue.frames.front_mut().expect("head")[ACTION_PAYLOAD_OFFSET + 40] ^= 1;
+        let corrupt_first = *queue.frames.front().expect("head");
+        assert_eq!(
+            queue.pop(),
+            Err(ActionErrorV1::NonCanonicalPadding)
+        );
+        assert_eq!(queue.len(), 2);
+        assert_eq!(*queue.frames.front().expect("retained corrupt head"), corrupt_first);
+        assert_eq!(*queue.frames.get(1).expect("retained second"), intact_second);
+        // Only an independent owner may choose the quarantine/recovery action.
+        // A rejected frame must never skip ahead and execute the second action.
+    }
+
+    #[test]
+    fn stale_grant_binding_does_not_consume_queue_head() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        queue.push(click(1)).expect("push");
+        let original = *queue.frames.front().expect("head");
+        queue.verifier.grant.digest = digest(b"revoked-or-rotated-grant");
+        assert!(matches!(queue.pop(), Err(ActionErrorV1::CapabilityDenied)));
+        assert_eq!(queue.len(), 1);
+        assert_eq!(*queue.frames.front().expect("retained head"), original);
+        // The production sandbox must separately recheck current revocation.
+    }
+
+    #[test]
+    fn valid_pop_consumes_exactly_one_frame() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("batch");
+        assert_eq!(queue.pop().expect("first").frame(), &click(1));
+        assert_eq!(queue.len(), 1);
+        assert_eq!(queue.pop().expect("second").frame(), &click(2));
+        assert_eq!(queue.len(), 0);
+        assert!(matches!(queue.pop(), Err(ActionErrorV1::QueueEmpty)));
+    }
