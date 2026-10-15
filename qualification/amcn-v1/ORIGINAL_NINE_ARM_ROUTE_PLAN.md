@@ -1,0 +1,39 @@
+# AMCN source-first nine-arm route materialization (shadow-only)
+
+This increment closes a missing execution boundary between **original physically reloaded #1968 Head probabilities**, source-first candidate selection, independently supplied **actual strong-RAG route outputs**, a registered fixed HNMF graph, TRAIN-only graph relation coefficients, and the already existing #2085 **same frozen Reader** original-answer execution path. It is not a production model, a new memory writer, an independent host/reviewer, or proof of adaptive memory superiority.
+
+## Exact prerequisites
+
+`amcn_causal_route_plan.py` requires six **out-of-band SHA-256 pinned, immutable JSON files**:
+
+1. `source`: complete eligible source inventory for every question, not a publisher-label-selected shortlist. Each source binds ID, original root, exact scope/generation, current-not-revoked marker, revision, original UTF-8 content SHA, source-first Encoder input row ID and reconstructed input digest; source-family and temporal splits must remain separate. A fake `revoked=False` flag is only a caller declaration until the source owner authenticates it.
+2. `predictions`: original `amcn_typed_budget.py` saved TRAIN-only physical five-arm Head probabilities, with exact row/source/type/split input hashes.
+3. `bank`: complete output of the existing `amcn_causal_physical_bank_bridge.replay_and_bind_original_bank`, including **six actually reloaded safetensors Heads, 5 forwards per original heldout row**, two independent equal-cost trained Head banks, frozen Head and negative authority. Self-generated JSON can imitate SHA strings; it is not independently authenticated model material. Prefer `build_from_original_physical_bank` to force physical re-execution before plan construction.
+4. `rag`: **original external strong hybrid-RAG execution receipt** and full-source inventory/immutable request per question. A BM25 shortlist is **not** a strong RAG substitute. If actual RAG discovers sources outside lexical Top-16, they MUST enter the common candidate union and receive real Head Encoder/forward predictions before comparing any arms. Missing rows refuse the entire study; silently restricting RAG to lexical Top-16 is scientifically invalid.
+5. `graph`: registered source-bound original edge sets, one predeclared lesion edge and six real TRAIN-only relation coefficients plus immutable physical training/graph receipts. Three interventions are fixed weights, trained relation weights on unchanged topology, and source-supported edge lesion. Graph association scores are ranking signals, not causal/factual authority. Graph discoveries outside Top-16 also require common physical feature forwards. Frozen and learned graph must preserve provenance and final evidence count.
+6. `reader`: one exact Reader/Tokenizer/Prompt/Encoder source tuple and a fixed input/output token ceiling for all original nine arms.
+
+Only after all six records pass exact source checks is a **create-only** full-nine-arm request plan emitted. Gold labels and outcome scores are not read. All plan source candidates are capped and final Reader evidence counts match across arms. Original source-root transitive aliases are extended with shared **actually eligible evidence roots** to prevent counting linked questions as independent.
+
+## Execute the source-only plan bridge
+
+```sh
+PYTHONPATH=qualification/amcn-v1 python3 qualification/amcn-v1/amcn_causal_route_plan.py \
+  --source /pinned/original-complete-source.json --source-sha256 "$SOURCE_SHA" \
+  --predictions /pinned/original-physical-head-predictions.json --predictions-sha256 "$PRED_SHA" \
+  --bank /pinned/six-head-physical-bridge.json --bank-sha256 "$BANK_SHA" \
+  --rag /pinned/original-strong-rag-route.json --rag-sha256 "$RAG_SHA" \
+  --graph /pinned/original-hnmf-trained-graph-routes.json --graph-sha256 "$GRAPH_SHA" \
+  --reader /pinned/one-original-reader-tuple.json --reader-sha256 "$READER_SHA" \
+  --final-k 4 --output /new/only-once/original-nine-arm-route-plan.json
+```
+
+For physical re-execution rather than consuming a bank JSON, use the `build_from_original_physical_bank` Python entry point with the original `FeatureMatrix`, `type_by_row`, TRAIN receipt, six Head safetensors and externally supplied tensor/source SHA pins; that calls the **original #1968** safetensors validator and all five physical Head forwards for every heldout source pair before constructing any Reader request.
+
+`original-nine-arm-route-plan.json` contains a nested `plan` suitable for `amcn_causal_reader_generation.generate_original`. Pass **that nested plan**, with an independently pinned exact byte representation, to the Reader—not the wrapper. Execute only after an independently checked original Reader model inventory exists, then use the independent `amcn_causal_journal_review.py` and a separately authenticated scoring authority. Any original failure remains a failure. Candidate metadata never grants `FinalUse` or production selection.
+
+## What this increment proves and does not prove
+
+The new source-only unit tests exercise real BM25 numerical ranking, typed/pooled score sorting, common original source union, graph intervention and lesion reconstruction, stronger RAG sources absent from lexical Top-16, source revocations, exact Reader binding, transitive evidence-root clustering and byte-exact CLI pins. These use **synthetic input packets and predictions**, not pretrained Encoder/Reader weights, original hybrid-RAG executions or independently judged natural tasks.
+
+The **current original 44-question historical LoCoMo source-first labels** had a negative result (original uniform Head weak-support Hit@1 typed 4/44; lexical 14/44). Separate post-hoc balanced-sampling outputs must never be mixed into that frozen census. Authentic complete nine-arm source/graph/Reader material is not available in this experiment branch, therefore this increment cannot assert actual nine-arm model calls or wins. Production remains **DENY_ALL**, Draft, no main merge, no `blocking-ci` waiver and no independent future-calendar observation.

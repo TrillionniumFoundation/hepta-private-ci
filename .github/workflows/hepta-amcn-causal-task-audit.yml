@@ -6,6 +6,7 @@ on:
     paths:
       - "qualification/amcn-v1/amcn_causal_*.py"
       - "qualification/amcn-v1/test_amcn_causal_*.py"
+      - "qualification/amcn-v1/ORIGINAL_NINE_ARM_ROUTE_PLAN.md"
       - "qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md"
       - ".github/workflows/hepta-amcn-causal-task-audit.yml"
   pull_request:
@@ -13,6 +14,7 @@ on:
     paths:
       - "qualification/amcn-v1/amcn_causal_*.py"
       - "qualification/amcn-v1/test_amcn_causal_*.py"
+      - "qualification/amcn-v1/ORIGINAL_NINE_ARM_ROUTE_PLAN.md"
       - "qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md"
       - ".github/workflows/hepta-amcn-causal-task-audit.yml"
 
@@ -51,6 +53,7 @@ jobs:
           python3 --version > /tmp/amcn-three-axis-review/python.txt
           cp qualification/amcn-v1/amcn_causal_*.py \
              qualification/amcn-v1/test_amcn_causal_*.py \
+             qualification/amcn-v1/ORIGINAL_NINE_ARM_ROUTE_PLAN.md \
              qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md \
              .github/workflows/hepta-amcn-causal-task-audit.yml \
              /tmp/amcn-three-axis-review/source/
