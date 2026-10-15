@@ -65,6 +65,8 @@ jobs:
             experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
             experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
+            experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+            experiments/shared_stem_cell/test_p0_real_preflight_v9.py \
             experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py \
@@ -105,6 +107,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_partial_pretrained_diagnostic_v8.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_partial_pretrained_diagnostic_v8.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_real_preflight_v9.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_real_preflight_v9.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -244,48 +250,52 @@ jobs:
             'transformers==5.19.0' 'sentence-transformers==6.1.0' \
             'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
             'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
-            'pyarrow==21.0.0' 'pillow==11.3.0' 'laya==0.3.20'
+            'pyarrow==21.0.0' 'pillow==11.3.0'
           "$PY" -m pip check
           "$PY" -m pip freeze > "$RUNNER_TEMP/human-p0-freeze.txt"
-      - name: Pin complete source-reviewed Granite and mmBERT safetensors
-        run: |
-          set -euo pipefail
-          "$RUNNER_TEMP/human-p0-venv/bin/python" - <<'PY'
-          from pathlib import Path
-          import hashlib
-          from huggingface_hub import HfApi,snapshot_download
-          models=[('ibm-granite/granite-embedding-97m-multilingual-r2','835ad14087e140460703cf0fae09f97d469d65c2'),
-                  ('jhu-clsp/mmBERT-small','0eb3d056ec1d6333cf4e19b0966dfde342a41a3a')]
-          for name,sha in models:
-              info=HfApi().model_info(repo_id=name,revision=sha,files_metadata=True)
-              assert info.sha==sha
-              root=Path(snapshot_download(repo_id=name,revision=sha,
-                           allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
-              files={p.relative_to(root).as_posix():p for p in root.rglob('*') if p.is_file()}
-              assert {'model.safetensors','tokenizer.json','config.json'}<=set(files)
-              assert not any(x.endswith(('.bin','.pkl','.pickle','.pt','.py')) for x in files)
-              for f in info.siblings:
-                  if f.rfilename not in files:continue
-                  lfs=f.lfs
-                  expected=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
-                  if expected: assert hashlib.sha256(files[f.rfilename].read_bytes()).hexdigest()==expected
-          PY
-      - name: Prepare pinned genuine Gemma text checkpoint
+      - name: Preflight separately pinned Granite and mmBERT snapshots without cross-arm cancellation
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/physical"
           "$RUNNER_TEMP/human-p0-venv/bin/python" \
-            pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
-            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
-            --destination "$RUNNER_TEMP/physical/gemma-snapshot" \
-            --profile text --dimension 256 --precision float32 \
-            > "$RUNNER_TEMP/physical/gemma-source-receipt.json"
+            experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+            --output-root "$RUNNER_TEMP/physical"
+      - name: Prepare Gemma text checkpoint; preserve failure without cancelling Granite/mmBERT
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/physical"
+          mkdir -p "$ROOT"
+          if timeout --signal=TERM --kill-after=30s 1200s \
+              "$RUNNER_TEMP/human-p0-venv/bin/python" \
+              pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+              --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+              --destination "$ROOT/gemma-snapshot" \
+              --profile text --dimension 256 --precision float32 \
+              > "$ROOT/gemma-source-receipt.json"; then
+            test -s "$ROOT/gemma-snapshot/manifest.json" || {
+              printf '%s\n' 'Gemma pinned model preparation lacked a complete manifest' > "$ROOT/embeddinggemma_2_text.failed.txt"
+            }
+          else
+            printf '%s\n' 'Gemma pinned model preparation failed or timed out' > "$ROOT/embeddinggemma_2_text.failed.txt"
+          fi
       - name: Four pinned original pretrained calls or preserved failures
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/human-p0-venv/bin/python"
           ROOT="$RUNNER_TEMP/physical"
           for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            if [ -s "$ROOT/$model.failed.txt" ]; then
+              echo "$model pinned preflight failed; retain unavailable slot and continue independent arms"
+              continue
+            fi
+            if [ "$model" = laya421_nochange ]; then
+              if "$PY" -m pip install --only-binary=:all: 'laya==0.3.20' && "$PY" -m pip check; then
+                echo 'Laya pinned dependency prepared after separate compact-model execution'
+              else
+                printf '%s\n' 'Laya pinned native dependency installation failed' > "$ROOT/laya421_nochange.failed.txt"
+                continue
+              fi
+            fi
             REPLAY_ARGS=()
             if [ "$model" != laya421_nochange ]; then
               REPLAY_ARGS=(--replay-dir "$ROOT/$model.replay")
@@ -318,6 +328,9 @@ jobs:
             if [ -f "$ROOT/$model.failed.txt" ]; then cp "$ROOT/$model.failed.txt" "$OUT/$model.failed.txt"; fi
             if [ -d "$ROOT/$model.replay" ]; then cp -R "$ROOT/$model.replay" "$OUT/$model.replay"; fi
           done
+          if [ -f "$ROOT/compact-preflight-v9.json" ]; then
+            cp "$ROOT/compact-preflight-v9.json" "$OUT/compact-preflight-v9.json"
+          fi
           if [ -f "$ROOT/gemma-source-receipt.json" ]; then
             cp "$ROOT/gemma-source-receipt.json" "$OUT/gemma-source-receipt.json"
           fi
@@ -624,8 +637,6 @@ jobs:
           PY="$RUNNER_TEMP/independent-v7-venv/bin/python"
           if ! timeout --signal=TERM --kill-after=15s 1100s "$PY" \
             experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
-            experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
-            experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
             --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
             --mmbert-small "$ROOT/mmbert_small.json" \
