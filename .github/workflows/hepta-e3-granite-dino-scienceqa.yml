@@ -9,6 +9,7 @@ on:
       - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
   pull_request:
     paths:
@@ -18,6 +19,7 @@ on:
       - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
 permissions:
   contents: read
@@ -41,6 +43,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Fail fast on independent stdlib negative-contract tests (no pretrained claims)
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q experiments/shared_stem_cell/e3_physical_ci_gate.py experiments/shared_stem_cell/test_e3_physical_ci_gate.py
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -q
       - name: Install pinned stock PyTorch, HF, dataset and media dependencies
         run: |
           set -euo pipefail
@@ -161,6 +169,7 @@ jobs:
             experiments/shared_stem_cell/e3_physical_ci_gate.py \
             experiments/shared_stem_cell/test_e3_physical_ci_gate.py \
             experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md \
+            experiments/shared_stem_cell/E3_PHYSICAL_REQUIRED_20261015.md \
             .github/workflows/hepta-e3-granite-dino-scienceqa.yml \
             > /tmp/e3-safe-evidence/source-blobs-SHA256
           (cd /tmp/e3-safe-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
