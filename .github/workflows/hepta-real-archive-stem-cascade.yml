@@ -1,0 +1,140 @@
+name: hepta-real-archive-stem-cascade (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/archive_cascade_materials.py'
+      - 'qualification/stem-cell-v1/archive_cascade_policy.py'
+      - 'qualification/stem-cell-v1/archive_cascade_review.py'
+      - 'qualification/stem-cell-v1/test_archive_cascade_policy.py'
+      - 'qualification/stem-cell-v1/test_archive_cascade_real.py'
+      - 'qualification/stem-cell-v1/REAL_ARCHIVE_CASCADE_REVIEW_20261015.md'
+      - 'qualification/stem-cell-v1/REAL_ARCHIVE_CASCADE_OBS_20261015.json'
+      - '.github/workflows/hepta-real-archive-stem-cascade.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-real-archive-stem-cascade-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-only-policies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Test source-only policy, negative budgets, identity and data-leak boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -m unittest discover -s qualification/stem-cell-v1 -p test_archive_cascade_policy.py -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p test_archive_cascade_policy.py -v
+          python -m compileall -q qualification/stem-cell-v1/archive_cascade_materials.py \
+            qualification/stem-cell-v1/archive_cascade_policy.py \
+            qualification/stem-cell-v1/archive_cascade_review.py \
+            qualification/stem-cell-v1/test_archive_cascade_policy.py \
+            qualification/stem-cell-v1/test_archive_cascade_real.py
+  original-archival-real-model-replay:
+    needs: [source-only-policies]
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin original immutable Git SHA and establish archive workspace
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/real-archive-cascade-source-sha.txt"
+          mkdir -p "$RUNNER_TEMP/real-archive-cascade-input"
+      - name: Retrieve two historical ORIGINAL completed real-model artifact archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" > "$RUNNER_TEMP/real-archive-cascade-input/historical-source.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11908591037/zip" > "$RUNNER_TEMP/real-archive-cascade-input/physical-granite-mmbert.zip"
+          printf '%s  %s\n' \
+            'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$RUNNER_TEMP/real-archive-cascade-input/historical-source.zip" \
+            'd8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa' "$RUNNER_TEMP/real-archive-cascade-input/physical-granite-mmbert.zip" | sha256sum --check
+      - name: Adversarial tests on independently original-model-encoded evidence
+        env:
+          HEPTA_HIST_SOURCE_ZIP: ${{ runner.temp }}/real-archive-cascade-input/historical-source.zip
+          HEPTA_REAL_PHYS_ZIP: ${{ runner.temp }}/real-archive-cascade-input/physical-granite-mmbert.zip
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/stem-cell-v1 -p test_archive_cascade_real.py -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p test_archive_cascade_real.py -v
+      - name: Material-owner seals label-blind evaluation from original completed archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/real-archive-cascade-input"
+          python qualification/stem-cell-v1/archive_cascade_materials.py \
+            --historical-source-zip "$ROOT/historical-source.zip" \
+            --real-physical-zip "$ROOT/physical-granite-mmbert.zip" \
+            --output-dir "$ROOT/material-owner"
+      - name: Fit routing policies using calibration labels only; seal heldout predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/real-archive-cascade-input"
+          python qualification/stem-cell-v1/archive_cascade_policy.py \
+            --calibration "$ROOT/material-owner/calibration.json" \
+            --evaluation-blind "$ROOT/material-owner/evaluation-blind.json" \
+            --output-dir "$ROOT/prediction-seal"
+          test -f "$ROOT/prediction-seal/COMMITTED.json"
+          test ! -f "$ROOT/prediction-seal/FAILED.json"
+      - name: Open original owner labels ONLY AFTER predictions were sealed; independent re-score
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/real-archive-cascade-input"
+          python qualification/stem-cell-v1/archive_cascade_review.py \
+            --calibration "$ROOT/material-owner/calibration.json" \
+            --evaluation-blind "$ROOT/material-owner/evaluation-blind.json" \
+            --owner-labels "$ROOT/material-owner/evaluation-owner-labels.json" \
+            --predictions-dir "$ROOT/prediction-seal" \
+            --historical-source-zip "$ROOT/historical-source.zip" \
+            --real-physical-zip "$ROOT/physical-granite-mmbert.zip" \
+            --output-dir "$ROOT/sanitized-review"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'real-archive-cascade-input'
+          fresh=json.loads((root/'sanitized-review/scores.json').read_text())
+          frozen=json.loads(Path('qualification/stem-cell-v1/REAL_ARCHIVE_CASCADE_OBS_20261015.json').read_text())
+          from hashlib import sha256
+          import json as _j
+          def stable(a):return sha256(_j.dumps(a,sort_keys=True,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+          if stable(fresh)!=frozen['sanitized_review_sha256']:
+              raise ValueError('historical archive replay changed from pinned reviewed receipt')
+          if fresh['production_authorized'] or fresh['real_pretrained_model_forward_newly_executed']:
+              raise ValueError('archived model replay cannot authorize production or claim new forwards')
+          print('Original real-model archive SHA + label-blind heldout independent scores reproduced; no new model forward')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-real-pretrained-archive-cascade-reviewed-deny-all
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/real-archive-cascade-source-sha.txt
+            ${{ runner.temp }}/real-archive-cascade-input/sanitized-review/scores.json
+            ${{ runner.temp }}/real-archive-cascade-input/sanitized-review/COMMITTED.json
