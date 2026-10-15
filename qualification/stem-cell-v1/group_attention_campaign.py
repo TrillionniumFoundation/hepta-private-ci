@@ -187,7 +187,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                        separate_fits_charged=True,
                        source_group_independence_claimed=False)
 
-    rows, summaries = [], {}
+    rows, summaries, system2_traces = [], {}, []
     execution_arms = (
         ("static", "static", "direct"),
         ("wide", "wide", "direct"),
@@ -234,6 +234,26 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                         "budget_exhausted", "callback_failed", "resource_budget_stop",
                         "ndu_stop:expired_policy", "ndu_stop:continuation_support_violated"}
                 wall_ns, cpu_ns = time.perf_counter_ns() - wall, time.process_time_ns() - cpu
+                trace_sha256 = None
+                if execution_mode != "direct":
+                    trace_payload = dict(
+                        schema="hepta.group.system2-full-trace.v1",
+                        authority="DENY_ALL",
+                        cohort=cohort, arm=name, case_id=task.task_id,
+                        mode=execution_mode, status=status,
+                        feature_sha256=snapshot.digest,
+                        model_sha256=parameter_digest(model),
+                        critic_sha256=critics[owner].params_sha256,
+                        final_candidate=result["candidate"],
+                        calls=result["calls"],
+                        trace=result["trace"],
+                        workspace_bindings=result["workspace_bindings"],
+                        verifier_statuses=result["verifier_statuses"],
+                        ndu_decisions=result.get("ndu_decisions", []),
+                        independent_success_established=False,
+                        production_authorized=False)
+                    trace_sha256 = digest_json(trace_payload)
+                    system2_traces.append(trace_payload)
                 truth = supported_answer(task)
                 supported = truth is not None
                 success = bool(supported and valid and guess == truth)
@@ -243,6 +263,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     evidence_supported=supported, success=success,
                     unsupported_attempt=not supported,
                     execution_mode=execution_mode, execution_status=status,
+                    full_trace_sha256=trace_sha256,
                     valid_execution=bool(valid), steps=count_steps,
                     verifier_calls=verifier_calls, search_formula_work=search_work,
                     cpu_ns=cpu_ns, wall_ns=wall_ns)
@@ -273,8 +294,12 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         genuine_pretrained_encoder_executed=True, natural_future_win_established=False,
         independent_model_execution_attested=False, production_authorized=False,
         authority="DENY_ALL")
-    (root / "observations.json").write_text(json.dumps(rows, sort_keys=True))
-    (root / "report.json").write_text(json.dumps(report, sort_keys=True))
+    report["full_system2_trace_count"] = len(system2_traces)
+    report["full_system2_trace_manifest_sha256"] = digest_json(system2_traces)
+    (root / "system2-traces.json").write_text(
+        json.dumps(system2_traces, sort_keys=True, allow_nan=False))
+    (root / "observations.json").write_text(json.dumps(rows, sort_keys=True, allow_nan=False))
+    (root / "report.json").write_text(json.dumps(report, sort_keys=True, allow_nan=False))
     return report
 
 
