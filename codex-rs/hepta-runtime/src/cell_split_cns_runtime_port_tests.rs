@@ -382,7 +382,9 @@ fn signed_cns_and_control_commit_join_cannot_accept_opaque_wal_without_original_
             .contains("original durable effect receipt is missing")
     );
     assert_eq!(
-        runtime.topology_snapshot().expect("unchanged serving predecessor"),
+        runtime
+            .topology_snapshot()
+            .expect("unchanged serving predecessor"),
         before
     );
 }
