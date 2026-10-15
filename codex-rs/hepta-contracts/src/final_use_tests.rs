@@ -311,9 +311,7 @@ fn revocation_capacity_snapshot_matches_the_enforced_final_use_limit() {
         revoked_grant_ids: BTreeSet::new(),
     };
     for index in 0..MAX_REVOKED_GRANTS {
-        assert!(at_limit
-            .revoked_grant_ids
-            .insert(format!("grant:{index}")));
+        assert!(at_limit.revoked_grant_ids.insert(format!("grant:{index}")));
     }
     assert!(valid_head(&at_limit));
 
