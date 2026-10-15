@@ -134,5 +134,6 @@ class RankOnlyNullTests(unittest.TestCase):
                 rerun.returncode, 0, "audit must not overwrite original"
             )
 
+
 if __name__ == "__main__":
     unittest.main()

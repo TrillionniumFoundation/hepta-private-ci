@@ -126,33 +126,33 @@ class RankPairedOriginalsTests(unittest.TestCase):
             argv = [
                 sys.executable,
                 str(Path(__file__).with_name("real_source_rank_paired_gate.py")),
-                "--source-zip", src,
-                "--reopen-zip", reopen,
+                "--source-zip",
+                src,
+                "--reopen-zip",
+                reopen,
             ]
             for tier in TIERS:
                 original = base / (tier + ".jsonl")
-                data = b"".join(
-                    canonical(r) + b"\n" for r in self.originals[tier]
-                )
+                data = b"".join(canonical(r) + b"\n" for r in self.originals[tier])
                 original.write_bytes(data)
-                argv.extend([
-                    "--" + tier, str(original),
-                    "--" + tier + "-sha256", hashlib.sha256(data).hexdigest(),
-                ])
+                argv.extend(
+                    [
+                        "--" + tier,
+                        str(original),
+                        "--" + tier + "-sha256",
+                        hashlib.sha256(data).hexdigest(),
+                    ]
+                )
             target = base / "unpromoted-postrun.json"
             argv.extend(["--output", str(target)])
-            proc = subprocess.run(
-                argv, capture_output=True, text=True, timeout=45
-            )
+            proc = subprocess.run(argv, capture_output=True, text=True, timeout=45)
             self.assertEqual(proc.returncode, 0, proc.stderr)
             report = json.loads(target.read_bytes())
             self.assertEqual(
                 report["successful_reader_model_calls_after_validation"], 72
             )
             self.assertFalse(report["production_qualified"])
-            rerun = subprocess.run(
-                argv, capture_output=True, text=True, timeout=45
-            )
+            rerun = subprocess.run(argv, capture_output=True, text=True, timeout=45)
             self.assertNotEqual(rerun.returncode, 0, "must not overwrite audit")
 
     def test_original_git_archives_if_available(self):

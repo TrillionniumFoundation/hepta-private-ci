@@ -105,7 +105,8 @@ def compare_original_reader_to_rank(plan: dict, sources: tuple, journals: dict) 
         and rank["fixed_rank_one_strict_correct"] == 7
         and full_score[
             "original_mechanical_support_marker_derivable_from_public_source"
-        ] is True,
+        ]
+        is True,
         "original 9-case no-code ranking cannot be established",
     )
     by_rank = {x["case_id"]: x for x in rank["cases"]}
@@ -125,10 +126,14 @@ def compare_original_reader_to_rank(plan: dict, sources: tuple, journals: dict) 
                 rank_row = by_rank[case_id]
                 retrieved = case["conditions"][condition]
                 target_marker = case["conditions"]["mechanical_support"][0]["marker"]
-                at = [i for i, evidence in enumerate(retrieved, 1)
-                      if evidence["marker"] == target_marker]
+                at = [
+                    i
+                    for i, evidence in enumerate(retrieved, 1)
+                    if evidence["marker"] == target_marker
+                ]
                 require(
-                    len(at) == 1 and at[0] == rank_row["actual_target_rank"]
+                    len(at) == 1
+                    and at[0] == rank_row["actual_target_rank"]
                     and condition in CONTRASTS,
                     "no-code rank/Reader exposure differs from source corpus",
                 )
@@ -188,8 +193,11 @@ def compare_original_reader_to_rank(plan: dict, sources: tuple, journals: dict) 
         by_id_a = {row["case_id"]: row for row in rows_for_paired[tier]["hybrid_k4"]}
         lesion = rows_for_paired[tier]["removed_declaration"]
         causal_rows = [
-            dict(root=r["root"], hybrid_correct=by_id_a[r["case_id"]]["reader_correct"],
-                 lesion_correct=r["reader_correct"])
+            dict(
+                root=r["root"],
+                hybrid_correct=by_id_a[r["case_id"]]["reader_correct"],
+                lesion_correct=r["reader_correct"],
+            )
             for r in lesion
         ]
         summaries[tier]["hybrid_vs_full_symbol_lesion"] = _paired(
