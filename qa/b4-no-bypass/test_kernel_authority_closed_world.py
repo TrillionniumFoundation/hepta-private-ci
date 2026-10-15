@@ -807,13 +807,13 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertRegex(
             live,
             r"unixfs::openat\(\s*&parent_dir,\s*"
-            r"lock_path\.file_name\(\)",
+            r"lock_path\s*\.\s*file_name\(\)",
             "owner-lock must be opened relative to the original dirfd",
         )
         self.assertRegex(
             live,
             r"unixfs::openat\(\s*&parent_dir,\s*"
-            r"path\.file_name\(\)",
+            r"path\s*\.\s*file_name\(\)",
             "original WAL must be opened relative to the same dirfd",
         )
         self.assertEqual(
