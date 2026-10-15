@@ -37,13 +37,17 @@ runners, native NDU, or production authority.
 - The existing `audit_six` then independently recomputes all six
   cross-factor summary/cost conditions. No source-run artifact is silently
   substituted with a synthetic one.
-- A separate `hepta-group-feedback-raw-replay.yml` provides PR-path
-  source-only negative tests and a manually triggered *exact original run*
-  review. Before fetching artifacts, the workflow must authenticate the
-  original GitHub run metadata as the frozen push SHA/branch/workflow with
-  **status completed AND conclusion success**. If the original run is
-  queued/failed/cancelled, it refuses physical review rather than inventing
-  source, model, or task observations.
+- A separate `hepta-group-feedback-raw-replay.yml` executes PR-path
+  source-only negative tests **and an original-run replay job on the Draft
+  PR**. Before fetching artifacts, the replay job authenticates the original
+  GitHub run metadata as the frozen push SHA/branch/workflow with
+  **status completed AND conclusion success**. While the original run is
+  queued/failed/cancelled, the replay job explicitly fails (this is an
+  intended scientific blocker, not a successful skipped physical review).
+  The failed PR job can be retried against the same source SHA once that
+  original run really succeeds, without changing the protected main branch.
+  A manual dispatch remains separately described by the workflow, but it
+  is not the only executable entrypoint.
 - Only sanitized raw-file SHA inventory and independent replay receipts are
   uploaded. No original publisher weights, media or original private labels.
 
