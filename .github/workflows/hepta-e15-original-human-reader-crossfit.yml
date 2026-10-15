@@ -1,0 +1,262 @@
+name: Hepta E15 original-human Reader Cell Head crossfit (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e15_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e15_*.py'
+      - 'qualification/shared-stem-system2-architecture/E15_*.md'
+      - '.github/workflows/hepta-e15-original-human-reader-crossfit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-label-material-owner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      SOURCE: /tmp/hepta-e15-original-trained-reader.zip
+      OUT: /tmp/hepta-e15-material-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze original source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e15_*.py "$ROOT"/test_e15_*.py | tee "$OUT/original-source.sha256"
+      - name: Load original pretrained Reader output and original human source ONLY in material owner
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$SOURCE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$SOURCE" | sha256sum -c -
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import shutil
+          p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+              revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+              filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(p.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('original human annotation source changed')
+          shutil.copyfile(p,'/tmp/hepta-e15-original-validation.parquet')
+          PY
+      - name: Materialize ONLY three-source training labels for each disjoint fold
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 0 1 2 3; do
+            python "$ROOT/e15_reader_crossfit.py" material \
+              --archive "$SOURCE" \
+              --validation-parquet /tmp/hepta-e15-original-validation.parquet \
+              --fold "$i" --output "$OUT/training-fold-${i}.json"
+            sha256sum "$OUT/training-fold-${i}.json" > "$OUT/training-fold-${i}.sha256"
+          done
+          python - "$OUT" <<'PY'
+          import json,sys,pathlib
+          root=pathlib.Path(sys.argv[1]); groups=set()
+          for fold in range(4):
+              d=json.loads((root/f'training-fold-{fold}.json').read_text())
+              groups.add(d['held_group'])
+              assert d['fold']==fold and len(d['training_label_rows']) in (23,24,25,27)
+              assert d['held_labels_exposed'] is False and d['production_accepted'] is False
+          assert len(groups)==4
+          PY
+      - name: Publish one train-only set per isolated fold 0
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e15-material-${{ matrix.profile }}-0
+          path: ${{ env.OUT }}/training-fold-0.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Publish isolated fold 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e15-material-${{ matrix.profile }}-1
+          path: ${{ env.OUT }}/training-fold-1.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Publish isolated fold 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e15-material-${{ matrix.profile }}-2
+          path: ${{ env.OUT }}/training-fold-2.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Publish isolated fold 3
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e15-material-${{ matrix.profile }}-3
+          path: ${{ env.OUT }}/training-fold-3.json
+          retention-days: 2
+          if-no-files-found: error
+  blind-fold-train:
+    needs: original-label-material-owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+        fold: [0, 1, 2, 3]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      HEPTA_E15_ARCHIVE: /tmp/hepta-e15-original-trained-reader.zip
+      OUT: /tmp/hepta-e15-predict-${{ matrix.profile }}-${{ matrix.fold }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e15-material-${{ matrix.profile }}-${{ matrix.fold }}
+          path: /tmp/hepta-e15-train-only
+      - name: Reopen ONLY frozen original pretrained logits, no validation truth material
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          test ! -e /tmp/hepta-e15-original-validation.parquet
+          test "$(find /tmp/hepta-e15-train-only -type f | wc -l)" -eq 1
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$HEPTA_E15_ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$HEPTA_E15_ARCHIVE" | sha256sum -c -
+      - name: Real archived logits + synthetic-label adversarial contract regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e15_*.py' -v > "$OUT/tests.txt" 2>&1 || { cat "$OUT/tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e15_*.py' -v > "$OUT/tests-O.txt" 2>&1 || { cat "$OUT/tests-O.txt"; exit 1; }
+          grep -F 'Ran 18 tests' "$OUT/tests.txt"
+          grep -F 'Ran 18 tests' "$OUT/tests-O.txt"
+          if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$OUT"/tests*.txt; then exit 1; fi
+      - name: Train actual tiny Cell Heads on train-only human labels and seal held predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e15_reader_crossfit.py" train \
+            --archive "$HEPTA_E15_ARCHIVE" \
+            --train-only-material /tmp/hepta-e15-train-only/training-fold-${{ matrix.fold }}.json \
+            --output "$OUT/held-prediction.json" | tee "$OUT/training-source-sha.txt"
+          sha256sum "$OUT/held-prediction.json" > "$OUT/held-prediction.sha256"
+          test ! -e /tmp/hepta-e15-original-validation.parquet
+      - name: Preserve create-only source-blind held predictions, never human holdout labels
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e15-blind-${{ matrix.profile }}-${{ matrix.fold }}
+          path: ${{ env.OUT }}/
+          retention-days: 14
+          if-no-files-found: warn
+  independent-original-human-score:
+    needs: blind-fold-train
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      SOURCE: /tmp/hepta-e15-original-trained-reader.zip
+      OUT: /tmp/hepta-e15-score-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: hepta-e15-blind-${{ matrix.profile }}-*
+          path: /tmp/hepta-e15-sealed
+          merge-multiple: false
+      - name: Acquire exact source and ORIGINAL human annotations only after all fold predictions sealed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            --output "$SOURCE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$SOURCE" | sha256sum -c -
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from hashlib import sha256
+          from pathlib import Path
+          import shutil
+          p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+              revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+              filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(p.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('original original-human source changed')
+          shutil.copyfile(p,'/tmp/hepta-e15-original-validation.parquet')
+          PY
+      - name: Independent four-fold numeric SGD replay and HUMAN held task outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for i in 0 1 2 3; do
+            dir="/tmp/hepta-e15-sealed/hepta-e15-blind-${{ matrix.profile }}-${i}"
+            source_path="$dir/held-prediction.json"
+            test -s "$source_path"
+            expected="$(cut -d ' ' -f1 "$dir/held-prediction.sha256")"
+            printf '%s  %s\n' "$expected" "$source_path" | sha256sum -c -
+            args+=("--fold-${i}" "$source_path" "--fold-${i}-sha256" "$expected")
+          done
+          python "$ROOT/e15_independent_score.py" \
+            --archive "$SOURCE" --validation-parquet /tmp/hepta-e15-original-validation.parquet \
+            "${args[@]}" --output "$OUT/original-human-e15-lopo-result.json" \
+            | tee "$OUT/independent-score.txt"
+          sha256sum "$OUT/original-human-e15-lopo-result.json" > "$OUT/score.sha256"
+      - name: Preserve separate original human score without raw text, labels, or checkpoints
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e15-human-score-${{ matrix.profile }}
+          path: ${{ env.OUT }}/
+          retention-days: 14
+          if-no-files-found: warn
