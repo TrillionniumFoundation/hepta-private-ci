@@ -18,6 +18,10 @@ on:
       - "qualification/stem-cell-v1/STEM_V7_HEAD_FLEET_READOUT.md"
       - ".github/workflows/hepta-stem-v7-physical-heads.yml"
 
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
