@@ -374,12 +374,8 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
     // Control records an original CNS receipt in an fsynced C row. A later
     // checkpoint P or cutover C can advance its binding but cannot erase it.
     // This is a signed Unix RPC test, not a local digest-only declaration.
-    for (new_split, erased_binding) in [
-        (false, true),
-        (true, true),
-        (false, false),
-        (true, false),
-    ] {
+    for (new_split, erased_binding) in [(false, true), (true, true), (false, false), (true, false)]
+    {
         let root = tempfile::tempdir().expect("separate signed Observer root");
         let (socket_path, listener) = socket(root.path());
         let server = thread::spawn(move || {
@@ -402,13 +398,14 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
                         11
                     },
                 );
-                claim.original_cns_receipt_binding = if observation == 0 || !new_split && !erased_binding {
-                    Some("dd".repeat(32))
-                } else if erased_binding {
-                    None
-                } else {
-                    Some("ee".repeat(32))
-                };
+                claim.original_cns_receipt_binding =
+                    if observation == 0 || !new_split && !erased_binding {
+                        Some("dd".repeat(32))
+                    } else if erased_binding {
+                        None
+                    } else {
+                        Some("ee".repeat(32))
+                    };
                 if observation == 1 {
                     claim.wal_bytes = 2_048;
                     if new_split {
@@ -455,9 +452,14 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
             assert_eq!(next.sequence, if new_split { 12 } else { 11 });
             assert_eq!(next.wal_bytes, 2_048);
             let expected_binding = if new_split { "ee" } else { "dd" };
-            assert_eq!(next.original_cns_receipt_binding, Some(expected_binding.repeat(32)));
+            assert_eq!(
+                next.original_cns_receipt_binding,
+                Some(expected_binding.repeat(32))
+            );
         }
-        server.join().expect("signed original high-water RPC server");
+        server
+            .join()
+            .expect("signed original high-water RPC server");
     }
 }
 
@@ -524,7 +526,9 @@ fn changed_original_cns_binding_requires_begin_commit_and_new_route_fence() {
         let retained = verifier.seen.get(SCOPE).expect("original ratchet retained");
         assert_eq!(retained.sequence, 10);
         assert_eq!(retained.original_cns_receipt_binding, Some("dd".repeat(32)));
-        server.join().expect("signed two-stage Control test service");
+        server
+            .join()
+            .expect("signed two-stage Control test service");
     }
 }
 
