@@ -156,5 +156,4 @@ class RealFileTreeContract(unittest.TestCase):
         with self.assertRaises(handoff.ModelEntryDenied):self.check()
 
 
-if __name__=='__main__':
-    unittest.main()
+if __name__=='__main__':unittest.main()
