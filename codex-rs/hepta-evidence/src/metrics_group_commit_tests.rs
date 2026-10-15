@@ -1075,3 +1075,183 @@ fn invalid_bound_sample_query_never_disables_original_evidence_owner() {
             .is_some()
     );
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn bounded_cohort_readback_one_pass_matches_individual_exact_rows_and_cold_replay() {
+    let dir = tempfile::tempdir().expect("private original evidence directory");
+    let path = dir.path().join("two-member-admission.wal");
+    let scope = Digest32::of_bytes(b"original scope");
+    let a = Digest32::of_bytes(b"member request A");
+    let b = Digest32::of_bytes(b"member request B");
+    let missing = Digest32::of_bytes(b"unadmitted member");
+    let queries = [a, b, missing].map(|operation_digest| MetricsCommittedSampleQueryV1 {
+        scope_digest: scope,
+        operation_digest,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    });
+
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("actual single owned WAL");
+    writer
+        .stage(MetricSampleV1 {
+            scope_digest: scope,
+            operation_digest: a,
+            phase: MetricPhaseV1::Admission,
+            latency_micros: 10,
+            succeeded: true,
+        })
+        .expect("first accepted but unsynced");
+    writer
+        .stage(MetricSampleV1 {
+            scope_digest: scope,
+            operation_digest: b,
+            phase: MetricPhaseV1::Admission,
+            latency_micros: 11,
+            succeeded: true,
+        })
+        .expect("second accepted but unsynced");
+    assert_eq!(
+        writer.read_committed_samples(&queries).expect("read staged-only WAL"),
+        vec![None, None, None],
+        "readback MUST exclude metrics that have not been fsynced"
+    );
+
+    let commit = writer.flush().expect("physical original group fsync").unwrap();
+    assert_eq!(commit.rows, 2);
+    let rows = writer
+        .read_committed_samples(&queries)
+        .expect("one verified original WAL/marker traversal");
+    assert_eq!(rows.len(), 3);
+    assert_eq!(rows[2], None);
+    assert_eq!(rows[0].unwrap().matching_rows, 1);
+    assert_eq!(rows[1].unwrap().matching_rows, 1);
+    assert_eq!(rows[0].unwrap().frontier, rows[1].unwrap().frontier);
+    assert_eq!(rows[0].unwrap().first_group_sequence, 1);
+    assert_eq!(rows[1].unwrap().last_group_head, commit.head_digest);
+    for (query, row) in queries[..2].iter().zip(&rows) {
+        assert_eq!(
+            *row,
+            writer.read_committed_sample(*query).expect("legacy exact readback"),
+            "bounded cohort must preserve the exact old V1 sample ABI"
+        );
+    }
+
+    drop(writer);
+    let mut cold = MetricsGroupCommitV1::open(&path).expect("real cold WAL recovery");
+    let after = cold
+        .read_committed_samples(&queries)
+        .expect("same committed marker after restart");
+    assert_eq!(after, rows);
+    assert_eq!(
+        cold.read_local_frontier().unwrap(),
+        rows[0].expect("first committed Admission").frontier
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn invalid_bounded_cohort_queries_do_not_poison_original_writer_but_duplicate_rows_are_visible() {
+    let dir = tempfile::tempdir().expect("private Evidence directory");
+    let mut writer = MetricsGroupCommitV1::open(dir.path().join("duplicates.wal"))
+        .expect("exact original writer");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"one scope"),
+        operation_digest: Digest32::of_bytes(b"one operation"),
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    assert!(matches!(
+        writer.read_committed_samples(&[query, query]),
+        Err(MetricsJournalErrorV1::Capacity)
+    ));
+    assert!(matches!(
+        writer.read_committed_samples(&[]),
+        Err(MetricsJournalErrorV1::Capacity)
+    ));
+    assert!(matches!(
+        writer.read_committed_samples(&[MetricsCommittedSampleQueryV1 {
+            operation_digest: Digest32::ZERO,
+            ..query
+        }]),
+        Err(MetricsJournalErrorV1::EmptyDigest)
+    ));
+    assert!(!writer.poisoned, "invalid untrusted selection must not destroy an owner");
+    for _ in 0..2 {
+        writer.stage(MetricSampleV1 {
+            scope_digest: query.scope_digest,
+            operation_digest: query.operation_digest,
+            phase: query.phase,
+            latency_micros: 30,
+            succeeded: true,
+        }).expect("original source can still append");
+    }
+    writer.flush().expect("actual group fsync");
+    let results = writer
+        .read_committed_samples(&[query])
+        .expect("historically duplicate original rows are not concealed");
+    assert_eq!(results[0].unwrap().matching_rows, 2);
+    assert!(!writer.poisoned);
+}
+
+
+
+#[cfg(unix)]
+#[test]
+fn bounded_cohort_readback_covers_all_256_exact_member_admissions_under_one_wal_frontier() {
+    let dir = tempfile::tempdir().expect("private original Evidence");
+    let mut writer = MetricsGroupCommitV1::open(dir.path().join("256-cohort.wal"))
+        .expect("one original append-only writer");
+    let scope = Digest32::of_bytes(b"same physical batch scope");
+    let queries = (0..MAX_GROUP_ROWS)
+        .map(|i| MetricsCommittedSampleQueryV1 {
+            scope_digest: scope,
+            operation_digest: Digest32::of_bytes(
+                format!("original-signed-member-{i}").as_bytes(),
+            ),
+            phase: MetricPhaseV1::Admission,
+            succeeded: true,
+        })
+        .collect::<Vec<_>>();
+    for query in &queries {
+        writer
+            .stage(MetricSampleV1 {
+                scope_digest: query.scope_digest,
+                operation_digest: query.operation_digest,
+                phase: query.phase,
+                latency_micros: 42,
+                succeeded: true,
+            })
+            .expect("each distinct bounded original operation");
+    }
+    let committed = writer.flush().expect("one 256-member WAL fsync").unwrap();
+    assert_eq!(committed.rows, MAX_GROUP_ROWS);
+    let rows = writer
+        .read_committed_samples(&queries)
+        .expect("one complete original 256-member high-water scan");
+    assert_eq!(rows.len(), MAX_GROUP_ROWS);
+    let frontier = rows[0].expect("first committed original member").frontier;
+    assert_eq!(frontier.sequence, 1);
+    assert_eq!(frontier.committed_rows, MAX_GROUP_ROWS as u64);
+    for (query, row) in queries.iter().zip(&rows) {
+        let exact = row.expect("all original Admissions physically committed");
+        assert_eq!(exact.query, *query);
+        assert_eq!(exact.matching_rows, 1);
+        assert_eq!(exact.frontier, frontier);
+    }
+    // An oversized untrusted batch selection must not poison a healthy
+    // owner or change the committed state.
+    let mut oversized = queries.clone();
+    oversized.push(MetricsCommittedSampleQueryV1 {
+        operation_digest: Digest32::of_bytes(b"257-th-member"),
+        ..queries[0]
+    });
+    assert!(matches!(
+        writer.read_committed_samples(&oversized),
+        Err(MetricsJournalErrorV1::Capacity)
+    ));
+    assert!(!writer.poisoned);
+    assert_eq!(writer.read_local_frontier().unwrap(), frontier);
+}
