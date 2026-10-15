@@ -1,0 +1,63 @@
+name: hepta-stem-selection-multimodal-v7
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_selection_v7.py"
+      - "qualification/stem-cell-v1/test_stem_selection_v7.py"
+      - "qualification/stem-cell-v1/STEM_V7_SELECTION_PROTOCOL.md"
+      - "qualification/stem-cell-v1/STEM_V7_WEIGHT_BOUNDS_20261015.json"
+      - ".github/workflows/hepta-stem-selection-v7.yml"
+  push:
+    branches:
+      - "research/stem-differentiation-v7-20261015"
+    paths:
+      - "qualification/stem-cell-v1/stem_selection_v7.py"
+      - "qualification/stem-cell-v1/test_stem_selection_v7.py"
+      - "qualification/stem-cell-v1/STEM_V7_SELECTION_PROTOCOL.md"
+      - "qualification/stem-cell-v1/STEM_V7_WEIGHT_BOUNDS_20261015.json"
+      - ".github/workflows/hepta-stem-selection-v7.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify exact HEAD and Python source
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/stem_selection_v7.py qualification/stem-cell-v1/test_stem_selection_v7.py
+      - name: Adversarial tests and optimized-mode denial
+        run: |
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest -v qualification/stem-cell-v1/test_stem_selection_v7.py
+          PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest -v qualification/stem-cell-v1/test_stem_selection_v7.py
+      - name: Recompute arithmetic research-only artifact
+        run: |
+          PYTHONPATH=qualification/stem-cell-v1 python - <<'PY'
+          import json
+          from pathlib import Path
+          from stem_selection_v7 import SLOTS, weight_budget
+          p = Path("qualification/stem-cell-v1/STEM_V7_WEIGHT_BOUNDS_20261015.json")
+          expected = {
+              "schema": "hepta.stem.selection.weight-bounds.v7",
+              "planning_only": True,
+              "measured_pretrained_forward": False,
+              "measured_peak_rss": False,
+              "production_authorized": False,
+              "cases": [dict(model=m, cells=c,
+                             expected_parameter_count_approx=v[0],
+                             **weight_budget(backbone_params=v[0], cells=c,
+                                             head_params=10_000, copies=c if m == "legacy421" else 1,
+                                             active_train_heads=min(c, 32), bridge_params=4_096))
+                        for m, v in SLOTS.items() for c in (64, 256, 1024, 4096)],
+          }
+          assert json.loads(p.read_text(encoding="utf-8")) == expected
+          assert expected["production_authorized"] is False
+          PY
