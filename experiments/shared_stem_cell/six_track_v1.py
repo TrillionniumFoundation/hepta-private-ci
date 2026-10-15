@@ -35,7 +35,7 @@ PAIRS = {
     "P1": (("shared_learned", "shared_frozen"), ("shared_learned", "replicated_learned")),
     "P2": (("split_children", "parent_unsplit"), ("split_children", "matched_unsplit")),
     "P3": (("multimodal_generator", "text_only"), ("temporal_video", "scrambled_media")),
-    "P4": (("ndu_solver", "bellman"), ("ndu_solver", "critic"),
+    "P4": (("ndu_solver", "no_search"), ("ndu_solver", "bellman"), ("ndu_solver", "critic"),
            ("ndu_solver", "tree_search"), ("ndu_solver", "standard_optimizer")),
     "P5": (("native_cpu", "typed"), ("native_cpu", "mcp_batch"),
            ("native_gpu", "typed"), ("native_gpu", "mcp_batch")),
@@ -241,6 +241,8 @@ def check_arm(stage, name, arm, cases):
         number(arm.get("compute_budget_ms"), positive=True)
         if name in ("no_search", "bellman") and arm["train_steps"] != 0:
             raise Invalid("P4 no-fit cheap control cannot report training steps")
+        if name in ("no_search", "bellman") and costs["ndu_ms"] != 0:
+            raise Invalid("P4 no-fit cheap control cannot claim NDU solver charges")
         if arm["train_steps"] == 0:
             if (arm["train_cases"] != 0 or arm["trainable_parameters"] != 0
                     or costs["training_ms"] != 0):
@@ -277,6 +279,8 @@ def check_arm(stage, name, arm, cases):
             digest(row.get("generated_artifact_sha256"))
         if stage == "P4":
             solver_ms = number(row.get("measured_solver_ms"))
+            if name == "no_search" and solver_ms != 0:
+                raise Invalid("P4 no-search baseline cannot claim solver execution")
             if solver_ms > arm["compute_budget_ms"]:
                 raise Invalid("actual P4 compute exceeded matched budget")
         if stage == "P5":
