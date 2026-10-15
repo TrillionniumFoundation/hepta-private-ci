@@ -123,7 +123,11 @@ fn too_large_empty_or_unsafe_storage_fails_closed() {
 
     let tokenizer_path = root.path().join(source.tokenizer_digest.to_string());
     fs::remove_file(&tokenizer_path).unwrap();
-    symlink(root.path().join(source.stem_weights_digest.to_string()), &tokenizer_path).unwrap();
+    symlink(
+        root.path().join(source.stem_weights_digest.to_string()),
+        &tokenizer_path,
+    )
+    .unwrap();
     assert!(matches!(
         StemArtifactCasVerifierV1::open(root.path(), 4096)
             .unwrap()
