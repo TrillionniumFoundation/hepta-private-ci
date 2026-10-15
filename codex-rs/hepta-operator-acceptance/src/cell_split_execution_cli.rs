@@ -316,7 +316,11 @@ mod tests {
             .expect("private config mode");
         let opened = std::fs::metadata(&path).expect("real original config");
         let current = rustix::process::geteuid().as_raw();
-        assert_eq!(opened.uid(), current, "test fixture must be owned by this principal");
+        assert_eq!(
+            opened.uid(),
+            current,
+            "test fixture must be owned by this principal"
+        );
         assert!(config_owner_matches_euid(opened.uid(), opened.uid()));
         let foreign = current ^ 1;
         assert!(!config_owner_matches_euid(foreign, current));
