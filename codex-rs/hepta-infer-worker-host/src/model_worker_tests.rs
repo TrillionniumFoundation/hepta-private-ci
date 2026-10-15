@@ -1608,6 +1608,31 @@ fn shared_stem_batch_preflight_binds_two_real_loaded_heads_without_driver_or_gra
     assert_ne!(plan.bindings[0].destination_id, plan.bindings[1].destination_id);
     assert!(!plan.batch_digest.is_zero());
     assert!(!plan.authority.grants_any());
+
+    // Even with the same CAS bytes and two identical signed-member proposals,
+    // changing physical batch order changes the aggregate intent identity.
+    let reversed = [
+        StemBatchMemberProposalV1 {
+            selected_head: &other_head,
+            authorization: &other_auth,
+        },
+        StemBatchMemberProposalV1 {
+            selected_head: &head,
+            authorization: &auth,
+        },
+    ];
+    let reordered = worker.prepare_stem_final_use_batch_proposal_v1(
+        100,
+        StemBatchProposalV1 {
+            source: &source,
+            access: &access,
+            verified_artifacts: &verified_artifacts,
+            cas_verifier: &cas_verifier,
+            feature_vector_q24: &features,
+            members: &reversed,
+        },
+    ).expect("reversed proposal is independently complete");
+    assert_ne!(plan.batch_digest, reordered.batch_digest);
     assert_eq!(worker.driver.feature_calls, 0);
     assert!(worker.active_requests.is_empty());
     assert!(!worker.poisoned);
