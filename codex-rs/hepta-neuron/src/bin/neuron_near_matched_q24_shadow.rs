@@ -448,10 +448,7 @@ fn q24_adapter_tick(
                 )?)
                 .ok_or_else(|| fail("native adapter observation sum overflow"))?;
             predicted = predicted
-                .checked_add(q24_mul_round_ties_even(
-                    weight,
-                    source.prediction_q24[col],
-                )?)
+                .checked_add(q24_mul_round_ties_even(weight, source.prediction_q24[col])?)
                 .ok_or_else(|| fail("native adapter prediction sum overflow"))?;
         }
         drive.push(projected.clamp(-H, H));
@@ -766,7 +763,9 @@ fn execute() -> Result<serde_json::Value, String> {
     let arm = arg(&opts, "--arm")?;
     let cap: usize = arg(&opts, "--cap")?.parse().map_err(|_| fail("bad cap"))?;
     if ![2048, 8192].contains(&cap) {
-        return Err(fail("16K/64K/256K near-matched geometry is not implemented"));
+        return Err(fail(
+            "16K/64K/256K near-matched geometry is not implemented",
+        ));
     }
     let rank = opts
         .get("--rank")
@@ -781,16 +780,19 @@ fn execute() -> Result<serde_json::Value, String> {
     let width: usize = arg(&opts, "--hidden-width")?
         .parse()
         .map_err(|_| fail("invalid hidden width"))?;
-    let (registered_width, registered_rank, registered_count) =
-        registered_near_match(arm, cap)?;
+    let (registered_width, registered_rank, registered_count) = registered_near_match(arm, cap)?;
     if width != registered_width || rank != registered_rank {
-        return Err(fail("candidate width/rank differs from registered realized geometry"));
+        return Err(fail(
+            "candidate width/rank differs from registered realized geometry",
+        ));
     }
     let model_path = Path::new(arg(&opts, "--model")?);
     let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
     let bank = physical_weights(&bytes, arm, width, rank, cap, source_width)?;
     if source_width != 32 || bank.parameter_count != registered_count {
-        return Err(fail("physical trained model is not an exactly registered 32D budget shape"));
+        return Err(fail(
+            "physical trained model is not an exactly registered 32D budget shape",
+        ));
     }
     let adapted_inputs = inputs
         .iter()
@@ -969,7 +971,10 @@ mod tests {
     fn only_eight_registered_near_matched_physical_candidates_are_admitted() {
         assert_eq!(registered_near_match("v2", 2048), Ok((58, None, 2031)));
         assert_eq!(registered_near_match("v3", 8192), Ok((215, None, 8171)));
-        assert_eq!(registered_near_match("min_gru", 8192), Ok((182, Some(2), 8191)));
+        assert_eq!(
+            registered_near_match("min_gru", 8192),
+            Ok((182, Some(2), 8191))
+        );
         for ceiling in [16384, 65536, 262144] {
             for arm in ["v2", "v3", "ssm", "min_gru"] {
                 assert!(registered_near_match(arm, ceiling).is_err());
@@ -1016,5 +1021,4 @@ mod tests {
         );
         Ok(())
     }
-
 }
