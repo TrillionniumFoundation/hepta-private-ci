@@ -9,6 +9,9 @@ name: Hepta E3 original-source learning curve (DENY_ALL)
       - 'experiments/shared_stem_cell/test_e3_original_human_score.py'
       - 'experiments/shared_stem_cell/E3_SOURCE_GROUP_LEARNING_CURVE.md'
       - '.github/workflows/hepta-e3-original-source-group.yml'
+      - 'experiments/shared_stem_cell/e4_observed_lifecycle_frontier.py'
+      - 'experiments/shared_stem_cell/test_e4_observed_lifecycle_frontier.py'
+      - 'experiments/shared_stem_cell/E4_OBSERVED_RESOURCE_FRONTIER.md'
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,7 +24,11 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 8
+          # A depth-1 checkout lacks the fixed E2 ancestor object and makes
+          # git merge-base fail with 128 even for a valid research descendant.
+          # This pinned study is fewer than 16 commits past E2; fetch history
+          # for ancestry verification, without altering the exact HEAD ref.
+          fetch-depth: 16
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -38,13 +45,15 @@ jobs:
           python -m pip check
           export PYTHONPATH=experiments/shared_stem_cell
           for SUITE in test_e1_matched_gated_head.py test_e2_original_human_score.py \
-                       test_e3_original_group_learning_curve.py test_e3_original_human_score.py; do
+                       test_e3_original_group_learning_curve.py test_e3_original_human_score.py \
+                       test_e4_observed_lifecycle_frontier.py; do
             python -m unittest discover -s "$PYTHONPATH" -p "$SUITE" -v
             python -O -m unittest discover -s "$PYTHONPATH" -p "$SUITE" -v
           done
           python -m py_compile experiments/shared_stem_cell/e3_original_group_learning_curve.py \
             experiments/shared_stem_cell/e3_group_learning_review.py \
-            experiments/shared_stem_cell/e3_original_human_score.py
+            experiments/shared_stem_cell/e3_original_human_score.py \
+            experiments/shared_stem_cell/e4_observed_lifecycle_frontier.py
 
   original-feature-source-budget:
     needs: source
@@ -280,11 +289,41 @@ jobs:
             --candidate-head-sha "$CURRENT_HEAD" --candidate-run-id "$CURRENT_RUN" \
             --output "$ROOT/score/e3-original-human-learning-curve.json"
           python -m json.tool "$ROOT/score/e3-original-human-learning-curve.json" >/dev/null
+      - name: Account original P0 + E1 + E3 observed work, never select Stem
+        env:
+          CURRENT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CURRENT_HEAD"
+          ROOT="$RUNNER_TEMP/e3"
+          COST_ARGS=()
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            GROUP="$ROOT/sealed/e3-$MODEL-prelabel-$CURRENT_RUN"
+            test -s "$GROUP/e1-probe/COMMITTED.json"
+            test -s "$GROUP/e2-prelabel.json"
+            test -s "$GROUP/e3-probe/COMMITTED.json"
+            test -s "$GROUP/e3-numeric.json"
+            test -s "$ROOT/p0-arms/hepta-human-original-arm-$MODEL-38686023757/$MODEL.json"
+            COST_ARGS+=("--p0-${MODEL//_/-}" "$ROOT/p0-arms/hepta-human-original-arm-$MODEL-38686023757/$MODEL.json")
+            COST_ARGS+=("--e1-${MODEL//_/-}" "$GROUP/e1-probe/COMMITTED.json")
+            COST_ARGS+=("--e2-seal-${MODEL//_/-}" "$GROUP/e2-prelabel.json")
+            COST_ARGS+=("--e3-${MODEL//_/-}" "$GROUP/e3-probe/COMMITTED.json")
+            COST_ARGS+=("--e3-review-${MODEL//_/-}" "$GROUP/e3-numeric.json")
+          done
+          python experiments/shared_stem_cell/e4_observed_lifecycle_frontier.py \
+            --fit "$ROOT/score/fit.json" --blind "$ROOT/score/blind.json" \
+            --e3-scored "$ROOT/score/e3-original-human-learning-curve.json" \
+            "${COST_ARGS[@]}" --candidate-head-sha "$CURRENT_HEAD" \
+            --candidate-run-id "$CURRENT_RUN" \
+            --output "$ROOT/score/e4-observed-cost-frontier.json"
+          python -m json.tool "$ROOT/score/e4-observed-cost-frontier.json" >/dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: e3-human-original-source-group-summary-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/e3/score/e2-original-human-summary.json
             ${{ runner.temp }}/e3/score/e3-original-human-learning-curve.json
+            ${{ runner.temp }}/e3/score/e4-observed-cost-frontier.json
           if-no-files-found: error
           retention-days: 7
