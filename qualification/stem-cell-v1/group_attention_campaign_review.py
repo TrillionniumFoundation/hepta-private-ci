@@ -155,6 +155,26 @@ def review(root):
     summaries = {k: _summarize(values) for k, values in by_arm.items()}
     if report["summaries"] != summaries:
         raise ValueError("reported scores/timing disagree with complete raw observations")
+    # Paired deltas are descriptive evidence, not a causal model or matched
+    # total-compute acceptance test. Recompute directly from raw observations.
+    paired = {}
+    for cohort in COHORTS:
+        core_rows = {r["case_id"]: r for r in by_arm[f"{cohort}.core"]}
+        candidate_rows = {r["case_id"]: r for r in by_arm[f"{cohort}.attention"]}
+        if core_rows.keys() != candidate_rows.keys():
+            raise ValueError("attention/core pairs do not match")
+        rescued = sum(candidate_rows[k]["success"] and not v["success"]
+                      for k, v in core_rows.items())
+        harmed = sum(v["success"] and not candidate_rows[k]["success"]
+                     for k, v in core_rows.items())
+        paired[cohort] = dict(n=len(core_rows), rescued=rescued, harmed=harmed,
+            correct_delta=rescued-harmed,
+            core_online_cpu_ns=sum(v["cpu_ns"] for v in core_rows.values()),
+            attention_online_cpu_ns=sum(v["cpu_ns"] for v in candidate_rows.values()),
+            core_training_cpu_ns=training["core"]["cpu_ns"],
+            attention_training_cpu_ns=training["attention"]["cpu_ns"],
+            equal_total_compute_demonstrated=False,
+            independent_future_samples_established=False)
     return dict(schema="hepta.group.paired-attention-independent-review.v1",
                 passed=True, authority="DENY_ALL",
                 complete_group_replay=True,
@@ -164,6 +184,7 @@ def review(root):
                 equal_compute_claim_allowed=False,
                 real_host_execution_independently_attested=False,
                 future_task_efficacy_proved=False,
+                descriptive_paired=paired,
                 observation_sha256=_digest(rows),
                 protocol_sha256=_digest(protocol),
                 paired_summaries=summaries)
