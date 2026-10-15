@@ -71,6 +71,7 @@ def populate_receipts(root):
                        schedule_sha256=_hash(schedule),
                        original_parameter_digest='2'*64,
                        trained_parameter_digest='3'*64,
+                       training_cpu_ns=300, training_wall_ns=300,
                        natural_internal_tune={'f1_a':.25},
                        old_task_internal_not_selection=True)
             for role in ROLES:
@@ -90,6 +91,7 @@ def populate_receipts(root):
                 parameter_count=row['parameter_count'],
                 schedule_sha256=row['schedule_sha256'],
                 completed_steps=250, actual_training_exposures=4000,
+                cpu_ns=300, wall_ns=300, optimizer_tensor_bytes=800,
                 updates=updates, case_exposures=exposures,
                 case_ids=[case.case_id for case in train], train_gate_passed=True,
                 status='train_gate_passed', diagnostics=[dict(optimizer_step=250,
