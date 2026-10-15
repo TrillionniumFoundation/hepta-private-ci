@@ -273,6 +273,14 @@ jobs:
         run: |
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-cell-roles -p codex-hepta-evidence -p codex-hepta-operator-acceptance -p codex-hepta-supervisor -p codex-hepta-intelligence-eval -- --check
+          # Exact original owner bytes must survive both source HEAD and base
+          # merge. A current unrelated PR cannot silently replace the signed
+          # physical executor with a fixture-only or alternate implementation.
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
+          # Strict original batch/Core compilation, including all new Arc
+          # sharing negative tests. No --allow or ignored Clippy warnings.
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-neuron-mechanism.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/role-control-durable-cas.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-cell-roles --lib control_owner -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-final-use-library.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib final_use::tests -- --nocapture
@@ -290,6 +298,9 @@ jobs:
           # The original NativeTestDriver counts one backend invocation,
           # not one physical pretrained Encoder forward or serving authority.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/typed-stem-original-physical-batch.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --nocapture --test-threads=1
+          # The separately public typed preview never grants authority; its
+          # private borrowed Arc/source identity checks also run as real Rust.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/typed-stem-shared-preview-negative.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests:: -- --nocapture --test-threads=1
           # Test the signed Worker against the ACTUAL original Evidence
           # WAL actor and fsynced marker, including cold restart readback.
           # These tests must run; unrelated fixture-only tests cannot pass
