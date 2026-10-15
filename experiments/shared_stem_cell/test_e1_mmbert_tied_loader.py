@@ -30,9 +30,9 @@ class TestMMBertSourceTie(unittest.TestCase):
             save_file({'decoder.weight':source},str(target))
             if expect_pass:
                 actual=verify_tied_pretrained_table(torch,model,target)
-                self.assertTrue(actual['actual_local_tied_embedding_checkpoint_sample_checked'])
+                self.assertTrue(actual['actual_local_full_tied_embedding_checkpoint_verified'])
                 self.assertFalse(actual['publisher_signature_independently_verified'])
-                self.assertEqual(len(actual['sample_sha256']),64)
+                self.assertEqual(len(actual['complete_table_sha256']),64)
             else:
                 with self.assertRaises(Invalid):
                     verify_tied_pretrained_table(torch,model,target)
