@@ -7,7 +7,7 @@ import struct
 import tempfile
 import unittest
 
-from group_attention_campaign_review import ARMS, COHORTS, DIRECT, SYSTEM2, REQUIRED_SOURCES, MODES, MODELS, _digest, review
+from group_attention_campaign_review import ARMS, COHORTS, DIRECT, SYSTEM2, REQUIRED_SOURCES, MODES, MODELS, _digest, _summarize, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
 from group_checkpoint_audit import verify_checkpoint_file
 
@@ -224,6 +224,7 @@ def fixture(directory):
                 status = row["execution_status"]
                 status_counts[status] = status_counts.get(status, 0) + 1
             summaries[f"{cohort}.{arm}"] = dict(n=len(group_rows),
+                failed_episodes=0,
                 correct=sum(r["success"] for r in group_rows),
                 unsupported_attempts=sum(r["unsupported_attempt"] for r in group_rows),
                 steps=sum(r["steps"] for r in group_rows),
@@ -264,6 +265,45 @@ class PairedReviewTests(unittest.TestCase):
             self.assertEqual(reviewed["descriptive_paired"]["test"]["rescued"], 0)
             self.assertEqual(reviewed["descriptive_paired"]["test"]["harmed"], 0)
             self.assertFalse(reviewed["descriptive_paired"]["long"]["equal_total_compute_demonstrated"])
+
+
+    def test_real_abort_is_counted_as_negative_in_complete_campaign(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            initial = fixture(root)
+            rows = copy.deepcopy(initial["observations"])
+            traces = copy.deepcopy(initial["system2-traces"])
+            report = copy.deepcopy(initial["report"])
+            row = next(r for r in rows if r["cohort"] == "test"
+                       and r["arm"] == "core_ndu" and r["prediction"] == 1)
+            episode = next(t for t in traces if
+                           (t["cohort"], t["arm"], t["case_id"]) ==
+                           (row["cohort"], row["arm"], row["case_id"]))
+            row.update(prediction=2, success=False, valid_execution=False,
+                       execution_status="callback_failed", search_formula_work=100)
+            episode.update(final_candidate="C", status="callback_failed",
+                           proposed_candidates=["C"], verifier_statuses=["unsupported_dependency"],
+                           calls=3, ndu_decisions=[],
+                           trace=[
+                               dict(kind="propose", call=1, status="completed",
+                                    elapsed_ns=1, output_digest=_digest("C")),
+                               dict(kind="verify", call=2, status="completed",
+                                    elapsed_ns=1,
+                                    output_digest=_digest([False, "unsupported_dependency"])),
+                               dict(kind="value", call=3, status="failed",
+                                    elapsed_ns=1, error_type="ValueError")])
+            row["full_trace_sha256"] = _digest(episode)
+            report["full_system2_trace_manifest_sha256"] = _digest(traces)
+            report["summaries"]["test.core_ndu"] = _summarize([
+                r for r in rows if r["cohort"] == "test" and r["arm"] == "core_ndu"])
+            for name, value in (("observations", rows), ("system2-traces", traces),
+                                ("report", report)):
+                (root / (name + ".json")).write_text(json.dumps(value))
+            result = review(root)
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["failed_episodes_by_cohort"]["test"], 1)
+            self.assertFalse(result["production_promotion_permitted"]
+                             if "production_promotion_permitted" in result else False)
 
     def test_reject_prediction_cost_binding_and_missing_arm(self):
         with tempfile.TemporaryDirectory() as tmp:

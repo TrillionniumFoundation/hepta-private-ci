@@ -16,6 +16,7 @@ from group_campaign_review import _parse
 from group_checkpoint_audit import verify_checkpoint_file, strict_json_file
 from group_trace_semantic_audit import verify_trace_semantics
 from group_attention_slot_review import review_train_slots
+from group_abort_trace_audit import ABORTS, audit_abort
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -44,6 +45,7 @@ REQUIRED_SOURCES = (
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
     "group_attention_slot_review.py", "group_token_id_binding.py",
+    "group_abort_trace_audit.py",
 )
 
 
@@ -55,6 +57,7 @@ def _digest(value):
 def _summarize(rows):
     times = sorted(x["wall_ns"] for x in rows)
     return dict(n=len(rows), correct=sum(x["success"] for x in rows),
+                failed_episodes=sum(not x["valid_execution"] for x in rows),
                 unsupported_attempts=sum(x["unsupported_attempt"] for x in rows),
                 steps=sum(x["steps"] for x in rows),
                 verifier_calls=sum(x["verifier_calls"] for x in rows),
@@ -92,6 +95,8 @@ def _verify_system2_trace(row, record, critic_sha, public_answer, family):
             or record["critic_sha256"] != critic_sha
             or row["full_trace_sha256"] != _digest(record)):
         raise ValueError("System2 trace identity or provenance mismatch")
+    if row["execution_status"] in ABORTS:
+        return audit_abort(row, record, public_answer, family)
     step_count = row["steps"]
     if (type(record["trace"]) is not list or type(record["calls"]) is not int
             or record["calls"] != len(record["trace"])
@@ -379,7 +384,9 @@ def review(root):
                                      and row["valid_execution"]
                                      and row["prediction"] == label)):
             raise ValueError("independently replayed evidence outcome differs")
-        if (type(row["steps"]) is not int or not 1 <= row["steps"] <= 4
+        abort = mode in ("fixed", "ndu") and row["execution_status"] in ABORTS
+        if (type(row["steps"]) is not int or
+                not (0 if abort else 1) <= row["steps"] <= 4
                 or type(row["verifier_calls"]) is not int
                 or not 0 <= row["verifier_calls"] <= 4):
             raise ValueError("bounded physical System2 steps and verifier calls required")
@@ -391,7 +398,13 @@ def review(root):
                     or row["prediction"] == -1):
                 raise ValueError("direct control contains fabricated System2 work")
         else:
-            if (row["execution_status"] == "direct_forward"
+            if abort:
+                if (row["valid_execution"] or row["success"]
+                        or row["verifier_calls"] > row["steps"]
+                        or type(row["search_formula_work"]) is not int
+                        or row["search_formula_work"] < 0):
+                    raise ValueError("failed System2 cannot qualify as correct or uncharged")
+            elif (row["execution_status"] == "direct_forward"
                     or row["verifier_calls"] != row["steps"]
                     or type(row["search_formula_work"]) is not int
                     or row["search_formula_work"] <= 0
@@ -476,6 +489,12 @@ def review(root):
     return dict(schema="hepta.group.paired-attention-independent-review.v1",
                 passed=True, authority="DENY_ALL",
                 complete_group_replay=True,
+                failed_episodes_by_cohort={
+                    cohort: sum(not row["valid_execution"] for row in rows
+                                if row["cohort"] == cohort)
+                    for cohort in COHORTS
+                },
+                aborts_are_deny_all_diagnostics=True,
                 public_evidence_labels_independently_recomputed=True,
                 teacher_bound_to_train_sources=True,
                 exact_archived_model_bytes_replayed=True,

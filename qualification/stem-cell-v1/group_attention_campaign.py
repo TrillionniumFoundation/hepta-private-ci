@@ -44,6 +44,7 @@ OPTIMIZER_PROFILES = {
 def summarize(rows):
     times = sorted(x["wall_ns"] for x in rows)
     return dict(n=len(rows), correct=sum(x["success"] for x in rows),
+                failed_episodes=sum(not x["valid_execution"] for x in rows),
                 unsupported_attempts=sum(x["unsupported_attempt"] for x in rows),
                 steps=sum(x["steps"] for x in rows),
                 verifier_calls=sum(x["verifier_calls"] for x in rows),
@@ -98,7 +99,8 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "system2_execution.py", "ndu_continuation.py",
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
                     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
-                    "group_attention_slot_review.py", "group_token_id_binding.py")
+                    "group_attention_slot_review.py", "group_token_id_binding.py",
+                    "group_abort_trace_audit.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
