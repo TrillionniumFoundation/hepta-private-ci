@@ -65,11 +65,13 @@ class IsolatedFactorialProcessTests(unittest.TestCase):
         self.output = self.root / "result"
 
     def run_study(self, **kw):
+        settings = dict(train_count=16, heldout_count=12, steps=1,
+                        timeout_seconds=5)
+        settings.update(kw)
         return isolated_factorial(
             self.snapshot, self.output,
             campaign_script=self.campaign, reviewer_script=self.reviewer,
-            train_count=16, heldout_count=12, steps=1, timeout_seconds=5,
-            **kw)
+            **settings)
 
     def test_four_actual_distinct_pids_and_fifth_independent_reviewer(self):
         receipt = self.run_study()
