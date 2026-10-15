@@ -82,6 +82,15 @@ class ActionGateTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             choose([c("ABSTAIN", "1", "1", feasible=False)])
 
+    def test_signed_utility_but_not_negative_cost(self):
+        d = choose([c("ABSTAIN", "-5", "-4"), c("SOLVE", "-1", "0")])
+        self.assertEqual(d.selected_action, "SOLVE")
+        with self.assertRaises(ValueError):
+            choose([c("ABSTAIN", "1", "1"), c("SOLVE", "4", "4", cost="-1")])
+        with self.assertRaises(ValueError):
+            q("-1")
+        self.assertEqual(q("-1/3", signed=True), -q("1/3"))
+
     def test_exact_fraction_gap(self):
         d = choose([c("ABSTAIN", "1/3", "1/3"), c("SOLVE", "2/3", "2/3")])
         self.assertEqual(d.lower_gap, "1/3")
