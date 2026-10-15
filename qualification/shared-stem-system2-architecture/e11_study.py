@@ -153,8 +153,26 @@ def audit(path: str, source_sha: str, output: str, *, e10_path: str | None = Non
                 or e10.get("all_four_policies_strictly_dominated_in_registered_historical_metrics") is not True
                 or e10.get("production_accepted") is not False):
             raise ValueError("real predecessor negative-E10 receipt not intact")
-        e10_result = {"source_sha256": e10sha, "retrospective_no_go": True,
-                      "not_a_future_time_efficacy_result": True}
+        # Recompute E10 independently from both original inherited E7
+        # reviewers, not merely from E10 self-asserted decision/status flags.
+        # These are retrospective archive summaries, NOT original signer
+        # authentication or new Encoder execution.
+        from e10_paired_pareto import review as recompute_e10
+        observations = Path(__file__).resolve().parent / "observations"
+        first, first_sha = strict_json(str(
+            observations / "E7_ORIGINAL_PHYSICAL_RETROSPECTIVE_20261015.json"))
+        second, second_sha = strict_json(str(
+            observations / "E7_INDEPENDENT_SECOND_ALGORITHM_20261015.json"))
+        if recompute_e10(first, second) != e10:
+            raise ValueError("E10 retrospective decision differs from two original E7 independent reviewers")
+        e10_result = {
+            "source_sha256": e10sha,
+            "independent_e7_first_sha256": first_sha,
+            "independent_e7_second_sha256": second_sha,
+            "retrospective_no_go": True,
+            "not_a_future_time_efficacy_result": True,
+            "exact_paired_and_Holm_recomputed": True,
+        }
     verdict = {
         "schema": "hepta.e11.independent-exact-stochastic-review.v1",
         "source_sha256": original_sha,
