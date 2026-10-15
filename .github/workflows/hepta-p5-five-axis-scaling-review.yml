@@ -1,0 +1,54 @@
+name: Hepta P5 five-axis Stem scaling negative and claim-control tests (DENY_ALL)
+on:
+  push:
+    branches: ["research/p5-five-axis-scaling-falsification-20261015"]
+    paths:
+      - "qualification/stem_scaling_v1/**"
+      - ".github/workflows/hepta-p5-five-axis-scaling-review.yml"
+  pull_request:
+    paths:
+      - "qualification/stem_scaling_v1/**"
+      - ".github/workflows/hepta-p5-five-axis-scaling-review.yml"
+permissions:
+  contents: read
+jobs:
+  five-axis-source-falsification:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/stem_scaling_v1
+    steps:
+      - name: Checkout exact source with no persisted write token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Compile actual P5 research/auditor sources
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qualification/stem_scaling_v1/scaling_frontier.py qualification/stem_scaling_v1/test_scaling_frontier.py
+      - name: Run genuine contract, corruption and five-axis tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
+      - name: Test same contracts with Python optimized mode
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s qualification/stem_scaling_v1 -p 'test_scaling_frontier.py' -v
+      - name: No false physically observed real-model or 10T/100T inference
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "qualification/stem_scaling_v1")
+          import scaling_frontier
+          from test_scaling_frontier import fixture
+          report = scaling_frontier.one_axis_sweeps(fixture())
+          assert report["authority_posture"] == "DENY_ALL"
+          assert report["model_or_teacher_equivalence_certified"] is False
+          assert report["complete_cost_pareto_certified"] is False
+          assert report["production_accepted"] is False
+          print("SOURCE_ONLY_CONTRACT_OK / REAL_MODEL_RESULTS_NOT_PRODUCED / DENY_ALL")
+          PY
