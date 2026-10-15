@@ -749,11 +749,11 @@ fn verified_stem_cas_fixture(
     tempfile::TempDir,
 ) {
     use crate::stem_artifact_cas::StemArtifactCasVerifierV1;
+    use std::os::unix::fs::PermissionsExt;
 
     // Physical fixture files, not declarations of a digest. The real loader
     // must later consume an independently verified immutable artifact pack.
     let root = tempfile::tempdir().expect("private CAS fixture root");
-    use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
         .expect("protect test CAS fixture root");
     for (digest, bytes) in [
