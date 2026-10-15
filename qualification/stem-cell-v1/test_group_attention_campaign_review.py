@@ -130,6 +130,7 @@ def fixture(directory):
         production_authorized=False, natural_future_win_established=False,
         equal_actual_training_work=False, teacher=teacher, critic_cost=critic,
         real_system2_callbacks_executed=True,
+        heldout_target_stripped_before_system2_callbacks=True,
         same_model_critic_frozen_on_validation_only=True,
         encoder_cost=encoder, training=training, summaries=summaries)
     for name, data in (("protocol", protocol), ("teacher", teacher),
@@ -168,6 +169,16 @@ class PairedReviewTests(unittest.TestCase):
                 (root / "observations.json").write_text(json.dumps(rows))
                 with self.subTest(mutation=repr(mutation)), self.assertRaises(ValueError):
                     review(root)
+
+    def test_reject_missing_live_heldout_target_redaction(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            originals = fixture(root)
+            changed = copy.deepcopy(originals["report"])
+            changed["heldout_target_stripped_before_system2_callbacks"] = False
+            (root / "report.json").write_text(json.dumps(changed))
+            with self.assertRaisesRegex(ValueError, "System2"):
+                review(root)
 
     def test_reject_fake_training_of_system2_alias_arm(self):
         with tempfile.TemporaryDirectory() as tmp:
