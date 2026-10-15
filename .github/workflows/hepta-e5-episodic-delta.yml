@@ -44,6 +44,7 @@ jobs:
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
           python -m pip install --only-binary=:all: "safetensors==0.7.0"
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/e5-episodic-pip-freeze.txt"
       - name: Real optimizer mechanism and tamper tests
