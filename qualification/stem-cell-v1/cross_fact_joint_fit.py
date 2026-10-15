@@ -114,9 +114,8 @@ def _eval(model, data, cases, groups, depth, batch_size):
                 wall_ns=time.perf_counter_ns()-start_wall)
 
 
-def _step(model, optimizer, data, cases, indices, depth, pair_weight):
+def _step(model, optimizer, batch, cases, indices, depth, pair_weight):
     start_wall, start_cpu = time.perf_counter_ns(), time.process_time_ns()
-    batch = data.take(indices)
     optimizer.zero_grad(set_to_none=True)
     trace = model(*batch.features(), steps=depth, return_attention=True)
     logits = trace["logits"]
@@ -182,6 +181,7 @@ def fit_joint_reader_pair(models, data, cases, *, steps=8000, seed=41,
                    seed=seed, requested_steps=steps, completed_steps=0,
                    original_models_unchanged=False, arms=list(ARMS),
                    partial_attempts=[], equal_train_rows=True,
+                   shared_input_batch_materializations=0,
                    stop_rule="both_fits_on_the_same_training_only_diagnostic",
                    final_evaluation_authorized=False, production_authorized=False)
     try:
@@ -240,9 +240,13 @@ def fit_joint_reader_pair(models, data, cases, *, steps=8000, seed=41,
                 break
             receipt["attempted_step"] = step
             pending={}
+            # One detached TRAIN batch is borrowed by both Heads. This is a
+            # physical input-copy saving, not two independent data forwards.
+            batch = data.take(indices)
+            receipt["shared_input_batch_materializations"] += 1
             for arm in ARMS:
                 receipt["attempted_arm"] = arm
-                row=_step(trained[arm], optimizers[arm], data, cases, indices, depth, pair_weight)
+                row=_step(trained[arm], optimizers[arm], batch, cases, indices, depth, pair_weight)
                 row["step"] = step
                 pending[arm] = row
                 totals[arm]["cpu_ns"] += row["cpu_ns"]
