@@ -4,6 +4,7 @@ on:
     paths:
       - 'qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py'
       - 'qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py'
+      - 'qualification/stem-cell-v1/test_group_raw_read_once.py'
       - '.github/workflows/hepta-group-feedback-raw-replay.yml'
   workflow_dispatch:
     inputs:
@@ -36,12 +37,13 @@ jobs:
         run: |
           python -m py_compile qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py
           python -m py_compile qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py
+          python -m py_compile qualification/stem-cell-v1/test_group_raw_read_once.py
       - name: Reopen synthetic archives under ordinary and optimized Python
         env:
           PYTHONPATH: qualification/stem-cell-v1
         run: |
-          python -S -m unittest test_group_feedback_factorial_raw_replay -v
-          python -S -O -m unittest test_group_feedback_factorial_raw_replay -v
+          python -S -m unittest test_group_feedback_factorial_raw_replay test_group_raw_read_once -v
+          python -S -O -m unittest test_group_feedback_factorial_raw_replay test_group_raw_read_once -v
 
   replay-original-physical:
     # PR execution intentionally fails closed while the original 24-arm run is queued.

@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import stat
 from pathlib import Path
 
 from group_checkpoint_audit import strict_json_file
@@ -23,15 +25,35 @@ MAX_RAW_BYTES = 64_000_000
 
 def _regular_file(path: Path) -> bytes:
     """Acquire bounded original bytes; forbid symlinks and nonregular files."""
-    if path.is_symlink() or not path.is_file():
-        raise ValueError("raw original archive must contain regular non-symlink files")
-    stat = path.stat()
-    if not 0 < stat.st_size <= MAX_RAW_BYTES:
-        raise ValueError("raw original receipt exceeds configured byte ceiling")
-    data = path.read_bytes()
-    if len(data) != stat.st_size:
-        raise ValueError("original archive changed while reading")
-    return data
+    # A prior lstat followed by Path.read_bytes() trusts a second path lookup.
+    # Pin one descriptor, never follow final-component symlinks, and validate
+    # both pre- and post-read identity on the actual opened file.
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise ValueError("read-once POSIX O_NOFOLLOW support required")
+    flags = os.O_RDONLY | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    if hasattr(os, "O_NONBLOCK"):
+        flags |= os.O_NONBLOCK
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise ValueError("raw receipt unavailable without following links") from exc
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= MAX_RAW_BYTES:
+            raise ValueError("opened original receipt is not a bounded regular file")
+        with os.fdopen(fd, "rb", closefd=False) as source:
+            data = source.read(before.st_size + 1)
+        after = os.fstat(fd)
+        if (len(data) != before.st_size or before.st_dev != after.st_dev
+                or before.st_ino != after.st_ino or before.st_size != after.st_size
+                or before.st_mtime_ns != after.st_mtime_ns
+                or before.st_ctime_ns != after.st_ctime_ns):
+            raise ValueError("raw original receipt mutated during read")
+        return data
+    finally:
+        os.close(fd)
 
 
 def _inventory(bundle: Path):
