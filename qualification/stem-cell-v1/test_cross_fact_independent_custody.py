@@ -41,7 +41,7 @@ def populate_receipts(root):
                 external_result_was_used_for_selection=False,
                 new_code_sha256={name:_digest(Path(__file__).parent/name)
                      for name in ('cross_fact_bridge.py','cross_fact_granite_campaign.py',
-                             'cross_fact_granite_receipt_oracle.py')},
+                             'cross_fact_granite_receipt_oracle.py','cross_fact_joint_fit.py')},
                 train_case_ids_sha256=_caseroster_digest(train_cases()))
     (root/'plan.json').write_text(json.dumps(plan))
     train = train_cases()
@@ -92,6 +92,7 @@ def populate_receipts(root):
                 schedule_sha256=row['schedule_sha256'],
                 completed_steps=250, actual_training_exposures=4000,
                 cpu_ns=300, wall_ns=300, optimizer_tensor_bytes=800,
+                synchronized_early_stop=True, joint_cost_not_additive=True,
                 updates=updates, case_exposures=exposures,
                 case_ids=[case.case_id for case in train], train_gate_passed=True,
                 status='train_gate_passed', diagnostics=[dict(optimizer_step=250,
@@ -103,6 +104,21 @@ def populate_receipts(root):
                 training_receipt_file=f'{arm}-training.json',
                 training_receipt_sha256=_digest(receipt),
                 execution_parameter_sha256=code_model_digest))
+        joint=sub/'joint-training.json'
+        _write_once(joint,dict(schema='hepta.cross-fact.joint-fit.v1',
+            seed=seed, requested_steps=8000, arms=list(ARMS),
+            original_models_unchanged=True, nested_arm_costs_additive=False,
+            production_authorized=False, training_arms_both_fit=True,
+            completed_steps=250, status='train_gate_passed',
+            matched_training_steps={arm:250 for arm in ARMS},
+            matched_parameter_count=8192,
+            matched_training_source_digest=_hash(schedule),
+            initial_parameter_sha256='2'*64,
+            cpu_ns=700,wall_ns=700))
+        for arm in ARMS:
+            summary[str(seed)][arm].update(
+                joint_training_file_sha256=_digest(joint),
+                joint_training_contract='hepta.cross-fact.joint-fit.v1')
     (root/'fit-summary.json').write_text(json.dumps(summary))
     (root/'all-models-frozen.json').write_text(json.dumps(
         {str(seed):{arm:summary[str(seed)][arm]['model_file_sha256'] for arm in ARMS}
