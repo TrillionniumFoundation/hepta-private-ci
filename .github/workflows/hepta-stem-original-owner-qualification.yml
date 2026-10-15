@@ -8,6 +8,9 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
+      - "codex-rs/hepta-agentd/src/neuron_production_bootstrap.rs"
+      - "codex-rs/hepta-agentd/src/neuron_production_bootstrap_tests.rs"
+      - "codex-rs/hepta-agentd/src/lib.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
@@ -97,6 +100,14 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-neuron --lib runtime::tests::
       - name: Strict Neuron all-target Clippy on external-denial change
         run: cargo +1.95.0 clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+      - name: Verify Agentd original Evidence bootstrap Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-agentd -- --check
+      - name: Exercise Agentd signed Neuron telemetry gates
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_runtime::tests::
+      - name: Verify actual durable Evidence writer cold reopen
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests::
+      - name: Strict Agentd all-target Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Check source integrity after compiler and formatter
         if: always()
         shell: bash

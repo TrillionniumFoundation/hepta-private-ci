@@ -404,6 +404,9 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    /// A model effect may already have executed but terminal Evidence fsync
+    /// failed; never blindly retry this durable business identity.
+    TelemetryIndeterminate,
     /// Original Control/CNS and durable Evidence are not independently
     /// composed; a caller-selected verifier cannot grant physical model use.
     OriginalEffectOwnerUnverified,

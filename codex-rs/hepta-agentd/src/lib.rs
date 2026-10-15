@@ -33,6 +33,7 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_effect_bootstrap;
 mod neuron_ndu_read;
+mod neuron_production_bootstrap;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -203,6 +204,8 @@ pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV
 pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleReadbackV1;
 pub use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+pub use neuron_production_bootstrap::NeuronProductionBootstrapErrorV1;
+pub use neuron_production_bootstrap::bootstrap_neuron_production_owner_v1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
