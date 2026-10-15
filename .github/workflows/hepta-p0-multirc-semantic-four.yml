@@ -10,6 +10,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_encoding_cost_frontier.py'
       - 'experiments/shared_stem_cell/p0_physical_replay_v5.py'
       - 'experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py'
+      - 'experiments/shared_stem_cell/p0_independent_training_replay_v7.py'
+      - 'experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py'
+      - 'experiments/shared_stem_cell/P0_INDEPENDENT_TRAINING_REPLAY_V7.md'
       - 'experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py'
       - 'experiments/shared_stem_cell/P0_COLD_PRETRAINED_ENCODER_V6.md'
       - 'experiments/shared_stem_cell/test_p0_physical_replay_v5.py'
@@ -57,7 +60,9 @@ jobs:
             experiments/shared_stem_cell/p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/p0_physical_replay_v5.py \
             experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py \
+            experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
+            experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py \
             experiments/shared_stem_cell/test_p0_physical_replay_v5.py \
             experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/test_p0_question_only_matched.py \
@@ -87,6 +92,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_cold_encoder_replay_v6.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_cold_encoder_replay_v6.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_independent_training_replay_v7.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_independent_training_replay_v7.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -497,8 +506,87 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-  independent-human-score:
+  independent-original-head-training:
+    # Replay the ENTIRE original 40-step SGD trajectory on BOTH frozen-Encoder
+    # views in another CPU process. This job never downloads held labels,
+    # original giant foundation checkpoints or any effect-grant material.
     needs: [original-human-materials, physical-four-models, independent-pretrained-replay, independent-cold-pretrained-encoder]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU optimizer and bounded safetensors reader; no pretrained weights
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/independent-v7-venv"
+          PY="$RUNNER_TEMP/independent-v7-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          "$PY" -m pip check
+          mkdir -p "$RUNNER_TEMP/training-only"
+          "$PY" -m pip freeze > "$RUNNER_TEMP/training-only/cpu-runtime.txt"
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/training-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/training-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/training-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-independent-head-replay-${{ github.run_id }}
+          path: ${{ runner.temp }}/training-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-independent-cold-encoder-${{ github.run_id }}
+          path: ${{ runner.temp }}/training-only
+      - name: Refit two Heads per model from exact original human TRAIN labels and archived Q24 features
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/training-only"
+          PY="$RUNNER_TEMP/independent-v7-venv/bin/python"
+          if ! timeout --signal=TERM --kill-after=15s 1100s "$PY" \
+            experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --head-replay "$ROOT/head-replay-review.json" \
+            --cold-replay "$ROOT/independent-cold-encoder.json" \
+            --replay-root "$ROOT" --output "$ROOT/independent-v7-train.json"; then
+            echo 'Independent original 40-step two-Head SGD replay rejected' > "$ROOT/train-replay-failed.txt"
+            exit 1
+          fi
+          "$PY" -m json.tool "$ROOT/independent-v7-train.json" >/dev/null
+          echo 'Recomputed original-target SGD; NO held label, no pretrained model selection or authority.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-original-training-replay-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/training-only/independent-v7-train.json
+            ${{ runner.temp }}/training-only/train-replay-failed.txt
+            ${{ runner.temp }}/training-only/cpu-runtime.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+  independent-human-score:
+    needs: [original-human-materials, physical-four-models, independent-pretrained-replay, independent-cold-pretrained-encoder, independent-original-head-training]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
