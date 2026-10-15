@@ -1,0 +1,62 @@
+name: Hepta original Granite Group P1/P4 independent negative audit (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/group_v2_independent_negative.py"
+      - "qualification/stem-cell-v1/test_group_v2_independent_negative.py"
+      - "qualification/stem-cell-v1/GROUP_V2_INDEPENDENT_NEGATIVE_20261015.md"
+      - ".github/workflows/hepta-group-v2-independent-negative.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-original-three-seed-aggregation:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact child source/merge without persisted write token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - name: Verify original pretrained three-seed source byte SHA and executable code
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          if [[ '${{ matrix.profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          test "$(git hash-object qualification/stem-cell-v1/GROUP_REASONING_V2_3SEED_20261015.json)" = e2913669e502238c82c7f8982ead99d7998e99c7
+          python3 -m py_compile qualification/stem-cell-v1/group_v2_independent_negative.py qualification/stem-cell-v1/test_group_v2_independent_negative.py
+      - name: Actually recompute eleven independent ORIGINAL pretrained Group summary tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qualification/stem-cell-v1 -p test_group_v2_independent_negative.py -v
+      - name: Recompute original adversarial tests in optimized Python
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s qualification/stem-cell-v1 -p test_group_v2_independent_negative.py -v
+      - name: Independent fail-closed original three-seed report and no model promotion
+        run: |
+          set -euo pipefail
+          python3 qualification/stem-cell-v1/group_v2_independent_negative.py \
+            --original-summary qualification/stem-cell-v1/GROUP_REASONING_V2_3SEED_20261015.json \
+            --output "$RUNNER_TEMP/group-v2-independent-negative.json"
+          python3 - "$RUNNER_TEMP/group-v2-independent-negative.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert x["split_candidates_all_rejected"] is True
+          assert x["learning_or_split_winner_certified"] is False
+          assert x["original_archive_zip_independently_replayed_here"] is False
+          assert x["model_or_NDU_promotion_permitted"] is False
+          assert x["authority_posture"] == "DENY_ALL"
+          print("PINNED_ORIGINAL_SUMMARY_RECONCILED / NO_NEW_MODEL_FORWARDS / DENY_ALL")
+          PY
