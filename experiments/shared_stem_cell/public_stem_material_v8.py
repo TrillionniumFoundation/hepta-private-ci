@@ -345,6 +345,7 @@ def physical_probe(plan: dict, root: Path, material: dict) -> dict:
             "feature_sha256":sha(first.detach().contiguous().numpy().tobytes()),
             "forward_calls":model.forward_calls,"wall_ns":wall_ns,"cpu_ns":cpu_ns,
             "process_lifetime_peak_rss_bytes":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
+            "original_tied_weight_source_recovery":model.original_tied_source_recovery,
             "pretrained_source_independently_attested":False,
             "matched_pair_completed":False,"heldout_efficacy_evaluated":False,
             "production_accepted":False,"authority":"DENY_ALL"}

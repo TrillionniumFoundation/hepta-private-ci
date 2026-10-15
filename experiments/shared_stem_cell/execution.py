@@ -292,9 +292,17 @@ class LocalEncoder:
             output_loading_info=True, attn_implementation="eager", **config_kwargs)
         if any(info.get(k) for k in ("unexpected_keys", "mismatched_keys", "error_msgs")):
             raise InputError("incomplete model load")
-        # A pinned safetensors checkpoint must not leave lazy/meta weights.
-        # Diagnose missing material BEFORE .cpu(), without to_empty, random
-        # initialization, or silently accepting incomplete training weights.
+        # Only the exact stock ModernBERT MLM's two physically tied Meta
+        # weights may be restored from SHA256-verified ORIGINAL saved bytes.
+        # All other missing/mismatched source tensors remain forbidden.
+        from multimodal_saved_tie_recovery_v18 import (
+            OriginalTieRecoveryError, recover_saved_tie,
+        )
+        try:
+            self.original_tied_source_recovery = recover_saved_tie(
+                loaded, info, root, manifest)
+        except OriginalTieRecoveryError as exc:
+            raise InputError("unproven original tied Embedding: " + str(exc)) from exc
         from multimodal_meta_integrity_v14 import UnmaterializedCheckpoint, require_materialized
         try:
             require_materialized(loaded, info)

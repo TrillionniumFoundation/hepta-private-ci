@@ -66,14 +66,23 @@ def reconcile_loading_report(loaded, info: dict, serialized_keys: Collection[str
             or getattr(config, "model_type", None) != "modernbert"
             or getattr(config, "tie_word_embeddings", None) is not True):
         raise MissingTensorError("only stock tied ModernBERT MLM alias is admissible")
-    if list(missing) != [DECODER]:
-        raise MissingTensorError("an unrecognized or duplicate trained tensor is missing")
     keys = set(serialized_keys)
-    if EMBEDDING not in keys or DECODER in keys:
-        raise MissingTensorError("serialized embedding source or alias inventory mismatched")
+    if list(missing) == [DECODER]:
+        if EMBEDDING not in keys or DECODER in keys:
+            raise MissingTensorError("serialized embedding source or alias inventory mismatched")
+        omitted = DECODER
+    elif list(missing) == [EMBEDDING]:
+        # Reverse tied-key serialization is allowed ONLY if decoder is
+        # physically present in the saved checkpoint and both loaded names
+        # resolve to the same proven CPU Parameter view.
+        if DECODER not in keys or EMBEDDING in keys:
+            raise MissingTensorError("serialized decoder source or alias inventory mismatched")
+        omitted = EMBEDDING
+    else:
+        raise MissingTensorError("an unrecognized or duplicate trained tensor is missing")
     state = loaded.state_dict()
     if DECODER not in state or EMBEDDING not in state:
         raise MissingTensorError("loaded full MLM decoder or embedding missing")
     if not same_physical_view(state[DECODER], state[EMBEDDING]):
         raise MissingTensorError("equal bytes are not a physical tied decoder")
-    return [DECODER]
+    return [omitted]
