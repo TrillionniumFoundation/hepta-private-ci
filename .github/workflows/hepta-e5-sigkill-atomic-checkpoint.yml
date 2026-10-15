@@ -49,6 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/e5-atomic-runtime.txt"
       - name: Test exact optimizer and actual killed subprocesses
