@@ -733,7 +733,9 @@ fn verified_stem_cas_fixture(
     }
     let cas = StemArtifactCasVerifierV1::open(root.path(), 4096)
         .expect("audited private read-only CAS root");
-    let proof = cas.verify_selected(source).expect("genuine matched blob hashes");
+    let proof = cas
+        .verify_selected(source)
+        .expect("genuine matched blob hashes");
     (proof, root)
 }
 
@@ -978,7 +980,9 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
         Driver::default(),
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("loaded Head fixture");
+    worker
+        .load_model(100, manifest())
+        .expect("loaded Head fixture");
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
     let mut wrong_source = source.clone();
     wrong_source.stem_generation = Generation::new(4).unwrap();
@@ -1013,5 +1017,50 @@ fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
             },
         ),
         Err(Error::FeatureContract)
+    );
+}
+
+#[test]
+fn typed_neuron_receipt_move_preserves_512d_payload_and_tamper_rejection() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.move-512".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("Worker fixture");
+    worker
+        .load_model(100, manifest())
+        .expect("loaded model fixture");
+
+    let mut request = neuron_feature_request();
+    request.feature_vector_q24 = vec![1 << 22; 512];
+    let original_digest = canonical_neuron_feature_payload_digest(&request);
+    request.authorization.payload_digest = original_digest.clone();
+    request.authorization.lease_payload_digest = original_digest;
+
+    let receipt = worker
+        .run_neuron_features_receipt(100, "model.1", request)
+        .expect("full bounded Q24 request executes with existing Worker guards");
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
+    assert_eq!(receipt.drive_q24, vec![1 << 24; 5]);
+    assert!(!receipt.request_digest.is_zero());
+    assert!(!receipt.receipt_digest.is_zero());
+    assert!(!receipt.authority.grants_any());
+
+    let mut changed = neuron_feature_request();
+    changed.feature_vector_q24 = vec![1 << 22; 512];
+    let exact_digest = canonical_neuron_feature_payload_digest(&changed);
+    changed.authorization.payload_digest = exact_digest.clone();
+    changed.authorization.lease_payload_digest = exact_digest;
+    changed.feature_vector_q24[511] += 1;
+
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", changed),
+        Err(Error::PayloadMismatch)
     );
 }
