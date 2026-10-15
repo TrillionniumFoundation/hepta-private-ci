@@ -11,6 +11,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_physical_replay_v5.py'
       - 'experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py'
       - 'experiments/shared_stem_cell/p0_independent_training_replay_v7.py'
+      - 'experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py'
+      - 'experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py'
+      - 'experiments/shared_stem_cell/P0_PARTIAL_REAL_MODEL_DIAGNOSTIC_V8.md'
       - 'experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py'
       - 'experiments/shared_stem_cell/P0_INDEPENDENT_TRAINING_REPLAY_V7.md'
       - 'experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py'
@@ -61,6 +64,8 @@ jobs:
             experiments/shared_stem_cell/p0_physical_replay_v5.py \
             experiments/shared_stem_cell/p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
+            experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
+            experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/test_p0_cold_encoder_replay_v6.py \
             experiments/shared_stem_cell/test_p0_independent_training_replay_v7.py \
             experiments/shared_stem_cell/test_p0_physical_replay_v5.py \
@@ -96,6 +101,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_independent_training_replay_v7.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_independent_training_replay_v7.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_partial_pretrained_diagnostic_v8.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_partial_pretrained_diagnostic_v8.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -321,6 +330,59 @@ jobs:
         with:
           name: hepta-human-four-original-predictions-${{ github.run_id }}
           path: ${{ runner.temp }}/physical-public/
+          if-no-files-found: warn
+          retention-days: 7
+
+  partial-original-model-diagnostic:
+    # This diagnostic MUST run even when physical-four-models fails after
+    # successfully uploading a subset of its original producer artifacts.
+    # Source material still has to be valid and complete; it never opens labels.
+    if: ${{ always() && needs['original-human-materials'].result == 'success' }}
+    needs: [original-human-materials, physical-four-models]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bounded numerical audit dependencies, no pretrained model weights
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/partial-model-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/partial-model-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/partial-model-only
+      - name: Audit each original model, retain failures, never open held labels
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/partial-model-only"
+          python experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --artifacts-root "$ROOT" --output "$ROOT/partial-diagnostic-v8.json"
+          python -m json.tool "$ROOT/partial-diagnostic-v8.json" >/dev/null
+          echo 'DIAGNOSTIC ONLY: partial numeric consistency, never model quality, Stem selection or FinalUse.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-partial-model-diagnostic-${{ github.run_id }}
+          path: ${{ runner.temp }}/partial-model-only/partial-diagnostic-v8.json
           if-no-files-found: warn
           retention-days: 7
 
@@ -562,6 +624,8 @@ jobs:
           PY="$RUNNER_TEMP/independent-v7-venv/bin/python"
           if ! timeout --signal=TERM --kill-after=15s 1100s "$PY" \
             experiments/shared_stem_cell/p0_independent_training_replay_v7.py \
+            experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
+            experiments/shared_stem_cell/test_p0_partial_pretrained_diagnostic_v8.py \
             --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
             --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
             --mmbert-small "$ROOT/mmbert_small.json" \
