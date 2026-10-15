@@ -150,7 +150,9 @@ fn verified_bytes_feed_two_independent_heads_with_source_free_receipt() {
     assert_eq!(result.claimed_original_weight_tensors, 74);
     assert_eq!(result.actual_reader_attention_pairs, 12);
     assert_eq!(result.cells.len(), 2);
-    assert_ne!(result.cells[0].score_q24, result.cells[1].score_q24);
+    assert_eq!(result.cells[0].score_q24, 0);
+    assert_eq!(result.cells[1].score_q24, Q24 / 4);
+    assert_eq!(result.q24_payload_bytes, 3 * (STEM_WIDTH * 8 + 1 + 12));
     assert_ne!(result.cells[0].head_digest, result.cells[1].head_digest);
     assert_eq!(result.original_source_digest, Digest32::of_bytes(&f.source).to_string());
     assert_eq!(result.admission_bytes_digest, Digest32::of_bytes(&f.admission).to_string());
@@ -234,4 +236,16 @@ fn untrusted_structure_missing_fields_and_oversized_admission_fail_closed() {
     config["heads"] = json!(vec![repeated; MAX_HEADS + 1]);
     f.admission = serde_json::to_vec(&config).expect("serialize");
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+}
+
+#[test]
+fn changed_owner_resource_budget_binds_a_new_result_receipt() {
+    let a = fixture();
+    let original = evaluate(&a, 10).expect("original");
+    let mut b = fixture();
+    rewrite_admission(&mut b, "maximum_attention_pairs", json!(24));
+    let changed = evaluate(&b, 10).expect("larger allowed budget");
+    assert_eq!(original.cells, changed.cells);
+    assert_ne!(original.admission_bytes_digest, changed.admission_bytes_digest);
+    assert_ne!(original.gate_receipt_digest, changed.gate_receipt_digest);
 }
