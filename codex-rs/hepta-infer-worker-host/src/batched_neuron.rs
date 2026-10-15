@@ -409,6 +409,97 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self.pending.len()
     }
 
+    /// Read-only, ORIGINAL-owner-backed ordered cohort signature proposal.
+    ///
+    /// Reconstruct ONLY requests physically present in this Worker's own
+    /// signed pending queue. A caller cannot turn arbitrary valid standalone
+    /// grants into a batch by assembling unadmitted request metadata. Every
+    /// exact current Scope/CNS key is independently read through the already
+    /// installed original Control frontier. The final group signing bytes
+    /// are computed from the SAME immutable pending Q24 buffers and original
+    /// FinalUse bindings that a later execution would have to recheck.
+    ///
+    /// This method grants NOTHING: no issuer, nonce claim, scheduler dequeue,
+    /// WAL effect intent, CAS verification, or backend invocation occurs.
+    /// Original producer must repeat all checks after independently signed
+    /// aggregate issuance and before the eventual effect boundary.
+    pub fn prepare_pending_native_group_signature_v1(
+        &self,
+        now_ms: u64,
+        ordered: &[(StableId, MicrobatchKeyV1)],
+    ) -> Result<NonAuthorizingNativeBatchGroupV1, BatchWorkerErrorV1> {
+        use codex_hepta_infer_core::microbatch::MAX_MICROBATCH_SIZE;
+
+        if ordered.len() < 2 || ordered.len() > MAX_MICROBATCH_SIZE {
+            return Err(BatchWorkerErrorV1::Capacity);
+        }
+        self.validate_caller_now_ms(now_ms)?;
+        if !self.metrics_available_for_effect() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        let effective_now = self.queue_effective_now_ms(now_ms);
+        if !self
+            .worker
+            .original_batch_resource_grant_current_v1(effective_now)
+        {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
+        let mut entries = Vec::with_capacity(ordered.len());
+        let mut original_bindings = Vec::with_capacity(ordered.len());
+        let mut model_id: Option<&str> = None;
+        let mut seen = BTreeSet::new();
+
+        for (id, key) in ordered {
+            if !seen.insert(id.as_str())
+                || !self.binding_current(key)
+                || key.generation.get() != self.worker.worker_generation()
+                || key.authority_epoch != self.worker.authority_epoch()
+                || key.route_fence == 0
+                || self.retired.contains(&retired_identity(id))
+            {
+                return Err(BatchWorkerErrorV1::InvalidBinding);
+            }
+            let pending = self.pending.get(id).ok_or(BatchWorkerErrorV1::NoAdmission)?;
+            if pending.request.authorization.request_id != id.as_str()
+                || pending.request.authorization.deadline_ms <= effective_now
+                || pending.request.authorization.cancelled
+                || !pending.request.feature_vector_q24.is_empty()
+                || pending.signed.grant.binding != pending.binding
+                || pending.signed.grant.authority_epoch != key.authority_epoch
+                || !self.worker.model_matches_digest(&pending.model_id, key.model_digest)
+            {
+                return Err(BatchWorkerErrorV1::InvalidBinding);
+            }
+            match model_id {
+                Some(earlier) if earlier != pending.model_id => {
+                    return Err(BatchWorkerErrorV1::InvalidBinding);
+                }
+                None => model_id = Some(pending.model_id.as_str()),
+                _ => {}
+            }
+            entries.push(NativeBatchGroupMemberV1 {
+                key,
+                request: &pending.request,
+                feature: &pending.feature,
+            });
+            original_bindings.push(&pending.binding);
+        }
+        let current = group_signature::prepare_original_native_batch_group_v1(
+            self.worker.worker_id(),
+            model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?,
+            &entries,
+        )?;
+        if !current
+            .member_bindings
+            .iter()
+            .zip(original_bindings)
+            .all(|(fresh, stored)| fresh == stored)
+        {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
+        Ok(current)
+    }
+
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
     /// Final-use signature verification and durable nonce claim occur only at
     /// actual worker execution, immediately before the model driver is called.

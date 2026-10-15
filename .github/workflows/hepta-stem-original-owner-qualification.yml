@@ -40,9 +40,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           # Exact original #2145 source blobs, not newly substituted owners.
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "91a60eab41050bfdac69c4f710f0cc3ce57c1d9b"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "eeffdff964b006b5fb79cb410986f503c673112f"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "00c4cf73636ef836a8edff9adc8fdb8554556f1e"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "b62d0d9430c51beb505558457855a5922ca89006"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
@@ -110,6 +110,8 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts
       - name: Exercise exact independently signed native cohort plus per-Head nonce claim
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_native_group_
+      - name: Verify original queued cohort proposal only accepts current CNS signed members
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_pending_group_signature_
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Run original Control/CNS denial in a NON-TEST linked Worker library

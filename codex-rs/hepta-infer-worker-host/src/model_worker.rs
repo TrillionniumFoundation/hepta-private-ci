@@ -414,6 +414,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         validate_grant(now_ms, &self.grant)
     }
+
+    /// Fail-closed, READ-ONLY resource-grant currentness for the original
+    /// Native Batch owner when proposing an unprivileged cohort signature.
+    /// True is NOT authorization: only original FinalUse/Control/CNS/Evidence
+    /// owners can authorize one model effect later.
+    pub(crate) fn original_batch_resource_grant_current_v1(&self, now_ms: u64) -> bool {
+        self.validate_current_grant(now_ms).is_ok()
+    }
 }
 
 fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {

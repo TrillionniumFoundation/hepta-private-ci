@@ -3259,3 +3259,212 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     )));
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
+
+
+
+#[test]
+fn original_pending_group_signature_uses_live_queue_bindings_and_never_claims_nonce() {
+    let directory = tempfile::tempdir().expect("private original nonce owner");
+    let signer = SigningKey::from_bytes(&[85; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let first_signed = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("exact independently signed first member");
+    let second_signed = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("exact independently signed second member");
+    let mut worker = runner_with_driver(
+        &signer,
+        directory.path(),
+        manifest,
+        backend,
+        2,
+    );
+    worker
+        .enqueue(
+            100,
+            "model".to_string(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_signed, "owner-first", 85),
+        )
+        .expect("first original pending signature");
+    worker
+        .enqueue(
+            100,
+            "model".to_string(),
+            second,
+            key.clone(),
+            signed_member(&signer, second_signed, "owner-second", 86),
+        )
+        .expect("second original pending signature");
+
+    let selected = [
+        (first_id.clone(), key.clone()),
+        (second_id.clone(), key.clone()),
+    ];
+    let observed = worker
+        .prepare_pending_native_group_signature_v1(100, &selected)
+        .expect("only actual already-admitted and live CNS-bound members");
+    assert_eq!(observed.member_bindings.len(), 2);
+    assert_eq!(
+        observed.member_bindings[0],
+        worker.pending.get(&first_id).unwrap().binding
+    );
+    assert_eq!(
+        observed.member_bindings[1],
+        worker.pending.get(&second_id).unwrap().binding
+    );
+    assert!(!observed.authority.grants_any());
+    assert_eq!(worker.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    let reordered = worker
+        .prepare_pending_native_group_signature_v1(
+            100,
+            &[(second_id.clone(), key.clone()), (first_id.clone(), key.clone())],
+        )
+        .expect("same pending originals require different ordered signature");
+    assert_ne!(
+        observed.group_binding.request_sha256,
+        reordered.group_binding.request_sha256
+    );
+    assert_eq!(worker.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    // Neither non-authorizing proposal has consumed an original nonce.
+    // This actual deterministic test backend still uses the original
+    // per-member signed FinalUse and one physical batch driver invocation.
+    let completed = worker.poll_and_execute(101).expect("original test batch");
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes.iter().all(|item| item.result.is_ok()));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(102, &selected),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+        "retired original queue identities can never be re-proposed"
+    );
+}
+
+#[test]
+fn original_pending_group_signature_rejects_unadmitted_rebound_and_expired_cohorts() {
+    let directory = tempfile::tempdir().expect("protected original FinalUse");
+    let signer = SigningKey::from_bytes(&[86; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let frontier = Arc::new(FixtureScopeFrontier::new(key.model_digest));
+    let mut worker = runner_with_driver_using_frontier(
+        &signer,
+        directory.path(),
+        manifest,
+        Driver,
+        2,
+        frontier.clone(),
+    );
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let signed_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let signed_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker.enqueue(
+        100, "model".into(), first, key.clone(),
+        signed_member(&signer, signed_one, "owner-scope-1", 87),
+    ).expect("one original signed request");
+    let selected = [
+        (first_id.clone(), key.clone()),
+        (second_id.clone(), key.clone()),
+    ];
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::NoAdmission),
+        "caller-supplied other valid request is not an original queued member"
+    );
+    worker.enqueue(
+        100, "model".into(), second, key.clone(),
+        signed_member(&signer, signed_two, "owner-scope-2", 88),
+    ).expect("second original signed request");
+    assert!(worker
+        .prepare_pending_native_group_signature_v1(100, &selected)
+        .is_ok());
+
+    let mut stale = key.clone();
+    stale.route_fence += 1;
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(
+            100, &[(first_id.clone(), stale), (second_id.clone(), key.clone())],
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(
+            100, &[(first_id.clone(), key.clone()), (first_id.clone(), key.clone())],
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(9000, &selected),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+
+    // The ORIGINAL live CNS reader, not a previously signed snapshot,
+    // invalidates an otherwise valid, already queued exact cohort.
+    let mut cutover = key.clone();
+    cutover.route_fence += 1;
+    frontier.install(cutover);
+    assert_eq!(
+        worker.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(worker.pending(), 2);
+}
+
+
+
+#[test]
+fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests_remain_live() {
+    let root = tempfile::tempdir().expect("original signed nonce owner");
+    let signer = SigningKey::from_bytes(&[89; 32]);
+    let (manifest, mut first, key) = fixture_request();
+    // The original physical ResourceGrant expires at 10_000 ms. Keep the
+    // requests live to prove this rejection is genuinely due to the WORKER
+    // grant rather than their individual deadlines.
+    first.authorization.deadline_ms = 11_000;
+    let second = second_request(&first);
+    let first_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+            .expect("first exact original requested use");
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+            .expect("second original requested use");
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let mut original = runner_with_driver(
+        &signer, root.path(), manifest, Driver, 2,
+    );
+    original.enqueue(
+        100, "model".into(), first, key.clone(),
+        signed_member(&signer, first_binding, "grant-expired-1", 91),
+    ).expect("first admitted before original Worker grant expiry");
+    original.enqueue(
+        100, "model".into(), second, key.clone(),
+        signed_member(&signer, second_binding, "grant-expired-2", 92),
+    ).expect("second admitted before original Worker grant expiry");
+    let ordered = [(first_id, key.clone()), (second_id, key)];
+    assert!(original
+        .prepare_pending_native_group_signature_v1(100, &ordered)
+        .is_ok());
+
+    assert_eq!(
+        original.prepare_pending_native_group_signature_v1(10_000, &ordered),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+        "an unexpired request or signed Head grant never extends the original physical Worker resource grant"
+    );
+    assert_eq!(original.pending(), 2);
+}
