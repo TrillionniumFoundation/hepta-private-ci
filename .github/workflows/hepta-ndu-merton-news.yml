@@ -177,6 +177,43 @@ jobs:
                   raise ValueError('missing physical or exact-math comparison')
           PYCODE
           git diff --exit-code
+      - name: Nested source exclusion and independent learning-curve forecast audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer
+          E="$RUNNER_TEMP/news-evidence/nested"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          mkdir -p "$E"
+          python "$D/nested.py" prepare --archive "$NEWS_ARCHIVE" --output "$E/material"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_nested.py -v 2>&1 | tee "$E/tests-$mode.log"
+            grep -F 'Ran 32 tests' "$E/tests-$mode.log"
+            for fold in 0 1 2 3; do
+              WORKER_SHA=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["folds"][int(sys.argv[2])]["worker_sha256"])' "$E/material/manifest.json" "$fold")
+              python "${FLAGS[@]}" "$D/nested.py" run --worker "$E/material/fold-$fold/worker.npz" --worker-sha "$WORKER_SHA" --output "$E/run-$mode/fold-$fold"
+            done
+            python "${FLAGS[@]}" "$D/audit_nested.py" --archive "$NEWS_ARCHIVE" --material "$E/material" --runs "$E/run-$mode" --output "$E/audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence/nested'
+          for f in range(4):
+              a,b=[json.loads((e/f'run-{m}/fold-{f}/sealed.json').read_text()) for m in ('normal','optimized')]
+              def semantic(s):
+                  if len(s['rows'])!=5: raise ValueError('incomplete nested study')
+                  return [{k:v for k,v in r.items() if k not in ('cpu_ns','wall_ns')} for r in s['rows']]
+              if semantic(a)!=semantic(b): raise ValueError('nested interpreter drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'audit-{m}.json').read_text())
+              if a['verified_folds']!=4 or a['policy_lifecycles']!=20 or a['prior_updates']!=1536:
+                  raise ValueError('missing exclusion or physical replay')
+              if not a['outer_label_exclusion_verified'] or a['transfer_qualified'] or a['original_holdout_used']:
+                  raise ValueError('false transfer claim')
+          PYCODE
+          git diff --exit-code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
