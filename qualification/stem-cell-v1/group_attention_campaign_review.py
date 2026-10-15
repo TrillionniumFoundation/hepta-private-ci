@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 
 from group_campaign_review import _parse
+from group_checkpoint_audit import verify_checkpoint_file
 
 ARMS = ("static", "wide", "core", "attention",
         "core_fixed", "attention_fixed", "core_ndu", "attention_ndu")
@@ -39,6 +40,7 @@ REQUIRED_SOURCES = (
     "group_campaign.py", "group_loop.py", "group_critic.py",
     "system2_execution.py", "ndu_continuation.py",
     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
+    "group_checkpoint_audit.py",
 )
 
 
@@ -268,6 +270,35 @@ def review(root):
         if key in traces:
             raise ValueError("duplicate System2 trace entry")
         traces[key] = receipt
+    # Replay exact archived initial and fitted model bytes using no Torch and
+    # no original serializer. These attest byte consistency, NOT training acts.
+    saved = report.get("checkpoint_materialization")
+    checkpoint_names = {"core_initial", *DIRECT}
+    if (type(saved) is not dict or
+            set(saved.get("files", {})) != checkpoint_names or
+            type(saved.get("cpu_ns")) is not int or saved["cpu_ns"] <= 0 or
+            type(saved.get("wall_ns")) is not int or saved["wall_ns"] <= 0 or
+            saved.get("independent_execution_attested") is not False):
+        raise ValueError("complete bounded checkpoint cost and inventory required")
+    checkpoint_bytes = 0
+    for name in sorted(checkpoint_names):
+        entry = saved["files"][name]
+        expected_name = f"group-{name}.safetensors"
+        if (type(entry) is not dict or entry.get("file") != expected_name or
+                entry.get("authority") != "DENY_ALL"):
+            raise ValueError("unexpected or unbound checkpoint file")
+        replay = verify_checkpoint_file(root / expected_name)
+        checkpoint_bytes += replay["bytes"]
+        reference = (report["initial_core_sha256"] if name == "core_initial"
+                     else training[name]["trained_model_sha256"])
+        if (entry.get("model_sha256") != reference or
+                replay["model_sha256"] != reference or
+                entry.get("checkpoint_sha256") != replay["checkpoint_sha256"] or
+                entry.get("bytes") != replay["bytes"] or
+                entry.get("tensor_count") != len(replay["tensors"])):
+            raise ValueError("stored model bytes disagree with trained/initial SHA and manifest")
+    if saved.get("total_artifact_bytes") != checkpoint_bytes:
+        raise ValueError("checkpoint archive storage cost differs from actual bytes")
     expected = {(cohort, arm, case["case_id"]) for cohort in COHORTS
                 for arm in ARMS for case in public[cohort]}
     cases = {cohort: {r["case_id"]: r for r in public[cohort]} for cohort in COHORTS}
@@ -396,6 +427,7 @@ def review(root):
                 complete_group_replay=True,
                 public_evidence_labels_independently_recomputed=True,
                 teacher_bound_to_train_sources=True,
+                exact_archived_model_bytes_replayed=True,
                 same_initial_core_claim_still_unattested=True,
                 equal_compute_claim_allowed=False,
                 real_host_execution_independently_attested=False,
