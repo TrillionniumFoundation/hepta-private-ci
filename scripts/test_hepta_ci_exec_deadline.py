@@ -82,7 +82,9 @@ class CommandDeadlineTests(unittest.TestCase):
             stat = Path(f"/proc/{child_pid}/stat")
             try:
                 state = stat.read_text().rsplit(")", 1)[1].split()[0]
-            except FileNotFoundError:
+            except (FileNotFoundError, ProcessLookupError):
+                # Linux may reap the child between opening /proc/PID and
+                # reading its stat. ESRCH is evidence of exit, not survival.
                 break
             if state == "Z":
                 break
