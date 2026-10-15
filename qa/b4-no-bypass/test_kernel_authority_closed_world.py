@@ -807,7 +807,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         prefix = production[bootstrap:open_lock]
         self.assertRegex(
             prefix,
-            r"if\s+parent\.canonicalize\(\)\.map_err\(\|_\|\s*"
+            r"if\s+parent\s*\.canonicalize\(\)\s*\.map_err\(\|_\|\s*"
             r"NduPublicationErrorV1::UnsafePath\)\?\s*!=\s*parent\s*"
             r"\{\s*return\s+Err\(NduPublicationErrorV1::UnsafePath\);\s*\}",
             "noncanonical ancestor must fail before opening original WAL or lock",
