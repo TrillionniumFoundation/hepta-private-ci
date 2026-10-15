@@ -624,3 +624,47 @@ fn local_original_frontier_refuses_replaced_wal_even_with_identical_bytes() {
         Err(MetricsJournalErrorV1::Poisoned)
     ));
 }
+
+#[cfg(unix)]
+#[test]
+fn local_original_frontier_rejects_same_inode_early_row_tampering() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("early-prefix.log");
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("original owner");
+    writer
+        .stage(sample(MetricPhaseV1::Cas))
+        .expect("first group");
+    writer.flush().expect("first group fsynced");
+    writer
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("second group");
+    writer.flush().expect("second group fsynced");
+
+    let initial = writer
+        .read_local_original_frontier()
+        .expect("original chain");
+    assert_eq!(initial.sequence, 2);
+    let before = fs::read_to_string(&path).expect("original bytes");
+    let corrupted = before.replacen(":42:1", ":43:1", 1);
+    assert_ne!(corrupted, before, "one earlier payload field was rewritten");
+    assert_eq!(corrupted.len(), before.len(), "preserve WAL length");
+    let old_tail = before.lines().last();
+    assert_eq!(corrupted.lines().last(), old_tail, "same last fsynced row");
+
+    let original_inode = fs::metadata(&path).expect("original inode").ino();
+    fs::write(&path, corrupted.as_bytes()).expect("same inode prefix overwrite");
+    assert_eq!(
+        fs::metadata(&path).expect("original inode retained").ino(),
+        original_inode
+    );
+    assert!(matches!(
+        writer.read_local_original_frontier(),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+    assert!(matches!(
+        writer.read_local_original_frontier(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}

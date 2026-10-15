@@ -11,6 +11,8 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -384,17 +386,69 @@ impl MetricsGroupCommitV1 {
         self.head
     }
 
+    /// Verify the bounded COMPLETE original WAL chain for rare Observer
+    /// readback. The hot group-commit flush still verifies only its original
+    /// inode, writer marker, byte length and last fsynced row.
+    ///
+    /// This is at most MAX_JOURNAL_BYTES, not unbounded; a slow read may
+    /// trigger the async sink's existing timeout and fail closed.
+    fn verify_entire_local_frontier(&self) -> Result<(), MetricsJournalErrorV1> {
+        self.verify_original_frontier()?;
+        let mut original = self.file.try_clone()?;
+        original.seek(SeekFrom::Start(0))?;
+        let mut reader = BufReader::new(original);
+        let mut line = Vec::new();
+        let mut total = 0_u64;
+        let mut sequence = 0_u64;
+        let mut committed_rows = 0_u64;
+        let mut head = Digest32::ZERO;
+        loop {
+            line.clear();
+            let remaining = MAX_JOURNAL_BYTES.saturating_sub(total).saturating_add(1);
+            let read = (&mut reader)
+                .take(remaining.min(MAX_LINE_BYTES as u64 + 1))
+                .read_until(b'\n', &mut line)?;
+            if read == 0 {
+                break;
+            }
+            total = total
+                .checked_add(read as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
+            if read > MAX_LINE_BYTES || total > MAX_JOURNAL_BYTES || line.pop() != Some(b'\n') {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+            let contents =
+                std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let (next_sequence, next_head, rows) = parse_group(contents, sequence, head)?;
+            sequence = next_sequence;
+            committed_rows = committed_rows
+                .checked_add(rows as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
+            head = next_head;
+        }
+        if sequence != self.sequence
+            || committed_rows != self.committed_rows
+            || head != self.head
+            || total != self.bytes
+        {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        // Revalidate original inode, marker, parent and fsynced tail after
+        // the complete replay; an in-flight path swap cannot earn an ACK.
+        self.verify_original_frontier()
+    }
+
     /// Verify the original WAL inode, private owner marker, parent directory,
-    /// exact current length and final fsynced row before exporting a local
-    /// diagnostic frontier. Staged rows are deliberately excluded. Never
-    /// treat this cached-owner readback as independently signed custody.
+    /// exact current length AND full original hash chain before exporting a
+    /// read-only local diagnostic frontier. Never treat this local readback
+    /// as independently signed, rollback-resistant Observer custody.
     pub fn read_local_original_frontier(
         &mut self,
     ) -> Result<MetricsOriginalLocalFrontierV1, MetricsJournalErrorV1> {
         if self.poisoned {
             return Err(MetricsJournalErrorV1::Poisoned);
         }
-        if let Err(error) = self.verify_original_frontier() {
+        if let Err(error) = self.verify_entire_local_frontier() {
             self.poisoned = true;
             return Err(error);
         }
