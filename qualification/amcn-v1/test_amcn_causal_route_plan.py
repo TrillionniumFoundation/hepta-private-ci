@@ -140,6 +140,54 @@ class OriginalRouteBuilder(unittest.TestCase):
         return route.build_original_plan(self.packet, self.predictions,
                   self.bank, self.rag, self.graphs, self.reader, final_k=2)
 
+    def test_true_two_hop_graph_score_changes_original_final_selection(self):
+        candidates = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.45, "c": 0.12, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "associative"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {name: 0.0 for name in route.RELATIONS}
+        weights.update(associative=1.0, supports=1.0)
+        selected = route.graph_rank(candidates, scores, edges, weights, 3)
+        self.assertIn("d", selected)
+        self.assertNotIn("d", route.graph_rank(candidates, scores, edges[:1], weights, 3))
+
+    def test_negative_relation_suppresses_but_does_not_redistribute(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.9, "c": 0.2, "d": 0.1}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "contradicts"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {key: 0.0 for key in route.RELATIONS}
+        weights.update(contradicts=-1.0, supports=1.0)
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3), ["a", "b"])
+
+    def test_graph_cycle_is_bounded_without_score_amplification(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.90, "c": 0.11, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "associative"},
+            {"source_id": "c", "target_id": "a", "relation": "associative"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {key: 1.0 for key in route.RELATIONS}
+        self.assertEqual(route.graph_rank(ids, scores, edges, weights, 3),
+                         route.graph_rank(ids, scores, edges[:1] + edges[2:], weights, 3))
+
+    def test_second_hop_lesion_changes_finite_graph_counterfactual(self):
+        ids = ["a", "b", "c", "d"]
+        scores = {"a": 0.95, "b": 0.45, "c": 0.12, "d": 0.10}
+        edges = [
+            {"source_id": "a", "target_id": "c", "relation": "associative"},
+            {"source_id": "c", "target_id": "d", "relation": "supports"},
+        ]
+        weights = {key: 1.0 for key in route.RELATIONS}
+        full = route.graph_rank(ids, scores, edges, weights, 3)
+        lesion = route.graph_rank(ids, scores, edges[:-1], weights, 3)
+        self.assertNotEqual(full, lesion)
+
     def test_builds_original_whole_question_nine_arm_pairs(self):
         result = self.run_plan()
         self.assertEqual(result["query_count"], 6)

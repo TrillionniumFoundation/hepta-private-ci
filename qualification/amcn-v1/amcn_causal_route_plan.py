@@ -155,16 +155,50 @@ def _admit_graph(graph, case, candidates, full_snapshot_sha256):
 
 
 def graph_rank(candidates, base_scores, edges, weights, k):
-    """Bounded fixed-topology additive association; no evidence authority."""
-    scores = {key: float(value) for key, value in base_scores.items()}
+    """Deterministic bounded two-hop association over immutable original edges.
+
+    A source is activated once per seed at its shortest hop. Cycle back-edges
+    cannot repeatedly amplify a signal. Each seed's bounded signed coefficient
+    product is computed without inspecting gold labels. A negative relation
+    suppresses rather than silently becoming an excitatory traversal.
+    """
+    require(len(candidates) == len(set(candidates)) and candidates,
+            "duplicate or empty graph candidate inventory")
+    require(set(base_scores) == set(candidates)
+            and all(type(v) in (int, float) and isfinite(v) and 0 <= v <= 1
+                    for v in base_scores.values()), "graph base scores invalid")
+    scores = {sid: float(base_scores[sid]) for sid in candidates}
     seeds = _stable_rank(candidates, scores, min(2, len(candidates)))
-    boost = defaultdict(float)
+    adjacency = defaultdict(list)
     for edge in edges:
-        a, b = edge["source_id"], edge["target_id"]
-        if a in seeds:
-            weight = weights[edge["relation"]]
-            # Learned negative/inhibitory connections can suppress candidates.
-            boost[b] += max(-1.0, min(1.0, weight)) * max(0.0, scores[a])
+        a, b, relation = edge["source_id"], edge["target_id"], edge["relation"]
+        require(a in scores and b in scores and a != b and relation in weights,
+                "graph edge leaves common admitted frontier")
+        weight = weights[relation]
+        require(type(weight) in (float, int) and isfinite(weight) and -8 <= weight <= 8,
+                "unbounded graph coefficient")
+        adjacency[a].append((b, relation))
+    for source in adjacency:
+        adjacency[source].sort()
+    boost = defaultdict(float)
+    for seed in seeds:
+        # Branches cannot revisit the same node at a greater hop. A second
+        # hop is counted only when it represents a new discovered destination.
+        discovered = {seed}
+        queue = deque([(seed, 0, 1.0)])
+        while queue:
+            source, depth, strength = queue.popleft()
+            if depth == 2:
+                continue
+            for target, relation in adjacency[source]:
+                if target in discovered:
+                    continue
+                discovered.add(target)
+                signed = strength * max(-1.0, min(1.0, weights[relation]))
+                boost[target] += scores[seed] * signed / (depth + 1)
+                # Suppressive paths do not become exploratory seeds.
+                if signed > 0:
+                    queue.append((target, depth + 1, signed))
     final = {sid: scores[sid] + boost[sid] for sid in candidates}
     return _stable_rank(candidates, final, k)
 
