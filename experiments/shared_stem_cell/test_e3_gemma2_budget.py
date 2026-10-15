@@ -100,6 +100,17 @@ class NativeBudgetContract(unittest.TestCase):
         with self.assertRaises(b.NativeBudgetError):
             b.check_batch(self.model, [{"image": str(link)}])
 
+    def test_parent_symlink_escape_denied(self):
+        alias = Path(self.root.name) / "source-alias"
+        alias.symlink_to(Path(self.root.name), target_is_directory=True)
+        with self.assertRaises(b.NativeBudgetError):
+            b.check_batch(self.model, [{"image": str(alias / self.path.name)}])
+
+    def test_parent_dotdot_rejected(self):
+        parent = str(self.path.parent / "subdir" / ".." / self.path.name)
+        with self.assertRaises(b.NativeBudgetError):
+            b.check_batch(self.model, [{"image": parent}])
+
     def test_audio_and_unregistered_media_denied(self):
         with self.assertRaises(b.NativeBudgetError):
             b.check_batch(self.model, [{"audio": "payload"}])
