@@ -526,6 +526,17 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // A non-test serving build has no original same-owner Control
+        // Begin -> physical CNS effect -> Control Commit capability. Merely
+        // populating atomic_control_cutover_owner in a future constructor
+        // cannot enable this dangerous path without a separately reviewed
+        // product transaction. Deny before preflight, Final-use or dispatch.
+        if !cfg!(test) {
+            return Err(
+                "CNS mutation denied: original same-owner Control B/effect/C is not production-composed"
+                    .into(),
+            );
+        }
         // No live CNS generation replacement may happen under an unrelated
         // route owner. A signed route observation, signed Final-use grant and
         // digest-only predecessor are NOT a linearization transaction.
