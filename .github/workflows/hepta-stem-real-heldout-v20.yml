@@ -1,0 +1,202 @@
+name: Hepta V20 pinned AG News pretrained Stem matched Head pilot (research NO-GO)
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py"
+      - "experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py"
+      - "experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md"
+      - ".github/workflows/hepta-stem-real-heldout-v20.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py"
+      - "experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py"
+      - ".github/workflows/hepta-stem-real-heldout-v20.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-stem-v20-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  offline-registered-budgets:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONPATH: experiments/shared_stem_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU head test environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-v20-offline
+          python3 -m venv /tmp/stem-v20-offline-venv
+          /tmp/stem-v20-offline-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-v20-offline-venv/bin/pip install numpy==1.26.4
+          /tmp/stem-v20-offline-venv/bin/pip check
+          /tmp/stem-v20-offline-venv/bin/pip freeze > /tmp/stem-v20-offline/environment.txt
+      - name: Require all nine train/test-budget and no-change NO-GO contracts
+        run: |
+          set -euo pipefail
+          /tmp/stem-v20-offline-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_public_stem_agnews_pilot_v20.py' -v \
+            2>&1 | tee /tmp/stem-v20-offline/tests.log
+          grep -q 'Ran 9 tests' /tmp/stem-v20-offline/tests.log
+          grep -q '^OK$' /tmp/stem-v20-offline/tests.log
+          if grep -Ei 'skipped[=: ]' /tmp/stem-v20-offline/tests.log; then exit 1; fi
+          /tmp/stem-v20-offline-venv/bin/python -m py_compile \
+            experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py
+      - name: Retain exact source and test disposition
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-v20-offline
+          git rev-parse HEAD > /tmp/stem-v20-offline/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-v20-offline/tree.txt
+          sha256sum experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md \
+            .github/workflows/hepta-stem-real-heldout-v20.yml \
+            > /tmp/stem-v20-offline/SHA256SUMS
+          echo 'Synthetic contract tests only; no future NDU or production eligibility' > /tmp/stem-v20-offline/disposition.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-v20-offline-frozen-budget-contract-not-efficacy
+          path: /tmp/stem-v20-offline
+          if-no-files-found: error
+  matched-public-heldout:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push'
+    needs: offline-registered-budgets
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PYTHONPATH: experiments/shared_stem_cell
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned physical model and bounded Parquet reader
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-v20 /tmp/stem-v20-evidence
+          python3 -m venv /tmp/stem-v20-env
+          /tmp/stem-v20-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-v20-env/bin/pip install numpy==1.26.4 transformers==4.57.1 \
+            safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 \
+            psutil==7.0.0 packaging==25.0 pyarrow==18.1.0
+          /tmp/stem-v20-env/bin/pip check
+          /tmp/stem-v20-env/bin/pip freeze > /tmp/stem-v20-evidence/environment.txt
+          /tmp/stem-v20-env/bin/python -c 'import pyarrow.parquet, torch, transformers, safetensors.torch, psutil; print("STOCK_RESEARCH_RUNTIME_OK")'
+      - name: Acquire exact released pretrained weights and recheck V10 paired physical handoff
+        run: |
+          set -euo pipefail
+          P=/tmp/stem-v20-env/bin/python
+          mkdir -p /tmp/stem-v20/models /tmp/stem-v20-evidence/model-logs
+          for candidate in mmbert-small granite-97m-r2; do
+            "$P" experiments/shared_stem_cell/public_stem_material_v8.py prepare \
+              --candidate "$candidate" --out "/tmp/stem-v20/models/${candidate}.plan.json" \
+              >> "/tmp/stem-v20-evidence/model-logs/${candidate}.log" 2>&1
+            "$P" experiments/shared_stem_cell/public_stem_material_v8.py run \
+              --plan "/tmp/stem-v20/models/${candidate}.plan.json" \
+              --output "/tmp/stem-v20/models/${candidate}" \
+              >> "/tmp/stem-v20-evidence/model-logs/${candidate}.log" 2>&1
+          done
+          "$P" experiments/shared_stem_cell/public_stem_pair_handoff_v10.py \
+            --mmbert-root /tmp/stem-v20/models/mmbert-small \
+            --granite-root /tmp/stem-v20/models/granite-97m-r2 \
+            --output /tmp/stem-v20/paired \
+            2>&1 | tee /tmp/stem-v20-evidence/paired-physical.log
+      - name: Freeze two original SHA256 Parquet sources, keep heldout target out of producer calls
+        run: |
+          set -euo pipefail
+          /tmp/stem-v20-env/bin/python experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
+            prepare --out /tmp/stem-v20/agnews \
+            2>&1 | tee /tmp/stem-v20-evidence/dataset-prepare.log
+      - name: Independently train identically sized frozen-feature Cell Heads and source-only predictions
+        run: |
+          set -euo pipefail
+          P=/tmp/stem-v20-env/bin/python
+          mkdir -p /tmp/stem-v20/head-reports
+          for candidate in mmbert-small granite-97m-r2; do
+            "$P" experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py fit-predict \
+              --plan /tmp/stem-v20/agnews/plan.json \
+              --train /tmp/stem-v20/agnews/train.jsonl \
+              --heldout-source /tmp/stem-v20/agnews/heldout-source.jsonl \
+              --pair-summary /tmp/stem-v20/paired/pair-summary.json \
+              --profile "/tmp/stem-v20/paired/${candidate}.profile.json" \
+              --model-root "/tmp/stem-v20/models/${candidate}/model" \
+              --candidate "$candidate" \
+              --out "/tmp/stem-v20/head-reports/${candidate}" \
+              2>&1 | tee "/tmp/stem-v20-evidence/${candidate}-training.log"
+          done
+      - name: Evaluate in separate process with sealed test labels and with NO deployed baseline claim
+        run: |
+          set -euo pipefail
+          /tmp/stem-v20-env/bin/python experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py evaluate \
+            --plan /tmp/stem-v20/agnews/plan.json \
+            --heldout-targets /tmp/stem-v20/agnews/heldout-targets.jsonl \
+            --mmbert-result /tmp/stem-v20/head-reports/mmbert-small/candidate-result.json \
+            --granite-result /tmp/stem-v20/head-reports/granite-97m-r2/candidate-result.json \
+            --out /tmp/stem-v20/readout \
+            2>&1 | tee /tmp/stem-v20-evidence/evaluator.log
+          /tmp/stem-v20-env/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('/tmp/stem-v20/readout/readout.json').read_text())
+          assert report['production_accepted'] is False
+          assert report['deployed_no_change_baseline_observed'] is False
+          assert report['winner'] is None
+          assert set(report['candidate_reports'])=={'mmbert-small','granite-97m-r2'}
+          print('BOTH_REAL_PRETRAINED_HELDOUT_ARMS_REPORTED_NO_PRODUCTION_PROMOTION')
+          PY
+      - name: Preserve source, failure and numeric evidence; exclude raw text, labels and model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          D=/tmp/stem-v20-evidence
+          mkdir -p "$D/source" "$D/results"
+          git rev-parse HEAD > "$D/source/commit.txt"
+          git rev-parse HEAD^{tree} > "$D/source/tree.txt"
+          cp experiments/shared_stem_cell/public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/test_public_stem_agnews_pilot_v20.py \
+            experiments/shared_stem_cell/PUBLIC_AGNEWS_HELDOUT_V20.md \
+            .github/workflows/hepta-stem-real-heldout-v20.yml "$D/source/"
+          if test -e /tmp/stem-v20/agnews/plan.json; then
+            cp /tmp/stem-v20/agnews/plan.json "$D/results/agnews-plan.json"
+          fi
+          if test -e /tmp/stem-v20/paired/pair-summary.json; then
+            cp /tmp/stem-v20/paired/pair-summary.json "$D/results/pair-summary.json"
+          fi
+          if test -e /tmp/stem-v20/readout/readout.json; then
+            cp /tmp/stem-v20/readout/readout.json "$D/results/heldout-readout.json"
+          fi
+          for candidate in mmbert-small granite-97m-r2; do
+            if test -e "/tmp/stem-v20/head-reports/${candidate}/candidate-result.json"; then
+              cp "/tmp/stem-v20/head-reports/${candidate}/candidate-result.json" \
+                "$D/results/${candidate}-predictions.json"
+            fi
+            if test -e "/tmp/stem-v20/models/${candidate}/physical-receipt.json"; then
+              cp "/tmp/stem-v20/models/${candidate}/physical-receipt.json" \
+                "$D/results/${candidate}-physical.json"
+            fi
+          done
+          (cd "$D" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-v20-real-heldout-pilot-no-deployed-baseline-no-ndu
+          path: /tmp/stem-v20-evidence
+          if-no-files-found: error
