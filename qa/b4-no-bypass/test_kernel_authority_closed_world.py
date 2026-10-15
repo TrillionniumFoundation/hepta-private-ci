@@ -675,6 +675,69 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "generic CNS generation writer callsites drifted; audit Control handoff",
         )
 
+    def test_generic_cns_effect_owner_denies_product_mutation_before_callbacks(self) -> None:
+        # The concrete CNS kernel port denies compiled product mutation, but
+        # the generic CellSplit effect owner accepts a caller-selected trait
+        # implementation. Neither admission nor Execute may reach that trait
+        # before the original durable Control B/effect/C is composed.
+        code = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_cns_cutover.rs"
+        )
+        self.assertIn("OriginalControlUnverified", code)
+        owner = code.find("impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1")
+        self.assertGreaterEqual(owner, 0, "original generic CNS owner missing")
+        for method_name, next_method in (
+            ("authorize_execute", "commit_once"),
+            ("commit_once", "read_committed"),
+        ):
+            with self.subTest(method=method_name):
+                start = code.find(f"fn {method_name}(", owner)
+                end = code.find(f"fn {next_method}(", start)
+                self.assertGreater(end, start, "original effect boundary missing")
+                method = code[start:end]
+                opening = method.find("{")
+                self.assertGreaterEqual(opening, 0)
+                body = method[opening + 1 :]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!cfg!\(test\)\s*\{\s*"
+                    r"return\s+Err\(CellSplitCnsCutoverErrorV1::"
+                    r"OriginalControlUnverified\);\s*\}",
+                    "compiled original generic CNS owner must deny first",
+                )
+                self.assertLess(
+                    body.index("if !cfg!(test)"),
+                    body.index("self.verified_effect("),
+                    "caller-selected preconditions must not run before denial",
+                )
+        native = (
+            ROOT
+            / "codex-rs/hepta-operator-acceptance/tests/"
+            "cell_split_cns_non_test_owner_denial.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn compiled_generic_cns_effect_owner_denies_execute_and_cold_replay_before_port_callbacks()",
+            native,
+            "external linked non-cfg(test) arbitrary CNS port negative is required",
+        )
+        self.assertIn("owner.authorize_execute(&intent)", native)
+        self.assertIn("owner.commit_once(&intent)", native)
+        self.assertIn("reopened.commit_once(&intent)", native)
+        self.assertIn("publishes.load(Ordering::SeqCst)", native)
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "cns-generic-owner-non-test-deny.json",
+            workflow,
+            "early real external test may not be replaced by cfg(test) fixture",
+        )
+        self.assertIn(
+            "--test cell_split_cns_non_test_owner_denial",
+            workflow,
+            "non-test product library must be linked by the required gate",
+        )
+
     def test_generic_runtime_denies_typed_split_before_final_use(self) -> None:
         # This is a second physical cutover route distinct from the direct
         # CellSplitRouteController. An admitted topology Update carrying a
