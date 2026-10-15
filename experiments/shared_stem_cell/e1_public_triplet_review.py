@@ -68,8 +68,15 @@ def evaluate(panel,reports):
   if model=='mmbert_small':
    flag=measures.get('mmbert_pretrained_complete_tied_table_verified')
    identity=measures.get('mmbert_local_complete_table_sha256')
-   if flag is not True or type(identity) is not str or len(identity)!=64 or identity=='0'*64 or any(c not in '0123456789abcdef' for c in identity):
-    raise Invalid('mmBERT full pretrained tied token embedding table not verified')
+   full=measures.get('mmbert_all_serialized_weights_byte_verified')
+   state=measures.get('mmbert_whole_pretrained_checkpoint_sha256')
+   count=measures.get('mmbert_verified_source_tensor_count')
+   if (flag is not True or type(identity) is not str or len(identity)!=64 or identity=='0'*64 or
+       any(c not in '0123456789abcdef' for c in identity) or
+       full is not True or type(state) is not str or len(state)!=64 or state=='0'*64 or
+       any(c not in '0123456789abcdef' for c in state) or
+       type(count) is not int or count < 100):
+    raise Invalid('mmBERT full pretrained model parameter source not verified')
   elif measures.get('mmbert_pretrained_complete_tied_table_verified') is not None:
    raise Invalid('non-mmBERT arm forged mmBERT provenance')
   encoded=sum(latency.values())
