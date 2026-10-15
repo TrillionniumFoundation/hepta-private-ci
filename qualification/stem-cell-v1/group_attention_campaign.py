@@ -56,14 +56,16 @@ def summarize(rows):
 
 
 def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
-        steps=120, attention_weight=0.1, training_profile="sgd_v1"):
+        steps=120, attention_weight=0.1, training_profile="sgd_v1",
+        terminal_guard=False):
     if (type(seed) is not int or seed < 0 or type(train_count) is not int
             or not 16 <= train_count <= 2048 or type(heldout_count) is not int
             or not 12 <= heldout_count <= 256 or type(steps) is not int
             or not 1 <= steps <= 10000 or type(attention_weight) not in (int, float)
             or not math.isfinite(attention_weight) or not 0 < attention_weight <= 1
             or type(training_profile) is not str
-            or training_profile not in OPTIMIZER_PROFILES):
+            or training_profile not in OPTIMIZER_PROFILES
+            or type(terminal_guard) is not bool):
         raise ValueError("registered finite bounded paired campaign required")
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
@@ -100,10 +102,12 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
                     "group_checkpoint_audit.py", "group_trace_semantic_audit.py",
                     "group_attention_slot_review.py", "group_token_id_binding.py",
-                    "group_abort_trace_audit.py", "group_attention_coverage.py")
+                    "group_abort_trace_audit.py", "group_attention_coverage.py",
+                    "group_terminal_evidence.py")
     frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         training_profile=training_profile,
+        terminal_guard=terminal_guard,
         optimizer_policy=dict(frozen_optimizer),
         optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",
         seed=seed, steps=steps, train_count=train_count,
@@ -189,14 +193,16 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             feedback_fn=feedback if depth > 1 else None,
             attention_targets=teacher if special else None,
             operation_targets=per_operation_targets if special else None,
-            attention_weight=attention_weight)
+            attention_weight=attention_weight,
+            terminal_guard=terminal_guard if special else False)
         if training[name]["status"] != "completed" or training[name]["completed_steps"] != steps:
             raise ValueError("partial training cannot be scored as completed")
     if (teacher_receipt["operation_mask_sha256"] !=
             training["attention"]["operation_target_sha256"]
             or teacher_receipt["coverage_loss_contract"] !=
                training["attention"]["attention_loss_contract"]
-            or not training["attention"]["operation_coverage_enabled"]):
+            or not training["attention"]["operation_coverage_enabled"]
+            or training["attention"].get("terminal_guard_enabled") is not terminal_guard):
         raise ValueError("required public fact coverage was lost in measured training")
     if (training["core"]["parameter_count"] != training["attention"]["parameter_count"]
             or training["core"]["initial_model_sha256"] != initial_core_digest
@@ -388,13 +394,16 @@ def main():
     parser.add_argument("--attention-weight", type=float, default=.1)
     parser.add_argument("--training-profile", choices=sorted(OPTIMIZER_PROFILES),
                         default="sgd_v1")
+    parser.add_argument("--terminal-guard", action="store_true",
+                        help="research: suppress final labels before all TRAIN evidence slots")
     parser.add_argument("--acquire", action="store_true")
     args = parser.parse_args()
     if args.acquire:
         acquire(args.snapshot)
     run(args.snapshot, args.output, seed=args.seed, train_count=args.train_count,
         heldout_count=args.heldout_count, steps=args.steps,
-        attention_weight=args.attention_weight, training_profile=args.training_profile)
+        attention_weight=args.attention_weight, training_profile=args.training_profile,
+        terminal_guard=args.terminal_guard)
 
 
 if __name__ == "__main__":
