@@ -53,7 +53,7 @@ def extract_allowed(source, target):
             prefix = "memory-inputs/reader/"
             if not member.name.startswith(prefix):
                 continue
-            name = member.name[len(prefix):]
+            name = member.name[len(prefix) :]
             if name not in MODEL_FILES:
                 continue
             if name in seen or not member.isfile() or member.size != MODEL_FILES[name]:
@@ -84,7 +84,10 @@ def stage(archive, target):
 def census(plan, sources, native, official):
     """Check *all* 64 original matched prompts, not one convenient example."""
     if len(plan["cases"]) != 8 or tuple(ARMS) != (
-        "empty", "hybrid", "organized", "without_prerequisite"
+        "empty",
+        "hybrid",
+        "organized",
+        "without_prerequisite",
     ):
         raise ValueError("frozen question/arm census changed")
     rows = []
@@ -101,17 +104,18 @@ def census(plan, sources, native, official):
                 actual = official.apply_chat_template(
                     messages, tokenize=True, add_generation_prompt=True
                 )
-                from_render = official.encode(
-                    official_prompt, add_special_tokens=False
-                )
+                from_render = official.encode(official_prompt, add_special_tokens=False)
                 if not 1 <= len(expected) <= TOKEN_LIMIT:
                     raise ValueError("original reader full prompt exceeds fixed budget")
                 label = dict(
-                    question=case["query"]["identity"], style=style, arm=arm,
+                    question=case["query"]["identity"],
+                    style=style,
+                    arm=arm,
                     selection_digest=digest(selected),
                     native_input_digest=digest(expected),
                     official_input_digest=digest(actual),
-                    native_tokens=len(expected), official_tokens=len(actual),
+                    native_tokens=len(expected),
+                    official_tokens=len(actual),
                 )
                 rows.append(label)
                 if (
@@ -124,9 +128,10 @@ def census(plan, sources, native, official):
                         min(len(expected), len(actual)),
                     )
                     mismatches.append(label | dict(first_differing_token=first))
-    if len(rows) != 64 or len({
-        (row["question"], row["style"], row["arm"]) for row in rows
-    }) != 64:
+    if (
+        len(rows) != 64
+        or len({(row["question"], row["style"], row["arm"]) for row in rows}) != 64
+    ):
         raise ValueError("duplicate or incomplete comparison matrix")
     return rows, mismatches
 
@@ -172,8 +177,10 @@ def audit(source_archive, model_directory, output, source_commit):
     try:
         native = OriginalSmol(model_directory)
         hf_tokenizer = AutoTokenizer.from_pretrained(
-            model_directory, use_fast=True, local_files_only=True,
-            trust_remote_code=False
+            model_directory,
+            use_fast=True,
+            local_files_only=True,
+            trust_remote_code=False,
         )
         result["official_tokenizer_executed"] = True
         if hf_tokenizer.is_fast is not True:
@@ -185,9 +192,12 @@ def audit(source_archive, model_directory, output, source_commit):
             raise ValueError("original offline tokenizer differs from official")
         result["tokenization_parity"] = True
         hf = AutoModelForCausalLM.from_pretrained(
-            model_directory, torch_dtype=torch.float32,
-            local_files_only=True, trust_remote_code=False,
-            use_safetensors=True, attn_implementation="eager"
+            model_directory,
+            torch_dtype=torch.float32,
+            local_files_only=True,
+            trust_remote_code=False,
+            use_safetensors=True,
+            attn_implementation="eager",
         ).eval()
         hf.requires_grad_(False)
         result["official_model_executed"] = True
@@ -201,18 +211,28 @@ def audit(source_archive, model_directory, output, source_commit):
             ids = native.tokenizer.encode(native.tokenizer.render(messages))
             with torch.inference_mode():
                 native_logits, _ = native.forward(ids)
-                hf_logits = hf(
-                    input_ids=torch.tensor([ids], dtype=torch.long),
-                    use_cache=False,
-                ).logits[0, -1].float()
+                hf_logits = (
+                    hf(
+                        input_ids=torch.tensor([ids], dtype=torch.long),
+                        use_cache=False,
+                    )
+                    .logits[0, -1]
+                    .float()
+                )
             error = (native_logits - hf_logits).abs()
             maximum, mean = float(error.max()), float(error.mean())
             same_top = int(native_logits.argmax()) == int(hf_logits.argmax())
-            comparisons.append(dict(
-                question=case["query"]["identity"], style=style, arm=arm,
-                input_digest=digest(ids), max_logit_error=maximum,
-                mean_logit_error=mean, same_next_token=same_top,
-            ))
+            comparisons.append(
+                dict(
+                    question=case["query"]["identity"],
+                    style=style,
+                    arm=arm,
+                    input_digest=digest(ids),
+                    max_logit_error=maximum,
+                    mean_logit_error=mean,
+                    same_next_token=same_top,
+                )
+            )
             if (
                 not torch.isfinite(hf_logits).all()
                 or not same_top
@@ -230,20 +250,28 @@ def audit(source_archive, model_directory, output, source_commit):
             with torch.inference_mode():
                 hf_tokens = hf.generate(
                     input_ids=torch.tensor([ids], dtype=torch.long),
-                    max_new_tokens=8, do_sample=False, num_beams=1,
-                    use_cache=True, eos_token_id=2, pad_token_id=2,
-                )[0, len(ids):].tolist()
+                    max_new_tokens=8,
+                    do_sample=False,
+                    num_beams=1,
+                    use_cache=True,
+                    eos_token_id=2,
+                    pad_token_id=2,
+                )[0, len(ids) :].tolist()
             native_text = native.tokenizer.decode(native_tokens)
             hf_text = hf_tokenizer.decode(
-                hf_tokens, skip_special_tokens=True,
+                hf_tokens,
+                skip_special_tokens=True,
                 clean_up_tokenization_spaces=False,
             )
             equal = native_tokens == hf_tokens and native_text == hf_text
-            greedy_pairs.append(dict(
-                question=case["query"]["identity"],
-                native_token_digest=digest(native_tokens),
-                official_token_digest=digest(hf_tokens), identical=equal,
-            ))
+            greedy_pairs.append(
+                dict(
+                    question=case["query"]["identity"],
+                    native_token_digest=digest(native_tokens),
+                    official_token_digest=digest(hf_tokens),
+                    identical=equal,
+                )
+            )
             if not equal:
                 raise ValueError("official HF greedy token/text decoding drift")
         native.verify_frozen()
