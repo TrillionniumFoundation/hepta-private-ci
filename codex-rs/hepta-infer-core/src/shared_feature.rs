@@ -59,6 +59,13 @@ impl SharedFeatureBufferV1 {
         &self.values
     }
 
+    /// Share the exact original read-only Q24 allocation with a separate
+    /// typed Stem source view. This copies only the Arc pointer, not feature
+    /// bytes, and is NEVER an admission, signature or authority capability.
+    pub fn shared_arc(&self) -> Arc<[i64]> {
+        Arc::clone(&self.values)
+    }
+
     pub fn digest(&self) -> Digest32 {
         self.digest
     }
