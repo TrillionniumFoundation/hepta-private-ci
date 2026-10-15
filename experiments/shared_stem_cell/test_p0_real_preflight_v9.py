@@ -238,7 +238,9 @@ class OriginalPhysicalWorkflowTests(unittest.TestCase):
     def test_real_four_model_acceptance_remains_all_or_nothing(self):
         collector=self.physical
         self.assertIn('needs: [original-human-materials, physical-single-model]',collector)
-        self.assertIn('merge-multiple: true',collector)
+        self.assertIn('merge-multiple: false',collector)
+        self.assertNotIn('merge-multiple: true',collector)
+        self.assertIn('p0_isolated_artifact_intake_v11.py',collector)
         self.assertIn('p0_parallel_model_collector_v10.py',collector)
         self.assertIn('original-arm-*-${{ github.run_id }}',collector)
         self.assertIn('if: always()',collector)
