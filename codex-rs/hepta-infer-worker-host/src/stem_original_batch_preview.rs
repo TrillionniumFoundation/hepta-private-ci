@@ -228,7 +228,10 @@ pub fn prepare_stem_original_shared_batch_preview_v1(
         .map_err(|_| Denied::InvalidSource)?;
     if borrowed.authority().grants_any()
         || borrowed.feature_vector_q24().len() != original_shared.len()
-        || borrowed.feature_vector_q24().as_ptr() != original_shared.as_slice().as_ptr()
+        || !std::ptr::eq(
+            borrowed.feature_vector_q24().as_ptr(),
+            original_shared.as_slice().as_ptr(),
+        )
     {
         // Pointer AND length MUST match the original Arc allocation, not
         // merely equal numeric bytes. This avoids silently rematerializing
