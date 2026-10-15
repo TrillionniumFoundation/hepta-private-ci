@@ -130,6 +130,9 @@ def check_cases(raw):
     if type(raw) is not list or not 1 <= len(raw) <= 50000:
         raise Invalid("missing cohort rows")
     cases, groups, sources, observed = {}, defaultdict(set), defaultdict(set), defaultdict(list)
+    # A declared independent source family cannot recycle identical input bytes
+    # under another family name to inflate paired bootstrap/source counts.
+    source_owner_by_input = {}
     reader_by_task = defaultdict(dict)
     for r in raw:
         if type(r) is not dict:
@@ -140,6 +143,9 @@ def check_cases(raw):
             raise Invalid("duplicate case or unsupported split/modality/Reader")
         group = ident(r.get("source_group"))
         src = digest(r.get("input_sha256"))
+        original_owner = source_owner_by_input.setdefault(src, (split, group))
+        if original_owner != (split, group):
+            raise Invalid("identical input reused across distinct source families")
         number(r.get("observed_at"), positive=True)
         if type(r.get("label")) is not int or r["label"] not in (0, 1):
             raise Invalid("binary externally supplied label missing")
@@ -172,6 +178,9 @@ def check_cases(raw):
                 raise Invalid("missing Reader four-condition task intervention")
             if len({r["label"] for r in by_condition.values()}) != 1:
                 raise Invalid("Reader intervention changed original task answer")
+            if (by_condition["sufficient"]["input_sha256"]
+                    == by_condition["premise_removed"]["input_sha256"]):
+                raise Invalid("Reader sufficient/premise-removed intervention has identical input bytes")
             for key in ("modality", "source_group", "expected_effect_sha256"):
                 if len({r[key] for r in by_condition.values()}) != 1:
                     raise Invalid("Reader intervention changed original task media/source/effect")
@@ -425,7 +434,10 @@ def audit(doc):
     return {
         "schema": "hepta.six-track-descriptive-adjudication.v2",
         "source_sha256": doc["source_sha256"],
-        "cases": len(cases), "track_count": 6,
+        "cases": len(cases),
+        "distinct_input_sha256_count": len({case["input_sha256"] for case in cases.values()}),
+        "independent_source_groups_not_cryptographically_attested": True,
+        "track_count": 6,
         "tracks": out,
         "independent_outcome_provenance_verified": False,
         "prelabel_seals_independently_verified": False,
