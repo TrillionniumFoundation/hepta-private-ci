@@ -88,7 +88,7 @@ l is mean assistant-token log probability including the unchanged citation/end
 suffix, not calibrated correctness. Both margins must be positive to satisfy
 the weak two-direction criterion. Positive I_question alone is not sufficient.
 The reversed training control is evaluated against the SAME intended orientation,
-never regraded against its intentionally wrong supervision direction.
+never re-scored against its intentionally wrong supervision direction.
 
 Generation separately records matched refusal, mismatched refusal and their
 JOINT behavior on each pair. Always-refuse and always-answer fail the joint
