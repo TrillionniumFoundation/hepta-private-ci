@@ -1,8 +1,8 @@
 use super::*;
-#[cfg(unix)]
-use std::fs::OpenOptions;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+#[cfg(unix)]
+use std::fs::OpenOptions;
 
 /// A production Control WAL rejects directories writable by group/others.
 /// TempDir creation is influenced by the host umask; make these *test* roots
@@ -1264,13 +1264,15 @@ fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory() {
     assert!(
         matches!(
             result,
-            Err(NduPublicationErrorV1::Indeterminate)
-                | Err(NduPublicationErrorV1::UnsafePath)
+            Err(NduPublicationErrorV1::Indeterminate) | Err(NduPublicationErrorV1::UnsafePath)
         ),
         "path rebind must never be interpreted as a committed Control owner"
     );
     assert!(!journal.exists(), "substitute must not receive a WAL");
-    assert!(!marker.exists(), "substitute must not receive an owner marker");
+    assert!(
+        !marker.exists(),
+        "substitute must not receive an owner marker"
+    );
     assert!(
         moved.join("ndu.wal.owner-lock").exists(),
         "new reservation, if created, must remain in the pinned original directory"
