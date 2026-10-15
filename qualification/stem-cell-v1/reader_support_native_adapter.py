@@ -6,6 +6,8 @@ existing MultiRC V1, not a replacement for native-answer Reader training.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 from pathlib import Path
 
 from reader_support_causal import (PLAN, OBS, REPLAY, digest, hex64, validate_plan,
@@ -14,7 +16,58 @@ from reader_support_causal import (PLAN, OBS, REPLAY, digest, hex64, validate_pl
 ANNOTATION = 'hepta.reader.external-source-spans.v1'
 
 
-def build_plan(blind_eval, frozen, annotations):
+def validate_original_material(train, blind_eval, original_panel_id):
+    """Reconstruct the *actual V1 prepare_panels* content ID, never trust a label.
+
+    The full typed V1 train and validation bundles jointly bind every original
+    source/question/candidate to the frozen Reader's original panel digest.
+    A self-rehashed external support plan or unchanged claimed panel_id cannot
+    authorize a rewritten passage. Source publisher signatures are still absent.
+    """
+    if (not isinstance(train, dict) or not isinstance(blind_eval, dict)
+        or set(train) != set(blind_eval)
+        or train.get('split') != 'train' or blind_eval.get('split') != 'validation'
+        or not hex64(original_panel_id)
+        or train.get('panel_id') != original_panel_id
+        or blind_eval.get('panel_id') != original_panel_id
+        or train.get('schema') != 'hepta.multirc.two-question-material.v1'):
+        raise ValueError('paired original V1 TRAIN+EVAL bundles required')
+    header_keys = {'schema','revision','repo','seed','source_sha256_train',
+                   'source_sha256_validation','train_passage_count','eval_passage_count',
+                   'query_selection','material_admission',
+                   'training_data_license_approved','pretraining_contamination_ruled_out'}
+    if set(train) != header_keys | {'split','rows','panel_id'}:
+        raise ValueError('original panel must preserve exact publisher metadata')
+    if any(train[k] != blind_eval[k] for k in header_keys):
+        raise ValueError('original training and evaluation panel header mismatch')
+    if (train['query_selection'] != 'first-two-ids-first-answer-per-question-no-label-choice'
+        or train['training_data_license_approved'] is not False
+        or train['pretraining_contamination_ruled_out'] is not False
+        or not hex64(train['source_sha256_train'])
+        or not hex64(train['source_sha256_validation'])
+        or type(train['seed']) is not int or train['seed'] <= 0
+        or not isinstance(train['rows'],list) or not isinstance(blind_eval['rows'],list)
+        or len(train['rows']) != train['train_passage_count']
+        or len(blind_eval['rows']) != train['eval_passage_count']):
+        raise ValueError('incomplete original source or unqualified panel metadata')
+    for source in blind_eval['rows']:
+        if (not isinstance(source,dict) or set(source) != {'source_group','evidence','questions'}
+            or not isinstance(source['questions'],list) or len(source['questions'])!=2
+            or any(not isinstance(q,dict)
+                   or set(q) != {'task_id','question','answer'} for q in source['questions'])):
+            raise ValueError('heldout labels or unexpected evaluation fields are forbidden')
+    header = {k: train[k] for k in header_keys}
+    material = dict(header=header, train=train['rows'], evaluation=blind_eval['rows'])
+    # V1 next_round_matrix._digest uses json.dumps default ensure_ascii=True.
+    original = hashlib.sha256(json.dumps(material, sort_keys=True, separators=(',', ':'),
+                                         allow_nan=False).encode()).hexdigest()
+    if original != original_panel_id:
+        raise ValueError('original source/answer/paragraph bytes do not match V1 panel SHA')
+    return original
+
+
+
+def build_plan(train_bundle, blind_eval, frozen, annotations):
     if (not isinstance(blind_eval, dict)
         or blind_eval.get('schema') != 'hepta.multirc.two-question-material.v1'
         or blind_eval.get('split') != 'validation'
@@ -34,6 +87,7 @@ def build_plan(blind_eval, frozen, annotations):
         or annotations['support_independently_verified'] is not False
         or annotations['annotation_id'] != digest({k:v for k,v in annotations.items() if k!='annotation_id'})):
         raise ValueError('sealed, label-blind source annotation and original frozen Reader required')
+    validate_original_material(train_bundle, blind_eval, frozen['panel_id'])
     source = []
     for passage in blind_eval['rows']:
         for q in passage['questions']:
@@ -84,7 +138,7 @@ def main():
         sub = modes.add_parser(name)
         sub.add_argument('--output', required=True)
         if name == 'prepare':
-            for flag in ('blind-eval-bundle','run-dir','expected-v1-seal-id','external-spans'):
+            for flag in ('train-bundle','blind-eval-bundle','run-dir','expected-v1-seal-id','external-spans'):
                 sub.add_argument('--'+flag,required=True)
         elif name == 'run':
             for flag in ('plan','run-dir','expected-v1-seal-id','snapshot'):
@@ -105,8 +159,8 @@ def main():
     try:
         if args.mode == 'prepare':
             frozen=check_seal(args.run_dir,args.expected_v1_seal_id)
-            plan=build_plan(strict_json(args.blind_eval_bundle), frozen,
-                            strict_json(args.external_spans))
+            plan=build_plan(strict_json(args.train_bundle), strict_json(args.blind_eval_bundle),
+                            frozen, strict_json(args.external_spans))
             write_json_exclusive(dest/'plan.json',plan)
             write_json_exclusive(dest/'COMMITTED.json',dict(schema=PLAN,
                 plan_id=plan['plan_id'],plan_file_sha256=file_sha256(dest/'plan.json'),
