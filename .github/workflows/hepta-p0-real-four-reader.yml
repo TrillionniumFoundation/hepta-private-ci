@@ -1,0 +1,289 @@
+name: Hepta P0 genuine pretrained four-Stem evidence Reader (DENY_ALL)
+
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/p0_squad_materials.py'
+      - 'experiments/shared_stem_cell/p0_real_reader_cpu.py'
+      - 'experiments/shared_stem_cell/p0_reader_independent_review.py'
+      - 'experiments/shared_stem_cell/test_p0_squad_causal.py'
+      - 'experiments/shared_stem_cell/P0_REAL_FOUR_STEM_READER.md'
+      - '.github/workflows/hepta-p0-real-four-reader.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  source-and-faults:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Actual Torch SGD and label/provenance fault tests
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m py_compile \
+            experiments/shared_stem_cell/p0_squad_materials.py \
+            experiments/shared_stem_cell/p0_real_reader_cpu.py \
+            experiments/shared_stem_cell/p0_reader_independent_review.py \
+            experiments/shared_stem_cell/test_p0_squad_causal.py
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
+
+  original-source:
+    needs: source-and-faults
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire exact-original human-annotated SQuAD parquet
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'huggingface-hub==1.33.0' 'pyarrow==21.0.0'
+          mkdir -p "$RUNNER_TEMP/source" "$RUNNER_TEMP/materials"
+          python - <<'PY'
+          import hashlib, os, shutil
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download, HfApi
+          repo='rajpurkar/squad_v2'
+          revision='3ffb306f725f7d2ce8394bc1873b24868140c412'
+          assert HfApi().dataset_info(repo_id=repo, revision=revision).sha==revision
+          material={
+            'train':('squad_v2/train-00000-of-00001.parquet','f6da32ffb482ff463ad056477740d1bb284b96a45db3a08bee6a225ca6abf291'),
+            'validation':('squad_v2/validation-00000-of-00001.parquet','0560174ab095c5ac0a8c8dc8da05f1625453c45a77e4ce9cabc6947ddfdd24cb'),
+          }
+          for name,(remote,expected) in material.items():
+            local=Path(hf_hub_download(repo_id=repo,repo_type='dataset',revision=revision,filename=remote))
+            assert hashlib.sha256(local.read_bytes()).hexdigest()==expected,(name,'source-drift')
+            shutil.copyfile(local,Path(os.environ['READER_SOURCE_DIR'])/f'{name}.parquet')
+          PY
+        env:
+          READER_SOURCE_DIR: ${{ runner.temp }}/source
+      - name: Construct source-locked fit, blind, and separately held scoring material
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/p0_squad_materials.py \
+            --train-parquet "$RUNNER_TEMP/source/train.parquet" \
+            --validation-parquet "$RUNNER_TEMP/source/validation.parquet" \
+            --output-directory "$RUNNER_TEMP/materials" \
+            > "$RUNNER_TEMP/source/source-receipt.json"
+          python -m json.tool "$RUNNER_TEMP/source/source-receipt.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/materials/fit.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/materials/blind.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-held-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/materials/labels.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-source-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/source/source-receipt.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  physical-four-models:
+    needs: original-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      USE_TF: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Checkout exact reviewed original compact Stem source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+      - name: Checkout exact reviewed Gemma source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-gemma
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+      - name: Enforce immutable backend source revisions
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download fit material only
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/model-only
+      - name: Download blind material only, NEVER held labels
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/model-only
+      - name: Build pinned original physical CPU runtime
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/p0-venv"
+          PY="$RUNNER_TEMP/p0-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pyarrow==21.0.0' 'pillow==11.3.0' 'laya==0.3.20'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/p0-runtime-freeze.txt"
+      - name: Prepare pinned complete compact checkpoints (original E1 owner)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p0-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import hashlib
+          from huggingface_hub import HfApi,snapshot_download
+          models=[('ibm-granite/granite-embedding-97m-multilingual-r2','835ad14087e140460703cf0fae09f97d469d65c2'),
+                  ('jhu-clsp/mmBERT-small','0eb3d056ec1d6333cf4e19b0966dfde342a41a3a')]
+          for name,sha in models:
+            info=HfApi().model_info(repo_id=name,revision=sha,files_metadata=True)
+            assert info.sha==sha
+            root=Path(snapshot_download(repo_id=name,revision=sha,
+                  allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+            files={x.relative_to(root).as_posix():x for x in root.rglob('*') if x.is_file()}
+            assert {'model.safetensors','tokenizer.json','config.json'}<=set(files)
+            assert not any(x.endswith(('.bin','.pkl','.pickle','.pt','.py')) for x in files)
+            for f in info.siblings:
+              if f.rfilename in files:
+                expected=f.lfs.get('sha256') if isinstance(f.lfs,dict) else getattr(f.lfs,'sha256',None)
+                if expected: assert hashlib.sha256(files[f.rfilename].read_bytes()).hexdigest()==expected
+          PY
+      - name: Prepare original complete Gemma text snapshot
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/model-observations"
+          "$RUNNER_TEMP/p0-venv/bin/python" \
+            pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+            --destination "$RUNNER_TEMP/model-observations/gemma-snapshot" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/model-observations/gemma-receipt.json"
+      - name: Four genuine checkpoint invocations; no synthetic fallback
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/model-observations"
+          PY="$RUNNER_TEMP/p0-venv/bin/python"
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            if timeout --signal=TERM --kill-after=30s 3200s "$PY" \
+              experiments/shared_stem_cell/p0_real_reader_cpu.py \
+              --model "$model" --fit "$RUNNER_TEMP/model-only/fit.json" \
+              --blind "$RUNNER_TEMP/model-only/blind.json" \
+              --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
+              --gemma-manifest "$ROOT/gemma-snapshot/manifest.json" \
+              --output "$ROOT/$model.json"; then
+              printf '%s\n' "$model real pretrained inference completed"
+            else
+              printf '%s\n' "$model failed: no model-forward or score will be fabricated" > "$ROOT/$model.failed.txt"
+            fi
+          done
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            test -s "$ROOT/$model.json" || { echo "missing physical $model" >&2; exit 1; }
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-real-original-model-predictions-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/model-observations/*.json
+            ${{ runner.temp }}/model-observations/*.failed.txt
+            ${{ runner.temp }}/p0-runtime-freeze.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+  held-label-independent-review:
+    needs: [original-source, physical-four-models]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - name: Only the evaluator receives original held labels
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-held-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p0-real-original-model-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - name: Reject missing arms, recompute real observation accuracy and cost
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/p0_reader_independent_review.py \
+            --fit "$RUNNER_TEMP/score-only/fit.json" \
+            --blind "$RUNNER_TEMP/score-only/blind.json" \
+            --labels "$RUNNER_TEMP/score-only/labels.json" \
+            --granite-97m-r2 "$RUNNER_TEMP/score-only/granite_97m_r2.json" \
+            --mmbert-small "$RUNNER_TEMP/score-only/mmbert_small.json" \
+            --embeddinggemma-2-text "$RUNNER_TEMP/score-only/embeddinggemma_2_text.json" \
+            --laya421-nochange "$RUNNER_TEMP/score-only/laya421_nochange.json" \
+            --output "$RUNNER_TEMP/score-only/independent-p0-score.json"
+          python -m json.tool "$RUNNER_TEMP/score-only/independent-p0-score.json" >/dev/null
+          echo 'No future learning, semantic human negative label, NDU or production model selection is accepted.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-independent-score-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only/independent-p0-score.json
+          if-no-files-found: warn
+          retention-days: 7
