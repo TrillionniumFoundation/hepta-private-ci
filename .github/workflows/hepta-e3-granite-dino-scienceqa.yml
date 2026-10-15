@@ -6,6 +6,8 @@ on:
       - "experiments/shared_stem_cell/e3_scienceqa_*.py"
       - "experiments/shared_stem_cell/e3_granite_dino_real.py"
       - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
+      - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
   pull_request:
@@ -13,6 +15,8 @@ on:
       - "experiments/shared_stem_cell/e3_scienceqa_*.py"
       - "experiments/shared_stem_cell/e3_granite_dino_real.py"
       - "experiments/shared_stem_cell/test_e3_scienceqa_real.py"
+      - "experiments/shared_stem_cell/e3_physical_ci_gate.py"
+      - "experiments/shared_stem_cell/test_e3_physical_ci_gate.py"
       - "experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md"
       - ".github/workflows/hepta-e3-granite-dino-scienceqa.yml"
 permissions:
@@ -57,6 +61,9 @@ jobs:
           grep -q 'Ran 27 tests' /tmp/e3-local-test.log
           grep -q '^OK$' /tmp/e3-local-test.log
           "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_scienceqa_real.py' -q 2>&1 | tee /tmp/e3-optimized-test.log
+          "$P" -m compileall -q experiments/shared_stem_cell/e3_physical_ci_gate.py experiments/shared_stem_cell/test_e3_physical_ci_gate.py
+          "$P" -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -v 2>&1 | tee /tmp/e3-physical-gate-tests.log
+          "$P" -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_physical_ci_gate.py' -q 2>&1 | tee /tmp/e3-physical-gate-optimized.log
       - name: Stage source-only ScienceQA and create separate held-label seal
         run: |
           set -euo pipefail
@@ -119,63 +126,16 @@ jobs:
               assert arm['cases']==64
           print('REAL MODEL DESCRIPTIVE E3 REVIEW COMPLETED, NEVER A PRODUCTION SELECTION')
           PY
-      - name: Fail closed unless original pretrained forward AND held-label readout completed
+      - name: Independently verify physical and heldout evidence without promotion
         run: |
           set -euo pipefail
-          /tmp/e3-venv/bin/python - <<'PY'
-          import hashlib
-          import json
-          from pathlib import Path
-
-          root = Path('/tmp/e3-scienceqa')
-          pred_path = Path('/tmp/e3-original-model/sealed-predictions.json')
-          score_path = Path('/tmp/e3-original-review.json')
-          seal_path = Path('/tmp/e3-prediction-seal-before-label.txt')
-          source = json.loads((root / 'source-seals.json').read_bytes())
-          raw = pred_path.read_bytes()
-          got_sha = hashlib.sha256(raw).hexdigest()
-          stored_sha = seal_path.read_text().split()[0]
-          pred = json.loads(raw)
-          score = json.loads(score_path.read_bytes())
-          assert len(got_sha) == 64 and got_sha == stored_sha == score['sealed_predictions_sha256']
-          assert pred['source_sha256'] == source['source_sha256'] == score['source_sha256']
-          assert score['holdout_targets_sha256'] == source['private_test_labels_sha256']
-          assert pred['fit_labels_sha256'] == source['fit_labels_sha256']
-          for name in ('physical_text_forward_batches', 'physical_vision_forward_batches'):
-              assert type(pred.get(name)) is int and pred[name] > 0, name
-          assert pred['stem_model']['repo'] == 'ibm-granite/granite-embedding-97m-multilingual-r2'
-          assert pred['vision_model']['repo'] == 'facebook/dinov2-small'
-          assert pred['fit']['private_cell_head_parameters'] == 769
-          assert pred['fit']['train_cases'] == 96
-          assert pred['fit']['calibration_cases'] == 32
-          assert pred['fit']['holdout_cases'] == score['original_heldout_cases'] == 64
-          assert pred['held_labels_visible_to_inference'] is False
-          assert pred['production_accepted'] is False
-          assert score['production_accepted'] is False
-          assert score['stem_winner'] is None and score['authority'] == 'DENY_ALL'
-          assert score['statistical_selection_authorized'] is False
-          assert len(score['arms']) == 8
-          assert all(v['cases'] == 64 for v in score['arms'].values())
-          out = {
-              'schema': 'hepta.e3.physical-and-score-required.v1',
-              'exact_source_sha': '${{ github.sha }}',
-              'source_sha256': source['source_sha256'],
-              'sealed_predictions_sha256': got_sha,
-              'physical_text_forward_batches': pred['physical_text_forward_batches'],
-              'physical_vision_forward_batches': pred['physical_vision_forward_batches'],
-              'heldout_cases': 64,
-              'completed_original_pretrained_stage_and_scoring': True,
-              'signed_model_origin_authenticated': False,
-              'natural_visual_necessity_adjudicated': False,
-              'stem_winner': None,
-              'authority': 'DENY_ALL',
-          }
-          p = Path('/tmp/e3-physical-verified.json')
-          with p.open('x', encoding='utf-8') as f:
-              json.dump(out, f, sort_keys=True, separators=(',', ':'))
-              f.write('\n')
-          print('E3_PHYSICAL_AND_SCORE_REQUIRED_PASS: native model origin remains unsigned')
-          PY
+          /tmp/e3-venv/bin/python experiments/shared_stem_cell/e3_physical_ci_gate.py \
+            --source-seals /tmp/e3-scienceqa/source-seals.json \
+            --predictions /tmp/e3-original-model/sealed-predictions.json \
+            --prediction-seal /tmp/e3-prediction-seal-before-label.txt \
+            --review /tmp/e3-original-review.json \
+            --exact-head ${{ github.sha }} \
+            --out /tmp/e3-physical-verified.json
       - name: Retain immutable source and available failure evidence without raw media or weights
         if: always()
         run: |
@@ -186,6 +146,8 @@ jobs:
           cp /tmp/e3-environment.txt /tmp/e3-safe-evidence/versions.txt || true
           cp /tmp/e3-local-test.log /tmp/e3-safe-evidence/offline-tests.txt || true
           cp /tmp/e3-optimized-test.log /tmp/e3-safe-evidence/optimized-tests.txt || true
+          cp /tmp/e3-physical-gate-tests.log /tmp/e3-safe-evidence/physical-gate-contract-tests.txt || true
+          cp /tmp/e3-physical-gate-optimized.log /tmp/e3-safe-evidence/physical-gate-optimized-tests.txt || true
           cp /tmp/e3-prediction-seal-before-label.txt /tmp/e3-safe-evidence/predictions-before-labels.sha256 || true
           cp /tmp/e3-scienceqa/source-seals.json /tmp/e3-safe-evidence/source-seals.json || true
           cp /tmp/e3-original-model/sealed-predictions.json /tmp/e3-safe-evidence/sealed-source-bound-predictions.json || true
@@ -196,6 +158,8 @@ jobs:
             experiments/shared_stem_cell/e3_granite_dino_real.py \
             experiments/shared_stem_cell/e3_scienceqa_review.py \
             experiments/shared_stem_cell/test_e3_scienceqa_real.py \
+            experiments/shared_stem_cell/e3_physical_ci_gate.py \
+            experiments/shared_stem_cell/test_e3_physical_ci_gate.py \
             experiments/shared_stem_cell/E3_REAL_GRANITE_DINO.md \
             .github/workflows/hepta-e3-granite-dino-scienceqa.yml \
             > /tmp/e3-safe-evidence/source-blobs-SHA256
