@@ -1,0 +1,183 @@
+{
+  "authority_posture": "DENY_ALL",
+  "channel_mask_arms_are_exploratory_posthoc": true,
+  "channel_mask_counterfactual_reencodes_evidence": false,
+  "equal_full_lifecycle_compute": false,
+  "future_task_utility_gain_established": false,
+  "historical_e16_scaled_brier": 0.4679101347990239,
+  "historical_e16_scaled_correct": 20,
+  "human_validation_sha256": "5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada",
+  "hypothesis_confirmatory_preregistration": false,
+  "model_selected": false,
+  "ndu_system2_admitted": false,
+  "new_pretrained_forwards": 0,
+  "origin_model_sha256": "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17",
+  "original-human-parquet-directly-reopened": false,
+  "original_passage_groups": 4,
+  "original_pretraining_reexecuted": false,
+  "original_questions": 8,
+  "original_real_5param_SGD_updates": 640,
+  "paired_against_original_frozen": {
+    "bce5": {
+      "candidate_harmed": 5,
+      "candidate_rescued": 9,
+      "independent_question_sampling_established": false,
+      "question_harmed": 0,
+      "question_rescued": 2,
+      "statistical_significance_or_superiority_established": false
+    },
+    "pairwise5": {
+      "candidate_harmed": 6,
+      "candidate_rescued": 12,
+      "independent_question_sampling_established": false,
+      "question_harmed": 0,
+      "question_rescued": 3,
+      "statistical_significance_or_superiority_established": false
+    }
+  },
+  "prelabel_sha256": "cd24d3e05505f909ce16a569eb1110aece0c28945850d118f83dd0d14e0213c7",
+  "production_accepted": false,
+  "reader_sufficient": false,
+  "results": {
+    "bce5": {
+      "brier": 0.43988188250141336,
+      "complete_passages": 0,
+      "complete_questions": 2,
+      "correct": 21,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 4,
+        "d155a60277d9446f3547e6656793ec1c": 5,
+        "d4ec9831a783440f34b405008c7dd018": 6,
+        "f8d230a4a66bb62b1543e3697f85dd14": 6
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "frozen_meanpool": {
+      "brier": 0.49686492717706704,
+      "complete_passages": 0,
+      "complete_questions": 0,
+      "correct": 17,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 2,
+        "d155a60277d9446f3547e6656793ec1c": 4,
+        "d4ec9831a783440f34b405008c7dd018": 6,
+        "f8d230a4a66bb62b1543e3697f85dd14": 5
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "pairwise5": {
+      "brier": 0.4341480199736129,
+      "complete_passages": 0,
+      "complete_questions": 3,
+      "correct": 23,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 4,
+        "d155a60277d9446f3547e6656793ec1c": 5,
+        "d4ec9831a783440f34b405008c7dd018": 8,
+        "f8d230a4a66bb62b1543e3697f85dd14": 6
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "without_conditioned_center": {
+      "brier": 0.4675615667985234,
+      "complete_passages": 0,
+      "complete_questions": 2,
+      "correct": 22,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 4,
+        "d155a60277d9446f3547e6656793ec1c": 5,
+        "d4ec9831a783440f34b405008c7dd018": 8,
+        "f8d230a4a66bb62b1543e3697f85dd14": 5
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "without_meanpool_center": {
+      "brier": 0.5137552040224094,
+      "complete_passages": 0,
+      "complete_questions": 1,
+      "correct": 17,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 2,
+        "d155a60277d9446f3547e6656793ec1c": 4,
+        "d4ec9831a783440f34b405008c7dd018": 5,
+        "f8d230a4a66bb62b1543e3697f85dd14": 6
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "without_meanpool_raw": {
+      "brier": 0.4402271590938985,
+      "complete_passages": 0,
+      "complete_questions": 1,
+      "correct": 22,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 4,
+        "d155a60277d9446f3547e6656793ec1c": 5,
+        "d4ec9831a783440f34b405008c7dd018": 7,
+        "f8d230a4a66bb62b1543e3697f85dd14": 6
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    },
+    "without_no_evidence_center": {
+      "brier": 0.43447279099084574,
+      "complete_passages": 0,
+      "complete_questions": 3,
+      "correct": 23,
+      "passage_correct": {
+        "c06eb09fc5826306d19b96d10daa55c6": 4,
+        "d155a60277d9446f3547e6656793ec1c": 5,
+        "d4ec9831a783440f34b405008c7dd018": 8,
+        "f8d230a4a66bb62b1543e3697f85dd14": 6
+      },
+      "passage_total": {
+        "c06eb09fc5826306d19b96d10daa55c6": 6,
+        "d155a60277d9446f3547e6656793ec1c": 9,
+        "d4ec9831a783440f34b405008c7dd018": 10,
+        "f8d230a4a66bb62b1543e3697f85dd14": 8
+      },
+      "total": 33
+    }
+  },
+  "schema": "hepta.e24.independent-original-human-pairwise-fiveparam.v1",
+  "source_family_count": 1,
+  "source_group_independence_certified": false,
+  "trainer_cpu_ns": {
+    "bce5": 7921496,
+    "pairwise5": 15271883
+  }
+}
