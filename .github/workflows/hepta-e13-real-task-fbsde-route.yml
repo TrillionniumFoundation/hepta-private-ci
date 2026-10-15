@@ -1,0 +1,111 @@
+name: Hepta E13 real-archive task / nonlinear FBSDE cost control (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e13_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e13_*.py'
+      - 'qualification/shared-stem-system2-architecture/E13_REAL_TASK_ROUTE_20261015.md'
+      - '.github/workflows/hepta-e13-real-task-fbsde-route.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-model-paired-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ROOT: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e13-real-task
+      HEPTA_E13_PHYSICAL_ZIP: /tmp/hepta-e13-physical-11908591037.zip
+      HEPTA_E13_HISTORICAL_ZIP: /tmp/hepta-e13-original-11886761368.zip
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact source/branch and test identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/exact-head.txt"
+          if [[ '${{ matrix.source_profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e13_*.py "$ROOT"/test_e13_*.py "$ROOT"/e12_*.py > "$OUTPUT/source-hashes.txt"
+      - name: Download ORIGINAL pinned physical predictions and separate label-owner ZIP
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11908591037/zip' \
+            -o "$HEPTA_E13_PHYSICAL_ZIP"
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11886761368/zip' \
+            -o "$HEPTA_E13_HISTORICAL_ZIP"
+          echo "d8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa  $HEPTA_E13_PHYSICAL_ZIP" | sha256sum -c -
+          echo "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d  $HEPTA_E13_HISTORICAL_ZIP" | sha256sum -c -
+          sha256sum "$HEPTA_E13_PHYSICAL_ZIP" "$HEPTA_E13_HISTORICAL_ZIP" > "$OUTPUT/original-archive-hashes.txt"
+      - name: Run original-source 14 adversarial tests, normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e13_*.py' -v > "$OUTPUT/normal-tests.log" 2>&1 || { cat "$OUTPUT/normal-tests.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e13_*.py' -v > "$OUTPUT/optimized-tests.log" 2>&1 || { cat "$OUTPUT/optimized-tests.log"; exit 1; }
+          if grep -Eq 'skipped=[1-9]|FAILED|ERROR' "$OUTPUT/normal-tests.log" "$OUTPUT/optimized-tests.log"; then
+            echo 'Original physical/label archive execution is mandatory'; exit 1
+          fi
+          tail -7 "$OUTPUT/normal-tests.log"; tail -7 "$OUTPUT/optimized-tests.log"
+      - name: Label-blind create-only 128 original-physical-prediction decisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e13_labelblind_route.py" --physical "$HEPTA_E13_PHYSICAL_ZIP" \
+            --output "$OUTPUT/original-source-label-blind-proposals.json" \
+            | tee "$OUTPUT/proposer-stdout.json"
+          sha256sum "$OUTPUT/original-source-label-blind-proposals.json" | tee "$OUTPUT/prescore-create-only-sha256.txt"
+      - name: "Separate reviewer — 128 E12 tree replays, original labels and costs"
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROPOSAL_SHA="$(cut -d ' ' -f1 "$OUTPUT/prescore-create-only-sha256.txt")"
+          python "$ROOT/e13_independent_score.py" \
+            --prelabel "$OUTPUT/original-source-label-blind-proposals.json" --prelabel-sha256 "$PROPOSAL_SHA" \
+            --historical "$HEPTA_E13_HISTORICAL_ZIP" --physical "$HEPTA_E13_PHYSICAL_ZIP" \
+            --output "$OUTPUT/original-independent-retrospective-task-score.json" \
+            | tee "$OUTPUT/scorer-stdout.json"
+          sha256sum "$OUTPUT/original-independent-retrospective-task-score.json" > "$OUTPUT/score-sha256.txt"
+          python - "$OUTPUT/original-independent-retrospective-task-score.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]));s=r['scored']
+          if not (r['authority']=='DENY_ALL' and r['production_accepted'] is False
+                  and r['case_count']==128 and s['granite_only']['correct']==122
+                  and s['e12_certified']['correct']==119
+                  and s['e12_certified']['hypothetical_secondary_model_calls']==12
+                  and s['e12_certified']['extra_archived_proxy_ns_vs_granite']>0
+                  and r['future_time_task_outcome'] is False
+                  and r['entire_online_lifecycle_cost_qualified'] is False):
+              raise SystemExit('E13 original task negative outcome or authority mutated')
+          print('Original 128-case E13: 119<122, 12 extra second-Encoder calls, no-go retained')
+          PY
+      - name: Retain independently checkable success and failed attempt bytes
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e13-original-tasks-${{ matrix.source_profile }}
+          path: /tmp/hepta-e13-real-task/
+          retention-days: 14
+          if-no-files-found: warn
