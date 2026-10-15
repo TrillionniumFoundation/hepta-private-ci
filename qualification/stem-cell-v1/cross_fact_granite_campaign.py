@@ -126,7 +126,8 @@ def campaign(args):
         seeds = SEEDS if args.seed == "all" else (int(args.seed),)
         source_dir = Path(__file__).parent
         code_hashes = {name: file_digest(source_dir / name) for name in
-                       ("cross_fact_bridge.py", "cross_fact_granite_campaign.py")}
+                       ("cross_fact_bridge.py", "cross_fact_granite_campaign.py",
+                        "cross_fact_granite_receipt_oracle.py")}
         plan = {"schema": "hepta.cross-fact.granite-v5.plan.v1", "seeds": list(seeds),
                 "registered_complete_seeds": list(SEEDS), "arms": list(ARMS),
                 "model_input_width": 384, "hidden_width": 32,
