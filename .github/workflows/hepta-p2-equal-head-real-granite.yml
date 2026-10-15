@@ -6,6 +6,11 @@ on:
       - "qualification/stem-cell-v1/p2_real_cell_split.py"
       - "qualification/stem-cell-v1/p2_real_cell_split_review.py"
       - "qualification/stem-cell-v1/test_p2_real_cell_split.py"
+      - "qualification/stem-cell-v1/p2_real_cell_split_sparse_probe.py"
+      - "qualification/stem-cell-v1/p2_real_cell_split_sparse_review.py"
+      - "qualification/stem-cell-v1/test_p2_selected_head_sparse.py"
+      - "qualification/stem-cell-v1/P2_ACTUAL_SELECTED_HEAD_SHADOW.md"
+      - ".github/workflows/hepta-p2-physically-sparse-selected.yml"
       - "qualification/stem-cell-v1/P2_EQUAL_HEAD_REAL_GRANITE.md"
       - "qualification/stem-cell-v1/P2_LOCAL_TOY_REPLAY_20261015.json"
       - ".github/workflows/hepta-p2-equal-head-real-granite.yml"
@@ -26,7 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Verify actual source checkout before numerical tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -46,9 +60,16 @@ jobs:
             -p test_p2_real_cell_split.py -v 2>&1 | tee "$RUNNER_TEMP/p2/source-tests.log"
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p test_p2_real_cell_split.py -v 2>&1 | tee "$RUNNER_TEMP/p2/optimized-tests.log"
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_selected_head_sparse.py -v 2>&1 | tee "$RUNNER_TEMP/p2/sparse-tests.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p test_p2_selected_head_sparse.py -v 2>&1 | tee "$RUNNER_TEMP/p2/sparse-optimized-tests.log"
           python -m compileall -q qualification/stem-cell-v1/p2_real_cell_split.py \
             qualification/stem-cell-v1/p2_real_cell_split_review.py \
-            qualification/stem-cell-v1/test_p2_real_cell_split.py
+            qualification/stem-cell-v1/test_p2_real_cell_split.py \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_probe.py \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_review.py \
+            qualification/stem-cell-v1/test_p2_selected_head_sparse.py
       - name: Check toy receipt is byte-bound to original tested source and cannot claim efficacy
         shell: bash
         run: |
@@ -108,8 +129,11 @@ jobs:
           persist-credentials: false
       - name: Verify exact reviewed source commits
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
           test "$(git -C pinned-e1 rev-parse HEAD)" = 09bb40d8bf3a058a34607179d4e0fbdf11a41277
           test "$(git -C pinned-public-source rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
@@ -194,6 +218,15 @@ jobs:
             --compact-source pinned-compact \
             --output "$ROOT/predictions-unscored.json" \
             2>&1 | tee "$ROOT/physical-run.log"
+      - name: Physical selected-only Head replay on original sealed label-blind predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_probe.py \
+            --original-report "$ROOT/predictions-unscored.json" \
+            --out "$ROOT/physical-selected-head-private.json"
       - name: Only AFTER sealed model predictions, open original source owner labels and replay NumPy weights
         shell: bash
         run: |
@@ -207,6 +240,21 @@ jobs:
             --owner-labels "$ROOT/material/owner-labels.json" \
             --report "$ROOT/predictions-unscored.json" \
             --output "$ROOT/independent-review.json"
+      - name: Independent source/numeric review of selected-only physical Head path
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p2"
+          "$RUNNER_TEMP/p2-venv/bin/python" \
+            qualification/stem-cell-v1/p2_real_cell_split_sparse_review.py \
+            --original-report "$ROOT/predictions-unscored.json" \
+            --physical-probe "$ROOT/physical-selected-head-private.json" \
+            --original-review "$ROOT/independent-review.json" \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/material/train.json" \
+            --blind-material "$ROOT/material/blind.json" \
+            --owner-labels "$ROOT/material/owner-labels.json" \
+            --output "$ROOT/physical-sparse-independent-review.json"
       - name: Retain sanitized aggregate audit only, never raw text/features/head weights
         uses: actions/upload-artifact@v4
         if: always()
@@ -218,3 +266,4 @@ jobs:
             ${{ runner.temp }}/p2/locked-dependencies.txt
             ${{ runner.temp }}/p2/physical-run.log
             ${{ runner.temp }}/p2/independent-review.json
+            ${{ runner.temp }}/p2/physical-sparse-independent-review.json
