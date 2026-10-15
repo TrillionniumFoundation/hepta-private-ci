@@ -1056,6 +1056,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     }
 }
 
+// Non-authorizing group signing target on this SAME original batch owner.
+// This module never invokes a new driver, signer, nonce ledger or Effect.
+#[path = "batched_neuron_group.rs"]
+mod group_signature;
+pub use group_signature::NativeBatchGroupMemberV1;
+pub use group_signature::NonAuthorizingNativeBatchGroupV1;
+pub use group_signature::prepare_original_native_batch_group_v1;
+
 #[cfg(test)]
 #[path = "batched_neuron_tests.rs"]
 mod tests;
