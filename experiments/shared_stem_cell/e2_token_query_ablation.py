@@ -122,6 +122,7 @@ def _materialize(cases: list[dict], snapshots: dict, width: int):
 
 def _train(module, tokens, mask, pooled, y, *, steps: int, lr: float):
     before = _digest_module(module)
+    initial_query = module.query.detach().clone() if module.kind == 'token_query' else None
     optimizer = torch.optim.SGD(module.parameters(), lr=lr)
     started = time.perf_counter_ns()
     for _ in range(steps):
@@ -134,7 +135,11 @@ def _train(module, tokens, mask, pooled, y, *, steps: int, lr: float):
     end = _digest_module(module)
     if end == before:
         raise Invalid("no actual Head update")
+    query_changed = None if initial_query is None else not bool(torch.equal(initial_query, module.query.detach()))
+    if query_changed is False:
+        raise Invalid("token attention query was never updated")
     return {"initial_head_sha256": before, "final_head_sha256": end,
+            "learnable_query_actually_changed": query_changed,
             "train_steps": steps, "train_ms": (time.perf_counter_ns() - started) / 1e6,
             "trainable_parameters": sum(p.numel() for p in module.parameters())}
 
