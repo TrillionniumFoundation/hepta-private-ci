@@ -1,4 +1,5 @@
     use super::*;
+    use crate::action::ACTION_PAYLOAD_OFFSET;
 
     fn digest(value: &[u8]) -> Digest32 {
         Digest32::of_bytes(value)
