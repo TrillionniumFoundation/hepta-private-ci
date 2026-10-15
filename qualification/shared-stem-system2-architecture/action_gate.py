@@ -10,8 +10,8 @@ from fractions import Fraction as Q
 from typing import Sequence
 import re
 
-_ID = re.compile(r"[A-Za-z0-9_.:/-]{1,96}\\Z")
-_SHA = re.compile(r"[0-9a-f]{64}\\Z")
+_ID = re.compile(r"[A-Za-z0-9_.:/-]{1,96}\Z")
+_SHA = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def q(value: str) -> Q:
