@@ -390,6 +390,95 @@ fn split(
 }
 
 #[test]
+fn legacy_migration_api_denies_before_entering_any_state_owner_callback() {
+    struct RecordingMigration(usize);
+
+    impl crate::OrganStateMigrationV1 for RecordingMigration {
+        fn snapshot(
+            &mut self,
+            _predecessor: Generation,
+        ) -> Result<Vec<u8>, crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(vec![])
+        }
+
+        fn migrate(
+            &mut self,
+            _snapshot: &[u8],
+            _predecessor: Generation,
+            _candidate: Generation,
+        ) -> Result<(), crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(())
+        }
+
+        fn rollback(
+            &mut self,
+            _snapshot: &[u8],
+            _predecessor: Generation,
+            _candidate: Generation,
+        ) -> Result<(), crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(())
+        }
+    }
+
+    let predecessor = host(1, &[]);
+    let parent_route = predecessor
+        .route(&id("system"), &id("parent"), 0)
+        .expect("current parent route");
+    let successor = host(2, &[("child-a", "sink-a"), ("child-b", "sink-b")]);
+    let child_routes = vec![
+        successor.route(&id("system"), &id("child-a"), 0).unwrap(),
+        successor.route(&id("system"), &id("child-b"), 0).unwrap(),
+    ];
+    let split = split(&predecessor, &parent_route, &successor, &child_routes);
+    let mut controller =
+        CellSplitRouteControllerV1::new(predecessor, split, parent_route.clone()).unwrap();
+    let mut migration = RecordingMigration(0);
+    assert_eq!(
+        controller.activate_children_with_migration(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes,
+            &mut migration,
+        ),
+        Err(CellSplitRouteErrorV1::CutoverOwnerUnavailable)
+    );
+    assert_eq!(migration.0, 0, "no Snapshot, Migrate or Rollback callback");
+    assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ParentActive);
+    assert_eq!(controller.generation(), Generation::new(1).unwrap());
+    assert_eq!(controller.parent_route(), &parent_route);
+    assert!(controller.route_fence_receipt().is_none());
+    assert!(controller.child_route(&id("child-a")).is_none());
+}
+
+#[test]
+fn legacy_public_activation_cannot_publish_even_fully_valid_child_routes() {
+    let predecessor = host(1, &[]);
+    let parent_route = predecessor
+        .route(&id("system"), &id("parent"), 0)
+        .expect("actual parent route");
+    let successor = host(2, &[("child-a", "sink-a"), ("child-b", "sink-b")]);
+    let child_routes = vec![
+        successor.route(&id("system"), &id("child-a"), 0).unwrap(),
+        successor.route(&id("system"), &id("child-b"), 0).unwrap(),
+    ];
+    let split = split(&predecessor, &parent_route, &successor, &child_routes);
+    let mut controller =
+        CellSplitRouteControllerV1::new(predecessor, split, parent_route.clone()).unwrap();
+    assert_eq!(
+        controller.activate_children(Generation::new(1).unwrap(), successor, child_routes),
+        Err(CellSplitRouteErrorV1::CutoverOwnerUnavailable)
+    );
+    assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ParentActive);
+    assert_eq!(controller.generation(), Generation::new(1).unwrap());
+    assert!(controller.route_fence_receipt().is_none());
+    assert!(controller.child_route(&id("child-a")).is_none());
+    assert_eq!(controller.parent_route(), &parent_route);
+}
+
+#[test]
 fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
     let predecessor = host(1, &[]);
     let parent_route = predecessor.route(&id("system"), &id("parent"), 0).unwrap();
@@ -411,7 +500,11 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
         .unwrap();
     assert_eq!(parent_receipt.route_owner, CellSplitRouteOwnerV1::Parent);
     controller
-        .activate_children(Generation::new(1).unwrap(), successor, child_routes.clone())
+        .activate_children_for_qualification(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes.clone(),
+        )
         .unwrap();
     assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ChildrenActive);
     assert_eq!(controller.cns_latency_observations().observations, 1);
@@ -485,7 +578,7 @@ fn reopened_successor_rejects_parent_route_and_binds_tombstone_fence() {
         CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route).unwrap();
     controller.start_all().unwrap();
     controller
-        .activate_children(Generation::new(1).unwrap(), successor, child_routes)
+        .activate_children_for_qualification(Generation::new(1).unwrap(), successor, child_routes)
         .unwrap();
     let fence = controller.route_fence_receipt().cloned().unwrap();
 
@@ -525,7 +618,11 @@ fn wrong_predicate_and_unbound_child_route_are_rejected_before_handler() {
         CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route).unwrap();
     controller.start_all().unwrap();
     controller
-        .activate_children(Generation::new(1).unwrap(), successor, child_routes.clone())
+        .activate_children_for_qualification(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes.clone(),
+        )
         .unwrap();
     let child = &split.children[0];
     let wrong_selection = CellSplitRouteSelectionV1 {
@@ -571,7 +668,11 @@ fn invalid_child_route_does_not_publish_activation() {
     let mut controller =
         CellSplitRouteControllerV1::new(predecessor, split, parent_route.clone()).unwrap();
     assert_eq!(
-        controller.activate_children(Generation::new(1).unwrap(), successor, child_routes),
+        controller.activate_children_for_qualification(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes,
+        ),
         Err(CellSplitRouteErrorV1::ChildRouteCount)
     );
     assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ParentActive);
@@ -591,7 +692,11 @@ fn abi_port_binding_mismatch_is_rejected_before_cutover() {
     split.ports.children[0].termination_port_digest = digest("wrong-termination");
     let mut controller = CellSplitRouteControllerV1::new(predecessor, split, parent_route).unwrap();
     assert_eq!(
-        controller.activate_children(Generation::new(1).unwrap(), successor, child_routes),
+        controller.activate_children_for_qualification(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes,
+        ),
         Err(CellSplitRouteErrorV1::ChildRoutePort(id("child-a")))
     );
     assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ParentActive);
