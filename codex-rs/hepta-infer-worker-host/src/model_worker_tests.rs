@@ -1478,3 +1478,67 @@ fn invalid_post_effect_receipt_poison_prevents_reusing_signed_worker_generation(
     );
     assert_eq!(worker.driver.feature_calls, 1);
 }
+
+
+#[cfg(unix)]
+#[test]
+fn signed_final_use_rejects_stale_cas_bytes_before_any_head_driver_effect() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.stale-cas-fence".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("head loaded");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let (verified_artifacts, cas_verifier, cas_root) =
+        verified_stem_cas_fixture(&source);
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
+        )
+        .expect("original request proposal");
+    let (authority, signed, _authority_dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("real verified use token");
+
+    // Alter the original hash-addressed file *after* byte proof/claim.
+    // Neither a previously valid CAS proof nor a valid signature may waive
+    // current CAS file pinning when entering the effect fence.
+    std::fs::write(
+        cas_root.path().join(source.stem_weights_digest.to_string()),
+        b"mutated-after-claim-not-original-stem",
+    )
+    .expect("simulated CAS mutation");
+    assert!(matches!(
+        cas_verifier.verify_pinned_current(&source, &verified_artifacts),
+        Err(crate::stem_artifact_cas::StemCasError::ArtifactChanged)
+    ));
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &verified_artifacts,
+                cas_verifier: &cas_verifier,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
+        ),
+        Err(Error::FeatureContract)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned, "no physical Head effect took place");
+}
