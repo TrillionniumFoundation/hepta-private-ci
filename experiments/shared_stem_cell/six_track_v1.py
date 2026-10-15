@@ -13,7 +13,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-SCHEMA = "hepta.six-track-paired-observation.v3"
+SCHEMA = "hepta.six-track-paired-observation.v4"
 SHA_KEYS = ("source_sha256", "plan_sha256", "dataset_sha256", "evaluator_sha256")
 SPLITS = ("train", "calibration", "test", "future1", "future2", "future3", "ood")
 EVAL_SPLITS = ("test", "future1", "future2", "future3", "ood")
@@ -236,9 +236,18 @@ def check_arm(stage, name, arm, cases):
     for key in COSTS:
         number(costs[key], positive=(key == "peak_rss_bytes"))
     if stage == "P4":
-        # The registered compute ceiling is PER CASE. Do not compare total
-        # arm-level NDU milliseconds to one request's solver budget.
+        # The solver's ceiling is per request; training is a separately
+        # observed, charged lifecycle cost, not extra hidden solver credit.
         number(arm.get("compute_budget_ms"), positive=True)
+        if name in ("no_search", "bellman") and arm["train_steps"] != 0:
+            raise Invalid("P4 no-fit cheap control cannot report training steps")
+        if arm["train_steps"] == 0:
+            if (arm["train_cases"] != 0 or arm["trainable_parameters"] != 0
+                    or costs["training_ms"] != 0):
+                raise Invalid("P4 zero-step control claims training exposure or cost")
+        elif (arm["train_cases"] <= 0 or arm["trainable_parameters"] <= 0
+              or costs["training_ms"] <= 0):
+            raise Invalid("P4 trained algorithm omitted training exposure or cost")
     rows = arm.get("results")
     if type(rows) is not list or len(rows) != len(cases):
         raise Invalid("missing/extra paired case results")
@@ -372,7 +381,19 @@ def audit(doc):
         # examples, steps, params, or altered frozen initial weights into a gain.
         for left, right in PAIRS[stage]:
             a, b = study[left], study[right]
-            if a["train_data_sha256"] != b["train_data_sha256"] or a["train_cases"] != b["train_cases"]:
+            if stage == "P4":
+                # Unlike a controlled train-vs-train ablation, this evaluates
+                # cheap zero-fit algorithms against potentially trained policy
+                # solvers. Identical held cases and compute ceilings remain
+                # required, and all observed training must be charged. For
+                # pairs that BOTH fit, source exposure must still agree.
+                if a["train_steps"] > 0 and b["train_steps"] > 0 and (
+                    a["train_data_sha256"] != b["train_data_sha256"]
+                    or a["train_cases"] != b["train_cases"]
+                ):
+                    raise Invalid("P4 both-trained controls have unmatched training exposure")
+            elif (a["train_data_sha256"] != b["train_data_sha256"]
+                  or a["train_cases"] != b["train_cases"]):
                 raise Invalid("unmatched source/example exposure between paired candidates")
             if a["model_sha256"] != b["model_sha256"]:
                 raise Invalid("base model changed inside purported same-Stem comparison")
@@ -381,8 +402,10 @@ def audit(doc):
             # Freeze-vs-learned is a causal intervention: the control has
             # zero training steps while the learned arm must train. Only
             # actual learned-vs-learned P1 pairs need equal optimizer steps.
-            # P2 and P4 matched-compute/effort comparisons remain strict.
-            match_steps = stage in ("P2", "P4") or (
+            # P2 split ablations match optimizer steps. P4 instead matches
+            # decision-compute ceilings and accounts for actual train cost:
+            # forcing Bellman or no-search to mimic NDU training is invalid.
+            match_steps = stage == "P2" or (
                 stage == "P1" and left.endswith("_learned") == right.endswith("_learned")
             )
             if match_steps and a["train_steps"] != b["train_steps"]:
@@ -443,10 +466,21 @@ def audit(doc):
             deltas[f"{left}__vs__{right}"] = per_split
         out[stage] = {"arms": metrics, "paired_family_differences": deltas,
                       "full_six_track_production_acceptance": False}
+        if stage == "P4":
+            out[stage]["training_effort_not_implicitly_equalized"] = True
+            out[stage]["reported_training_control_census"] = {
+                name: {
+                    "train_steps": study[name]["train_steps"],
+                    "train_cases": study[name]["train_cases"],
+                    "trainable_parameters": study[name]["trainable_parameters"],
+                    "training_ms": study[name]["costs"]["training_ms"],
+                }
+                for name in names
+            }
     # Even a complete locally supplied corpus does not authenticate independently
     # observed real labels, weights, exact CPU/GPU execution or FinalUse.
     return {
-        "schema": "hepta.six-track-descriptive-adjudication.v3",
+        "schema": "hepta.six-track-descriptive-adjudication.v4",
         "task_instance_ids_cross_split_rejected": True,
         "task_identity_provenance_independently_verified": False,
         "source_sha256": doc["source_sha256"],
