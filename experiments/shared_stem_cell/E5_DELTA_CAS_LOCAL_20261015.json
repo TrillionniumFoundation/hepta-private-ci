@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.e5.delta-cas-local-observation.v1",
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false,
+  "host": "one untrusted local CPU process host; exploratory, not production target hardware",
+  "source_model": "synthetic fixed Q24 feature, synthetic labels, real PyTorch CPU SGD, all Head weights resident",
+  "logical_cells": 4096,
+  "active_cells": 409,
+  "repeated_SGD_waves": 2,
+  "local_source_tests_passed": 8,
+  "real_child_sigkill_total": 12,
+  "sigkill_64": 10,
+  "sigkill_4096": 2,
+  "recovered_previous_commit_count": 9,
+  "recovered_new_commit_count": 3,
+  "sgd_weights_and_momentum_bit_exact": true,
+  "full_fp32_head_weight_payload_bytes": 159645696,
+  "first_delta_safetensors_bytes": 31890144,
+  "second_delta_safetensors_bytes": 31890144,
+  "second_wave_cumulative_sparse_safetensors_bytes": 47873592,
+  "first_wave_whole_invocation_ms": 4717.013111,
+  "second_wave_whole_invocation_ms": 5931.119423,
+  "cold_replay_and_reference_validation_ms": 4834.513969,
+  "source_git_blobs": {
+    "e5_delta_cas.py": "0da019e7d85826265ee0fcba75b3ccf6fbadba07",
+    "e5_delta_crash_matrix.py": "f7a4fe11201ec0d097099ed3625cee7a19d8862d",
+    "test_e5_delta_cas.py": "a2c7ceff9fc65abd1184befc24b32b3cfcf13ce0"
+  },
+  "local_zip_sha256": "01fb7e4b399de629bc56071280ac875fb82fb45cda643c508b3b71c3f744850e",
+  "raw_receipts": {
+    "64-2cuts.json": {
+      "events": 2,
+      "sha256": "deae7f3e291469d70eda55313ec8bec1e19988534cbada85a57c984bd39f0907"
+    },
+    "64-4cuts-A.json": {
+      "events": 4,
+      "sha256": "c6212e9c27e7025d951527b5b235f03a2e842c0bd797932832b68def19f89bf0"
+    },
+    "64-4cuts-B.json": {
+      "events": 4,
+      "sha256": "9950d18df436f97cbd704e707fb7e2af7e482a49805a10868075dacc32226381"
+    },
+    "4096-crash-blob.json": {
+      "events": 1,
+      "sha256": "fb5cfbf78d1ebd25d49a735ac9af1991c1e2aa24502f0518661945a705db911a"
+    },
+    "4096-crash-head.json": {
+      "events": 1,
+      "sha256": "21a2737c20c576fb9265ca9a0f61bcd7f32a4adeb80d186f9167939a2b197638"
+    }
+  },
+  "clean_4096_reports": {
+    "4096-wave1.json": "3067a985fa0eb0236407cfb49d1da8aaf33c8d1198f5826ace8c2d838656acf6",
+    "4096-wave2.json": "2698ec9ecd718ef5a706e5ab9dac13e46a61f47ac7e4685876aff61eae90d2eb",
+    "4096-verify.json": "c68ef7f309548eecf6776da62cf0c5fe5ffc70bf187337dafed8afccb2e3f710"
+  },
+  "underlying_safetensors_blobs": {
+    "c512569987b7ef8741fade5276e46434ec2661fb06ffd9a4c2cb6657cd20acd0.safetensors": {
+      "bytes": 31890144,
+      "sha256": "c512569987b7ef8741fade5276e46434ec2661fb06ffd9a4c2cb6657cd20acd0"
+    },
+    "f5a0fbac3b157b7baa2172c9dde1fee553f8430ca6183a53d473997266150f29.safetensors": {
+      "bytes": 31890144,
+      "sha256": "f5a0fbac3b157b7baa2172c9dde1fee553f8430ca6183a53d473997266150f29"
+    }
+  },
+  "physical_evidence_limits": {
+    "real_pretrained_encoder": false,
+    "real_labels_or_future_ndu": false,
+    "signed_checkpoint_origin": false,
+    "native_rust_worker": false,
+    "native_wal_recovery": false,
+    "true_power_cut_durability": false,
+    "distributed_cas": false,
+    "final_use_revoke": false,
+    "target_host_p99": false,
+    "exact_github_head_actions_green": false
+  }
+}

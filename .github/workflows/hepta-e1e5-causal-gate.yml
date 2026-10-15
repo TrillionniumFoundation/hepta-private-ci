@@ -1,0 +1,71 @@
+name: Hepta E1-E5 causal research contracts
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1e5_causal_gate.py"
+      - "experiments/shared_stem_cell/test_e1e5_causal_gate.py"
+      - "experiments/shared_stem_cell/e1e5_confirmatory_review.py"
+      - "experiments/shared_stem_cell/test_e1e5_confirmatory_review.py"
+      - "experiments/shared_stem_cell/e1e2_public_receipt_audit.py"
+      - "experiments/shared_stem_cell/test_e1e2_public_receipt_audit.py"
+      - "experiments/shared_stem_cell/E1E2_PUBLIC_ACTUAL_RECEIPT_20261014.json"
+      - "experiments/shared_stem_cell/E1E5_CAUSAL_FRONTIER.md"
+      - "experiments/shared_stem_cell/E1E5_CONFIRMATORY_REVIEW.md"
+      - ".github/workflows/hepta-e1e5-causal-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  causal-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Model-free mechanism tests
+        run: |
+          python -m py_compile experiments/shared_stem_cell/e1e5_causal_gate.py experiments/shared_stem_cell/e1e5_confirmatory_review.py experiments/shared_stem_cell/e1e2_public_receipt_audit.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e5_*.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e2_*.py' -v
+
+  public-receipt-recheck:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch two pinned read-only public run archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" > "$RUNNER_TEMP/paired.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886807698/zip" > "$RUNNER_TEMP/sealed.zip"
+          printf '%s  %s\n' 'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$RUNNER_TEMP/paired.zip" | sha256sum -c -
+          printf '%s  %s\n' '7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469' "$RUNNER_TEMP/sealed.zip" | sha256sum -c -
+      - name: Independent numeric and Head-reload replay check
+        run: |
+          python experiments/shared_stem_cell/e1e2_public_receipt_audit.py \
+            --paired-zip "$RUNNER_TEMP/paired.zip" \
+            --paired-sha256 e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d \
+            --sealed-zip "$RUNNER_TEMP/sealed.zip" \
+            --sealed-sha256 7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469 \
+            --output "$RUNNER_TEMP/e1e2-recomputed.json"
+          python -m json.tool "$RUNNER_TEMP/e1e2-recomputed.json" > /dev/null
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hepta-e1e2-public-recheck
+          path: ${{ runner.temp }}/e1e2-recomputed.json
+          retention-days: 7

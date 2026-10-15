@@ -1,0 +1,101 @@
+name: Hepta E5 sparse Packed Head SGD (actual CPU)
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_sparse_packed_sgd.py"
+      - "experiments/shared_stem_cell/e5_sparse_sgd_review.py"
+      - "experiments/shared_stem_cell/test_e5_sparse_packed_sgd.py"
+      - "experiments/shared_stem_cell/test_e5_sparse_sgd_review.py"
+      - "experiments/shared_stem_cell/E5_SPARSE_PACKED_SGD.md"
+      - "experiments/shared_stem_cell/E5_SPARSE_PACKED_SGD_20261014.json"
+      - ".github/workflows/hepta-e5-sparse-sgd.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e5-sparse-sgd-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  twenty-four-physical-cpu-runs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact research SHA, no credentials retained
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate exact source checkout
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install reviewed CPU dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'psutil==7.2.2'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/e5-sparse-python-versions.txt"
+      - name: Actual CPU numerical parity and adversarial review tests
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            experiments/shared_stem_cell/e5_sparse_packed_sgd.py \
+            experiments/shared_stem_cell/e5_sparse_sgd_review.py
+          python -m unittest discover -s experiments/shared_stem_cell \
+            -p 'test_e5_sparse_*.py' -v
+      - name: Execute 24 isolated physical CPU SGD runs
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-sparse-raw"
+          for n in 64 256 1024 4096; do
+            active=$((n / 10))
+            if [ "$active" -lt 8 ]; then active=8; fi
+            for seed in 20261014 20261015 20261016; do
+              for mode in packed modules; do
+                timeout --signal=TERM --kill-after=5s 120s \
+                  python experiments/shared_stem_cell/e5_sparse_packed_sgd.py \
+                    --cells "$n" --active "$active" --mode "$mode" \
+                    --steps 3 --seed "$seed" \
+                    --output "$RUNNER_TEMP/e5-sparse-raw/$n-$mode-$seed.json"
+              done
+            done
+          done
+      - name: Independent source-bound descriptive review
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e5_sparse_sgd_review.py \
+            --receipts-root "$RUNNER_TEMP/e5-sparse-raw" \
+            --output "$RUNNER_TEMP/e5-sparse-raw/independent-review.json"
+          python - "$RUNNER_TEMP/e5-sparse-raw/independent-review.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1]))
+          assert report["completed_os_process_records_declared"]==24
+          assert set(report["scales"])=={"64","256","1024","4096"}
+          assert report["production_promotion_permitted"] is False
+          assert report["actual_pretrained_encoder_verified"] is False
+          assert report["statistical_resource_superiority_established"] is False
+          PY
+      - name: Preserve completed and failed-arm evidence without promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e5-sparse-cpu-sgd-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e5-sparse-raw/*.json
+            ${{ runner.temp }}/e5-sparse-python-versions.txt
+          retention-days: 7

@@ -19,7 +19,7 @@ are reused across arms; these are not 96 independent tasks. Teacher forcing uses
 14 TRAIN and 3 eligible SELECT pairs, with the fourth SELECT reference missing.
 TEST families remain excluded. All four arms have zero prescribed refusals,
 zero registered exact bodies and zero citation-syntax counts. These diagnostics
-are not independent semantic accuracy. Raw paraphrases have not been regraded or
+are not independent semantic accuracy. Raw paraphrases have not been re-scored or
 silently edited. Both desired likelihood preferences remain positive on 0/14
 TRAIN and 0/3 SELECT pairs in every arm.
 

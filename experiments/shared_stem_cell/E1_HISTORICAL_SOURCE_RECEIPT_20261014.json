@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.e1-historical-source-bytes-observation.v1",
+  "source_workflow_run_id": 38541658096,
+  "source_workflow_head_sha": "f8d168a7689eb3624d97c44751791badd069e521",
+  "source_workflow_conclusion": "success",
+  "source_artifact_id": 11886761368,
+  "source_artifact_zip_sha256": "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d",
+  "pinned_original_source_panel_sha256": "2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4",
+  "original_dataset_file_sha256": {
+    "train": "cc35afe9d5e7ff01878c9aeba08bb0bdfa16947702789530b216a580a1bc09d5",
+    "calibration_test": "3171d3aeee227372165bb0f9e84ebf2bfaf5fc870d034f33a5fc568e7995c672"
+  },
+  "source_case_counts": {
+    "train/0": 64,
+    "train/1": 64,
+    "calibration/0": 16,
+    "calibration/1": 16,
+    "test/0": 32,
+    "test/1": 32
+  },
+  "archived_laya_calibration_rows": 32,
+  "archived_laya_test_rows": 64,
+  "archived_laya_unique_case_ids": 96,
+  "source_archive_and_registered_panel_digest_agree": true,
+  "original_encoder_pretrained_weights_executed_on_source_run": true,
+  "new_granite_mmbert_gemma_triplet_run_completed": false,
+  "independent_publisher_signature_verified": false,
+  "original_public_data_is_chronological_future": false,
+  "independent_ndu_verified": false,
+  "production_promotion_permitted": false,
+  "authority": "DENY_ALL",
+  "note": "The ZIP was independently byte-hashed and original embedded source, comparison and Laya row identifiers inspected. It is a reusable historical content identity, not an independent producer signature or production baseline."
+}

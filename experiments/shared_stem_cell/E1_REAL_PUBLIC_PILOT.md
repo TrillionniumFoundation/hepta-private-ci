@@ -1,0 +1,62 @@
+# E1 public real-weight three-Encoder pilot — execution runbook
+
+**Draft/SHADOW/DENY_ALL.** This is a physically executable English-only cross-sectional pilot, **not** the full E1 bilingual+code future-time candidate qualification. A workflow with zero completed pretrained model runs provides **zero** scientific evidence even if its Python mechanism tests pass.
+
+## Pinned immutable dependencies and data
+
+- Granite R2 `ibm-granite/granite-embedding-97m-multilingual-r2` @ `835ad14087e140460703cf0fae09f97d469d65c2`, official CLS+L2, 384D, 512-token experiment cap.
+- mmBERT-small `jhu-clsp/mmBERT-small` @ `0eb3d056ec1d6333cf4e19b0966dfde342a41a3a`, research masked-mean+L2, 384D, 512-token experiment cap.
+- `google/embeddinggemma-2` @ `914f7f89142e33e77833254d9c9b90c3cef7303b`, approved separate text-only 256D MRL profile, 512-token matched cap.
+- Existing exact source implementations: compact Stem PR #1897 commit `e05f939f65fb76f6bdbf7470eef7e63b77284dcd`; Gemma/public AG News PR #1775 commit `f8d168a7689eb3624d97c44751791badd069e521`. The workflow pins both checkouts and verifies their exact HEAD.
+- Existing immutable public AG News source hashes: `cc35afe9d5e7ff01878c9aeba08bb0bdfa16947702789530b216a580a1bc09d5` train and `3171d3aeee227372165bb0f9e84ebf2bfaf5fc870d034f33a5fc568e7995c672` calibration/test. Existing source selector yields 128 train, 32 calibration, 64 test rows. Labels in all files are already public, so this is **retrospective**, not secret-holdout or true future.
+
+## Executable experiment
+
+`.github/workflows/hepta-e1-real-public-three.yml` runs in one pinned read-only hosted environment. It installs pinned CPU Torch and source-facing model libraries, reconstructs public data from exact hashed parquet, verifies safetensors and publisher LFS digests where available, loads each real pretrained Encoder in a separate Python process and uses its registered readout. **No remote code, pickle weights, trainable projection, silent truncation or stub fallback is allowed.** Gemma goes through the original pinned audited text-only local-snapshot Stem owner, not a new implicit multimodal model.
+
+All Head inputs are explicit rounded Q24 vectors; width 384/384/256. Each frozen and independently trained binary linear Head starts with the same seed **within** its Encoder arm. Whole-Head parameters are 770 (384×2+2) or 514 (256×2+2), both within a declared 2K ceiling; these are **not exactly equal parameter counts**. Run **40 complete train-only SGD updates** on the same 128 cases, then choose each Head's temperature from disjoint 32-case calibration data. Test labels have no computational path into optimizer, temperature fit or predictions (synthetic label-flip tests).
+
+The write-once output includes every 224-case token count and feature digest, model source/revision, 96 untouched calibration/test predictions per frozen/learned Head, final real Head tensor digest, observed process CPU/wall/peak RSS and Encoder load/encode/train times. Weight origin signatures, physical Transformer forward counters, target worker batching, energy and complete lifecycle savings are **not** independently certified.
+
+`e1_public_triplet_review.py` is an independent, model-free numeric scorer. It requires all three actual source-identical reports, unchanged train IDs/seed/SGD schedule, full predictor/Head identities and every source case; recomputes accuracy, Brier, and **unadjusted** exact paired McNemar on 64 public test cases. No model winner, confidence-based superiority, lifetime cost claim or production promotion is issued.
+
+## Host-side reproducibility
+
+For code/unit tests (requires local CPU Torch but **not** weights):
+
+```sh
+python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_public_triplet_*.py' -v
+```
+
+The hosted workflow itself creates the approved source data, model manifests and output paths. Missing models, network errors, compute timeouts and partially executed arms are preserved as **failures**, not replaced by synthetic data. Only sanitized JSON reports are uploaded, never weights or raw private training assets.
+
+## What still blocks full E1–E5
+
+Independent Chinese/English/code source-group/time-separated tasks and three real future windows; Reader evidence sufficiency; independent no-change *production* arm; 2K/8K/16K baseline-preserving residual learning; real Granite+DINOv2 vs Gemma E3 visual capability; real Whisper/audio/video temporal reversal E4; 64/256/1024/4096 Cell native performance and unclean WAL/FinalUse E5; independently signed NDU and exact-HEAD whole-repository `blocking-ci`. This single public task does not supply any of those.
+
+**Authority is always DENY_ALL.** The trial may not mutate the selected Stem, production Encoder/Worker, Cell Head, Q24 V1 journal, CNS routes, Artifact CAS, or FinalUse.
+
+
+## Additional historical frozen Laya421 paired comparator
+
+The same-job research workflow now downloads previously completed public Laya reference artifact `11886761368` (ZIP SHA-256 `e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d`) and runs the **independent** `e1_public_laya_reference.py` against the newly generated source panel and every actual E1 candidate prediction. It rejects even one changed case ID, joint task digest, public source digest, panel SHA, duplicate ZIP entry, or incomplete paired prediction. Source-specific historical Laya accuracy/Brier and paired McNemar are descriptive only.
+
+**This historical Laya checkpoint is not the authorized/current production no-change policy.** It was run at a different time with its own model API/prompt realization, host cost profile, and checkpoint exposure. The independent report keeps `historical_reference_is_production_no_change=false`, no equal-cost claims and `production_promotion_permitted=false` even if a candidate seems better.
+
+The historical ZIP is never published again and the 1.5 GB+ pretrained weights stay out of Actions artifacts. Only case-bound sanitized research reports and explicit failure markers are uploaded.
+
+
+## E1 resource parity hardening
+
+The independent scorer now rejects all three-arm experiments unless every actual `case_id` has a positive finite reported encode duration and model-specific token count, exactly 224 model API requests are recorded, and the declared model load, encoder, and Head training durations fit within the total measured process wall time (allowing a 1 microsecond reporting tolerance). It requires nonzero process CPU, runtime RSS, and Head training time for every candidate. It records these **observed/self-reported** values side by side with the actual total Head parameter counts, but keeps `energy_joules=null`, `request_p99_verified=false`, `backend_batch_physical_count_verified=false`, and `same_host_total_lifecycle_budget_and_energy_verified=false`. Failure to supply a resource column is a *failure*, never free zero-cost evidence.
+
+
+## 2026-10-15 exact real CI failure and pretrained mmBERT repair
+
+The previous exact-HEAD [real E1 run 38594668819](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38594668819) **FAILED**. Granite R2 completed its actual Encoder and Head stage, but mmBERT's prior `AutoModel` reported the critical `embeddings.tok_embeddings.weight` **MISSING / randomly initialized**, so its completed 40-step run was not a qualified pretrained comparison. Gemma failed on `ModuleNotFoundError: torchvision`. The same run's other models may not be combined to declare an E1 winner.
+
+The E1 environment now pins CPU Torch 2.10.0, torchvision 0.25.0, torchcodec 0.10.0, NumPy 2.2.6 and the existing Transformers 5.19.0. The new `e1_mmbert_tied_loader.py` loads the **full registered MLM class**, not an unqualified base-only model. It requires a complete loading report; compares input and output tied weights using the upstream V11 exact physical-storage predicate; streams across **every row** of the original safetensors vocabulary; and independently byte-compares **every serialized original model tensor** to the loaded model. The only allowed missing parameter is one of the two tied aliases, and no generic weight may be newly initialized, silently discarded or filled from a random fallback. The source is pinned to the same original immutable model revision; no remote code, pickle checkpoint, or silent token truncation is allowed. The complete audit is included in model-load lifetime cost.
+
+The independent `e1_public_triplet_review.py` now rejects all mmBERT probabilities unless both *full tied source table* and *entire MLM tensor inventory* receipts are present. Synthetic tamper tests include changes in a middle vocabulary row, a hidden Head tensor and a fabricated/missing source tensor. **A clean source-based research assertion is still not a publisher or production-model signature**.
+
+No replacement pretrained E1 numeric result may be claimed until the new exact-HEAD hosted model job finishes and its original full probabilities/costs are independently recomputed. The original AG News run remains an **English-only public cross-sectional study**, not three longitudinal future windows or a Reader/NDU utility acceptance.

@@ -1,0 +1,73 @@
+name: Hepta E3 pinned public media numeric review
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_public_media_receipt_audit.py"
+      - "experiments/shared_stem_cell/test_e3_public_media_receipt_audit.py"
+      - "experiments/shared_stem_cell/E3_PUBLIC_MEDIA_REVIEW.md"
+      - "experiments/shared_stem_cell/E3_PUBLIC_MEDIA_RECEIPT_20261014.json"
+      - ".github/workflows/hepta-e3-public-media-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e3-review-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  model-free-fault-injections:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e3_public_media_receipt_audit.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_public_media_receipt_audit.py' -v
+  public-media-archive-recheck:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Re-fetch immutable successful media subjob ZIP from overall-failed run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11881821872/zip" > "$RUNNER_TEMP/public-media.zip"
+          printf '%s  %s\n' '1836173b1f92f21bb26296ccf06e929646ff60ff933e3880716dcce62faf3f53' "$RUNNER_TEMP/public-media.zip" | sha256sum -c -
+      - name: Independently recompute from archived probabilities and source labels
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e3_public_media_receipt_audit.py \
+            --source-zip "$RUNNER_TEMP/public-media.zip" \
+            --output "$RUNNER_TEMP/e3-public-media-audit.json"
+          python -m json.tool "$RUNNER_TEMP/e3-public-media-audit.json" > /dev/null
+          python - "$RUNNER_TEMP/e3-public-media-audit.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1], encoding="utf-8"))
+          assert report["source_zip_sha256"]=="1836173b1f92f21bb26296ccf06e929646ff60ff933e3880716dcce62faf3f53"
+          assert report["production_promotion_permitted"] is False
+          assert report["granite_dinov2_or_gemma_multimodal_comparison_performed"] is False
+          assert report["results"]["hepta-calibrated-media"]["n_holdout"]==64
+          assert report["results"]["hepta-calibrated-media"]["scores"]["image+text"]["correct"]==20
+          assert report["results"]["hepta-calibrated-media"]["modality_interventions"]["mask:text"]["correct"]==10
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hepta-e3-pinned-numeric-review
+          path: ${{ runner.temp }}/e3-public-media-audit.json
+          retention-days: 7

@@ -1,0 +1,43 @@
+name: Hepta E2 residual Head independent research tests
+
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/e2_residual_review.py"
+      - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/test_e2_residual_review.py"
+      - "experiments/shared_stem_cell/E2_PUBLIC_RESIDUAL_STUDY.md"
+      - "experiments/shared_stem_cell/E1E2_FROZEN_Q24_LINEAGE.md"
+      - "experiments/shared_stem_cell/E1E2_SOURCE_FEATURE_LOCAL_CHECKS_20261014.json"
+      - ".github/workflows/hepta-e2-residual-head-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2-frozen-encoder-head-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pinned CPU PyTorch for real optimizer math on synthetic features
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
+      - name: Source and test conformance only
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e2_feature_residual_study.py experiments/shared_stem_cell/e2_residual_review.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_*.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e2_q24_identity.py' -v

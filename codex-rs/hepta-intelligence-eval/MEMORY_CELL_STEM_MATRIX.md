@@ -895,7 +895,7 @@ median minimum residual scale required to overturn frozen top-1, and distinct
 equality/tie infimum as a guaranteed flip. It opens **no target labels or
 generated answer content**. The read-only GitHub Action downloads the pinned
 ZIP, verifies its external SHA, all internal hashes and tested commit/tree,
-executes five adversarial/edge-case regressions, and retains a checksumed JSON.
+executes five adversarial/edge-case regressions, and retains a checksummed JSON.
 
 At the original checkpoint **48**, gated Head's overall median flip infimum
 is approximately **15**, while under the fixed grid of 0–64 the direction

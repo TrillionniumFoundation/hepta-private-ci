@@ -1,0 +1,243 @@
+name: Hepta E1 real three-Encoder public CPU pilot
+
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1_public_triplet_real_cpu.py"
+      - "experiments/shared_stem_cell/e1_mmbert_tied_loader.py"
+      - "experiments/shared_stem_cell/test_e1_mmbert_tied_loader.py"
+      - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e2_residual_review.py"
+      - "experiments/shared_stem_cell/test_e2_residual_review.py"
+      - "experiments/shared_stem_cell/E2_PUBLIC_RESIDUAL_STUDY.md"
+      - "experiments/shared_stem_cell/E1E2_FROZEN_Q24_LINEAGE.md"
+      - "experiments/shared_stem_cell/E1E2_SOURCE_FEATURE_LOCAL_CHECKS_20261014.json"
+      - "experiments/shared_stem_cell/test_e1_public_triplet_real_cpu.py"
+      - "experiments/shared_stem_cell/e1_public_triplet_review.py"
+      - "experiments/shared_stem_cell/test_e1_public_triplet_review.py"
+      - "experiments/shared_stem_cell/e1_public_laya_reference.py"
+      - "experiments/shared_stem_cell/test_e1_public_laya_reference.py"
+      - "experiments/shared_stem_cell/e1_source_archive_lock.py"
+      - "experiments/shared_stem_cell/test_e1_source_archive_lock.py"
+      - "experiments/shared_stem_cell/E1_REAL_PUBLIC_PILOT.md"
+      - ".github/workflows/hepta-e1-real-public-three.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-e1-real-triplet-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  real-public-pilot:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      actions: read
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DISABLE_XET: "0"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Read exact experimental PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout reviewed compact Stem source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          persist-credentials: false
+      - name: Checkout reviewed real Gemma / public AG News source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: pinned-gemma
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          persist-credentials: false
+      - name: Verify audited source SHA identities
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned CPU-only research runtime
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/e1-real-venv"
+          PY="$RUNNER_TEMP/e1-real-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pyarrow==21.0.0' 'pillow==11.3.0' 'soundfile==0.13.1'
+          "$PY" -m pip check
+          "$PY" - <<'PY'
+          import numpy,torch,torchvision,torchcodec
+          assert torch.__version__.startswith('2.10.0')
+          assert torchvision.__version__.startswith('0.25.0')
+          PY
+          "$PY" -m pip freeze > "$RUNNER_TEMP/e1-pinned-runtime.txt"
+      - name: Run model-free and actual CPU optimizer integrity tests
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e1_public_triplet_*.py' -v
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e1_mmbert_tied_loader.py' -v
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e2_*.py' -v
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e1e2_q24_identity.py' -v
+      - name: Independently re-create pinned AG News panel
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e1-public"
+          "$RUNNER_TEMP/e1-real-venv/bin/python" - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0, 'pinned-gemma/qualification/neuron-dynamic-learning')
+          from public_agnews_source import download_checked
+          from public_agnews_panel import prepare,canonical,sha
+          root=Path(os.environ['RUNNER_TEMP'])/'e1-public'
+          for role in ('train','calibration_test'):
+              download_checked(role,root/(role+'.parquet'))
+          panel,receipt=prepare(root/'train.parquet',root/'calibration_test.parquet')
+          (root/'panel.json').write_bytes(canonical(panel))
+          (root/'public-source-receipt.json').write_bytes(canonical(receipt))
+          assert receipt['panel_digest']==sha(canonical(panel))
+          assert panel['cross_sectional_not_future'] is True
+          PY
+      - name: Validate exact historical public source bytes BEFORE expensive model weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-public"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" > "$ROOT/original-public-source.zip"
+          printf '%s  %s\n' 'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$ROOT/original-public-source.zip" | sha256sum -c -
+          "$RUNNER_TEMP/e1-real-venv/bin/python" experiments/shared_stem_cell/e1_source_archive_lock.py \
+            --panel "$ROOT/panel.json" \
+            --historical-zip "$ROOT/original-public-source.zip" \
+            --output "$ROOT/original-source-lock.json"
+      - name: Fetch and verify safe pinned compact pretrained snapshots
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/e1-real-venv/bin/python" - <<'PY'
+          import hashlib,os
+          from pathlib import Path
+          from huggingface_hub import HfApi,snapshot_download
+          arms=(('ibm-granite/granite-embedding-97m-multilingual-r2','835ad14087e140460703cf0fae09f97d469d65c2'),
+                ('jhu-clsp/mmBERT-small','0eb3d056ec1d6333cf4e19b0966dfde342a41a3a'))
+          for name,revision in arms:
+              info=HfApi().model_info(repo_id=name,revision=revision,files_metadata=True)
+              assert info.sha==revision
+              snap=Path(snapshot_download(repo_id=name,revision=revision,
+                  allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+              found={p.relative_to(snap).as_posix():p for p in snap.rglob('*') if p.is_file()}
+              assert 'model.safetensors' in found and 'tokenizer.json' in found and 'config.json' in found
+              assert all(not n.endswith(('.bin','.pkl','.pickle','.pt','.py','.so')) for n in found)
+              for item in info.siblings:
+                  if item.rfilename not in found:continue
+                  expected=item.lfs.get('sha256') if isinstance(item.lfs,dict) else getattr(item.lfs,'sha256',None)
+                  if expected:
+                      digest=hashlib.sha256(found[item.rfilename].read_bytes()).hexdigest()
+                      assert digest==expected,('LFS mismatch',item.rfilename)
+          PY
+      - name: Pin full real Gemma text-only snapshot
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/e1-real-venv/bin/python" \
+            pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+            --destination "$RUNNER_TEMP/e1-public/gemma-pinned" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/e1-public/gemma-source-receipt.json"
+      - name: Actual three independent CPU model and 40-step Head executions
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          PY="$RUNNER_TEMP/e1-real-venv/bin/python"
+          ROOT="$RUNNER_TEMP/e1-public"
+          failed=0
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            if timeout --signal=TERM --kill-after=30s 2400s "$PY" \
+              experiments/shared_stem_cell/e1_public_triplet_real_cpu.py \
+              --panel "$ROOT/panel.json" --model "$model" \
+              --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
+              --gemma-manifest "$ROOT/gemma-pinned/manifest.json" \
+              --output "$ROOT/$model.json" \
+              --e2-output "$ROOT/$model.e2.json"; then
+              echo "$model real model and Head run completed"
+            else
+              echo "$model failed, original failure preserved" >&2
+              printf '%s\n' "$model failed source-based real CPU trial" > "$ROOT/$model.failed.txt"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Independent numeric scoring and three-way paired evidence
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-public"
+          "$RUNNER_TEMP/e1-real-venv/bin/python" \
+            experiments/shared_stem_cell/e1_public_triplet_review.py \
+            --panel "$ROOT/panel.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --output "$ROOT/three-public-numeric-only.json"
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m json.tool "$ROOT/three-public-numeric-only.json" > /dev/null
+      - name: Independently re-score all real E2 residual Head arms without running a model
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-public"
+          PY="$RUNNER_TEMP/e1-real-venv/bin/python"
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            "$PY" experiments/shared_stem_cell/e2_residual_review.py \
+              --panel "$ROOT/panel.json" \
+              --e1 "$ROOT/$model.json" \
+              --e2 "$ROOT/$model.e2.json" \
+              --output "$ROOT/$model.e2-review.json"
+          done
+      - name: Reuse verified source archive for historical Laya comparison
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/e1-public/original-public-source.zip" "$RUNNER_TEMP/e1-public/laya-historical.zip"
+          printf '%s  %s\n' 'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$RUNNER_TEMP/e1-public/laya-historical.zip" | sha256sum -c -
+      - name: Independent source-bound historical Laya vs all new Heads
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-public"
+          "$RUNNER_TEMP/e1-real-venv/bin/python" experiments/shared_stem_cell/e1_public_laya_reference.py \
+            --panel "$ROOT/panel.json" \
+            --historical-laya-zip "$ROOT/laya-historical.zip" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --output "$ROOT/laya-historical-comparison.json"
+      - name: Preserve existing observations including failed arms
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e1-real-public-three-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e1-public/*.json
+            ${{ runner.temp }}/e1-public/*.failed.txt
+            ${{ runner.temp }}/e1-pinned-runtime.txt
+          retention-days: 7

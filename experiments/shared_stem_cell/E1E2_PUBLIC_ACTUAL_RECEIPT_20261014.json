@@ -1,0 +1,66 @@
+{
+  "authority": "DENY_ALL",
+  "checkpoint_bundle_sha256": "a2b1e1cdc6cc7bfcb41cbb7cd744b2d7a1ea820da305c8e621f980023ea64ce7",
+  "chronological_future_windows_confirmed": false,
+  "equal_total_lifecycle_cost_verified": false,
+  "foundation_pretraining_overlap_excluded": false,
+  "future_ndu_utility_verified": false,
+  "gemma_minus_laya_accuracy": -0.03125,
+  "gemma_scaled_minus_laya_brier": 0.029199384779376003,
+  "independent_origin_signatures_verified": false,
+  "independent_physical_transformer_forward_count_verified": false,
+  "laya_vs_gemma_mcnemar_exact_two_sided_unadjusted_p": 0.21875,
+  "laya_vs_gemma_paired_counts": {
+    "both_correct": 119,
+    "both_wrong": 3,
+    "only_gemma_correct": 1,
+    "only_laya_correct": 5
+  },
+  "learning_gain_accuracy_vs_frozen": 0.5546875,
+  "metrics": {
+    "gemma2_frozen_head": {
+      "accuracy": 0.3828125,
+      "brier": 0.25001948282039893,
+      "cases": 128,
+      "descriptive_ece_8bin": 0.11724725614175757,
+      "reported_serving_micros": 27005304.0
+    },
+    "gemma2_trained_head": {
+      "accuracy": 0.9375,
+      "brier": 0.24881424270172695,
+      "cases": 128,
+      "descriptive_ece_8bin": 0.4362370817246819,
+      "reported_serving_micros": 27005176.0
+    },
+    "gemma2_trained_head_scaled_1024": {
+      "accuracy": 0.9375,
+      "brier": 0.049326070170001006,
+      "cases": 128,
+      "descriptive_ece_8bin": 0.06540466112170822,
+      "reported_serving_micros": 27005176.0
+    },
+    "laya421_frozen": {
+      "accuracy": 0.96875,
+      "brier": 0.020126685390625003,
+      "cases": 128,
+      "descriptive_ece_8bin": 0.020157031250000023,
+      "reported_serving_micros": 65206203.0
+    }
+  },
+  "paired_archive_sha256": "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d",
+  "paired_prediction_replay_exact": true,
+  "paired_val2_case_count": 128,
+  "production_promotion_permitted": false,
+  "reader_adequacy_verified": false,
+  "reloaded_head_parameter_count": 2018,
+  "reloaded_head_training_steps": 40,
+  "same_dataset_family": true,
+  "scaled_logits_selected_in_prior_exploratory_work": true,
+  "schema": "hepta.stem-e1e2-public-receipt-numeric-audit.v1",
+  "sealed_archive_sha256": "7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469",
+  "source_artifact_ids": [
+    11886761368,
+    11886807698
+  ],
+  "source_disjoint_within_val2_cases": true
+}
