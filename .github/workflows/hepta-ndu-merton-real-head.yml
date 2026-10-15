@@ -1,0 +1,132 @@
+name: Hepta NDU Merton real residual Head (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/**'
+      - '.github/workflows/hepta-ndu-merton-real-head.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-human-head:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Acquire exact original artifacts without forwarding API credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head
+          export PYTHONPATH="$D"
+          python - <<'PY'
+          import os, urllib.request, urllib.error, urllib.parse
+          from pathlib import Path
+          from material import LOCKS, sha
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          out = Path(os.environ['RUNNER_TEMP']) / 'merton-real'
+          assets = out / 'assets'
+          assets.mkdir(parents=True, exist_ok=False)
+          for role, (ident, expected) in LOCKS.items():
+              url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/artifacts/{ident}/zip"
+              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              opener = urllib.request.build_opener(NoRedirect())
+              try:
+                  response = opener.open(req, timeout=60)
+              except urllib.error.HTTPError as exc:
+                  if exc.code not in (301, 302, 303, 307, 308):
+                      raise
+                  location = exc.headers['Location']
+                  exc.close()
+                  if urllib.parse.urlsplit(location).scheme != 'https':
+                      raise ValueError('non-HTTPS artifact redirect')
+                  # A fresh request contains NO bearer token or other API credentials.
+                  response = urllib.request.urlopen(location, timeout=60)
+              with response:
+                  raw = response.read(1_000_001)
+              if len(raw) > 1_000_000 or sha(raw) != expected:
+                  raise ValueError('original artifact bytes mismatch: ' + role)
+              with (assets / f'{ident}.zip').open('xb') as f:
+                  f.write(raw)
+              print(role, ident, sha(raw))
+          PY
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/merton-real/candidate.txt"
+          python --version >> "$RUNNER_TEMP/merton-real/candidate.txt"
+      - name: Original finite oracles and real-archive contracts in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=experiments/ndu_tree_fbsde_gates
+          D="$P/merton/real_head"
+          E="$RUNNER_TEMP/merton-real"
+          export HEPTA_MERTON_ASSETS="$E/assets"
+          test "$(git hash-object "$P/global_consistency.py")" = f763e4a5bd1e285a09da11c51cecc97d5dd66b28
+          test "$(git hash-object "$P/merton/portfolio.py")" = 8a76346109ca4a017ba6546d9b8f18f8e7551388
+          for mode in normal optimized; do
+            FLAGS=()
+            if [ "$mode" = optimized ]; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$P" -p test_global_consistency.py -v 2>&1 | tee "$E/original-$mode.log"
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$P/merton" -p test_portfolio.py -v 2>&1 | tee "$E/finite-$mode.log"
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v 2>&1 | tee "$E/tests-$mode.log"
+            grep -F 'Ran 8 tests' "$E/original-$mode.log"
+            grep -F 'Ran 44 tests' "$E/finite-$mode.log"
+            grep -F 'Ran 36 tests' "$E/tests-$mode.log"
+          done
+      - name: Actual SGD then post-seal human scoring in separate processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head
+          E="$RUNNER_TEMP/merton-real"
+          A="$E/assets"
+          INPUTS=(--reader "$A/11946621518.zip" --labels0 "$A/11949305579.zip" --labels1 "$A/11949100961.zip" --human-score "$A/11953241456.zip")
+          python "$D/material.py" "${INPUTS[@]}" --output "$E/material"
+          for mode in normal optimized; do
+            FLAGS=()
+            if [ "$mode" = optimized ]; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" "$D/learning.py" --material "$E/material" --output "$E/run-$mode"
+            python "${FLAGS[@]}" "$D/audit_real.py" "${INPUTS[@]}" --material "$E/material" --run "$E/run-$mode" --output "$E/audit-$mode.json"
+          done
+          PYTHONPATH="$D" python -O - <<'PY'
+          import os
+          from pathlib import Path
+          from fractions import Fraction
+          from material import strict_loads, write_new
+          from learning import select
+          e = Path(os.environ['RUNNER_TEMP']) / 'merton-real'
+          reports = [strict_loads((e / f'audit-{mode}.json').read_bytes()) for mode in ('normal', 'optimized')]
+          if any(r['rows_verified'] != 72 or r['same_profile_choices_verified'] != 48 for r in reports):
+              raise ValueError('incomplete real lifecycle/reference census')
+          original = strict_loads((e / 'run-normal/sealed.json').read_bytes())
+          n = 0
+          for row in original['rows']:
+              if row['candidate_quotes']:
+                  decision, values = select(row['candidate_quotes'], row['horizon_scenario'], Fraction(row['preference']))
+                  if decision != row['selected_steps'] or values != row['selection_values']:
+                      raise ValueError('same-cost optimized-mode decision drift')
+                  n += 1
+          write_new(e / 'same-cost-mode-check.json', {'same_recorded_cost_choices_replayed_under_optimized': n, 'fresh_clock_choices_not_required_equal': True})
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ndu-merton-real-head-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/merton-real/
+          retention-days: 14
+          if-no-files-found: error
