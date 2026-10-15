@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.stem-e1e5-exact-ci-remediation-review.v1",
+  "date": "2026-10-15",
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false,
+  "old_exact_source_sha": "1a22e114c1c8ea081da51d4e94ccb9ff9ce9aeff",
+  "original_runs": {
+    "e1_real_public": {
+      "run_id": 38594668819,
+      "result": "failure",
+      "granite": "actual_research_encoder_forward_and_head_completed",
+      "mmbert": "completed_but_missing_pretrained_token_table_weight_warning_INVALID_TO_COMPARE",
+      "embeddinggemma2": "failure_missing_torchvision"
+    },
+    "e2_head_tests": {
+      "run_ids": [
+        38594668785,
+        38594669059
+      ],
+      "result": "failure",
+      "cause": "pinned_cpu_torch_runners_omitted_numpy"
+    },
+    "e5_cpu_heads": {
+      "run_ids": [
+        38594668822,
+        38594668694,
+        38594668847,
+        38594668944,
+        38594668839
+      ],
+      "result": "failure",
+      "cause": "CPU_Torch_tensor_numpy_used_without_numpy_installed"
+    },
+    "blocking_ci": {
+      "run_id": 38594669104,
+      "result": "failure",
+      "causes": [
+        "12_codespell_diagnostics",
+        "dependency_scope_test_temporary_git_repository_cleanup_race"
+      ]
+    },
+    "native_architecture": {
+      "run_id": 38594668935,
+      "result": "failure",
+      "cause": "base_merge_ref_check_failed_on_diverged_draft_parent"
+    },
+    "e3": {
+      "run_id": 38594668811,
+      "result": "success"
+    },
+    "e4": {
+      "run_id": 38594668806,
+      "result": "success"
+    }
+  },
+  "changes": {
+    "cpu_workflows_numpy_pinned": 8,
+    "e1_gemma_cpu_processor_dependencies": [
+      "torchvision==0.25.0",
+      "torchcodec==0.10.0"
+    ],
+    "mmbert_loading_strategy": "AutoModelForMaskedLM frozen base with full loading info and physically tied 384D embedding vs ALL source safetensors rows",
+    "mmbert_source_integrity_claim": "entire local vocabulary tensor checked, no independent publisher signature",
+    "independent_e1_scorer_rejects_unverified_tied_mmbert": true,
+    "parallel_stem_parent": "30c36096aa713e3d7098a79c2f080dff2900b684",
+    "parent_no_overlap_paths": 44,
+    "parent_two_parent_merge": "2ab88d66869193196558d377249dad75d0ed3a84",
+    "blocking_codespell_diagnostics_fixed": 12,
+    "dependency_scope_test_fixture_auto_maintenance_disabled": true
+  },
+  "limits": {
+    "new_exact_head_CI_green": false,
+    "new_three_model_physical_pair_confirmed": false,
+    "mmbert_full_checkpoint_source_signature_verified": false,
+    "three_chronological_future_windows_verified": false,
+    "reader_four_condition_independently_reviewed": false,
+    "real_ndu_verified": false,
+    "distributed_cas_native_wal_finaluse_verified": false,
+    "stem_selected": false,
+    "production_approved": false
+  }
+}
