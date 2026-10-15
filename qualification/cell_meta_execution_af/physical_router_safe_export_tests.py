@@ -31,6 +31,38 @@ def os_summary() -> dict:
             "raw_process_trace_that_must_not_export": SENTINEL}
 
 
+
+def fivearm_summary(seed: int) -> dict:
+    rows = []
+    for name in subject.OS_ARMS:
+        rows.append({"arm": name, "split_proposed": name in (
+            "fixed_router", "learned_router", "adaptive_split"),
+            "retrospective_scores": {
+                "future_1": metrics(), "future_2": metrics()},
+            "cost_observation": {
+                "additional_stage2_training_head_rows": 0 if name == subject.OS_ARMS[0] else 512,
+                "additional_stage2_optimizer_updates": 0 if name == subject.OS_ARMS[0] else 5,
+                "evaluated_head_rows": 256,
+                "train_router_rows": 0 if name == subject.OS_ARMS[0] else 128,
+                "diagnostic_head_rows_in_existing_arm": 0},
+            "raw_tensor": SENTINEL})
+    return {"schema": "hepta.cell-meta-five-arm-retrospective.v1",
+            "seed": seed, "source_kind": "external_unverified",
+            "source_rule": "external", "shared_stem_sha256": "a" * 64,
+            "retrospective_not_prospective": True,
+            "same_source_calibration_not_ood": True,
+            "research_only_no_independent_external_outcomes": True,
+            "single_common_frozen_stage1_parent": True,
+            "training_budget_unequal_across_five_arms": True,
+            "complete_lifecycle_compute_matched": False,
+            "statistical_winner_certified": False,
+            "ndu_selection_authorized": False,
+            "original_worker_model_origin_signed": False,
+            "physical_cell_split_permitted": False,
+            "production_admission": "BLOCKED", "authority_posture": "DENY_ALL",
+            "arms": rows}
+
+
 def metrics() -> dict:
     return {"accuracy": 0.5, "brier": 0.25, "nll": 0.69, "source_text": SENTINEL}
 
@@ -81,6 +113,8 @@ def staged_directory(path: Path) -> None:
             payload = json.dumps(summary(hard=True)).encode()
         elif name == "os-meter-joined.json":
             payload = json.dumps(os_summary()).encode()
+        elif name.endswith("-fivearm-report.json"):
+            payload = json.dumps(fivearm_summary(int(name.split("-", 1)[0]))).encode()
         (path / name).write_bytes(payload)
 
 
@@ -108,6 +142,7 @@ class SafeGraniteArtifactTests(unittest.TestCase):
         self.assertEqual(len(output["aggregate"]["four_arm_soft_research"]), 12)
         self.assertEqual(len(output["aggregate"]["four_arm_hard_top1_research"]), 12)
         self.assertEqual(len(output["aggregate"]["five_arm_os_medians"]["by_arm"]), 5)
+        self.assertEqual(len(output["aggregate"]["five_arm_retrospective_research"]), 15)
         self.assertEqual(output["production_admission"], "BLOCKED")
         self.assertEqual(output["authority_posture"], "DENY_ALL")
         self.assertFalse(output["host_custody_authenticated"])
@@ -185,6 +220,27 @@ class SafeGraniteArtifactTests(unittest.TestCase):
 
     def test_boolean_pretending_to_be_numeric_blocks(self):
         self.modify_summary(True, lambda o: o["arms"][0].__setitem__("train_head_rows", True))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_forged_fivearm_model_origin_denied(self):
+        path = self.root / "41-fivearm-report.json"
+        value = json.loads(path.read_text())
+        value["original_worker_model_origin_signed"] = True
+        path.write_text(json.dumps(value))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_forged_fivearm_encoder_across_seeds_denied(self):
+        path = self.root / "53-fivearm-report.json"
+        value = json.loads(path.read_text())
+        value["shared_stem_sha256"] = "b" * 64
+        path.write_text(json.dumps(value))
+        self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
+
+    def test_forged_frozen_optimizer_updates_denied(self):
+        path = self.root / "47-fivearm-report.json"
+        value = json.loads(path.read_text())
+        value["arms"][0]["cost_observation"]["additional_stage2_optimizer_updates"] = 1
+        path.write_text(json.dumps(value))
         self.assertEqual(subject.produce(self.root)["status"], "BLOCKED")
 
     def test_forged_os_energy_or_production_resource_winner_denied(self):

@@ -224,6 +224,59 @@ def extract_isolated_os(value: dict[str, Any]) -> dict[str, Any]:
             "by_arm": result}
 
 
+
+def extract_fivearm(value: dict[str, Any], seed: int) -> tuple[str, list[dict[str, Any]]]:
+    """Sanitize the crucial fifth frozen policy; omit all source-case payloads."""
+    require(value.get("schema") == "hepta.cell-meta-five-arm-retrospective.v1"
+            and type(value.get("seed")) is int and value.get("seed") == seed
+            and value.get("source_kind") == "external_unverified"
+            and value.get("source_rule") == "external"
+            and value.get("retrospective_not_prospective") is True
+            and value.get("same_source_calibration_not_ood") is True
+            and value.get("research_only_no_independent_external_outcomes") is True
+            and value.get("single_common_frozen_stage1_parent") is True
+            and value.get("training_budget_unequal_across_five_arms") is True
+            and value.get("complete_lifecycle_compute_matched") is False
+            and value.get("statistical_winner_certified") is False
+            and value.get("ndu_selection_authorized") is False
+            and value.get("original_worker_model_origin_signed") is False
+            and value.get("physical_cell_split_permitted") is False
+            and value.get("production_admission") == "BLOCKED"
+            and value.get("authority_posture") == "DENY_ALL",
+            "false_fivearm_future_or_authority_claim")
+    stem = value.get("shared_stem_sha256")
+    require(type(stem) is str and HEX64.fullmatch(stem) is not None,
+            "invalid_fivearm_encoder_identity")
+    arms = value.get("arms")
+    require(type(arms) is list and len(arms) == len(OS_ARMS) and
+            [x.get("arm") for x in arms if type(x) is dict] == list(OS_ARMS),
+            "wrong_fivearm_inventory")
+    output = []
+    for arm, name in zip(arms, OS_ARMS, strict=True):
+        require(type(arm.get("split_proposed")) is bool,
+                "invalid_fivearm_split_decision")
+        scores = arm.get("retrospective_scores")
+        require(type(scores) is dict and
+                {"future_1", "future_2"} <= set(scores),
+                "missing_fivearm_outcomes")
+        costs = arm.get("cost_observation")
+        require(type(costs) is dict, "missing_fivearm_costs")
+        work = {key: nonnegative_int(costs.get(key)) for key in (
+            "additional_stage2_training_head_rows", "additional_stage2_optimizer_updates",
+            "evaluated_head_rows", "train_router_rows",
+            "diagnostic_head_rows_in_existing_arm")}
+        if name == OS_ARMS[0]:
+            require(work["additional_stage2_training_head_rows"] ==
+                    work["additional_stage2_optimizer_updates"] ==
+                    work["train_router_rows"] == 0, "frozen_policy_not_frozen")
+        output.append({"seed": seed, "arm": name,
+                       "split_proposed": arm["split_proposed"],
+                       "test_1": metric(scores["future_1"]),
+                       "test_2": metric(scores["future_2"]),
+                       "observed_head_router_work": work})
+    return stem, output
+
+
 def produce(root: Path) -> dict[str, Any]:
     """Return a BLOCKED receipt on every invalid or incomplete raw inventory."""
     result: dict[str, Any] = {
@@ -290,11 +343,22 @@ def produce(root: Path) -> dict[str, Any]:
         soft = load_json(root / "descriptive-retrospective-summary.json")
         hard = load_json(root / "hardtop1-descriptive-retrospective-summary.json")
         kernel = load_json(root / "os-meter-joined.json")
+        fivearm = []
+        common_stem = None
+        for seed in SEEDS:
+            stem, rows = extract_fivearm(
+                load_json(root / f"{seed}-fivearm-report.json"), seed)
+            if common_stem is None:
+                common_stem = stem
+            else:
+                require(stem == common_stem, "inconsistent_fivearm_shared_encoder")
+            fivearm.extend(rows)
         result["aggregate"] = {
             "original_public_panel_sha256": SOURCE_SHA,
             "registered_encoder": MODEL_NAME,
             "four_arm_soft_research": extract_summary(soft, hard=False),
             "four_arm_hard_top1_research": extract_summary(hard, hard=True),
+            "five_arm_retrospective_research": fivearm,
             "five_arm_os_medians": extract_isolated_os(kernel),
         }
     except (UnsafeExport, OSError, UnicodeError, RecursionError) as exc:

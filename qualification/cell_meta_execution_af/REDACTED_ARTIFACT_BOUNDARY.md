@@ -25,8 +25,9 @@ The only published file is
 
 - fixed names, SHA-256 digests and sizes of expected original research files
   (no bytes, per-case identifiers, features or FP32 weights);
-- sanitized per-seed aggregate accuracy/Brier, declared operation counts, and
-  five-arm OS CPU/RSS medians (including Python/Torch startup and replay);
+- sanitized per-seed aggregate accuracy/Brier and operation counts for all
+  **five** policies (including genuinely frozen No-Change), with five-arm OS
+  CPU/RSS medians (including Python/Torch startup and replay);
 - explicit blocked/no-authority/no-prospective/no-OOD/no-cost-parity flags;
 - missing-entry / invalid-schema reasons if the physical run failed partway.
 
