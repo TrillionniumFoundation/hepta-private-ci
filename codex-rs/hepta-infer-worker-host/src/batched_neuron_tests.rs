@@ -3472,7 +3472,7 @@ fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests
 
 
 #[test]
-fn original_pending_group_admission_requires_terminally_acknowledged_wal_before_signing() {
+fn original_pending_group_admission_requires_metric_flush_ack_before_signing() {
     let root = tempfile::tempdir().expect("original signed owner");
     let signer = SigningKey::from_bytes(&[96; 32]);
     let (manifest, first, key) = fixture_request();
