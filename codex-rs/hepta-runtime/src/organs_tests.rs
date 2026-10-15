@@ -758,10 +758,11 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
 /// map. This intentionally uses only test-owned keys, candidate and storage.
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 #[test]
-fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
+fn cell_split_cns_runtime_port_denies_without_original_control_owner() -> Result<()> {
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
     use std::path::PathBuf;
 
     use codex_hepta_contracts::SignedFinalUseGrant;
@@ -1013,34 +1014,47 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         witness,
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
-    port.publish_once(&plan, &binding, &intent)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(runtime.topology_snapshot()?, expected);
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
-    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
-    let original = port
-        .read_original_commit(&intent.idempotency_key)
-        .map_err(|error| anyhow::anyhow!("{error}"))?
-        .expect("fsynced original runtime receipt");
-    port.verify_original_commit(&original)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
+    // Production has no original shared Control Begin/effect/Commit owner.
+    // A valid signed Final-use and a fully prepared successor CANNOT bypass
+    // this missing durable transaction, even in reference-only unit tests.
+    let denied = port
+        .publish_once(&plan, &binding, &intent)
+        .expect_err("original Control handoff is absent");
     assert_eq!(
-        original.committed_sequence,
-        port.committed_sequence(&binding.cns_id)
-            .map_err(|error| anyhow::anyhow!("{error}"))?
+        denied,
+        "CNS mutation denied: no shared durable Control/Neuron cutover transaction"
     );
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert!(!original_path.exists(), "no fabricated CNS commit");
+    assert!(
+        port.read_original_commit(&intent.idempotency_key)
+            .map_err(|error| anyhow::anyhow!("{error}"))?
+            .is_none(),
+        "no original effect may be acknowledged without Control Begin/Commit"
+    );
+    assert_eq!(
+        port.committed_sequence(&binding.cns_id)
+            .map_err(|error| anyhow::anyhow!("{error}"))?,
+        1,
+        "no original control event was fsynced"
+    );
+
+    // Signed read-only predecessor observations remain available, but are
+    // never a substitute for an original Control-owned physical handoff.
     let live = port
         .inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     port.verify_live(&live)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(live.generation, plan.child_generation);
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(live.generation, plan.parent_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert!(!original_path.exists());
 
-    // Process-local CNS hosts are NOT a durable restart registry. A fresh
-    // default host must never be mistaken for the already-committed successor
-    // simply because the original signed runtime receipt survived on disk.
+    // An external signed route observation cannot make a fresh host accept
+    // an effect that never passed the original Control and CNS owners.
     drop(port);
     let after_restart = crate::HeptaRuntime::from_adapter(root, state);
     assert_eq!(after_restart.topology_snapshot()?, before);
@@ -1061,6 +1075,9 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     let owner_root = tempfile::tempdir()?;
+    // Enforce the same 0700 original-owner root required in production;
+    // never relax the owner security gate for a test fixture.
+    fs::set_permissions(owner_root.path(), fs::Permissions::from_mode(0o700))?;
     let mut owner = codex_hepta_operator_acceptance::CellSplitCnsCutoverOwnerV1::open(
         owner_root.path(),
         plan,
@@ -1070,8 +1087,8 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
-        owner.read_committed(&intent).is_err(),
-        "committed runtime receipt cannot activate a fresh old-generation host",
+        owner.read_committed(&intent)?.is_none(),
+        "without an original Control/CNS commit a fresh host must return no effect",
     );
     Ok(())
 }
