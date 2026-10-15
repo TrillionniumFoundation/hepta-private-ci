@@ -1,0 +1,79 @@
+name: Hepta NDU Merton finite research (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/**'
+      - '.github/workflows/hepta-ndu-merton.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-control:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin inherited exact oracle and record candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=experiments/ndu_tree_fbsde_gates
+          test "$(git hash-object "$P/global_consistency.py")" = f763e4a5bd1e285a09da11c51cecc97d5dd66b28
+          test "$(git hash-object "$P/test_global_consistency.py")" = 94bfa5ec176fc0f33cb17786e915a8cd265f1605
+          mkdir -p "$RUNNER_TEMP/ndu-merton"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/ndu-merton/candidate.txt"
+          python --version >> "$RUNNER_TEMP/ndu-merton/candidate.txt"
+      - name: Run original obstruction and new contracts in both modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=experiments/ndu_tree_fbsde_gates
+          E="$RUNNER_TEMP/ndu-merton"
+          python -W error::ResourceWarning -m unittest discover -s "$P" -p 'test_global_consistency.py' -v 2>&1 | tee "$E/inherited-normal.log"
+          python -O -W error::ResourceWarning -m unittest discover -s "$P" -p 'test_global_consistency.py' -v 2>&1 | tee "$E/inherited-optimized.log"
+          python -W error::ResourceWarning -m unittest discover -s "$P/merton" -p 'test_*.py' -v 2>&1 | tee "$E/tests-normal.log"
+          python -O -W error::ResourceWarning -m unittest discover -s "$P/merton" -p 'test_*.py' -v 2>&1 | tee "$E/tests-optimized.log"
+          grep -F 'Ran 8 tests' "$E/inherited-normal.log"
+          grep -F 'Ran 8 tests' "$E/inherited-optimized.log"
+          grep -F 'Ran 44 tests' "$E/tests-normal.log"
+          grep -F 'Ran 44 tests' "$E/tests-optimized.log"
+      - name: Seal 75 policies and replay with separate reference process
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton
+          E="$RUNNER_TEMP/ndu-merton"
+          python "$D/portfolio.py" --output "$E/run-normal"
+          python "$D/audit.py" --directory "$E/run-normal" --output "$E/audit-normal.json"
+          python -O "$D/portfolio.py" --output "$E/run-optimized"
+          python -O "$D/audit.py" --directory "$E/run-optimized" --output "$E/audit-optimized.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = Path(os.environ['RUNNER_TEMP']) / 'ndu-merton'
+          reports = [json.loads((e / f'audit-{mode}.json').read_text()) for mode in ('normal', 'optimized')]
+          def semantic(report):
+              if report['audited_policy_rows'] != 75 or report['same_profile_oracle_equalities'] != 45:
+                  raise ValueError('missing policy or exact-reference comparison')
+              return [{k: v for k, v in row.items() if not k.endswith('_ns')} for row in report['rows']]
+          if semantic(reports[0]) != semantic(reports[1]):
+              raise ValueError('optimized-mode semantic drift')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ndu-merton-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/ndu-merton/
+          retention-days: 7
+          if-no-files-found: error
