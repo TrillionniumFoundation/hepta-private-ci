@@ -1,0 +1,73 @@
+name: Hepta P0 independent physical four-Stem replay (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/p0-four-stem-replay/**'
+      - '.github/workflows/hepta-p0-independent-four-stem-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retrospective-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      HEPTA_P0_HISTORICAL_ZIP: /tmp/hepta-p0-reference-11886761368.zip
+      HEPTA_P0_PHYSICAL_ZIP: /tmp/hepta-p0-physical-11908591037.zip
+      OUTPUT: /tmp/hepta-p0-independent-replay
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze exact source and workflow identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/exact-head.txt"
+          python --version | tee "$OUTPUT/python-version.txt"
+          sha256sum qualification/p0-four-stem-replay/*.py | tee "$OUTPUT/independent-auditor-source.sha256"
+      - name: Fetch historical independent labels and physical new model reports (read-only)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11886761368/zip' \
+            -o "$HEPTA_P0_HISTORICAL_ZIP"
+          curl --fail --location --retry 2 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11908591037/zip' \
+            -o "$HEPTA_P0_PHYSICAL_ZIP"
+          echo "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d  $HEPTA_P0_HISTORICAL_ZIP" | sha256sum -c -
+          echo "d8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa  $HEPTA_P0_PHYSICAL_ZIP" | sha256sum -c -
+          sha256sum "$HEPTA_P0_HISTORICAL_ZIP" "$HEPTA_P0_PHYSICAL_ZIP" > "$OUTPUT/evidence-archive-sha256.txt"
+      - name: Execute fail-closed archive and numeric tamper tests (normal plus optimized)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/p0-four-stem-replay -p 'test_*.py' -v > "$OUTPUT/tests-normal.log" 2>&1 || { cat "$OUTPUT/tests-normal.log"; exit 1; }
+          python -O -m unittest discover -s qualification/p0-four-stem-replay -p 'test_*.py' -v > "$OUTPUT/tests-optimized.log" 2>&1 || { cat "$OUTPUT/tests-optimized.log"; exit 1; }
+          tail -6 "$OUTPUT/tests-normal.log"
+          tail -6 "$OUTPUT/tests-optimized.log"
+      - name: Independently score original sealed predictions against distinct archived labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/p0-four-stem-replay/independent_replay.py \
+            --historical "$HEPTA_P0_HISTORICAL_ZIP" --physical "$HEPTA_P0_PHYSICAL_ZIP" \
+            --output "$OUTPUT/independent-score.json" | tee "$OUTPUT/score-stdout.json"
+          sha256sum "$OUTPUT/independent-score.json" > "$OUTPUT/independent-score-sha256.txt"
+      - name: Retain audit and failed attempts, but never duplicate raw source or weights
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-four-stem-independent-numeric-replay-${{ github.run_id }}
+          path: /tmp/hepta-p0-independent-replay/
+          retention-days: 14
+          if-no-files-found: warn
