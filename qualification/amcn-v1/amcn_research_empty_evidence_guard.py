@@ -27,7 +27,7 @@ def admit_for_research(question: str, sources: list[dict], latest_by_id: dict,
     contract. External owner signatures and currentness are still separately
     required; this function cannot authenticate the supplied latest snapshot.
     """
-    require(isinstance(question,str) and 0 < len(question.encode('utf-8')) <= 8192,
+    require(isinstance(question,str) and bool(question.strip()) and 0 < len(question.encode('utf-8')) <= 8192,
             'bounded question required')
     require(isinstance(scope,str) and bool(scope) and isinstance(generation,str)
             and bool(generation) and isinstance(latest_by_id,dict),
@@ -42,7 +42,7 @@ def admit_for_research(question: str, sources: list[dict], latest_by_id: dict,
         require(all(isinstance(e[k],str) and e[k] and len(e[k])<=256 for k in
                     ('source_id','source_root','scope','generation'))
                 and type(e['revision']) is int and e['revision']>0
-                and isinstance(e['text'],str)
+                and isinstance(e['text'],str) and bool(e['text'].strip())
                 and len(e['text'].encode('utf-8'))<=MAX_SOURCE_BYTES
                 and isinstance(e['content_sha256'],str)
                 and _SHA.fullmatch(e['content_sha256']) is not None

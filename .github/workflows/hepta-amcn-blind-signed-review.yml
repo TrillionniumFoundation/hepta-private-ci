@@ -1,0 +1,72 @@
+name: Hepta AMCN blind signed semantic-review intake contracts (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_blind_review.py"
+      - "qualification/amcn-v1/test_amcn_original_blind_review.py"
+      - "qualification/amcn-v1/amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/ORIGINAL_BLIND_SEMANTIC_REVIEW.md"
+      - ".github/workflows/hepta-amcn-blind-signed-review.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_blind_review.py"
+      - "qualification/amcn-v1/test_amcn_original_blind_review.py"
+      - "qualification/amcn-v1/amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py"
+      - "qualification/amcn-v1/ORIGINAL_BLIND_SEMANTIC_REVIEW.md"
+      - ".github/workflows/hepta-amcn-blind-signed-review.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-cryptographic-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned signature-verification implementation
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/amcn-blind-review-venv
+          /tmp/amcn-blind-review-venv/bin/pip install --disable-pip-version-check cryptography==50.0.2
+          /tmp/amcn-blind-review-venv/bin/pip check
+      - name: Original audit and Ed25519 blinded-review adversarial contracts
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-blind-review-venv/bin/python
+          "$P" -m compileall -q qualification/amcn-v1/amcn_original_blind_review.py qualification/amcn-v1/test_amcn_original_blind_review.py qualification/amcn-v1/amcn_research_empty_evidence_guard.py qualification/amcn-v1/test_amcn_research_empty_evidence_guard.py
+          PYTHONPATH=qualification/amcn-v1 "$P" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_original_blind_review.py' -v
+          PYTHONPATH=qualification/amcn-v1 "$P" -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_research_empty_evidence_guard.py' -v
+      - name: Record source-only negative authority
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-blind-review-source
+          git rev-parse HEAD > /tmp/amcn-blind-review-source/exact-HEAD.sha
+          git rev-parse HEAD^{tree} > /tmp/amcn-blind-review-source/exact-tree.sha
+          printf '%s\n' \
+            'synthetic_signature_fixture_not_human_review=true' \
+            'real_original_reviewer_identity_verified=false' \
+            'raw_original_answers_excluded=true' \
+            'original_owner_source_truth_verified=false' \
+            'official_HF_reader_parity_verified=false' \
+            'semantic_task_gain_verified=false' \
+            'true_future_calendar_windows=0' \
+            'production_accepted=false' \
+            > /tmp/amcn-blind-review-source/DENY_ALL.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-blinded-source-only-review-contracts-deny-all
+          path: /tmp/amcn-blind-review-source
+          if-no-files-found: error

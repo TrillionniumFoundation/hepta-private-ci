@@ -71,6 +71,26 @@ class EvidenceEmptyGuardTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'owner frontier'):
             admit_for_research('Which event?',[s],latest,scope='research',generation='g1')
 
+    def test_whitespace_question_refused(self):
+        with self.assertRaisesRegex(ValueError,'question'):
+            admit_for_research(' \t\n',[],{},scope='research',generation='g1')
+
+    def test_empty_source_bypass_refused(self):
+        s,latest=fixture()
+        s['text']=''
+        s['content_sha256']=sha256(b'').hexdigest()
+        latest[s['source_id']]=copy.deepcopy(s)
+        with self.assertRaisesRegex(ValueError,'revoked/foreign/modified'):
+            admit_for_research('Which event?',[s],latest,scope='research',generation='g1')
+
+    def test_whitespace_source_bypass_refused(self):
+        s,latest=fixture()
+        s['text']='\n \t'
+        s['content_sha256']=sha256(s['text'].encode()).hexdigest()
+        latest[s['source_id']]=copy.deepcopy(s)
+        with self.assertRaisesRegex(ValueError,'revoked/foreign/modified'):
+            admit_for_research('Which event?',[s],latest,scope='research',generation='g1')
+
     def test_question_empty_refused(self):
         with self.assertRaisesRegex(ValueError,'question'):
             admit_for_research('',[],{},scope='research',generation='g1')
