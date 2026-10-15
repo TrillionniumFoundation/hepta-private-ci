@@ -7,6 +7,9 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_multirc_semantic_review.py'
       - 'experiments/shared_stem_cell/p0_question_only_head.py'
       - 'experiments/shared_stem_cell/p0_question_only_review.py'
+      - 'experiments/shared_stem_cell/p0_encoding_cost_frontier.py'
+      - 'experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py'
+      - 'experiments/shared_stem_cell/P0_ENCODING_INCLUSIVE_FRONTIER_V4.md'
       - 'experiments/shared_stem_cell/test_p0_question_only_matched.py'
       - 'experiments/shared_stem_cell/test_p0_multirc_semantic.py'
       - 'experiments/shared_stem_cell/P0_MULTIRC_HUMAN_SEMANTIC.md'
@@ -45,6 +48,8 @@ jobs:
             experiments/shared_stem_cell/p0_multirc_semantic_review.py \
             experiments/shared_stem_cell/p0_question_only_head.py \
             experiments/shared_stem_cell/p0_question_only_review.py \
+            experiments/shared_stem_cell/p0_encoding_cost_frontier.py \
+            experiments/shared_stem_cell/test_p0_encoding_cost_frontier.py \
             experiments/shared_stem_cell/test_p0_question_only_matched.py \
             experiments/shared_stem_cell/test_p0_squad_causal.py \
             experiments/shared_stem_cell/test_p0_multirc_semantic.py
@@ -56,6 +61,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_question_only_matched.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_question_only_matched.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_encoding_cost_frontier.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_encoding_cost_frontier.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_squad_causal.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
@@ -343,6 +352,22 @@ jobs:
             --output "$ROOT/matched-question-only-score.json"
           python -m json.tool "$ROOT/matched-question-only-score.json" >/dev/null
           echo 'Original human target only; eight independent source groups; DENY_ALL.'
+      - name: Independently charge real Encoder input lengths and whole trial cost
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/score-only"
+          python experiments/shared_stem_cell/p0_encoding_cost_frontier.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --labels "$ROOT/owner-only-human-labels.json" \
+            --train-parquet "$ROOT/train.parquet" --validation-parquet "$ROOT/validation.parquet" \
+            --matched-score "$ROOT/matched-question-only-score.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --laya421-nochange "$ROOT/laya421_nochange.json" \
+            --output "$ROOT/encoding-inclusive-cost-frontier.json"
+          python -m json.tool "$ROOT/encoding-inclusive-cost-frontier.json" >/dev/null
+          echo 'Source-bound cost lower bounds only; no model selection, authority or false equal-FLOP claim.'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -350,5 +375,6 @@ jobs:
           path: |
             ${{ runner.temp }}/score-only/independent-human-semantic-score.json
             ${{ runner.temp }}/score-only/matched-question-only-score.json
+            ${{ runner.temp }}/score-only/encoding-inclusive-cost-frontier.json
           if-no-files-found: warn
           retention-days: 7
