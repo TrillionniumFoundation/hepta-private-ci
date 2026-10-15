@@ -154,14 +154,24 @@ def review(root):
             or training["attention"]["attention_target_sha256"] !=
                teacher["teacher_tensor_sha256"]):
         raise ValueError("paired training schedule or teacher digest mismatch")
+    def valid_sha(value):
+        return (type(value) is str and len(value) == 64
+                and value != "0" * 64
+                and all(ch in "0123456789abcdef" for ch in value))
     for name in DIRECT:
         receipt = training[name]
         if (receipt["status"] != "completed" or
                 receipt["completed_steps"] != protocol["steps"] or
                 receipt["seed"] != protocol["seed"] or
                 receipt["cpu_ns"] <= 0 or receipt["wall_ns"] <= 0 or
-                receipt["parameter_count"] <= 0):
-            raise ValueError("partial or unmeasured training")
+                receipt["parameter_count"] <= 0 or
+                not valid_sha(receipt.get("initial_model_sha256")) or
+                not valid_sha(receipt.get("trained_model_sha256"))):
+            raise ValueError("partial, unbound or unmeasured training")
+    if (not valid_sha(report.get("initial_core_sha256"))
+            or any(training[name]["initial_model_sha256"] !=
+                   report["initial_core_sha256"] for name in ("core", "attention"))):
+        raise ValueError("paired initial model tensor digest mismatch")
     expected = {(cohort, arm, case["case_id"]) for cohort in COHORTS
                 for arm in ARMS for case in public[cohort]}
     cases = {cohort: {r["case_id"]: r for r in public[cohort]} for cohort in COHORTS}
@@ -229,6 +239,9 @@ def review(root):
     for arm, owner in MODELS.items():
         if model_hashes[arm] != model_hashes[owner]:
             raise ValueError("loop execution changed the frozen model artifact")
+    for arm in DIRECT:
+        if model_hashes[arm] != {training[arm]["trained_model_sha256"]}:
+            raise ValueError("evaluation model digest differs from frozen fitted weight bytes")
     for cid in replay_labels["test"]:
         if feature_hashes[("deleted", cid)] == feature_hashes[("test", cid)]:
             raise ValueError("deleted and original evidence cannot reuse a snapshot")
