@@ -566,6 +566,17 @@ fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFronti
     .expect("external domain source mutation");
 }
 
+fn advance_test_independent_custody(
+    registry_path: &Path,
+    frontier: &CellSplitMonotonicDurableFrontierV1,
+) {
+    // Test fixture only: the distinct signed custody readback must advance
+    // before the registry's new epoch/revision can be accepted.
+    let custody_path = registry_path.with_file_name("independently-retained-floor.json");
+    let bytes = crate::durable::canonical_json(frontier).expect("canonical custody frontier");
+    std::fs::write(custody_path, bytes).expect("test independent custody advance");
+}
+
 #[test]
 fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let root = tempfile::tempdir().expect("private registry");
@@ -613,6 +624,10 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
 
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
+    // A complete-looking new registry record must still fail when the
+    // independently signed custody floor retains the preceding frontier.
+    assert!(read_through_signed_service(&mut service, &"ed".repeat(32)).is_err());
+    advance_test_independent_custody(&file, &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
 
     // The previous epoch/revision cannot be accepted again, even if it
@@ -650,6 +665,10 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
     stale_rollover.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &stale_rollover);
+    // A higher epoch cannot be signed while the distinct custody store
+    // still authenticates the old epoch, even with fresh registry digests.
+    assert!(read_through_signed_service(&mut service, &"cf".repeat(32)).is_err());
+    advance_test_independent_custody(&file, &stale_rollover);
     assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
