@@ -11,6 +11,8 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_paired_screen*.py'
       - 'qualification/cell_meta_execution_af/physical_router_cost_frontier*.py'
       - 'qualification/cell_meta_execution_af/physical_router_os_meter*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_safe_export*.py'
+      - 'qualification/cell_meta_execution_af/REDACTED_ARTIFACT_BOUNDARY.md'
       - 'qualification/cell_meta_execution_af/ISOLATED_OS_RESOURCE_REPLAY.md'
       - 'qualification/cell_meta_execution_af/OBSERVED_WORK_COST_FRONTIER.md'
       - 'qualification/cell_meta_execution_af/PAIRED_ORIGINAL_SOURCE_SCREEN.md'
@@ -94,7 +96,9 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_cost_frontier.py \
             qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py \
             qualification/cell_meta_execution_af/physical_router_os_meter.py \
-            qualification/cell_meta_execution_af/physical_router_os_meter_tests.py
+            qualification/cell_meta_execution_af/physical_router_os_meter_tests.py \
+            qualification/cell_meta_execution_af/physical_router_safe_export.py \
+            qualification/cell_meta_execution_af/physical_router_safe_export_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -122,6 +126,8 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_os_meter_tests.py'
+          python -m unittest -v \
+            qualification.cell_meta_execution_af.physical_router_safe_export_tests
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -464,34 +470,24 @@ jobs:
               'independent_NDU_verified':False,'production_admission':'BLOCKED',
               'authority_posture':'DENY_ALL','arms':rows},sort_keys=True))
           PY
-      - name: Publish immutable numeric evidence and preserve all failures; never weights/texts
+      # Keep source parquet, per-case labels, Q24 vectors, Head FP32 tensors
+      # and replay inputs in this ephemeral Runner only. The redacted exporter
+      # publishes hashes and a strict descriptive scalar allowlist; it never
+      # uploads the original per-case/raw-model artifacts.
+      - name: Export bounded redacted evidence manifest (even for failed trials)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-meta-redacted"
+          python qualification/cell_meta_execution_af/physical_router_safe_export.py \
+            --root "$RUNNER_TEMP/hepta-meta-real" \
+            --out "$RUNNER_TEMP/hepta-meta-redacted/granite-redacted-receipt.json"
+      - name: Publish ONLY redacted receipt, no raw source/features/Head weights
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hepta-granite-cell-meta-physical-${{ github.run_id }}
+          name: hepta-granite-cell-meta-redacted-${{ github.run_id }}
           retention-days: 7
-          if-no-files-found: warn
-          path: |
-            ${{ runner.temp }}/hepta-meta-real/model-files.json
-            ${{ runner.temp }}/hepta-meta-real/model-files-source-hash.txt
-            ${{ runner.temp }}/hepta-meta-real/original-source-sha256.txt
-            ${{ runner.temp }}/hepta-meta-real/granite-q24-features.json
-            ${{ runner.temp }}/hepta-meta-real/*-trial-panel.json
-            ${{ runner.temp }}/hepta-meta-real/*-trial-report.json
-            ${{ runner.temp }}/hepta-meta-real/*-bridge-receipt.json
-            ${{ runner.temp }}/hepta-meta-real/*-feature-review.json
-            ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
-            ${{ runner.temp }}/hepta-meta-real/*-top1-report.json
-            ${{ runner.temp }}/hepta-meta-real/*-top1-review.json
-            ${{ runner.temp }}/hepta-meta-real/*-hard-train-report.json
-            ${{ runner.temp }}/hepta-meta-real/*-hard-train-review.json
-            ${{ runner.temp }}/hepta-meta-real/*-frozen-report.json
-            ${{ runner.temp }}/hepta-meta-real/*-frozen-review.json
-            ${{ runner.temp }}/hepta-meta-real/*-fivearm-report.json
-            ${{ runner.temp }}/hepta-meta-real/paired-original-source-screen.json
-            ${{ runner.temp }}/hepta-meta-real/observed-work-frontier.json
-            ${{ runner.temp }}/hepta-meta-real/*-os-meter.json
-            ${{ runner.temp }}/hepta-meta-real/os-meter-joined.json
-            ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
-            ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
-            ${{ runner.temp }}/granite-model-environment.txt
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-meta-redacted/granite-redacted-receipt.json
