@@ -96,3 +96,75 @@
         let verified = verifier().verify_and_bind(&click(1)).expect("verified");
         assert_eq!(sandbox.submit(verified), Err(SandboxErrorV1::NotConfigured));
     }
+
+
+    #[test]
+    fn atomic_batch_has_the_same_fixed_wires_as_scalar_pushes() {
+        let mut scalar = SharedMemoryQueueV1::new(verifier(), 8).expect("scalar queue");
+        let mut batch = SharedMemoryQueueV1::new(verifier(), 8).expect("batch queue");
+        let actions: Vec<_> = (1..=6).map(click).collect();
+        for action in &actions {
+            scalar.push(action.clone()).expect("single action");
+        }
+        batch.push_batch(&actions).expect("verified atomic batch");
+        assert_eq!(batch.len(), 6);
+        for expected in &actions {
+            assert_eq!(scalar.pop().expect("scalar pop").frame(), expected);
+            assert_eq!(batch.pop().expect("batch pop").frame(), expected);
+        }
+        assert!(batch.is_empty());
+    }
+
+    #[test]
+    fn atomic_batch_rejects_a_late_sequence_gap_without_partial_effect() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 4).expect("queue");
+        queue.push(click(1)).expect("existing prefix");
+        assert_eq!(
+            queue.push_batch(&[click(2), click(4)]),
+            Err(ActionErrorV1::SequenceMismatch)
+        );
+        assert_eq!(queue.len(), 1);
+        queue.push_batch(&[click(2), click(3)]).expect("retry clean batch");
+        for expected in 1..=3 {
+            assert_eq!(queue.pop().expect("pop").frame(), &click(expected));
+        }
+    }
+
+    #[test]
+    fn atomic_batch_rejects_capacity_without_consuming_sequence() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        assert_eq!(
+            queue.push_batch(&[click(1), click(2), click(3)]),
+            Err(ActionErrorV1::QueueFull)
+        );
+        assert!(queue.is_empty());
+        queue.push_batch(&[click(1), click(2)]).expect("valid retry");
+        assert_eq!(queue.len(), 2);
+    }
+
+    #[test]
+    fn atomic_batch_rejects_late_capability_mismatch() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        let mut wrong = click(2);
+        wrong.capability_digest = digest(b"not-the-current-grant");
+        assert_eq!(
+            queue.push_batch(&[click(1), wrong]),
+            Err(ActionErrorV1::CapabilityDenied)
+        );
+        assert!(queue.is_empty());
+        queue.push(click(1)).expect("sequence was not consumed");
+    }
+
+    #[test]
+    fn atomic_batch_does_not_wrap_sequence_or_accept_empty_batches() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        assert_eq!(queue.push_batch(&[]), Err(ActionErrorV1::ProposalLimit));
+        queue.next_sequence = u64::MAX;
+        let mut last = click(1);
+        last.sequence = u64::MAX;
+        assert_eq!(
+            queue.push_batch(&[last]),
+            Err(ActionErrorV1::SequenceMismatch)
+        );
+        assert!(queue.is_empty());
+    }
