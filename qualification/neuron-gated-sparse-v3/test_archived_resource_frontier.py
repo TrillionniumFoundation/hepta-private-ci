@@ -165,6 +165,7 @@ class ArchivedEvidenceReviewTests(unittest.TestCase):
     def test_duplicate_json_keys_and_nan_refused(self):
         self.assert_bad(lambda:g.strict_json(b'{"x":1,"x":2}'),'duplicated')
         self.assert_bad(lambda:g.strict_json(b'{"x":NaN}'),'nonfinite')
+        self.assert_bad(lambda:g.strict_json(b'{"x":1e999}'),'nonfinite')
 
     def test_pinned_zip_does_not_accept_relabelled_or_corrupt_bytes(self):
         with tempfile.TemporaryDirectory() as tmp:
