@@ -18,6 +18,7 @@ from qualification.cell_meta_execution_af import physical_router_audit as numeri
 
 SCHEMA = "hepta.cell-meta-frozen-old-parent.v1"
 PARTITIONS = ("old_retention", "future_1", "future_2", "ood")
+ALL_PARTITIONS = ("old_train", "new_train", *PARTITIONS)
 FIELDS = frozenset({
     "schema", "source_panel_sha256", "source_kind", "source_scope", "seed",
     "freeze_point", "trained_new_rows", "split_proposed", "optimizer_steps_old_only",
@@ -34,20 +35,83 @@ def require(ok: bool, why: str) -> None:
         raise numeric.AuditError(why)
 
 
+def validate_panel_contract(panel: Any) -> tuple[int, int]:
+    """Independently audit source shape, chronology and group separation.
+
+    This is a structural check, not independent authentication of source
+    rows or labels. It deliberately never imports the Torch producer.
+    """
+    require(type(panel) is dict and set(panel) == {"schema", "source", "partitions"}
+            and panel["schema"] == "hepta.cell-meta-router-panel.v1",
+            "unregistered source panel fields")
+    source = panel["source"]
+    require(type(source) is dict and set(source) == {
+        "kind", "stem_sha256", "scope", "dim", "router_feature_index", "seed", "rule"},
+        "unregistered source identity fields")
+    width = source["dim"]
+    index = source["router_feature_index"]
+    require(type(width) is int and 2 <= width <= 64 and type(index) is int
+            and 0 <= index < width, "invalid original feature profile")
+    stem = source["stem_sha256"]
+    require(type(stem) is str and len(stem) == 64 and
+            all(c in "0123456789abcdef" for c in stem) and any(c != "0" for c in stem),
+            "missing source stem digest")
+    scope = source["scope"]
+    require(type(scope) is str and 1 <= len(scope) <= 96 and scope == scope.strip(),
+            "invalid source scope")
+    kind, rule, seed = source["kind"], source["rule"], source["seed"]
+    require(type(kind) is str and kind in ("synthetic", "external_unverified")
+            and type(rule) is str and rule in ("stable", "conditional", "external")
+            and (kind == "synthetic") == (rule != "external")
+            and type(seed) is int and 0 <= seed <= 2**31 - 1,
+            "incompatible source kind/rule/seed")
+    partitions = panel["partitions"]
+    require(type(partitions) is dict and set(partitions) == set(ALL_PARTITIONS),
+            "incomplete original cohort inventory")
+    ids: set[str] = set()
+    groups: set[str] = set()
+    bounds: dict[str, tuple[int, int]] = {}
+    total = 0
+    for part in ALL_PARTITIONS:
+        rows = partitions[part]
+        require(type(rows) is list and len(rows) >= (32 if part in
+                ("old_train", "new_train") else 16), "missing paired source rows")
+        total += len(rows)
+        require(total <= 8192, "oversized source inventory")
+        min_step, max_step = None, None
+        for row in rows:
+            require(type(row) is dict and set(row) == {
+                "id", "source_group", "step", "features", "label"},
+                "unknown source-row fields")
+            rid, group, step = row["id"], row["source_group"], row["step"]
+            require(type(rid) is str and 1 <= len(rid) <= 100 and rid not in ids
+                    and type(group) is str and 1 <= len(group) <= 100 and group not in groups,
+                    "duplicate case or source-family leakage")
+            require(type(step) is int and step >= 0, "noninteger source chronology")
+            features, label = row["features"], row["label"]
+            require(type(features) is list and len(features) == width
+                    and all(type(x) in (int, float) and math.isfinite(x) and -32 <= x <= 32
+                            for x in features)
+                    and type(label) is int and label in (0, 1),
+                    "invalid feature width/value or label")
+            ids.add(rid)
+            groups.add(group)
+            min_step = step if min_step is None else min(min_step, step)
+            max_step = step if max_step is None else max(max_step, step)
+        require(min_step is not None and max_step is not None, "empty source cohort")
+        bounds[part] = (min_step, max_step)
+    for older, later in zip(ALL_PARTITIONS, ALL_PARTITIONS[1:]):
+        require(bounds[older][1] < bounds[later][0],
+                "source chronology overlaps between train/retention/future/OOD")
+    return width, index
+
+
 def validate(panel: dict[str, Any], frozen: dict[str, Any],
              continued: dict[str, Any] | None = None) -> dict[str, Any]:
     """Replay frozen weights and identify an unfrozen, continued-SGD control."""
-    require(type(panel) is dict and panel.get("schema") == "hepta.cell-meta-router-panel.v1",
-            "unknown original panel")
-    source = panel.get("source")
-    partitions = panel.get("partitions")
-    require(type(source) is dict and type(partitions) is dict, "missing original source")
-    require(set(partitions) == {"old_train", "new_train", *PARTITIONS},
-            "incomplete original cohorts")
-    width = source.get("dim")
-    index = source.get("router_feature_index")
-    require(type(width) is int and 2 <= width <= 64 and type(index) is int
-            and 0 <= index < width, "invalid original feature profile")
+    width, index = validate_panel_contract(panel)
+    source = panel["source"]
+    partitions = panel["partitions"]
     require(type(frozen) is dict and set(frozen) == FIELDS, "unknown frozen artifact fields")
     require(frozen["schema"] == SCHEMA, "wrong frozen artifact schema")
     require(frozen["source_panel_sha256"] == numeric.digest(panel) and
@@ -74,9 +138,9 @@ def validate(panel: dict[str, Any], frozen: dict[str, Any],
     heads, gate = numeric.decode_fp32_weights(frozen, width)
     require(all(value == 0.0 for value in heads[width + 1:] + gate),
             "frozen old-parent unexpectedly contains split/router parameters")
-    # If training were skipped entirely, this is not the old-trained frozen control.
-    require(any(value != 0.0 for value in heads[:width + 1]),
-            "no evidence of changed parent weights")
+    # Zero parameter updates may be a legal result for a balanced old cohort.
+    # Neither zero nor nonzero weights prove that SGD actually occurred: the
+    # original training trace and physical resource meters remain unauthenticated.
     expected_p = frozen["predictions"]
     expected_e = frozen["evaluation"]
     require(type(expected_p) is dict and set(expected_p) == set(PARTITIONS)
@@ -154,15 +218,25 @@ def validate(panel: dict[str, Any], frozen: dict[str, Any],
         audit = numeric.validate(panel, continued)  # independent 4-arm FP32 replay
         require(audit["outcome"] == "NUMERIC_REPLAY_ONLY", "old comparator not independently replayed")
         existing = continued["results"][0]
+        require(type(continued["training_steps_each_stage"]) is int
+                and continued["training_steps_each_stage"] == steps,
+                "continued trial must have the same old-task training step count")
         require(existing["arm"] == "no_change" and existing["split_proposed"] is False
-                and existing["meters"]["optimizer_steps"] > steps
-                and existing["meters"]["sample_exposures"] > steps * old_count,
-                "v1 no_change must represent continued training, not frozen baseline")
+                and existing["meters"]["optimizer_steps"] == 2 * steps
+                and existing["meters"]["sample_exposures"] == steps * (
+                    2 * old_count + len(partitions["new_train"])),
+                "v1 no_change must represent matched-old-stage continued training")
         output["descriptive_accuracy_delta_continued_minus_frozen"] = {
             part: round(existing["evaluation"][part]["accuracy"] -
                         frozen["evaluation"][part]["accuracy"], 7)
             for part in PARTITIONS
         }
+        output["descriptive_brier_delta_continued_minus_frozen"] = {
+            part: round(existing["evaluation"][part]["brier"] -
+                        frozen["evaluation"][part]["brier"], 7)
+            for part in PARTITIONS
+        }
+        output["additional_continued_optimizer_steps"] = steps
     return output
 
 

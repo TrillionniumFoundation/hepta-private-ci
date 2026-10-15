@@ -31,6 +31,30 @@ must itself pass the existing independent V1 four-arm audit and is explicitly
 classified as **not frozen**. Both numerical meters and source provenance are
 still locally claimed; this is *not* independent evidence authentication.
 
+## Independent structural audit and valid no-update cases
+
+A caller-controlled SHA-256 can match a manipulated input panel. Before
+numerical replay, the independent stdlib auditor now checks exact source
+fields and all six cohort inventories, finite feature types and dimensions,
+non-Boolean labels, unique case and source-family identities, bounded row
+counts, and strict old-train -> new-train -> retention -> future_1 -> future_2
+-> OOD chronology. Recomputing the panel digest does not bypass these checks.
+
+The optional continued-training comparator must independently replay as the
+original V1 four-arm report **and** use the same old-stage SGD step count as
+this frozen Parent. Only descriptive paired accuracy/Brier deltas and the
+additional continued-training step count are emitted. Unequal total budgets
+never turn into an NDU effect-size or automatic selection.
+
+An exactly zero-delta frozen Head is valid: inspecting nonzero parameters
+cannot authenticate whether SGD ran, and rejecting zero weights would
+incorrectly exclude legitimate no-update outcomes. Source identity, training
+work counters, true hardware meters and pretrained model-origin signatures
+remain independently unverified regardless of numerical replay success.
+The new adversarial tests explicitly exercise altered-and-rehashed panel
+identities, source-family/time leakage, mismatched old-stage budgets and
+the zero-delta case. No additional effect authority is created.
+
 ## Run
 
 ```sh
