@@ -93,7 +93,9 @@ mod unix {
         .expect("queued but not yet committed");
         let original_wal = fs::read(&wal).expect("original WAL bytes");
         let original_marker = fs::read(&marker).expect("original marker bytes");
-        let staged = sink.read_local_frontier().expect("read-only original frontier");
+        let staged = sink
+            .read_local_frontier()
+            .expect("read-only original frontier");
         assert_eq!(staged.sequence, 0);
         assert_eq!(staged.committed_rows, 0);
         assert_eq!(staged.journal_bytes, 0);
@@ -121,8 +123,8 @@ mod unix {
         let root = original_private_root();
         let wal = root.path().join("actor-corrupt.wal");
         let marker = root.path().join("actor-corrupt.wal.owner-lock");
-        let sink = DurablePhaseMetricSinkV1::open(&wal, 8, 1, 60_000)
-            .expect("original Evidence writer");
+        let sink =
+            DurablePhaseMetricSinkV1::open(&wal, 8, 1, 60_000).expect("original Evidence writer");
         for _ in 0..3 {
             sink.record(PhaseMetricEventV1 {
                 scope_digest: Digest32::of_bytes(b"observed-scope"),
@@ -155,16 +157,20 @@ mod unix {
             .expect("in-place prior marker corruption");
         same_inode.sync_all().expect("persist corruption");
         assert!(sink.read_local_frontier().is_err());
-        assert!(!sink.healthy(), "a failed original Observer poisons the writer");
-        assert!(sink
-            .record(PhaseMetricEventV1 {
+        assert!(
+            !sink.healthy(),
+            "a failed original Observer poisons the writer"
+        );
+        assert!(
+            sink.record(PhaseMetricEventV1 {
                 scope_digest: Digest32::of_bytes(b"observed-scope"),
                 operation_digest: Digest32::of_bytes(b"forbidden-effect"),
                 phase: PhaseMetricKindV1::FinalUse,
                 latency_micros: 1,
                 succeeded: false,
             })
-            .is_err());
+            .is_err()
+        );
     }
 
     #[test]
@@ -204,11 +210,15 @@ mod unix {
         let wal = root.path().join("frontier.wal");
         let marker = root.path().join("frontier.wal.owner-lock");
         let mut owner = MetricsGroupCommitV1::open(&wal).expect("original Evidence owner");
-        owner.stage(sample()).expect("staged but uncommitted metric");
+        owner
+            .stage(sample())
+            .expect("staged but uncommitted metric");
         let before_wal = fs::read(&wal).expect("WAL before readback");
         let before_marker = fs::read(&marker).expect("marker before readback");
 
-        let frontier = owner.read_local_frontier().expect("original local observer");
+        let frontier = owner
+            .read_local_frontier()
+            .expect("original local observer");
         assert_eq!(frontier.sequence, 0);
         assert_eq!(frontier.committed_rows, 0);
         assert_eq!(frontier.journal_bytes, 0);
@@ -267,7 +277,9 @@ mod unix {
         original
             .write_all(&bytes)
             .expect("corrupt only the original first marker row");
-        original.sync_all().expect("persisted same-inode marker corruption");
+        original
+            .sync_all()
+            .expect("persisted same-inode marker corruption");
         assert_eq!(
             fs::metadata(&marker).expect("same marker inode").ino(),
             original_inode
