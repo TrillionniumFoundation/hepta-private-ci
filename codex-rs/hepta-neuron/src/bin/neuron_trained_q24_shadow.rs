@@ -744,8 +744,6 @@ fn execute() -> Result<serde_json::Value, String> {
     }))
 }
 
-
-
 fn main() {
     match execute() {
         Ok(result) => println!("{result}"),
