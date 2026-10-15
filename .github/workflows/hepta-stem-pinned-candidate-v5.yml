@@ -76,7 +76,7 @@ jobs:
             echo 'Skipped physical test is NOT admissible' >&2
             exit 1
           fi
-          grep -q 'Ran 2 tests' /tmp/hepta-stem-v5/physical.log
+          grep -q 'Ran 3 tests' /tmp/hepta-stem-v5/physical.log
           grep -q '^OK$' /tmp/hepta-stem-v5/physical.log
       - name: Retain source identity and explicit research-only disposition
         if: always()

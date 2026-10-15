@@ -1,0 +1,26 @@
+# V14 — Fixes from actual hosted CI failure logs (research / NO-GO)
+
+Exact failing source: \`30c36096aa713e3d7098a79c2f080dff2900b684\`.
+
+- V7 job 116188903826: safetensors import failed for missing packaging.
+- V6 job 116188905343: same missing packaging.
+- Multimodal job 116188904272: cryptography, psutil, NumPy and
+  other dependencies absent from isolated testing environment.
+- V5 job 116188904357: actual random-BERT prediction failed in
+  torch.embedding with index out of range. Model fixture allocated
+  17 embedding rows; vocabulary contains 18 entries. Its TRAIN examples
+  never referenced the last index; FUTURE examples did.
+
+V14 explicitly installs missing pinned dependencies and requires
+import preflights for affected isolated runners. The V5 fixture now
+allocates 18 embeddings and checks tokenizer length. A new negative
+physical test adds a 19th token to an unchanged stock checkpoint and
+requires LocalEncoder admission failure before training or inference.
+LocalEncoder also verifies every tokenizer token ID is within the
+already byte-verified model embedding range; no weight resizing,
+silent truncation, fallback or substitution is permitted. The V5 CI
+requires all 3 physical tests without skips.
+
+CI checks must run anew on the exact amended commit. A green contract
+does not certify real pretrained mmBERT/Granite quality, matched training,
+future NDU benefit, Rust data-plane performance or production authority.

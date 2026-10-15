@@ -324,6 +324,17 @@ class LocalEncoder:
             raise InputError("unverified loaded tensor")
         verify_snapshot(root, manifest)
         self.model = self.loaded.base_model
+        # A correctly hashed tokenizer can still exceed the hashed embedding
+        # matrix. Fail before training/prediction rather than torch.embedding.
+        embedding = self.model.get_input_embeddings()
+        if embedding is None or not hasattr(embedding, "num_embeddings"):
+            raise InputError("verified encoder has no bounded input embedding")
+        vocabulary = self.tokenizer.get_vocab()
+        if (not vocabulary or len(self.tokenizer) > embedding.num_embeddings
+                or any(type(index) is not int or index < 0
+                       or index >= embedding.num_embeddings
+                       for index in vocabulary.values())):
+            raise InputError("tokenizer vocabulary exceeds verified embedding capacity")
         self.forward_calls = 0
 
     @torch.no_grad()

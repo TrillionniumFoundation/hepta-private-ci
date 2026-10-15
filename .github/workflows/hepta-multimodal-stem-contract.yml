@@ -37,6 +37,9 @@ jobs:
           set -euo pipefail
           python3 -m venv /tmp/hepta-multimodal-stem-venv
           /tmp/hepta-multimodal-stem-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-multimodal-stem-venv/bin/pip install numpy==1.26.4 safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0 packaging==25.0
+          /tmp/hepta-multimodal-stem-venv/bin/python -c 'import numpy, packaging.version, cryptography, psutil, safetensors.torch; print("MULTIMODAL_IMPORT_PREFLIGHT_OK")'
+          /tmp/hepta-multimodal-stem-venv/bin/pip check
           /tmp/hepta-multimodal-stem-venv/bin/pip freeze > /tmp/hepta-multimodal-stem-environment.txt
       - name: Test frozen projection, feature reuse, scope fencing and local learning
         run: |

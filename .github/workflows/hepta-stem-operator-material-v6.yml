@@ -41,8 +41,9 @@ jobs:
           python3 -m venv /tmp/hepta-stem-v6-venv
           /tmp/hepta-stem-v6-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu \
             2>&1 | tee /tmp/hepta-stem-v6/install-torch.log
-          /tmp/hepta-stem-v6-venv/bin/pip install safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0 \
+          /tmp/hepta-stem-v6-venv/bin/pip install safetensors==0.6.2 cryptography==46.0.4 psutil==7.0.0 packaging==25.0 \
             2>&1 | tee /tmp/hepta-stem-v6/install-verify.log
+          /tmp/hepta-stem-v6-venv/bin/python -c 'import packaging.version, safetensors.torch, cryptography, psutil; print("V6_IMPORT_PREFLIGHT_OK")'
           /tmp/hepta-stem-v6-venv/bin/pip check
           /tmp/hepta-stem-v6-venv/bin/pip freeze > /tmp/hepta-stem-v6/environment.txt
       - name: Verify real safetensors and Ed25519 without any skipped cases
