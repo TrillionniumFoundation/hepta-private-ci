@@ -11,6 +11,7 @@ from pathlib import Path
 
 from cross_fact_granite_campaign import (ARMS, SEEDS, _digest, full_fit_gate,
                                          matching_training_budgets, matched_fresh_gate)
+from cross_fact_granite_receipt_oracle import verify_observed_training
 
 
 def require(condition, message):
@@ -96,8 +97,10 @@ def review(root):
             and plan['external_result_was_used_for_selection'] is False,
             'research and no-heldout-selection commitments required')
     code = Path(__file__).parent
-    require(set(plan['new_code_sha256']) == {'cross_fact_bridge.py', 'cross_fact_granite_campaign.py'},
-            'unexpected source inventory entries')
+    require(set(plan['new_code_sha256']) == {
+        'cross_fact_bridge.py', 'cross_fact_granite_campaign.py',
+        'cross_fact_granite_receipt_oracle.py'},
+        'unexpected source inventory entries')
     require(all(_digest(code / name) == digest for name, digest in plan['new_code_sha256'].items()),
             'new source changed after run')
     cases = build_binding_cases('train', groups=32, seed=41)
@@ -147,6 +150,10 @@ def review(root):
                     'training schedule/exposure mismatch')
             require(receipt['case_ids'] == ids and receipt['train_gate_passed'] is row['train_gate_passed'],
                     'training case or gate mismatch')
+            replay = verify_observed_training(cases, seed, receipt,
+                                              steps=8000, batch_size=16)
+            require(replay['completed_steps'] == row['completed_steps'],
+                    'independent physical update replay differs from summary')
             last_step = receipt['diagnostics'][-1]['optimizer_step']
             require(0 <= last_step <= receipt['completed_steps'],
                     'training metric checkpoint inconsistent')
