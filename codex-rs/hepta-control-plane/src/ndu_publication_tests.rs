@@ -852,9 +852,8 @@ fn symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner() {
     assert_eq!(std::fs::read(&canonical_path).unwrap(), journal_before);
     assert_eq!(std::fs::read(&canonical_lock).unwrap(), marker_before);
 
-    let reopened =
-        NduPublicationOwnerV1::open_production(&canonical_path, frozen, Digest32::ZERO)
-            .expect("real owner stays readable under the canonical path");
+    let reopened = NduPublicationOwnerV1::open_production(&canonical_path, frozen, Digest32::ZERO)
+        .expect("real owner stays readable under the canonical path");
     assert!(reopened.current().is_ok());
 }
 
