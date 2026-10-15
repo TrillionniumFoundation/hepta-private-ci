@@ -8,11 +8,17 @@ on:
       - scripts/memory_cell/test_memory_original_crossfile_trace.py
       - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
       - .github/workflows/hepta-memory-original-crossfile-static.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell/memory_original_crossfile_trace.py
+      - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+      - .github/workflows/hepta-memory-original-crossfile-static.yml
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-original-crossfile-static-${{ github.sha }}
+  group: memory-original-crossfile-static-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: false
 jobs:
   cross-file-static-integrity:
@@ -26,12 +32,14 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Exact-source SHA and independent source download
+        env:
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$PIN"
           mkdir -p /tmp/crossfile-static
           curl --fail --silent --show-error --location --retry 3 --max-time 180 \
             -H "Authorization: Bearer ${GH_TOKEN}" \
