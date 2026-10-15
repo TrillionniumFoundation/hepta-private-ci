@@ -2488,3 +2488,142 @@ fn borrowed_stem_payload_hash_agrees_with_legacy_across_q24_sign_and_bounds() {
         assert_eq!(old, borrowed.to_string());
     }
 }
+
+
+
+#[test]
+fn borrowed_head_and_legacy_owned_final_use_proposals_agree_under_live_and_denied_claims() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.borrowed-head-id".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("actual Head");
+
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let owned = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
+        )
+        .expect("historical owned Head interface");
+    let borrowed = worker
+        .expected_stem_final_use_binding_borrowed_v1(
+            100,
+            &source,
+            &access,
+            &head,
+            &features,
+            &authorization,
+        )
+        .expect("new borrowed Head interface");
+    assert_eq!(owned, borrowed);
+    assert_eq!(worker.driver.feature_calls, 0);
+
+    let mut revoked = access.clone();
+    revoked.revocation_observed = true;
+    let owned_rejected = worker.expected_stem_final_use_binding_v1(
+        100,
+        &source,
+        &revoked,
+        head.clone(),
+        &features,
+        &authorization,
+    );
+    let borrowed_rejected = worker.expected_stem_final_use_binding_borrowed_v1(
+        100,
+        &source,
+        &revoked,
+        &head,
+        &features,
+        &authorization,
+    );
+    assert_eq!(owned_rejected, Err(Error::FeatureContract));
+    assert_eq!(owned_rejected, borrowed_rejected);
+
+    let mut stolen = authorization.clone();
+    stolen.lease_payload_digest = "c".repeat(64);
+    let old_stolen = worker.expected_stem_final_use_binding_v1(
+        100,
+        &source,
+        &access,
+        head.clone(),
+        &features,
+        &stolen,
+    );
+    let new_stolen = worker.expected_stem_final_use_binding_borrowed_v1(
+        100,
+        &source,
+        &access,
+        &head,
+        &features,
+        &stolen,
+    );
+    assert_eq!(old_stolen, Err(Error::PayloadMismatch));
+    assert_eq!(old_stolen, new_stolen);
+    assert_eq!(worker.driver.feature_calls, 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn borrowed_head_batch_proposal_remains_exactly_the_signed_member_binding() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.batch-head-ids".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let (second_head, second_auth) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (artifacts, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 {
+            selected_head: &head,
+            authorization: &authorization,
+        },
+        StemBatchMemberProposalV1 {
+            selected_head: &second_head,
+            authorization: &second_auth,
+        },
+    ];
+    let plan = worker
+        .prepare_stem_final_use_batch_proposal_v1(
+            100,
+            StemBatchProposalV1 {
+                source: &source,
+                access: &access,
+                cas_verifier: &verifier,
+                verified_artifacts: &artifacts,
+                feature_vector_q24: &features,
+                members: &members,
+            },
+        )
+        .expect("complete non-authorizing batch");
+    for (member, bound) in members.iter().zip(&plan.bindings) {
+        let owned = worker
+            .expected_stem_final_use_binding_v1(
+                100,
+                &source,
+                &access,
+                member.selected_head.clone(),
+                &features,
+                member.authorization,
+            )
+            .expect("historical Head entry");
+        assert_eq!(*bound, owned);
+    }
+    assert_eq!(plan.group_binding.scope_sha256, plan.bindings[0].scope_sha256);
+    assert!(!plan.authority.grants_any());
+    assert_eq!(worker.driver.feature_calls, 0);
+}
