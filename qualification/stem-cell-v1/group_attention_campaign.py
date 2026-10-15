@@ -19,6 +19,8 @@ import torch
 
 from execution_meter import WorkLedger, TRANSFORMER_POLICY_SCHEMA
 from group_attention_curriculum import build_train_attention
+from group_checkpoint_audit import verify_checkpoint_file
+from safetensors.torch import save_file as write_safetensors
 from group_campaign import packed, critic_rows
 from group_core import Core
 from group_critic import fit_critic
@@ -85,7 +87,8 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "hf_encoder_kernel.py", "execution_meter.py", "aten_work.py",
                     "group_campaign.py", "group_loop.py", "group_critic.py",
                     "system2_execution.py", "ndu_continuation.py",
-                    "paired_execution.py", "transformer_work.py", "next_round_matrix.py")
+                    "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
+                    "group_checkpoint_audit.py")
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
         seed=seed, steps=steps, train_count=train_count,
         heldout_count=heldout_count, max_depth=4, attention_weight=attention_weight,
@@ -169,6 +172,33 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             or training["core"]["sample_and_depth_sha256"] !=
                training["attention"]["sample_and_depth_sha256"]):
         raise ValueError("paired initial weights, terminal weights or sampling controls drifted")
+    # Store the exact starting Core and all four fitted model tensors, not just
+    # uncheckable parameter labels. The independent auditor uses stdlib only.
+    archive_wall, archive_cpu = time.perf_counter_ns(), time.process_time_ns()
+    checkpoint_models = {"core_initial": core, **models}
+    checkpoints = {}
+    for checkpoint_id, candidate in checkpoint_models.items():
+        output_path = root / f"group-{checkpoint_id}.safetensors"
+        write_safetensors({name: value.detach().cpu().contiguous().clone()
+                           for name, value in candidate.state_dict().items()},
+                          str(output_path))
+        checked = verify_checkpoint_file(output_path)
+        if checked["model_sha256"] != parameter_digest(candidate):
+            raise ValueError("safetensors bytes do not match source weights")
+        checkpoints[checkpoint_id] = dict(
+            file=output_path.name,
+            model_sha256=checked["model_sha256"],
+            checkpoint_sha256=checked["checkpoint_sha256"],
+            bytes=checked["bytes"],
+            tensor_count=len(checked["tensors"]),
+            authority="DENY_ALL")
+    checkpoint_cost = dict(
+        wall_ns=time.perf_counter_ns() - archive_wall,
+        cpu_ns=time.process_time_ns() - archive_cpu,
+        total_artifact_bytes=sum(v["bytes"] for v in checkpoints.values()),
+        files=checkpoints,
+        independent_execution_attested=False)
+
     # Fit model-specific frozen critics ONLY on the separate validation group.
     # This pays the complete existing propose/verify/value/revise executor.
     critic_start_wall, critic_start_cpu = time.perf_counter_ns(), time.process_time_ns()
@@ -287,6 +317,7 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
         protocol_sha256=digest_json(protocol), seed=seed,
         runtime=dict(python=platform.python_version(), torch=torch.__version__),
         initial_core_sha256=initial_core_digest, training=training,
+        checkpoint_materialization=checkpoint_cost,
         wide_parameter_match=geometry, encoder_cost=encoder_cost,
         final_loaded_tensor_verification=final_loaded_tensor_verification,
         teacher=teacher_receipt, summaries=summaries, critic_cost=critic_cost,
