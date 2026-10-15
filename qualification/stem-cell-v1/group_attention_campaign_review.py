@@ -48,6 +48,7 @@ REQUIRED_SOURCES = (
     "group_attention_slot_review.py", "group_token_id_binding.py",
     "group_abort_trace_audit.py", "group_attention_coverage.py",
     "group_terminal_evidence.py", "group_terminal_receipt_review.py",
+    "group_feedback_factorial_review.py", "group_feedback_factorial_campaign.py",
 )
 
 
