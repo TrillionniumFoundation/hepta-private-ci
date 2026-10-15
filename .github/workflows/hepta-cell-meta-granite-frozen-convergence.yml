@@ -1,0 +1,86 @@
+name: Hepta Cell Meta Granite Frozen E3 convergence (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py'
+      - 'qualification/cell_meta_execution_af/GRANITE_FROZEN_PARENT_JOIN.md'
+      - 'qualification/cell_meta_execution_af/physical_router_frozen_old*.py'
+      - '.github/workflows/hepta-cell-meta-granite-real.yml'
+      - '.github/workflows/hepta-cell-meta-granite-frozen-convergence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-granite-frozen-e3-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONPATH: '.'
+
+jobs:
+  two-parent-native-physical:
+    name: Original Granite and truly-frozen CPU tests (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Checkout exact source with no persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source and clean worktree
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Construct exact prospective merge for evaluation, not publication
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Granite Frozen Qualification
+          author-email: hepta-granite-frozen-research@users.noreply.github.com
+          message: Synthetic Granite Frozen Meta convergence
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned CPU numeric backend only
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+      - name: Run original and two-parent exact source tests
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            qualification/cell_meta_execution_af/physical_router_trial.py \
+            qualification/cell_meta_execution_af/physical_router_audit.py \
+            qualification/cell_meta_execution_af/physical_router_real_bridge.py \
+            qualification/cell_meta_execution_af/physical_router_real_review.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_old.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_old_audit.py \
+            qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py
+          python -m unittest qualification.cell_meta_execution_af.physical_router_trial_tests -v
+          python -m unittest qualification.cell_meta_execution_af.physical_router_real_tests -v
+          python -m unittest qualification.cell_meta_execution_af.physical_router_frozen_old_tests -v
+          python -m unittest qualification.cell_meta_execution_af.physical_router_real_frozen_tests -v
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

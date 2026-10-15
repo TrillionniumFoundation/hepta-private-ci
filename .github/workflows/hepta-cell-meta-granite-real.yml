@@ -57,13 +57,19 @@ jobs:
           python -m py_compile \
             qualification/cell_meta_execution_af/physical_router_real_bridge.py \
             qualification/cell_meta_execution_af/physical_router_real_review.py \
-            qualification/cell_meta_execution_af/physical_router_real_tests.py
+            qualification/cell_meta_execution_af/physical_router_real_tests.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_old.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_old_audit.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_old_tests.py \
+            qualification/cell_meta_execution_af/physical_router_real_frozen_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_trial_tests.py'
+          python -m unittest qualification.cell_meta_execution_af.physical_router_frozen_old_tests -v
+          python -m unittest qualification.cell_meta_execution_af.physical_router_real_frozen_tests -v
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -205,12 +211,23 @@ jobs:
             python qualification/cell_meta_execution_af/physical_router_audit.py \
               --panel "$ROOT/$seed-trial-panel.json" \
               --report "$ROOT/$seed-trial-report.json" > "$ROOT/$seed-numeric-review.json"
+            # The first V1 "no_change" arm is unsplit-but-still-trained:
+            # a separate OLD-ONLY frozen Parent is mandatory for causal contrast.
+            python qualification/cell_meta_execution_af/physical_router_frozen_old.py \
+              --panel "$ROOT/$seed-trial-panel.json" --steps 24 \
+              --report "$ROOT/$seed-frozen-old-report.json"
+            python qualification/cell_meta_execution_af/physical_router_frozen_old_audit.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --frozen "$ROOT/$seed-frozen-old-report.json" \
+              --continued "$ROOT/$seed-trial-report.json" \
+              > "$ROOT/$seed-frozen-old-audit.json"
           done
           python - <<'PY'
           import json,os
           from pathlib import Path
           r=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
           out=[]
+          frozen_baselines=[]
           for seed in (41,47,53):
               x=json.loads((r/f'{seed}-trial-report.json').read_text())
               assert x['authority_posture']=='DENY_ALL'
@@ -221,6 +238,25 @@ jobs:
                               'retrospective_test_1':arm['evaluation']['future_1'],
                               'retrospective_test_2':arm['evaluation']['future_2'],
                               'head_forward_rows':arm['meters']['head_forward_rows']})
+              frozen=json.loads((r/f'{seed}-frozen-old-report.json').read_text())
+              frozen_audit=json.loads((r/f'{seed}-frozen-old-audit.json').read_text())
+              assert frozen['authority_posture']=='DENY_ALL'
+              assert frozen['ndu_selection_authorized'] is False
+              assert frozen['future_window_prospective'] is False
+              assert frozen['real_pretrained_encoder_executed'] is False
+              assert frozen_audit['outcome']=='FROZEN_OLD_PARENT_REPLAY_ONLY'
+              assert frozen_audit['existing_v1_no_change_is_frozen'] is False
+              assert frozen_audit['training_budget_matched'] is False
+              assert frozen_audit['additional_continued_optimizer_steps']==24
+              frozen_baselines.append({
+                  'seed':seed,'arm':'frozen_old_parent',
+                  'retrospective_test_1':frozen['evaluation']['future_1'],
+                  'retrospective_test_2':frozen['evaluation']['future_2'],
+                  'old_only_optimizer_steps':frozen['meters']['optimizer_steps'],
+                  'continued_minus_frozen_brier':
+                      frozen_audit['descriptive_brier_delta_continued_minus_frozen'],
+                  'training_total_compute_matched':False
+              })
           (r/'descriptive-retrospective-summary.json').write_text(json.dumps({
               'schema':'hepta.cell-meta-granite-descriptive-only.v1',
               'registered_public_model':'ibm-granite/granite-embedding-97m-multilingual-r2',
@@ -229,7 +265,10 @@ jobs:
               'real_ood_verified':False,'future_window_prospective':False,
               'ndu_selection_authorized':False,'total_compute_matched':False,
               'production_admission':'BLOCKED','authority_posture':'DENY_ALL',
-              'arms':out},sort_keys=True))
+              'arms':out,
+              'true_old_only_frozen_baselines':frozen_baselines,
+              'legacy_no_change_is_unsplit_continued_training':True,
+              'old_only_vs_continued_training_budget_matched':False},sort_keys=True))
           PY
       - name: Publish immutable numeric evidence and preserve all failures; never weights/texts
         if: always()
@@ -248,5 +287,7 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-bridge-receipt.json
             ${{ runner.temp }}/hepta-meta-real/*-feature-review.json
             ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-frozen-old-report.json
+            ${{ runner.temp }}/hepta-meta-real/*-frozen-old-audit.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
