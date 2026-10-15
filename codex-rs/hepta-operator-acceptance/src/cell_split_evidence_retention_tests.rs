@@ -305,7 +305,12 @@ fn forensic_metrics_ack_binding_requires_all_four_original_commits() {
         match change {
             0 => altered.plan_digest = "11".repeat(32),
             1 => altered.transcript_digest = "22".repeat(32),
-            2 => altered.acknowledged_steps.pop(),
+            2 => {
+                assert!(
+                    altered.acknowledged_steps.pop().is_some(),
+                    "four committed originals expected in test fixture"
+                );
+            }
             3 => altered.acknowledged_steps.swap(1, 2),
             4 => altered.acknowledged_steps[0].owner_id = "other.owner".into(),
             5 => altered.acknowledged_steps[1].idempotency_key = "be".repeat(32),

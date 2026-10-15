@@ -117,29 +117,45 @@ trust identity. They do **not** establish independent custody or authorization:
 the selector must still supply the externally pinned config hash and each
 effect owner must prove current signed state on every readback.
 
-## Commands
+## Commands: read-only inspection while physical Split is denied
 
 Use the externally supplied pin; do **not** synthesize it from the file at
-execution time.
+execution time. The supported operator CLI command is **transcript only**:
 
 ```sh
-hepta-operator-acceptance cell-split-execution advance \
-  /private/canonical/cell-split-config.json "$PIN_FROM_INDEPENDENT_OWNER"
-
 hepta-operator-acceptance cell-split-execution transcript \
   /private/canonical/cell-split-config.json "$PIN_FROM_INDEPENDENT_OWNER"
 ```
 
-An `advance` invocation calls at most one effect. For a new step,
-it first requires a fresh, nonce-bound, signed **negative readback** from the
-original effect owner. Missing/unreachable owners or an already committed
-effect cannot cause an otherwise new `prepared` intent to be written. This
-read-only preflight is not a final-use authorization, nor proof that a future
-mutation will succeed. After that preflight, the coordinator durably writes
-the exact `prepared` intent **before** entering the physical mutation. On an
-unknown or lost acknowledgement, it returns a non-success result. A later
-invocation reads the original owner state via `reconcile`, never retransmits
-that effect or repeats the new-effect preflight.
+The historical `cell-split-execution advance` command is deliberately **not
+available for production**. The public
+`run_pinned_cell_split_execution_v1("advance", ...)` entry returns an error
+before reading a config or creating a ledger. The generic metrics/callback
+entry also denies fresh effects in an ordinary non-test build; neither a
+configuration SHA nor a healthy Evidence sink is an independent Control
+cutover transaction. The `reconcile` action is not a public CLI command:
+`run_pinned_cell_split_reconcile_only_v1` is an explicitly separate library
+entry that can read back **only an already prepared** original operation.
+
+### Future one-effect protocol (not yet production-admitted)
+
+The durable coordinator's `advance` protocol is designed to call at most one
+effect per invocation **after** the original shared Control/Neuron Begin,
+signed CNS original-owner effect/Commit, independent final-use and recovery
+capabilities have been reviewed and connected. Until then, P0 remains
+**DENY_ALL**: do not enable an `advance` caller by supplying a mock port,
+allow-all admission callback, synthesized permit or copied digest.
+
+For a new, independently admitted step, it first requires a fresh,
+nonce-bound, signed **negative readback** from the original effect owner.
+Missing/unreachable owners or an already committed effect cannot cause an
+otherwise new `prepared` intent to be written. This read-only preflight is
+not a final-use authorization, nor proof that a future mutation will succeed.
+After that preflight, the coordinator durably writes the exact `prepared`
+intent **before** entering the physical mutation. On an unknown or lost
+acknowledgement, it returns a non-success result. A later invocation reads
+the original owner state via `reconcile`, never retransmits that effect or
+repeats the new-effect preflight.
 The CLI cannot bypass the coordinator's journal lock, predecessor binding,
 or verification of original owner signatures.
 
@@ -251,11 +267,13 @@ current mapping fails closed.
 
 A selection receipt is **not** a final-use grant. The four independent
 effect services must still authenticate current Selector/NDU and one-shot
-final-use at their own mutation/readback boundaries. The current bridge is
-a callable source ingress, not a canonical startup composition or live
-deployment registration. The exact selected candidate-to-child route
-association, CNS durable cutover, independent observer evidence and
-target-host power-loss/recovery qualification remain unproven.
+final-use at their own mutation/readback boundaries. The current bridge supplies admission validation but **cannot dispatch
+new effects in a non-test build**: the production coordinator rejects fresh
+advancement until the original shared Control/Neuron durable cutover protocol
+exists. It is not a canonical startup composition or live deployment
+registration. The exact selected candidate-to-child route association, CNS
+durable cutover, independent observer evidence and target-host power-loss/
+recovery qualification remain unproven.
 
 Targeted source check:
 
