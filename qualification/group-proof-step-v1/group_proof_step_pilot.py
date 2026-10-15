@@ -96,6 +96,8 @@ def execute_campaign(seed, *, train_count=128, test_count=64):
                          "input": "public_text_only_grammar_specific"},
             "evaluation_cpu_ns": time.process_time_ns() - start,
             "summary": totals, "observations": observed,
+            "source_cases": [dict(source_text=text, constructor_label=label, source_group=group, depth=depth)
+                             for text, label, group, depth in test],
             "stem_encoder_forwards": 0, "encoder_work_not_qualified": True,
             "independent_task_labels": "source_constructor_not_model_inference",
             "real_multimodal": False, "actual_native_effects": False,
