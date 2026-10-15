@@ -94,6 +94,10 @@ pub struct CellSplitCnsKernelRuntimePortV1<W: CellSplitCnsKernelWitnessV1> {
     intent: CellSplitExecutionIntentV1,
     runtime_key: VerifyingKey,
     witness: W,
+    // There is no original same-owner Control Begin/Commit transaction on this
+    // branch. A signed CNS observation or Final-use grant cannot mint one.
+    // Infallible prevents any safe caller from constructing an effect permit.
+    atomic_control_cutover_prepared: Option<std::convert::Infallible>,
 }
 
 impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
@@ -142,6 +146,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             intent,
             runtime_key,
             witness,
+            atomic_control_cutover_prepared: None,
         })
     }
 
@@ -271,6 +276,12 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // DENY all new physical CNS effects until a reviewed original Control
+        // Prepare -> signed CNS effect -> Commit protocol actually exists.
+        // Fail before taking a successor or consuming any Final-use nonce.
+        self.atomic_control_cutover_prepared
+            .as_ref()
+            .ok_or("CNS mutation denied: no shared durable Control/Neuron cutover transaction")?;
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());
