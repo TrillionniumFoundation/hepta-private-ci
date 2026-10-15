@@ -5,10 +5,12 @@ selected model or a replacement for the first independently scored model job.
 The baseline is the **real frozen DINOv2 vision nearest-prototype classifier**,
 not an artificially weak unaligned text/image vector comparison.
 
-`e2_beans_paired_uncertainty.py` reads exactly five SHA-256-pinned input
-files: source manifest, future source-only JSONL, independent future class
-labels, sealed 4-arm future predictions, and the earlier independent class
-readout. It never imports the producer, trainer, model or first scorer. It
+`e2_beans_paired_uncertainty.py` reads exactly six SHA-256-pinned input
+files: source manifest, separately withheld target manifest, future source-only JSONL,
+independent future class labels, sealed 4-arm future predictions, and the
+earlier independent class readout. A target SHA by itself is **not** sufficient:
+the withheld manifest must bind the original test Parquet SHA and the exact
+source-only manifest before the scorer may load class labels. It never imports the producer, trainer, model or first scorer. It
 independently matches all 24 case/group/scope/time/image byte digests and each
 predicted class; recomputes original score totals, source class coverage (8 per
 class), four-arm accuracy, per-class results and the paired rescued/harmed
@@ -33,6 +35,8 @@ operator from the exact completed natural Beans workflow):
 python3 experiments/shared_stem_cell/e2_beans_paired_uncertainty.py \
   --source-manifest source-manifest.json \
   --source-manifest-sha256 "$SOURCE_MANIFEST_SHA" \
+  --target-manifest target-manifest.json \
+  --target-manifest-sha256 "$TARGET_MANIFEST_SHA" \
   --future-source future_images.jsonl \
   --future-source-sha256 "$FUTURE_SOURCE_SHA" \
   --future-targets future_class_targets.jsonl \
@@ -55,3 +59,8 @@ archive rehash/attestation; adequate source-group dedup, stronger text/OCR/nativ
 multimodal controls, equivalent training/compute budgets, independent future
 1/2/3 windows, actual 64/256/1024/4096 Cell target-host RSS/p95/p99 and
 revocation/recovery, original owner `blocking-ci` and FinalUse. No promotion.
+
+The paired evaluator V2 strict-entrypoint refuses to score if source and withheld
+manifests do not match the pinned original Beans train/test Parquet revisions
+and the exact future source/target file byte digests. This extra target-owner
+lineage check is byte integrity, **not** cryptographic ground truth ownership.

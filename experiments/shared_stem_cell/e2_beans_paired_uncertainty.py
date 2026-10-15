@@ -14,6 +14,11 @@ PREFIX = 'hepta.e2.beans-natural-retrospective.v1'
 ARMS = ('fitted', 'rotated_target_control', 'unaligned_identity', 'vision_prototype')
 CLASSES = ('angular_leaf_spot', 'bean_rust', 'healthy')
 HEX = set('0123456789abcdef')
+DATA_REVISION = '27aa014ce09b193e1a6f58112d4a66e0eddb69c5'
+TRAIN_PARQUET_SHA = '7f905a7323966a58e89b8e839ed656bb869fc82d16a3fadc7dce40972a5f8b19'
+TEST_PARQUET_SHA = '534a6b0648f585d69b7ec0ad7a7540720d60c8db8106dc6d0508296316f6cb27'
+SOURCE_FILES = {'train_images.jsonl', 'future_images.jsonl', 'train_anchors.jsonl', 'train_class.jsonl'}
+WITHHELD_FILES = {'future_caption_targets.jsonl', 'future_class_targets.jsonl'}
 
 class AuditFailure(ValueError):
     pass
@@ -53,6 +58,52 @@ def read_pinned(path, expected, jsonl=False):
     records = [parse(line + b'\n') for line in blob.splitlines()]
     require(1 <= len(records) <= 256, 'invalid row cardinality')
     return records
+
+def require_original_target_seal(source_manifest, source_digest, target_manifest,
+                                 target_digest, future_source_digest, future_target_digest):
+    """Bind original, separately withheld target bytes before class scoring.
+
+    SHA-256 gives byte identity, NOT independent label-owner attestation.
+    Returns no production or model-selection authority.
+    """
+    def good_sha(value):
+        return type(value) is str and len(value)==64 and not set(value).difference(HEX)
+    require(all(good_sha(v) for v in (source_digest, target_digest,
+            future_source_digest, future_target_digest)), 'missing strict byte pins')
+    require(type(source_manifest) is dict and
+            sha(canonical(source_manifest))==source_digest and
+            source_manifest.get('schema')==PREFIX+'.source-plan' and
+            source_manifest.get('dataset_repo')=='AI-Lab-Makerere/beans' and
+            source_manifest.get('dataset_revision')==DATA_REVISION and
+            source_manifest.get('train_parquet_sha256')==TRAIN_PARQUET_SHA and
+            source_manifest.get('phase_time_is_not_original_timestamp') is True and
+            source_manifest.get('test_cases')==24 and
+            source_manifest.get('production_accepted') is False and
+            source_manifest.get('stem_selected') is False and
+            source_manifest.get('authority')=='DENY_ALL' and
+            type(source_manifest.get('file_sha256s')) is dict and
+            set(source_manifest['file_sha256s'])==SOURCE_FILES and
+            all(good_sha(x) for x in source_manifest['file_sha256s'].values()) and
+            source_manifest['file_sha256s']['future_images.jsonl']==future_source_digest,
+            'source must bind original Beans bytes without future labels')
+    require(type(target_manifest) is dict and
+            set(target_manifest)=={'schema','source_manifest_sha256',
+                'original_test_parquet_sha256','file_sha256s','production_accepted','authority'} and
+            sha(canonical(target_manifest))==target_digest and
+            target_manifest['schema']==PREFIX+'.withheld-target-plan' and
+            target_manifest['source_manifest_sha256']==source_digest and
+            target_manifest['original_test_parquet_sha256']==TEST_PARQUET_SHA and
+            target_manifest['production_accepted'] is False and
+            target_manifest['authority']=='DENY_ALL' and
+            type(target_manifest['file_sha256s']) is dict and
+            set(target_manifest['file_sha256s'])==WITHHELD_FILES and
+            all(good_sha(x) for x in target_manifest['file_sha256s'].values()) and
+            target_manifest['file_sha256s']['future_class_targets.jsonl']==future_target_digest,
+            'unverified withheld original test-target provenance')
+    return {'withheld_manifest_sha256':target_digest,
+            'target_byte_lineage_consistent':True,
+            'independent_ground_truth_owner_attested':False}
+
 
 def wilson(correct, total):
     require(type(correct) is int and type(total) is int and 0 <= correct <= total and total > 0,
@@ -180,9 +231,14 @@ def main():
     for key in ('source_manifest','future_source','future_targets','sealed_predictions','original_readout'):
         a.add_argument('--'+key.replace('_','-'), required=True, type=Path)
         a.add_argument('--'+key.replace('_','-')+'-sha256', required=True)
+    a.add_argument('--target-manifest', required=True, type=Path)
+    a.add_argument('--target-manifest-sha256', required=True)
     a.add_argument('--output', required=True, type=Path)
     p=a.parse_args()
     m=read_pinned(p.source_manifest,p.source_manifest_sha256)
+    target_manifest=read_pinned(p.target_manifest,p.target_manifest_sha256)
+    proof=require_original_target_seal(m,p.source_manifest_sha256,target_manifest,
+              p.target_manifest_sha256,p.future_source_sha256,p.future_targets_sha256)
     s=read_pinned(p.future_source,p.future_source_sha256,True)
     t=read_pinned(p.future_targets,p.future_targets_sha256,True)
     q=read_pinned(p.sealed_predictions,p.sealed_predictions_sha256)
@@ -193,6 +249,7 @@ def main():
             o['predictions_sha256']==p.sealed_predictions_sha256,
             'original evaluator not bound to same sealed case cohort')
     result=audit(m,s,t,q,o)
+    result.update(proof)
     require(not p.output.exists() and p.output.parent.is_dir(), 'write-once output required')
     with p.output.open('xb') as f:f.write(canonical(result))
     print(json.dumps(result,sort_keys=True))
