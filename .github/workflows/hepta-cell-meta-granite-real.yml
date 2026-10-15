@@ -6,6 +6,9 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_real_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_top1*.py'
       - 'qualification/cell_meta_execution_af/physical_router_hard*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_frozen_*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_fivearm_*.py'
+      - 'qualification/cell_meta_execution_af/FIVE_ARM_GRANITE_HANDOFF.md'
       - 'qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md'
       - 'qualification/cell_meta_execution_af/TOP1_SPARSE_ROUTER_REALITY.md'
       - 'qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md'
@@ -74,7 +77,12 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_top1_tests.py \
             qualification/cell_meta_execution_af/physical_router_hard_train.py \
             qualification/cell_meta_execution_af/physical_router_hard_review.py \
-            qualification/cell_meta_execution_af/physical_router_hard_tests.py
+            qualification/cell_meta_execution_af/physical_router_hard_tests.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_baseline.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_review.py \
+            qualification/cell_meta_execution_af/physical_router_frozen_tests.py \
+            qualification/cell_meta_execution_af/physical_router_fivearm_review.py \
+            qualification/cell_meta_execution_af/physical_router_fivearm_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -87,6 +95,12 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_hard_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_frozen_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_fivearm_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -249,7 +263,61 @@ jobs:
               --posthoc-report "$ROOT/$seed-top1-report.json" \
               --hard-report "$ROOT/$seed-hard-train-report.json" \
               > "$ROOT/$seed-hard-train-review.json"
+            # Additional true no-change model: reuse the exact stage-1 parent
+            # without any stage-2 training or Router. Historical no_change
+            # means unsplit *continued* learning and must retain that meaning.
+            python qualification/cell_meta_execution_af/physical_router_frozen_baseline.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --posthoc-report "$ROOT/$seed-top1-report.json" \
+              --hard-report "$ROOT/$seed-hard-train-report.json" \
+              --out "$ROOT/$seed-frozen-report.json"
+            python qualification/cell_meta_execution_af/physical_router_frozen_review.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --posthoc-report "$ROOT/$seed-top1-report.json" \
+              --hard-report "$ROOT/$seed-hard-train-report.json" \
+              --frozen-report "$ROOT/$seed-frozen-report.json" \
+              > "$ROOT/$seed-frozen-review.json"
+            # Independent five-arm numeric and cost-accounting comparison.
+            # A green report is never an independent NDU/scientific decision.
+            python qualification/cell_meta_execution_af/physical_router_fivearm_review.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --posthoc-report "$ROOT/$seed-top1-report.json" \
+              --hard-report "$ROOT/$seed-hard-train-report.json" \
+              --frozen-report "$ROOT/$seed-frozen-report.json" \
+              --out "$ROOT/$seed-fivearm-report.json"
           done
+          # Identical original source/features/labels in all three seed panels;
+          # an apparent independent-seed gain must not count reused source as
+          # three independent task families or prospective observations.
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'hepta-meta-real'
+          expected=['frozen_stage1_no_second_phase_learning','unsplit_continued_update',
+                    'fixed_router','learned_router','adaptive_split']
+          reference=None
+          for seed in (41,47,53):
+              panel=json.loads((root/f'{seed}-trial-panel.json').read_text())
+              report=json.loads((root/f'{seed}-fivearm-report.json').read_text())
+              frozen_review=json.loads((root/f'{seed}-frozen-review.json').read_text())
+              assert report['seed']==seed and report['source_kind']=='external_unverified'
+              assert [arm['arm'] for arm in report['arms']]==expected
+              assert report['authority_posture']=='DENY_ALL'
+              assert report['production_admission']=='BLOCKED'
+              assert report['complete_lifecycle_compute_matched'] is False
+              assert report['statistical_winner_certified'] is False
+              assert report['retrospective_not_prospective'] is True
+              assert frozen_review['outcome']=='FROZEN_NO_CHANGE_NUMERIC_REPLAY_NO_AUTHORITY'
+              assert report['arms'][0]['cost_observation']['additional_stage2_optimizer_updates']==0
+              identity=(panel['source']['stem_sha256'],panel['source']['scope'],
+                        panel['source']['dim'],panel['source']['router_feature_index'],
+                        panel['partitions'])
+              if reference is None: reference=identity
+              assert identity==reference, 'seed or cohort changed physical source panel'
+          PY
           python - <<'PY'
           import json,os
           from pathlib import Path
@@ -328,6 +396,9 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-top1-review.json
             ${{ runner.temp }}/hepta-meta-real/*-hard-train-report.json
             ${{ runner.temp }}/hepta-meta-real/*-hard-train-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-frozen-report.json
+            ${{ runner.temp }}/hepta-meta-real/*-frozen-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-fivearm-report.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
