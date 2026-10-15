@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from group_attention_campaign_review import ARMS, COHORTS, DIRECT, REQUIRED_SOURCES, MODES, MODELS, _digest, review
+from group_attention_campaign_review import ARMS, COHORTS, DIRECT, SYSTEM2, REQUIRED_SOURCES, MODES, MODELS, _digest, review
 from group_campaign_review import COMPOSITION_PROMPT, _parse
 
 
@@ -26,6 +26,43 @@ def _case(family, query, facts, prefix):
                  for entity, time, label in facts]
     return dict(case_id=prefix + "/" + source[:20], source_group=source,
                 family=family, text="\n".join([prompt, *lines]))
+
+
+def fake_system2_trace(row, critic_sha):
+    """Synthetic correctly sequenced receipts, never authentic execution."""
+    mode = row["execution_mode"]
+    steps = row["steps"]
+    kinds = []
+    trailing_value = row["execution_status"].startswith("ndu_stop:")
+    for step in range(steps):
+        kinds.extend(("propose", "verify"))
+        if step < steps - 1 or trailing_value:
+            kinds.append("value")
+    trace = [
+        dict(kind=kind, call=idx, elapsed_ns=1, status="completed",
+             output_digest=hashlib.sha256(f"{row['case_id']}/{idx}/{kind}".encode()).hexdigest())
+        for idx, kind in enumerate(kinds, start=1)
+    ]
+    workspaces = [
+        dict(step=idx, feature_sha256=row["feature_sha256"],
+             model_sha256=row["model_sha256"],
+             state_sha256=hashlib.sha256(f"{row['case_id']}/state/{idx}".encode()).hexdigest())
+        for idx in range(1, steps + 1)
+    ]
+    statuses = (["missing_evidence"] * steps if not row["evidence_supported"]
+                else ["supported"] * steps)
+    decisions = ([dict(continue_computation=False, reason="synthetic-stop")
+                  for _ in kinds if _ == "value"] if mode == "ndu" else [])
+    return dict(schema="hepta.group.system2-full-trace.v1",
+                authority="DENY_ALL", cohort=row["cohort"], arm=row["arm"],
+                case_id=row["case_id"], mode=mode, status=row["execution_status"],
+                feature_sha256=row["feature_sha256"],
+                model_sha256=row["model_sha256"],
+                critic_sha256=critic_sha,
+                final_candidate=chr(65 + row["prediction"]), calls=len(trace),
+                trace=trace, workspace_bindings=workspaces,
+                verifier_statuses=statuses, ndu_decisions=decisions,
+                independent_success_established=False, production_authorized=False)
 
 
 def fixture(directory):
@@ -87,7 +124,7 @@ def fixture(directory):
             sample_and_depth_sha256="b" * 64,
             attention_supervision_enabled=arm == "attention",
             attention_target_sha256="a" * 64 if arm == "attention" else None)
-    rows, summaries = [], {}
+    rows, summaries, full_traces = [], {}, []
     for cohort in COHORTS:
         for arm in ARMS:
             group_rows = []
@@ -114,6 +151,12 @@ def fixture(directory):
                         else "depth_exhausted" if mode == "fixed"
                         else "ndu_stop:no_supported_net_gain"),
                     wall_ns=20, cpu_ns=10)
+                row["full_trace_sha256"] = None
+                if arm in SYSTEM2:
+                    artifact = fake_system2_trace(
+                        row, critic["receipts"][MODELS[arm]]["parameters_sha256"])
+                    full_traces.append(artifact)
+                    row["full_trace_sha256"] = _digest(artifact)
                 rows.append(row)
                 group_rows.append(row)
             status_counts = {}
@@ -130,6 +173,8 @@ def fixture(directory):
                 wall_ns=sum(r["wall_ns"] for r in group_rows),
                 p50_ns=20, p95_ns=20)
     report = dict(schema="hepta.group.paired-step-observation.v1",
+        full_system2_trace_count=len(full_traces),
+        full_system2_trace_manifest_sha256=_digest(full_traces),
         protocol_sha256=_digest(protocol), authority="DENY_ALL",
         production_authorized=False, natural_future_win_established=False,
         equal_actual_training_work=False, teacher=teacher, critic_cost=critic,
@@ -139,11 +184,12 @@ def fixture(directory):
         initial_core_sha256=initial_core,
         encoder_cost=encoder, training=training, summaries=summaries)
     for name, data in (("protocol", protocol), ("teacher", teacher),
-                       ("encoder", encoder), ("observations", rows), ("report", report)):
+                       ("encoder", encoder), ("observations", rows), ("report", report),
+                       ("system2-traces", full_traces)):
         (directory / (name + ".json")).write_text(json.dumps(data))
     return {name: copy.deepcopy(value) for name, value in
             (("protocol", protocol), ("teacher", teacher), ("encoder", encoder),
-             ("observations", rows), ("report", report))}
+             ("observations", rows), ("report", report), ("system2-traces", full_traces))}
 
 
 class PairedReviewTests(unittest.TestCase):
@@ -238,6 +284,42 @@ class PairedReviewTests(unittest.TestCase):
             changed["source_groups_sha256"] = "d" * 64
             (root / "teacher.json").write_text(json.dumps(changed))
             with self.assertRaisesRegex(ValueError, "teacher"):
+                review(root)
+
+    def test_reject_rehashed_but_causally_wrong_system2_call_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            changed = copy.deepcopy(files["system2-traces"])
+            target = next(t for t in changed if t["arm"] == "core_fixed")
+            target["trace"][0]["kind"] = "verify"
+            # Attacker updates both available hash layers; semantic replay must
+            # still reject the rewritten callback order.
+            changed_rows = copy.deepcopy(files["observations"])
+            match = next(r for r in changed_rows if
+                         (r["cohort"], r["arm"], r["case_id"]) ==
+                         (target["cohort"], target["arm"], target["case_id"]))
+            match["full_trace_sha256"] = _digest(target)
+            changed_report = copy.deepcopy(files["report"])
+            changed_report["full_system2_trace_manifest_sha256"] = _digest(changed)
+            (root / "system2-traces.json").write_text(json.dumps(changed))
+            (root / "observations.json").write_text(json.dumps(changed_rows))
+            (root / "report.json").write_text(json.dumps(changed_report))
+            with self.assertRaisesRegex(ValueError, "causal propose"):
+                review(root)
+
+    def test_reject_missing_system2_trajectory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = fixture(root)
+            traces = copy.deepcopy(files["system2-traces"])
+            traces.pop()
+            changed_report = copy.deepcopy(files["report"])
+            changed_report["full_system2_trace_count"] = len(traces)
+            changed_report["full_system2_trace_manifest_sha256"] = _digest(traces)
+            (root / "system2-traces.json").write_text(json.dumps(traces))
+            (root / "report.json").write_text(json.dumps(changed_report))
+            with self.assertRaises(ValueError):
                 review(root)
 
     def test_reject_forged_exact_source_fingerprint(self):
