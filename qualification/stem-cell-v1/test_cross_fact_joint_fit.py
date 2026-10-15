@@ -133,7 +133,15 @@ class JointTests(unittest.TestCase):
         self.assertEqual(record,failed[0])
         self.assertEqual(record['status'],'failed')
         self.assertEqual(record['completed_steps'],0)
-        self.assertEqual(record['partial_attempts'],['cross_fact'])
+        self.assertEqual(len(record['partial_attempts']), 1)
+        paid = record['partial_attempts'][0]
+        self.assertEqual(paid['arm'], 'cross_fact')
+        self.assertEqual(paid['step'], 1)
+        self.assertEqual(paid['observation']['exposures'], 8)
+        self.assertEqual(len(paid['observation']['case_ids']), 8)
+        self.assertEqual(paid['observation']['inference_feature_arguments'], 6)
+        self.assertGreater(paid['observation']['cpu_ns'], 0)
+        self.assertGreater(paid['observation']['wall_ns'], 0)
         self.assertFalse(record['final_evaluation_authorized'])
 
     def test_granite97_width_384_two_step_real_tensor_training(self):
