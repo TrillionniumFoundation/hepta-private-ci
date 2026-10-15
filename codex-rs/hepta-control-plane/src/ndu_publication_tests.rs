@@ -7,7 +7,20 @@ use codex_hepta_types::StableId;
 fn private_control_dir() -> tempfile::TempDir {
     use std::os::unix::fs::PermissionsExt as _;
 
-    let root = tempfile::tempdir().expect("isolated Control root");
+    // Some Unix platforms expose the system temp root through an alias
+    // (for example /var -> /private/var on macOS). All original Control WAL
+    // fixtures must exercise an explicitly canonical production path.
+    let canonical_temp = std::env::temp_dir()
+        .canonicalize()
+        .expect("canonical OS temp directory");
+    let root = tempfile::Builder::new()
+        .tempdir_in(canonical_temp)
+        .expect("isolated canonical Control root");
+    assert_eq!(
+        root.path().canonicalize().expect("fixture path"),
+        root.path(),
+        "test owner must start from canonical path"
+    );
     std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
         .expect("private Control fixture");
     assert_eq!(
