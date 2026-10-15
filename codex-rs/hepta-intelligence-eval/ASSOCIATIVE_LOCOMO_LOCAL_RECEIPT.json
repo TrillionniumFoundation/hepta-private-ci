@@ -1,0 +1,115 @@
+{
+  "authoritative_review_or_external_signature": false,
+  "candidate_parent_head": "aa65aa665f0240b135c24744bc3d15516ec4f7f0",
+  "code_sha256": "e021ac243db81d5561b7e6cfbafc698138431001b132c82fb968d264a661b0a8",
+  "heldout_reference_available_to_training_process": false,
+  "independent_family_count_verified": false,
+  "independent_semantic_verification": false,
+  "local_runtime": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu"
+  },
+  "origin_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "original_transformers_parity_verified": false,
+  "post_seal_source_frontier_sha256": "c449993c6da2cda08664f3af72e1e847d79af8653733403bac26c8fee4f99cf8",
+  "production_accepted": false,
+  "public_only_training_input_sha256": "176a3137ffc85b993e758b634637a8e785696be4fd8ddf3aecee72dc56f53927",
+  "research": {
+    "by_arm": {
+      "cached_bm25": {
+        "all_gold_at_8_eligible": 0.5789473684210527,
+        "any_gold_at_8_all_reference": 0.13025210084033614,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.04201680672268908,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "cached_rrf": {
+        "all_gold_at_8_eligible": 0.631578947368421,
+        "any_gold_at_8_all_reference": 0.14285714285714285,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.046218487394957986,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "dense_cosine": {
+        "all_gold_at_8_eligible": 0.5526315789473685,
+        "any_gold_at_8_all_reference": 0.12605042016806722,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.05042016806722689,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "frozen": {
+        "all_gold_at_8_eligible": 0.05263157894736842,
+        "any_gold_at_8_all_reference": 0.025210084033613446,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.0,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "parent_trained": {
+        "all_gold_at_8_eligible": 0.07894736842105263,
+        "any_gold_at_8_all_reference": 0.029411764705882353,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.0,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "shared_continued": {
+        "all_gold_at_8_eligible": 0.05263157894736842,
+        "any_gold_at_8_all_reference": 0.025210084033613446,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.0,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "split_correct": {
+        "all_gold_at_8_eligible": 0.07894736842105263,
+        "any_gold_at_8_all_reference": 0.029411764705882353,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.004201680672268907,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      },
+      "split_swapped": {
+        "all_gold_at_8_eligible": 0.05263157894736842,
+        "any_gold_at_8_all_reference": 0.025210084033613446,
+        "full_gold_pool_eligible": 38,
+        "hit_at_1_all_reference": 0.004201680672268907,
+        "questions": 240,
+        "reference_evidence_queries": 238
+      }
+    },
+    "model_wall_seconds": 39.46102130299914,
+    "parameter_count_shared_total": 10240,
+    "post_seal_full_gold_available_at_prefix": {
+      "128": 38,
+      "256": 84,
+      "32": 15,
+      "512": 176,
+      "64": 21,
+      "all": 224
+    },
+    "questions": 240,
+    "reference_evidence_coverage": {
+      "any_gold_in_pool": 57,
+      "full_gold_in_pool": 38,
+      "reference_label_nonempty": 238,
+      "unresolved_reference": 2
+    },
+    "shared_encoder_bytes": 91567205,
+    "source_dialogue_groups": 10,
+    "source_documents": 1280
+  },
+  "review_sha256": "35dca04ec27f530d50f6f92925a995906d09be33780a17bd84c1d912289700da",
+  "schema": "hepta.associative-locomo-10-dialogue-local-receipt.v1",
+  "sealed_model_journal_sha256": "3c8cadb49362575062bdd97a1562d8f2ef2f68ab6db47d3475e8637f3e16edd9",
+  "sealed_model_output_sha256": "88d3bfbff2f7c1aa63c19a538d73122c7bd06cfae8682541e98dc382d865dcb6",
+  "semantic_qa_reader_executed": false,
+  "strong_tuned_rag_executed": false,
+  "superiority_claim": false,
+  "test_sha256": "5707fd3dd9fcf1389728ebb6025831dfcd95734a664040df4d94e15530436e92",
+  "two_future_calendar_windows_verified": false
+}
