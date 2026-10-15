@@ -30,8 +30,8 @@ fn fixture(width: usize) -> Fixture {
     let features = (0..width)
         .map(|n| if n % 2 == 0 { q24 / 2 } else { -(q24 / 4) })
         .collect::<Vec<_>>();
-    let generic = SharedFeatureBufferV1::from_vec(features.clone())
-        .expect("original generic Q24 buffer");
+    let generic =
+        SharedFeatureBufferV1::from_vec(features.clone()).expect("original generic Q24 buffer");
     let generation = Generation::new(3).expect("generation");
     let source = StemFeatureRefV1 {
         scope_id: id("scope.1"),
@@ -93,13 +93,8 @@ fn fixture(width: usize) -> Fixture {
 
     // This digest is generated only by the *test fixture*. The actual
     // adapter MUST NOT rewrite caller-supplied lease/payload hashes.
-    let owned = bind_stem_feature_request_v1(
-        &source,
-        &access,
-        head.clone(),
-        &features,
-    )
-    .expect("exact canonical typed Stem source");
+    let owned = bind_stem_feature_request_v1(&source, &access, head.clone(), &features)
+        .expect("exact canonical typed Stem source");
     let scoped_input = Digest32::of_parts(&[
         b"hepta.infer-worker.scoped-stem-input.v1",
         source.input_digest.as_array(),
@@ -117,11 +112,8 @@ fn fixture(width: usize) -> Fixture {
     let expected_payload = canonical_neuron_feature_payload_digest(&request);
     authorization.payload_digest = expected_payload.clone();
     authorization.lease_payload_digest = expected_payload;
-    let stem = SharedStemQ24BufferV1::from_unverified_arc(
-        source.clone(),
-        generic.shared_arc(),
-    )
-    .expect("same allocation under separate validated Stem hash");
+    let stem = SharedStemQ24BufferV1::from_unverified_arc(source.clone(), generic.shared_arc())
+        .expect("same allocation under separate validated Stem hash");
     Fixture {
         source,
         access,
@@ -166,12 +158,9 @@ fn original_signed_batch_binding_matches_typed_stem_request_at_512d() {
         feature_vector_q24: expected.request.feature_vector_q24,
         expected_output_width: expected.request.expected_output_width,
     };
-    let original_binding = neuron_batch_final_use_binding_v1(
-        "worker.1",
-        &fx.key,
-        &original_request,
-    )
-    .expect("original signed Worker prepares exact expected binding");
+    let original_binding =
+        neuron_batch_final_use_binding_v1("worker.1", &fx.key, &original_request)
+            .expect("original signed Worker prepares exact expected binding");
     let preview = prepare_stem_original_batch_preview_v1(
         "worker.1",
         &fx.source,
@@ -187,7 +176,10 @@ fn original_signed_batch_binding_matches_typed_stem_request_at_512d() {
     assert_eq!(preview.exact_final_use_binding, original_binding);
     assert_eq!(preview.model_id, fx.head.head_model_id.to_string());
     assert!(!preview.authority.grants_any());
-    assert_ne!(preview.request.input_digest, fx.source.input_digest.to_string());
+    assert_ne!(
+        preview.request.input_digest,
+        fx.source.input_digest.to_string()
+    );
     assert_eq!(
         canonical_neuron_feature_payload_digest(&preview.request),
         fx.authorization.payload_digest
@@ -201,13 +193,7 @@ fn preview_does_not_repair_forged_leases_or_cross_scope_identity() {
     bad_lease.lease_payload_digest = digest(b"mismatched lease").to_string();
     assert!(matches!(
         prepare_stem_original_batch_preview_v1(
-            "worker.1",
-            &fx.source,
-            &fx.access,
-            &fx.head,
-            &fx.stem,
-            &fx.key,
-            &bad_lease,
+            "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem, &fx.key, &bad_lease,
         ),
         Err(StemOriginalBatchPreviewErrorV1::PayloadMismatch)
     ));
@@ -265,13 +251,7 @@ fn preview_rechecks_lease_epoch_and_stem_digest_not_just_same_arc_pointer() {
     expired.deadline_ms = fx.source.lease_expires_at_ms + 1;
     assert!(matches!(
         prepare_stem_original_batch_preview_v1(
-            "worker.1",
-            &fx.source,
-            &fx.access,
-            &fx.head,
-            &fx.stem,
-            &fx.key,
-            &expired,
+            "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem, &fx.key, &expired,
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidLease)
     ));
@@ -348,19 +328,11 @@ fn preview_refuses_unfenced_or_cancelled_original_batch_requests() {
     cancelled.cancelled = true;
     assert!(matches!(
         prepare_stem_original_batch_preview_v1(
-            "worker.1",
-            &fx.source,
-            &fx.access,
-            &fx.head,
-            &fx.stem,
-            &fx.key,
-            &cancelled,
+            "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem, &fx.key, &cancelled,
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidIdentity)
     ));
 }
-
-
 
 #[test]
 fn two_logical_cells_retain_one_stem_source_but_distinct_original_signed_bindings() {
@@ -396,12 +368,17 @@ fn two_logical_cells_retain_one_stem_source_but_distinct_original_signed_binding
     .expect("second logical Cell admission preview");
 
     assert_eq!(first.model_id, second.model_id);
-    assert_eq!(first.request.feature_vector_q24, second.request.feature_vector_q24);
+    assert_eq!(
+        first.request.feature_vector_q24,
+        second.request.feature_vector_q24
+    );
     assert_eq!(first.request.input_digest, second.request.input_digest);
-    assert_ne!(first.request.authorization.request_id, second.request.authorization.request_id);
     assert_ne!(
-        first.exact_final_use_binding.request_sha256,
-        second.exact_final_use_binding.request_sha256,
+        first.request.authorization.request_id,
+        second.request.authorization.request_id
+    );
+    assert_ne!(
+        first.exact_final_use_binding.request_sha256, second.exact_final_use_binding.request_sha256,
         "original signed Final-use also binds each independent request/reservation"
     );
     assert_eq!(
@@ -429,21 +406,35 @@ fn two_logical_cells_retain_one_stem_source_but_distinct_original_signed_binding
     );
 }
 
-
-
 #[test]
 fn no_copy_preview_matches_exact_legacy_v1_binding_and_original_arc_allocation() {
     let fx = fixture(512);
     let owned = prepare_stem_original_batch_preview_v1(
-        "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem,
-        &fx.key, &fx.authorization,
-    ).expect("legacy typed owned V1 preview");
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("legacy typed owned V1 preview");
     let shared = prepare_stem_original_shared_batch_preview_v1(
-        "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem,
-        &fx.generic, &fx.key, &fx.authorization,
-    ).expect("exact immutable Arc-backed original Batch preview");
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("exact immutable Arc-backed original Batch preview");
 
-    assert_eq!(shared.exact_final_use_binding, owned.exact_final_use_binding);
+    assert_eq!(
+        shared.exact_final_use_binding,
+        owned.exact_final_use_binding
+    );
     assert_eq!(shared.model_id, owned.model_id);
     assert!(shared.request.feature_vector_q24.is_empty());
     assert_eq!(shared.request.authorization, owned.request.authorization);
@@ -456,7 +447,10 @@ fn no_copy_preview_matches_exact_legacy_v1_binding_and_original_arc_allocation()
         owned.request.expected_output_width
     );
     assert!(shared.shared_features.shares_allocation_with(&fx.generic));
-    assert_eq!(shared.shared_features.as_slice(), owned.request.feature_vector_q24);
+    assert_eq!(
+        shared.shared_features.as_slice(),
+        owned.request.feature_vector_q24
+    );
     assert!(!shared.authority.grants_any());
 }
 
@@ -469,8 +463,14 @@ fn original_shared_preview_denies_equal_bytes_in_different_allocations_and_forge
     assert!(!copied.shares_allocation_with(&fx.generic));
     assert_eq!(
         prepare_stem_original_shared_batch_preview_v1(
-            "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem,
-            &copied, &fx.key, &fx.authorization,
+            "worker.1",
+            &fx.source,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &copied,
+            &fx.key,
+            &fx.authorization,
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
     );
@@ -479,8 +479,14 @@ fn original_shared_preview_denies_equal_bytes_in_different_allocations_and_forge
     forged.lease_expires_at_ms += 250;
     assert_eq!(
         prepare_stem_original_shared_batch_preview_v1(
-            "worker.1", &forged, &fx.access, &fx.head, &fx.stem,
-            &fx.generic, &fx.key, &fx.authorization,
+            "worker.1",
+            &forged,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &fx.authorization,
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
     );
@@ -489,8 +495,14 @@ fn original_shared_preview_denies_equal_bytes_in_different_allocations_and_forge
     forged_digest.feature_digest = fx.generic.digest();
     assert_eq!(
         prepare_stem_original_shared_batch_preview_v1(
-            "worker.1", &forged_digest, &fx.access, &fx.head, &fx.stem,
-            &fx.generic, &fx.key, &fx.authorization,
+            "worker.1",
+            &forged_digest,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &fx.authorization,
         ),
         Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
     );
@@ -499,8 +511,14 @@ fn original_shared_preview_denies_equal_bytes_in_different_allocations_and_forge
     bad_payload.lease_payload_digest = digest(b"wrong authorization bytes").to_string();
     assert_eq!(
         prepare_stem_original_shared_batch_preview_v1(
-            "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem,
-            &fx.generic, &fx.key, &bad_payload,
+            "worker.1",
+            &fx.source,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &bad_payload,
         ),
         Err(StemOriginalBatchPreviewErrorV1::PayloadMismatch)
     );
@@ -516,15 +534,33 @@ fn two_cells_share_exact_q24_arc_but_keep_distinct_original_signed_request_ident
     auth_two.reservation_id = "reservation.cell.two".to_string();
 
     let first = prepare_stem_original_shared_batch_preview_v1(
-        "worker.1", &fx.source, &fx.access, &fx.head, &fx.stem,
-        &fx.generic, &fx.key, &fx.authorization,
-    ).expect("first independently signed original pending intent");
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("first independently signed original pending intent");
     let second = prepare_stem_original_shared_batch_preview_v1(
-        "worker.1", &fx.source, &fx.access, &head_two, &fx.stem,
-        &fx.generic, &fx.key, &auth_two,
-    ).expect("second independently signed original pending intent");
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &head_two,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &auth_two,
+    )
+    .expect("second independently signed original pending intent");
 
-    assert!(first.shared_features.shares_allocation_with(&second.shared_features));
+    assert!(
+        first
+            .shared_features
+            .shares_allocation_with(&second.shared_features)
+    );
     assert!(first.shared_features.shares_allocation_with(&fx.generic));
     assert_eq!(
         first.shared_features.as_slice().as_ptr(),

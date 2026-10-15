@@ -1043,10 +1043,7 @@ mod tests {
         let mut wrong_source = source.clone();
         wrong_source.feature_digest = original.digest();
         assert!(matches!(
-            SharedStemQ24BufferV1::from_unverified_arc(
-                wrong_source,
-                original.shared_arc(),
-            ),
+            SharedStemQ24BufferV1::from_unverified_arc(wrong_source, original.shared_arc(),),
             Err(StemFeatureBindingError::FeatureDigestMismatch)
         ));
 
@@ -1054,9 +1051,8 @@ mod tests {
         // 512-D Q24 Vec. The existing original and new Stem views own exactly
         // one underlying, immutable data allocation.
         let retained_ptr = original.as_slice().as_ptr();
-        let new_stem =
-            SharedStemQ24BufferV1::from_unverified_arc(source, original.shared_arc())
-                .expect("actual matching Stem-domain content digest");
+        let new_stem = SharedStemQ24BufferV1::from_unverified_arc(source, original.shared_arc())
+            .expect("actual matching Stem-domain content digest");
         let view = new_stem
             .borrow_for_head(&access, &head)
             .expect("fresh checked Stem-to-Head view");
@@ -1070,7 +1066,10 @@ mod tests {
         let after_original_drop = new_stem
             .borrow_for_head(&access, &head)
             .expect("Stem retains actual shared Q24 allocation");
-        assert_eq!(after_original_drop.feature_vector_q24().as_ptr(), retained_ptr);
+        assert_eq!(
+            after_original_drop.feature_vector_q24().as_ptr(),
+            retained_ptr
+        );
 
         // Physical pointer reuse is never a principal, epoch, or revocation
         // grant; changing live access still fails before returning any Head
@@ -1082,5 +1081,4 @@ mod tests {
             Err(StemFeatureBindingError::Revoked)
         ));
     }
-
 }

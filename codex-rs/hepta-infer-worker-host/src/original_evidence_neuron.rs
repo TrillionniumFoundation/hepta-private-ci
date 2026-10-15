@@ -223,9 +223,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         if !self.original_evidence.healthy() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
-        self.owner.enqueue_shared_features(
-            now_ms, model_id, request, shared_features, key, signed,
-        )
+        self.owner
+            .enqueue_shared_features(now_ms, model_id, request, shared_features, key, signed)
     }
 
     /// First commit ALL preceding Admission Evidence, only then dequeue and

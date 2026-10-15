@@ -2967,8 +2967,6 @@ fn generic_unattested_metrics_sink_denies_original_evidence_effect_provenance() 
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
-
-
 #[test]
 fn shared_arc_enqueue_uses_one_immutable_q24_allocation_and_one_real_native_batch() {
     let root = tempfile::tempdir().expect("private original authority");
@@ -2997,10 +2995,8 @@ fn shared_arc_enqueue_uses_one_immutable_q24_allocation_and_one_real_native_batc
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut owner = runner_with_driver(
-        &signing_key, root.path(), model, driver, 2,
-    )
-    .with_metric_sink(metrics.clone());
+    let mut owner = runner_with_driver(&signing_key, root.path(), model, driver, 2)
+        .with_metric_sink(metrics.clone());
     owner
         .enqueue_shared_features(
             100,
@@ -3022,15 +3018,25 @@ fn shared_arc_enqueue_uses_one_immutable_q24_allocation_and_one_real_native_batc
         )
         .expect("second original signed shared admission");
     assert_eq!(owner.pending(), 2);
-    let one = &owner.pending.get(&first_id).expect("first exact queue").feature;
-    let two = &owner.pending.get(&second_id).expect("second exact queue").feature;
+    let one = &owner
+        .pending
+        .get(&first_id)
+        .expect("first exact queue")
+        .feature;
+    let two = &owner
+        .pending
+        .get(&second_id)
+        .expect("second exact queue")
+        .feature;
     assert!(one.shares_allocation_with(&shared));
     assert!(two.shares_allocation_with(&shared));
     assert_eq!(one.as_slice().as_ptr(), original_ptr);
     assert_eq!(two.as_slice().as_ptr(), original_ptr);
     assert!(one.shares_allocation_with(two));
 
-    let result = owner.poll_and_execute(101).expect("one native batch polling");
+    let result = owner
+        .poll_and_execute(101)
+        .expect("one native batch polling");
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert_eq!(result.outcomes.len(), 2);
     assert_eq!(owner.pending(), 0);
@@ -3057,8 +3063,12 @@ fn shared_arc_enqueue_rejects_double_payload_and_tampered_signed_bytes_without_n
     // Do not allow two competing feature sources in one signed request.
     assert_eq!(
         owner.enqueue_shared_features(
-            100, "model".into(), request.clone(), features.clone(),
-            key.clone(), signed.clone(),
+            100,
+            "model".into(),
+            request.clone(),
+            features.clone(),
+            key.clone(),
+            signed.clone(),
         ),
         Err(BatchWorkerErrorV1::InvalidRequest)
     );
@@ -3071,27 +3081,30 @@ fn shared_arc_enqueue_rejects_double_payload_and_tampered_signed_bytes_without_n
         .expect("valid but NOT the original signed feature bytes");
     assert_eq!(
         owner.enqueue_shared_features(
-            100, "model".into(), request.clone(), adversarial,
-            key.clone(), signed.clone(),
+            100,
+            "model".into(),
+            request.clone(),
+            adversarial,
+            key.clone(),
+            signed.clone(),
         ),
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
     assert_eq!(owner.pending(), 0);
 
     // Neither denied attempt reached the FinalUseAuthority nonce owner.
-    owner.enqueue_shared_features(
-        100, "model".into(), request, features, key, signed,
-    ).expect("identical original grant still valid after rejected queue attempts");
+    owner
+        .enqueue_shared_features(100, "model".into(), request, features, key, signed)
+        .expect("identical original grant still valid after rejected queue attempts");
     let receipt = owner.poll_and_execute(101).expect("original signed driver");
     assert_eq!(receipt.outcomes.len(), 1);
     assert!(receipt.outcomes[0].result.is_ok());
     assert_eq!(owner.pending(), 0);
 }
 
-
-
 #[test]
 fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts() {
+    use crate::stem_original_batch_preview::prepare_stem_original_shared_batch_preview_v1;
     use codex_hepta_infer_core::SharedStemQ24BufferV1;
     use codex_hepta_infer_core::StemAccessContextV1;
     use codex_hepta_infer_core::StemFeatureRefV1;
@@ -3099,7 +3112,6 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     use codex_hepta_infer_core::bind_stem_feature_request_v1;
     use codex_hepta_infer_core::stem_encoder_pipeline_digest_v1;
     use codex_hepta_infer_core::stem_feature_vector_digest_v1;
-    use crate::stem_original_batch_preview::prepare_stem_original_shared_batch_preview_v1;
 
     let root = tempfile::tempdir().expect("protected original authority");
     let signer = SigningKey::from_bytes(&[74; 32]);
@@ -3145,16 +3157,14 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
         required_feature_width: source.feature_width,
         expected_output_width: first.expected_output_width,
     };
-    let stem = SharedStemQ24BufferV1::from_unverified_arc(
-        source.clone(),
-        generic.shared_arc(),
-    ).expect("same original immutable Arc with separate Stem-domain hash");
+    let stem = SharedStemQ24BufferV1::from_unverified_arc(source.clone(), generic.shared_arc())
+        .expect("same original immutable Arc with separate Stem-domain hash");
 
     // A test fixture may create the input authorization. The product helper
     // never signs nor repairs these exact bytes.
-    let typed_reference = bind_stem_feature_request_v1(
-        &source, &access, head.clone(), generic.as_slice(),
-    ).expect("old owned Q24 request correlation");
+    let typed_reference =
+        bind_stem_feature_request_v1(&source, &access, head.clone(), generic.as_slice())
+            .expect("old owned Q24 request correlation");
     first.encoder_digest = typed_reference.request.encoder_digest.to_string();
     first.head_digest = typed_reference.request.head_digest.to_string();
     first.weights_digest = typed_reference.request.weights_digest.to_string();
@@ -3162,7 +3172,8 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
         b"hepta.infer-worker.scoped-stem-input.v1",
         source.input_digest.as_array(),
         typed_reference.feature_ref_digest.as_array(),
-    ]).to_string();
+    ])
+    .to_string();
     let payload = canonical_neuron_feature_payload_digest(&first);
     first.authorization.payload_digest = payload.clone();
     first.authorization.lease_payload_digest = payload;
@@ -3171,14 +3182,31 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     head2.request_id = StableId::new("req-two").expect("second request");
 
     let one = prepare_stem_original_shared_batch_preview_v1(
-        "worker-one", &source, &access, &head, &stem, &generic,
-        &key, &first.authorization,
-    ).expect("first exact original signed Stem preview");
+        "worker-one",
+        &source,
+        &access,
+        &head,
+        &stem,
+        &generic,
+        &key,
+        &first.authorization,
+    )
+    .expect("first exact original signed Stem preview");
     let two = prepare_stem_original_shared_batch_preview_v1(
-        "worker-one", &source, &access, &head2, &stem, &generic,
-        &key, &second.authorization,
-    ).expect("second exact original signed Stem preview");
-    assert!(one.shared_features.shares_allocation_with(&two.shared_features));
+        "worker-one",
+        &source,
+        &access,
+        &head2,
+        &stem,
+        &generic,
+        &key,
+        &second.authorization,
+    )
+    .expect("second exact original signed Stem preview");
+    assert!(
+        one.shared_features
+            .shares_allocation_with(&two.shared_features)
+    );
     assert!(one.shared_features.shares_allocation_with(&generic));
     assert!(one.request.feature_vector_q24.is_empty());
     assert!(two.request.feature_vector_q24.is_empty());
@@ -3194,17 +3222,28 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut owner = runner_with_driver(
-        &signer, root.path(), model, backend, 2,
-    ).with_metric_sink(metrics.clone());
-    owner.enqueue_shared_features(
-        100, one.model_id, one.request, one.shared_features, key.clone(),
-        signed_member(&signer, one.exact_final_use_binding, "stem-original-1", 94),
-    ).expect("first independent Final-use and original queue admission");
-    owner.enqueue_shared_features(
-        100, two.model_id, two.request, two.shared_features, key,
-        signed_member(&signer, two.exact_final_use_binding, "stem-original-2", 95),
-    ).expect("second independently signed member");
+    let mut owner = runner_with_driver(&signer, root.path(), model, backend, 2)
+        .with_metric_sink(metrics.clone());
+    owner
+        .enqueue_shared_features(
+            100,
+            one.model_id,
+            one.request,
+            one.shared_features,
+            key.clone(),
+            signed_member(&signer, one.exact_final_use_binding, "stem-original-1", 94),
+        )
+        .expect("first independent Final-use and original queue admission");
+    owner
+        .enqueue_shared_features(
+            100,
+            two.model_id,
+            two.request,
+            two.shared_features,
+            key,
+            signed_member(&signer, two.exact_final_use_binding, "stem-original-2", 95),
+        )
+        .expect("second independently signed member");
 
     // This driver is a deterministic test backend, not a pretrained Encoder.
     // Nevertheless this is ONE real original ModelDriver::run_neuron_features_batch

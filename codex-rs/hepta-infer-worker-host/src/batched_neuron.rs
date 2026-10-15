@@ -420,9 +420,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
-        self.enqueue_with_optional_shared_features(
-            now_ms, model_id, request, key, signed, None,
-        )
+        self.enqueue_with_optional_shared_features(now_ms, model_id, request, key, signed, None)
     }
 
     /// Admit an externally prepared immutable Q24 buffer under the SAME
@@ -442,7 +440,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
         self.enqueue_with_optional_shared_features(
-            now_ms, model_id, request, key, signed, Some(shared_features),
+            now_ms,
+            model_id,
+            request,
+            key,
+            signed,
+            Some(shared_features),
         )
     }
 
@@ -468,11 +471,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         // Keep failed Admission telemetry observable without allowing an
         // invalid caller clock to consume a queue ID or a Final-use nonce.
-        let result = self
-            .validate_caller_now_ms(caller_now_ms)
-            .and_then(|()| {
-                self.enqueue_inner(now_ms, model_id, request, key, signed, shared_features)
-            });
+        let result = self.validate_caller_now_ms(caller_now_ms).and_then(|()| {
+            self.enqueue_inner(now_ms, model_id, request, key, signed, shared_features)
+        });
         let queued = result.is_ok();
         if queued {
             self.last_caller_now_ms = Some(caller_now_ms);
@@ -545,7 +546,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let binding = match &shared_features {
             Some(shared) => neuron_batch_final_use_binding_with_slice_v1(
-                self.worker.worker_id(), &key, &request, shared.as_slice(),
+                self.worker.worker_id(),
+                &key,
+                &request,
+                shared.as_slice(),
             )?,
             None => neuron_batch_final_use_binding_v1(self.worker.worker_id(), &key, &request)?,
         };
@@ -554,10 +558,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let feature = match shared_features {
             Some(shared) => shared,
-            None => SharedFeatureBufferV1::from_vec(std::mem::take(
-                &mut request.feature_vector_q24,
-            ))
-            .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?,
+            None => {
+                SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
+                    .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?
+            }
         };
         self.scheduler
             .enqueue(

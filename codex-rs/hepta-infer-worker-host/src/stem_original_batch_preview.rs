@@ -35,7 +35,6 @@ pub struct PreparedStemOriginalBatchPreviewV1 {
     pub authority: AuthorityPosture,
 }
 
-
 /// Identity-only metadata request paired with the SAME original immutable
 /// generic Neuron Q24 Arc. No vector materialization on admission. The signed
 /// Final-use bytes use the immutable shared feature slice in the original
@@ -89,9 +88,7 @@ pub fn prepare_stem_original_batch_preview_v1(
 ) -> Result<PreparedStemOriginalBatchPreviewV1, StemOriginalBatchPreviewErrorV1> {
     use StemOriginalBatchPreviewErrorV1 as Denied;
 
-    validate_original_stem_batch_claims_v1(
-        worker_id, source, access, head, key, authorization,
-    )?;
+    validate_original_stem_batch_claims_v1(worker_id, source, access, head, key, authorization)?;
 
     // The typed immutable view is checked against the CURRENT caller access
     // before producing the one necessary legacy owned V1 request. The second
@@ -143,7 +140,6 @@ pub fn prepare_stem_original_batch_preview_v1(
         authority: AuthorityPosture::DENY_ALL,
     })
 }
-
 
 /// Common pure claim checks for the legacy owned and true shared original
 /// batch preview. Claims are NOT Control/CNS or Final-use authorization.
@@ -217,9 +213,7 @@ pub fn prepare_stem_original_shared_batch_preview_v1(
     authorization: &WorkerRequest,
 ) -> Result<PreparedStemOriginalSharedBatchPreviewV1, StemOriginalBatchPreviewErrorV1> {
     use StemOriginalBatchPreviewErrorV1 as Denied;
-    validate_original_stem_batch_claims_v1(
-        worker_id, source, access, head, key, authorization,
-    )?;
+    validate_original_stem_batch_claims_v1(worker_id, source, access, head, key, authorization)?;
     if !stem.matches_source(source) {
         return Err(Denied::InvalidSource);
     }
@@ -252,15 +246,16 @@ pub fn prepare_stem_original_shared_batch_preview_v1(
         feature_vector_q24: Vec::new(),
         expected_output_width: head.expected_output_width,
     };
-    let actual = canonical_neuron_feature_payload_digest_with_slice(
-        &request,
-        original_shared.as_slice(),
-    );
+    let actual =
+        canonical_neuron_feature_payload_digest_with_slice(&request, original_shared.as_slice());
     if actual != authorization.payload_digest || actual != authorization.lease_payload_digest {
         return Err(Denied::PayloadMismatch);
     }
     let exact_final_use_binding = neuron_batch_final_use_binding_with_slice_v1(
-        worker_id, key, &request, original_shared.as_slice(),
+        worker_id,
+        key,
+        &request,
+        original_shared.as_slice(),
     )
     .map_err(|_| Denied::OriginalBatchBinding)?;
 
