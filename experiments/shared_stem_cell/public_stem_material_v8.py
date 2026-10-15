@@ -391,6 +391,11 @@ def main(args=None) -> int:
                              downloader=lambda repo,name,rev:hf_hub_download(
                                  repo_id=repo,filename=name,revision=rev,token=False))
             _write_new(opts.output/"material-receipt.json",material)
+            # Read only saved-tensor name/shape headers first. Preserve this
+            # source evidence even if stock HF physical loading then fails.
+            from public_stem_tensor_audit_v17 import audit_headers
+            _write_new(opts.output/"tensor-header-audit.json",
+                       audit_headers(opts.output/"model", material["manifest"], plan["candidate"]))
             measured=physical_probe(plan,opts.output/"model",material)
             _write_new(opts.output/"physical-receipt.json",measured)
             print("PUBLIC_STEM_PHYSICAL_FORWARD_SUCCEEDED_NO_EFFICACY_OR_AUTHORITY",opts.output)

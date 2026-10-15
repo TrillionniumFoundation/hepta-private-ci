@@ -4,6 +4,8 @@ on:
     branches: ["research/multimodal-stem-bridge-20261014"]
     paths:
       - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py"
       - "experiments/shared_stem_cell/execution.py"
       - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
@@ -18,6 +20,8 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/public_stem_material_v8.py"
+      - "experiments/shared_stem_cell/public_stem_tensor_audit_v17.py"
+      - "experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py"
       - "experiments/shared_stem_cell/execution.py"
       - "experiments/shared_stem_cell/multimodal_meta_integrity_v14.py"
       - "experiments/shared_stem_cell/test_public_stem_material_v8.py"
@@ -78,6 +82,12 @@ jobs:
           /tmp/hepta-public-v8-env/bin/pip check
           /tmp/hepta-public-v8-env/bin/pip freeze > /tmp/hepta-public-v8-versions.txt
           "$P" -c 'from transformers import AutoModel, AutoModelForMaskedLM; from huggingface_hub import HfApi; print("installed pinned physical stack")'
+      - name: Require read-only pinned safetensors header census contracts
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-public-v8-env/bin/python
+          PYTHONPATH=experiments/shared_stem_cell "$P" -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_tensor_audit_v17.py -v
+          "$P" -m py_compile experiments/shared_stem_cell/public_stem_tensor_audit_v17.py experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py
       - name: Acquire exactly pinned public weights and execute real frozen CPU forwards
         run: |
           set -euo pipefail
@@ -135,7 +145,7 @@ jobs:
           git rev-parse HEAD > "$D/source/commit.txt"
           git rev-parse HEAD^{tree} > "$D/source/tree.txt"
           cp /tmp/hepta-public-v8-versions.txt "$D/source/packages.txt" || true
-          cp experiments/shared_stem_cell/public_stem_material_v8.py experiments/shared_stem_cell/test_public_stem_material_v8.py experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md experiments/shared_stem_cell/public_stem_handoff_v9.py experiments/shared_stem_cell/test_public_stem_handoff_v9.py experiments/shared_stem_cell/PUBLIC_STEM_HANDOFF_V9.md experiments/shared_stem_cell/public_stem_pair_handoff_v10.py experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py experiments/shared_stem_cell/PUBLIC_STEM_PAIRED_HANDOFF_V10.md .github/workflows/hepta-public-stem-physical-v8.yml "$D/source/"
+          cp experiments/shared_stem_cell/public_stem_material_v8.py experiments/shared_stem_cell/test_public_stem_material_v8.py experiments/shared_stem_cell/public_stem_tensor_audit_v17.py experiments/shared_stem_cell/test_public_stem_tensor_audit_v17.py experiments/shared_stem_cell/PUBLIC_STEM_PHYSICAL_V8.md experiments/shared_stem_cell/public_stem_handoff_v9.py experiments/shared_stem_cell/test_public_stem_handoff_v9.py experiments/shared_stem_cell/PUBLIC_STEM_HANDOFF_V9.md experiments/shared_stem_cell/public_stem_pair_handoff_v10.py experiments/shared_stem_cell/test_public_stem_pair_handoff_v10.py experiments/shared_stem_cell/PUBLIC_STEM_PAIRED_HANDOFF_V10.md .github/workflows/hepta-public-stem-physical-v8.yml "$D/source/"
           if test -d /tmp/hepta-public-v8; then
             find /tmp/hepta-public-v8 -name '*.json' -type f ! -path '*/model/*' -print0 | while IFS= read -r -d '' src; do
               rel=${src#/tmp/hepta-public-v8/}
