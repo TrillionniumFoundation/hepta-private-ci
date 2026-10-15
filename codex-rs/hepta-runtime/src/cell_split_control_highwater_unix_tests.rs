@@ -1,5 +1,3 @@
-use std::io::Read as _;
-use std::io::Write as _;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::thread;
@@ -162,15 +160,12 @@ fn mismatched_signer_or_signed_replayed_nonce_never_returns_evidence() {
         let server = thread::spawn(move || {
             let (mut peer, _) = listener.accept().expect("read-only client");
             let req = read_request(&mut peer);
-            let mut proof = signed_proof(
-                &req,
-                if wrong_signer {
-                    &SigningKey::from_bytes(&[99; 32])
-                } else {
-                    &test_signer()
-                },
-                10,
-            );
+            let signer = if wrong_signer {
+                SigningKey::from_bytes(&[99; 32])
+            } else {
+                test_signer()
+            };
+            let mut proof = signed_proof(&req, &signer, 10);
             if !wrong_signer {
                 proof.challenge_nonce = "ff".repeat(32);
                 proof.observer_signature_bytes = test_signer()
