@@ -3669,6 +3669,15 @@ fn original_pending_group_real_original_evidence_fsync_before_signing_and_cold_r
         None,
         "successful async Admission is NOT a durable original Evidence row"
     );
+    let cohort_queries = [query, MetricsCommittedSampleQueryV1 {
+        operation_digest: operations[1],
+        ..query
+    }];
+    assert_eq!(
+        owner.observe_exact_committed_cohort(&cohort_queries).unwrap(),
+        vec![None, None],
+        "one-pass original reader MUST NOT invent unflushed admission evidence"
+    );
 
     // Only the original Evidence-bound wrapper may flush that original WAL
     // before forwarding a signable (still DENY_ALL) cohort snapshot.
@@ -3685,6 +3694,16 @@ fn original_pending_group_real_original_evidence_fsync_before_signing_and_cold_r
         .expect("read original fsynced sample marker");
     assert_eq!(fsynced.sequence, 1);
     assert_eq!(fsynced.committed_rows, 2);
+    let multi = owner
+        .observe_exact_committed_cohort(&cohort_queries)
+        .expect("one original WAL/marker traversal for BOTH admitted members");
+    assert_eq!(multi.len(), 2);
+    for (query, row) in cohort_queries.iter().zip(&multi) {
+        let readback = row.expect("original committed member Admission");
+        assert_eq!(readback.query, *query);
+        assert_eq!(readback.matching_rows, 1);
+        assert_eq!(readback.frontier, fsynced);
+    }
     for operation_digest in operations {
         let sample = owner
             .observe_exact_committed_sample(MetricsCommittedSampleQueryV1 {
