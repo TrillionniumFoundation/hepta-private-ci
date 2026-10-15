@@ -868,6 +868,10 @@ mod tests {
         let shared =
             SharedStemQ24BufferV1::from_unverified_source(source.clone(), original.clone())
                 .expect("one content validation during immutable construction");
+        let direct = borrow_stem_feature_request_v1(&source, &access, &head, &original)
+            .expect("direct caller-provided slice validates its digest");
+        let fast = shared
+            .borrow_for_head(&access, &head)
             .expect("immutable Arc reuses validated digest");
         assert_eq!(fast.feature_vector_q24(), direct.feature_vector_q24());
         assert_eq!(fast.feature_ref_digest(), direct.feature_ref_digest());
