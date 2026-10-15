@@ -1,12 +1,15 @@
 name: Hepta P2b deny-only execution audit
+
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-evidence/**'
-      - '.github/workflows/hepta-execution-entry-p2b.yml'
+      - codex-rs/hepta-evidence/**
+      - .github/workflows/hepta-execution-entry-p2b.yml
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   original-owner-denial:
     runs-on: ubuntu-24.04

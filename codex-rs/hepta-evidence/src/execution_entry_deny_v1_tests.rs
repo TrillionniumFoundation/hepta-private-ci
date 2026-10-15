@@ -81,7 +81,9 @@ async fn even_a_real_durable_prepare_cannot_mint_a_tool_grant() {
         denial.request_sha256,
         intent.binding_proposal().expect("binding").request_sha256
     );
-    assert!(!crate::execution_entry_deny_v1::EXECUTION_EFFECT_ENTRY_P2B_PERMITTED);
+    const {
+        assert!(!crate::execution_entry_deny_v1::EXECUTION_EFFECT_ENTRY_P2B_PERMITTED);
+    };
 }
 
 #[tokio::test]
