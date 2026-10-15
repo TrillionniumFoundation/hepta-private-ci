@@ -790,6 +790,50 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "released Control lock can admit a different signed receipt frontier",
         )
 
+    def test_original_control_marker_read_is_pinned_and_postchecked(self) -> None:
+        # A path-based marker read after inode preflight can accept data
+        # from a different file. This Audit protects the original locked FD
+        # positional read and final name-to-FD revalidation. A real Unix
+        # deterministic rebind fixture must also remain in the same source.
+        relative = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        code = self.lexical_code(relative)
+        start = code.find("fn verify_original_paths_with_identity_hook(")
+        end = code.find("fn verify_original_full_history(", start)
+        self.assertGreaterEqual(start, 0, "original Control marker verifier missing")
+        self.assertGreater(end, start, "original full-history verifier missing")
+        body = code[start:end]
+        self.assertNotIn(
+            "fs::read(&self.lock_path)",
+            body,
+            "owner-lock content must never be reopened by mutable pathname",
+        )
+        self.assertRegex(
+            body,
+            r"self\.owner_lock\s*\.read_exact_at\(",
+            "marker content must come from the already locked original FD",
+        )
+        self.assertIn(
+            "MAX_CONTROL_OWNER_MARKER_BYTES",
+            body,
+            "marker read must use a fixed bounded stack buffer",
+        )
+        recheck = body.rfind(
+            "control_owner_file_identity(&self.owner_lock, &self.lock_path)?;"
+        )
+        self.assertGreater(
+            recheck,
+            body.find(".read_exact_at("),
+            "live marker pathname must be rechecked after the positional read",
+        )
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check()",
+            native,
+            "same-byte different-inode owner marker fault regression is mandatory",
+        )
+
     def test_original_control_wal_uses_pinned_dirfd_for_both_children(self) -> None:
         # Local owner writes must never resolve the journal or owner-lock by
         # a second mutable absolute pathname after checking a private parent.
