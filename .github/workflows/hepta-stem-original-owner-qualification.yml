@@ -63,7 +63,7 @@ jobs:
           import re
           worker = Path("codex-rs/hepta-infer-worker-host/src/model_worker.rs").read_text()
           for method in ("can_run_neuron_feature_batch", "run_neuron_features_batch_receipts"):
-              pattern = r"(?m)^\\s*#\\[cfg\\(test\\)\\]\\s*\\n\\s*pub\\(crate\\) fn " + method + r"\\("
+              pattern = r"(?m)^\s*#\[cfg\(test\)\]\s*\n\s*pub\(crate\) fn " + method + r"\("
               if re.search(pattern, worker) is None:
                   raise SystemExit(f"missing test-only fence on original Worker: {method}")
           PY
