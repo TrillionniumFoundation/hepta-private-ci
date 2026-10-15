@@ -103,7 +103,7 @@ jobs:
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Run typed Stem to original signed Batch ABI parity tests
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::"
       - name: Prove actual original Worker Arc sharing and one native backend batch
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
       - name: Prove typed Stem-to-original signed Native Batch invokes one test backend
