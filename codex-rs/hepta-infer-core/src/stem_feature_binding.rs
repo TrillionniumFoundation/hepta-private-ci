@@ -131,6 +131,14 @@ impl SharedStemQ24BufferV1 {
         })
     }
 
+    /// Compare the COMPLETE private immutable Stem source reference, not
+    /// just weights, feature digest or an untrusted Principal claim. A
+    /// matching source grants no Final-use or Control/CNS authority.
+    #[must_use]
+    pub fn matches_source(&self, source: &StemFeatureRefV1) -> bool {
+        &self.source == source
+    }
+
     /// Borrow features for exactly one selected Head. This executes the
     /// SAME Principal/Scope/Epoch/Generation/Lease/Revocation/Head gates as
     /// the historical owned V1 binding, not a weakened cache-only check.
