@@ -132,3 +132,15 @@ A separate local CPU **synthetic mechanism** toy (not the pinned Granite97
 campaign) showed severe SGD underfitting and rapid Adam convergence across
 three seeds. That finding motivates this controlled experiment but does not
 rank real Stem candidates or qualify a deployed Cell.
+
+## Independently paired SGD/Adam execution diagnostics
+
+When all six physical research jobs complete, a final GitHub Actions job
+downloads artifacts from the **same run** and performs a stdlib-only cross-run
+audit. Both original case, callback, source and model-byte reviews must pass.
+The reviewer requires the same source material, frozen input inventory,
+initial Core and SGD/Adam sampling schedule; it reports paired rescues/harm
+and separately observed training, Encoder, teacher, Critic, online and
+checkpoint costs. It deliberately does **not** certify equal compute,
+same physical host, prospective independent cases, or any optimizer winner.
+The research output remains DENY_ALL.

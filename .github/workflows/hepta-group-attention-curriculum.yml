@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: group-step-${{ github.event.pull_request.number || github.ref }}
@@ -47,6 +48,7 @@ jobs:
               "test_group_attention_campaign_review",
               "test_group_checkpoint_audit",
               "test_group_training_optimizer",
+              "test_group_optimizer_paired_review",
               "test_group_step_supervision",
               "test_group_training",
           )
@@ -93,4 +95,54 @@ jobs:
           path: |
             ${{ runner.temp }}/paired-step/*.json
             ${{ runner.temp }}/paired-step/*.safetensors
+          if-no-files-found: warn
+
+
+  optimizer-paired-review:
+    needs: physical-pretrained
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Fetch exactly this run's source, trace, and weight artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download '${{ github.run_id }}' --dir '${{ runner.temp }}/optimizer-paired'
+      - name: Independently review all three SGD/Adam pairs without Torch
+        run: |
+          python -S - <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+          import sys
+          root = Path('${{ runner.temp }}/optimizer-paired')
+          for seed in (41, 47, 53):
+              folders = []
+              for name in ('sgd_v1', 'adam_v1'):
+                  found = list(root.glob(f'group-step-pretrained-{seed}-{name}-*'))
+                  if len(found) != 1:
+                      raise SystemExit(f'expected one same-run artifact for {seed}/{name}')
+                  folders.append(found[0])
+              output = root / f'optimizer-pair-{seed}.json'
+              subprocess.run([
+                  sys.executable, '-S',
+                  'qualification/stem-cell-v1/group_optimizer_paired_review.py',
+                  str(folders[0]), str(folders[1]), '--output', str(output),
+              ], check=True)
+              data = json.loads(output.read_text())
+              if not data['paired_structure_passed'] or data['production_promotion_permitted']:
+                  raise SystemExit('optimizer evidence cannot authorize production')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: optimizer-paired-${{ github.run_id }}
+          path: ${{ runner.temp }}/optimizer-paired/optimizer-pair-*.json
           if-no-files-found: warn
