@@ -907,8 +907,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // Fail closed before claiming the final-use effect: a signed digest
         // declaration without actual bytes in the protected host CAS is not
         // sufficient to dispatch even an otherwise valid Head request.
-        if !verified_artifacts.matches_source(source)
-            || verified_artifacts.authority().grants_any()
+        if !verified_artifacts.matches_source(source) || verified_artifacts.authority().grants_any()
         {
             return Err(Error::FeatureContract);
         }
