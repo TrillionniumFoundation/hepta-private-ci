@@ -598,6 +598,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences",
             "valid_signed_control_wal_append_is_accepted_without_evicting_history",
             "signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding",
+            "changed_original_cns_binding_requires_begin_commit_and_new_route_fence",
             "signed_new_split_id_cannot_reset_original_scope_wal_ratchet",
             "new_split_may_follow_actual_same_inode_wal_append_without_erasing_scope_ratchet",
             "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",
