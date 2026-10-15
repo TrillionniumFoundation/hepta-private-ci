@@ -93,26 +93,52 @@ fn validate_production_paths(
     Ok(())
 }
 
-/// Never treat a lost Evidence journal as an empty new installation when a
-/// durable effect-intent WAL already exists. It would erase the observed
-/// continuity required for recovery acceptance, even though metrics do not
-/// authorize business effects.
+/// An original signed Neuron effect and its terminal Evidence belong to two
+/// independent WAL owners. Losing EITHER history must never be interpreted as
+/// permission to bootstrap a fresh, empty companion journal after restart.
+/// This preflight is deliberately read-only; both original open/replay owners
+/// still validate their real WAL contents and pinned inode identities.
 #[cfg(unix)]
 fn require_existing_effect_metrics_v1(
     effect_intent_path: &Path,
     metrics_path: &Path,
 ) -> Result<(), NeuronProductionBootstrapErrorV1> {
-    let prior_intent = match std::fs::symlink_metadata(effect_intent_path) {
-        Ok(metadata) => metadata.len() != 0,
-        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
-        Err(error) => return Err(NeuronProductionBootstrapErrorV1::Io(error)),
-    };
-    if prior_intent
-        && !matches!(std::fs::symlink_metadata(metrics_path), Ok(metadata) if metadata.len() != 0)
-    {
-        return Err(NeuronProductionBootstrapErrorV1::NotReady);
+    use std::fs;
+    use std::os::unix::fs::MetadataExt;
+
+    let parent = effect_intent_path
+        .parent()
+        .ok_or(NeuronProductionBootstrapErrorV1::InvalidPaths)?;
+    // A symlinked parent or an ancestor alias can silently switch the pair
+    // onto different history. Reject it before either open() creates bytes.
+    let directory = fs::symlink_metadata(parent)?;
+    if !directory.file_type().is_dir() || fs::canonicalize(parent)? != parent {
+        return Err(NeuronProductionBootstrapErrorV1::InvalidPaths);
     }
-    Ok(())
+
+    let probe = |path: &Path| -> Result<Option<u64>, NeuronProductionBootstrapErrorV1> {
+        match fs::symlink_metadata(path) {
+            Ok(metadata) if metadata.is_file() && metadata.nlink() == 1 => {
+                Ok(Some(metadata.len()))
+            }
+            Ok(_) => Err(NeuronProductionBootstrapErrorV1::InvalidPaths),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(NeuronProductionBootstrapErrorV1::Io(error)),
+        }
+    };
+    let intent = probe(effect_intent_path)?;
+    let evidence = probe(metrics_path)?;
+    match (intent, evidence) {
+        (None, None) | (Some(0), Some(0)) => Ok(()),
+        (Some(intent_bytes), Some(evidence_bytes))
+            if intent_bytes > 0 && evidence_bytes > 0 =>
+        {
+            Ok(())
+        }
+        // Partial startup, truncated companion, lost original ledger, or a
+        // namespace replacement all fail before the first new WAL write.
+        _ => Err(NeuronProductionBootstrapErrorV1::NotReady),
+    }
 }
 
 /// Returns a Neuron owner only after independently recovering the exact

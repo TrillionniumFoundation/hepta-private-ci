@@ -86,3 +86,83 @@ fn recovered_effect_wal_rejects_missing_or_zero_length_evidence() {
     require_existing_effect_metrics_v1(&effect, &metrics)
         .expect("presence gate only; real Evidence replay is checked separately");
 }
+
+#[cfg(unix)]
+#[test]
+fn recovered_evidence_denies_missing_or_empty_effect_ledger_before_creation() {
+    let root = tempfile::tempdir().expect("private root");
+    let effect = root.path().join("effect.wal");
+    let metrics = root.path().join("evidence.wal");
+    std::fs::write(&metrics, b"previous-original-evidence")
+        .expect("existing original Evidence bytes");
+
+    // A deleted business-effect WAL MUST NOT be recreated as an empty file,
+    // even though the independent Metrics owner can reopen its own history.
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    assert!(!effect.exists(), "preflight must be read-only");
+
+    std::fs::write(&effect, b"").expect("truncated effect ledger");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+
+    std::fs::write(&effect, b"previous-effect-intent")
+        .expect("restored previous intent bytes");
+    require_existing_effect_metrics_v1(&effect, &metrics)
+        .expect("presence only; BOTH original open/replay owners must validate bytes");
+}
+
+#[cfg(unix)]
+#[test]
+fn partial_zero_length_preprovisioned_journal_is_not_fresh_installation() {
+    let root = tempfile::tempdir().expect("private root");
+    let effect = root.path().join("effect.wal");
+    let metrics = root.path().join("evidence.wal");
+    std::fs::write(&metrics, b"").expect("zero-length Evidence placeholder");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    assert!(!effect.exists());
+    std::fs::write(&effect, b"").expect("paired empty placeholder");
+    require_existing_effect_metrics_v1(&effect, &metrics)
+        .expect("paired empty files are only a preflight; original owners replay separately");
+}
+
+#[cfg(unix)]
+#[test]
+fn symlinked_parent_or_journal_is_refused_before_any_bootstrap_write() {
+    use std::os::unix::fs::symlink;
+
+    let root = tempfile::tempdir().expect("private root");
+    let real = root.path().join("real");
+    std::fs::create_dir(&real).expect("private directory");
+    let alias = root.path().join("alias");
+    symlink(&real, &alias).expect("ancestor namespace alias");
+
+    let aliased_effect = alias.join("effect.wal");
+    let aliased_metrics = alias.join("evidence.wal");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&aliased_effect, &aliased_metrics),
+        Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
+    ));
+    assert!(!real.join("effect.wal").exists());
+    assert!(!real.join("evidence.wal").exists());
+
+    let effect = real.join("effect.wal");
+    let metrics = real.join("evidence.wal");
+    std::fs::write(&effect, b"original-effect").expect("existing WAL");
+    symlink(&effect, &metrics).expect("malicious journal alias");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
+    ));
+    assert_eq!(
+        std::fs::read(&effect).expect("unchanged original bytes"),
+        b"original-effect"
+    );
+}
