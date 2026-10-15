@@ -128,6 +128,9 @@ class NoTargetVisibility(unittest.TestCase):
         for physical in (physical_ocr, physical_native):
             self.assertIn("e3_scienceqa_stage.py --output", physical)
             self.assertIn("--predictor-source-only", physical)
+            self.assertIn('HF_HOME="$RUNNER_TEMP/e3-source-cache"', physical)
+            self.assertIn('HF_DATASETS_CACHE="$RUNNER_TEMP/e3-source-cache/datasets"', physical)
+            self.assertIn('rm -rf -- "$RUNNER_TEMP/e3-source-cache"', physical)
             self.assertIn("private_test_labels_sha256", physical)
             self.assertIn(" is None", physical)
             self.assertIn("test_labels.jsonl", physical)
