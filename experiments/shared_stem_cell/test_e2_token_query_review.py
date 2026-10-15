@@ -9,6 +9,7 @@ from test_e2_token_query_ablation import fixture
 
 def synthetic_reports():
     rows,prototype=fixture()
+    for row in rows: row['group_id']=row['case_id']  # synthetic source groups only
     panel={'schema':'hepta.stem.agnews-binary-capability-panel.v1',
            'cross_sectional_not_future':True,'case_count':224,'cases':rows}
     parents={};runs={};digests={}
@@ -51,6 +52,11 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(answer['models']),3)
         self.assertEqual(answer['models']['modernbert_base']['token_query']['learned']['n'],64)
         self.assertFalse(answer['future_ndu_utility_verified'])
+        pair=answer['paired_differences']['modernbert_base']['retrospective_exact_unadjusted_discordance']
+        self.assertEqual(pair['query_vs_equal_parameter_pooled_gated']['paired_cases'],64)
+        self.assertFalse(pair['query_learned_vs_own_frozen']['future_or_source_independence_verified'])
+        self.assertFalse(pair['query_learned_vs_own_frozen']['statistical_stem_winner_selected'])
+        self.assertFalse(answer['paired_differences']['modernbert_base']['multiple_comparison_adjustment_applied'])
         self.assertFalse(answer['production_promotion_permitted'])
 
     def deny(self,edit):
@@ -76,6 +82,9 @@ class Tests(unittest.TestCase):
 
     def test_reject_fake_source(self):
         self.deny(lambda p,a,r,h:r['granite_97m_r2'].update(parent_e1_report_sha256='f'*64))
+
+    def test_reject_missing_source_group_before_statistical_claim(self):
+        self.deny(lambda p,a,r,h:p['cases'][-1].pop('group_id'))
 
 
 if __name__=='__main__':unittest.main()

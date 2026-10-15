@@ -10,6 +10,8 @@ import json
 import math
 from pathlib import Path
 
+from e2_pairwise_evidence import paired, Invalid as PairedInvalid
+
 MODELS={
  'granite_97m_r2':('835ad14087e140460703cf0fae09f97d469d65c2',384),
  'mmbert_small':('0eb3d056ec1d6333cf4e19b0966dfde342a41a3a',384),
@@ -164,10 +166,32 @@ def review(panel, parents, studies, parent_sha):
             record['trained_minus_frozen_accuracy']=record['learned']['accuracy']-record['frozen']['accuracy']
             record['train_ms_reported']=costs[arm]
             metrics[model][arm]=record
+        # The published outcome panel has 96 calibration+test predictions,
+        # but these predeclared paired statistics use only the 64 TEST cases.
+        try:
+            test_ids={row['case_id'] for row in test}
+            def only_test(predictions):
+                return {k:v for k,v in predictions.items() if k in test_ids}
+            pairwise={
+                'query_vs_equal_parameter_pooled_gated':paired(
+                    test,only_test(current['token_query']['learned']),
+                    only_test(current['pooled_gated']['learned'])),
+                'query_vs_pooled_linear':paired(
+                    test,only_test(current['token_query']['learned']),
+                    only_test(current['pooled_linear']['learned'])),
+                'query_learned_vs_own_frozen':paired(
+                    test,only_test(current['token_query']['learned']),
+                    only_test(current['token_query']['frozen'])),
+            }
+        except PairedInvalid as exc:
+            raise Invalid('failed independent paired source/statistical preflight') from exc
         comparisons[model]={
-            'query_minus_equal_parameter_pooled_gated_accuracy':metrics[model]['token_query']['learned']['accuracy']-metrics[model]['pooled_gated']['learned']['accuracy'],
-            'query_minus_linear_pooled_accuracy':metrics[model]['token_query']['learned']['accuracy']-metrics[model]['pooled_linear']['learned']['accuracy'],
-            'query_trained_minus_own_frozen_accuracy':metrics[model]['token_query']['trained_minus_frozen_accuracy'],
+            'query_minus_equal_parameter_pooled_gated_accuracy':pairwise['query_vs_equal_parameter_pooled_gated']['left_minus_right_accuracy'],
+            'query_minus_linear_pooled_accuracy':pairwise['query_vs_pooled_linear']['left_minus_right_accuracy'],
+            'query_trained_minus_own_frozen_accuracy':pairwise['query_learned_vs_own_frozen']['left_minus_right_accuracy'],
+            'retrospective_exact_unadjusted_discordance':pairwise,
+            'multiple_comparison_adjustment_applied':False,
+            'hypothesis_pre_registered_with_independent_labels':False,
         }
         budgets[model]={'original_model_loaded_once_for_E2_claimed':True,
                         'model_load_ms_reported':d['model_load_ms'],

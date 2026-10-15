@@ -6,6 +6,8 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_ablation.py"
       - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
       - "experiments/shared_stem_cell/e2_token_query_review.py"
+      - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
       - "experiments/shared_stem_cell/test_e2_token_query_ablation.py"
       - "experiments/shared_stem_cell/test_e2_token_query_real_cpu.py"
       - "experiments/shared_stem_cell/test_e2_token_query_review.py"
@@ -43,7 +45,7 @@ jobs:
           "$PY" -m py_compile \
             experiments/shared_stem_cell/e2_token_query_ablation.py \
             experiments/shared_stem_cell/e2_token_query_real_cpu.py \
-            experiments/shared_stem_cell/e2_token_query_review.py
+            experiments/shared_stem_cell/e2_token_query_review.py             experiments/shared_stem_cell/e2_pairwise_evidence.py
           "$PY" -m unittest discover -s experiments/shared_stem_cell \
             -p 'test_e2_token_query_*.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hepta-e2-contract-tests.txt"

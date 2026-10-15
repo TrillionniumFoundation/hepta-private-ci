@@ -35,3 +35,7 @@ Every output remains **production_promotion_permitted=false**, **stem_winner_sel
 ## Explicit within-arm frozen comparator
 
 For every E2 arm, the runner now publishes its original untrained Head's complete calibration-only-temperature-selected 96-case predictions, alongside the 96-case learned probabilities. The independent reviewer rejects a single missing/swapped frozen case and reports learned-minus-its-own-frozen accuracy as well as the paired query-minus-equal-capacity pooled result. This **is not** a substitute for the E0 deployed original no-change model or a prospective NDU improvement.
+
+## 2026-10-15 exact paired diagnostic
+
+The independent E2 scorer now slices the original 96 calibration/test prediction rows down to exactly **64 original TEST rows**, requires explicit source groups and calculates paired discordance counts, exact **unadjusted two-sided McNemar p**, and Brier loss differences for Query versus the same-parameter Pooled Gated, Query versus Pooled Linear, and learned Query versus its own frozen Head. It rejects altered labels, duplicated/missing IDs, nonfinite or boolean probabilities, absent source-group declarations and incomplete controls. **The sample is retrospective, source-group independence is unverified, three comparisons are not multiplicity-adjusted, and no p-value can select a Stem, certify positive NDU, or grant production promotion.** Pooled/Query CPU cost remains observed separately and no energy or target-host p99 is invented.
