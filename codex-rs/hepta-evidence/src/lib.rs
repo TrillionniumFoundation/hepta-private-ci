@@ -6,6 +6,7 @@ mod authbus_outbox_worker;
 mod authbus_recovery;
 mod authbus_store;
 mod canonical;
+mod execution_preparation_v1;
 mod governance_store;
 mod governance_validation;
 mod historical;
@@ -34,6 +35,12 @@ pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_recovery::AuthBusRecoveryError;
 pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY;
+pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER;
+pub use execution_preparation_v1::ExecutionPreparationReadbackStatusV1;
+pub use execution_preparation_v1::ExecutionPreparationReadbackV1;
+pub use execution_preparation_v1::ExecutionPreparationReceiptV1;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -115,6 +122,10 @@ mod provider_claim_tests;
 #[cfg(test)]
 #[path = "provider_effect_tests.rs"]
 mod provider_effect_tests;
+
+#[cfg(test)]
+#[path = "execution_preparation_v1_tests.rs"]
+mod execution_preparation_v1_tests;
 
 #[cfg(test)]
 #[path = "summary_tests.rs"]
