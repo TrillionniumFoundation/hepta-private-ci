@@ -36,6 +36,7 @@ jobs:
       - name: Three actual source-only training seeds and independent labels
         run: |
           python qualification/group-proof-step-v1/group_proof_step_pilot.py --output "${RUNNER_TEMP}/group-proof-observations.json"
+          python -S qualification/group-proof-step-v1/group_proof_step_review.py "${RUNNER_TEMP}/group-proof-observations.json" --output "${RUNNER_TEMP}/group-proof-independent-review.json"
           python - "${RUNNER_TEMP}/group-proof-observations.json" <<'PY'
           import json, sys
           data = json.load(open(sys.argv[1], encoding='utf-8'))
@@ -47,10 +48,13 @@ jobs:
               assert run['stem_encoder_forwards'] == 0
               assert run['natural_reasoning_emergence_established'] is False
               assert len(run['observations']) == 64 * 5 * 2
+              assert len(run['source_cases']) == 64
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: hepta-group-proof-step-${{ github.run_id }}
-          path: ${{ runner.temp }}/group-proof-observations.json
+          path: |
+            ${{ runner.temp }}/group-proof-observations.json
+            ${{ runner.temp }}/group-proof-independent-review.json
           if-no-files-found: warn
