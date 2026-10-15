@@ -7,7 +7,9 @@
 
 use std::collections::BTreeSet;
 
+#[cfg(test)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(test)]
 use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_infer_core::StemAccessContextV1;
@@ -25,6 +27,7 @@ use super::MAX_ACTIVE_REQUESTS;
 use super::ModelDriver;
 use super::NeuronFeatureDriver;
 use super::WorkerRequest;
+#[cfg(test)]
 use super::with_verified_stem_batch_tokens_v1;
 
 const MAX_BATCH_MEMBERS: usize = 32;
@@ -205,7 +208,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ///
     /// The caller must later wire the effect only to the original Evidence-
     /// journalled batch driver with complete post-effect observations.
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub(crate) fn with_verified_stem_batch_effect_v1<T>(
         &mut self,
         now_ms: u64,
