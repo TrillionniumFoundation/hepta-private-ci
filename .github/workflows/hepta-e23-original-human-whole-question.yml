@@ -1,0 +1,181 @@
+name: Hepta E23 independent original human whole-question corroboration (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e23_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e23_*.py'
+      - 'qualification/shared-stem-system2-architecture/E23_*.md'
+      - '.github/workflows/hepta-e23-original-human-whole-question.yml'
+      - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preregistered-original-predictions-blind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e23-original-blind-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze actual source HEAD and research-only types
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          if [[ '${{ matrix.profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e23_*.py "$ROOT"/test_e23_*.py > "$OUTPUT/original-scientific-source.sha256"
+      - name: Fetch ONLY original unlabeled pretrained logits and eight sealed trained held predictions
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python "$ROOT/e22_artifact_fetch.py" --stage blind \
+            --out /tmp/hepta-e23-frozen-blind-archives --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/original-frozen-source.txt"
+          test ! -e /tmp/hepta-e23-material-human-label-owners
+          test ! -e /tmp/hepta-e23-original-human-validation.parquet
+      - name: Execute source-only original blind tests and seal predictions BEFORE any human label owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_E23_ORIGINAL="$HEPTA_E22_ARCHIVE"
+          args=()
+          for i in 0 1 2 3; do
+            a="HEPTA_E22_E15_FOLD_${i}"; b="HEPTA_E22_E16_FOLD_${i}"
+            export "HEPTA_E23_E15_FOLD_${i}=${!a}"
+            export "HEPTA_E23_E16_FOLD_${i}=${!b}"
+            args+=("--e15-$i" "${!a}" "--e16-$i" "${!b}")
+          done
+          python -m unittest discover -s "$ROOT" -p 'test_e23_blind_only.py' -v \
+            > "$OUTPUT/blind-normal-tests.txt" 2>&1 || { cat "$OUTPUT/blind-normal-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e23_blind_only.py' -v \
+            > "$OUTPUT/blind-optimized-tests.txt" 2>&1 || { cat "$OUTPUT/blind-optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 5 tests' "$OUTPUT/blind-normal-tests.txt"
+          grep -F 'Ran 5 tests' "$OUTPUT/blind-optimized-tests.txt"
+          python "$ROOT/e22_e16_question_gate.py" --original "$HEPTA_E23_ORIGINAL" \
+            "${args[@]}" --out "$OUTPUT/strict-original-prelabel-e23.json" \
+            | tee "$OUTPUT/blind-source-seal.txt"
+          sha256sum "$OUTPUT/strict-original-prelabel-e23.json" > "$OUTPUT/strict-original-prelabel-e23.sha256"
+          test ! -e /tmp/hepta-e23-original-human-validation.parquet
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e23-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e23-original-blind-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  post-seal-original-human-owner-verification:
+    needs: preregistered-original-predictions-blind
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e23-original-owner-score-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e23-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e23-sealed-prelabel
+      - name: First enforce immutable original model blind source seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          expected="$(cut -d' ' -f1 /tmp/hepta-e23-sealed-prelabel/strict-original-prelabel-e23.sha256)"
+          printf '%s  %s\n' "$expected" /tmp/hepta-e23-sealed-prelabel/strict-original-prelabel-e23.json | sha256sum -c -
+          test -s /tmp/hepta-e23-sealed-prelabel/blind-source-seal.txt
+          test ! -e /tmp/hepta-e23-original-human-validation.parquet
+      - name: Acquire source-locked original folds and completed human score receipts AFTER seal
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python "$ROOT/e22_artifact_fetch.py" --stage full \
+            --out /tmp/hepta-e23-complete-original-model-inputs --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/complete-original-model-inputs.txt"
+          python "$ROOT/e23_historical_owner_fetch.py" \
+            --out /tmp/hepta-e23-material-human-label-owners --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/two-human-owner-inputs.txt"
+          test -s "$OUTPUT/two-human-owner-inputs.txt"
+      - name: Enforce 18 adversarial original source/true training label tests twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_E23_ORIGINAL="$HEPTA_E22_ARCHIVE"
+          export HEPTA_E23_BLIND=/tmp/hepta-e23-sealed-prelabel/strict-original-prelabel-e23.json
+          for i in 0 1 2 3; do
+            a="HEPTA_E22_E15_FOLD_${i}"; b="HEPTA_E22_E16_FOLD_${i}"
+            export "HEPTA_E23_E15_FOLD_${i}=${!a}"
+            export "HEPTA_E23_E16_FOLD_${i}=${!b}"
+          done
+          export HEPTA_E23_E15_SCORE_SOURCE="$HEPTA_E22_E15_SCORE_SOURCE"
+          export HEPTA_E23_E15_SCORE_MERGE="$HEPTA_E22_E15_SCORE_MERGE"
+          export HEPTA_E23_E16_SCORE_SOURCE="$HEPTA_E22_E16_SCORE_SOURCE"
+          export HEPTA_E23_E16_SCORE_MERGE="$HEPTA_E22_E16_SCORE_MERGE"
+          python -m unittest discover -s "$ROOT" -p 'test_e23_original_owner.py' -v \
+            > "$OUTPUT/review-normal-tests.txt" 2>&1 || { cat "$OUTPUT/review-normal-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e23_original_owner.py' -v \
+            > "$OUTPUT/review-optimized-tests.txt" 2>&1 || { cat "$OUTPUT/review-optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 18 tests' "$OUTPUT/review-normal-tests.txt"
+          grep -F 'Ran 18 tests' "$OUTPUT/review-optimized-tests.txt"
+      - name: Independently re-fit true-label E16 four-fold SGD and recompute original complete-question outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--original "$HEPTA_E22_ARCHIVE" \
+            --blind /tmp/hepta-e23-sealed-prelabel/strict-original-prelabel-e23.json \
+            --e15-score-source "$HEPTA_E22_E15_SCORE_SOURCE" \
+            --e15-score-merge "$HEPTA_E22_E15_SCORE_MERGE" \
+            --e16-score-source "$HEPTA_E22_E16_SCORE_SOURCE" \
+            --e16-score-merge "$HEPTA_E22_E16_SCORE_MERGE")
+          for i in 0 1 2 3; do
+            a="HEPTA_E22_E15_FOLD_${i}"; b="HEPTA_E22_E16_FOLD_${i}"
+            c="HEPTA_E23_E15_OWNER_${i}"; d="HEPTA_E23_E16_OWNER_${i}"
+            args+=("--e15-fold-$i" "${!a}" "--e16-fold-$i" "${!b}"
+                   "--e15-owner-$i" "${!c}" "--e16-owner-$i" "${!d}")
+          done
+          python "$ROOT/e23_original_owner_question_gate.py" "${args[@]}" \
+            --output "$OUTPUT/independent-original-human-eight-question-e23.json" \
+            | tee "$OUTPUT/independent-original-human-review-seal.txt"
+          sha256sum "$OUTPUT/independent-original-human-eight-question-e23.json" \
+            > "$OUTPUT/independent-original-human-review.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e23-original-human-question-${{ matrix.profile }}
+          path: /tmp/hepta-e23-original-owner-score-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
