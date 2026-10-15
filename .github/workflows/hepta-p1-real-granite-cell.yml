@@ -1,0 +1,201 @@
+name: hepta-P1-real-Granite97-4096-Cells (research DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/p1_real_granite_cohort.py"
+      - "qualification/stem-cell-v1/p1_real_granite_review.py"
+      - "qualification/stem-cell-v1/test_p1_real_granite_cohort.py"
+      - "qualification/stem-cell-v1/P1_REAL_GRANITE97_COHORT.md"
+      - ".github/workflows/hepta-p1-real-granite-cell.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install local CPU tensor runtime (no weights)
+        run: |
+          python -m pip install numpy==2.3.5
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Run numerical and adversarial controls, both interpreter modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/p1-real-source"
+          git rev-parse HEAD > "$RUNNER_TEMP/p1-real-source/commit.txt"
+          git hash-object qualification/stem-cell-v1/{p1_real_granite_cohort,p1_real_granite_review,test_p1_real_granite_cohort}.py \
+            > "$RUNNER_TEMP/p1-real-source/git-blobs.txt"
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_p1_real_granite_cohort.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/p1-real-source/normal.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_p1_real_granite_cohort.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/p1-real-source/optimized.log"
+          python -m compileall -q qualification/stem-cell-v1/p1_real_granite_cohort.py \
+            qualification/stem-cell-v1/p1_real_granite_review.py \
+            qualification/stem-cell-v1/test_p1_real_granite_cohort.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-real-granite-source-regressions-deny-all
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/p1-real-source/
+
+  pinned-real-weights-and-original-source:
+    needs: numerical-controls
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: pinned-e1
+          ref: 09bb40d8bf3a058a34607179d4e0fbdf11a41277
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: pinned-public-source
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          persist-credentials: false
+      - name: Verify exact existing owner implementations before dependency/model work
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-e1 rev-parse HEAD)" = 09bb40d8bf3a058a34607179d4e0fbdf11a41277
+          test "$(git -C pinned-public-source rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          mkdir -p "$RUNNER_TEMP/p1-real"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/p1-real/executed-research-head-sha.txt"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install same source-owner pinned real CPU dependency profile as E1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/p1-real-venv"
+          PY="$RUNNER_TEMP/p1-real-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'numpy==2.2.6' 'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' 'packaging==25.0' \
+            'pyarrow==21.0.0' 'pillow==11.3.0'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/p1-real/pinned-dependencies.txt"
+      - name: Material owner reacquires exact original public AG News bytes and seals three split artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ROOT="$RUNNER_TEMP/p1-real"
+          "$RUNNER_TEMP/p1-real-venv/bin/python" - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,'pinned-public-source/qualification/neuron-dynamic-learning')
+          from public_agnews_source import download_checked
+          from public_agnews_panel import prepare,canonical,sha
+          root=Path(os.environ['ROOT'])
+          for role in ('train','calibration_test'):
+              download_checked(role,root/(role+'.parquet'))
+          panel,receipt=prepare(root/'train.parquet',root/'calibration_test.parquet')
+          (root/'panel.json').write_bytes(canonical(panel))
+          assert receipt['panel_digest']==sha(canonical(panel))
+          assert sha(canonical(panel))=='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4'
+          assert panel['cross_sectional_not_future'] is True
+          PY
+          "$RUNNER_TEMP/p1-real-venv/bin/python" \
+            qualification/stem-cell-v1/p1_real_granite_cohort.py prepare \
+            --original-panel "$ROOT/panel.json" --e1-source pinned-e1 \
+            --output-dir "$ROOT/original-material"
+      - name: Acquire exact 97M real pretrained weights, verify model revision and all published LFS digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/p1-real-venv/bin/python" - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from huggingface_hub import HfApi,snapshot_download
+          name='ibm-granite/granite-embedding-97m-multilingual-r2'
+          rev='835ad14087e140460703cf0fae09f97d469d65c2'
+          info=HfApi().model_info(repo_id=name,revision=rev,files_metadata=True)
+          assert info.sha==rev
+          snap=Path(snapshot_download(repo_id=name,revision=rev,
+                         allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+          found={p.relative_to(snap).as_posix():p for p in snap.rglob('*') if p.is_file()}
+          assert all(not n.endswith(('.bin','.pt','.pkl','.py','.so')) for n in found)
+          for n in ('model.safetensors','config.json','tokenizer.json'):
+              assert n in found,('required pretrained input missing',n)
+          for item in info.siblings:
+              if item.rfilename not in found:continue
+              sha=item.lfs.get('sha256') if isinstance(item.lfs,dict) else getattr(item.lfs,'sha256',None)
+              if sha:
+                  assert hashlib.sha256(found[item.rfilename].read_bytes()).hexdigest()==sha,item.rfilename
+          PY
+      - name: Physically execute all resident Cell cohorts with ONE loaded Granite97 checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          ROOT="$RUNNER_TEMP/p1-real"
+          "$RUNNER_TEMP/p1-real-venv/bin/python" \
+            qualification/stem-cell-v1/p1_real_granite_cohort.py run-batch \
+            --train-material "$ROOT/original-material/train.json" \
+            --blind-material "$ROOT/original-material/blind.json" \
+            --compact-source pinned-compact \
+            --cache-bytes 33554432 --output-dir "$ROOT/cohorts" \
+            2>&1 | tee "$ROOT/cohort-physical-process.log"
+      - name: Independent model-free numerical source-label and per-case cost review AFTER sealed predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/p1-real"
+          "$RUNNER_TEMP/p1-real-venv/bin/python" \
+            qualification/stem-cell-v1/p1_real_granite_review.py \
+            --original-panel "$ROOT/panel.json" \
+            --train-material "$ROOT/original-material/train.json" \
+            --blind-material "$ROOT/original-material/blind.json" \
+            --owner-labels "$ROOT/original-material/owner-labels.json" \
+            --report "$ROOT"/cohorts/*.json \
+            --output "$ROOT/independent-score.json"
+      - name: Upload only redacted reports, source identity, timings and failure logs — never raw public media or weights
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-real-granite-4096-cohort-deny-all
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/p1-real/executed-research-head-sha.txt
+            ${{ runner.temp }}/p1-real/pinned-dependencies.txt
+            ${{ runner.temp }}/p1-real/cohort-physical-process.log
+            ${{ runner.temp }}/p1-real/cohorts/*.json
+            ${{ runner.temp }}/p1-real/independent-score.json
