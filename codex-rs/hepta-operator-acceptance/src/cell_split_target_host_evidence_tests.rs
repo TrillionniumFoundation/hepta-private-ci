@@ -1567,15 +1567,17 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
         serde_json::from_slice(&journal.original_checkpoint_bytes)
             .expect("signed journal checkpoint");
     checkpoint["phase"] = serde_json::json!("route_published");
+    let preserved_digest = checkpoint["receiptDigest"]
+        .as_str()
+        .expect("original signed checkpoint digest")
+        .to_owned();
     let mutated: crate::cell_split_observer_join::OriginalSupervisorCheckpointV1 =
         serde_json::from_value(checkpoint).expect("valid nonterminal shape");
     // The original checksum is still valid for this fixture's signed bytes:
     // the test must deny the nonterminal phase itself, not digest drift.
     assert_eq!(
-        mutated.receipt_digest,
-        mutated
-            .content_digest_v1()
-            .expect("unchanged canonical original checkpoint digest"),
+        preserved_digest,
+        mutated.content_digest_v1().expect("unchanged canonical original checkpoint digest"),
         "the nonterminal rejection must be independent of digest corruption"
     );
     journal.original_checkpoint_bytes = serde_json::to_vec(&mutated).expect("nonterminal journal");
