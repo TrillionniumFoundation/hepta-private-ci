@@ -40,13 +40,13 @@ jobs:
           /tmp/stem-v20-offline-venv/bin/pip install numpy==1.26.4
           /tmp/stem-v20-offline-venv/bin/pip check
           /tmp/stem-v20-offline-venv/bin/pip freeze > /tmp/stem-v20-offline/environment.txt
-      - name: Require all nine train/test-budget and no-change NO-GO contracts
+      - name: Require all ten pinned-data/Head-budget and no-change NO-GO contracts
         run: |
           set -euo pipefail
           /tmp/stem-v20-offline-venv/bin/python -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_public_stem_agnews_pilot_v20.py' -v \
             2>&1 | tee /tmp/stem-v20-offline/tests.log
-          grep -q 'Ran 9 tests' /tmp/stem-v20-offline/tests.log
+          grep -q 'Ran 10 tests' /tmp/stem-v20-offline/tests.log
           grep -q '^OK$' /tmp/stem-v20-offline/tests.log
           if grep -Ei 'skipped[=: ]' /tmp/stem-v20-offline/tests.log; then exit 1; fi
           /tmp/stem-v20-offline-venv/bin/python -m py_compile \

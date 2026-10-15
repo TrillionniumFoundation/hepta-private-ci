@@ -63,3 +63,7 @@ text, heldout target labels or Head weights are uploaded).
 The paired text workload is a research baseline only. Next: independent
 heldout/training provenance, deployed no-change, future-window drift tests,
 negative transfer and target-host 64–4096 Cell measurement.
+
+Hub cache symlinks are never trusted as independent identity: dataset acquisition
+stages bounded bytes into a new regular temporary file, verifies the complete
+original fixed SHA-256 and length, then parses only that staged Parquet file.

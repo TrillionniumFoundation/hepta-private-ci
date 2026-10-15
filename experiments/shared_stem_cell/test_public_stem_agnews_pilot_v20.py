@@ -12,6 +12,7 @@ from public_stem_agnews_pilot_v20 import (
     CANDIDATES, DATA_FILES, DATA_REVISION, N_CLASSES, SEED, STEPS, WIDTH,
     PilotError, canon, checked_plan, evaluate, head_train, jsonl,
     make_plan, output_dir, profile_binding, read_rows, select_balanced,
+    stage_verified_hub_file,
     sha, strict_json, to_cohorts,
 )
 
@@ -151,6 +152,21 @@ class RealPublicDatasetProtocolTests(unittest.TestCase):
         changed[0]['label']=(changed[0]['label']+1)%4
         with self.assertRaisesRegex(PilotError,'precommitment'):
             evaluate(plan,changed,mock_results(plan,target))
+
+    def test_hub_cache_symlink_is_staged_by_content_hash_not_trusted_path(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            blob=root/'hub-blob';blob.write_bytes(b'parquet-fixture-binary-payload')
+            link=root/'hub-pointer';link.symlink_to(blob)
+            digest=hashlib.sha256(blob.read_bytes()).hexdigest()
+            out=stage_verified_hub_file(link,root/'stage.bin',digest,blob.stat().st_size)
+            self.assertFalse(out.is_symlink())
+            self.assertEqual(out.read_bytes(),blob.read_bytes())
+            with self.assertRaisesRegex(PilotError,'immutable SHA256'):
+                stage_verified_hub_file(link,root/'rejected.bin','0'*64,blob.stat().st_size)
+            with self.assertRaisesRegex(PilotError,'preregistered size'):
+                stage_verified_hub_file(link,root/'short.bin',digest,4)
 
     def test_output_cannot_overwrite_existing_research_evidence(self):
         with tempfile.TemporaryDirectory() as td:

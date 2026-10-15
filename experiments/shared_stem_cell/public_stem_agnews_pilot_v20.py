@@ -219,6 +219,31 @@ def output_dir(path:Path, raw:dict[str,bytes]):
         finally:os.close(d)
 
 
+def stage_verified_hub_file(downloaded:Path, stage:Path, expected_sha:str, expected_size:int):
+    """Convert a Hub cache symlink into bounded, verified regular material.
+
+    hf_hub_download may legitimately return a symlink to a cache blob; rejecting
+    it before following its bytes would reject the official dataset despite its
+    preregistered SHA. Never trust path identity: verify the *copied bytes*.
+    """
+    require(isinstance(downloaded,Path) and downloaded.is_file()
+            and stage.parent.is_dir() and not stage.exists()
+            and 0<expected_size<=8*1024*1024, 'unavailable pinned Hub cache material')
+    length=0;digest=hashlib.sha256()
+    with downloaded.open('rb') as source,stage.open('xb') as target:
+        for chunk in iter(lambda:source.read(1024*1024),b''):
+            length+=len(chunk)
+            require(length<=expected_size,'dataset copy exceeds preregistered size')
+            digest.update(chunk)
+            target.write(chunk)
+        target.flush();os.fsync(target.fileno())
+    require(length==expected_size and digest.hexdigest()==expected_sha,
+            'downloaded Parquet source differs from immutable SHA256')
+    require(digest_file(stage)==(expected_sha,expected_size),
+            'staged Parquet bytes differ from download')
+    return stage
+
+
 def prepare(out:Path):
     from huggingface_hub import hf_hub_download
     import pyarrow.parquet as pq
@@ -226,10 +251,14 @@ def prepare(out:Path):
     for phase,(filename,expected,size) in DATA_FILES.items():
         downloaded=Path(hf_hub_download(repo_id=DATA_REPO,repo_type='dataset',
                        filename=filename,revision=DATA_REVISION,token=False))
-        actual,count=digest_file(downloaded)
-        require(actual==expected and count==size,'dataset file differs from preregistered original')
-        table=pq.read_table(downloaded,columns=['text','label'])
-        raw=table.to_pylist()
+        # HF's own cache may expose an immutable blob through a symlink.
+        # Stage a regular, newly-created copy and check *actual bytes* first.
+        with tempfile.TemporaryDirectory(prefix='.agnews-v20-',dir=out.parent) as work:
+            local=stage_verified_hub_file(downloaded,Path(work)/Path(filename).name,
+                                          expected,size)
+            table=pq.read_table(local,columns=['text','label'])
+            raw=table.to_pylist()
+        actual,count=expected,size
         require((phase=='train' and len(raw)==1500) or
                 (phase=='heldout' and len(raw)==7600),'dataset cohort cardinality drift')
         reports[phase]={'sha256':actual,'bytes':count}
