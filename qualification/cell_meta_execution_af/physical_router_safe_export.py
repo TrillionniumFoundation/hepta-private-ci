@@ -107,8 +107,8 @@ def safe_read(path: Path, *, max_bytes: int = MAX_FILE_BYTES) -> bytes:
         os.close(fd)
 
 
-def load_json(path: Path) -> dict[str, Any]:
-    raw = safe_read(path, max_bytes=MAX_SUMMARY_BYTES)
+def load_json(path: Path, *, max_bytes: int = MAX_SUMMARY_BYTES) -> dict[str, Any]:
+    raw = safe_read(path, max_bytes=max_bytes)
     try:
         obj = json.loads(raw, object_pairs_hook=strict_pairs,
                          parse_constant=forbidden_constant)
@@ -283,6 +283,176 @@ def extract_fivearm(value: dict[str, Any], seed: int) -> tuple[str, list[dict[st
     return stem, output
 
 
+
+def canonical_digest(value: Any) -> str:
+    """Match the research trial's fixed canonical JSON digest convention."""
+    try:
+        encoded = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                             allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError, RecursionError) as exc:
+        raise UnsafeExport("invalid_raw_report_digest") from exc
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def independently_score(partition: Any, prediction: Any) -> dict[str, float]:
+    """Recompute two retrospective scores from the raw per-case predictions.
+
+    Never echo text, labels, identifiers, features or model weights to the
+    published artifact. This is internal consistency, not external signing.
+    """
+    require(type(partition) is list and type(prediction) is list and
+            0 < len(partition) == len(prediction) <= 8192,
+            "incomplete_raw_score_pairing")
+    good = 0
+    brier = 0.0
+    for row, forecast in zip(partition, prediction, strict=True):
+        require(type(row) is dict and type(forecast) is dict and
+                type(row.get("id")) is str and forecast.get("id") == row["id"] and
+                type(row.get("label")) is int and row["label"] in (0, 1),
+                "changed_original_case_pairing")
+        prob = forecast.get("probability")
+        require(type(prob) is float and math.isfinite(prob) and
+                1.0e-6 <= prob <= 1 - 1.0e-6,
+                "invalid_raw_prelabel_probability")
+        good += int((prob >= .5) == bool(row["label"]))
+        brier += (prob - row["label"]) ** 2
+    return {"accuracy": round(good / len(partition), 7),
+            "brier": round(brier / len(partition), 7)}
+
+
+def verify_descriptive_reports_against_raw(root: Path, soft: dict[str, Any],
+                                           hard: dict[str, Any]) -> None:
+    """Cross-check final published numbers against original source-case reports.
+
+    Original numerical auditors remain mandatory upstream; this is a *second*
+    read at the artifact-publication boundary, not a new signed Evaluator.
+    """
+    lookups = {}
+    for kind, summary in (("soft", soft), ("hard", hard)):
+        # Validate all submitted keys, exact arm membership and numeric ranges
+        # *before* indexing. Never raise KeyError for a malformed summary.
+        arms = extract_summary(summary, hard=(kind == "hard"))
+        lookups[kind] = {(r["seed"], r["arm"]): r for r in arms}
+        require(set(lookups[kind]) == {(seed, arm) for seed in SEEDS for arm in ARMS},
+                "incomplete_public_summary")
+    for seed in SEEDS:
+        panel = load_json(root / f"{seed}-trial-panel.json",
+                          max_bytes=MAX_FILE_BYTES)
+        source = panel.get("source")
+        require(type(source) is dict and type(source.get("seed")) is int and
+                source["seed"] == seed and source.get("kind") == "external_unverified",
+                "wrong_raw_source_panel_seed")
+        cohort = panel.get("partitions")
+        require(type(cohort) is dict and
+                all(part in cohort for part in ("future_1", "future_2")),
+                "incomplete_original_holdout")
+        panel_sha = canonical_digest(panel)
+        hard_original = None
+        for kind, suffix, schema in (
+            ("soft", "trial-report", "hepta.cell-meta-physical-router-trial.v1"),
+            ("hard", "hard-train-report", "hepta.cell-meta-hard-trained-top1.v1"),
+        ):
+            observed = load_json(root / f"{seed}-{suffix}.json",
+                                 max_bytes=MAX_FILE_BYTES)
+            require(observed.get("schema") == schema and
+                    observed.get("source_panel_sha256") == panel_sha and
+                    observed.get("authority_posture") == "DENY_ALL" and
+                    observed.get("production_admission") == "BLOCKED",
+                    "raw_training_report_drift")
+            if kind == "soft":
+                require(type(observed.get("seed")) is int and
+                        observed["seed"] == seed and
+                        observed.get("future_window_prospective") is False,
+                        "wrong_soft_source_or_future_claim")
+            else:
+                require(observed.get("prospective_future_windows_verified") is False,
+                        "wrong_hard_future_claim")
+            if kind == "hard":
+                hard_original = observed
+            records = observed.get("results")
+            require(type(records) is list and len(records) == len(ARMS) and
+                    [x.get("arm") for x in records if type(x) is dict] == list(ARMS),
+                    "wrong_original_training_arm_inventory")
+            for name, fitted in zip(ARMS, records, strict=True):
+                published = lookups[kind][(seed, name)]
+                require(type(fitted.get("split_proposed")) is bool and
+                        fitted["split_proposed"] == published["split_proposed"],
+                        "summary_split_decision_drift")
+                predictions = fitted.get("predictions")
+                require(type(predictions) is dict and
+                        fitted.get("prediction_sha256") == canonical_digest(predictions),
+                        "original_prediction_seal_drift")
+                observed_scores = fitted.get("evaluation" if kind == "soft"
+                                             else "retrospective_evaluation")
+                meters = fitted.get("meters")
+                require(type(observed_scores) is dict and type(meters) is dict,
+                        "incomplete_training_report")
+                for part, field in (("future_1", "test_1"),
+                                    ("future_2", "test_2")):
+                    computed = independently_score(cohort[part], predictions.get(part))
+                    require(metric(observed_scores.get(part)) == computed and
+                            metric(published.get(field)) == computed,
+                            "published_metric_not_replayed_from_source")
+                if kind == "soft":
+                    require(published.get("head_forward_rows") ==
+                            nonnegative_int(meters.get("head_forward_rows")),
+                            "published_soft_work_count_drift")
+                else:
+                    for dest, terms in (
+                        ("train_head_rows", ("train_head_0_rows", "train_head_1_rows")),
+                        ("eval_head_rows", ("eval_head_0_rows", "eval_head_1_rows")),
+                        ("diagnostic_head_rows", ("diagnostic_head_rows",)),
+                        ("train_router_rows", ("train_router_rows",)),
+                        ("sampled_routes", ("sampled_routes",)),
+                    ):
+                        expected = sum(nonnegative_int(meters.get(k)) for k in terms)
+                        require(published.get(dest) == expected,
+                                "published_hard_work_count_drift")
+
+        require(hard_original is not None, "missing_original_hard_training")
+        frozen_original = load_json(root / f"{seed}-frozen-report.json",
+                                    max_bytes=MAX_FILE_BYTES)
+        require(frozen_original.get("schema") ==
+                "hepta.cell-meta-true-frozen-stage1.v1" and
+                frozen_original.get("source_panel_sha256") == panel_sha and
+                frozen_original.get("authority_posture") == "DENY_ALL" and
+                frozen_original.get("production_admission") == "BLOCKED" and
+                frozen_original.get("additional_training_effect") is not True,
+                "frozen_original_lineage_drift")
+        frozen_predictions = frozen_original.get("predictions")
+        require(type(frozen_predictions) is dict and
+                frozen_original.get("prediction_sha256") ==
+                canonical_digest(frozen_predictions),
+                "frozen_prediction_seal_drift")
+        five = load_json(root / f"{seed}-fivearm-report.json",
+                         max_bytes=MAX_FILE_BYTES)
+        require(five.get("schema") == "hepta.cell-meta-five-arm-retrospective.v1" and
+                type(five.get("seed")) is int and five["seed"] == seed and
+                five.get("panel_sha256") == panel_sha and
+                five.get("hard_train_sha256") == canonical_digest(hard_original) and
+                five.get("frozen_sha256") == canonical_digest(frozen_original) and
+                five.get("shared_stem_sha256") == source.get("stem_sha256"),
+                "fivearm_source_or_model_lineage_drift")
+        five_rows = five.get("arms")
+        require(type(five_rows) is list and len(five_rows) == len(OS_ARMS) and
+                [x.get("arm") for x in five_rows if type(x) is dict] ==
+                list(OS_ARMS), "wrong_original_fivearm_inventory")
+        for index, row in enumerate(five_rows):
+            predecessor = (frozen_original if index == 0
+                           else hard_original["results"][index - 1])
+            predictions = predecessor["predictions"]
+            retrospective = (predecessor["retrospective_evaluation"])
+            require(type(row.get("split_proposed")) is bool and
+                    row["split_proposed"] ==
+                    (False if index == 0 else predecessor["split_proposed"]),
+                    "fivearm_split_decision_drift")
+            for part in ("future_1", "future_2"):
+                computed = independently_score(cohort[part], predictions.get(part))
+                require(metric(retrospective.get(part)) == computed and
+                        metric(row.get("retrospective_scores", {}).get(part)) == computed,
+                        "published_fivearm_metric_not_replayed")
+
+
 def produce(root: Path) -> dict[str, Any]:
     """Return a BLOCKED receipt on every invalid or incomplete raw inventory."""
     result: dict[str, Any] = {
@@ -359,6 +529,7 @@ def produce(root: Path) -> dict[str, Any]:
         soft = load_json(root / "descriptive-retrospective-summary.json")
         hard = load_json(root / "hardtop1-descriptive-retrospective-summary.json")
         kernel = load_json(root / "os-meter-joined.json")
+        verify_descriptive_reports_against_raw(root, soft, hard)
         fivearm = []
         common_stem = None
         for seed in SEEDS:
