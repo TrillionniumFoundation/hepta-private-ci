@@ -253,7 +253,10 @@ def fit_joint_reader_pair(models, data, cases, *, steps=8000, seed=41,
                 totals[arm]["wall_ns"] += row["wall_ns"]
                 # A failure during the second arm cannot hide the first
                 # completed operation from the preserved terminal receipt.
-                receipt["partial_attempts"] = list(pending)
+                receipt["partial_attempts"] = [
+                    {"arm": name, "step": step, "observation": dict(pending[name])}
+                    for name in ARMS if name in pending
+                ]
             for arm in ARMS:
                 records[arm]["updates"].append(pending[arm])
                 records[arm]["completed_steps"] = step
