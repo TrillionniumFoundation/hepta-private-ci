@@ -36,11 +36,24 @@ TRAIN source membership:
 | `wide` | Approximately parameter-matched static reference |
 | `core` | Original four-step recurrent model |
 | `attention` | Identical Core initialization + same SGD sampler + teacher masks |
+| `core_fixed`, `attention_fixed` | Actually run the existing four-round propose/verify/value/revise loop using each frozen model |
+| `core_ndu`, `attention_ndu` | Actually invoke the existing bounded continuation controller; verify episode stop reason and physical search work |
 
 The last two have **the same trainable parameter count, training rows, SGD
 updates and sampled depth/indices**, independently checked by a receipt digest.
 They do **not** have equal training arithmetic, because the attention arm pays
-for auxiliary loss and tokenizer offset binding. Exact physical CPU and wall
+for auxiliary loss and tokenizer offset binding.
+The inference comparison now also includes **two individually frozen critics**,
+fitted only on non-overlapping halves of a distinct `validation` source
+partition; this critic preparation, training and calibration are additional
+measured CPU/wall cost. The `fixed` and `ndu` arms run the actual existing
+`execute_group` callbacks and record workspace steps, verifier calls,
+terminal status and search formula work. The standard-library replay must
+reject impossible verifier-accepted statuses, stale model/feature hashes,
+missing execution work, wrong critic source groups and inconsistent
+`fixed` depth. Its printed paired rescue/harm and costs are descriptive, not
+causal or matched total-compute acceptance.
+ Exact physical CPU and wall
 measurements, train operator ledger, feature cache resident bytes, Encoder
 forward counts, and teacher-generation costs are separately retained.
 
