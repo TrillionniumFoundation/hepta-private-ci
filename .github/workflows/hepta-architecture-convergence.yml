@@ -256,6 +256,17 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
       - name: Frozen-source CellSplit measurement matrix capture regressions
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_matrix_capture.py' -v
+      - name: Early non-test Neuron original-owner effect denial and reference parity
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.learning == 'true' || steps.scope.outputs.inference == 'true')
+        run: |
+          set -euo pipefail
+          # A caller-controlled NDU callback and a local Final-use authority
+          # cannot stand in for independently composed Control/CNS/Evidence.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-product-original-owner-compile.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-product-original-owner-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-internal-reference-parity.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D warnings
       - name: Signed serving owners and durable metrics regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
