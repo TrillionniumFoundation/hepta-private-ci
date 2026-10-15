@@ -226,7 +226,32 @@ class SixTrackValidation(unittest.TestCase):
     def test_chronology_violation(self):
         self.rejected(lambda d: d["cases"][32].update(observed_at=2), "time boundary")
 
-    def test_reader_counterfactual_missing(self):
+    def test_exact_input_cannot_create_second_independent_source_group(self):
+        # Same split, two apparently distinct provenance groups, identical bytes.
+        # Without this check the family-count estimate can be inflated.
+        self.rejected(lambda d: d["cases"][4].update(
+            input_sha256=d["cases"][0]["input_sha256"]),
+            "identical input reused across distinct source families")
+
+    def test_reader_sufficient_vs_removed_premise_must_change_input(self):
+        # A label saying "premise_removed" is not a causal intervention when
+        # the bytes seen by the model are identical to the sufficient condition.
+        self.rejected(lambda d: d["cases"][35].update(
+            input_sha256=d["cases"][34]["input_sha256"]),
+            "Reader sufficient/premise-removed intervention")
+
+    def test_same_source_can_reuse_input_for_noop_retrieval(self):
+        doc = copy.deepcopy(self.doc)
+        doc["cases"][33]["input_sha256"] = doc["cases"][32]["input_sha256"]
+        for arms in doc["tracks"].values():
+            for arm in arms.values():
+                arm["results"][33]["input_sha256"] = doc["cases"][32]["input_sha256"]
+        out = target.audit(doc)
+        self.assertEqual(out["distinct_input_sha256_count"], 111)
+        self.assertIs(out["independent_source_groups_not_cryptographically_attested"], True)
+        self.assertIs(out["production_promotion_permitted"], False)
+
+
         self.rejected(lambda d: d["cases"][33].update(reader_condition="none"), "repeated Reader")
 
     def test_reader_answer_flip(self):
