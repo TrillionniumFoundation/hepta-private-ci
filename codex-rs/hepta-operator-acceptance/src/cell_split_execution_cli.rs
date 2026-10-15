@@ -224,6 +224,16 @@ fn parse_verifying_key(value: &str) -> Result<VerifyingKey, String> {
     VerifyingKey::from_bytes(&bytes).map_err(|_| "invalid owner verification key".to_string())
 }
 
+/// A private configuration owned by some other Unix principal is not a
+/// trusted deployment input, even when a privileged operator can read its
+/// 0600 inode and an external hash matches. Check the *current* EUID on
+/// each read, rather than caching a principal across a privilege transition.
+#[cfg(unix)]
+fn config_owner_matches_euid(opened_uid: u32, named_uid: u32) -> bool {
+    let current = rustix::process::geteuid().as_raw();
+    opened_uid == current && named_uid == current
+}
+
 fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
     if !path.is_absolute() || path.canonicalize().map_err(|e| e.to_string())? != path {
         return Err("configuration path must be canonical, absolute and symlink-free".to_string());
@@ -243,6 +253,9 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt as _;
+        if !config_owner_matches_euid(before.uid(), before.uid()) {
+            return Err("configuration owner differs from current effective UID".to_string());
+        }
         if before.mode() & 0o077 != 0 {
             return Err("configuration file must not be accessible by group or others".to_string());
         }
@@ -273,6 +286,8 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
             || before.dev() != after_path.dev()
             || before.ino() != after_path.ino()
             || before.len() != after_path.len()
+            || before.uid() != after_fd.uid()
+            || !config_owner_matches_euid(after_fd.uid(), after_path.uid())
             || before.nlink() != 1
             || after_fd.nlink() != 1
             || after_path.nlink() != 1
@@ -287,6 +302,35 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(unix)]
+    #[test]
+    fn operator_config_requires_current_effective_uid_for_original_inode() {
+        use std::os::unix::fs::MetadataExt as _;
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let private = tempfile::tempdir().expect("private operator fixture");
+        let path = private.path().join("pinned-operator.json");
+        std::fs::write(&path, b"{}").expect("original config inode");
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
+            .expect("private config mode");
+        let opened = std::fs::metadata(&path).expect("real original config");
+        let current = rustix::process::geteuid().as_raw();
+        assert_eq!(
+            opened.uid(),
+            current,
+            "test fixture must be owned by this principal"
+        );
+        assert!(config_owner_matches_euid(opened.uid(), opened.uid()));
+        let foreign = current ^ 1;
+        assert!(!config_owner_matches_euid(foreign, current));
+        assert!(!config_owner_matches_euid(current, foreign));
+        assert!(!config_owner_matches_euid(foreign, foreign));
+        assert_eq!(
+            read_private_config(&path).expect("same-UID original inode is readable"),
+            b"{}".to_vec(),
+        );
+    }
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
