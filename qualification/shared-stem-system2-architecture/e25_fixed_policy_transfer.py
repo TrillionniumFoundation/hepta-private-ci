@@ -104,6 +104,13 @@ def geometry(audit,source_meta,slate,owner_run,original_archive):
     if (source_meta.get('new_candidate_count')!=audit.get('actual_candidate_count')
         or source_meta.get('new_question_count')!=12
         or source_meta.get('new_source_groups')!=[x['source_group'] for x in slate['rows']]
+        or source_meta.get('eligible_unused_passage_count_verified')!=6
+        or source_meta.get('eligible_unused_distinct_text_count_verified')!=6
+        or source_meta.get('full_unused_source_census_before_model') is not True
+        or source_meta.get('source_issuer_independently_authenticated') is not False
+        or source_meta.get('eligible_unused_group_set_sha256')!=sha256(
+            json.dumps(sorted(x['source_group'] for x in slate['rows']),
+                       separators=(',',':')).encode()).hexdigest()
         or source_meta.get('original_archive_sha256')!=ARCHIVE_SHA
         or source_meta.get('original_source_head')!=ORIGINAL_SOURCE_HEAD
         or source_meta.get('selection_uses_labels_or_predictions') is not False
@@ -202,6 +209,9 @@ def propose(audit,source_meta,slate,owner_run,policy,original_archive):
         'new_validation_candidates':len(rows),'rows':out,
         'actual_new_frozen_fourfold_student_cpu_ns':timing,
         'four_trained_heads_per_policy':True,
+        'eligible_unused_group_set_sha256':source_meta['eligible_unused_group_set_sha256'],
+        'exhaustive_unused_eligible_passages_confirmed_before_model':True,
+        'source_issuer_independently_authenticated':False,
         'new_time_or_data_family':False,
         'learning_or_model_selected':False,
         'complete_service_cost_measured':False}
