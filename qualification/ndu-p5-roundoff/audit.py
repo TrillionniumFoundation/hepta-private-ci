@@ -13,7 +13,7 @@ from pathlib import Path
 from time import process_time_ns, perf_counter_ns
 import sys
 
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ndu-p5-coupled-study'))
+sys.path.append(str(Path(__file__).resolve().parents[1]/'ndu-p5-coupled-study'))
 from independent_reference import direct_map  # WORK REPLAY ONLY, never mathematical bounds
 from rigorous_tree import action_bounds,resolve,SCALE,Unqualified
 

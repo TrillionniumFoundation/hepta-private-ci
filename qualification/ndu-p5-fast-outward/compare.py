@@ -17,9 +17,9 @@ from pathlib import Path
 from time import process_time_ns
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT/'ndu-p5-roundoff'))
-sys.path.insert(0,str(ROOT/'ndu-p5-decision-cert'))
-sys.path.insert(0,str(ROOT/'ndu-p5-coupled-study'))
+sys.path.append(str(ROOT/'ndu-p5-roundoff'))
+sys.path.append(str(ROOT/'ndu-p5-decision-cert'))
+sys.path.append(str(ROOT/'ndu-p5-coupled-study'))
 from rigorous_tree import action_bounds, resolve, SCALE
 from independent_reference import direct_map
 from fast_tanh import fast_action_bounds, REDUCTIONS, TERMS
