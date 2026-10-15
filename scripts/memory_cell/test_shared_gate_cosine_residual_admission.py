@@ -104,9 +104,13 @@ class AdmissionTests(unittest.TestCase):
         before = c.digest([train, rebuilt, [q.identity for q in selected]])
         own, _ = v3.admitted_own_inputs(train, rebuilt, selected)
         self.assertEqual(before, c.digest([train, rebuilt, [q.identity for q in selected]]))
-        self.assertEqual(own[0]["request"], train[0]["request"])
-        own[0]["request"]["question"] = "changed"
-        self.assertNotEqual(own[0]["request"], train[0]["request"])
+        projected = {row["question_id"]: row for row in own}
+        source = next(row for row in train
+                      if row["question_id"] == c.digest(selected[0].identity)
+                      and row["kind"] == "annotated_answer")
+        self.assertEqual(projected[selected[0].identity]["request"], source["request"])
+        projected[selected[0].identity]["request"]["question"] = "changed"
+        self.assertNotEqual(projected[selected[0].identity]["request"], source["request"])
 
     def test_wrapper_preserves_receipt_fix_and_installs_admission_fix(self):
         self.assertIs(legacy.validate_similarity, v2.validate_similarity)
