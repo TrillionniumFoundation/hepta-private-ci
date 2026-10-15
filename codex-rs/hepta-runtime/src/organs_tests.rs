@@ -762,6 +762,7 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
     use std::path::PathBuf;
 
     use codex_hepta_contracts::SignedFinalUseGrant;
@@ -1071,6 +1072,8 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     let owner_root = tempfile::tempdir()?;
+    // Qualify absence of the original effect, never an unsafe-directory error.
+    fs::set_permissions(owner_root.path(), fs::Permissions::from_mode(0o700))?;
     let mut owner = codex_hepta_operator_acceptance::CellSplitCnsCutoverOwnerV1::open(
         owner_root.path(),
         plan,
@@ -1080,8 +1083,8 @@ fn cell_split_cns_runtime_port_denies_real_governed_runtime_without_control() ->
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
-        owner.read_committed(&intent).is_err(),
-        "missing original Control handoff cannot promote a fresh runtime host",
+        owner.read_committed(&intent)?.is_none(),
+        "no original Control/CNS commit means no physical successor effect",
     );
     assert!(!original_path.exists(), "restart may not manufacture a CNS commit");
     Ok(())
