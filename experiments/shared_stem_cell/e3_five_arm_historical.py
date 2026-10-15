@@ -147,7 +147,15 @@ def compose(original, ocr, native, *, original_sha, ocr_sha, native_sha):
            native.get("audio_tower_loaded") is False and
            native.get("train_only_private_head_parameters") == 769 and
            native.get("train_only_head_updates") == 80 and
-           native.get("future_labels_visible") is False,
+           native.get("future_labels_visible") is False and
+           type(native.get("source_token_preflight_rows")) is int and
+           native["source_token_preflight_rows"] == 1344 and
+           type(native.get("max_conservative_context_tokens")) is int and
+           1 <= native["max_conservative_context_tokens"] <= 8192 and
+           native.get("native_context_limit") == 8192 and
+           native.get("max_image_soft_tokens_charged") == 1120 and
+           native.get("text_tokenizer_truncation_disabled") is True and
+           native.get("image_tokens_physically_verified") is False,
            "native multimodal evaluation/Head training not qualified")
     refs = original.get("predictions")
     demand(type(refs) is list and len(refs) == 64, "original paired heldout missing")
