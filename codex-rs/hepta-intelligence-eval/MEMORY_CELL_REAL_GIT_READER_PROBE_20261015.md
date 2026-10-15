@@ -35,3 +35,26 @@ This study may be informative even if the stronger Reader answers all mechanical
 - Source-only public plan: `python3 scripts/memory_cell/real_source_reader_probe.py prepare --source-zip ORIGINAL.zip --reopen-zip REOPEN.zip --plan NEW.json`.
 - New inference and independent evidence review: `.github/workflows/hepta-memory-real-git-reader-probe.yml`, triggered by the exact PR head path, with original attempts retained even if a shard fails. Inspect that run's **terminal exact-head** result and scored archive; a queued job and a deterministic 10-test pass must not be called completed real pretrained inference.
 - Strong RAG with full tool rights, independently authenticated sufficient evidence, source-written-before-future-task parametric-memory comparisons, real program repair and complete lifecycle accounting remain separate blocked stages. No modification to `blocking-ci` or serving owners is authorized.
+
+## Original-delivery and CI-head correction (October 15 continuation)
+
+The independent scoring process no longer trusts only a model journal's
+self-reported evidence SHA. For every successful original answer it reconstructs
+the exact expected Reader-side `EvidenceBundle` (query, source roots, original
+bytes, ordered spans, byte offsets, source digests, `[E...]` labels, bundle
+seal and delivered excerpts), using the separately reopened original Git ZIP.
+A journal with a changed delivered excerpt, span identity or input binding is
+rejected. Only the code-path and byte consistency are independently checked;
+model tensor bytes and human semantic sufficiency remain outside this scorer's
+authority. Input token-ID digests remain self-reported, because the independent
+score job deliberately does not load model weights/tokenizers.
+
+The exact-head check in the independent scorer now uses the same PR HEAD
+expression as its checkout and reader shards, rather than `github.sha`,
+which can refer to the synthetic PR merge commit instead of the original branch.
+Mechanical complete-citation success now requires *exactly* the target-source
+citation set: citing a correct target plus an unrelated source is not complete
+citation fidelity. Three additional mutation regressions exercise these cases.
+Verified source-only lexical retrieval already includes the target file in all
+nine preregistered cases (9/9); that is **not** evidence of a learned selector
+or a new RAG recall improvement. These are research-only source and CI fixes.

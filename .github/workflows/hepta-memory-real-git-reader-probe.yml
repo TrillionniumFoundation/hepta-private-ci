@@ -191,7 +191,7 @@ jobs:
             -o /tmp/scoring-source/reopen.zip
       - name: Verify exact generation HEAD, original manifests and complete model calls
         env:
-          PIN: ${{ github.sha }}
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$PIN"

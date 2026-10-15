@@ -15,6 +15,7 @@ from real_source_reader_probe import (
     build_plan,
     canonical,
     digest,
+    expected_reader_delivery,
     locked_plan,
     plan_from_archives,
     score_outputs,
@@ -54,7 +55,11 @@ def fake_journals(plan, *, deliberate_wrong=False):
                 answer = expected + " [E1]" if not deliberate_wrong else "F99 [E9]"
                 identity = digest(tier.encode())
                 profile = digest((tier + ":profile").encode())
-                receipt = dict(reader_identity=identity, reader_profile=profile,
+                receipt = dict(expected_reader_delivery(c, condition),
+                               reader_identity=identity, reader_profile=profile,
+                               input_ids_digest=digest((tier + ":input").encode()),
+                               generated_ids_digest=digest((tier + ":output").encode()),
+                               token_limit=1024,
                                input_tokens=100, generated_tokens=7, seconds=1.0,
                                trainable_parameters=0, answer_postprocessed=False,
                                production_accepted=False)
@@ -101,6 +106,36 @@ class RealSourceProbeTests(unittest.TestCase):
         result = score_outputs(self.plan, self.sources, fake_journals(self.plan, deliberate_wrong=True))
         self.assertEqual(result["reader_conditions"]["smol-1.7b"]["mechanical_support"]["strict_correct"], 0)
         self.assertEqual(result["reader_conditions"]["smol-1.7b"]["mechanical_support"]["invalid_citation_labels"], 9)
+
+    def test_ordered_delivered_source_forgery_rejected(self):
+        records = fake_journals(self.plan)
+        records["smol-135m"][1]["receipt"]["delivered_evidence"][0]["excerpt"] = "fabricated"
+        with self.assertRaisesRegex(ValueError, "delivered evidence/prompt binding"):
+            score_outputs(self.plan, self.sources, records)
+
+    def test_altered_native_bundle_digest_rejected(self):
+        records = fake_journals(self.plan)
+        records["smol-1.7b"][1]["receipt"]["bundle_digest"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "delivered evidence/prompt binding"):
+            score_outputs(self.plan, self.sources, records)
+
+    def test_citation_for_unrelated_source_is_not_full_chain(self):
+        records = fake_journals(self.plan)
+        target = next((c, x) for c in self.plan["cases"]
+                      for x in records["smol-135m"] if x["case_id"] == c["id"]
+                      and x["condition"] == "hybrid_k4" and len(c["conditions"]["hybrid_k4"]) > 1)
+        case, row = target
+        gold = case["conditions"]["mechanical_support"][0]["marker"]
+        source = case["conditions"]["hybrid_k4"]
+        correct_index = next(i for i, e in enumerate(source, 1)
+                             if e["marker"] == gold)
+        row["answer"] = f"{gold} [E{correct_index}] [E{1 if correct_index != 1 else 2}]"
+        report = score_outputs(self.plan, self.sources, records)
+        unchanged = score_outputs(self.plan, self.sources, fake_journals(self.plan))
+        self.assertEqual(report["reader_conditions"]["smol-135m"]["hybrid_k4"]
+                         ["original_correct_and_cited"],
+                         unchanged["reader_conditions"]["smol-135m"]["hybrid_k4"]
+                         ["original_correct_and_cited"] - 1)
 
     def test_reference_evidence_drift_is_refused(self):
         records = fake_journals(self.plan)

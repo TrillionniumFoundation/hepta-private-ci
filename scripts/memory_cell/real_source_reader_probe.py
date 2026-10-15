@@ -417,6 +417,47 @@ def reader_execute(plan: dict, tier: str, stage: Path, stage_sha: str, output: P
                 production_qualified=False)
 
 
+def hepta_json_digest(value) -> str:
+    """Mirror the native JSON-domain digest, without loading any model package."""
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
+                                     separators=(",", ":")).encode()).hexdigest()
+
+
+def expected_reader_delivery(case: dict, condition: str) -> dict:
+    """Rebuild every prompt-independent evidence receipt from original Git bytes.
+
+    The raw Reader journal's evidence_sha256 field is only a self-report.
+    Validate precise delivered spans, source roots and ordered citation labels
+    instead of trusting its declaration of model inputs.
+    """
+    query = dict(identity=case["id"], family=case["root"], scope=case["id"],
+                 content=case["question"], observed_at="2026-10-15T00:00:00Z")
+    query_digest = hepta_json_digest(query)
+    spans, delivered = [], []
+    for i, e in enumerate(case["conditions"][condition], 1):
+        content = e["text"]
+        doc_id = hepta_json_digest((case["id"], e["marker"], content))
+        source_root = case["root"] + ":" + e["blob_sha"]
+        span = dict(source_id=doc_id, root=source_root, scope=case["id"],
+                    session="real-git-blob", observed_at=SOURCE_CUT,
+                    start=0, end=len(content.encode()), excerpt=content,
+                    source_digest=hepta_json_digest(content))
+        spans.append(span)
+        delivered.append(dict(label=f"E{i}", id=hepta_json_digest(span),
+                              original_id=doc_id, root=source_root,
+                              scope=case["id"], excerpt=content,
+                              source_start=0, source_end=span["end"],
+                              observed_at=SOURCE_CUT,
+                              source_digest=span["source_digest"]))
+    bundle = dict(query_digest=query_digest,
+                  source_frontier=hepta_json_digest((case["root"], case["source_identity_digest"])),
+                  selected=spans, mode=condition, rounds=1)
+    return dict(query_digest=query_digest,
+                bundle_digest=hepta_json_digest(("hepta.evidence-bundle.v1", bundle)),
+                delivered_evidence=delivered, omitted_evidence_bytes=0,
+                semantic_sufficiency=None)
+
+
 def score_outputs(plan: dict, sources: tuple, journals: dict):
     """Post-generation independent mechanical scoring; never modify answers."""
     files, blobs = sources
@@ -463,6 +504,14 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
                     "original attempt status inconsistent")
             if ok:
                 receipt = row["receipt"]
+                expected_receipt = expected_reader_delivery(case, row["condition"])
+                require(all(receipt.get(k) == v for k, v in expected_receipt.items())
+                        and receipt.get("token_limit") == plan["token_limit"]
+                        and isinstance(receipt.get("input_ids_digest"), str)
+                        and HEX64.fullmatch(receipt["input_ids_digest"])
+                        and isinstance(receipt.get("generated_ids_digest"), str)
+                        and HEX64.fullmatch(receipt["generated_ids_digest"]),
+                        "original Reader delivered evidence/prompt binding differs from Git source")
                 require(row["reader_identity"] == receipt.get("reader_identity")
                         and row["reader_profile"] == receipt.get("reader_profile")
                         and isinstance(row["reader_identity"], str)
@@ -488,7 +537,8 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
             cited_ids = {int(x[2:-1]) for x in cited}
             delivery = {i for i, e in enumerate(evidence, 1) if e["path"] == targets[row["case_id"]][1]}
             invalid_labels = len(cited_ids - set(range(1, len(evidence) + 1)))
-            complete_cited = correct and bool(delivery) and bool(cited_ids & delivery) and not invalid_labels
+            # An extra unrelated citation cannot qualify as a complete source chain.
+            complete_cited = correct and bool(delivery) and cited_ids == delivery
             seen.setdefault(tier, []).append(dict(case_id=row["case_id"],
                 root=case["root"], condition=row["condition"], succeeded_call=ok,
                 strict_correct=correct, necessary_source_delivered=bool(delivery),
