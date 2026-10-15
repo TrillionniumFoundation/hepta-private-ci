@@ -10,9 +10,10 @@ import torch
 
 from group_encoder import file_digest
 from multirc_data import ReaderCase
-from token_native_campaign import ARMS, evaluate, load_critic, profile_bounds, summarize, train
+from token_native_campaign import (ARMS, ZeroFeedbackReader, evaluate, load_critic, load_reader,
+                                   profile_bounds, summarize, train)
 from token_reader import TokenReader
-from token_reader_training import TokenBatch
+from token_reader_training import TokenBatch, parameter_digest
 
 
 def sample(name, label=0):
@@ -80,6 +81,24 @@ class NativeCampaignTests(unittest.TestCase):
             (folder / "critic.pt").write_bytes(b"substitution")
             with self.assertRaisesRegex(ValueError, "critic file changed"):
                 load_critic(folder, artifact["critic"])
+
+    def test_reader_policy_preserves_main_parameters_and_ignores_nonzero_feedback(self):
+        original = TokenReader(384, 32).eval().requires_grad_(False)
+        original.training_source_groups = ("original-training-source",)
+        with patch("token_native_campaign.load_models", return_value={"recurrent": original}):
+            reader = load_reader(Path("unused"), {})
+        self.assertIsInstance(reader, ZeroFeedbackReader)
+        self.assertEqual(parameter_digest(original), parameter_digest(reader))
+        self.assertEqual(reader.training_source_groups, original.training_source_groups)
+        bank = TinyBank()
+        with torch.no_grad():
+            prepared = reader.prepare(*bank.features.values())
+            baseline = reader.step_prepared(prepared)
+            arbitrary = reader.step_prepared(prepared, feedback=torch.tensor([[1., -1., .4, .8]]))
+            prior = original.step_prepared(original.prepare(*bank.features.values()))
+        self.assertTrue(all(torch.equal(a, b) for a, b in zip(baseline, arbitrary)))
+        self.assertTrue(all(torch.equal(a, b) for a, b in zip(baseline, prior)))
+        self.assertFalse(any(p.requires_grad for p in reader.parameters()))
 
     def test_unknown_work_refuses_native_profile_instead_of_inventing_bound(self):
         model = SimpleNamespace(training_source_groups=("reader",))
