@@ -187,6 +187,30 @@ class SixTrackValidation(unittest.TestCase):
             d["tracks"]["P1"]["replicated_frozen"]["final_head_sha256"] = sha("different-initial")
         self.rejected(alter, "initialization differs")
 
+    def test_p1_frozen_zero_steps_and_learned_positive_steps_is_valid(self):
+        study = self.doc["tracks"]["P1"]
+        self.assertEqual(study["shared_frozen"]["train_steps"], 0)
+        self.assertGreater(study["shared_learned"]["train_steps"], 0)
+        result = target.audit(self.doc)
+        self.assertEqual(result["authority"], "DENY_ALL")
+        self.assertFalse(result["statistical_model_winner_selected"])
+        self.assertIn("shared_learned__vs__shared_frozen",
+                      result["tracks"]["P1"]["paired_family_differences"])
+
+    def test_p1_learned_vs_learned_still_requires_matching_steps(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["replicated_learned"].update(
+            train_steps=25), "unmatched learning effort")
+
+    def test_p1_frozen_head_cannot_fake_training_steps(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(
+            train_steps=1), "frozen Head cannot report optimizer steps")
+
+    def test_p2_and_p4_learned_effort_still_matches(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["matched_unsplit"].update(
+            train_steps=25), "unmatched learning effort")
+        self.rejected(lambda d: d["tracks"]["P4"]["tree_search"].update(
+            train_steps=25), "unmatched learning effort")
+
     def test_p1_shared_vs_replicated_head_capacity(self):
         self.rejected(lambda d: d["tracks"]["P1"]["replicated_learned"].update(
             trainable_parameters=9750), "parameter budget differs")
@@ -390,7 +414,9 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["tracks"]["P2"]["parent_more_data"].update(train_cases=64), "additional independent exposure")
 
     def test_no_misleading_frozen_head(self):
-        self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(final_head_sha256=sha("changed")), "frozen baseline")
+        # The per-arm frozen immutability gate runs before paired scoring.
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(
+            final_head_sha256=sha("changed")), "frozen Head changed weights")
 
     def test_p4_equal_budget(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(compute_budget_ms=101), "compute budgets")
