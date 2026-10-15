@@ -1,0 +1,76 @@
+name: Hepta E3 actual ScienceQA independent archive review (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e3-scienceqa-original-archive-review-20261015
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-e3-original-archive-review-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  exact-original-independent-review:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: No-hidden-skip contract and adversarial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_original_archive_*.py' -q
+          python -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_original_archive_*.py' -q
+          python -m compileall -q experiments/shared_stem_cell/e3_original_archive_*.py
+      - name: Pin original committed source/run, fetch ZIP without forwarding GH token to storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/e3-original-public
+          python experiments/shared_stem_cell/e3_original_archive_fetch.py \
+            --output /tmp/e3-original-public/original.zip
+          test -s /tmp/e3-original-public/original.zip
+      - name: Independent original per-case prediction/cost/paired exact and Holm recheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e3_original_archive_critical_review.py \
+            --original-zip /tmp/e3-original-public/original.zip \
+            --output /tmp/e3-original-public/source-bound-review.json
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('/tmp/e3-original-public/source-bound-review.json')
+          raw=p.read_bytes()
+          v=json.loads(raw)
+          assert v['schema']=='hepta.e3.scienceqa-original-source-bound-critical-review.v1'
+          assert v['observed_predictions']==64
+          assert v['original_correct']['text_only']==17
+          assert v['original_correct']['train_gate']==24
+          assert v['exploratory_holm_adjusted_p_vs_text']['train_gate']>0.94
+          assert v['original_calibration_selected_zero_visual_weight'] is True
+          assert v['external_model_or_ground_truth_attested'] is False
+          assert v['independently_recomputed_accuracy_from_labels'] is False
+          assert v['stem_winner'] is None and v['authority']=='DENY_ALL'
+          assert v['production_accepted'] is False
+          assert hashlib.sha256(raw).hexdigest() == '00cc23f008f4c1bc41e1e2eb165219439dc6d37da11aacc0f6918ea894136933'
+          print('EXACT_SOURCE_E3_NO_WIN_AUDIT_PASS, source archive not a production proof')
+          PY
+      - name: Upload only original-source-bound bounded audit JSON, no raw weights or labels
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-original-source-bound-no-win-deny-all
+          path: /tmp/e3-original-public/source-bound-review.json
+          if-no-files-found: error
+          retention-days: 7
