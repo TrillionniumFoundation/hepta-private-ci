@@ -246,13 +246,27 @@ async fn restore_rejects_row_tamper_even_if_attacker_reinstates_original_trigger
     .await
     .expect("simulate malicious original content rewrite");
     sqlx::query(
-        "CREATE TRIGGER execution_prepared_envelopes_no_update
+        "CREATE TRIGGER IF NOT EXISTS execution_prepared_envelopes_no_update
          BEFORE UPDATE ON execution_prepared_envelopes
          BEGIN SELECT RAISE(ABORT, 'execution prepared envelopes are immutable'); END",
     )
     .execute(&store.pool)
     .await
-    .expect("restore exact schema spelling");
+    .expect("restore original no-update trigger if not already restored");
+    // The original store may have already restored the trigger while opening
+    // a pooled connection. Do not confuse that benign repair with failure,
+    // and do not assume an existing trigger still enforces the right policy.
+    let second_attack = sqlx::query(
+        "UPDATE execution_prepared_envelopes
+         SET recorded_at_ms = recorded_at_ms WHERE effect_key = ?",
+    )
+    .bind(key.as_str())
+    .execute(&store.pool)
+    .await;
+    assert!(
+        second_attack.is_err(),
+        "restored original trigger must still deny a fresh write"
+    );
     assert!(matches!(
         store.recover_execution_preparation_by_key_v1(&key).await,
         Err(EvidenceError::Corrupt(_))
@@ -336,9 +350,11 @@ async fn cold_startup_keyset_verification_crosses_multiple_bounded_pages() {
 
 #[tokio::test]
 async fn no_external_effect_or_signer_is_created_by_complete_recovery() {
-    assert!(!crate::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
-    assert!(!crate::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
-    assert!(!crate::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY);
+    const {
+        assert!(!crate::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
+        assert!(!crate::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
+        assert!(!crate::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY);
+    };
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&temp))
         .await
