@@ -55,6 +55,10 @@ fn head(
             SequenceHeadBindingV3 {
                 cell_id: StableId::new(cell).expect("cell"),
                 encoder_digest: id.base.encoder_digest,
+                tokenizer_digest: id.base.tokenizer_digest,
+                normalizer_digest: id.base.normalizer_digest,
+                quantization_digest: id.base.quantization_digest,
+                preprocessing_digest: id.preprocessing_digest,
                 adapter_digest: id.adapter_digest,
                 modality: id.modality,
                 attention: policy,
@@ -262,6 +266,10 @@ fn invalid_tensor_model_binding_duplicate_cell_and_work_budget_fail_closed() {
             SequenceHeadBindingV3 {
                 cell_id: StableId::new("bad-cell").expect("cell"),
                 encoder_digest: id.base.encoder_digest,
+                tokenizer_digest: id.base.tokenizer_digest,
+                normalizer_digest: id.base.normalizer_digest,
+                quantization_digest: id.base.quantization_digest,
+                preprocessing_digest: id.preprocessing_digest,
                 adapter_digest: id.adapter_digest,
                 modality: id.modality,
                 attention: SequenceAttentionPolicyV3::Causal,
@@ -287,6 +295,18 @@ fn invalid_tensor_model_binding_duplicate_cell_and_work_budget_fail_closed() {
     );
     assert_eq!(
         evaluate_sequence_heads_v3(&fence(&seq), &seq, &[wrong_head]),
+        Err(SequenceReadErrorV3::IncompatibleHead),
+    );
+    let mut changed_profile = id.clone();
+    changed_profile.base.tokenizer_digest = Digest32::of_bytes(b"changed-tokenization");
+    let mismatched = head(
+        &changed_profile,
+        "cell:new-profile",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
+    assert_eq!(
+        evaluate_sequence_heads_v3(&fence(&seq), &seq, &[mismatched]),
         Err(SequenceReadErrorV3::IncompatibleHead),
     );
     assert_eq!(

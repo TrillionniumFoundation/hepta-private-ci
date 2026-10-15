@@ -38,6 +38,10 @@ pub enum SequenceAttentionPolicyV3 {
 pub struct SequenceHeadBindingV3 {
     pub cell_id: StableId,
     pub encoder_digest: Digest32,
+    pub tokenizer_digest: Digest32,
+    pub normalizer_digest: Digest32,
+    pub quantization_digest: Digest32,
+    pub preprocessing_digest: Digest32,
     pub adapter_digest: Digest32,
     pub modality: FeatureModalityV3,
     pub attention: SequenceAttentionPolicyV3,
@@ -117,7 +121,17 @@ impl SequenceCellHeadV3 {
         binding: SequenceHeadBindingV3,
         parameters: SequenceHeadParametersV3,
     ) -> Result<Self, SequenceReadErrorV3> {
-        if binding.encoder_digest.is_zero() || binding.adapter_digest.is_zero() {
+        if [
+            binding.encoder_digest,
+            binding.tokenizer_digest,
+            binding.normalizer_digest,
+            binding.quantization_digest,
+            binding.preprocessing_digest,
+            binding.adapter_digest,
+        ]
+        .iter()
+        .any(|digest| digest.is_zero())
+        {
             return Err(SequenceReadErrorV3::InvalidHead);
         }
         let width = parameters.query_q24.len();
@@ -151,8 +165,16 @@ impl SequenceCellHeadV3 {
                 .to_be_bytes(),
         );
         bytes.extend_from_slice(id);
-        bytes.extend_from_slice(binding.encoder_digest.as_array());
-        bytes.extend_from_slice(binding.adapter_digest.as_array());
+        for digest in [
+            binding.encoder_digest,
+            binding.tokenizer_digest,
+            binding.normalizer_digest,
+            binding.quantization_digest,
+            binding.preprocessing_digest,
+            binding.adapter_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
         bytes.push(binding.modality as u8);
         bytes.push(match binding.attention {
             SequenceAttentionPolicyV3::Causal => 1,
@@ -237,6 +259,10 @@ pub fn evaluate_sequence_heads_v3(
         }
         if head.width != width
             || head.binding.encoder_digest != fence.expected_identity.base.encoder_digest
+            || head.binding.tokenizer_digest != fence.expected_identity.base.tokenizer_digest
+            || head.binding.normalizer_digest != fence.expected_identity.base.normalizer_digest
+            || head.binding.quantization_digest != fence.expected_identity.base.quantization_digest
+            || head.binding.preprocessing_digest != fence.expected_identity.preprocessing_digest
             || head.binding.adapter_digest != fence.expected_identity.adapter_digest
             || head.binding.modality != fence.expected_identity.modality
         {
