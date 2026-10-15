@@ -1832,3 +1832,356 @@ fn shared_stem_batch_does_not_promote_caller_revocation_claims_to_permission() {
     assert_eq!(worker.driver.feature_calls, 0);
     assert!(!worker.poisoned);
 }
+
+
+
+#[cfg(unix)]
+fn signed_stem_batch_token_fixture(
+    bindings: &[codex_hepta_contracts::FinalUseBinding],
+) -> (
+    codex_hepta_contracts::FinalUseAuthority,
+    Vec<codex_hepta_contracts::VerifiedUseToken>,
+    Vec<codex_hepta_contracts::SignedFinalUseGrant>,
+    tempfile::TempDir,
+) {
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use std::os::unix::fs::PermissionsExt;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    let issuer = SigningKey::from_bytes(&[47; 32]);
+    let dir = tempfile::tempdir().expect("test final-use root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("protect batch authority root");
+    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+        dir.path(),
+        "stem-batch-signing-test-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        codex_hepta_contracts::FinalUseRevocations {
+            authority_epoch: 2,
+            revision: 1,
+            revoked_grant_ids: std::collections::BTreeSet::new(),
+        },
+    ).expect("one original signature authority");
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("test clock")
+        .as_millis() as u64;
+    let mut tokens = Vec::with_capacity(bindings.len());
+    let mut signed = Vec::with_capacity(bindings.len());
+    for (index, binding) in bindings.iter().enumerate() {
+        let grant = codex_hepta_contracts::FinalUseGrant {
+            schema_version: 1,
+            signer_id: "stem-batch-signing-test-owner".into(),
+            authority_epoch: 2,
+            grant_id: format!("stem-batch-grant-{index}"),
+            nonce: [u8::try_from(index + 1).expect("bounded distinct nonce"); 32],
+            binding: binding.clone(),
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let signature = issuer
+            .sign(&grant.signing_bytes().expect("valid signed grant"))
+            .to_bytes()
+            .to_vec();
+        let verified_grant = codex_hepta_contracts::SignedFinalUseGrant {
+            grant,
+            signature,
+        };
+        let token = authority
+            .claim(&verified_grant, binding)
+            .expect("durably claimed independent one-use nonce");
+        tokens.push(token);
+        signed.push(verified_grant);
+    }
+    (authority, tokens, signed, dir)
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_all_tokens_hold_one_effect_fence_without_partial_execution() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-batch".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (head2, auth2) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &head2, authorization: &auth2 },
+    ];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("complete read-only plan");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+
+    let returned = worker.with_verified_stem_batch_effect_v1(
+        100, proposed, &plan, &authority, tokens, |current| {
+            // No generic provider batch is installed. This callback is a
+            // deterministic one-call probe beneath both genuine token fences.
+            let revocation = authority.update_revocations(
+                codex_hepta_contracts::FinalUseRevocations {
+                    authority_epoch: 2,
+                    revision: 2,
+                    revoked_grant_ids: std::collections::BTreeSet::new(),
+                },
+            );
+            assert_eq!(
+                revocation,
+                Err(codex_hepta_contracts::FinalUseError::DispatchInProgress)
+            );
+            current.driver.feature_calls += 1;
+            Ok(17_u32)
+        },
+    ).expect("both independent signed entries were current");
+    assert_eq!(returned, 17);
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.active_requests.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_one_revoked_member_denies_whole_callback_and_no_nonce_refund() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-revoke".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (head2, auth2) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &head2, authorization: &auth2 },
+    ];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("preflight");
+    let (authority, tokens, signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    authority.update_revocations(codex_hepta_contracts::FinalUseRevocations {
+        authority_epoch: 2,
+        revision: 2,
+        revoked_grant_ids: std::collections::BTreeSet::from([
+            signed[1].grant.grant_id.clone(),
+        ]),
+    }).expect("revocation of second member");
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &plan, &authority, tokens, |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FinalUseDenied)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(
+        authority.claim(&signed[0], &plan.bindings[0]).unwrap_err(),
+        codex_hepta_contracts::FinalUseError::AlreadyClaimed
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_foreign_verifier_token_cannot_substitute_for_second_member() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-foreign".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (head2, auth2) =
+        add_second_batch_head(&mut worker, &source, &access, &head, &features);
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+        StemBatchMemberProposalV1 { selected_head: &head2, authorization: &auth2 },
+    ];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("preflight");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    let (_foreign_authority, foreign_tokens, _signed2, _foreign_dir) =
+        signed_stem_batch_token_fixture(&plan.bindings[1..]);
+    let first_token = tokens.into_iter().next().expect("first valid token");
+    let foreign_token = foreign_tokens.into_iter().next().expect("foreign claim");
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &plan, &authority,
+            vec![first_token, foreign_token],
+            |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FinalUseDenied)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_driver_failure_poison_generation_after_verified_entry() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-unknown".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("first Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [
+        StemBatchMemberProposalV1 { selected_head: &head, authorization: &auth },
+    ];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("preflight");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &plan, &authority, tokens, |current| {
+                current.driver.feature_calls += 1;
+                Err::<(), Error>(Error::DriverFailure("unknown batch outcome".into()))
+            },
+        ),
+        Err(Error::DriverFailure("unknown batch outcome".into()))
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+            .err(),
+        Some(Error::IndeterminateLifecycle)
+    );
+}
+
+
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_stale_aggregate_plan_denies_before_effect_without_using_driver() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-plan".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("correct original plan");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    let forged = NonAuthorizingStemBatchPlanV1 {
+        batch_digest: Digest32::of_bytes(b"tampered-order-or-members"),
+        bindings: plan.bindings.clone(),
+        authority: plan.authority,
+    };
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &forged, &authority, tokens, |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FeatureContract)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_panicking_effect_poison_generation_and_release_original_fence() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-unwind".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("original plan");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    let caught = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _ = worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &plan, &authority, tokens,
+            |current| -> Result<(), Error> {
+                current.driver.feature_calls += 1;
+                panic!("simulate synchronous backend panic after effect entry");
+            },
+        );
+    }));
+    assert!(caught.is_err());
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.poisoned);
+
+    // The original authority active dispatch fence must unwind correctly.
+    authority.update_revocations(codex_hepta_contracts::FinalUseRevocations {
+        authority_epoch: 2,
+        revision: 2,
+        revoked_grant_ids: std::collections::BTreeSet::new(),
+    }).expect("no stranded active effect");
+    assert_eq!(
+        worker.prepare_stem_final_use_batch_proposal_v1(100, proposed).err(),
+        Some(Error::IndeterminateLifecycle)
+    );
+}
