@@ -21,7 +21,9 @@ def fixture():
    'fitting':fitted,
    'physical_transformer_forward_count_attested':False,
    'physical_observations':{'load_ms':1.0,'encode_ms_by_case':{c['case_id']:.01 for c in p['cases']},
-      'local_model_api_requests':224,'physical_transformer_forward_count_attested':False},
+      'local_model_api_requests':224,'physical_transformer_forward_count_attested':False,
+      'mmbert_pretrained_tied_checkpoint_sample_verified':True if model=='mmbert_small' else None,
+      'mmbert_local_sample_sha256':'b'*64 if model=='mmbert_small' else None},
    'wall_ms':fitted['train_time_ms']+10.,'cpu_process_ms':fitted['train_time_ms']+1.,
    'process_lifetime_peak_rss_bytes':12345678}
  return p,reports
@@ -54,5 +56,9 @@ class Checks(unittest.TestCase):
  def test_missing_rss(self):self.deny(lambda p,a:a['mmbert_small'].pop('process_lifetime_peak_rss_bytes'))
  def test_fabricated_physical_forward_attestation(self):self.deny(lambda p,a:a['mmbert_small'].update(physical_transformer_forward_count_attested=True))
  def test_total_wall_undercount(self):self.deny(lambda p,a:a['embeddinggemma_2_text'].update(wall_ms=0.001))
+ def test_missing_pretrained_mmbert_tie_evidence(self):
+  self.deny(lambda p,a:a['mmbert_small']['physical_observations'].update(mmbert_pretrained_tied_checkpoint_sample_verified=False))
+ def test_fake_tie_evidence_on_granite(self):
+  self.deny(lambda p,a:a['granite_97m_r2']['physical_observations'].update(mmbert_pretrained_tied_checkpoint_sample_verified=True))
  def test_false_future(self):self.deny(lambda p,a:a['granite_97m_r2'].update(public_dataset_is_chronological_future=True))
 if __name__=='__main__':unittest.main()
