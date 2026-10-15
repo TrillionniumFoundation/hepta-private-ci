@@ -5,6 +5,10 @@ on:
       - 'qualification/shared-stem-system2-architecture/e22_*.py'
       - 'qualification/shared-stem-system2-architecture/test_e22_*.py'
       - 'qualification/shared-stem-system2-architecture/E22_*.md'
+      - 'qualification/shared-stem-system2-architecture/e24_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e24_*.py'
+      - 'qualification/shared-stem-system2-architecture/E24_*.md'
+      - 'qualification/shared-stem-system2-architecture/E24_*.json'
       - '.github/workflows/hepta-e22-original-human-eight-arm-question.yml'
       - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
   workflow_dispatch:
@@ -63,6 +67,22 @@ jobs:
           grep -F 'Ran 17 tests' "$OUTPUT/original-blind-tests.txt"
           grep -F 'Ran 17 tests' "$OUTPUT/original-blind-tests-O.txt"
           if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$OUTPUT"/*tests*.txt; then exit 1; fi
+      - name: Replay exact four E16 original pretrained ZIPs and ten fail-closed E24 contracts, no labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_E24_SOURCE="$HEPTA_E22_ARCHIVE"
+          for i in 0 1 2 3; do
+            source_name="HEPTA_E22_E16_FOLD_$i"
+            export "HEPTA_E24_FOLD_$i=\${!source_name}"
+          done
+          python -m py_compile "$ROOT/e24_e16_original_geometry.py" "$ROOT/test_e24_e16_original_geometry.py"
+          python -m unittest discover -s "$ROOT" -p 'test_e24_e16_original_geometry.py' -v > "$OUTPUT/e24-real-original-normal.txt" 2>&1 || {
+            cat "$OUTPUT/e24-real-original-normal.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e24_e16_original_geometry.py' -v > "$OUTPUT/e24-real-original-optimized.txt" 2>&1 || {
+            cat "$OUTPUT/e24-real-original-optimized.txt"; exit 1; }
+          grep -F 'Ran 10 tests' "$OUTPUT/e24-real-original-normal.txt"
+          grep -F 'Ran 10 tests' "$OUTPUT/e24-real-original-optimized.txt"
       - name: Produce create-only eight-arm model predictions BEFORE human truth exists
         shell: bash
         run: |
@@ -78,6 +98,37 @@ jobs:
             | tee "$OUTPUT/original-blind-source-seal.txt"
           sha256sum "$OUTPUT/original-blind-e22.json" > "$OUTPUT/original-blind-e22.sha256"
           test ! -e /tmp/hepta-e22-original-human-validation.parquet
+          python "$ROOT/e24_e16_original_geometry.py" \
+            --original "$HEPTA_E22_ARCHIVE" \
+            --e16-0 "$HEPTA_E22_E16_FOLD_0" \
+            --e16-1 "$HEPTA_E22_E16_FOLD_1" \
+            --e16-2 "$HEPTA_E22_E16_FOLD_2" \
+            --e16-3 "$HEPTA_E22_E16_FOLD_3" \
+            --e22-blind "$OUTPUT/original-blind-e22.json" \
+            --out "$OUTPUT/e24-original-prelabel-answer-geometry.json"
+          sha256sum "$OUTPUT/e24-original-prelabel-answer-geometry.json" \
+            > "$OUTPUT/e24-original-prelabel-answer-geometry.sha256"
+          python - "$OUTPUT/e24-original-prelabel-answer-geometry.json" "$ROOT/E24_ORIGINAL_E16_BLIND_GEOMETRY_20261015.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          result=json.loads(Path(sys.argv[1]).read_text())
+          original=json.loads(Path(sys.argv[2]).read_text())
+          assert result['schema']=='hepta.e24.actual-E16-true-archive-prelabel-question-geometry.v1'
+          assert result['authority']==original['authority']=='DENY_ALL'
+          assert result['e22_independent_prediction_replay_passed'] is True
+          assert result['original_human_labels_or_score_zip_opened'] is False
+          assert result['NDU_System2_reader_sufficiency_admitted'] is False
+          assert result['source_archive_sha256']==original['source_archive_sha256']
+          assert (result['original_candidates'],result['original_question_count'],result['original_passages'])==(33,8,4)
+          for method,expected in original['arms'].items():
+              got=result['arms'][method]
+              assert got['constant_hard_questions']==expected['constant_hard_questions']
+              assert got['questions_with_two_predicted_classes']==expected['two_class_questions']
+              assert got['four_original_optimizer_steps']==expected['trained_steps_sum']
+              assert got['four_original_train_cpu_ns']==expected['train_cpu_ns']
+              assert got['four_original_held_cpu_ns']==expected['held_cpu_ns']
+          print('TRUE_ORIGINAL_E16_E24_E22_BLIND_GEOMETRY_PAIRED / NO_HUMAN_LABELS / DENY_ALL')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -119,6 +170,22 @@ jobs:
           test -s /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.json
           expected="$(cut -d ' ' -f1 /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.sha256)"
           printf '%s  %s\n' "$expected" /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.json | sha256sum -c -
+          test -s /tmp/hepta-e22-pinned-sealed-blind/e24-original-prelabel-answer-geometry.json
+          e24="$(cut -d ' ' -f1 /tmp/hepta-e22-pinned-sealed-blind/e24-original-prelabel-answer-geometry.sha256)"
+          printf '%s  %s\n' "$e24" /tmp/hepta-e22-pinned-sealed-blind/e24-original-prelabel-answer-geometry.json | sha256sum -c -
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/hepta-e22-pinned-sealed-blind/e24-original-prelabel-answer-geometry.json')
+          r=json.loads(p.read_bytes())
+          assert r['authority']=='DENY_ALL' and r['production_accepted'] is False
+          assert r['e22_independent_prediction_replay_passed'] is True
+          assert r['original_human_labels_or_score_zip_opened'] is False
+          assert r['arms']['centered_scaled_5']['questions_with_two_predicted_classes']==6
+          assert r['arms']['centered_raw_5']['questions_with_two_predicted_classes']==0
+          assert r['NDU_System2_reader_sufficiency_admitted'] is False
+          print('E24_SEALED_BEFORE_ORIGINAL_HUMAN_MATERIAL_ACCESS / DENY_ALL')
+          PY
       - name: Acquire original human owner material ONLY after blind seal verified
         shell: bash
         env:
