@@ -1402,6 +1402,101 @@ fn pinned_dirfd_rejects_rebound_existing_wal_and_recovers_exact_original_frontie
     assert_eq!(std::fs::read(&marker).unwrap(), marker_bytes);
 }
 
+#[cfg(unix)]
+#[test]
+fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check() {
+    use std::io::Seek as _;
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = private_control_dir();
+    let wal = dir.path().join("original-live.wal");
+    let marker = dir.path().join("original-live.wal.owner-lock");
+    let detached_marker = dir.path().join("detached-original.owner-lock");
+    let frozen = snapshot(3);
+    let checkpoint = Digest32::of_bytes(b"marker-race-checkpoint");
+    let owner = NduPublicationOwnerV1::open_production(&wal, frozen.clone(), Digest32::ZERO)
+        .expect("original writer");
+    owner
+        .compare_and_publish_checkpoint(
+            &frozen,
+            Digest32::of_bytes(b"original-read"),
+            Digest32::of_bytes(b"original-tick"),
+            Digest32::ZERO,
+            checkpoint,
+        )
+        .expect("original fsynced WAL checkpoint");
+
+    let original_frontier = owner
+        .read_original_local_frontier_v1()
+        .expect("original full-prefix Observer readback");
+    let original_wal_bytes = std::fs::read(&wal).expect("original WAL bytes");
+    let original_marker_bytes = std::fs::read(&marker).expect("original marker");
+    let original_inode = std::fs::metadata(&marker).unwrap().ino();
+
+    // One deterministic attack occurs AFTER the initial real marker and
+    // WAL inode check but BEFORE marker content is read. A copied marker
+    // has exactly the original contents yet is not the original locked inode.
+    // The source must read through the pinned original FD, then revalidate
+    // both original names before publishing any success or append.
+    {
+        let mut state = owner.state.lock().expect("original Control owner");
+        let old_cursor = state.owner_lock.stream_position().expect("marker offset");
+        let result = state.verify_original_paths_with_identity_hook(
+            state.bytes,
+            state.sequence,
+            state.head,
+            || {
+                std::fs::rename(&marker, &detached_marker)
+                    .expect("detach only original locked marker name");
+                std::fs::write(&marker, &original_marker_bytes)
+                    .expect("same-content impostor marker");
+                std::fs::set_permissions(&marker, std::fs::Permissions::from_mode(0o600))
+                    .expect("private impostor");
+            },
+        );
+        assert_eq!(result, Err(NduPublicationErrorV1::Indeterminate));
+        assert_eq!(
+            state.owner_lock.stream_position().unwrap(),
+            old_cursor,
+            "positional original marker read cannot move shared descriptor offset"
+        );
+    }
+    assert_ne!(
+        std::fs::metadata(&marker).unwrap().ino(),
+        original_inode,
+        "same bytes are never proof of original owner inode identity"
+    );
+    assert_eq!(std::fs::read(&marker).unwrap(), original_marker_bytes);
+    assert_eq!(std::fs::read(&wal).unwrap(), original_wal_bytes);
+    assert_eq!(owner.current(), Err(NduPublicationErrorV1::Indeterminate));
+    assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+    assert_eq!(
+        owner.compare_and_publish_checkpoint(
+            &frozen,
+            Digest32::of_bytes(b"forbidden-read"),
+            Digest32::of_bytes(b"forbidden-tick"),
+            checkpoint,
+            Digest32::of_bytes(b"forbidden-checkpoint"),
+        ),
+        Err(NduPublicationErrorV1::Poisoned)
+    );
+    drop(owner);
+    std::fs::remove_file(&marker).expect("remove impostor marker only");
+    std::fs::rename(&detached_marker, &marker).expect("restore original locked name");
+
+    // Restoring the exact same original inode and fsynced bytes does not
+    // create a second genesis or a new rollback frontier.
+    let reopened = NduPublicationOwnerV1::open_production(&wal, frozen, checkpoint)
+        .expect("reopen exact original Control state");
+    assert_eq!(
+        reopened.read_original_local_frontier_v1().unwrap(),
+        original_frontier
+    );
+    assert_eq!(std::fs::read(&wal).unwrap(), original_wal_bytes);
+    assert_eq!(std::fs::read(&marker).unwrap(), original_marker_bytes);
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
