@@ -265,6 +265,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-stack-marker-decimal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib fixed_stack_control_owner_marker_matches_original_decimal_grammar -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-current-euid.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib original_control_wal_requires_effective_uid_for_private_owner_and_reopen -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-bounded-tail.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-original-pending-begin-readonly.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib original_pending_begin_inspector_ -- --nocapture --test-threads=1
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

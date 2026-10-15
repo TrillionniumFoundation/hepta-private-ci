@@ -101,6 +101,31 @@ class ScopeTests(unittest.TestCase):
             "product library EUID compile must precede native fault tests",
         )
 
+    def test_original_control_pending_begin_observer_is_native_and_read_only(self):
+        scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["effects"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(workflow.count("control-original-pending-begin-readonly.json"), 1)
+        self.assertIn(
+            "-p codex-hepta-control-plane --lib original_pending_begin_inspector_",
+            workflow,
+        )
+        self.assertIn(
+            "control-original-pending-begin-readonly.json\" --minimum-tests 2",
+            workflow,
+        )
+        self.assertLess(
+            workflow.index("control-original-pending-begin-readonly.json"),
+            workflow.index("control-ndu-atomic-owner.json"),
+            "read-only ambiguous-recovery gate precedes subsequent native owner effects",
+        )
+
     def test_original_operator_config_uid_gate_has_real_product_and_native_receipts(self):
         scope = select(["codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"])
         self.assertTrue(scope["native"])
