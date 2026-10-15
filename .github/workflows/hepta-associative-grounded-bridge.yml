@@ -1,0 +1,88 @@
+name: Hepta associative memory observed-source pretrained bridge
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_text_bridge.py'
+      - 'scripts/memory_cell/associative_event_bridge.py'
+      - 'scripts/memory_cell/test_associative_text_bridge.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_GROUNDED_BRIDGE.md'
+      - '.github/workflows/hepta-associative-grounded-bridge.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-associative-grounded-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-bound-pretrained-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install frozen reference CPU environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/assoc-python
+          /tmp/assoc-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/assoc-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/assoc-receipts
+          /tmp/assoc-python/bin/pip freeze > /tmp/assoc-receipts/python-lock.txt
+      - name: Run isolated source/lineage/clean-process and mock port tests
+        run: |
+          set -euo pipefail
+          /tmp/assoc-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_text_bridge.py' -v 2>&1 \
+            | tee /tmp/assoc-receipts/tests.log
+      - name: Collect observed subprocess sources and stage pinned pretrained Encoder
+        run: |
+          set -euo pipefail
+          /tmp/assoc-python/bin/python scripts/memory_cell/event_experience.py collect /tmp/assoc-real-observations
+          /tmp/assoc-python/bin/python scripts/memory_cell/event_memory_trial.py encoder /tmp/assoc-encoder
+          test -s /tmp/assoc-encoder/encoder/model.safetensors
+          cp /tmp/assoc-encoder/inventory.json /tmp/assoc-encoder/publisher.json /tmp/assoc-receipts/
+          sha256sum /tmp/assoc-real-observations/{collection,sources,questions,labels,worker-receipts}.json \
+            > /tmp/assoc-receipts/original-input-sha256.txt
+          mkdir -p /tmp/assoc-public
+          cp /tmp/assoc-real-observations/{collection,sources,questions}.json /tmp/assoc-public/
+      - name: Execute pretrained source-only write, bounded read and cached hybrid
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/assoc-receipts/resources.txt \
+            /tmp/assoc-python/bin/python scripts/memory_cell/associative_event_bridge.py run \
+              /tmp/assoc-public /tmp/assoc-encoder/encoder /tmp/assoc-real-run \
+              --commit "$(git rev-parse HEAD)" --steps 192 --rank 4 --dimension 64 \
+            2>&1 | tee /tmp/assoc-receipts/execution.log
+          /tmp/assoc-python/bin/python scripts/memory_cell/associative_event_bridge.py review \
+            /tmp/assoc-real-observations /tmp/assoc-real-run /tmp/assoc-receipts/review.json \
+            2>&1 | tee /tmp/assoc-receipts/review.log
+          cp /tmp/assoc-real-run/manifest.json /tmp/assoc-real-run/journal.json /tmp/assoc-receipts/
+          find /tmp/assoc-real-run/cells -maxdepth 1 -type f -printf '%f\n' | sort \
+            > /tmp/assoc-receipts/model-inventory.txt
+          (cd /tmp/assoc-real-run && find cells indices -type f -print0 | sort -z \
+            | xargs -0 sha256sum) > /tmp/assoc-receipts/artifact-sha256.txt
+      - name: Retain exact commit, failures and locally reconstructible receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/assoc-receipts/exact-commit.txt
+          (cd /tmp/assoc-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: associative-grounded-shadow-not-acceptance
+          path: /tmp/assoc-receipts
+          if-no-files-found: error
