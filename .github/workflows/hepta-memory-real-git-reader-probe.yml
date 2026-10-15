@@ -1,0 +1,233 @@
+name: MemoryCell immutable Git-source Reader capacity (research)
+on:
+  push:
+    branches:
+      - codex/memory-four-stage-causal-admission-20261015
+    paths:
+      - scripts/memory_cell/real_source_reader_probe.py
+      - scripts/memory_cell/test_real_source_reader_probe.py
+      - .github/workflows/hepta-memory-real-git-reader-probe.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-real-git-reader-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      plan_sha: ${{ steps.freeze.outputs.plan_sha }}
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source checkout
+        env:
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$PIN"
+      - name: Download exact original Git-byte and independent-reopen archives
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/real-git-reader
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o /tmp/real-git-reader/source.zip
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o /tmp/real-git-reader/reopen.zip
+          echo 'a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  /tmp/real-git-reader/source.zip' | sha256sum --check
+          echo '59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  /tmp/real-git-reader/reopen.zip' | sha256sum --check
+      - name: Execute source-byte integrity and negative regression suite (no Reader)
+        env:
+          MEMORY_REAL_SOURCE_ZIP: /tmp/real-git-reader/source.zip
+          MEMORY_REOPEN_ZIP: /tmp/real-git-reader/reopen.zip
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/real_source_reader_probe.py scripts/memory_cell/test_real_source_reader_probe.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_real_source_reader_probe.py -v
+      - name: Freeze a source-before-query exact plan with no gold in model prompts
+        id: freeze
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/real-git-reader/plan-artifact
+          python3 scripts/memory_cell/real_source_reader_probe.py prepare \
+            --source-zip /tmp/real-git-reader/source.zip \
+            --reopen-zip /tmp/real-git-reader/reopen.zip \
+            --plan /tmp/real-git-reader/plan-artifact/public-plan.json
+          echo "plan_sha=$(sha256sum /tmp/real-git-reader/plan-artifact/public-plan.json | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+          git rev-parse HEAD > /tmp/real-git-reader/plan-artifact/preparation-commit.txt
+          (cd /tmp/real-git-reader/plan-artifact && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-real-git-reader-registered-plan
+          path: /tmp/real-git-reader/plan-artifact
+          if-no-files-found: error
+
+  reader:
+    needs: source-plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [smol-135m, smol-1.7b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      PLAN_SHA: ${{ needs.source-plan.outputs.plan_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact HEAD and externally frozen plan identity
+        env:
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          test -n "$PLAN_SHA"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-real-git-reader-registered-plan
+          path: /tmp/reader-plan
+      - name: Stage the publisher-pinned real pretrained Reader on CPU
+        run: |
+          set -euo pipefail
+          mkdir /tmp/reader-venv
+          python3 -m venv /tmp/reader-venv/python
+          /tmp/reader-venv/python/bin/python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/reader-venv/python/bin/python -m pip install -r scripts/memory_cell/requirements.txt
+          /tmp/reader-venv/python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/reader-stage
+      - name: Original frozen inference, all four paired conditions (never open gold)
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /tmp/reader-venv/python/bin/python scripts/memory_cell/real_source_reader_probe.py run \
+            --plan /tmp/reader-plan/public-plan.json --plan-sha256 "$PLAN_SHA" \
+            --model /tmp/reader-stage \
+            --stage-sha256 "$(sha256sum /tmp/reader-stage/stage.json | cut -d ' ' -f1)" \
+            --tier '${{ matrix.tier }}' --output /tmp/real-reader-result
+          /tmp/reader-venv/python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('/tmp/real-reader-result/generation-report.json').read_text())
+          if report['attempts'] != 36 or not report['all_calls_successful']:
+              raise SystemExit('incomplete actual Reader generation; retain failed original journal')
+          PY
+      - name: Retain actual original answers, provenance and failures, not model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/real-reader-result
+          git rev-parse HEAD > /tmp/real-reader-result/tested-commit.txt
+          if test -d /tmp/reader-stage; then
+            cp /tmp/reader-stage/stage.json /tmp/reader-stage/inventory.json /tmp/reader-stage/publisher.json /tmp/real-reader-result/
+          fi
+          (cd /tmp/real-reader-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-real-git-reader-${{ matrix.tier }}
+          path: /tmp/real-reader-result
+          if-no-files-found: error
+
+  independent-score:
+    needs: [source-plan, reader]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      PLAN_SHA: ${{ needs.source-plan.outputs.plan_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-real-git-reader-registered-plan
+          path: /tmp/reader-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-real-git-reader-smol-135m
+          path: /tmp/reader-small
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-real-git-reader-smol-1.7b
+          path: /tmp/reader-reference
+      - name: Re-fetch exact immutable Git-byte archives for independent scoring
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/scoring-source
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o /tmp/scoring-source/source.zip
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o /tmp/scoring-source/reopen.zip
+      - name: Verify exact generation HEAD, original manifests and complete model calls
+        env:
+          PIN: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          for path in /tmp/reader-plan /tmp/reader-small /tmp/reader-reference; do
+            (cd "$path" && sha256sum --check SHA256SUMS)
+          done
+          test "$(cat /tmp/reader-small/tested-commit.txt)" = "$PIN"
+          test "$(cat /tmp/reader-reference/tested-commit.txt)" = "$PIN"
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          for path, tier in [('/tmp/reader-small', 'smol-135m'), ('/tmp/reader-reference', 'smol-1.7b')]:
+              p = Path(path)
+              report = json.loads((p / 'generation-report.json').read_bytes())
+              raw = (p / 'original-generation.jsonl').read_bytes()
+              if not (report['tier'] == tier and report['attempts'] == 36
+                      and report['completed_model_calls'] == 36
+                      and report['all_calls_successful'] is True
+                      and hashlib.sha256(raw).hexdigest() == report['output_sha256']):
+                  raise ValueError('incomplete or altered original pretrained generation')
+          PY
+      - name: Verify every original answer without regenerating inference
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/real-git-scored
+          python3 scripts/memory_cell/real_source_reader_probe.py score \
+            --source-zip /tmp/scoring-source/source.zip \
+            --reopen-zip /tmp/scoring-source/reopen.zip \
+            --plan /tmp/reader-plan/public-plan.json --plan-sha256 "$PLAN_SHA" \
+            --smol-135m /tmp/reader-small/original-generation.jsonl \
+            --smol-1.7b /tmp/reader-reference/original-generation.jsonl \
+            --output /tmp/real-git-scored/original-scored.json
+          git rev-parse HEAD > /tmp/real-git-scored/scoring-commit.txt
+          (cd /tmp/real-git-scored && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-real-git-reader-mechanical-score
+          path: /tmp/real-git-scored
+          if-no-files-found: error
