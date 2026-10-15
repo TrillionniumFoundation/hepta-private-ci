@@ -1,0 +1,48 @@
+name: hepta-stem-v11-lexical-residual
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v11_lexical_residual.py"
+      - "qualification/stem-cell-v1/v11_independent_recount.py"
+      - "qualification/stem-cell-v1/v11_public_no_go.py"
+      - "qualification/stem-cell-v1/test_v11_public_no_go.py"
+      - "qualification/stem-cell-v1/STEM_V11_ORIGINAL_LEXICAL_RESIDUAL_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V11_ORIGINAL_LEXICAL_RESIDUAL_20261015.md"
+      - ".github/workflows/hepta-stem-v11-lexical-residual.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/stem_v11_lexical_residual.py"
+      - "qualification/stem-cell-v1/v11_independent_recount.py"
+      - "qualification/stem-cell-v1/v11_public_no_go.py"
+      - "qualification/stem-cell-v1/test_v11_public_no_go.py"
+      - "qualification/stem-cell-v1/STEM_V11_ORIGINAL_LEXICAL_RESIDUAL_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V11_ORIGINAL_LEXICAL_RESIDUAL_20261015.md"
+      - ".github/workflows/hepta-stem-v11-lexical-residual.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-negative-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exact-source syntax and stdlib negative review
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q \
+            qualification/stem-cell-v1/stem_v11_lexical_residual.py \
+            qualification/stem-cell-v1/v11_independent_recount.py \
+            qualification/stem-cell-v1/v11_public_no_go.py \
+            qualification/stem-cell-v1/test_v11_public_no_go.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v11_public_no_go.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v11_public_no_go.py' -v
+          python qualification/stem-cell-v1/v11_public_no_go.py qualification/stem-cell-v1/STEM_V11_ORIGINAL_LEXICAL_RESIDUAL_20261015.json
