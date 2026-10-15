@@ -427,11 +427,7 @@ impl NduPublicationOwnerV1 {
         // aliases before creating, reading or locking either durable file.
         // This bootstrap check is not a substitute for independent custody
         // or kernel-anchored openat protection against privileged path races.
-        if parent
-            .canonicalize()
-            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
-            != parent
-        {
+        if parent.canonicalize().map_err(|_| NduPublicationErrorV1::UnsafePath)? != parent {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let dir = fs::symlink_metadata(parent)?;
