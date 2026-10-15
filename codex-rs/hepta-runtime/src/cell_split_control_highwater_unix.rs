@@ -256,6 +256,27 @@ impl CellSplitControlHighwaterUnixPortV1 {
                         || proof.route_fence < previous.route_fence
                         || proof.revocation_epoch < previous.revocation_epoch
                         || proof.ndu_owner_id != previous.ndu_owner_id
+                        // A Control C record is durable, and subsequent
+                        // P/C appends never erase its original CNS binding.
+                        // A signed disappearance is a rollback/fork, not
+                        // permission to forget a previously witnessed effect.
+                        || (previous.original_cns_receipt_binding.is_some()
+                            && proof.original_cns_receipt_binding.is_none())
+                        // Only a new fsynced Control B followed by C may
+                        // change an original CNS runtime receipt binding.
+                        // A Neuron P append cannot change it. A later C
+                        // also increases the original route fence, and a
+                        // second CNS cutover must have a new Split identity.
+                        || (proof.original_cns_receipt_binding.is_some()
+                            && proof.original_cns_receipt_binding
+                                != previous.original_cns_receipt_binding
+                            && (proof
+                                .sequence
+                                .checked_sub(previous.sequence)
+                                .is_none_or(|rows| rows < 2)
+                                || proof.route_fence <= previous.route_fence
+                                || (previous.original_cns_receipt_binding.is_some()
+                                    && proof.split_id == previous.split_id)))
                         || (proof.split_id == previous.split_id
                             && (proof.plan_digest != previous.plan_digest
                                 || proof.ndu_snapshot_digest != previous.ndu_snapshot_digest))))

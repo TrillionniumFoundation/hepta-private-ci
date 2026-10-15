@@ -570,6 +570,12 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertIn("proof.wal_bytes <= previous.wal_bytes", code)
         self.assertIn("proof.route_fence < previous.route_fence", code)
         self.assertIn("proof.wal_inode != previous.wal_inode", code)
+        self.assertRegex(
+            code,
+            r"previous\.original_cns_receipt_binding\.is_some\(\)\s*"
+            r"&&\s*proof\.original_cns_receipt_binding\.is_none\(\)",
+            "later signed Control WAL may not erase an original CNS commit binding",
+        )
         # The closed-world lexer intentionally strips Rust string literals.
         # Verify the literal RPC method against source bytes, not stripped code.
         raw = (ROOT / path).read_text(encoding="utf-8")
@@ -591,6 +597,8 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "signed_same_sequence_cannot_rewrite_checkpoint_or_frozen_plan",
             "signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences",
             "valid_signed_control_wal_append_is_accepted_without_evicting_history",
+            "signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding",
+            "changed_original_cns_binding_requires_begin_commit_and_new_route_fence",
             "signed_new_split_id_cannot_reset_original_scope_wal_ratchet",
             "new_split_may_follow_actual_same_inode_wal_append_without_erasing_scope_ratchet",
             "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",

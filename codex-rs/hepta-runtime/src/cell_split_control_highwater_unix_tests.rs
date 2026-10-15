@@ -370,6 +370,165 @@ fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
 }
 
 #[test]
+fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
+    // Control records an original CNS receipt in an fsynced C row. A later
+    // checkpoint P or cutover C can advance its binding but cannot erase it.
+    // This is a signed Unix RPC test, not a local digest-only declaration.
+    for (new_split, erased_binding) in [
+        (false, true),
+        (true, true),
+        (false, false),
+        (true, false),
+    ] {
+        let root = tempfile::tempdir().expect("separate signed Observer root");
+        let (socket_path, listener) = socket(root.path());
+        let server = thread::spawn(move || {
+            for observation in 0..2 {
+                let (mut peer, _) = listener.accept().expect("original read-only request");
+                let split = if new_split && observation == 1 {
+                    "split-2"
+                } else {
+                    SPLIT
+                };
+                let request = read_request_for_split(&mut peer, split);
+                let mut claim = signed_proof(
+                    &request,
+                    &test_signer(),
+                    if observation == 0 {
+                        10
+                    } else if new_split {
+                        12
+                    } else {
+                        11
+                    },
+                );
+                claim.original_cns_receipt_binding = if observation == 0 || !new_split && !erased_binding {
+                    Some("dd".repeat(32))
+                } else if erased_binding {
+                    None
+                } else {
+                    Some("ee".repeat(32))
+                };
+                if observation == 1 {
+                    claim.wal_bytes = 2_048;
+                    if new_split {
+                        claim.plan_digest = "ff".repeat(32);
+                        claim.ndu_snapshot_digest = "ee".repeat(32);
+                        claim.generation = 4;
+                        claim.route_fence = 8;
+                        claim.revocation_epoch = 10;
+                    }
+                }
+                claim.observer_signature_bytes = test_signer()
+                    .sign(
+                        &cell_split_control_highwater_signing_bytes_v1(&claim)
+                            .expect("fully signed CNS binding history"),
+                    )
+                    .to_bytes()
+                    .to_vec();
+                send_response(&mut peer, &response(claim));
+            }
+        });
+
+        let mut verifier = client(socket_path, Duration::from_secs(2));
+        let first = verifier
+            .read_signed_highwater(SPLIT, SCOPE, &"33".repeat(32))
+            .expect("signed original committed CNS binding");
+        assert_eq!(first.original_cns_receipt_binding, Some("dd".repeat(32)));
+        let successor_split = if new_split { "split-2" } else { SPLIT };
+        let second = verifier.read_signed_highwater(successor_split, SCOPE, &"44".repeat(32));
+        if erased_binding {
+            assert!(
+                second.is_err(),
+                "a newer signed WAL must not erase an original CNS effect binding"
+            );
+            assert_eq!(
+                verifier
+                    .seen
+                    .get(SCOPE)
+                    .expect("original Scope remains pinned")
+                    .original_cns_receipt_binding,
+                Some("dd".repeat(32))
+            );
+        } else {
+            let next = second.expect("a genuine post-Commit or unchanged P frontier is permitted");
+            assert_eq!(next.sequence, if new_split { 12 } else { 11 });
+            assert_eq!(next.wal_bytes, 2_048);
+            let expected_binding = if new_split { "ee" } else { "dd" };
+            assert_eq!(next.original_cns_receipt_binding, Some(expected_binding.repeat(32)));
+        }
+        server.join().expect("signed original high-water RPC server");
+    }
+}
+
+#[test]
+fn changed_original_cns_binding_requires_begin_commit_and_new_route_fence() {
+    // An original CNS binding can change only on a Control C record after B.
+    // Signed claims with just one new row, no new route fence, or a reused
+    // already-committed Split ID cannot manufacture another physical effect.
+    for violation in 0_u8..3 {
+        let root = tempfile::tempdir().expect("separate signed Observer");
+        let (path, listener) = socket(root.path());
+        let server = thread::spawn(move || {
+            for observation in 0..2 {
+                let (mut peer, _) = listener.accept().expect("original read-only RPC");
+                let new_split = violation != 2;
+                let split = if new_split && observation == 1 {
+                    "split-2"
+                } else {
+                    SPLIT
+                };
+                let request = read_request_for_split(&mut peer, split);
+                let sequence = if observation == 0 {
+                    10
+                } else if violation == 0 {
+                    11
+                } else {
+                    12
+                };
+                let mut claim = signed_proof(&request, &test_signer(), sequence);
+                let receipt_digest = if observation == 0 { "dd" } else { "ee" };
+                claim.original_cns_receipt_binding = Some(receipt_digest.repeat(32));
+                if observation == 1 {
+                    claim.wal_bytes = 2_048;
+                    claim.generation = 4;
+                    claim.route_fence = if violation == 1 { 7 } else { 8 };
+                    claim.revocation_epoch = 10;
+                    if new_split {
+                        claim.plan_digest = "ff".repeat(32);
+                        claim.ndu_snapshot_digest = "ee".repeat(32);
+                    }
+                }
+                claim.observer_signature_bytes = test_signer()
+                    .sign(
+                        &cell_split_control_highwater_signing_bytes_v1(&claim)
+                            .expect("signed but impossible original Control C claim"),
+                    )
+                    .to_bytes()
+                    .to_vec();
+                send_response(&mut peer, &response(claim));
+            }
+        });
+
+        let mut verifier = client(path, Duration::from_secs(2));
+        verifier
+            .read_signed_highwater(SPLIT, SCOPE, &"11".repeat(32))
+            .expect("real prior original CNS binding");
+        let second_split = if violation == 2 { SPLIT } else { "split-2" };
+        assert!(
+            verifier
+                .read_signed_highwater(second_split, SCOPE, &"22".repeat(32))
+                .is_err(),
+            "a complete original B/C and independent new Split fence are required"
+        );
+        let retained = verifier.seen.get(SCOPE).expect("original ratchet retained");
+        assert_eq!(retained.sequence, 10);
+        assert_eq!(retained.original_cns_receipt_binding, Some("dd".repeat(32)));
+        server.join().expect("signed two-stage Control test service");
+    }
+}
+
+#[test]
 fn signed_new_split_id_cannot_reset_original_scope_wal_ratchet() {
     // A genuine remote signature is not enough to reset a previously seen
     // original WAL by changing only the Cell Split request identity.
