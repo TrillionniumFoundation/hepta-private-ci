@@ -1512,14 +1512,26 @@ fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen() {
 
     let dir_meta = std::fs::symlink_metadata(dir.path()).expect("original private owner root");
     assert_eq!(dir_meta.uid(), effective_uid);
-    assert!(control_original_owner_uid_matches_euid(dir_meta.uid(), dir_meta.uid()));
+    assert!(control_original_owner_uid_matches_euid(
+        dir_meta.uid(),
+        dir_meta.uid()
+    ));
 
     // Deterministic foreign-UID denial without requiring chown, privileges
     // or a forged root process. Both a replaced path and a replaced open
     // descriptor's owner must be rejected, even with private 0700 modes.
-    assert!(!control_original_owner_uid_matches_euid(foreign_uid, foreign_uid));
-    assert!(!control_original_owner_uid_matches_euid(effective_uid, foreign_uid));
-    assert!(!control_original_owner_uid_matches_euid(foreign_uid, effective_uid));
+    assert!(!control_original_owner_uid_matches_euid(
+        foreign_uid,
+        foreign_uid
+    ));
+    assert!(!control_original_owner_uid_matches_euid(
+        effective_uid,
+        foreign_uid
+    ));
+    assert!(!control_original_owner_uid_matches_euid(
+        foreign_uid,
+        effective_uid
+    ));
 
     let frozen = snapshot(3);
     let checkpoint = Digest32::of_bytes(b"original-principal-checkpoint");
@@ -1544,8 +1556,14 @@ fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen() {
         let marker_meta = std::fs::symlink_metadata(&marker).expect("actual original marker");
         assert_eq!(wal_meta.uid(), effective_uid);
         assert_eq!(marker_meta.uid(), effective_uid);
-        assert!(control_original_owner_uid_matches_euid(wal_meta.uid(), wal_meta.uid()));
-        assert!(control_original_owner_uid_matches_euid(marker_meta.uid(), marker_meta.uid()));
+        assert!(control_original_owner_uid_matches_euid(
+            wal_meta.uid(),
+            wal_meta.uid()
+        ));
+        assert!(control_original_owner_uid_matches_euid(
+            marker_meta.uid(),
+            marker_meta.uid()
+        ));
     }
 
     // The ownership fence must not reject legitimate same-principal
