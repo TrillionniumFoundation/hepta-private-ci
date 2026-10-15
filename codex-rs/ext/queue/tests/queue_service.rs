@@ -157,7 +157,11 @@ fn install_registered_queue(
 fn queue_python_interpreter() -> &'static str {
     // The Windows hosted Bazel runner invokes `python`; `python3` is not
     // guaranteed to resolve to an executable in the Windows test environment.
-    if cfg!(windows) { "python" } else { "python3" }
+    if cfg!(windows) {
+        "python"
+    } else {
+        "python3"
+    }
 }
 
 fn queue_python_hook_command(script_path: &Path) -> String {
