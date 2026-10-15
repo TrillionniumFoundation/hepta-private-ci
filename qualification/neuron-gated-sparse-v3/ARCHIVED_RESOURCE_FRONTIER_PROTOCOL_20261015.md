@@ -18,7 +18,7 @@ NDU authority, Cell Split, Artifact CAS, Evidence WAL, FinalUse or CNS routing.
 
 Run `archived_resource_frontier.py` against these ZIPs as originally
 downloaded, not substituted JSON or generated fixture receipts. The reader
-checks ZIP hashes, exact member names and bounds, strict JSON keys, complete
+checks ZIP hashes, parses only the already-hashed in-memory ZIP bytes, validates exact member names and bounds, rejects duplicate and overflow-to-infinity JSON keys/numbers, and checks complete
 arm/scale identities and cross-document matching costs. It independently
 recounts five unique physical weight digests across 20 model file slots, and
 rejects false production A0/F32 native parity/target-host status.
@@ -92,8 +92,8 @@ exact-archive positive test. In the local session with both original ZIPs,
 passed. GitHub-hosted exact-head green is a **separate gate**.
 
 The tested source bytes have the following Git blob hashes:
-- `archived_resource_frontier.py`: `8b2424805c2dbc5df2c1692b20533d1ac50af322`;
-- `test_archived_resource_frontier.py`: `0928732cf588d5f332942d795544116d737f45f0`.
+- `archived_resource_frontier.py`: `221b191e259ec55712e3283701df5f8d5290343e`;
+- `test_archived_resource_frontier.py`: `2af901b46c6a6786ba43abcab9a002163714c97b`.
 
 ## Remaining strict dependencies
 
