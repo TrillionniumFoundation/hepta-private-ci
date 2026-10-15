@@ -8,6 +8,7 @@ mod cell_split_cns_cutover;
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
+mod cell_split_evidence_custody;
 #[cfg(unix)]
 mod cell_split_execution_cli;
 mod cell_split_execution_owner;
@@ -119,6 +120,14 @@ pub use cell_split_effect_service::CellSplitDurableEffectBackendV1;
 pub use cell_split_effect_service::CellSplitEffectServiceV1;
 #[cfg(unix)]
 pub use cell_split_effect_service::CellSplitOwnedEffectV1;
+pub use cell_split_evidence_custody::CELL_SPLIT_EVIDENCE_CUSTODY_SCHEMA_V1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyComparisonV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyErrorV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyPortV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceLocalFrontierV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceSignedCustodyV1;
+pub use cell_split_evidence_custody::cell_split_evidence_custody_signing_payload_v1;
+pub use cell_split_evidence_custody::verify_cell_split_evidence_custody_v1;
 #[cfg(unix)]
 pub use cell_split_execution_cli::CellSplitExecutionCliOutcomeV1;
 #[cfg(unix)]
