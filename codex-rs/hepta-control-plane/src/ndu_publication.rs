@@ -421,6 +421,19 @@ impl NduPublicationOwnerV1 {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let parent = path.parent().ok_or(NduPublicationErrorV1::UnsafePath)?;
+        // symlink_metadata(parent) only checks the final path component.
+        // A symlink in an EARLIER ancestor can alias the same private WAL
+        // and owner-lock under a second, non-canonical name. Refuse such
+        // aliases before creating, reading or locking either durable file.
+        // This bootstrap check is not a substitute for independent custody
+        // or kernel-anchored openat protection against privileged path races.
+        if parent
+            .canonicalize()
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+            != parent
+        {
+            return Err(NduPublicationErrorV1::UnsafePath);
+        }
         let dir = fs::symlink_metadata(parent)?;
         if !dir.is_dir() || dir.file_type().is_symlink() || dir.permissions().mode() & 0o077 != 0 {
             return Err(NduPublicationErrorV1::UnsafePath);
