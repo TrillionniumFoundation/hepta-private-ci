@@ -596,7 +596,9 @@ fn regressed_caller_poll_cannot_bypass_scheduler_via_monotonic_max() {
     // regression and permit an invalid source time to reach the scheduler.
     assert!(matches!(
         worker.poll_and_execute(100),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     ));
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(101));
@@ -639,7 +641,9 @@ fn regressed_caller_enqueue_does_not_consume_a_signed_batch_nonce() {
             key.clone(),
             second_grant.clone(),
         ),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     );
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(100));
@@ -795,7 +799,21 @@ fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     );
     assert_eq!(worker.pending(), 0);
-    assert_eq!(original.0.lock().unwrap().len(), 3);
+    // Denied Admission is still recorded in the original Evidence journal.
+    // Three completed-effect samples plus one negative Admission; never
+    // record under the rejected replacement writer or replay the model.
+    let recorded = original.0.lock().unwrap();
+    assert_eq!(recorded.len(), 4);
+    assert_eq!(recorded[3].phase, PhaseMetricKindV1::Admission);
+    assert!(!recorded[3].succeeded);
+    assert_eq!(
+        recorded
+            .iter()
+            .filter(|row| row.phase == PhaseMetricKindV1::NeuronFeature)
+            .count(),
+        1
+    );
+    drop(recorded);
     assert!(replacement.0.lock().unwrap().is_empty());
 }
 
@@ -1567,24 +1585,12 @@ fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
     });
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let backend = CountingScalarDriver(calls.clone());
-    let mut worker = runner_with_driver_using_frontier(
-        &signer,
-        dir.path(),
-        model,
-        backend,
-        1,
-        frontier,
-    )
-    .with_metric_sink(sink);
+    let mut worker =
+        runner_with_driver_using_frontier(&signer, dir.path(), model, backend, 1, frontier)
+            .with_metric_sink(sink);
     assert!(worker.flush_production_metrics());
     worker
-        .enqueue(
-            100,
-            "model".into(),
-            request,
-            key,
-            signed(&signer, binding),
-        )
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     let observed = worker.poll_and_execute(106).unwrap();
     assert_eq!(observed.outcomes.len(), 1);
