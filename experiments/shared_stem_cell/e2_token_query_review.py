@@ -118,6 +118,9 @@ def review(panel, parents, studies, parent_sha):
         if type(state.get('arms')) is not dict or set(state['arms'])!=set(ARMS):
             raise Invalid('missing pooled matched-capacity or Token Query arm')
         costs={}
+        service_costs={}
+        service_profiles={}
+        test_cases={row['case_id'] for row in panel['cases'] if row['split']=='test'}
         current={}
         for arm in ARMS:
             info=state['arms'][arm]
@@ -132,6 +135,25 @@ def review(panel, parents, studies, parent_sha):
             if train.get('learnable_query_actually_changed') is not (arm=='token_query' if arm=='token_query' else None):
                 raise Invalid('learnable token Query movement must be physically recorded')
             costs[arm]=_positive(train.get('train_ms'))
+            trace=info.get('serving_ms_by_test_case')
+            if (info.get('single_case_serving_profile')!='cpu_forward_softmax_per_case.v1' or
+                info.get('native_target_host_latency_attested') is not False or
+                type(trace) is not dict or set(trace)!=test_cases):
+                raise Invalid('incomplete or overclaimed 64-case Head serving trace')
+            values=sorted(_positive(v) for v in trace.values())
+            def quantile(q):
+                idx=(len(values)-1)*q
+                lo=math.floor(idx);hi=math.ceil(idx)
+                return values[lo]+(idx-lo)*(values[hi]-values[lo])
+            service_costs[arm]=sum(values)
+            service_profiles[arm]={
+                'cases':len(values),
+                'single_case_head_forward_softmax_ms_sum_reported':sum(values),
+                'median_ms_descriptive':quantile(.50),
+                'p95_ms_descriptive':quantile(.95),
+                'p99_ms_descriptive':quantile(.99),
+                'independent_target_host_p99_verified':False,
+            }
             if info.get('frozen_calibration_temperature') not in (.5,.75,1.,1.5,2.,3.,4.):
                 raise Invalid('frozen original Head calibration missing')
             current[arm]={}
@@ -165,6 +187,7 @@ def review(panel, parents, studies, parent_sha):
                               'brier':brier}
             record['trained_minus_frozen_accuracy']=record['learned']['accuracy']-record['frozen']['accuracy']
             record['train_ms_reported']=costs[arm]
+            record['single_case_serving_cost_reported']=service_profiles[arm]
             metrics[model][arm]=record
         # The published outcome panel has 96 calibration+test predictions,
         # but these predeclared paired statistics use only the 64 TEST cases.
@@ -193,7 +216,13 @@ def review(panel, parents, studies, parent_sha):
             'multiple_comparison_adjustment_applied':False,
             'hypothesis_pre_registered_with_independent_labels':False,
         }
+        charged_shared_cost=d['model_load_ms']+phys['producer_observed_encode_wall_ms']
         budgets[model]={'original_model_loaded_once_for_E2_claimed':True,
+                        'per_arm_complete_research_cost_ms_charging_encoder_once':{
+                            arm:charged_shared_cost+costs[arm]+service_costs[arm] for arm in ARMS},
+                        'per_arm_serving_p95_descriptive_ms':{
+                            arm:service_profiles[arm]['p95_ms_descriptive'] for arm in ARMS},
+                        'these_are_not_full_three_arm_process_wall_times':True,
                         'model_load_ms_reported':d['model_load_ms'],
                         'whole_E2_process_wall_ms_reported':d['total_wall_ms'],
                         'observed_physical_forward_hook_count_claimed':phys['observed_model_module_forward_hooks'],

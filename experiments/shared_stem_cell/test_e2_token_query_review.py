@@ -58,6 +58,14 @@ class Tests(unittest.TestCase):
         self.assertFalse(pair['query_learned_vs_own_frozen']['statistical_stem_winner_selected'])
         self.assertFalse(answer['paired_differences']['modernbert_base']['multiple_comparison_adjustment_applied'])
         self.assertFalse(answer['production_promotion_permitted'])
+        for arm in answer['models']['modernbert_base']:
+            cost=answer['models']['modernbert_base'][arm]['single_case_serving_cost_reported']
+            self.assertEqual(cost['cases'],64)
+            self.assertGreater(cost['p95_ms_descriptive'],0)
+            self.assertFalse(cost['independent_target_host_p99_verified'])
+        research_cost=answer['resource_descriptions']['modernbert_base']
+        self.assertTrue(research_cost['these_are_not_full_three_arm_process_wall_times'])
+        self.assertEqual(len(research_cost['per_arm_complete_research_cost_ms_charging_encoder_once']),3)
 
     def deny(self,edit):
         data=copy.deepcopy(self.data)
@@ -79,6 +87,11 @@ class Tests(unittest.TestCase):
 
     def test_reject_missing_frozen_head_control(self):
         self.deny(lambda p,a,r,h:r['modernbert_base']['head_study']['arms']['token_query']['frozen_predictions'].pop())
+
+    def test_reject_serving_trace_missing_or_false_target_p99(self):
+        self.deny(lambda p,a,r,h:r['mmbert_small']['head_study']['arms']['token_query']['serving_ms_by_test_case'].pop('test-0'))
+        self.deny(lambda p,a,r,h:r['modernbert_base']['head_study']['arms']['pooled_gated'].update(native_target_host_latency_attested=True))
+        self.deny(lambda p,a,r,h:r['granite_97m_r2']['head_study']['arms']['pooled_linear']['serving_ms_by_test_case'].update({'test-0':float('nan')}))
 
     def test_reject_fake_source(self):
         self.deny(lambda p,a,r,h:r['granite_97m_r2'].update(parent_e1_report_sha256='f'*64))

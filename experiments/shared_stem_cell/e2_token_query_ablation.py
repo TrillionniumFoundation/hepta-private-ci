@@ -163,6 +163,7 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
     cy = torch.tensor([r["label"] for r in calibration], dtype=torch.long)
     scored = calibration + test
     scored_tokens, scored_mask, scored_pooled = _materialize(scored, snapshots, width)
+    test_tokens, test_mask, test_pooled = _materialize(test, snapshots, width)
     rng = torch.Generator(device="cpu").manual_seed(seed)
     common_readout = torch.randn(width, generator=rng) * (0.05 / math.sqrt(width))
     results = {}
@@ -187,6 +188,19 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
             temperature = min(TEMPERATURES, key=lambda t: float(F.cross_entropy(cal_logits / t, cy)))
             scores = F.softmax(head(scored_tokens, scored_mask, scored_pooled) / temperature,
                                dim=-1)[:, 1].tolist()
+            # Single-case CPU service is separately observed. Batched training
+            # throughput is not equivalent to real request latency.
+            head.eval()
+            head(test_tokens[:1], test_mask[:1], test_pooled[:1])  # bounded warmup
+            serving_ms = {}
+            for i, row in enumerate(test):
+                started_ns = time.perf_counter_ns()
+                single = F.softmax(head(test_tokens[i:i+1], test_mask[i:i+1],
+                                        test_pooled[i:i+1]) / temperature, dim=-1)[0,1].item()
+                elapsed_ns = time.perf_counter_ns() - started_ns
+                if elapsed_ns <= 0 or not math.isfinite(single) or abs(single - scores[len(calibration) + i]) > 1e-5:
+                    raise Invalid("single-case Head output differs from frozen-bank batched prediction")
+                serving_ms[row["case_id"]] = elapsed_ns / 1e6
         results[kind] = {
             "frozen_initial_head_sha256": frozen_digest,
             "frozen_initial_predictions_sha256": _sha(
@@ -196,6 +210,9 @@ def study(cases: list[dict], snapshots: dict, *, width: int,
                                     "joint_input_digest": row["joint_input_digest"],
                                     "positive_probability": float(p)} for row, p in zip(scored, frozen_probs)],
             "train_receipt": receipt,
+            "single_case_serving_profile": "cpu_forward_softmax_per_case.v1",
+            "serving_ms_by_test_case": serving_ms,
+            "native_target_host_latency_attested": False,
             "calibration_temperature": temperature,
             "predictions": [{"case_id": row["case_id"], "split": row["split"],
                              "joint_input_digest": row["joint_input_digest"],

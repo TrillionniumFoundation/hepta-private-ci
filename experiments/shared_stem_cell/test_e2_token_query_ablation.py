@@ -39,6 +39,10 @@ class Tests(unittest.TestCase):
             self.assertNotEqual(v['train_receipt']['initial_head_sha256'],v['train_receipt']['final_head_sha256'])
             self.assertEqual(v['train_receipt']['train_steps'],40)
             self.assertEqual(len(v['predictions']),96)
+            self.assertEqual(v['single_case_serving_profile'], 'cpu_forward_softmax_per_case.v1')
+            self.assertEqual(len(v['serving_ms_by_test_case']),64)
+            self.assertTrue(all(t > 0 for t in v['serving_ms_by_test_case'].values()))
+            self.assertFalse(v['native_target_host_latency_attested'])
         self.assertFalse(r['authentic_future_ndu_available'])
         self.assertFalse(r['stem_winner_selected'])
 
