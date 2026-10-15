@@ -35,6 +35,7 @@ MAX_CASES = 8192
 MAX_SOURCES = 512
 MAX_SOURCE_BYTES = 8192
 MAX_FILE_BYTES = 32 * 1024 * 1024
+TYPES = ("semantic_concept", "procedural_skill")
 
 
 class Refused(ValueError):
@@ -110,13 +111,27 @@ def validate_plan(plan):
     exact(capacity, {"shared", "typed"}, "missing equal-capacity control")
     for item in capacity.values():
         exact(item, {"total_trainable_parameters", "optimizer_steps",
-                     "minibatch_examples", "artifact_sha256", "training_receipt_sha256"},
+                     "minibatch_examples", "artifact_sha256", "training_receipt_sha256",
+                     "head_sha256_by_type", "trainable_head_count",
+                     "active_heads_per_query"},
               "incomplete physical training meter")
         require(all(type(item[k]) is int and item[k] > 0 for k in (
             "total_trainable_parameters", "optimizer_steps", "minibatch_examples")),
             "unverified parameter/training work meter")
         require(is_sha(item["artifact_sha256"])
                 and is_sha(item["training_receipt_sha256"]), "missing Head origin")
+        # Two real, distinct trainable Head tensors per arm are mandatory.
+        # The unspecialized control trains each bank member on pooled TRAIN
+        # families rather than gaining a free additional parameter or call.
+        bank = item["head_sha256_by_type"]
+        require(isinstance(bank, dict) and set(bank) == set(TYPES)
+                and all(is_sha(v) for v in bank.values())
+                and len(set(bank.values())) == len(TYPES)
+                and item["trainable_head_count"] == 2
+                and type(item["trainable_head_count"]) is int
+                and item["active_heads_per_query"] == 1
+                and type(item["active_heads_per_query"]) is int,
+                "two independent physical Heads and one read per query required")
     require(all(capacity["shared"][k] == capacity["typed"][k] for k in (
         "total_trainable_parameters", "optimizer_steps", "minibatch_examples")),
         "typed Head wins cannot buy additional training/capacity")
@@ -193,6 +208,14 @@ def validate_plan(plan):
                 plan, case, arm, source_by_id), "source/Reader request changed")
             expected[(case["question_id"], arm)] = (case, choice)
         get = choices.__getitem__
+        typed_bank = capacity["typed"]["head_sha256_by_type"]
+        shared_bank = capacity["shared"]["head_sha256_by_type"]
+        kind = case["memory_type"]
+        opposite = next(t for t in TYPES if t != kind)
+        require(get("learned_shared")["head_sha256"] == shared_bank[kind]
+                and get("learned_typed")["head_sha256"] == typed_bank[kind]
+                and get("typed_swapped")["head_sha256"] == typed_bank[opposite],
+                "changed/missing unspecialized or typed physical Head bank")
         typed = get("learned_typed")["head_sha256"]
         for arm in ("typed_fixed_graph", "typed_learned_graph", "typed_graph_lesion"):
             require(get(arm)["head_sha256"] == typed,

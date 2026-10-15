@@ -26,7 +26,10 @@ def fixture():
         "capacity": {
             name: {"total_trainable_parameters": 2048, "optimizer_steps": 40,
                    "minibatch_examples": 320, "artifact_sha256": sha(name + "-bank"),
-                   "training_receipt_sha256": sha(name + "-no-real-training")}
+                   "training_receipt_sha256": sha(name + "-no-real-training"),
+                   "head_sha256_by_type": {kind: sha(name + "-" + kind)
+                      for kind in a.TYPES},
+                   "trainable_head_count": 2, "active_heads_per_query": 1}
             for name in ("shared", "typed")},
         "cases": [], "lineage_alias_edges": [],
         "future_calendar_verified": False, "production_accepted": False,
@@ -53,7 +56,7 @@ def fixture():
                             else "learned-graph")
             head = (None if arm == "strong_hybrid_rag" else
                     sha("frozen") if arm == "frozen_shared" else
-                    sha("shared") if arm in ("learned_shared", "unsplit_equal_graph") else
+                    sha("shared-" + kind) if arm in ("learned_shared", "unsplit_equal_graph") else
                     sha("typed-" + ("procedural_skill" if kind == "semantic_concept"
                                     else "semantic_concept")) if arm == "typed_swapped"
                     else sha("typed-" + kind))
@@ -122,6 +125,28 @@ class CausalTaskAuditTests(unittest.TestCase):
         with self.assertRaises(a.Refused):
             self.score()
 
+    def test_missing_second_unspecialized_head_denied(self):
+        shared = self.plan["capacity"]["shared"]
+        shared["head_sha256_by_type"]["procedural_skill"] = shared[
+            "head_sha256_by_type"]["semantic_concept"]
+        with self.assertRaisesRegex(a.Refused, "two independent physical Heads"):
+            self.score()
+
+    def test_wrong_pooled_head_assignment_denied(self):
+        case = self.plan["cases"][0]
+        case["arm_plans"]["learned_shared"]["head_sha256"] = sha("wrong-shared-head")
+        # Even a coherently rewritten request digest cannot substitute a third
+        # unmetered Head for the original pooled equal-capacity control.
+        case["arm_plans"]["learned_shared"]["planned_request_sha256"] = a.request_digest(
+            self.plan, case, "learned_shared", {s["source_id"]: s for s in case["sources"]})
+        with self.assertRaisesRegex(a.Refused, "physical Head bank"):
+            self.score()
+
+    def test_extra_per_question_active_head_denied(self):
+        self.plan["capacity"]["typed"]["active_heads_per_query"] = 2
+        with self.assertRaisesRegex(a.Refused, "one read per query"):
+            self.score()
+
     def test_training_budget_not_equal_denied(self):
         self.plan["capacity"]["typed"]["optimizer_steps"] += 1
         with self.assertRaisesRegex(a.Refused, "capacity"):
@@ -148,7 +173,7 @@ class CausalTaskAuditTests(unittest.TestCase):
             "arm_plans"]["learned_typed"]["head_sha256"]
         case["arm_plans"]["typed_swapped"]["planned_request_sha256"] = a.request_digest(
             self.plan, case, "typed_swapped", {s["source_id"]: s for s in case["sources"]})
-        with self.assertRaisesRegex(a.Refused, "swapped-type negative"):
+        with self.assertRaisesRegex(a.Refused, "physical Head bank"):
             self.score()
 
     def test_graph_weight_fork_must_keep_head_fixed(self):

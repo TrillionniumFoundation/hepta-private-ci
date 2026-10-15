@@ -17,13 +17,20 @@ output token budgets for all nine arms:
 | --- | --- |
 | `strong_hybrid_rag` | **Actually executed**, externally tuned hybrid RAG baseline; not a BM25 alias |
 | `frozen_shared` | Untrained shared Head |
-| `learned_shared` | Trained shared Head |
+| `learned_shared` | **Two-head equally trained unspecialized bank**, each Head fitted on pooled TRAIN sources; deterministic externally frozen per-type slot selection and one physical active Head per query |
 | `learned_typed` | Two independently trained typed Heads under **equal total parameter, optimizer step and minibatch-example budgets** |
 | `typed_swapped` | Exact same bank, routing deliberately reversed |
 | `typed_fixed_graph` | Same typed weights, nonlearned source-bound topology |
 | `typed_learned_graph` | Same typed weights, genuinely fitted relationship weights |
 | `typed_graph_lesion` | Same typed weights, registered critical connections ablated |
 | `unsplit_equal_graph` | Same learned graph but equal-capacity unspecialized Head bank |
+
+The exact bank manifests declare two distinct Head SHA identities for both
+pooled/untyped and typed arms, two independently trainable Heads per bank, and
+exactly one active Head read per question. Both banks use the same precommitted
+case-type slot; **only the typed bank may specialize training rows by type**.
+This equality is asserted against the supplied physical training receipt, but
+receipt issuer authenticity and actual optimizer execution remain external.
 
 The evaluator contrasts parameter learning, type specialization, routing swap,
 fixed association, learned association, critical-edge lesion, equal-capacity
