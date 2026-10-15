@@ -178,9 +178,7 @@ fn compiled_product_cns_port_denies_before_preflight_or_physical_effect() {
         FinalUseAuthority::open_state_dir(
             private.path(),
             "caller-selected-local-authority".into(),
-            SigningKey::from_bytes(&[55; 32])
-                .verifying_key()
-                .to_bytes(),
+            SigningKey::from_bytes(&[55; 32]).verifying_key().to_bytes(),
             FinalUseRevocations {
                 authority_epoch: 1,
                 revision: 1,
@@ -203,13 +201,12 @@ fn compiled_product_cns_port_denies_before_preflight_or_physical_effect() {
     )
     .expect("validly shaped but untrusted original-owner construction");
 
+    let refused = port
+        .publish_once(&plan, &binding, &intent)
+        .expect_err("compiled production CNS must fail closed");
     assert_eq!(
-        port.publish_once(&plan, &binding, &intent),
-        Err(
-            "CNS mutation denied: original same-owner Control B/effect/C is not production-composed"
-                .into()
-        ),
-        "non-test CNS must refuse before any claimed signer/witness callback"
+        refused,
+        "CNS mutation denied: original same-owner Control B/effect/C is not production-composed"
     );
     assert_eq!(calls.load(Ordering::SeqCst), 0, "no injected owner callback");
     assert_eq!(
