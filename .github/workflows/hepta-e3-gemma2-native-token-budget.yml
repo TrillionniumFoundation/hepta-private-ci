@@ -1,0 +1,68 @@
+name: Hepta E3 native Gemma2 no-truncation contract (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-gemma2-native-token-budget-20261015"]
+    paths:
+      - "experiments/shared_stem_cell/e3_gemma2_native_budget.py"
+      - "experiments/shared_stem_cell/test_e3_gemma2_native_budget.py"
+      - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
+      - ".github/workflows/hepta-e3-gemma2-native-token-budget.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_gemma2_native_budget.py"
+      - "experiments/shared_stem_cell/test_e3_gemma2_native_budget.py"
+      - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
+      - ".github/workflows/hepta-e3-gemma2-native-token-budget.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e3-native-budget-${{ github.sha }}
+  cancel-in-progress: true
+jobs:
+  model-free-original-tokenizer-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Static compile all native model and preforward code
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            experiments/shared_stem_cell/e3_gemma2_native_physical.py \
+            experiments/shared_stem_cell/e3_gemma2_native_budget.py \
+            experiments/shared_stem_cell/test_e3_gemma2_native_budget.py
+      - name: Adversarial untruncated text and joint-image budget tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_gemma2_native_budget.py -v 2>&1 | tee /tmp/native-budget-normal.txt
+          grep -q 'Ran 18 tests' /tmp/native-budget-normal.txt
+          grep -q '^OK$' /tmp/native-budget-normal.txt
+      - name: Repeat security checks with Python optimizations enabled
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_gemma2_native_budget.py -v 2>&1 | tee /tmp/native-budget-optimized.txt
+          grep -q 'Ran 18 tests' /tmp/native-budget-optimized.txt
+          grep -q '^OK$' /tmp/native-budget-optimized.txt
+      - name: Require explicit false authority and media token attestations
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 - <<'PY'
+          from e3_gemma2_native_budget import original_native_input_preflight
+          class T:
+              tokenizer=None
+          try:
+              original_native_input_preflight(T(),[],[],[],[])
+          except ValueError:
+              print("FAIL CLOSED — model-free mechanisms only / DENY_ALL")
+          else:
+              raise RuntimeError("missing tokenizer incorrectly admitted")
+          PY
