@@ -4,8 +4,8 @@ import unittest
 import torch
 from torch.nn import functional as F
 
-from token_reader import TokenReader
-from token_reader_training import TokenBatch, fit_token_reader, parameter_digest
+from token_reader import TokenReader, _sigmoid, _tanh
+from token_reader_training import TokenBatch, TokenTrainingFailure, fit_token_reader, parameter_digest
 
 
 def binding_batch():
@@ -96,13 +96,13 @@ class TokenReaderTests(unittest.TestCase):
         self.assertFalse(receipt["natural_task_gain_established"])
 
     def test_training_sources_and_annotation_masks_are_checked(self):
-        with self.assertRaisesRegex(ValueError, "overlap"):
+        with self.assertRaisesRegex(TokenTrainingFailure, "overlap"):
             fit_token_reader(TokenReader(8, 16), self.batch, self.batch.take([0]), steps=1, seed=2)
         bad = TokenBatch(**{**self.batch.__dict__, "evidence_supervision": None})
         with self.assertRaisesRegex(ValueError, "explicit"):
             bad.validate(8)
         no_source = TokenBatch(**{**self.batch.__dict__, "source_groups": ()})
-        with self.assertRaisesRegex(ValueError, "source ownership"):
+        with self.assertRaisesRegex(TokenTrainingFailure, "source ownership"):
             fit_token_reader(TokenReader(8, 16), no_source, steps=1, seed=2)
         invalid = self.batch.evidence_targets.clone()
         invalid[0] *= 2
@@ -123,6 +123,44 @@ class TokenReaderTests(unittest.TestCase):
                          sum(row["exposures"] for row in receipt["updates"] if row["intervention"]))
         self.assertEqual(len(receipt["training_sources_sha256"]), 64)
         self.assertEqual(len(receipt["training_label_order_sha256"]), 64)
+
+    def test_extreme_activation_gradients_stay_finite(self):
+        for activation in (_sigmoid, _tanh):
+            values = torch.tensor([-1e6, -100., 0., 100., 1e6], requires_grad=True)
+            outputs = activation(values)
+            outputs.sum().backward()
+            self.assertTrue(torch.isfinite(outputs).all())
+            self.assertTrue(torch.isfinite(values.grad).all())
+            self.assertGreater(values.grad[2].item(), 0)
+
+    def test_failed_fit_emits_partial_actual_cost_receipt(self):
+        data = self.batch
+
+        class InterruptedDataset:
+            targets, source_groups = self.batch.targets, self.batch.source_groups
+            calls = 0
+
+            def validate(self, input_dim):
+                pass
+
+            def take(self, indices):
+                self.calls += 1
+                if self.calls == 3:
+                    raise RuntimeError("simulated batch materialization failure")
+                return data.take(indices)
+
+        persisted = []
+        with self.assertRaises(TokenTrainingFailure) as captured:
+            fit_token_reader(TokenReader(8, 16), InterruptedDataset(), steps=8, seed=11, batch_size=48,
+                             failure_receipt_fn=persisted.append)
+        self.assertEqual(len(persisted), 1)
+        self.assertEqual(persisted[0], captured.exception.receipt)
+        self.assertEqual(persisted[0]["completed_steps"], 1)
+        self.assertEqual(persisted[0]["actual_training_exposures"], 48)
+        self.assertEqual(len(persisted[0]["updates"]), 1)
+        self.assertGreater(persisted[0]["cpu_ns"], 0)
+        self.assertTrue(persisted[0]["failed_attempt_time_included"])
+        self.assertFalse(persisted[0]["final_evaluation_authorized"])
 
 
 if __name__ == "__main__":

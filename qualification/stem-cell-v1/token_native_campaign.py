@@ -104,7 +104,8 @@ def train(args):
         verifier, receipt = fit_token_reader(TokenReader(384, 32), bank.dataset(parts["verifier_fit"]),
             steps=args.steps, seed=seed, batch_size=16, max_depth=1, learning_rate=.003,
             counterfactual_fraction=0., evidence_weight=0., diagnostic_interval=args.steps,
-            wall_time_ns=1_800_000_000_000)
+            wall_time_ns=1_800_000_000_000,
+            failure_receipt_fn=lambda receipt: write_json(folder, "verifier-failed-training.json", receipt))
         write_json(folder, "verifier-training.json", receipt)
         if receipt["completed_steps"] != args.steps:
             raise RuntimeError("incomplete independent verifier fit; final remains closed")
