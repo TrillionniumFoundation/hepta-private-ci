@@ -523,3 +523,57 @@ fn bounded_exact_sample_observer_timeout_poisoned_without_successful_ack() {
     drop(rx);
     drop(sink);
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn original_actor_cohort_readback_uses_one_committed_frontier_and_never_flushes_implicitly() {
+    let root = tempfile::tempdir().expect("original private metric writer root");
+    let wal = root.path().join("cohort-signature-admissions.wal");
+    let owner = DurablePhaseMetricSinkV1::open(&wal, 128, 64, 60_000)
+        .expect("single protected original WAL/marker actor");
+    let mut first = sample(PhaseMetricKindV1::Admission);
+    first.operation_digest = Digest32::of_bytes(b"admitted-request-one");
+    let mut second = first;
+    second.operation_digest = Digest32::of_bytes(b"admitted-request-two");
+    owner.record(first).expect("first staged Admission");
+    owner.record(second).expect("second staged Admission");
+
+    let queries = [first, second].map(|event| MetricsCommittedSampleQueryV1 {
+        scope_digest: event.scope_digest,
+        operation_digest: event.operation_digest,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    });
+    assert_eq!(
+        owner.read_committed_samples(&queries)
+            .expect("non-flushing exact original reader"),
+        vec![None, None],
+        "an exact cohort query never fsyncs staged Admission data"
+    );
+    owner.flush().expect("one actual owned group-commit barrier");
+    let readbacks = owner
+        .read_committed_samples(&queries)
+        .expect("one original locked WAL and marker pass");
+    assert_eq!(readbacks.len(), 2);
+    assert!(readbacks.iter().all(|row| row.is_some_and(|item| item.matching_rows == 1)));
+    assert_eq!(readbacks[0].unwrap().frontier, readbacks[1].unwrap().frontier);
+    assert_eq!(readbacks[0].unwrap().frontier.committed_rows, 2);
+    for (query, actual) in queries.iter().zip(&readbacks) {
+        assert_eq!(
+            *actual,
+            owner.read_committed_sample(*query).unwrap(),
+            "new batched observer must retain original exact-sample identity"
+        );
+    }
+    assert!(owner.healthy());
+    drop(owner);
+    let reopened = DurablePhaseMetricSinkV1::open(&wal, 128, 64, 60_000)
+        .expect("genuine WAL and local high-water marker cold recovery");
+    assert_eq!(
+        reopened.read_committed_samples(&queries).unwrap(),
+        readbacks,
+        "cold original marker frontier matches the pre-signing cohort readback"
+    );
+}
