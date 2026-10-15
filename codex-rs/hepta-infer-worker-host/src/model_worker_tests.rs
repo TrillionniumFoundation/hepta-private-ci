@@ -1440,3 +1440,34 @@ fn uncertain_head_effect_fences_subsequent_signed_stem_binding_without_retry() {
     );
     assert_eq!(worker.driver.feature_calls, 1);
 }
+
+
+#[test]
+fn invalid_post_effect_receipt_poison_prevents_reusing_signed_worker_generation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.invalid-receipt".to_string(),
+        3,
+        grant(),
+        Driver {
+            // The mock intentionally returns failure with nonempty vectors.
+            // V1 receipt rules reject these even though the driver ran.
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+        Err(Error::FeatureContract)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
+}
