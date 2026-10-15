@@ -98,6 +98,23 @@ def fake_journals(plan, *, deliberate_wrong=False):
     return output
 
 
+def correctly_labelled_fake_journals(plan):
+    """Synthetic perfect marker guesses, including when no premise is delivered."""
+    records = fake_journals(plan)
+    cases = {case["id"]: case for case in plan["cases"]}
+    for rows in records.values():
+        for row in rows:
+            case = cases[row["case_id"]]
+            gold = case["conditions"]["mechanical_support"][0]["marker"]
+            evidence = case["conditions"][row["condition"]]
+            label = next(
+                (i for i, item in enumerate(evidence, 1) if item["marker"] == gold),
+                None,
+            )
+            row["answer"] = gold + (f" [E{label}]" if label is not None else "")
+    return records
+
+
 class RealSourceProbeTests(unittest.TestCase):
     def setUp(self):
         self.sources = pretend_corpus()
@@ -171,6 +188,54 @@ class RealSourceProbeTests(unittest.TestCase):
         self.assertFalse(report["independent_human_sufficiency_review"])
         self.assertFalse(report["independently_authenticated_model_calls"])
         self.assertIsNone(report["complete_lifecycle_tco"])
+
+    def test_removed_declaration_guess_is_not_supported_citation(self):
+        report = score_outputs(
+            self.plan, self.sources, correctly_labelled_fake_journals(self.plan)
+        )
+        for tier in TIERS:
+            lesion = report["reader_conditions"][tier]["removed_declaration"]
+            self.assertEqual(lesion["strict_correct"], 9)
+            self.assertEqual(lesion["required_source_marker_delivered"], 9)
+            self.assertEqual(lesion["required_source_delivered"], 0)
+            self.assertEqual(lesion["original_correct_and_cited"], 0)
+
+    def test_intact_declaration_support_and_empty_guesses_stay_distinct(self):
+        report = score_outputs(
+            self.plan, self.sources, correctly_labelled_fake_journals(self.plan)
+        )
+        for tier in TIERS:
+            for condition in ("hybrid_k4", "mechanical_support"):
+                intact = report["reader_conditions"][tier][condition]
+                self.assertEqual(intact["strict_correct"], 9)
+                self.assertEqual(intact["required_source_marker_delivered"], 9)
+                self.assertEqual(intact["required_source_delivered"], 9)
+                self.assertEqual(intact["original_correct_and_cited"], 9)
+            empty = report["reader_conditions"][tier]["none"]
+            self.assertEqual(empty["strict_correct"], 9)
+            self.assertEqual(empty["required_source_marker_delivered"], 0)
+            self.assertEqual(empty["required_source_delivered"], 0)
+            self.assertEqual(empty["original_correct_and_cited"], 0)
+
+    def test_original_source_lesion_cannot_be_credited_for_a_guessed_marker(self):
+        source = os.environ.get("MEMORY_REAL_SOURCE_ZIP")
+        reopen = os.environ.get("MEMORY_REOPEN_ZIP")
+        if not (source and reopen):
+            self.skipTest(
+                "exact historical archives not present in standalone unit job"
+            )
+        from real_source_reader_probe import real_source
+
+        sources = real_source(Path(source), Path(reopen))
+        plan = build_plan(*sources)
+        self.assertEqual(digest(canonical(plan) + b"\n"), FROZEN_PLAN_SHA256)
+        report = score_outputs(plan, sources, correctly_labelled_fake_journals(plan))
+        for tier in TIERS:
+            lesion = report["reader_conditions"][tier]["removed_declaration"]
+            self.assertEqual(lesion["strict_correct"], 9)
+            self.assertEqual(lesion["required_source_marker_delivered"], 9)
+            self.assertEqual(lesion["required_source_delivered"], 0)
+            self.assertEqual(lesion["original_correct_and_cited"], 0)
 
     def test_untrusted_reader_wrong_answers_not_accepted(self):
         result = score_outputs(

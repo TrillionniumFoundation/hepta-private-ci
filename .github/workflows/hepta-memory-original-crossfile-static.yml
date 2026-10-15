@@ -4,6 +4,8 @@ on:
     branches:
       - codex/memory-original-crossfile-trace-20261015
     paths:
+      - scripts/memory_cell/real_source_reader_probe.py
+      - scripts/memory_cell/test_real_source_reader_probe.py
       - scripts/memory_cell/memory_original_crossfile_trace.py
       - scripts/memory_cell/test_memory_original_crossfile_trace.py
       - scripts/memory_cell/memory_original_http_runtime.py
@@ -14,6 +16,8 @@ on:
       - .github/workflows/hepta-memory-original-crossfile-static.yml
   pull_request:
     paths:
+      - scripts/memory_cell/real_source_reader_probe.py
+      - scripts/memory_cell/test_real_source_reader_probe.py
       - scripts/memory_cell/memory_original_crossfile_trace.py
       - scripts/memory_cell/test_memory_original_crossfile_trace.py
       - scripts/memory_cell/memory_original_http_runtime.py
@@ -48,7 +52,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$PIN"
-          mkdir -p /tmp/crossfile-static
+          mkdir -p /tmp/crossfile-static/review
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
           curl --fail --silent --show-error --location --retry 3 --max-time 180 \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H 'Accept: application/vnd.github+json' \
@@ -61,6 +66,15 @@ jobs:
             -o "$MEMORY_REOPEN_ZIP"
           echo 'a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  /tmp/crossfile-static/source.zip' | sha256sum --check
           echo '59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  /tmp/crossfile-static/reopen.zip' | sha256sum --check
+      - name: Reader premise-support and existing causal admission regressions (no model)
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/real_source_reader_probe.py scripts/memory_cell/test_real_source_reader_probe.py
+          python3 -m unittest \
+            test_real_source_reader_probe test_factorial_evidence_gate \
+            test_memory_trial_admission test_memory_trial_independent_score \
+            test_memory_trial_preexposure_freeze test_memory_trial_program_replay \
+            -v 2>&1 | tee /tmp/crossfile-static/review/reader-premise-tests.txt
       - name: All 18 negative regression tests on the original bytes
         run: |
           set -euo pipefail
