@@ -1,0 +1,49 @@
+name: Hepta E2 natural Beans original four-ZIP independent integrity (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-beans-original-four-zip-review-20261015
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e2_beans_original_zip_review.py'
+      - 'experiments/shared_stem_cell/test_e2_beans_original_zip_review.py'
+      - '.github/workflows/hepta-e2-beans-original-four-zip-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e2-beans-original-review-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-original-archive-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: No network or pretrained weights — test original ZIP hashes, cross-source parity, and authority denial
+        env:
+          PYTHONPATH: experiments/shared_stem_cell
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e2_beans_original_zip_review.py -v
+          python -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e2_beans_original_zip_review.py -v
+          python -m compileall -q experiments/shared_stem_cell/e2_beans_original_zip_review.py
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e2_beans_original_zip_review import Reject, review_archives
+          try:
+              review_archives({}, {})
+          except Reject:
+              print('fail-closed: no completed original four pinned ZIPs, no natural efficacy claim')
+          else:
+              raise SystemExit('missing original ZIPs were incorrectly accepted')
+          PY
