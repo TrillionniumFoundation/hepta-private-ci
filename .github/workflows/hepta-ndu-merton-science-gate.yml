@@ -36,6 +36,28 @@ jobs:
           python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/ndu-science/optimized.log"
           grep -F 'Ran 52 tests' "$RUNNER_TEMP/ndu-science/ordinary.log"
           grep -F 'Ran 52 tests' "$RUNNER_TEMP/ndu-science/optimized.log"
+          # Original-output Pareto science contract: synthetic faults only in CI.
+          # Original completed trial ZIP remains local-only; this source gate
+          # must not pretend that a unit suite reran original pretrained tasks.
+          python -W error::ResourceWarning -m unittest discover -s "$D/frontier" -p 'test_roi_frontier.py' -v 2>&1 | tee "$RUNNER_TEMP/ndu-science/frontier-normal.log"
+          python -O -W error::ResourceWarning -m unittest discover -s "$D/frontier" -p 'test_roi_frontier.py' -v 2>&1 | tee "$RUNNER_TEMP/ndu-science/frontier-optimized.log"
+          grep -F 'Ran 34 tests' "$RUNNER_TEMP/ndu-science/frontier-normal.log"
+          grep -F 'Ran 34 tests' "$RUNNER_TEMP/ndu-science/frontier-optimized.log"
+          python - <<'PY_FRONTIER'
+          import json
+          from pathlib import Path
+          p=Path('experiments/ndu_tree_fbsde_gates/merton/qualification/frontier/OBSERVATION.json')
+          o=json.loads(p.read_text())
+          if (o['posture']!='RESEARCH_ONLY_DENY_ALL' or o['production_accepted'] is not False or
+              o['new_source_groups']!=0 or o['new_future_windows']!=0 or
+              o['hosted_current_head_verified'] is not False or
+              o['raw_rows']!=54 or o['observed_pairs']!=6 or
+              o['ndu_extra_updates_per_pair']!=120 or
+              o['original_public_sha256']!='195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7' or
+              o['observed_ndu_dominated_on_two_dimensions'] is not True):
+              raise SystemExit('original-output science receipt mismatch')
+          print('Source-only negative receipt. Original model/trial not reexecuted in this CI.')
+          PY_FRONTIER
           python - <<'PY'
           import json
           from pathlib import Path
