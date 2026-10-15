@@ -368,9 +368,11 @@ async fn simultaneous_identical_prepare_uses_one_original_sqlite_row() {
 
 #[tokio::test]
 async fn reserved_prepare_namespace_is_not_a_production_execution_grant() {
-    assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY);
-    assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
-    assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
+    const {
+        assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_FINAL_USE_AUTHORITY);
+        assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
+        assert!(!crate::execution_preparation_v1::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
+    };
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&sqlite(&temp))
         .await

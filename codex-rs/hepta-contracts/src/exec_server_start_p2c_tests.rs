@@ -69,7 +69,7 @@ fn pinned_process_start_is_inspectable_but_has_no_effect_authority() {
             .request_sha256
     );
     assert_ne!(observation.argv_sha256, [0; 32]);
-    assert!(!CODEX_EXEC_SERVER_P2C_EFFECT_AUTHORITY);
+    const { assert!(!CODEX_EXEC_SERVER_P2C_EFFECT_AUTHORITY) };
 }
 
 #[test]
