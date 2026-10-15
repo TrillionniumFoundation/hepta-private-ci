@@ -194,7 +194,10 @@ fn legacy_neuron_tick_cannot_invoke_untrusted_model_in_non_test_library() {
     let mut model = UntrustedModel { calls: 0 };
     let rejected = runtime.tick(&mut model, input);
     assert!(
-        matches!(rejected, Err(NeuronRuntimeError::MissingFinalUseAuthorization)),
+        matches!(
+            rejected,
+            Err(NeuronRuntimeError::MissingFinalUseAuthorization)
+        ),
         "a non-test library must reject the legacy Tick before even preparing a model request"
     );
     assert_eq!(model.calls, 0, "untrusted driver must never be invoked");
