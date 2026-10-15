@@ -68,8 +68,15 @@ def make_fixture():
             }
             if stage == "P4":
                 arm["compute_budget_ms"] = 100
+                if name in ("no_search", "bellman"):
+                    arm["train_steps"] = 0
+                    arm["train_cases"] = 0
+                    arm["trainable_parameters"] = 0
+                    arm["costs"]["training_ms"] = 0.0
                 if name == "ndu_solver":
                     arm["costs"]["ndu_ms"] = 3.0 * len(cases)
+                else:
+                    arm["costs"]["ndu_ms"] = 0.0
             for c in cases:
                 utility = 0.5
                 if stage == "P0" and not frozen:
@@ -92,7 +99,7 @@ def make_fixture():
                     "completed": True,
                 }
                 if stage == "P4":
-                    row["measured_solver_ms"] = 3.0
+                    row["measured_solver_ms"] = 0.0 if name == "no_search" else 3.0
                 if stage == "P3":
                     row["generated_artifact_sha256"] = sha("generated-" + c["case_id"] + name)
                 if stage == "P5":
@@ -205,11 +212,11 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(
             train_steps=1), "frozen Head cannot report optimizer steps")
 
-    def test_p2_and_p4_learned_effort_still_matches(self):
+    def test_p2_step_parity_and_p4_train_work_consistency(self):
         self.rejected(lambda d: d["tracks"]["P2"]["matched_unsplit"].update(
             train_steps=25), "unmatched learning effort")
         self.rejected(lambda d: d["tracks"]["P4"]["tree_search"].update(
-            train_steps=25), "unmatched learning effort")
+            train_steps=0), "P4 zero-step control claims training exposure or cost")
 
     def test_p1_shared_vs_replicated_head_capacity(self):
         self.rejected(lambda d: d["tracks"]["P1"]["replicated_learned"].update(
@@ -422,6 +429,65 @@ class SixTrackValidation(unittest.TestCase):
         self.rejected(lambda d: d["tracks"]["P1"]["shared_frozen"].update(
             final_head_sha256=sha("changed")), "frozen Head changed weights")
 
+    def test_p4_cheap_no_fit_bellman_vs_trained_ndu_is_valid(self):
+        arms = self.doc["tracks"]["P4"]
+        self.assertEqual(arms["bellman"]["train_steps"], 0)
+        self.assertEqual(arms["bellman"]["train_cases"], 0)
+        self.assertEqual(arms["bellman"]["trainable_parameters"], 0)
+        self.assertEqual(arms["bellman"]["costs"]["training_ms"], 0)
+        self.assertGreater(arms["ndu_solver"]["train_steps"], 0)
+        out = target.audit(self.doc)
+        p4 = out["tracks"]["P4"]
+        self.assertIs(p4["training_effort_not_implicitly_equalized"], True)
+        self.assertEqual(p4["reported_training_control_census"]["bellman"]["train_steps"], 0)
+        self.assertEqual(p4["reported_training_control_census"]["ndu_solver"]["train_steps"], 24)
+        self.assertFalse(out["statistical_model_winner_selected"])
+        self.assertEqual(out["authority"], "DENY_ALL")
+        self.assertIn("ndu_solver__vs__no_search", p4["paired_family_differences"])
+
+    def test_p4_cheap_bellman_cannot_pretend_to_fit(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(
+            train_steps=1), "P4 no-fit cheap control")
+
+    def test_p4_zero_fit_control_cannot_hide_training_cost(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"]["costs"].update(
+            training_ms=2.0), "P4 zero-step control claims training exposure or cost")
+
+    def test_p4_no_search_must_not_report_solver_execution(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["no_search"]["results"][0].update(
+            measured_solver_ms=1.0), "P4 no-search baseline cannot claim solver execution")
+
+    def test_p4_bellman_must_not_claim_ndu_cost(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["bellman"]["costs"].update(
+            ndu_ms=2.0), "P4 no-fit cheap control cannot claim NDU solver charges")
+
+    def test_p4_trained_ndu_cannot_omit_training_charges(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["ndu_solver"]["costs"].update(
+            training_ms=0.0), "P4 trained algorithm omitted training exposure or cost")
+
+    def test_p4_both_trained_critic_and_ndu_must_share_data_exposure(self):
+        self.rejected(lambda d: d["tracks"]["P4"]["critic"].update(
+            train_data_sha256=sha("critic-replacement-data")),
+            "P4 both-trained controls have unmatched training exposure")
+
+    def test_p4_unequal_training_steps_remain_visible_and_costed(self):
+        doc = copy.deepcopy(self.doc)
+        ndu = doc["tracks"]["P4"]["ndu_solver"]
+        ndu["train_steps"] = 25
+        ndu["costs"]["training_ms"] = 5.0
+        p4 = target.audit(doc)["tracks"]["P4"]
+        self.assertEqual(p4["reported_training_control_census"]["ndu_solver"]["train_steps"], 25)
+        self.assertEqual(p4["reported_training_control_census"]["critic"]["train_steps"], 24)
+        self.assertEqual(p4["reported_training_control_census"]["ndu_solver"]["training_ms"], 5.0)
+        self.assertGreater(
+            p4["arms"]["ndu_solver"]["lifecycle"]["amortized_one_time_ms_per_request"],
+            p4["arms"]["bellman"]["lifecycle"]["amortized_one_time_ms_per_request"],
+        )
+
+    def test_v3_p4_claim_cannot_be_mislabeled_v4(self):
+        self.rejected(lambda d: d.update(
+            schema="hepta.six-track-paired-observation.v3"), "non-authorizing")
+
     def test_p4_equal_budget(self):
         self.rejected(lambda d: d["tracks"]["P4"]["bellman"].update(compute_budget_ms=101), "compute budgets")
 
@@ -485,7 +551,7 @@ class SixTrackValidation(unittest.TestCase):
             p.write_text(json.dumps(self.doc, allow_nan=False), encoding="utf-8")
             obj, digest = target.load_json(p)
             self.assertEqual(digest, hashlib.sha256(p.read_bytes()).hexdigest())
-            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v3")
+            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v4")
 
 
 if __name__ == "__main__":
