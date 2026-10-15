@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 PHYSICAL = ROOT / ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 CONTRACT = ROOT / ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
-CHILD = "research/e3-five-arm-decongest-ci-20261015"
+CHILD = "research/e3-five-arm-merged-admission-decongestion-20261015"
 
 def physical_job(name, text):
     # Match job-level two-space headings, never nested four-space steps.

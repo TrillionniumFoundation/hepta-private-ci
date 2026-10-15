@@ -1,14 +1,19 @@
 name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015", "research/e3-five-arm-heldout-isolation-20261015", "research/e3-five-arm-decongest-ci-20261015"]
+    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
       - "experiments/shared_stem_cell/e3_source_target_partition.py"
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
       - "experiments/shared_stem_cell/test_e3_runner_budget.py"
+      - "experiments/shared_stem_cell/test_e3_converged_ci_gates.py"
       - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
+      - "experiments/shared_stem_cell/E3_CONVERGED_CI_AND_ADMISSION_20261015.md"
+      - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_HELD_TARGET_BOUNDARY_20261015.md"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -16,6 +21,13 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/test_e3_runner_budget.py"
+      - "experiments/shared_stem_cell/test_e3_converged_ci_gates.py"
+      - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
+      - "experiments/shared_stem_cell/E3_CONVERGED_CI_AND_ADMISSION_20261015.md"
+      - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
@@ -54,6 +66,26 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
+      - name: Branch-only expensive-work and merged source-admission gates
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_runner_budget.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_runner_budget.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_converged_ci_gates.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_converged_ci_gates.py -v
+      - name: Source-bound pre/post physical Encoder-view input gate
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            experiments/shared_stem_cell/test_e3_model_entry_ledger.py
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_ledger.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_ledger.py -v
       - name: No real-model or five-arm benefit claims from fixtures
         run: |
           set -euo pipefail
