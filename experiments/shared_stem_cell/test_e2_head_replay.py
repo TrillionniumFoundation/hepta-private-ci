@@ -180,6 +180,61 @@ class Tests(unittest.TestCase):
             with self.assertRaisesRegex(replay.Invalid,'excessive'):
                 replay._checked(root/'features.safetensors',16)
 
+    def test_train_labels_tampered_but_source_identity_unchanged_rejected(self):
+        ctx,root=self.folder()
+        with ctx:
+            modified=copy.deepcopy(self.rows)
+            for row in modified:
+                if row['split']=='train':
+                    row['label']=1-row['label']
+            with self.assertRaisesRegex(replay.Invalid, 'optimizer replay failed'):
+                replay.review(root,modified,self.report,self.report_sha)
+
+    def test_calibration_or_test_labels_not_learner_targets(self):
+        ctx,root=self.folder()
+        with ctx:
+            modified=copy.deepcopy(self.rows)
+            for row in modified:
+                if row['split']=='test':
+                    row['label']=1-row['label']
+            out=replay.review(root,modified,self.report,self.report_sha)
+            self.assertEqual(out['independent_train_only_optimizer_replay']['heads_retrained'],3)
+            self.assertFalse(out['independent_train_only_optimizer_replay']['future_ndu_verified'])
+
+    def test_optimizer_schedule_drift_rejected(self):
+        ctx,root=self.folder()
+        with ctx:
+            for key,bad in (('steps',41),('seed',20261016),('learning_rate',0.125)):
+                changed=copy.deepcopy(self.report)
+                changed['head_study'][key]=bad
+                with self.assertRaisesRegex(replay.Invalid, 'optimizer replay failed'):
+                    replay.review(root,self.rows,changed,self.report_sha)
+
+    def test_learner_checkpoint_tamper_direct_optimizer_replay_rejected(self):
+        from e2_optimizer_replay import replay_sgd, Invalid as OptimizerInvalid
+        changed=copy.deepcopy(self.states)
+        changed['token_query']['learned']['query'][3]+=0.04
+        with self.assertRaisesRegex(OptimizerInvalid, 'saved learned Head cannot be reproduced'):
+            replay_sgd(self.rows,self.bank,changed,self.report['head_study'],384)
+
+    def test_nonregistered_initialization_denied(self):
+        from e2_optimizer_replay import replay_sgd, Invalid as OptimizerInvalid
+        changed=copy.deepcopy(self.states)
+        changed['pooled_gated']['frozen']['readout'][3]+=0.03
+        with self.assertRaisesRegex(OptimizerInvalid, 'seeded initialization'):
+            replay_sgd(self.rows,self.bank,changed,self.report['head_study'],384)
+
+    def test_two_cpu_thread_configs_agree(self):
+        ctx,root=self.folder()
+        before=torch.get_num_threads()
+        with ctx:
+            try:
+                torch.set_num_threads(2)
+                result=replay.review(root,self.rows,self.report,self.report_sha)
+                self.assertLessEqual(result['independent_train_only_optimizer_replay']['max_absolute_parameter_error'],2e-6)
+            finally:
+                torch.set_num_threads(before)
+
     def test_create_only(self):
         ctx,root=self.folder()
         with ctx:

@@ -13,6 +13,7 @@ on:
       - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
       - "experiments/shared_stem_cell/e2_token_query_review.py"
       - "experiments/shared_stem_cell/e2_head_replay.py"
+      - "experiments/shared_stem_cell/e2_optimizer_replay.py"
       - "experiments/shared_stem_cell/test_e2_head_replay.py"
       - "experiments/shared_stem_cell/e2_pairwise_evidence.py"
       - "experiments/shared_stem_cell/test_e2_token_query_pairwise.py"
@@ -185,6 +186,11 @@ jobs:
           for model in ('granite_97m_r2','mmbert_small','modernbert_base'):
               r=json.loads((root/f'{model}.e2-replay-audit.json').read_bytes())
               assert r['heads_replayed']==6 and r['predictions_replayed']==576
+              o=r['independent_train_only_optimizer_replay']
+              assert o['heads_retrained']==3 and o['steps_per_head']==40
+              assert o['max_absolute_parameter_error']<=2e-6
+              assert o['source_independently_attested'] is False
+              assert o['production_promotion_permitted'] is False
               assert r['max_probability_absolute_error'] < 1e-5
               assert r['real_pretrained_execution_independently_verified'] is False
               assert r['production_promotion_permitted'] is False

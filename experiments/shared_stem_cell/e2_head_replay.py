@@ -22,6 +22,7 @@ from safetensors.torch import load as safe_load, save_file
 from e2_token_query_ablation import (
     Head, _digest_module, _materialize, frozen_bank, Invalid as FeatureInvalid,
 )
+from e2_optimizer_replay import replay_sgd, Invalid as OptimizerReplayInvalid
 
 SCHEMA = 'hepta.stem.e2-head-replay-bundle.v1'
 REVIEW_SCHEMA = 'hepta.stem.e2-head-replay-readonly-audit.v1'
@@ -291,8 +292,19 @@ def review(root: Path, cases: list[dict], report: dict, report_sha256: str):
                 if err>1e-5:
                     raise Invalid('checkpoint fails independent probability replay')
                 complete+=1
+    # Independent *training* reproduction: output-equivalent checkpoints can
+    # otherwise be forged without having used the declared train-only SGD.
+    states = {kind: {status: {name: heads[f'{kind}.{status}.{name}']
+                             for name in Head(width, kind, torch.zeros(width)).state_dict()}
+                     for status in ('frozen', 'learned')} for kind in ARMS}
+    try:
+        optimizer_replay = replay_sgd(cases, snapshots, states,
+                                      report['head_study'], width)
+    except OptimizerReplayInvalid as exc:
+        raise Invalid('independent Head optimizer replay failed') from exc
     return {'schema':REVIEW_SCHEMA,'original_case_count':MAX_ROWS,
             'heads_replayed':len(ARMS)*2,'predictions_replayed':complete,
+            'independent_train_only_optimizer_replay':optimizer_replay,
             'max_probability_absolute_error':max_abs,
             'real_pretrained_execution_independently_verified':False,
             'independent_future_ndu_verified':False,
