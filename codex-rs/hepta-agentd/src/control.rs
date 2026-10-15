@@ -186,7 +186,11 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         match tokio::fs::remove_file(socket_path).await {
             Ok(()) => Ok(()),
             Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
-            Err(error) => Err(io_context("remove stale agentd control socket", socket_path, error)),
+            Err(error) => Err(io_context(
+                "remove stale agentd control socket",
+                socket_path,
+                error,
+            )),
         }
     } else if !tokio::fs::try_exists(socket_path)
         .await
@@ -244,7 +248,10 @@ mod tests {
             matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
             "a running control listener must retain exclusive ownership"
         );
-        assert!(socket.exists(), "preflight must preserve the active rendezvous");
+        assert!(
+            socket.exists(),
+            "preflight must preserve the active rendezvous"
+        );
         Ok(())
     }
 
@@ -272,7 +279,10 @@ mod tests {
         drop(retired);
 
         prepare_socket(&socket).await?;
-        assert!(!socket.exists(), "only the abandoned socket may be unlinked");
+        assert!(
+            !socket.exists(),
+            "only the abandoned socket may be unlinked"
+        );
         let _rebound = UnixListener::bind(&socket).await?;
         Ok(())
     }
