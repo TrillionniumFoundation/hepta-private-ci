@@ -4,6 +4,8 @@ on:
     paths:
       - "qualification/stem-cell-v1/group_v2_independent_negative.py"
       - "qualification/stem-cell-v1/test_group_v2_independent_negative.py"
+      - "qualification/stem-cell-v1/group_v2_seedwise_contrast.py"
+      - "qualification/stem-cell-v1/test_group_v2_seedwise_contrast.py"
       - "qualification/stem-cell-v1/GROUP_V2_INDEPENDENT_NEGATIVE_20261015.md"
       - ".github/workflows/hepta-group-v2-independent-negative.yml"
   workflow_dispatch:
@@ -44,6 +46,27 @@ jobs:
         run: |
           set -euo pipefail
           python3 -O -m unittest discover -s qualification/stem-cell-v1 -p test_group_v2_independent_negative.py -v
+      - name: Run eight real original seedwise contrast regressions in both Python modes
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qualification/stem-cell-v1/group_v2_seedwise_contrast.py qualification/stem-cell-v1/test_group_v2_seedwise_contrast.py
+          python3 -m unittest discover -s qualification/stem-cell-v1 -p test_group_v2_seedwise_contrast.py -v
+          python3 -O -m unittest discover -s qualification/stem-cell-v1 -p test_group_v2_seedwise_contrast.py -v
+      - name: Independently retain source-seedwise negative contrasts
+        run: |
+          set -euo pipefail
+          python3 qualification/stem-cell-v1/group_v2_seedwise_contrast.py \
+            --original-summary qualification/stem-cell-v1/GROUP_REASONING_V2_3SEED_20261015.json \
+            --out "$RUNNER_TEMP/group-v2-seedwise-negative.json"
+          python3 - "$RUNNER_TEMP/group-v2-seedwise-negative.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert [r["split_correct_delta"] for r in x["rows"]]==[-3,3,0]
+          assert [r["ndu_correct_delta"] for r in x["rows"]]==[-4,-1,0]
+          assert x["split_winner"] is False and x["ndu_winner"] is False
+          assert x["production_accepted"] is False and x["authority_posture"]=="DENY_ALL"
+          print("REAL_ORIGINAL_3_SEED_NEGATIVE_CONTRAST / DENY_ALL")
+          PY
       - name: Independent fail-closed original three-seed report and no model promotion
         run: |
           set -euo pipefail
