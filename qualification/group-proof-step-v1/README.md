@@ -19,3 +19,26 @@ python3 qualification/group-proof-step-v1/group_proof_step_pilot.py --output /tm
 ```
 
 **Decision boundary:** Before using this mechanism in the real learned Group loop: align the step labels to real token-snapshot evidence, train a learned step proposer with no grammar-derived label shortcuts, compare to cheap exact symbolic and static/wide/recursive baselines under identical total compute, repeat real source/time-disjoint MultiRC and multimodal interventions, and show independent full-answer utility gains. Split selection and NDU remain proposal-only. Never merge this research artifact into a production effect or action owner from unit-test success alone.
+
+
+## Independent original-source replay
+
+The campaign now retains the **full synthetic public heldout source text** and its
+original constructor label once per test case. The separate
+`group_proof_step_review.py` is stdlib-only and intentionally imports neither
+the trainable policy nor its proof oracle. It independently parses public facts,
+reconstructs all five counterfactuals, hashes each modified prompt, checks
+constructor labels against the actual evidence, binds frozen training weights
+and exact source-group census, replays each raw prediction/work/latency row,
+and recomputes every score. Duplicate rows, altered source truth,
+mismatched interventions, invented labels, forged work, score inflation and
+authority claims are fatal. Ten new fault/acceptance tests verify the reviewer.
+
+`python3 -S qualification/group-proof-step-v1/group_proof_step_review.py
+/approved/group-proof-observations.json --output /sealed/group-proof-review.json`
+
+This is **read-only consistency** of synthetic original evidence, not an
+externally signed source publisher, model execution attestation, independent
+future chronology, real Granite task, or a new proof of general reasoning.
+The independent review must succeed in hosted CI before a diagnostic claim
+is considered, and still provides no production promotion authority.
