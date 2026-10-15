@@ -33,7 +33,7 @@ def truth_from_parquet(parquet_path,slate,owner_labels):
         raise ValueError('candidate slate missing or duplicated source')
     source_to_text={p['source_group']:p['evidence'] for p in slate['rows']}
     if len(source_to_text)!=6:raise ValueError('not six complete source passages')
-    found={};all_q=defaultdict(set)
+    found={};all_q=defaultdict(set);source_qids=defaultdict(set)
     for entry in src:
         idx=entry['idx'];txt=entry['paragraph']
         if not isinstance(txt,str):continue
@@ -51,9 +51,33 @@ def truth_from_parquet(parquet_path,slate,owner_labels):
             or task in found):
             raise ValueError('original human candidate/source was changed')
         found[task]=entry['label'];all_q[(group,idx['question'])].add(task)
+        source_qids[(group,exp_row['slot'])].add(idx['question'])
     if (set(found)!=set(required) or len(all_q)!=12
         or any(not 2<=len(v)<=8 for v in all_q.values())):
         raise ValueError('independent 12-question source reconstruction failed')
+    # Independently check *complete* original answer sets, not just that the
+    # submitted candidate IDs have correct labels. Any omitted extra genuine
+    # answer in a selected source question is a source-integrity failure.
+    if len(source_qids)!=12 or any(len(ids)!=1 for ids in source_qids.values()):
+        raise ValueError('source questions were not reconstructed uniquely')
+    selected={(g,next(iter(qids))) for (g,slot),qids in source_qids.items()}
+    if len(selected)!=12:
+        raise ValueError('original distinct question IDs collapsed')
+    all_source_tasks=set()
+    for entry in src:
+        if type(entry) is not dict or type(entry.get('idx')) is not dict:
+            raise ValueError('source human annotation has malformed ID')
+        idx=entry['idx'];txt=entry['paragraph']
+        if not isinstance(txt,str):continue
+        h=sha256(json.dumps(txt,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+        group=sha256(f'validation:passage:{idx["paragraph"]}:{h}'.encode()).hexdigest()[:32]
+        if (group,idx['question']) not in selected:continue
+        task=sha256(f'{group}:q{idx["question"]}:a{idx["answer"]}'.encode()).hexdigest()[:32]
+        if task not in required or task in all_source_tasks:
+            raise ValueError('original selected question contains omitted or duplicate genuine answer')
+        all_source_tasks.add(task)
+    if all_source_tasks!=set(required):
+        raise ValueError('original complete candidate census was not reproduced')
     if (type(owner_labels) is not dict or owner_labels.get('labels')!=found
         or owner_labels.get('slate_id')!=slate['slate_id']
         or owner_labels.get('external_observer_authenticated') is not False):

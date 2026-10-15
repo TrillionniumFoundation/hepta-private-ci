@@ -103,6 +103,20 @@ class TruthSeparationTest(unittest.TestCase):
             with patch.dict(sys.modules,self.src(rows[:-1])),patch('e25_independent_score.VAL_SHA',sha256(p.read_bytes()).hexdigest()):
                 with self.assertRaises(ValueError):truth_from_parquet(str(p),slate,labels)
 
+    def test_unlisted_real_candidate_in_selected_question_is_rejected(self):
+        audit,source,slate,owner,rows,labels=synthetic_parquet_and_slate()
+        more=deepcopy(rows)
+        addition=deepcopy(rows[0])
+        addition['idx']['answer']=2
+        addition['answer']='EXTRA genuine candidate never included in proposed slate'
+        addition['label']=1
+        more.append(addition)
+        with tempfile.TemporaryDirectory() as td:
+            p=Path(td)/'fake-test.parquet';p.write_bytes(b'FAKE SOURCE TEST ONLY')
+            with patch.dict(sys.modules,self.src(more)),patch('e25_independent_score.VAL_SHA',sha256(p.read_bytes()).hexdigest()):
+                with self.assertRaisesRegex(ValueError,'omitted or duplicate genuine answer'):
+                    truth_from_parquet(str(p),slate,labels)
+
     def test_independent_all_candidate_numeric_replay_on_synthetic_new_groups(self):
         audit,source,slate,owner,rows,labels=synthetic_parquet_and_slate()
         result=propose(audit,source,slate,owner,self.config,ORIGINAL)
