@@ -227,6 +227,32 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
             .enqueue_shared_features(now_ms, model_id, request, shared_features, key, signed)
     }
 
+    /// Original-Evidence-backed proposal for independently signing one
+    /// strictly ordered, already-admitted native Batch. This does NOT issue
+    /// a grant, claim any nonce, dequeue requests, or cross a backend.
+    ///
+    /// The original group-commit WAL must first fsync every preceding
+    /// Admission row. Otherwise the independent signer could approve a
+    /// batch whose member queue history is absent after a crash. The
+    /// same original Control/CNS and final-use gates still apply later.
+    pub fn prepare_pending_native_group_signature_v1(
+        &mut self,
+        now_ms: u64,
+        ordered: &[(StableId, MicrobatchKeyV1)],
+    ) -> Result<crate::batched_neuron::NonAuthorizingNativeBatchGroupV1, BatchWorkerErrorV1> {
+        if !self.original_evidence.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        if !self.owner.production_metrics_ready() && !self.owner.flush_production_metrics() {
+            return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+        }
+        if !self.original_evidence.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        self.owner
+            .prepare_pending_native_group_signature_v1(now_ms, ordered)
+    }
+
     /// First commit ALL preceding Admission Evidence, only then dequeue and
     /// enter Final-use. The original signed Worker already commits terminal
     /// Evidence before success publication and rechecks CNS/deadline after
