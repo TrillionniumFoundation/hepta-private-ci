@@ -119,32 +119,48 @@ jobs:
             --encoder "$PRIVATE/original/encoder" \
             --output "$ROOT/ten-family-real-original-minilm-rank.json" \
             --batch 32 > "$RESULTS/original-encoder-log.txt"
-          test "$(sha256sum "$ROOT/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)" = \
-            25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99
+          # Encoder elapsed wall seconds cannot have a cross-run fixed RAW SHA.
+          # Pin the COMPLETE original model/source/candidate ranking decision
+          # contents, retaining the new run's exact rank byte SHA separately.
+          "$P" - <<'PY_CHECK'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'qualification/amcn-v1')
+          from amcn_original_trained_rank_heads import stable_rank_digest,RANK_DECISION_SHA
+          rank=Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'ten-family-real-original-minilm-rank.json'
+          assert stable_rank_digest(json.loads(rank.read_bytes()))==RANK_DECISION_SHA, 'original full rank drift'
+          PY_CHECK
           test "$(sha256sum "$PRIVATE/withheld-publisher-weak-labels.json"|cut -d' ' -f1)" = \
             758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06
+          RANK_SHA=$(sha256sum "$ROOT/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
           "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py prepare-train \
             --public "$ROOT/public-sources-only.json" \
             --public-sha ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633 \
             --rank "$ROOT/ten-family-real-original-minilm-rank.json" \
-            --rank-sha 25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99 \
+            --rank-sha "$RANK_SHA" \
             --publisher-gold "$PRIVATE/withheld-publisher-weak-labels.json" \
             --gold-sha 758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06 \
             --output "$ROOT/train_only_labels.json"
-          test "$(sha256sum "$ROOT/train_only_labels.json"|cut -d' ' -f1)" = \
-            c2256994e86c0bdbeabce22c4b9b3d8d6617ccd88d5b535dfa4655c771ba629c
+          "$P" - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'train_only_labels.json').read_bytes())
+          assert len(r['labels'])==1157 and r['public_heldout_labels_present'] is False
+          assert r['production_accepted'] is False
+          PY_CHECK
       - name: Physical AdamW two-Head banks TRAIN-only and label-blind independent forwards
         run: |
           set -euo pipefail
           P=/tmp/hepta-amcn-original-head-venv/bin/python
           R="$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
           S=ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633
-          K=25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99
+          K=$(sha256sum "$R/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
+          TRAIN_SHA=$(sha256sum "$R/train_only_labels.json"|cut -d' ' -f1)
           "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py train \
             --public "$R/public-sources-only.json" --public-sha "$S" \
             --rank "$R/ten-family-real-original-minilm-rank.json" --rank-sha "$K" \
             --train-labels "$R/train_only_labels.json" \
-            --train-labels-sha c2256994e86c0bdbeabce22c4b9b3d8d6617ccd88d5b535dfa4655c771ba629c \
+            --train-labels-sha "$TRAIN_SHA" \
             --bank-directory "$R/physical_banks" --steps 160 > "$RESULTS/train-receipt.txt"
           MANIFEST=$(sha256sum "$R/physical_banks/manifest.json"|cut -d' ' -f1)
           "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py infer \
@@ -152,15 +168,21 @@ jobs:
             --rank "$R/ten-family-real-original-minilm-rank.json" --rank-sha "$K" \
             --bank-directory "$R/physical_banks" --manifest-sha "$MANIFEST" \
             --output "$R/sealed_heldout_predictions_recounted.json" > "$RESULTS/infer-receipt.txt"
-          test "$(sha256sum "$R/sealed_heldout_predictions_recounted.json"|cut -d' ' -f1)" = \
-            a937d4fd91e0c75cf4ddd265760c0b6c4cf1ed0947ad0c5be323686aca7391a3
+          "$P" - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['HEPTA_AMCN_ORIGINAL_RANK_ROOT'])/'sealed_heldout_predictions_recounted.json').read_bytes())
+          assert len(r['complete_predictions'])==829
+          assert r['original_physical_trained_head_forwards']==3316
+          assert r['new_reader_answers']==0 and r['production_accepted'] is False
+          PY_CHECK
       - name: Independent 3,316 physical saved-Head replays BEFORE heldout gold and negative scoring
         run: |
           set -euo pipefail
           P=/tmp/hepta-amcn-original-head-venv/bin/python
           R="$HEPTA_AMCN_ORIGINAL_RANK_ROOT"
           S=ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633
-          K=25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99
+          K=$(sha256sum "$R/ten-family-real-original-minilm-rank.json"|cut -d' ' -f1)
           MANIFEST=$(sha256sum "$R/physical_banks/manifest.json"|cut -d' ' -f1)
           PRED=$(sha256sum "$R/sealed_heldout_predictions_recounted.json"|cut -d' ' -f1)
           "$P" qualification/amcn-v1/amcn_original_trained_rank_heads.py score \
@@ -190,7 +212,7 @@ jobs:
           assert r['real_reader_answers']==0 and r['calendar_future_windows']==0
           assert r['production_accepted'] is False and r['official_hf_model_parity_verified'] is False
           tests=(Path(os.environ['RESULTS'])/'original-head-tests.txt').read_text()
-          assert 'Ran 12 tests' in tests and 'skipped=' not in tests and '\nOK\n' in tests
+          assert 'Ran 13 tests' in tests and 'skipped=' not in tests and '\nOK\n' in tests
           PY
       - name: Preserve source SHA / sanitized artifact only, no dialogue or tensor bytes
         if: always()

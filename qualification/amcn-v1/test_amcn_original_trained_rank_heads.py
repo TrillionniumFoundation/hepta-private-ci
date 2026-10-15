@@ -92,6 +92,18 @@ class RankHeadContracts(unittest.TestCase):
         self.assertNotEqual(r['learned_fp32_weights'],wrong['learned_fp32_weights'])
         self.assertEqual(r['minibatch_examples'],wrong['minibatch_examples'])
 
+    def test_elapsed_time_is_not_part_of_frozen_rank_decisions(self):
+        import json
+        packet={'case_predictions':[{'case_id':'family:0','ranked_source_ids':
+                                     {'bm25':['D1:1','D1:2']}}],
+                'original_encoder_wall_seconds':1.0,'original_query_count':1,
+                'original_encoder_sha256':e.SOURCE_SHA}
+        root=e.stable_rank_digest(packet)
+        packet['original_encoder_wall_seconds']=100000.0
+        self.assertEqual(e.stable_rank_digest(packet),root)
+        packet['case_predictions'][0]['ranked_source_ids']['bm25'].reverse()
+        self.assertNotEqual(e.stable_rank_digest(packet),root)
+
     def test_original_weak_census_is_read_only(self):
         self.assertEqual(e.SOURCE_SHA,'ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633')
         self.assertEqual(e.RANK_SHA,'25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99')

@@ -28,6 +28,7 @@ TYPES = ('episodic', 'semantic')
 VALID_SPLITS = ('train','select','retrospective_heldout_a','retrospective_heldout_b')
 SOURCE_SHA = 'ac5f95085e5b223f81e888236e2c162f1ef45a3d1f52ad3e903fde48a629a633'
 RANK_SHA = '25bd9754e1da4ee5ddf620e7f3c734f06650568278c6aab51916d55046baef99'
+RANK_DECISION_SHA = 'bd63d0555a8e5b0cde444023d40da4570987226451fb97a2284d0bd285614a66'
 GOLD_SHA = '758d951c2fb296c3ba23ef539e3f243fb8464d52ed0d42c8d0981943ac907a06'
 MAX_BYTES = 12_000_000
 TOP = 16
@@ -40,6 +41,26 @@ SOURCE_ID = re.compile(r'D(\d+):0*(\d+)$',re.I)
 def digest(value):
     return sha256(json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'),
                              allow_nan=False).encode()).hexdigest()
+
+
+def stable_rank_digest(packet):
+    """Full original model/source/per-question ranking identity, without wall time.
+
+    The archive's `original_encoder_wall_seconds` changes every physical run;
+    pinning its full original file SHA alone makes genuine replay impossible.
+    All other metadata and every source ID in all 1,986 ranked lists are bound.
+    This is a checksum, not an independent HF model/issuer endorsement.
+    """
+    require(isinstance(packet,dict) and
+            'original_encoder_wall_seconds' in packet and
+            type(packet['original_encoder_wall_seconds']) in (int,float),
+            'missing original wall-clock observation')
+    import math
+    require(math.isfinite(packet['original_encoder_wall_seconds']) and
+            packet['original_encoder_wall_seconds']>=0.,
+            'invalid original runtime observation')
+    return digest({k:v for k,v in packet.items()
+                   if k!='original_encoder_wall_seconds'})
 
 
 def file_sha(path):
@@ -93,7 +114,9 @@ def normalize_source(value):
 
 def load_source_and_rank(pub_path,pub_sha,rank_path,rank_sha):
     pub=pinned(pub_path,pub_sha);rank=pinned(rank_path,rank_sha)
-    require(pub_sha==SOURCE_SHA and rank_sha==RANK_SHA,'original frozen source/rank registry changed')
+    require(pub_sha==SOURCE_SHA, 'original frozen source registry changed')
+    require(stable_rank_digest(rank)==RANK_DECISION_SHA,
+            'original pretrained full 1,986-question model rank changed')
     require(pub.get('publisher_targets_not_included') is True and
             pub.get('production_accepted') is False and
             rank.get('training_or_publisher_gold_accessed') is False and
