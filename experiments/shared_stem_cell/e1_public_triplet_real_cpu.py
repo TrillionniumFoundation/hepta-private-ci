@@ -96,11 +96,11 @@ def encode_pretrained(cases,model,compact_dir,gemma_dir,manifest):
   tokens[key]=n;durations[key]=(time.perf_counter_ns()-start)/1e6
  return vectors,tokens,digests,{'load_ms':load_ms,'encode_ms_by_case':durations,
      'local_model_api_requests':len(cases),'physical_transformer_forward_count_attested':False,
-     'mmbert_pretrained_tied_checkpoint_sample_verified':(
-       backend.pretrained_weight_receipt['actual_local_tied_embedding_checkpoint_sample_checked']
+     'mmbert_pretrained_complete_tied_table_verified':(
+       backend.pretrained_weight_receipt['actual_local_full_tied_embedding_checkpoint_verified']
        if model=='mmbert_small' else None),
-     'mmbert_local_sample_sha256':(
-       backend.pretrained_weight_receipt['sample_sha256'] if model=='mmbert_small' else None)}
+     'mmbert_local_complete_table_sha256':(
+       backend.pretrained_weight_receipt['complete_table_sha256'] if model=='mmbert_small' else None)}
 def fit_heads(panel,model,vectors,*,seed=20261014,steps=40,lr=.15):
  import torch
  import torch.nn.functional as F
