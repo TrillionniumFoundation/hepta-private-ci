@@ -638,10 +638,12 @@ impl MetricsGroupCommitV1 {
     /// admission evidence for a proposed independent batch signature, NOT an
     /// executed-model receipt or an external anti-rollback signature.
     ///
-    /// A missing query is reported as None; a duplicate query, corrupt
-    /// group, torn marker or uncertain inode poisons this original writer.
-    /// Scanning is O(committed WAL + matches * log(cohort)), not one full
-    /// file scan per Neuron Cell. Never call on every inference tick.
+    /// A missing query is reported as None; invalid or duplicate caller
+    /// queries are rejected BEFORE touching disk and do NOT poison an
+    /// otherwise healthy original writer. Corrupt groups, torn markers or
+    /// uncertain inodes DO poison the original writer. Scanning is
+    /// O(committed rows * log(cohort)) after the original marker history
+    /// verification, never N complete file scans. Never call every tick.
     pub fn read_committed_samples(
         &mut self,
         queries: &[MetricsCommittedSampleQueryV1],
