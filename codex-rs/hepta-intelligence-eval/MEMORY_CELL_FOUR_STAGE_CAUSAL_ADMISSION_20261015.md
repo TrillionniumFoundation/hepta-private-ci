@@ -127,3 +127,21 @@ python3 -m unittest discover -s scripts/memory_cell -p 'test_memory_trial_indepe
 No independent human source sufficiency review or prospective reference Reader
 result is created by these changes; `production_qualified=false` and
 `blocking-ci` remain unchanged.
+
+### Salted answer commitments for low-entropy identifiers
+
+The exact-identifier gold has been hardened to
+`hepta.memory-cell.answer-commitment.nonce-v2`. The preregistered
+`answer_sha256` field now stores a **domain-separated SHA-256 commitment**
+over a unique, secret, nonzero 256-bit random nonce plus the answer bytes.
+The protected scorer-only label file supplies `{id, expected, nonce}`.
+All nonces must be unique and nonzero; absent schemes, reused nonces and
+modified answers fail closed. This avoids making short `site_`/`mode_` answers
+trivially enumerable from unsalted SHA-256 in a publicly exposed plan.
+Generate the real hidden nonces using a cryptographically secure random
+generator and keep them absent from the Reader/training material until
+original answers are durably closed. Test-fixture nonces are deterministic
+**only** for regression reproducibility and are not evaluation secrets.
+The verifier checks this structure; it cannot independently certify that
+a source plan was committed before exposure or that the nonce was truly
+kept secret. Production and independent-human review remain blocked.

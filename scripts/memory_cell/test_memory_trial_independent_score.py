@@ -1,13 +1,16 @@
 """Scoring tests only; authored fixtures have zero pretrained model executions."""
+import copy
 import hashlib
 import unittest
 
-from memory_trial_independent_score import score
+from factorial_evidence_gate import COST_KEYS
+from memory_trial_independent_score import COMMITMENT_SCHEME, commit_identifier, score
 from test_memory_trial_admission import fixture
 
 
 def prepare():
     plan, raw, old_scored = fixture()
+    plan["answer_commitment_scheme"] = COMMITMENT_SCHEME
     # One precommitted identifier per case; the original answers for other
     # arms/conditions remain independently generated distinct outputs.
     labels = []
@@ -19,8 +22,9 @@ def prepare():
         # make an isolated actual-answer analogue with strict identifier.
         selected["answer"] = "site_" + hashlib.sha256(case["id"].encode()).hexdigest()[:8]
         expected = selected["answer"]
-        case["answer_sha256"] = hashlib.sha256(expected.encode()).hexdigest()
-        labels.append(dict(id=case["id"], expected=expected))
+        nonce = hashlib.sha256(("fixture-nonce:" + case["id"]).encode()).hexdigest()
+        case["answer_sha256"] = commit_identifier(expected, nonce)
+        labels.append(dict(id=case["id"], expected=expected, nonce=nonce))
     for source, scored in zip(raw, old_scored, strict=True):
         source["cost"] = scored["cost"]
         source["diagnostic_count"] = scored["diagnostic_count"]
@@ -51,6 +55,24 @@ class ExactScoringTests(unittest.TestCase):
         plan, raw, labels = prepare()
         labels[0]["expected"] = "site_changed"
         with self.assertRaisesRegex(ValueError, "gold differs"):
+            score(plan, raw, labels)
+
+    def test_duplicate_nonce_rejected_before_label_hash(self):
+        plan, raw, labels = prepare()
+        labels[1]["nonce"] = labels[0]["nonce"]
+        with self.assertRaisesRegex(ValueError, "reused protected answer nonce"):
+            score(plan, raw, labels)
+
+    def test_all_zero_nonce_rejected(self):
+        plan, raw, labels = prepare()
+        labels[0]["nonce"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "zero or reused"):
+            score(plan, raw, labels)
+
+    def test_missing_commitment_scheme(self):
+        plan, raw, labels = prepare()
+        del plan["answer_commitment_scheme"]
+        with self.assertRaisesRegex(ValueError, "salted pre-exposure"):
             score(plan, raw, labels)
 
     def test_duplicate_protected_label(self):

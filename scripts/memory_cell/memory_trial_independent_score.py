@@ -27,6 +27,18 @@ PROGRAM_FIELDS = (
     "program_exit_code", "program_test_count", "program_tests_passed",
     "tool_trace_sha256",
 )
+COMMITMENT_SCHEME = "hepta.memory-cell.answer-commitment.nonce-v2"
+COMMITMENT_DOMAIN = b"hepta.memory-cell.exact-answer.v2\0"
+
+
+def commit_identifier(value, nonce):
+    """Bind a low-entropy identifier to a secret pre-exposure random nonce."""
+    ensure(isinstance(value, str) and hexsha(nonce) and nonce != "0" * 64,
+           "secret nonzero 256-bit label nonce required")
+    return hashlib.sha256(COMMITMENT_DOMAIN + bytes.fromhex(nonce)
+                          + b"\0" + value.encode("utf-8")).hexdigest()
+
+
 FORBIDDEN_ORIGINAL = frozenset((
     "success", "verified", "target", "expected", "gold", "gold_answer",
     "strict_task_success", "label", "answer_sha256",
@@ -50,6 +62,8 @@ def score(plan, originals, labels):
            "preregistered factorial plan required")
     ensure(isinstance(originals, list) and isinstance(labels, list),
            "original journal and protected label array required")
+    ensure(plan.get("answer_commitment_scheme") == COMMITMENT_SCHEME,
+           "salted pre-exposure answer commitment required")
     cases = plan.get("cases")
     ensure(isinstance(cases, list) and cases, "missing preregistered cases")
     by_case = {}
@@ -77,17 +91,20 @@ def score(plan, originals, labels):
     ensure(seen == expected, "incomplete original generation census")
     # Labels are a separate protected input; the plan contains their pre-exposure
     # SHA digests, not the literal answers. Any mismatch rejects the whole run.
-    targets = {}
+    targets, nonces = {}, set()
     for item in labels:
-        ensure(isinstance(item, dict) and set(item) == {"id", "expected"},
-               "protected label fields must be id and expected only")
-        cid, value = item["id"], item["expected"]
+        ensure(isinstance(item, dict) and set(item) == {"id", "expected", "nonce"},
+               "protected label fields must be id, expected and nonce")
+        cid, value, nonce = item["id"], item["expected"], item["nonce"]
         ensure(isinstance(cid, str) and cid in by_case and cid not in targets,
                "unexpected or duplicate protected label")
+        ensure(hexsha(nonce) and nonce != "0" * 64 and nonce not in nonces,
+               "absent, zero or reused protected answer nonce")
+        nonces.add(nonce)
         ensure(isinstance(value, str) and ANSWER.fullmatch(value) is not None
                and _answer(value) == value, "gold must be one exact identifier")
-        ensure(hashlib.sha256(value.encode("utf-8")).hexdigest()
-               == by_case[cid]["answer_sha256"], "gold differs from frozen plan")
+        ensure(commit_identifier(value, nonce) == by_case[cid]["answer_sha256"],
+               "gold differs from frozen plan")
         targets[cid] = value
     ensure(set(targets) == set(by_case), "incomplete protected label census")
     rows, derived_successes = [], 0
@@ -123,7 +140,9 @@ def score(plan, originals, labels):
         rows.append(scored)
     report = admit(plan, originals, rows, plan_pin=sha(plan), original_pin=sha(originals))
     report.update(
-        strict_scoring="precommitted-exact-identifier-with-program-receipt-v1",
+        strict_scoring="salted-precommitted-exact-identifier-with-program-receipt-v2",
+        answer_commitment_scheme=COMMITMENT_SCHEME,
+        salt_revealed_only_after_original_journal_verified=True,
         recomputed_strict_successes=derived_successes,
         labels_preexposure_hashes_checked=len(targets),
         generated_answer_mutation_permitted=False,
