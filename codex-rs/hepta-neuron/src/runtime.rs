@@ -389,6 +389,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
 
     /// Internal deterministic mechanism for qualification only; product
     /// serving must enter through the independently signed Final-use path.
+    #[cfg(test)]
     pub(crate) fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
