@@ -203,6 +203,21 @@ def validate_plan(plan: object) -> dict:
     return plan
 
 
+def require_reviewed_run_plan(plan: dict) -> dict:
+    """Keep direct 'run --plan' as restricted as the immutable prepare phase.
+
+    The plan's original file hashes and inventory are checked later against
+    the exact same Hub commit. This gate only prevents a pre-written,
+    otherwise valid plan from bypassing the research release allowlist.
+    """
+    validate_plan(plan)
+    candidate = plan["candidate"]
+    _require(candidate in PINNED_RELEASES
+             and plan["revision"] == PINNED_RELEASES[candidate],
+             "run plan is not the reviewed immutable public release")
+    return plan
+
+
 def strict_json(path: Path) -> dict:
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 8192:
         raise AdmissionError("missing or oversized plan")
@@ -366,7 +381,7 @@ def main(args=None) -> int:
             _write_new(opts.out,plan) # Must persist immutable revision BEFORE transfer.
             print(f"PINNED_NO_WEIGHTS_TRANSFERRED {plan['repo_id']}@{plan['revision']}")
             return 0
-        plan=strict_json(opts.plan)
+        plan=require_reviewed_run_plan(strict_json(opts.plan))
         _require(not opts.output.exists() and opts.output.parent.is_dir(),"new output required")
         opts.output.mkdir()
         _write_new(opts.output/"pinned-plan.json",plan)
