@@ -1,9 +1,9 @@
 """Freeze independent token verifiers/critics, then evaluate actual native control.
 
 Every arm uses raw argmax (ties negative) to isolate stopping from threshold
-selection. The frozen Reader was trained without verifier feedback; this study
-also measures that inference-time distribution change. No final labels fit the
-verifier, critic, cost profile, or stopping policy.
+selection. The frozen Reader ignores the feedback channel that received no
+training gradient. The verifier independently controls acceptance, never state.
+No final labels fit the verifier, critic, cost profile, or stopping policy.
 """
 import argparse
 import json
@@ -28,6 +28,26 @@ ARMS = ("fixed1", "fixed3", "native_ndu", "no_verifier", "reset3")
 COHORTS = ("full", "deleted")
 
 
+class ZeroFeedbackReader(TokenReader):
+    """Preserve trained weights while disabling the untrained feedback inputs."""
+
+    def step_prepared(self, prepared, state=None, feedback=None):
+        return super().step_prepared(prepared, state=state, feedback=None)
+
+
+def load_reader(folder, manifest):
+    original = load_models(folder, manifest)["recurrent"]
+    model = ZeroFeedbackReader(original.input_dim, original.hidden_dim,
+        max_hops=original.max_hops, max_facts=original.max_facts,
+        max_tokens=original.max_tokens, interaction=original.interaction)
+    model.load_state_dict(original.state_dict(), strict=True)
+    model.eval().requires_grad_(False)
+    model.training_source_groups = tuple(original.training_source_groups)
+    if parameter_digest(model) != parameter_digest(original):
+        raise ValueError("disabling feedback changed trained Reader parameters")
+    return model
+
+
 def native_inventory():
     return {**inventory(), Path(__file__).name: file_digest(__file__)}
 
@@ -42,7 +62,8 @@ def profile_bounds(model, verifier, receipts):
         duration_upper_ns=max(100_000_000, 4 * max(row["wall_ns"] for row in maxima)),
         formula_work_cap=10**13, wall_time_ns=30_000_000_000, request_ttl_ns=60_000_000_000,
         cost_per_formula_flop=1e-10, cost_per_latency_ns=1e-11,
-        discount_rate_per_second=0., minimum_margin=0.)
+        discount_rate_per_second=0., minimum_margin=0.,
+        reader_feedback_policy="disabled_untrained_channel", reader_execution_policy_sha256=file_digest(__file__))
 
 
 def load_critic(folder, artifact):
@@ -89,7 +110,8 @@ def train(args):
                       batch_size=16, evidence_weight=0., counterfactual_train=False),
         critic=dict(steps=80, target="empirical_next_argmax_correctness", threshold_selection=False),
         prediction_rule="argmax_ties_negative_for_all_arms", reader_training_feedback=False,
-        verifier_feedback_distribution_shift_measured=True, verifier_acceptance_is_semantic_truth=False,
+        reader_feedback_policy="disabled_untrained_channel", verifier_used_for_stop_not_state=True,
+        verifier_feedback_enters_reader_state=False, verifier_acceptance_is_semantic_truth=False,
         cost_bounds="four_times_observed_maximum_complete_trajectory_wall_floor_100ms",
         design_frozen_before_fitting_ns=time.time_ns(), official_validation_labels_used_for_fitting=False,
         strict_equal_compute=False, hosted_ci_consulted=False, production_authorized=False)
@@ -99,7 +121,7 @@ def train(args):
     for seed in SEEDS:
         folder = root / f"seed-{seed}"
         folder.mkdir()
-        model = load_models(args.campaign / f"seed-{seed}", manifests[seed])["recurrent"]
+        model = load_reader(args.campaign / f"seed-{seed}", manifests[seed])
         torch.manual_seed(seed)
         verifier, receipt = fit_token_reader(TokenReader(384, 32), bank.dataset(parts["verifier_fit"]),
             steps=args.steps, seed=seed, batch_size=16, max_depth=1, learning_rate=.001,
@@ -195,7 +217,7 @@ def evaluate(args):
         if file_digest(folder / "artifacts.json") != frozen["artifact_manifests_sha256"][str(seed)]:
             raise ValueError("native model selection changed after freeze")
         artifact = json.loads((folder / "artifacts.json").read_text())
-        model = load_models(args.campaign / f"seed-{seed}", manifests[seed])["recurrent"]
+        model = load_reader(args.campaign / f"seed-{seed}", manifests[seed])
         verifier_path = folder / artifact["verifier"]["file"]
         if file_digest(verifier_path) != artifact["verifier"]["file_sha256"]:
             raise ValueError("frozen verifier file changed")

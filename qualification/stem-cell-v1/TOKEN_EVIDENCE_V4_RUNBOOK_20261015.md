@@ -85,11 +85,21 @@ Before calling `token_campaign.py evaluate`, train/freeze the native campaign:
   --native-binary "$native" --output "$work/native" --steps 1000
 ```
 
-Its
-verifier uses eight additional source paragraphs; critic fitting and calibration
+Its verifier uses eight additional source paragraphs; critic fitting and calibration
 each use eight further disjoint paragraphs. Native control uses a frozen
 next-correctness surrogate. It is not a general FBSDE solver or certified future
 gain estimate. All native comparison arms use the same argmax decision rule.
+
+The main Reader was fitted with zero feedback, leaving its feedback weight
+columns at their initial values. Before native fitting or fresh evaluation, the
+native CLI therefore wraps every loaded main Reader in `ZeroFeedbackReader`.
+This preserves the exact parameter digest and always passes `feedback=None` to
+the original state update. The policy is `disabled_untrained_channel`; verifier
+observations control acceptance/stopping and never correct the Reader state.
+The critic still consumes six state/logit/step features, not verifier
+probabilities. Under this policy, fixed3/no-verifier Reader predictions should
+match; their measured verification cost can differ. Main runtime sources remain
+unchanged; only the separately frozen native CLI supplies this wrapper.
 
 ```bash
 "$python" qualification/stem-cell-v1/token_campaign.py evaluate \
