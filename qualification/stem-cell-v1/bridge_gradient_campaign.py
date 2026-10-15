@@ -19,10 +19,10 @@ from binding_protocol import retention_gate
 from bridge_campaign_utils import (SEEDS, checked_design, load_bank, load_model,
                                    save_model, source_inventory, write)
 from binding_campaign_utils import binding_panel, natural_panel
-from bridge_gradient_guard import ARMS, continue_candidate
+from bridge_gradient_guard import ARMS, OLD_TASK, NEW_TASK, continue_candidate
 from group_encoder import file_digest
 
-SCHEMA = "hepta.bridge.gradient-campaign.v7"
+SCHEMA = "hepta.bridge.gradient-campaign.v7.1"
 
 
 def run(args):
@@ -56,7 +56,9 @@ def run(args):
         original_runtime_sha256=source_inventory(),
         candidate_guard_source_sha256=file_digest(Path(__file__).with_name("bridge_gradient_guard.py")),
         candidate_campaign_source_sha256=file_digest(Path(__file__)),
-        original_pretrained_snapshots_verified_by_original_V6=True,
+        original_source_validation_scope="original_V6_checked_design_and_cached_features",
+        original_pretrained_snapshots_independently_authenticated=False,
+        task_roles={"old": OLD_TASK, "new": NEW_TASK},
         source_training_only=True, official_validation_unopened=True,
         final_use_authorized=False, production_authorized=False))
     results = {}
@@ -86,16 +88,18 @@ def run(args):
                 candidate, receipt = continue_candidate(parent, natural_train, binding,
                     parts["reader_train"], arm=arm, plan=plan,
                     original_natural_cases=natural["train"])
-                if (receipt["optimizer_steps"] != 500 or
-                        receipt["actual_reader_forwards"] != 1000 or
-                        receipt["actual_backward_calls"] != 1000):
+                if (receipt["attempted_optimizer_steps"] != 500 or
+                        receipt["accepted_optimizer_steps"] + receipt["rejected_optimizer_steps"] != 500 or
+                        receipt["actual_reader_forwards"] != 1500 or
+                        receipt["actual_backward_calls"] != 1000 or
+                        receipt["old_task"] != OLD_TASK or receipt["new_task"] != NEW_TASK):
                     raise RuntimeError("candidate full train work was incomplete")
                 save_model(folder, "candidate", candidate, receipt, seed=seed,
                            initial_digest=manifest["execution_parameter_sha256"])
-                metrics = binding_panel(folder, "old-task-train", candidate,
+                metrics = binding_panel(folder, "old-binding-train", candidate,
                                         parts["reader_train"], bank)
                 retained = retention_gate(metrics, baseline)
-                natural_metrics = natural_panel(folder, "new-task-internal-tune", candidate,
+                natural_metrics = natural_panel(folder, "new-natural-internal-tune", candidate,
                                                natural["tune"], bank)
                 write(folder, "descriptive.json", dict(arm=arm, seed=seed,
                     old_training_retention=retained, new_internal_tune=natural_metrics,
@@ -104,6 +108,8 @@ def run(args):
                     model_selected=False, production_authorized=False))
                 results[f"{seed}/{arm}"] = dict(retained_train_only=retained["passed"],
                     model_sha256=receipt["final_model_sha256"],
+                    accepted_optimizer_steps=receipt["accepted_optimizer_steps"],
+                    rejected_optimizer_steps=receipt["rejected_optimizer_steps"],
                     actual_cpu_ns=receipt["cpu_ns"], actual_wall_ns=receipt["wall_ns"],
                     old_train_rows=receipt["old_train_rows"],
                     new_train_rows=receipt["new_train_rows"])
@@ -117,6 +123,8 @@ def run(args):
         cpu_ns=time.process_time_ns()-start_cpu,
         wall_ns=time.perf_counter_ns()-start_wall,
         result_status="DESCRIPTIVE_TRAIN_ONLY", source_disjoint_future_windows=0,
+        task_roles={"old": OLD_TASK, "new": NEW_TASK},
+        original_source_validation_scope="original_V6_checked_design_and_cached_features",
         old_task_future_retention_verified=False, generalization_verified=False,
         original_v6_scientific_gate_superseded=False,
         cell_split_authorized=False, model_selected=False, native_ndu_admitted=False,

@@ -1,3 +1,9 @@
+# Historical V7 protocol (superseded)
+
+**Correction (2026-10-15):** V7 mistakenly identified `natural` as the old task and `binding` as the new task. The frozen V6 warmup in fact trains `binding`; the new continuation task is `natural`. Do not treat V7 gradient projection or its scientific claims as old-binding protection. The corrected executable and independent review protocol is in [`GRADIENT_CONTINUATION_V7_1.md`](GRADIENT_CONTINUATION_V7_1.md).
+
+---
+
 # V7 shared-Stem Bridge continuation: gradient-conflict mechanism
 
 **Status:** research / SHADOW_ONLY / DENY_ALL / no Stem or Cell promotion.
