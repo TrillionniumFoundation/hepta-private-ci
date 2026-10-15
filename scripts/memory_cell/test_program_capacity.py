@@ -111,6 +111,23 @@ class OriginalProgramReaderTests(unittest.TestCase):
   records=[json.loads(x) for x in V2.read_bytes().splitlines()];records[1]['model_sha256']='0'*64
   self.reject_rows(records,'unbound original request or model')
 
+ def test_v2_missing_or_modified_stage_fails_before_model_load(self):
+  with tempfile.TemporaryDirectory() as td:
+   stage=Path(td)/'wrong-stage';stage.mkdir()
+   (stage/'model.safetensors').write_bytes(b'forged model')
+   (stage/'tokenizer.json').write_bytes(b'forged tokenizer')
+   out=Path(td)/'run'
+   with self.assertRaisesRegex(ValueError,'original v2 Reader model or tokenizer SHA mismatch'):
+    stage2.generate(self.plan,self.proto,stage,out)
+   self.assertFalse(out.exists())
+
+ def test_v2_missing_stage_refused_with_no_output(self):
+  with tempfile.TemporaryDirectory() as td:
+   stage=Path(td)/'not-present';out=Path(td)/'run'
+   with self.assertRaisesRegex(ValueError,'registered Reader stage directory required'):
+    stage2.generate(self.plan,self.proto,stage,out)
+   self.assertFalse(out.exists())
+
  def test_wrong_prompt_profile_rejected(self):
   altered=dict(self.proto);altered['frozen_system_prompt']='Use the label.'
   with self.assertRaisesRegex(ValueError,'wrong v2 prompt profile'):

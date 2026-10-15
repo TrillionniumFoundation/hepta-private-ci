@@ -35,9 +35,13 @@ def protocol(plan_sha):
 def generate(plan,proto,stage,out):
  require(proto==protocol(digest(core.CANON(plan))),'changed frozen v2 prompt profile')
  require(not out.exists(),'no original model journal overwrite')
+ require(stage.is_dir() and not stage.is_symlink(), 'registered Reader stage directory required')
+ for name, expected in (('model.safetensors', WEIGHT_SHA), ('tokenizer.json', TOKENIZER_SHA)):
+  candidate = stage / name
+  require(candidate.is_file() and not candidate.is_symlink() and filehash(candidate) == expected,
+          'original v2 Reader model or tokenizer SHA mismatch')
  torch.set_num_threads(3)
  tok=ReaderTokenizer(stage/'tokenizer.json');model=ReaderModel(stage)
- assert filehash(stage/'model.safetensors')==WEIGHT_SHA
  out.mkdir(parents=True)
  rows=[]
  with (out/'original-generation.jsonl').open('x') as f:
