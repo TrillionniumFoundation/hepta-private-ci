@@ -50,7 +50,7 @@ jobs:
           fi
           mkdir -p "$PUBLIC" "$OWNER"
           git rev-parse HEAD | tee "$PUBLIC/head.txt"
-          sha256sum "$ROOT"/e25_*.py "$ROOT"/e25_frozen_policy.json > "$PUBLIC/e25-source-sha256.txt"
+          sha256sum "$ROOT"/e25_*.py "$ROOT"/test_e25_*.py "$ROOT"/e25_frozen_policy.json > "$PUBLIC/e25-source-sha256.txt"
           python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
       - name: Acquire original successful pretrained research archive before opening new source material
         shell: bash
@@ -130,6 +130,24 @@ jobs:
           cp /tmp/hepta-e25-generated-owner/human-labels.json "$OWNER/"
           test -s "$PUBLIC/source.json" && test -s "$OWNER/human-labels.json"
           test ! -e "$PUBLIC/human-labels.json"
+          python - "$PUBLIC/source.json" "$PUBLIC/blind_slate.json" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          source=json.loads(Path(sys.argv[1]).read_text())
+          slate=json.loads(Path(sys.argv[2]).read_text())
+          ids=sorted(x['source_group'] for x in slate['rows'])
+          expected=hashlib.sha256(json.dumps(ids,separators=(',',':')).encode()).hexdigest()
+          assert len(ids)==6 and len(set(ids))==6
+          assert source['full_unused_source_census_before_model'] is True
+          assert source['source_issuer_independently_authenticated'] is False
+          assert source['eligible_unused_passage_count_verified']==6
+          assert source['eligible_unused_distinct_text_count_verified']==6
+          assert source['eligible_unused_group_set_sha256']==expected
+          assert source['new_source_groups']==[p['source_group'] for p in slate['rows']]
+          assert source['selection_uses_labels_or_predictions'] is False
+          assert source['production_accepted'] is False
+          print('EXHAUSTIVE_ORIGINAL_SIX_ELIGIBLE_SOURCE_ONLY / DENY_ALL')
+          PY
           sha256sum "$PUBLIC"/*.json > "$PUBLIC/original-public-sha256.txt"
           sha256sum "$OWNER"/*.json > "$OWNER/original-human-sha256.txt"
       - uses: actions/upload-artifact@v4

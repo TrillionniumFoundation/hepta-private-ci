@@ -73,10 +73,17 @@ def synthetic_six():
              for i,row in enumerate(index)]
     new=dict(schema='hepta.multirc.original-question-complete-candidates.v1',
              source_panel_id='a'*64,slate_id='b'*64,rows=slate)
+    group_set_digest=sha256(json.dumps(sorted(p['source_group'] for p in slate),
+                                     separators=(',',':')).encode()).hexdigest()
     source=dict(new_candidate_count=len(index),new_question_count=12,
          new_source_groups=[x['source_group'] for x in slate],
          original_archive_sha256=original_sha(),original_source_head=ORIGINAL_SOURCE_HEAD,
          selection_uses_labels_or_predictions=False,future_time_or_independent_family=False,
+         eligible_unused_passage_count_verified=6,
+         eligible_unused_distinct_text_count_verified=6,
+         full_unused_source_census_before_model=True,
+         source_issuer_independently_authenticated=False,
+         eligible_unused_group_set_sha256=group_set_digest,
          production_accepted=False)
     owner=deepcopy(old);owner['actual_eval_encoder_calls']=6;owner['panel_id']='a'*64
     return audit,source,new,owner
@@ -96,6 +103,18 @@ class E25FrozenSourceContracts(unittest.TestCase):
 
     def test_original_archived_model_sha_is_real(self):
         self.assertEqual(original_sha(),self.config['model_archive_sha256'])
+
+    def test_original_real_historical_archive_has_exactly_ten_eligible_source_passages(self):
+        # True original pretrained ZIP bytes, but NO new six-passage logits
+        # or human validation labels are accessed in this diagnostic.
+        with ZipFile(ORIGINAL) as z:
+            archive=json.loads(z.read('multirc-material/MATERIAL.json'))
+        validation=archive['material_admission']['validation']
+        self.assertEqual((validation['eligible_passages'],
+                          validation['eligible_distinct_texts']), (10,10))
+        self.assertEqual(archive['total_selected_validation_passages'],4)
+        self.assertEqual(validation['raw_passages'],83)
+        self.assertEqual(validation['raw_rows'],4848)
 
     def test_historical_training_source_and_new_group_division(self):
         self.assertEqual(len(old_source_groups(ORIGINAL)),4)
@@ -153,6 +172,18 @@ class E25FrozenSourceContracts(unittest.TestCase):
     def test_source_observation_missing_group_rejected(self):
         src=deepcopy(self.source);src['new_source_groups'].pop()
         with self.assertRaises(ValueError):geometry(self.audit,src,self.slate,self.owner,ORIGINAL)
+
+    def test_forged_six_source_census_is_denied_before_reader_scoring(self):
+        for key,value in (
+                ('eligible_unused_passage_count_verified',5),
+                ('eligible_unused_distinct_text_count_verified',7),
+                ('full_unused_source_census_before_model',False),
+                ('source_issuer_independently_authenticated',True),
+                ('eligible_unused_group_set_sha256','f'*64)):
+            source=deepcopy(self.source)
+            source[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                geometry(self.audit,source,self.slate,self.owner,ORIGINAL)
 
     def test_source_new_pretrained_evidence_required(self):
         audit=deepcopy(self.audit);audit['shared_evidence_encoder_calls']=0

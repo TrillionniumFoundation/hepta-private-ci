@@ -51,6 +51,8 @@ def synthetic_parquet_and_slate():
                     audit['predictions'][arm][j]['source_group']=sourceid
                     audit['predictions'][arm][j]['task_id']=new['task_id']
     source['new_source_groups']=[p['source_group'] for p in slate['rows']]
+    source['eligible_unused_group_set_sha256']=sha256(
+        json.dumps(sorted(source['new_source_groups']),separators=(',',':')).encode()).hexdigest()
     ownerlabels={'schema':'hepta.multirc.candidate-slate-owner-labels.v1',
                  'slate_id':slate['slate_id'],'external_observer_authenticated':False,
                  'labels':labels}
@@ -141,6 +143,29 @@ class TruthSeparationTest(unittest.TestCase):
                 self.assertEqual(rec['methods']['mean_pool_query_fused']['total_questions'],12)
                 self.assertFalse(rec['production_accepted'])
                 self.assertFalse(rec['statistical_superiority_established'])
+
+    def test_held_human_score_denies_mismatched_prelabel_source_census(self):
+        audit,source,slate,owner,rows,labels=synthetic_parquet_and_slate()
+        result=propose(audit,source,slate,owner,self.config,ORIGINAL)
+        result['eligible_unused_group_set_sha256']='0'*64
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);parquet=root/'fake-test.parquet'
+            parquet.write_bytes(b'FAKE SOURCE TEST ONLY')
+            def dump(name,value):
+                path=root/name
+                path.write_text(json.dumps(value,sort_keys=True))
+                return path
+            blind=dump('blind.json',result)
+            stored_audit=dump('audit.json',audit)
+            stored_slate=dump('slate.json',slate)
+            owner_labels=dump('owner.json',labels)
+            with patch.dict(sys.modules,self.src(rows)),patch(
+                'e25_independent_score.VAL_SHA',sha256(parquet.read_bytes()).hexdigest()
+            ):
+                with self.assertRaisesRegex(ValueError,'physical source or authority'):
+                    review(str(blind),sha256(blind.read_bytes()).hexdigest(),
+                           str(stored_audit),str(stored_slate),POLICY,
+                           str(owner_labels),str(parquet))
 
     def test_forged_blind_probability_rejected_by_independent_math(self):
         audit,source,slate,owner,rows,labels=synthetic_parquet_and_slate()
