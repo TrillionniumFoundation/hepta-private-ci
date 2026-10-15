@@ -110,6 +110,9 @@ class PairedReviewTests(unittest.TestCase):
             self.assertTrue(reviewed["complete_group_replay"])
             self.assertFalse(reviewed["future_task_efficacy_proved"])
             self.assertFalse(reviewed["real_host_execution_independently_attested"])
+            self.assertEqual(reviewed["descriptive_paired"]["test"]["rescued"], 0)
+            self.assertEqual(reviewed["descriptive_paired"]["test"]["harmed"], 0)
+            self.assertFalse(reviewed["descriptive_paired"]["long"]["equal_total_compute_demonstrated"])
 
     def test_reject_prediction_cost_binding_and_missing_arm(self):
         with tempfile.TemporaryDirectory() as tmp:
