@@ -1026,7 +1026,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::FeatureContract);
         }
         let head_id = selected_head.head_model_id.as_str();
-        let loaded = self.models.get(&head_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get(head_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.manifest.weights_digest != selected_head.head_weights_digest.to_string()
             || authorization.model_digest != loaded.manifest.model_digest
             || authorization.reservation_model_digest != loaded.manifest.model_digest
