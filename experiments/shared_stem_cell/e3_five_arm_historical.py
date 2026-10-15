@@ -149,6 +149,25 @@ def compose(original, ocr, native, *, original_sha, ocr_sha, native_sha):
            native.get("train_only_head_updates") == 80 and
            native.get("future_labels_visible") is False,
            "native multimodal evaluation/Head training not qualified")
+    # Text-only tokenizer counts are bounded before model.encode, but actual
+    # image-patch/token use remains non-attested. Reject invented media attestations.
+    budget = native.get("preencode_text_image_budget")
+    demand(type(budget) is dict and
+           budget.get("registered_context_tokens") == 8192 and
+           budget.get("reserved_default_image_tokens") == 280 and
+           budget.get("reserved_misc_tokens") == 128 and
+           budget.get("complete_text_tokenizer_truncation_disabled") is True and
+           budget.get("actual_model_image_token_count_attested") is False and
+           budget.get("original_model_internal_forward_count_attested") is False and
+           budget.get("production_accepted") is False and
+           budget.get("authority") == "DENY_ALL",
+           "no authenticated native text preforward truncation preflight")
+    for key, reserved in (("maximum_plain_text_tokens", 128),
+                          ("maximum_joint_pre_media_tokens", 408),
+                          ("maximum_choice_tokens", 128)):
+        count = budget.get(key)
+        demand(type(count) is int and 0 < count <= 8192-reserved,
+               "native token count outside original no-truncation budget: " + key)
     refs = original.get("predictions")
     demand(type(refs) is list and len(refs) == 64, "original paired heldout missing")
     result, ids = [], set()
