@@ -258,13 +258,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         // These are still UNSIGNED telemetry facts; this is only a necessary
         // prerequisite to proposing a group for an independent issuer, NOT
         // an exactly-once physical effect receipt or authority.
-        let committed = self.original_evidence.read_local_frontier()
+        let committed = self
+            .original_evidence
+            .read_local_frontier()
             .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
         if committed.sequence == 0 || committed.committed_rows == 0 {
             return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
         }
         for (id, key) in ordered {
-            let row = self.original_evidence
+            let row = self
+                .original_evidence
                 .read_committed_sample(MetricsCommittedSampleQueryV1 {
                     scope_digest: codex_hepta_types::Digest32::of_bytes(
                         key.scope_id.as_str().as_bytes(),
@@ -276,9 +279,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
                     succeeded: true,
                 })
                 .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
-            if !row.is_some_and(|sample| {
-                sample.matching_rows == 1 && sample.frontier == committed
-            }) {
+            if !row.is_some_and(|sample| sample.matching_rows == 1 && sample.frontier == committed)
+            {
                 return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
             }
         }
