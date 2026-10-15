@@ -47,3 +47,21 @@ Existing offline source-matrix tests can still use synthetic commits through
 `make_plan`; they are not trusted production execution entrances.
 This is a fail-closed source-identity fix, not learning or model-quality
 evidence. Authority stays `DENY_ALL`.
+
+## V17: Read-only physical checkpoint-header evidence
+
+The source-approved, fully downloaded and hashed safetensors material now
+gets an independent **read-only tensor-header census** BEFORE Transformers
+loading. The census records whether the checkpoint contains
+`model.embeddings.tok_embeddings.weight` and/or `decoder.weight`, their exact
+on-disk shapes/dtypes, a SHA-256 of the full tensor-name/shape inventory,
+original snapshot identity and research-only DENY_ALL posture. It reads
+safetensors *headers*, not tensor data, and rehashes declared shard files.
+
+The resulting `tensor-header-audit.json` is retained even if a subsequent
+HF model load fails. This distinguishes a missing source embedding from a
+model loader that left a saved embedding on the Meta Device, without resorting
+to `to_empty`, randomized weights, a pickle conversion or silent partial
+model acceptance. Existing V11 tied alias, exact loaded-value verification,
+tokenizer bounds and post-forward rehash remain the sole physical admission
+mechanisms. The V17 local five-test header suite uses synthetic tensors only.
