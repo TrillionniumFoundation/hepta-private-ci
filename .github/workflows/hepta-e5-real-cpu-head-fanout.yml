@@ -31,6 +31,7 @@ jobs:
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: 'psutil==7.2.2'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
       - name: Exact current-source CPU mechanism tests
         run: |
