@@ -144,7 +144,7 @@ def review(root):
             or encoder["actual_forward_calls"] <= 0):
         raise ValueError("teacher or physical Encoder receipt mismatch")
     training = report["training"]
-    if (set(training) != set(ARMS)
+    if (set(training) != set(DIRECT)
             or training["core"]["sample_and_depth_sha256"] !=
                training["attention"]["sample_and_depth_sha256"]
             or training["core"]["parameter_count"] != training["attention"]["parameter_count"]
@@ -153,7 +153,7 @@ def review(root):
             or training["attention"]["attention_target_sha256"] !=
                teacher["teacher_tensor_sha256"]):
         raise ValueError("paired training schedule or teacher digest mismatch")
-    for name in ARMS:
+    for name in DIRECT:
         receipt = training[name]
         if (receipt["status"] != "completed" or
                 receipt["completed_steps"] != protocol["steps"] or
