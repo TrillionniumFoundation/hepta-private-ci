@@ -20,7 +20,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hepta-e3-five-arm-contract-${{ github.sha }}
+  group: hepta-e3-five-arm-contract-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   fail-closed-source-contract:
