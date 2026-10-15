@@ -182,5 +182,4 @@ def main():
         candidate_rows=len(result['neural_observations']),
         symbolic=result['symbolic_observations'],authority=result['authority'])))
 
-
 if __name__=='__main__':main()
