@@ -177,7 +177,7 @@ def run(snapshot: Path, images: Path, input_path: Path, input_sha: str, phase: s
     config = json.loads((snapshot / "config.json").read_bytes(), object_pairs_hook=_unique)
     if config.get("model_type") != "dinov2" or config.get("hidden_size") != 384:
         raise Rejected("unapproved architecture")
-    processor = AutoImageProcessor.from_pretrained(str(snapshot), local_files_only=True, trust_remote_code=False)
+    processor = AutoImageProcessor.from_pretrained(str(snapshot), local_files_only=True, trust_remote_code=False, use_fast=False)
     model = AutoModel.from_pretrained(str(snapshot), local_files_only=True,
                                       trust_remote_code=False, use_safetensors=True).eval().cpu()
     _verify_saved_state(snapshot, model)
