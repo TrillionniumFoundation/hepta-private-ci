@@ -1,0 +1,182 @@
+name: Hepta E22 eight-arm original-human complete-question score (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e22_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e22_*.py'
+      - 'qualification/shared-stem-system2-architecture/E22_*.md'
+      - '.github/workflows/hepta-e22-original-human-eight-arm-question.yml'
+      - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  label-blind-original-pretrained-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e22-blind-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze exact source profile before original evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          if [[ '${{ github.event_name }}' == pull_request && '${{ matrix.profile }}' == source_head ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e22_*.py "$ROOT"/test_e22_*.py > "$OUTPUT/original-source-sha256.txt"
+      - name: Download ONLY byte-pinned original unlabeled model and heldout forecasts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python "$ROOT/e22_artifact_fetch.py" --stage blind \
+            --out /tmp/hepta-e22-blind-inputs --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/original-source-acquisition.txt"
+          test ! -e /tmp/hepta-e22-original-human-validation.parquet
+          test ! -e /tmp/hepta-e22-human-e16-score.json
+      - name: Actual original-pretrained blind-only test contracts normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e22_blind*.py' -v \
+            > "$OUTPUT/original-blind-tests.txt" 2>&1 || { cat "$OUTPUT/original-blind-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e22_blind*.py' -v \
+            > "$OUTPUT/original-blind-tests-O.txt" 2>&1 || { cat "$OUTPUT/original-blind-tests-O.txt"; exit 1; }
+          grep -F 'Ran 17 tests' "$OUTPUT/original-blind-tests.txt"
+          grep -F 'Ran 17 tests' "$OUTPUT/original-blind-tests-O.txt"
+          if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$OUTPUT"/*tests*.txt; then exit 1; fi
+      - name: Produce create-only eight-arm model predictions BEFORE human truth exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for i in 0 1 2 3; do
+            e15="HEPTA_E22_E15_FOLD_$i"
+            e16="HEPTA_E22_E16_FOLD_$i"
+            args+=("--e15-$i" "${!e15}" "--e16-$i" "${!e16}")
+          done
+          python "$ROOT/e22_e16_question_gate.py" --original "$HEPTA_E22_ARCHIVE" \
+            "${args[@]}" --out "$OUTPUT/original-blind-e22.json" \
+            | tee "$OUTPUT/original-blind-source-seal.txt"
+          sha256sum "$OUTPUT/original-blind-e22.json" > "$OUTPUT/original-blind-e22.sha256"
+          test ! -e /tmp/hepta-e22-original-human-validation.parquet
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e22-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e22-blind-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  post-seal-independent-original-human-score:
+    needs: label-blind-original-pretrained-models
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e22-human-${{ matrix.profile }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e22-original-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e22-pinned-sealed-blind
+      - name: Freeze score process and verify prior sealed original predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/source-head.txt"
+          test -s /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.json
+          expected="$(cut -d ' ' -f1 /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.sha256)"
+          printf '%s  %s\n' "$expected" /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.json | sha256sum -c -
+      - name: Acquire original human owner material ONLY after blind seal verified
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python "$ROOT/e22_artifact_fetch.py" --stage full \
+            --out /tmp/hepta-e22-scoring-original-inputs --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/scoring-original-archives.txt"
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from hashlib import sha256
+          from pathlib import Path
+          import shutil
+          x=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+              revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+              filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(x.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('original human label bytes do not match preregistration')
+          shutil.copyfile(x,'/tmp/hepta-e22-original-human-validation.parquet')
+          PY
+      - name: Re-run all ten E22 source-bound score/tamper tests normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e22_human_contract.py' -v \
+            > "$OUTPUT/independent-contract-tests.txt" 2>&1 || { cat "$OUTPUT/independent-contract-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e22_human_contract.py' -v \
+            > "$OUTPUT/independent-contract-tests-O.txt" 2>&1 || { cat "$OUTPUT/independent-contract-tests-O.txt"; exit 1; }
+          grep -F 'Ran 10 tests' "$OUTPUT/independent-contract-tests.txt"
+          grep -F 'Ran 10 tests' "$OUTPUT/independent-contract-tests-O.txt"
+          if grep -E '^.+\.\.\. skipped |FAILED |ERROR:' "$OUTPUT"/*tests*.txt; then exit 1; fi
+      - name: Independently re-train E16 real-label Heads; score ALL original 8 questions
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for i in 0 1 2 3; do
+            e15="HEPTA_E22_E15_FOLD_$i"
+            e16="HEPTA_E22_E16_FOLD_$i"
+            args+=("--e15-$i" "${!e15}" "--e16-$i" "${!e16}")
+          done
+          python "$ROOT/e22_independent_human_score.py" \
+            --original "$HEPTA_E22_ARCHIVE" "${args[@]}" \
+            --blind /tmp/hepta-e22-pinned-sealed-blind/original-blind-e22.json \
+            --validation /tmp/hepta-e22-original-human-validation.parquet \
+            --e15-source "$HEPTA_E22_E15_SCORE_SOURCE" \
+            --e15-merge "$HEPTA_E22_E15_SCORE_MERGE" \
+            --e16-source "$HEPTA_E22_E16_SCORE_SOURCE" \
+            --e16-merge "$HEPTA_E22_E16_SCORE_MERGE" \
+            --out "$OUTPUT/independent-human-whole-question-e22.json" \
+            | tee "$OUTPUT/independent-human-score-seal.txt"
+          sha256sum "$OUTPUT/independent-human-whole-question-e22.json" > "$OUTPUT/human-review-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e22-independent-original-human-${{ matrix.profile }}
+          path: /tmp/hepta-e22-human-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
