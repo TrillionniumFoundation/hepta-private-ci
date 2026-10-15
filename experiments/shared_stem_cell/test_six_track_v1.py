@@ -223,6 +223,33 @@ class SixTrackValidation(unittest.TestCase):
     def test_cross_split_source(self):
         self.rejected(lambda d: d["cases"][16].update(source_group=d["cases"][0]["source_group"]), "leakage")
 
+    def test_same_task_instance_cannot_cross_train_future_even_with_new_bytes(self):
+        # Same task instance dressed as a new source family and input is not
+        # an independent future evaluation question.
+        self.rejected(lambda d: d["cases"][48].update(
+            task_id=d["cases"][0]["task_id"]),
+            "task instance identity reused across temporal cohorts")
+
+    def test_same_task_instance_cannot_cross_future_ood(self):
+        self.rejected(lambda d: d["cases"][96].update(
+            task_id=d["cases"][64]["task_id"]),
+            "task instance identity reused across temporal cohorts")
+
+    def test_four_reader_views_of_one_task_still_valid(self):
+        doc = copy.deepcopy(self.doc)
+        views = [row for row in doc["cases"]
+                 if row["task_id"] == doc["cases"][48]["task_id"]]
+        self.assertEqual({row["reader_condition"] for row in views},
+                         set(target.READER))
+        result = target.audit(doc)
+        self.assertTrue(result["task_instance_ids_cross_split_rejected"])
+        self.assertIs(result["task_identity_provenance_independently_verified"], False)
+        self.assertIs(result["production_promotion_permitted"], False)
+
+    def test_v2_observations_are_not_silently_upgraded_to_v3(self):
+        self.rejected(lambda d: d.update(
+            schema="hepta.six-track-paired-observation.v2"), "non-authorizing")
+
     def test_chronology_violation(self):
         self.rejected(lambda d: d["cases"][32].update(observed_at=2), "time boundary")
 
@@ -428,7 +455,7 @@ class SixTrackValidation(unittest.TestCase):
             p.write_text(json.dumps(self.doc, allow_nan=False), encoding="utf-8")
             obj, digest = target.load_json(p)
             self.assertEqual(digest, hashlib.sha256(p.read_bytes()).hexdigest())
-            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v2")
+            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v3")
 
 
 if __name__ == "__main__":
