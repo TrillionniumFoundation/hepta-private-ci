@@ -974,6 +974,33 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         feature_vector_q24: &[i64],
         authorization: &WorkerRequest,
     ) -> Result<FinalUseBinding, Error> {
+        // Preserve the external owned-Head API and its exact V1 signature
+        // semantics. Existing callers remain source and binary compatible.
+        self.expected_stem_final_use_binding_borrowed_v1(
+            now_ms,
+            source,
+            access,
+            &selected_head,
+            feature_vector_q24,
+            authorization,
+        )
+    }
+
+    /// Inner owner-only borrowed binding used by 32 bounded Cell Head
+    /// proposals. The head's strings and identity never need to be cloned
+    /// merely to validate or sign a non-authorizing batch plan.
+    ///
+    /// Every current Scope/Principal/Epoch/Generation/Lease/Head/Resource/
+    /// CAS input check remains identical to the owned public entry.
+    pub(crate) fn expected_stem_final_use_binding_borrowed_v1(
+        &self,
+        now_ms: u64,
+        source: &StemFeatureRefV1,
+        access: &StemAccessContextV1,
+        selected_head: &StemHeadBindingV1,
+        feature_vector_q24: &[i64],
+        authorization: &WorkerRequest,
+    ) -> Result<FinalUseBinding, Error> {
         self.validate_current_grant(now_ms)?;
         if access.now_ms != now_ms
             || source.authority_epoch != self.grant.authority_epoch
@@ -989,16 +1016,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let bound = borrow_stem_feature_request_v1(
             source,
             access,
-            &selected_head,
+            selected_head,
             feature_vector_q24,
         )
         .map_err(|_| Error::FeatureContract)?;
         if bound.authority().grants_any()
-            || authorization.request_id != selected_head.request_id.to_string()
+            || authorization.request_id.as_str() != selected_head.request_id.as_str()
         {
             return Err(Error::FeatureContract);
         }
-        let head_id = selected_head.head_model_id.to_string();
+        let head_id = selected_head.head_model_id.as_str();
         let loaded = self.models.get(&head_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.manifest.weights_digest != selected_head.head_weights_digest.to_string()
             || authorization.model_digest != loaded.manifest.model_digest
