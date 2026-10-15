@@ -203,9 +203,8 @@ impl<'a> StemFeatureRequestViewV1<'a> {
         access: &StemAccessContextV1,
         selected_head: &StemHeadBindingV1,
     ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
-        let current = borrow_stem_feature_request_v1(
-            source, access, selected_head, self.feature_vector_q24,
-        )?;
+        let current =
+            borrow_stem_feature_request_v1(source, access, selected_head, self.feature_vector_q24)?;
         if current.request_id != self.request_id
             || current.model_id != self.model_id
             || current.generation != self.generation
@@ -225,9 +224,7 @@ impl<'a> StemFeatureRequestViewV1<'a> {
     /// made ONLY when a legacy V1 consumer actually requires an owned request.
     /// The exact original V1 request digest is retained and checked.
     /// Private to the binding module: callers must use refreshed claims.
-    fn materialize_owned_v1(
-        &self,
-    ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
+    fn materialize_owned_v1(&self) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
         let request = NeuronFeatureRequestV1 {
             request_id: (*self.request_id).clone(),
             generation: self.generation,
@@ -415,8 +412,10 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     // Rehash arbitrary caller slices as before. The trusted immutable-buffer
     // path was verified exactly once at construction, and Arc<[i64]> cannot
     // be mutated using the safe APIs exposed by this crate.
-    if matches!(feature_verification, FeatureDigestVerification::RecomputeOnEveryUse)
-        && stem_feature_vector_digest_v1(vector_q24)? != source.feature_digest
+    if matches!(
+        feature_verification,
+        FeatureDigestVerification::RecomputeOnEveryUse
+    ) && stem_feature_vector_digest_v1(vector_q24)? != source.feature_digest
     {
         return Err(StemFeatureBindingError::FeatureDigestMismatch);
     }
@@ -425,9 +424,9 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     }
     let pipeline_digest = match feature_verification {
         FeatureDigestVerification::RecomputeOnEveryUse => stem_encoder_pipeline_digest_v1(source),
-        FeatureDigestVerification::ImmutableBufferVerified { pipeline_digest, .. } => {
-            pipeline_digest
-        }
+        FeatureDigestVerification::ImmutableBufferVerified {
+            pipeline_digest, ..
+        } => pipeline_digest,
     };
     if selected_head.required_stem_model_id != source.stem_model_id
         || selected_head.required_stem_generation != source.stem_generation
@@ -441,9 +440,9 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     }
     let feature_ref_digest = match feature_verification {
         FeatureDigestVerification::RecomputeOnEveryUse => stem_feature_ref_digest_v1(source),
-        FeatureDigestVerification::ImmutableBufferVerified { feature_ref_digest, .. } => {
-            feature_ref_digest
-        }
+        FeatureDigestVerification::ImmutableBufferVerified {
+            feature_ref_digest, ..
+        } => feature_ref_digest,
     };
     Ok(StemFeatureRequestViewV1 {
         request_id: &selected_head.request_id,
@@ -682,23 +681,13 @@ mod tests {
     #[test]
     fn borrowed_views_reuse_exact_q24_allocation_and_preserve_owned_v1_digest() {
         let (source, access, first_head, vector) = fixture();
-        let first = borrow_stem_feature_request_v1(
-            &source,
-            &access,
-            &first_head,
-            &vector,
-        )
-        .expect("borrowed, non-authorizing view");
+        let first = borrow_stem_feature_request_v1(&source, &access, &first_head, &vector)
+            .expect("borrowed, non-authorizing view");
         let mut second_head = first_head.clone();
         second_head.request_id = id("req-2");
         second_head.head_model_id = id("cell-head-2");
-        let second = borrow_stem_feature_request_v1(
-            &source,
-            &access,
-            &second_head,
-            &vector,
-        )
-        .expect("second Cell reuses exact feature vector");
+        let second = borrow_stem_feature_request_v1(&source, &access, &second_head, &vector)
+            .expect("second Cell reuses exact feature vector");
         assert_eq!(first.feature_vector_q24.as_ptr(), vector.as_ptr());
         assert_eq!(second.feature_vector_q24.as_ptr(), vector.as_ptr());
         assert_eq!(first.feature_ref_digest, second.feature_ref_digest);
@@ -706,17 +695,11 @@ mod tests {
         assert!(!second.authority.grants_any());
 
         let owned = first.materialize_owned_v1().expect("owned replay boundary");
-        let old_contract = bind_stem_feature_request_v1(
-            &source,
-            &access,
-            first_head,
-            &vector,
-        )
-        .expect("same existing V1 output");
+        let old_contract = bind_stem_feature_request_v1(&source, &access, first_head, &vector)
+            .expect("same existing V1 output");
         assert_eq!(owned, old_contract);
         assert_eq!(
-            neuron_feature_request_digest_v1(&owned.request)
-                .expect("existing V1 semantic digest"),
+            neuron_feature_request_digest_v1(&owned.request).expect("existing V1 semantic digest"),
             neuron_feature_request_digest_v1(&old_contract.request)
                 .expect("legacy semantic digest")
         );
@@ -754,10 +737,8 @@ mod tests {
     #[test]
     fn final_owned_conversion_refreshes_lease_epoch_and_head_identity() {
         let (source, access, selected_head, values) = fixture();
-        let view = borrow_stem_feature_request_v1(
-            &source, &access, &selected_head, &values,
-        )
-        .expect("initial view");
+        let view = borrow_stem_feature_request_v1(&source, &access, &selected_head, &values)
+            .expect("initial view");
         assert_eq!(view.feature_vector_q24().as_ptr(), values.as_ptr());
         assert!(!view.feature_ref_digest().is_zero());
         assert!(!view.authority().grants_any());
@@ -822,9 +803,11 @@ mod tests {
         second_head.request_id = id("other-request");
         second_head.head_model_id = id("other-head");
 
-        let first = shared.borrow_for_head(&access, &first_head)
+        let first = shared
+            .borrow_for_head(&access, &first_head)
             .expect("validated first Cell view");
-        let second = shared_copy.borrow_for_head(&access, &second_head)
+        let second = shared_copy
+            .borrow_for_head(&access, &second_head)
             .expect("validated second Cell view");
         assert_eq!(
             first.feature_vector_q24().as_ptr(),
@@ -833,12 +816,12 @@ mod tests {
         assert_eq!(first.feature_vector_q24(), values.as_slice());
         assert!(!first.authority().grants_any());
         assert!(!second.authority().grants_any());
-        let old = bind_stem_feature_request_v1(
-            &source_for_refresh, &access, first_head.clone(), &values
-        ).expect("historical V1 representation");
-        let new = first.materialize_owned_after_refresh(
-            &source_for_refresh, &access, &first_head
-        ).expect("same V1 after fresh owner claim");
+        let old =
+            bind_stem_feature_request_v1(&source_for_refresh, &access, first_head.clone(), &values)
+                .expect("historical V1 representation");
+        let new = first
+            .materialize_owned_after_refresh(&source_for_refresh, &access, &first_head)
+            .expect("same V1 after fresh owner claim");
         assert_eq!(new, old);
     }
 
@@ -850,8 +833,7 @@ mod tests {
             SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone()),
             Err(StemFeatureBindingError::FeatureDigestMismatch)
         ));
-        source.feature_digest = stem_feature_vector_digest_v1(&values)
-            .expect("known good content");
+        source.feature_digest = stem_feature_vector_digest_v1(&values).expect("known good content");
         source.feature_width += 1;
         assert!(matches!(
             SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone()),
@@ -878,51 +860,48 @@ mod tests {
         let (mut source, access, mut head, _) = fixture();
         let original = vec![Q24 / 8; 512];
         source.feature_width = original.len();
-        source.feature_digest = stem_feature_vector_digest_v1(&original)
-            .expect("bounded 512D vector");
+        source.feature_digest =
+            stem_feature_vector_digest_v1(&original).expect("bounded 512D vector");
         head.required_feature_width = original.len();
         head.required_encoder_digest = stem_encoder_pipeline_digest_v1(&source);
 
-        let shared = SharedStemQ24BufferV1::from_unverified_source(
-            source.clone(), original.clone()
-        ).expect("one content validation during immutable construction");
-        let direct = borrow_stem_feature_request_v1(
-            &source, &access, &head, &original
-        ).expect("direct caller-provided slice validates its digest");
-        let fast = shared.borrow_for_head(&access, &head)
+        let shared =
+            SharedStemQ24BufferV1::from_unverified_source(source.clone(), original.clone())
+                .expect("one content validation during immutable construction");
             .expect("immutable Arc reuses validated digest");
         assert_eq!(fast.feature_vector_q24(), direct.feature_vector_q24());
         assert_eq!(fast.feature_ref_digest(), direct.feature_ref_digest());
         assert!(!fast.authority().grants_any());
 
-        let direct_owned = direct.materialize_owned_after_refresh(
-            &source, &access, &head
-        ).expect("legacy owned V1 conversion");
-        let fast_owned = fast.materialize_owned_after_refresh(
-            &source, &access, &head
-        ).expect("immutable borrowed V1 conversion");
+        let direct_owned = direct
+            .materialize_owned_after_refresh(&source, &access, &head)
+            .expect("legacy owned V1 conversion");
+        let fast_owned = fast
+            .materialize_owned_after_refresh(&source, &access, &head)
+            .expect("immutable borrowed V1 conversion");
         assert_eq!(direct_owned, fast_owned);
 
         let mut changed_original = original;
         changed_original[511] += 1;
         assert_eq!(
-            borrow_stem_feature_request_v1(
-                &source, &access, &head, &changed_original
-            ),
+            borrow_stem_feature_request_v1(&source, &access, &head, &changed_original),
             Err(StemFeatureBindingError::FeatureDigestMismatch)
         );
         // Safe mutation of an unrelated Vec cannot poison immutable Arc bytes.
-        assert_eq!(shared.borrow_for_head(&access, &head)
-            .expect("unchanged shared content")
-            .feature_vector_q24(), direct_owned.request.feature_vector_q24.as_slice());
+        assert_eq!(
+            shared
+                .borrow_for_head(&access, &head)
+                .expect("unchanged shared content")
+                .feature_vector_q24(),
+            direct_owned.request.feature_vector_q24.as_slice()
+        );
     }
 
     #[test]
     fn immutable_buffer_does_not_bypass_fresh_principal_or_lease() {
         let (source, access, head, original) = fixture();
-        let shared = SharedStemQ24BufferV1::from_unverified_source(
-            source.clone(), original
-        ).expect("immutable source");
+        let shared = SharedStemQ24BufferV1::from_unverified_source(source.clone(), original)
+            .expect("immutable source");
         let mut future = access.clone();
         future.principal_id = id("another-principal");
         assert!(matches!(
@@ -946,13 +925,12 @@ mod tests {
     #[test]
     fn immutable_owned_boundary_keeps_same_v1_digest_after_fresh_claim() {
         let (source, access, head, values) = fixture();
-        let shared = SharedStemQ24BufferV1::from_unverified_source(
-            source.clone(), values.clone()
-        ).expect("buffer initialized from exact Q24 bytes");
-        let old = bind_stem_feature_request_v1(
-            &source, &access, head.clone(), &values
-        ).expect("existing owned V1 request");
-        let actual = shared.materialize_owned_for_head(&access, &head)
+        let shared = SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone())
+            .expect("buffer initialized from exact Q24 bytes");
+        let old = bind_stem_feature_request_v1(&source, &access, head.clone(), &values)
+            .expect("existing owned V1 request");
+        let actual = shared
+            .materialize_owned_for_head(&access, &head)
             .expect("current owner claim passes");
         assert_eq!(old, actual);
         assert!(!actual.authority.grants_any());
@@ -974,21 +952,23 @@ mod tests {
     #[test]
     fn cached_source_and_pipeline_digests_match_direct_for_4096_logical_heads() {
         let (source, access, mut head, features) = fixture();
-        let immutable = SharedStemQ24BufferV1::from_unverified_source(
-            source.clone(), features.clone()
-        ).expect("bounded immutable feature allocated once");
-        let shared_pointer = immutable.borrow_for_head(&access, &head)
+        let immutable =
+            SharedStemQ24BufferV1::from_unverified_source(source.clone(), features.clone())
+                .expect("bounded immutable feature allocated once");
+        let shared_pointer = immutable
+            .borrow_for_head(&access, &head)
             .expect("borrow same immutable allocation")
-            .feature_vector_q24().as_ptr();
-        let direct_ref = borrow_stem_feature_request_v1(
-            &source, &access, &head, &features
-        ).expect("direct-source reference")
-        .feature_ref_digest();
+            .feature_vector_q24()
+            .as_ptr();
+        let direct_ref = borrow_stem_feature_request_v1(&source, &access, &head, &features)
+            .expect("direct-source reference")
+            .feature_ref_digest();
         for index in 0..4096 {
             // Logical Heads only; NOT 4096 model executions or a host SLO.
             head.request_id = id(&format!("request:cell:{index}"));
             head.head_model_id = id(&format!("cell-head:{index}"));
-            let borrow = immutable.borrow_for_head(&access, &head)
+            let borrow = immutable
+                .borrow_for_head(&access, &head)
                 .expect("each Cell checks owner and Head claims");
             assert_eq!(borrow.feature_vector_q24().as_ptr(), shared_pointer);
             assert_eq!(borrow.feature_ref_digest(), direct_ref);
@@ -999,9 +979,8 @@ mod tests {
     #[test]
     fn cached_source_identity_cannot_make_changed_head_or_epoch_valid() {
         let (source, mut access, mut head, features) = fixture();
-        let cached = SharedStemQ24BufferV1::from_unverified_source(
-            source, features
-        ).expect("immutability source");
+        let cached = SharedStemQ24BufferV1::from_unverified_source(source, features)
+            .expect("immutability source");
         head.required_encoder_digest = digest(b"changed-encoder");
         assert!(matches!(
             cached.borrow_for_head(&access, &head),
@@ -1013,5 +992,4 @@ mod tests {
             Err(StemFeatureBindingError::AuthorityEpochMismatch)
         ));
     }
-
 }
