@@ -85,6 +85,15 @@ class JointTests(unittest.TestCase):
         self.assertTrue(all(row['cpu_ns']>0 for a in ARMS for row in rows[a]['updates']))
         self.assertGreater(joint['cpu_ns'],0)
 
+    def test_real_train_batch_is_materialized_once_for_two_head_updates(self):
+        # Initial and final/interval diagnostics still have independent copies;
+        # but one actual optimizer batch is shared by both Heads at every step.
+        with patch.object(self.data, 'take', wraps=self.data.take) as take:
+            _,_,joint=fit_joint_reader_pair(self.models,self.data,self.cases,
+                 steps=4,seed=41,batch_size=8,depth=2,diagnostic_interval=2)
+        self.assertEqual(joint['shared_input_batch_materializations'],4)
+        self.assertEqual(take.call_count,16)  # 3 diagnostic pairs x4 + 4 train
+
     def test_stop_when_both_pass_not_when_only_one_passes(self):
         # Calls: two initial reports, two after update 2, two after update 4.
         call=[0]
