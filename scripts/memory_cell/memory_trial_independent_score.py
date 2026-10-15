@@ -18,13 +18,25 @@ from memory_trial_admission import admit, bound_read, ensure, hexsha
 ANSWER = re.compile(r"\s*([A-Za-z][A-Za-z0-9_.-]{0,127})(?:\s+\[E[1-9][0-9]*\])*\s*\Z")
 ID_FIELDS = ("id", "arm", "condition", "reader")
 COPY_FIELDS = (
-    "id", "root", "arm", "condition", "reader", "reader_revision",
-    "prompt_digest", "tool_policy_sha256", "write_snapshot_sha256",
-    "memory_state_sha256", "source_digest", "raw_source_bytes",
-    "tokens", "generated_tokens",
+    "id",
+    "root",
+    "arm",
+    "condition",
+    "reader",
+    "reader_revision",
+    "prompt_digest",
+    "tool_policy_sha256",
+    "write_snapshot_sha256",
+    "memory_state_sha256",
+    "source_digest",
+    "raw_source_bytes",
+    "tokens",
+    "generated_tokens",
 )
 PROGRAM_FIELDS = (
-    "program_exit_code", "program_test_count", "program_tests_passed",
+    "program_exit_code",
+    "program_test_count",
+    "program_tests_passed",
     "tool_trace_sha256",
 )
 COMMITMENT_SCHEME = "hepta.memory-cell.answer-commitment.nonce-v2"
@@ -33,16 +45,28 @@ COMMITMENT_DOMAIN = b"hepta.memory-cell.exact-answer.v2\0"
 
 def commit_identifier(value, nonce):
     """Bind a low-entropy identifier to a secret pre-exposure random nonce."""
-    ensure(isinstance(value, str) and hexsha(nonce) and nonce != "0" * 64,
-           "secret nonzero 256-bit label nonce required")
-    return hashlib.sha256(COMMITMENT_DOMAIN + bytes.fromhex(nonce)
-                          + b"\0" + value.encode("utf-8")).hexdigest()
+    ensure(
+        isinstance(value, str) and hexsha(nonce) and nonce != "0" * 64,
+        "secret nonzero 256-bit label nonce required",
+    )
+    return hashlib.sha256(
+        COMMITMENT_DOMAIN + bytes.fromhex(nonce) + b"\0" + value.encode("utf-8")
+    ).hexdigest()
 
 
-FORBIDDEN_ORIGINAL = frozenset((
-    "success", "verified", "target", "expected", "gold", "gold_answer",
-    "strict_task_success", "label", "answer_sha256",
-))
+FORBIDDEN_ORIGINAL = frozenset(
+    (
+        "success",
+        "verified",
+        "target",
+        "expected",
+        "gold",
+        "gold_answer",
+        "strict_task_success",
+        "label",
+        "answer_sha256",
+    )
+)
 
 
 def _answer(text):
@@ -62,9 +86,11 @@ def preflight_originals(plan, originals):
     shadow = []
     cases = {case["id"]: case for case in plan["cases"]}
     for original in originals:
-        ensure(isinstance(original, dict)
-               and not FORBIDDEN_ORIGINAL.intersection(original),
-               "original journal leaked scoring outcome or target")
+        ensure(
+            isinstance(original, dict)
+            and not FORBIDDEN_ORIGINAL.intersection(original),
+            "original journal leaked scoring outcome or target",
+        )
         ensure(isinstance(original.get("answer"), str), "missing original answer")
         ensure(isinstance(original.get("cost"), dict), "original cost receipt required")
         row = {field: original[field] for field in COPY_FIELDS}
@@ -83,8 +109,10 @@ def preflight_originals(plan, originals):
     receipt = admit(
         plan, originals, shadow, plan_pin=sha(plan), original_pin=sha(originals)
     )
-    ensure(receipt["original_attempts"] == len(originals),
-           "incomplete original prelabel verification")
+    ensure(
+        receipt["original_attempts"] == len(originals),
+        "incomplete original prelabel verification",
+    )
     return receipt
 
 
@@ -94,36 +122,63 @@ def score(plan, originals, labels):
     `originals` must be original model receipts, not previously scored rows.
     The only accepted gold format is an exact precommitted output identifier.
     """
-    ensure(isinstance(plan, dict) and plan.get("schema") == "hepta.memory-factorial.plan.v1",
-           "preregistered factorial plan required")
-    ensure(isinstance(originals, list) and isinstance(labels, list),
-           "original journal and protected label array required")
-    ensure(plan.get("answer_commitment_scheme") == COMMITMENT_SCHEME,
-           "salted pre-exposure answer commitment required")
+    ensure(
+        isinstance(plan, dict)
+        and plan.get("schema") == "hepta.memory-factorial.plan.v1",
+        "preregistered factorial plan required",
+    )
+    ensure(
+        isinstance(originals, list) and isinstance(labels, list),
+        "original journal and protected label array required",
+    )
+    ensure(
+        plan.get("answer_commitment_scheme") == COMMITMENT_SCHEME,
+        "salted pre-exposure answer commitment required",
+    )
     cases = plan.get("cases")
     ensure(isinstance(cases, list) and cases, "missing preregistered cases")
     by_case = {}
     for case in cases:
-        ensure(isinstance(case, dict) and isinstance(case.get("id"), str)
-               and case["id"] not in by_case and hexsha(case.get("answer_sha256")),
-               "invalid or duplicate preregistered case")
+        ensure(
+            isinstance(case, dict)
+            and isinstance(case.get("id"), str)
+            and case["id"] not in by_case
+            and hexsha(case.get("answer_sha256")),
+            "invalid or duplicate preregistered case",
+        )
         by_case[case["id"]] = case
-    expected = {(cid, arm, condition, reader) for cid in by_case
-                for arm in ARMS for condition in CONDITIONS for reader in READERS}
+    expected = {
+        (cid, arm, condition, reader)
+        for cid in by_case
+        for arm in ARMS
+        for condition in CONDITIONS
+        for reader in READERS
+    }
     # Validate the original answer census BEFORE any label is consulted.
     seen = set()
     for row in originals:
-        ensure(isinstance(row, dict) and not FORBIDDEN_ORIGINAL.intersection(row),
-               "original journal leaked scoring outcome or target")
+        ensure(
+            isinstance(row, dict) and not FORBIDDEN_ORIGINAL.intersection(row),
+            "original journal leaked scoring outcome or target",
+        )
         key = tuple(row.get(k) for k in ID_FIELDS)
-        ensure(key in expected and key not in seen, "incomplete or duplicate original matrix")
+        ensure(
+            key in expected and key not in seen,
+            "incomplete or duplicate original matrix",
+        )
         seen.add(key)
         ensure(row.get("status") in ("succeeded", "failed"), "invalid original status")
         _answer(row.get("answer"))
-        ensure(isinstance(row.get("cost"), dict) and set(row["cost"]) == set(COST_KEYS),
-               "cost receipt absent (unknown categories must be null)")
-        ensure(type(row.get("diagnostic_count")) is int and row["diagnostic_count"] >= 0
-               and type(row.get("recovery_success")) is bool, "execution counters absent")
+        ensure(
+            isinstance(row.get("cost"), dict) and set(row["cost"]) == set(COST_KEYS),
+            "cost receipt absent (unknown categories must be null)",
+        )
+        ensure(
+            type(row.get("diagnostic_count")) is int
+            and row["diagnostic_count"] >= 0
+            and type(row.get("recovery_success")) is bool,
+            "execution counters absent",
+        )
     ensure(seen == expected, "incomplete original generation census")
     # Validate every original receipt before accessing scorer-only target keys.
     preflight_originals(plan, originals)
@@ -131,18 +186,30 @@ def score(plan, originals, labels):
     # SHA digests, not the literal answers. Any mismatch rejects the whole run.
     targets, nonces = {}, set()
     for item in labels:
-        ensure(isinstance(item, dict) and set(item) == {"id", "expected", "nonce"},
-               "protected label fields must be id, expected and nonce")
+        ensure(
+            isinstance(item, dict) and set(item) == {"id", "expected", "nonce"},
+            "protected label fields must be id, expected and nonce",
+        )
         cid, value, nonce = item["id"], item["expected"], item["nonce"]
-        ensure(isinstance(cid, str) and cid in by_case and cid not in targets,
-               "unexpected or duplicate protected label")
-        ensure(hexsha(nonce) and nonce != "0" * 64 and nonce not in nonces,
-               "absent, zero or reused protected answer nonce")
+        ensure(
+            isinstance(cid, str) and cid in by_case and cid not in targets,
+            "unexpected or duplicate protected label",
+        )
+        ensure(
+            hexsha(nonce) and nonce != "0" * 64 and nonce not in nonces,
+            "absent, zero or reused protected answer nonce",
+        )
         nonces.add(nonce)
-        ensure(isinstance(value, str) and ANSWER.fullmatch(value) is not None
-               and _answer(value) == value, "gold must be one exact identifier")
-        ensure(commit_identifier(value, nonce) == by_case[cid]["answer_sha256"],
-               "gold differs from frozen plan")
+        ensure(
+            isinstance(value, str)
+            and ANSWER.fullmatch(value) is not None
+            and _answer(value) == value,
+            "gold must be one exact identifier",
+        )
+        ensure(
+            commit_identifier(value, nonce) == by_case[cid]["answer_sha256"],
+            "gold differs from frozen plan",
+        )
         targets[cid] = value
     ensure(set(targets) == set(by_case), "incomplete protected label census")
     rows, derived_successes = [], 0
@@ -153,7 +220,9 @@ def score(plan, originals, labels):
         scored = {key: original[key] for key in COPY_FIELDS}
         scored.update(
             plan_sha256=sha(plan),
-            answer_digest=hashlib.sha256(original["answer"].encode("utf-8")).hexdigest(),
+            answer_digest=hashlib.sha256(
+                original["answer"].encode("utf-8")
+            ).hexdigest(),
             verified=True,
             success=correct,
             cost=dict(original["cost"]),
@@ -161,11 +230,14 @@ def score(plan, originals, labels):
             recovery_success=original["recovery_success"],
         )
         if by_case[cid]["task"] == "program":
-            ensure(all(field in original for field in PROGRAM_FIELDS),
-                   "program requires original execution receipt")
+            ensure(
+                all(field in original for field in PROGRAM_FIELDS),
+                "program requires original execution receipt",
+            )
             scored.update({field: original[field] for field in PROGRAM_FIELDS})
             correct = (
-                correct and type(original["program_exit_code"]) is int
+                correct
+                and type(original["program_exit_code"]) is int
                 and original["program_exit_code"] == 0
                 and type(original["program_test_count"]) is int
                 and original["program_test_count"] > 0
@@ -176,7 +248,9 @@ def score(plan, originals, labels):
             scored["success"] = correct
         derived_successes += correct
         rows.append(scored)
-    report = admit(plan, originals, rows, plan_pin=sha(plan), original_pin=sha(originals))
+    report = admit(
+        plan, originals, rows, plan_pin=sha(plan), original_pin=sha(originals)
+    )
     report.update(
         strict_scoring="salted-precommitted-exact-identifier-with-program-receipt-v2",
         answer_commitment_scheme=COMMITMENT_SCHEME,
@@ -204,7 +278,10 @@ def main():
     p.add_argument("--program-receipts", type=Path)
     p.add_argument("--program-receipts-sha256")
     args = p.parse_args()
-    ensure(not args.scored.exists() and not args.report.exists(), "never overwrite existing evidence")
+    ensure(
+        not args.scored.exists() and not args.report.exists(),
+        "never overwrite existing evidence",
+    )
     # Original journal is validated before opening protected labels.
     plan = bound_read(args.plan, args.plan_sha256)
     originals = bound_read(args.original, args.original_sha256)
@@ -212,23 +289,31 @@ def main():
     # The CLI must not OPEN the protected file before completing raw preflight.
     preflight_originals(plan, originals)
     # Reexecute fixed program traces before private gold can be opened.
-    supplied = (args.program_spec, args.program_spec_sha256,
-                args.program_receipts, args.program_receipts_sha256)
-    ensure(all(v is None for v in supplied) or all(v is not None for v in supplied),
-           "program manifest and original receipt pins must be supplied together")
+    supplied = (
+        args.program_spec,
+        args.program_spec_sha256,
+        args.program_receipts,
+        args.program_receipts_sha256,
+    )
+    ensure(
+        all(v is None for v in supplied) or all(v is not None for v in supplied),
+        "program manifest and original receipt pins must be supplied together",
+    )
     if all(v is not None for v in supplied):
         from memory_trial_program_replay import audit as replay_program
 
         spec = bound_read(args.program_spec, args.program_spec_sha256)
-        original_receipts = bound_read(args.program_receipts, args.program_receipts_sha256)
+        original_receipts = bound_read(
+            args.program_receipts, args.program_receipts_sha256
+        )
         replay = replay_program(plan, originals, spec, original_receipts)
     else:
         replay = None
     labels = bound_read(args.labels, args.labels_sha256)
     rows, audit = score(plan, originals, labels)
-    audit["external_byte_pins"] = dict(plan=args.plan_sha256,
-                                       original=args.original_sha256,
-                                       labels=args.labels_sha256)
+    audit["external_byte_pins"] = dict(
+        plan=args.plan_sha256, original=args.original_sha256, labels=args.labels_sha256
+    )
     audit["controlled_program_replay"] = replay
     audit["program_execution_independently_replayed"] = replay is not None
     audit["general_project_program_skill_qualified"] = False
@@ -236,7 +321,9 @@ def main():
         json.dump(rows, dest, sort_keys=True, ensure_ascii=False, allow_nan=False)
         dest.write("\n")
     with args.report.open("x", encoding="utf-8") as dest:
-        json.dump(audit, dest, sort_keys=True, ensure_ascii=False, indent=2, allow_nan=False)
+        json.dump(
+            audit, dest, sort_keys=True, ensure_ascii=False, indent=2, allow_nan=False
+        )
         dest.write("\n")
 
 

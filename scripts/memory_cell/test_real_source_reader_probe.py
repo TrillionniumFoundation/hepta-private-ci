@@ -32,14 +32,25 @@ def pretend_corpus():
         for index in range(3):
             path = f"lib/mod{index}{ext}"
             declarations = [
-                (f"fn precise_function_{index}_{j}() {{ }}" if ext == ".rs"
-                 else f"def precise_function_{index}_{j}():\n    return {index + j}")
+                (
+                    f"fn precise_function_{index}_{j}() {{ }}"
+                    if ext == ".rs"
+                    else f"def precise_function_{index}_{j}():\n    return {index + j}"
+                )
                 for j in range(4)
             ]
             raw = ("\n".join(declarations) + "\n").encode()
             sha = hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()
-            paths.append(dict(repo=repo, partition="evaluation", path=path,
-                              blob_sha=sha, bytes=len(raw), sha256=digest(raw)))
+            paths.append(
+                dict(
+                    repo=repo,
+                    partition="evaluation",
+                    path=path,
+                    blob_sha=sha,
+                    bytes=len(raw),
+                    sha256=digest(raw),
+                )
+            )
             blobs[(repo, path)] = raw
     return paths, blobs
 
@@ -55,19 +66,34 @@ def fake_journals(plan, *, deliberate_wrong=False):
                 answer = expected + " [E1]" if not deliberate_wrong else "F99 [E9]"
                 identity = digest(tier.encode())
                 profile = digest((tier + ":profile").encode())
-                receipt = dict(expected_reader_delivery(c, condition),
-                               reader_identity=identity, reader_profile=profile,
-                               input_ids_digest=digest((tier + ":input").encode()),
-                               generated_ids_digest=digest((tier + ":output").encode()),
-                               token_limit=1024,
-                               input_tokens=100, generated_tokens=7, seconds=1.0,
-                               trainable_parameters=0, answer_postprocessed=False,
-                               production_accepted=False)
-                rows.append(dict(case_id=c["id"], condition=condition, tier=tier,
-                                 question_sha256=digest(c["question"].encode()),
-                                 evidence_sha256=digest(canonical(c["conditions"][condition])),
-                                 reader_identity=identity, reader_profile=profile,
-                                 answer=answer, status="succeeded", receipt=receipt))
+                receipt = dict(
+                    expected_reader_delivery(c, condition),
+                    reader_identity=identity,
+                    reader_profile=profile,
+                    input_ids_digest=digest((tier + ":input").encode()),
+                    generated_ids_digest=digest((tier + ":output").encode()),
+                    token_limit=1024,
+                    input_tokens=100,
+                    generated_tokens=7,
+                    seconds=1.0,
+                    trainable_parameters=0,
+                    answer_postprocessed=False,
+                    production_accepted=False,
+                )
+                rows.append(
+                    dict(
+                        case_id=c["id"],
+                        condition=condition,
+                        tier=tier,
+                        question_sha256=digest(c["question"].encode()),
+                        evidence_sha256=digest(canonical(c["conditions"][condition])),
+                        reader_identity=identity,
+                        reader_profile=profile,
+                        answer=answer,
+                        status="succeeded",
+                        receipt=receipt,
+                    )
+                )
         output[tier] = rows
     return output
 
@@ -80,8 +106,13 @@ class RealSourceProbeTests(unittest.TestCase):
     def test_balanced_controls_and_masked_declaration(self):
         self.assertEqual(len(self.plan["cases"]), 9)
         self.assertEqual({c["root"] for c in self.plan["cases"]}, set(EVALUATION))
-        self.assertEqual({c["root"]: sum(q["root"] == c["root"] for q in self.plan["cases"])
-                          for c in self.plan["cases"]}, {c: 3 for c in EVALUATION})
+        self.assertEqual(
+            {
+                c["root"]: sum(q["root"] == c["root"] for q in self.plan["cases"])
+                for c in self.plan["cases"]
+            },
+            {c: 3 for c in EVALUATION},
+        )
         for c in self.plan["cases"]:
             self.assertEqual(set(c["conditions"]), set(CONDITIONS))
             self.assertFalse(c["conditions"]["none"])
@@ -89,8 +120,10 @@ class RealSourceProbeTests(unittest.TestCase):
             removed = c["conditions"]["removed_declaration"][0]["text"]
             self.assertIn(c["symbol"], support)
             self.assertNotIn(c["symbol"], removed)
-            self.assertEqual([r["marker"] for r in c["conditions"]["removed_declaration"]],
-                             [r["marker"] for r in c["conditions"]["hybrid_k4"]])
+            self.assertEqual(
+                [r["marker"] for r in c["conditions"]["removed_declaration"]],
+                [r["marker"] for r in c["conditions"]["hybrid_k4"]],
+            )
             self.assertGreaterEqual(len(c["conditions"]["removed_declaration"]), 2)
             self.assertTrue(c["prerequisite_is_machine_checked_not_human"])
         self.assertFalse(self.plan["independently_human_certified_sufficient_evidence"])
@@ -100,8 +133,9 @@ class RealSourceProbeTests(unittest.TestCase):
         for case in self.plan["cases"]:
             removed = case["conditions"]["removed_declaration"]
             original = case["conditions"]["hybrid_k4"]
-            self.assertEqual([r["marker"] for r in removed],
-                             [r["marker"] for r in original])
+            self.assertEqual(
+                [r["marker"] for r in removed], [r["marker"] for r in original]
+            )
             gold = case["conditions"]["mechanical_support"][0]["marker"]
             self.assertIn(gold, [r["marker"] for r in removed])
             self.assertNotEqual([r["marker"] for r in removed], [gold])
@@ -115,20 +149,41 @@ class RealSourceProbeTests(unittest.TestCase):
     def test_machine_score_does_not_become_human_review(self):
         report = score_outputs(self.plan, self.sources, fake_journals(self.plan))
         self.assertEqual(report["original_question_count"], 9)
-        self.assertEqual(report["original_real_model_calls"], 72)  # synthetic fixture only
-        self.assertEqual(report["reader_conditions"]["smol-135m"]["mechanical_support"]["strict_correct"], 9)
+        self.assertEqual(
+            report["original_real_model_calls"], 72
+        )  # synthetic fixture only
+        self.assertEqual(
+            report["reader_conditions"]["smol-135m"]["mechanical_support"][
+                "strict_correct"
+            ],
+            9,
+        )
         self.assertFalse(report["independent_human_sufficiency_review"])
         self.assertFalse(report["independently_authenticated_model_calls"])
         self.assertIsNone(report["complete_lifecycle_tco"])
 
     def test_untrusted_reader_wrong_answers_not_accepted(self):
-        result = score_outputs(self.plan, self.sources, fake_journals(self.plan, deliberate_wrong=True))
-        self.assertEqual(result["reader_conditions"]["smol-1.7b"]["mechanical_support"]["strict_correct"], 0)
-        self.assertEqual(result["reader_conditions"]["smol-1.7b"]["mechanical_support"]["invalid_citation_labels"], 9)
+        result = score_outputs(
+            self.plan, self.sources, fake_journals(self.plan, deliberate_wrong=True)
+        )
+        self.assertEqual(
+            result["reader_conditions"]["smol-1.7b"]["mechanical_support"][
+                "strict_correct"
+            ],
+            0,
+        )
+        self.assertEqual(
+            result["reader_conditions"]["smol-1.7b"]["mechanical_support"][
+                "invalid_citation_labels"
+            ],
+            9,
+        )
 
     def test_ordered_delivered_source_forgery_rejected(self):
         records = fake_journals(self.plan)
-        records["smol-135m"][1]["receipt"]["delivered_evidence"][0]["excerpt"] = "fabricated"
+        records["smol-135m"][1]["receipt"]["delivered_evidence"][0]["excerpt"] = (
+            "fabricated"
+        )
         with self.assertRaisesRegex(ValueError, "delivered evidence/prompt binding"):
             score_outputs(self.plan, self.sources, records)
 
@@ -140,21 +195,30 @@ class RealSourceProbeTests(unittest.TestCase):
 
     def test_citation_for_unrelated_source_is_not_full_chain(self):
         records = fake_journals(self.plan)
-        target = next((c, x) for c in self.plan["cases"]
-                      for x in records["smol-135m"] if x["case_id"] == c["id"]
-                      and x["condition"] == "hybrid_k4" and len(c["conditions"]["hybrid_k4"]) > 1)
+        target = next(
+            (c, x)
+            for c in self.plan["cases"]
+            for x in records["smol-135m"]
+            if x["case_id"] == c["id"]
+            and x["condition"] == "hybrid_k4"
+            and len(c["conditions"]["hybrid_k4"]) > 1
+        )
         case, row = target
         gold = case["conditions"]["mechanical_support"][0]["marker"]
         source = case["conditions"]["hybrid_k4"]
-        correct_index = next(i for i, e in enumerate(source, 1)
-                             if e["marker"] == gold)
+        correct_index = next(i for i, e in enumerate(source, 1) if e["marker"] == gold)
         row["answer"] = f"{gold} [E{correct_index}] [E{1 if correct_index != 1 else 2}]"
         report = score_outputs(self.plan, self.sources, records)
         unchanged = score_outputs(self.plan, self.sources, fake_journals(self.plan))
-        self.assertEqual(report["reader_conditions"]["smol-135m"]["hybrid_k4"]
-                         ["original_correct_and_cited"],
-                         unchanged["reader_conditions"]["smol-135m"]["hybrid_k4"]
-                         ["original_correct_and_cited"] - 1)
+        self.assertEqual(
+            report["reader_conditions"]["smol-135m"]["hybrid_k4"][
+                "original_correct_and_cited"
+            ],
+            unchanged["reader_conditions"]["smol-135m"]["hybrid_k4"][
+                "original_correct_and_cited"
+            ]
+            - 1,
+        )
 
     def test_reference_evidence_drift_is_refused(self):
         records = fake_journals(self.plan)
@@ -195,7 +259,9 @@ class RealSourceProbeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "must not exist"):
                 write_once(target, canonical(self.plan))
             payload = target.read_bytes()
-            target.write_bytes(payload.replace(b'"token_limit":1024', b'"token_limit":8192'))
+            target.write_bytes(
+                payload.replace(b'"token_limit":1024', b'"token_limit":8192')
+            )
             with self.assertRaisesRegex(ValueError, "plan census drift"):
                 locked_plan(target, digest(target.read_bytes()))
 
@@ -203,12 +269,19 @@ class RealSourceProbeTests(unittest.TestCase):
         source = os.environ.get("MEMORY_REAL_SOURCE_ZIP")
         reopen = os.environ.get("MEMORY_REOPEN_ZIP")
         if not (source and reopen):
-            self.skipTest("exact historical archives not present in standalone unit job")
+            self.skipTest(
+                "exact historical archives not present in standalone unit job"
+            )
         actual = plan_from_archives(Path(source), Path(reopen))
         self.assertEqual(digest(canonical(actual) + b"\n"), FROZEN_PLAN_SHA256)
         self.assertEqual(len(actual["cases"]), 9)
-        self.assertEqual(sum(len(c["conditions"]["hybrid_k4"]) for c in actual["cases"]), 27)
-        self.assertEqual(actual["source_inventory_sha256"], "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0")
+        self.assertEqual(
+            sum(len(c["conditions"]["hybrid_k4"]) for c in actual["cases"]), 27
+        )
+        self.assertEqual(
+            actual["source_inventory_sha256"],
+            "5ede9326e2234331f8f7f268a96257089a6703a74e7354206833db1d18f1beb0",
+        )
 
     def test_reject_bogus_git_zip_digest(self):
         with tempfile.TemporaryDirectory() as td:

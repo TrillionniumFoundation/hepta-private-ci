@@ -1,4 +1,5 @@
 """Model-free CSPRNG label sealer regressions, without human review claims."""
+
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -18,15 +19,30 @@ def inputs():
     plan, originals, ignored = fixture()
     for c in plan["cases"]:
         c["answer_sha256"] = None
-    answers = [{"id": c["id"], "expected": "site_aabb" + str(i)}
-               for i, c in enumerate(plan["cases"])]
+    answers = [
+        {"id": c["id"], "expected": "site_aabb" + str(i)}
+        for i, c in enumerate(plan["cases"])
+    ]
     for original, old in zip(originals, ignored, strict=True):
         if original["id"] == "case-3":
-            for name in ("program_exit_code", "program_test_count", "program_tests_passed"):
+            for name in (
+                "program_exit_code",
+                "program_test_count",
+                "program_tests_passed",
+            ):
                 original.setdefault(name, old[name])
-        original["cost"] = {k: 0.0 for k in
-                            ("extraction", "indexing", "training", "query",
-                             "maintenance", "revocation", "raw_storage")}
+        original["cost"] = {
+            k: 0.0
+            for k in (
+                "extraction",
+                "indexing",
+                "training",
+                "query",
+                "maintenance",
+                "revocation",
+                "raw_storage",
+            )
+        }
         original["diagnostic_count"] = 1
         original["recovery_success"] = False
     counter = iter(range(1, len(answers) + 20))
@@ -37,11 +53,15 @@ def inputs():
 class FreezeTests(unittest.TestCase):
     def test_seal_then_score_without_exposing_gold_in_plan(self):
         template, originals, reviews, random_bytes = inputs()
-        public, protected = freeze(template, reviews, now=NOW, nonce_factory=random_bytes)
+        public, protected = freeze(
+            template, reviews, now=NOW, nonce_factory=random_bytes
+        )
         self.assertEqual(public["answer_commitment_scheme"], COMMITMENT_SCHEME)
         self.assertNotIn(reviews[0]["expected"], json.dumps(public))
-        self.assertEqual(public["cases"][0]["answer_sha256"],
-                         commit_identifier(protected[0]["expected"], protected[0]["nonce"]))
+        self.assertEqual(
+            public["cases"][0]["answer_sha256"],
+            commit_identifier(protected[0]["expected"], protected[0]["nonce"]),
+        )
         self.assertIsNone(template["cases"][0]["answer_sha256"])
         rows, report = score(public, originals, protected)
         self.assertEqual(len(rows), 160)
