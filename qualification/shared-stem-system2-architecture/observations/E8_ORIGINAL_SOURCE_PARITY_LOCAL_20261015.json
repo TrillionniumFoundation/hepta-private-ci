@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.e8.original-source-local-independent-parity-receipt.v1",
+  "source_lineage": {
+    "previous_research_pr": 1923,
+    "exact_original_stitch_audit_blob_sha": "c9ccca486628836119cb04847956dfc2d2fd0c3b",
+    "local_byte_identity_verified_with_git_hash_object": true,
+    "local_python": "3.13.5",
+    "research_child_before_receipt_sha": "18f62ebdffb152c2e25b9e39419fb7326bf6749f"
+  },
+  "tested_reference": "original stitch_audit.py vs separate e8_global_gate.py on fixed rational short-horizon deterministic dX=Ydt, dY=0, YT=gXT",
+  "unique_regular_full_path_cases": 68,
+  "invalid_boundary_or_corrupted_path_rejections": 84,
+  "all_crosscheck_results_matched": true,
+  "local_stdout_sha256": "970e1e5c04cda842fb2eaced35ac87c8016a8d1e7547a794313acaf37b6d8c8c",
+  "limitations": [
+    "only fixed rational deterministic boundary problem",
+    "no general stochastic existence theorem",
+    "no actual pretrained Encoder in this test",
+    "no natural-language reasoning or independent future utility proven",
+    "hosted exact-head workflow and blocking-ci still pending"
+  ],
+  "production_accepted": false,
+  "authority": "DENY_ALL"
+}
