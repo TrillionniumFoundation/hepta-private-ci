@@ -95,6 +95,8 @@ jobs:
         run: |
           set -euo pipefail
           P="$RUNNER_TEMP/e3-ocr-env/bin/python"
+          HF_HOME="$RUNNER_TEMP/e3-source-cache" \
+          HF_DATASETS_CACHE="$RUNNER_TEMP/e3-source-cache/datasets" \
           "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
           "$P" - <<'PY'
           import json, os
@@ -107,6 +109,11 @@ jobs:
           assert q['raw_image_count']==192 and q['production_accepted'] is False
           print('SAME ORIGINAL SCIENCEQA SOURCE IDENTITY — NOT A FUTURE WINDOW')
           PY
+          # Original Parquet and Arrow caches may include TEST answer columns.
+          # Clear that staging cache before either pretrained-model entrypoint.
+          test -d "$RUNNER_TEMP/e3-source-cache"
+          rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
       - name: Physically OCR all 192 sources and encode with original Granite97
         run: |
           set -euo pipefail
@@ -167,6 +174,8 @@ jobs:
         run: |
           set -euo pipefail
           P="$RUNNER_TEMP/e3-gemma-env/bin/python"
+          HF_HOME="$RUNNER_TEMP/e3-source-cache" \
+          HF_DATASETS_CACHE="$RUNNER_TEMP/e3-source-cache/datasets" \
           "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
           "$P" - <<'PY'
           import json, os
@@ -178,6 +187,11 @@ jobs:
           assert not (Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/private_labels/test_labels.jsonl').exists()
           print('NATIVE MODEL COHORT MATCHES ORIGINAL GRANITE/DINO')
           PY
+          # Original Parquet and Arrow caches may include TEST answer columns.
+          # Clear that staging cache before either pretrained-model entrypoint.
+          test -d "$RUNNER_TEMP/e3-source-cache"
+          rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
       - name: Download and verify reviewed native Google model snapshot
         run: |
           set -euo pipefail
