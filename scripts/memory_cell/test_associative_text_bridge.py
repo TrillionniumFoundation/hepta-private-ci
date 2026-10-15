@@ -354,7 +354,14 @@ class IntegrationTests(unittest.TestCase):
                 self.assertTrue(receipt["pretrained_encoder_executed"])
                 self.assertFalse(receipt["pretrained_reader_executed"])
                 self.assertTrue((output / "journal.json").is_file())
+                journal = json.loads((output / "journal.json").read_text())
+                self.assertTrue(all(len(x["frozen_latent"]) == len(x["latent"])
+                                    for x in journal))
+                self.assertTrue(all(x["frozen_parent_sha256"]
+                                    != x["frozen_control_sha256"] for x in journal))
                 report = review(full, output, root / "review.json")
+                self.assertTrue(report["frozen_initialization_as_matched_control"])
+                self.assertIn("mean_delta_mse", report["score_by_phase"]["test"])
                 self.assertEqual(report["score_by_phase"]["test"]["cases"], 8)
                 self.assertEqual(report["score_by_phase"]["test"]["privileged_full_source_exact"], 8)
                 self.assertEqual(report["score_by_phase"]["test"]["indexed_hybrid_exact"], 8)
@@ -388,6 +395,7 @@ class IntegrationTests(unittest.TestCase):
                 self.assertFalse(reviewed["scored_rows"][0]["target_in_source_catalogue"])
                 self.assertIsNone(reviewed["scored_rows"][0]["latent_mse"])
                 self.assertFalse(reviewed["scored_rows"][0]["catalogue_decode_top1"])
+                self.assertIsNone(reviewed["scored_rows"][0]["delta_mse"])
 
     def test_public_rejects_target_fields_and_tampering(self):
         with tempfile.TemporaryDirectory() as td:

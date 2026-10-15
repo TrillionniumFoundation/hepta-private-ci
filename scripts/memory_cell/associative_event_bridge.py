@@ -216,6 +216,16 @@ def run(input_dir, encoder_dir, output, *, commit, steps=192, rank=4, dimension=
             encoder_identity=projector.identity, scope=scope,
             allowed_roots={d.root for d in documents}, revoked=set(),
         )
+        # Negative control: exact same architecture, seed, cue and resources,
+        # without any source-parameter update. Verify the actual training parent
+        # rather than presuming a convenient randomly initialized control.
+        frozen = AssociativeCell(
+            projector.dimension, rank, projector.identity, scope,
+            kind="mixed", seed=313,
+        )
+        if sha256(frozen.export()) != candidate.predecessor:
+            raise ValueError("frozen control is not the actual training parent")
+        frozen.roots.update(d.root for d in documents)
         observed = max(d.observed_at for d in documents)
         request, lookup = question(spec, observed)
         when = max(int(datetime.fromisoformat(d.observed_at).timestamp())
@@ -223,6 +233,10 @@ def run(input_dir, encoder_dir, output, *, commit, steps=192, rank=4, dimension=
         kind = "procedural" if spec["kind"] == "procedure" else "semantic"
         latent = direct_read(
             restored, projector, request.content, kind=kind,
+            as_of=when, revoked=set(),
+        )
+        frozen_latent = direct_read(
+            frozen, projector, request.content, kind=kind,
             as_of=when, revoked=set(),
         )
         model_seconds = time.perf_counter() - beginning
@@ -261,6 +275,9 @@ def run(input_dir, encoder_dir, output, *, commit, steps=192, rank=4, dimension=
             projection_digest=projection.frontier,
             cell_sha256=sha256(raw), cell_parameter_count=candidate.parameter_count(),
             cell_roots=sorted(candidate.roots),
+            frozen_parent_sha256=candidate.predecessor,
+            frozen_control_sha256=sha256(frozen.export()),
+            frozen_latent=list(frozen_latent),
             latent=list(latent),
             permitted_source_catalogue=[
                 dict(value=value, vector=list(vec))
@@ -301,7 +318,9 @@ def run(input_dir, encoder_dir, output, *, commit, steps=192, rank=4, dimension=
         production_accepted=False, superiority_claim=False,
         independent_semantic_adjudication=False, real_future_windows=0,
         model_calls=projector.model_calls, projector_encoded_texts=projector.encoded_texts,
-        arms=["parametric_latent", "indexed_hybrid_source_closure", "privileged_full_source"],
+        arms=["frozen_latent", "parametric_latent", "indexed_hybrid_source_closure",
+              "privileged_full_source"],
+        actual_training_parent_control_verified=True,
         fixed_hybrid_policy=POLICY, case_count=len(attempts),
         source_accounting=accounting,
         lifecycle_storage_bytes=dict(
@@ -317,6 +336,7 @@ def run(input_dir, encoder_dir, output, *, commit, steps=192, rank=4, dimension=
             "Observed controlled subprocess events, not independent naturalistic memory",
             "Training intentionally uses past source roots later queried; no independent source-family generalization",
             "Only unambiguous single-root source heads enter weights; correction and multihop handled by source retrieval",
+            "Matched frozen initialization is a causal learning control; no task superiority is implied",
             "Parameter outputs are latent vectors, not natural-language answers or citations",
             "Catalogued value decoding uses source-derived candidates; it is not parameter-only answer generation",
             "Fixed indexed hybrid is not an independently tuned strong RAG/Reader",
@@ -363,16 +383,25 @@ def review(input_dir, result_dir, report_file):
             {k: target[k] for k in public_by_id[qid]} != public_by_id[qid]
             or item["phase"] != target["phase"]
             or len(item["latent"]) != len(item["permitted_source_catalogue"][0]["vector"])
+            or len(item["frozen_latent"]) != len(item["latent"])
+            or not manifest.get("actual_training_parent_control_verified")
         ):
             raise ValueError("missing source-derived reference or leaked task fields")
         scores = [
             (cosine(item["latent"], c["vector"]), c["value"])
             for c in item["permitted_source_catalogue"]
         ]
-        if any(v is None for v, _ in scores):
-            top_value = None
+        frozen_scores = [
+            (cosine(item["frozen_latent"], c["vector"]), c["value"])
+            for c in item["permitted_source_catalogue"]
+        ]
+        if any(v is None for v, _ in scores + frozen_scores):
+            top_value = frozen_top_value = None
         else:
             top_value = sorted(scores, key=lambda v: (-v[0], v[1]))[0][1]
+            frozen_top_value = sorted(
+                frozen_scores, key=lambda v: (-v[0], v[1])
+            )[0][1]
         reference = next((
             c["vector"] for c in item["permitted_source_catalogue"]
             if c["value"] == target["expected"]
@@ -380,17 +409,25 @@ def review(input_dir, result_dir, report_file):
         if reference is None:
             # Unsupported correction is a real coverage failure, not a cue to
             # open the held-out label during inference or invent a target vector.
-            squared_error, latent_similarity = None, None
+            squared_error = latent_similarity = frozen_error = frozen_similarity = None
         else:
             diff = [a - b for a, b in zip(item["latent"], reference, strict=True)]
+            frozen_diff = [a - b for a, b in zip(item["frozen_latent"], reference,
+                                                strict=True)]
             squared_error = float(mean([x * x for x in diff]))
+            frozen_error = float(mean([x * x for x in frozen_diff]))
             latent_similarity = cosine(item["latent"], reference)
+            frozen_similarity = cosine(item["frozen_latent"], reference)
         scored.append(dict(
             query_id=qid, phase=item["phase"], kind=item["kind"],
             latent_cosine=latent_similarity,
             latent_mse=squared_error,
+            frozen_latent_mse=frozen_error,
+            frozen_latent_cosine=frozen_similarity,
+            delta_mse=(None if squared_error is None else squared_error - frozen_error),
             target_in_source_catalogue=reference is not None,
             catalogue_decode_top1=top_value == target["expected"],
+            frozen_catalogue_top1=frozen_top_value == target["expected"],
             indexed_hybrid_exact=item["hybrid"]["answer"] == target["expected"],
             indexed_hybrid_support_complete=set(target["support"]).issubset(
                 item["hybrid"]["sources"]
@@ -415,6 +452,12 @@ def review(input_dir, result_dir, report_file):
                                               if r["latent_mse"] is not None]))
                              if any(r["latent_mse"] is not None for r in rows) else None),
             source_catalogue_top1=sum(r["catalogue_decode_top1"] for r in rows),
+            frozen_catalogue_top1=sum(r["frozen_catalogue_top1"] for r in rows),
+            parametric_minus_frozen_top1=(sum(r["catalogue_decode_top1"] for r in rows)
+                                           - sum(r["frozen_catalogue_top1"] for r in rows)),
+            mean_delta_mse=(float(mean([r["delta_mse"] for r in rows
+                                        if r["delta_mse"] is not None]))
+                            if any(r["delta_mse"] is not None for r in rows) else None),
             indexed_hybrid_exact=sum(r["indexed_hybrid_exact"] for r in rows),
             indexed_hybrid_support_complete=sum(r["indexed_hybrid_support_complete"] for r in rows),
             privileged_full_source_exact=sum(r["privileged_full_source_exact"] for r in rows),
@@ -429,6 +472,8 @@ def review(input_dir, result_dir, report_file):
         all_truth_labels_accessed_only_in_review=True,
         experiment_kind="actual-pretrained-encoder-plus-controlled-program-events",
         parameter_only_natural_language_answer=False,
+        frozen_initialization_as_matched_control=True,
+        full_storage_lifecycle_not_measured=True,
         catalogue_decoder_has_source_derived_answer_vocabulary=True,
         model_plus_reader_tested=False,
         statistically_significant_rag_advantage=False,

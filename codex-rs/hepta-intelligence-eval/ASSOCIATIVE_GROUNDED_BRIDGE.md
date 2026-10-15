@@ -84,6 +84,13 @@ that exact-head job has completed; workflow existence does not prove execution.
 
 ## Evaluation meaning and limits
 
+A matched frozen candidate with the exact training parent's architecture,
+seed, encoder, source scope and current revocation lineage is read with the
+identical query. The job rejects parent-identity drift and separately reports
+paired latent-MSE and catalogue top-1 gains over this **non-learning** control.
+Learning-only benefit is not inferred from an untrained baseline alone; source
+catalogue decode remains an external aid.
+
 The parameter Cell returns a **latent vector only**. The reviewer computes
 cosine/MSE against source-derived answer embeddings after original labels are
 opened. A separate *candidate-catalogue* top-1 decoder ranks all source-only
