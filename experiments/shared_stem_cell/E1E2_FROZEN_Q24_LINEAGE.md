@@ -26,3 +26,7 @@ The pinned hosted E1 three-model job executes the new identity tests and writes 
 **150 local Python tests passed** across E1 source lock, three model fairness, E1+E2 numerical training and archive tampering, E3 public media and E4 reversal mechanisms. This includes *real PyTorch optimizer steps on synthetic vectors only*. It is not a production multi-Cell / 4,096 native Worker execution receipt, nor a new pretrained Granite/mmBERT/Gemma success. No Stem or Head is selected.
 
 All new outputs preserve `production_promotion_permitted=false`, `authority=DENY_ALL`. Exact-head Actions and `blocking-ci` remain required; a queued job is not an execution result.
+
+## Core-triad 768D research extension (2026-10-15)
+
+The canonical Q24 bank now accepts an explicit **768D** width alongside 256D/384D so a proposed ModernBERT-base Stem can participate in the same scientific Feature Identity and frozen Head experiments. Domain separator, per-case signed Q24 coordinates, whole-bank canonical order, exact-case coverage and all no-authority flags remain unchanged. Width is included in every digest; 384D and 768D banks cannot alias. This is **not** an admission of real ModernBERT weights or target-Worker Q24 compatibility. The original E1 public triplet still has only its 256D/384D model registrations; a genuine matched three-way CPU/GPU study remains separately required.

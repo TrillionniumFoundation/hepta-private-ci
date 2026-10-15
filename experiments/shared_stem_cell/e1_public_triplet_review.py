@@ -6,6 +6,14 @@ from pathlib import Path
 MODELS={'granite_97m_r2':('835ad14087e140460703cf0fae09f97d469d65c2',384),
 'mmbert_small':('0eb3d056ec1d6333cf4e19b0966dfde342a41a3a',384),
 'embeddinggemma_2_text':('914f7f89142e33e77833254d9c9b90c3cef7303b',256)}
+CORE_MODELS = {
+ 'granite_97m_r2':('835ad14087e140460703cf0fae09f97d469d65c2',384),
+ 'mmbert_small':('0eb3d056ec1d6333cf4e19b0966dfde342a41a3a',384),
+ 'modernbert_base':('fa3113d09d6dacfe5528708803dd92a62240237a',768)}
+CORE_REPOS = {
+ 'granite_97m_r2':'ibm-granite/granite-embedding-97m-multilingual-r2',
+ 'mmbert_small':'jhu-clsp/mmBERT-small',
+ 'modernbert_base':'answerdotai/ModernBERT-base'}
 class Invalid(ValueError):pass
 def pairs(seq):
  d={}
@@ -19,17 +27,19 @@ def read(path):
  return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(Invalid('nonfinite JSON')))
 def canonical(obj):return json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
 def sha(b):return hashlib.sha256(b).hexdigest()
-def evaluate(panel,reports):
+def evaluate(panel,reports,*,core=False):
+ if type(core) is not bool:raise Invalid('explicit registered study family required')
+ models=CORE_MODELS if core else MODELS
  if type(panel) is not dict or panel.get('schema')!='hepta.stem.agnews-binary-capability-panel.v1' or panel.get('case_count')!=224 or panel.get('cross_sectional_not_future') is not True or panel.get('production_promotion')!='DENY_ALL':
   raise Invalid('invalid public panel')
  cases=panel['cases'];bycase={c['case_id']:c for c in cases}
  if len(bycase)!=224 or len(cases)!=224:raise Invalid('duplicate public source case')
  observed={c['case_id'] for c in cases if c['split'] in ('calibration','test')}
  panel_sha=sha(canonical(panel))
- if set(reports)!=set(MODELS):raise Invalid('three model execution records required')
+ if set(reports)!=set(models):raise Invalid('three model execution records required')
  metrics={};prediction_map={};resource_summary={};training=None
  for model,report in reports.items():
-  revision,width=MODELS[model]
+  revision,width=models[model]
   if (type(report) is not dict or report.get('schema')!='hepta.e1-english-public-pretrained-head.v1' or
       report.get('model')!=model or report.get('model_revision')!=revision or report.get('feature_width')!=width or
       report.get('public_panel_sha256')!=panel_sha or report.get('authority')!='DENY_ALL' or
@@ -43,6 +53,8 @@ def evaluate(panel,reports):
    raise Invalid('optimizer/test-label boundary mismatch')
   n=fit.get('head_parameter_count')
   if type(n) is not int or not 0<n<=2048:raise Invalid('wrong complete Head parameter budget')
+  if core and (n!=2*width+2 or report.get('model_name')!=CORE_REPOS[model]):
+   raise Invalid('incorrect full private linear Head or publisher model identity')
   current=(fit.get('train_case_ids_sha256'),fit['steps'],fit['seed'],fit['learning_rate'])
   if training is None:training=current
   elif training!=current:raise Invalid('unmatched train group or optimizer')
@@ -65,7 +77,16 @@ def evaluate(panel,reports):
   if (any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in measurements) or
       any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in latency.values())):
    raise Invalid('nonpositive or missing measured runtime/RSS')
-  if model=='mmbert_small':
+  if core:
+   publisher=measures.get('publisher_file_inventory_sha256')
+   if (measures.get('local_all_saved_model_tensors_checked_by_loader') is not True or
+       measures.get('publisher_files_checked_by_local_acquisition') is not True or
+       measures.get('local_encoder_forward_calls_observed')!=224 or
+       type(publisher) is not str or len(publisher)!=64 or publisher=='0'*64 or
+       any(c not in '0123456789abcdef' for c in publisher) or
+       measures.get('reference_transformers_runtime_version')!='4.57.1'):
+    raise Invalid('missing local tensor/publisher/physical forward source checks')
+  elif model=='mmbert_small':
    flag=measures.get('mmbert_pretrained_complete_tied_table_verified')
    identity=measures.get('mmbert_local_complete_table_sha256')
    full=measures.get('mmbert_all_serialized_weights_byte_verified')
@@ -119,8 +140,8 @@ def evaluate(panel,reports):
                    'brier':sum((predictions[c['case_id']]-c['label'])**2 for c in rows)/len(rows)}
    metrics[model][control]=result
  comparisons={}
- for i,left in enumerate(MODELS):
-  for right in list(MODELS)[i+1:]:
+ for i,left in enumerate(models):
+  for right in list(models)[i+1:]:
    l=prediction_map[left]['learned_head'];r=prediction_map[right]['learned_head'];wins=[0,0]
    for case in cases:
     if case['split']!='test':continue
@@ -131,13 +152,17 @@ def evaluate(panel,reports):
    n=sum(wins)
    pval=min(1.,2.*sum(math.comb(n,k) for k in range(min(wins)+1))/(2**n)) if n else 1.
    comparisons[left+'__'+right]={'left_only_correct':wins[0],'right_only_correct':wins[1],'unadjusted_exact_mcnemar_p':pval}
- return {'schema':'hepta.e1-english-three-pretrained-numeric.v1','cases':len(cases),'scores':metrics,
+ return {'schema':('hepta.e1-core-triad-real-cpu-numeric.v1' if core else
+                   'hepta.e1-english-three-pretrained-numeric.v1'),
+         'registered_core_triad':core,'cases':len(cases),'scores':metrics,
  'pairwise_test':comparisons,'resource_observations':resource_summary,'new_chinese_or_code_tasks_tested':False,
  'chronological_future_windows_tested':False,
  'independent_model_origin_and_run_signatures_verified':False,
  'independent_labels_or_ndu_verified':False,
  'same_host_total_lifecycle_budget_and_energy_verified':False,
- 'Reader_sufficient_evidence_qualified':False,'stem_winner_selected':False,
+ 'Reader_sufficient_evidence_qualified':False,
+ 'production_no_change_checkpoint_authenticated':False,
+ 'true_future_three_window_evidence_available':False,'stem_winner_selected':False,
  'production_promotion_permitted':False,'authority':'DENY_ALL'}
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--panel',type=Path,required=True)

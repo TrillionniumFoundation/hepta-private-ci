@@ -71,7 +71,7 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
     if len(dims) != 1:
         raise Invalid('inconsistent feature width')
     width = dims.pop()
-    if width not in (256, 384) or any(type(value) not in (float, int) or not math.isfinite(value) or abs(value) > 8
+    if width not in (256, 384, 768) or any(type(value) not in (float, int) or not math.isfinite(value) or abs(value) > 8
                                         for v in vectors.values() for value in v):
         raise Invalid('bad feature width or unsafe Q24 float')
     parts = {name: [c for c in cases if c['split'] == name] for name in ('train', 'calibration', 'test')}

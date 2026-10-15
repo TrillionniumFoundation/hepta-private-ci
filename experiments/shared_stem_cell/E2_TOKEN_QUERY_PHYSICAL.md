@@ -1,0 +1,75 @@
+# E2 physical frozen Token Matrix vs native pooled Head
+
+**Draft / SHADOW / DENY_ALL. No Stem or Cell is selected or installed.**
+
+## Physical procedure
+
+The E1 core-triad workflow runs pinned Granite R2 (384D), mmBERT-small (384D), and ModernBERT-base (768D) on a single frozen 224-row public AG News cohort, and then executes E2 against those exact staged model files. E2 reloads the model, verifies the original E1 publisher-file inventory, and performs its own Encoder forwards. It never claims to reuse E1's earlier physical execution.
+
+Within E2, each original row is encoded in one of **28 physical microbatches of eight**. A PyTorch model-forward hook counts actual module calls, and the **same hidden tensor** is used to derive both the native pooled vector and the full contextual Token Matrix. No Head performs a new Encoder forward.
+
+Token Matrix: contextual hidden tokens, per-token unit L2, nearest-even Q24, padding removed; length 1–512 and width 384/768. Native Pooled: CLS for Granite, masked mean for mmBERT/ModernBERT, then unit-L2 and Q24. The Token Matrix normalization is a distinct explicit E2 representation profile; it does not claim to be identical to the E1 pooled profile. Per-case feature bytes/lengths are hashed and the full immutable bank is checked before and after Head training. No raw model weights or hidden token matrices are uploaded in artifacts.
+
+## Registered Head arms
+
+| Head | Private parameters 384D | Private parameters 768D | Purpose |
+| --- | ---: | ---: | --- |
+| Pooled Linear | 385 | 769 | Lower-capacity binary baseline |
+| Pooled Gated | 769 | 1537 | Same-capacity control |
+| Token Query | 769 | 1537 | Learned masked attention query and binary readout |
+
+All arms use exactly the same train cohort, seed, 40 full-train SGD steps at learning rate 0.15, calibration-only temperature fit, and maximum **2,048 private trainable parameters**. Actual Query movement and changed Head tensor digests are mandatory, not merely a declared learned architecture. The primary matched-capacity contrast is Token Query against Pooled Gated. Equal parameters are **not** equal FLOPs, CPU time or energy; the reviewer preserves separate observed costs.
+
+## Evidence and limits
+
+The independent reviewer requires complete original E1+E2 report pairs for all three pinned candidate models, all source case/label/input identities, full prediction coverage, original publisher snapshot digests, complete Head parameter and SGD receipts, actual observed batch hook counts and positive lifecycle resource fields. It rescales neither model, nor claims production advantage. Only **64 retrospective English held-out** records are scored for accuracy and Brier.
+
+Missing: the independently authenticated deployed no-change model, blind future chronological windows, Reader sufficiency, E3 D0–D3 specialization and negative transfer, independent NDU, real multimodal improvements and target-host 64/256/1024/4096 Cell p95/p99/CPU/RSS/GPU/energy/WAL/fence/recovery. Neither a physical local forward nor an SHA-shaped string is independent origin authentication.
+
+The E1/E2 workflow is located at .github/workflows/hepta-e1-core-triad-real-cpu.yml. Run the isolated mechanism tests with:
+
+    python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_token_query_*.py' -v
+
+Every output remains **production_promotion_permitted=false**, **stem_winner_selected=false**, **authority=DENY_ALL**. No main merge, Cell split or production route change is permitted.
+
+## Explicit within-arm frozen comparator
+
+For every E2 arm, the runner now publishes its original untrained Head's complete calibration-only-temperature-selected 96-case predictions, alongside the 96-case learned probabilities. The independent reviewer rejects a single missing/swapped frozen case and reports learned-minus-its-own-frozen accuracy as well as the paired query-minus-equal-capacity pooled result. This **is not** a substitute for the E0 deployed original no-change model or a prospective NDU improvement.
+
+## 2026-10-15 exact paired diagnostic
+
+The independent E2 scorer now slices the original 96 calibration/test prediction rows down to exactly **64 original TEST rows**, requires explicit source groups and calculates paired discordance counts, exact **unadjusted two-sided McNemar p**, and Brier loss differences for Query versus the same-parameter Pooled Gated, Query versus Pooled Linear, and learned Query versus its own frozen Head. It rejects altered labels, duplicated/missing IDs, nonfinite or boolean probabilities, absent source-group declarations and incomplete controls. **The sample is retrospective, source-group independence is unverified, three comparisons are not multiplicity-adjusted, and no p-value can select a Stem, certify positive NDU, or grant production promotion.** Pooled/Query CPU cost remains observed separately and no energy or target-host p99 is invented.
+
+## 2026-10-15 E2 feature-integrity hardening
+
+A binary Attention Mask alone is insufficient before slicing the unpadded contextual Token Matrix. The physical extractor now rejects masks containing 1→0→1 holes by requiring every row to be a contiguous right-padded prefix (the already required first valid token is preserved). Otherwise slicing with `mask.sum()` can discard later live tokens and silently replace them with padding. The offline learner also rejects a zero-length-equivalent or non-unit-L2 native pooled vector and any unpadded token vector with norm outside (0.999, 1.001), after full Q24 canonicality checks. Missing or nonfinite representations were already refused. Local physical-hook synthetic fault-injection and learning tests pass **26/26** in normal and Python optimized modes on the isolated working copy; those tests use synthetic PyTorch tensors, not pretrained real weights. The exact-HEAD hosted workflow and scientific E0–E6 qualification remain independently pending. `DENY_ALL` and no production mutation remain unchanged.
+
+## 2026-10-15 E2 complete Head service-cost diagnostic
+
+The isolated research comparison now measures each learned Head's real single-case CPU forward **including probability softmax** for all 64 original TEST inputs, after an explicit warmup. Every single-case probability must agree numerically (tolerance 1e-5) with that Head's separately computed batched prediction on the unchanged Token Matrix/pooled feature bank; a missing, changed, NaN, or nonpositive case duration fails closed. The independent evaluator separately recomputes descriptive median/p95/p99 from all 64 recorded positive timings; these statistics are **not trustworthy native p95/p99** on a target device and are especially limited for p99 with only 64 historical cases.
+
+The research cost envelope now charges original E2 model load+Encoder encode **once per hypothetical standalone Head** plus its own training and 64-case serving measurements, without charging the complete three-Head campaign runtime to each independent candidate. These additive values are descriptive and not equal-energy or equal-FLOPs performance evidence, and may omit scheduling/migration/recovery overhead. Token Query versus equal-capacity Pooled Gated must be judged on both learned utility and physical request cost; no winner/promotion follows. New local synthetic CPU tests: 27/27 regular, 27/27 `python -O`; no pretrained weights or independent host attestation executed in this local suite. Authority remains DENY_ALL.
+
+## 2026-10-15 Head safetensors independent replay (research only)
+
+E2 now **requires a create-only replay bundle** with the complete original Q24 Token Matrix and native pooled snapshots, case/group/source identity, and six **safe safetensors** checkpoints (Pooled Linear/Gated/Token Query × frozen/learned). Each file has a checked bounded size and SHA-256, and the manifest binds the exact original E2 JSON report bytes. No untrusted Python pickle loader or `torch.load` fallback is allowed. A separate Python process reopens these files, verifies unpadded offsets, case/source identity, canonical Q24 bank and saved-Head tensor digests, recomputes the original calibration temperatures and all **576 frozen/learned calibration+test prediction probabilities**, requiring error <= 1e-5. It detects rehashed but altered Head/feature tensors and refuses incomplete or substituted source cases.
+
+For all three real E1/E2 candidate runs, the same CI host runs independent artifact replay before the descriptive E2 accuracy/Brier Reviewer. Raw feature-bank tensors and Head checkpoints remain transient on the CI runner: only the sanitized success/error audit JSON is retained, **not** the large features, hidden states or weights. The replay is an independent *numerical process* check, not a cryptographic model-origin signature, genuine future data, target-host FinalUse/WAL evidence or authority for promotion. 37/37 local standard and 37/37 Python optimized tests passed using synthetic Q24 matrices and actual safe tensor arithmetic. Exact-head hosted CI and real-weight runs remain independently required. **DENY_ALL**.
+
+## 2026-10-15 POSIX replay read-once integrity hardening
+
+The previous research Reviewer hashed each safetensors file from a path, then **reopened the mutable path** to deserialize it. A file-replacement race between those two reads could make the checked bytes differ from the bytes used in the numerical replay. The new fail-closed POSIX reader opens a regular file with `O_NOFOLLOW` once, uses the **same descriptor** for `fstat`, bounded read and SHA-256, then decodes those **verified in-memory bytes** with `safetensors.torch.load` rather than reaccessing the file path. This also covers the case-identity JSON. Malformed (even rehashed) safe tensor bytes are rejected as an explicit research validation error, and descriptors close on success/failure. The tradeoff is bounded in-process ownership of feature bytes (max 450 MiB), acceptable for this research-only isolated Reviewer but not a claim of zero-copy production serving.
+
+Independent local exact-source validation: original **37 tests** plus **four new adversarial tests** for symlink sidecars, post-verification pathname replacement, corrupt rehashed safetensors, and nonregular/oversized input. **41/41 standard and 41/41 `python -O` tests pass using CPU PyTorch 2.10.0 and safetensors 0.7.0**, on synthetic 384D/768D Q24 matrices. These are mechanism tests, not real pretrained Encoder runs, independent model/source signatures, true future NDU or 4,096-Cell qualification. Production authority remains DENY_ALL.
+
+## 2026-10-15 independent 40-step SGD reconstruction
+
+Head output replay alone cannot show a learned checkpoint was produced by its claimed update trace: an unrelated checkpoint could be paired with recomputed probabilities and digests. The read-only E2 Reviewer now performs an **independent optimizer computation** on the exact original 128 TRAIN frozen Q24 feature cases, holding CAL and TEST out of SGD. It binds the preregistered seed 20261015, same initial binary readout/zero gate or query and bias, 40 complete full-batch PyTorch SGD steps, learning rate 0.15, with no momentum/weight decay. The resultant parameters must match all three saved **learned** Head tensors within a maximum 2e-6 absolute difference. Model-source and original no-change trust are not implied. The reviewer reuses only the published Head architecture and frozen safe tensor input; the SGD loop is separately authored and does not call the producer's training helper.
+
+Six new adversarial/causal tests reject a swapped TRAIN label, forged seed/step/lr, a rehashed arbitrary final query or changed initialization, verify CAL/TEST labels are excluded from fitting, and cover 1-vs-2 CPU thread numerical tolerance. Source-local PyTorch CPU: **47/47 ordinary + 47/47 under `python -O`**. The existing hosted E2 contract test and three real-model CPU workflow now require the independent optimizer result in addition to 576 frozen/learned probability replays. The test inputs remain synthetic until that exact-head pretrained model job actually completes. **No Stem selected; DENY_ALL.**
+
+## 2026-10-15 cross-implementation NumPy forward Oracle
+
+The independent E2 safe-tensor Reviewer previously recomputed all 576 Head probabilities using the **same PyTorch Head.forward class** as the Producer. Even in an independently started process, a shared arithmetic bug in that class could make both sides agree on the wrong numerical function. A separate **NumPy float64** scalar implementation now recomputes all three registered Head forms (pooled linear, pooled gate with stable sigmoid, unpadded learned token softmax Query), original CAL-only temperature objective, and every frozen/learned probability from the same previously verified frozen Q24/token/Head bytes. The original PyTorch independent replay and train-only 40-step SGD reconstruction remain mandatory. NumPy/Producer probability difference must not exceed 2e-5; a different numerical temperature minimum is only tolerated if calibration losses differ by <=1e-6.
+
+Eight new differential tests check both **384D and 768D** frozen/learned reports (six states × 96 = 576 original probabilities), swapped Query weights, modified probabilities or calibration temperatures, missing tensor, incomplete original cohort, and execution with `Head.forward` deliberately patched to throw. Isolated local CPU PyTorch 2.10.0 / NumPy 2.3.5 / safetensors 0.7.0 suite: **55/55 normal and 55/55 `python -O`**, synthetic features only. GitHub hosted runtime still uses its pinned NumPy 2.2.6; exact-head workflow completion is mandatory before declaring CI compatibility or real pretrained results. This tests cross-implementation arithmetic, NOT independent publisher signatures, NDU, E0 original no-change, or selected Stem. All outputs keep `DENY_ALL`.

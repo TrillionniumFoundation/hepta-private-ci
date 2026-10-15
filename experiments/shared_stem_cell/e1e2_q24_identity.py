@@ -6,7 +6,7 @@ import math
 import struct
 
 Q24=1<<24
-WIDTHS=(256,384)
+WIDTHS=(256,384,768)
 class Invalid(ValueError):pass
 
 def _id(value):

@@ -44,6 +44,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          printf 'source_sha=%s\nevent_base_sha=%s\n' "$SOURCE_SHA" "$BASE_SHA" > "$RUNNER_TEMP/hepta-command-records/original-event-identity.txt"
           args=(--full-history --commit "$SOURCE_SHA")
           if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
             args+=(--commit "$BASE_SHA")
@@ -55,20 +57,54 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
+          test -n "$BASE_REF"
+          # The pull_request event's .base.sha is a historical immutable
+          # snapshot, not a promise that a research target branch stays put.
+          # Never silently compare GitHub's CURRENT merge ref against that
+          # stale event SHA. Reconcile the live branch under strict identity
+          # checks and refuse any concurrent head/base movement.
+          pr_json="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          test "$(jq -er '.number' <<<"$pr_json")" = "$PR_NUMBER"
+          test "$(jq -er '.state' <<<"$pr_json")" = "open"
+          test "$(jq -er '.head.sha' <<<"$pr_json")" = "$SOURCE_SHA"
+          test "$(jq -er '.base.ref' <<<"$pr_json")" = "$BASE_REF"
+          test "$(jq -er '.head.repo.full_name' <<<"$pr_json")" = "$REPO"
+          test "$(jq -er '.base.repo.full_name' <<<"$pr_json")" = "$REPO"
+          live_json="$(gh api "repos/$REPO/git/ref/heads/$BASE_REF")"
+          test "$(jq -er '.ref' <<<"$live_json")" = "refs/heads/$BASE_REF"
+          test "$(jq -er '.object.type' <<<"$live_json")" = "commit"
+          live_base_sha="$(jq -er '.object.sha' <<<"$live_json")"
+          [[ "$live_base_sha" =~ ^[0-9a-f]{40}$ ]]
           ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          test "$(jq -er '.ref' <<<"$ref_json")" = "refs/pull/$PR_NUMBER/merge"
+          test "$(jq -er '.object.type' <<<"$ref_json")" = "commit"
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          test "$(jq -er '.sha' <<<"$commit_json")" = "$actual_sha"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
           test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[0]}" = "$live_base_sha"
           test "${parents[1]}" = "$SOURCE_SHA"
+          # scripts/hepta_ci_history authenticates exact full-history inputs;
+          # use the new live SHA only AFTER a verified GitHub merge parent.
+          python3 scripts/hepta_ci_history.py --full-history --commit "$live_base_sha"
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          expected_tree="$(git merge-tree --write-tree "$live_base_sha" "$SOURCE_SHA")"
           test "$actual_tree" = "$expected_tree"
+          # Reject an in-flight base update between resolution and tree check.
+          final_base_sha="$(gh api "repos/$REPO/git/ref/heads/$BASE_REF" --jq '.object.sha')"
+          test "$final_base_sha" = "$live_base_sha"
+          printf 'pr=%s\nsource_sha=%s\nevent_base_sha=%s\nverified_live_base_sha=%s\nverified_merge_sha=%s\nverified_merge_tree=%s\n' \
+            "$PR_NUMBER" "$SOURCE_SHA" "$BASE_SHA" "$live_base_sha" "$actual_sha" "$actual_tree" \
+            > "$RUNNER_TEMP/hepta-command-records/live-base-merge-identity.txt"
+          # Propagate independently validated live base to synthetic merge,
+          # exact-tree scope and candidate identity in this same CI job.
+          printf 'BASE_SHA=%s\n' "$live_base_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
       - name: Construct the canonical prospective merge

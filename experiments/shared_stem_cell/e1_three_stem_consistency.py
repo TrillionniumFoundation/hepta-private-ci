@@ -19,6 +19,17 @@ from e1e5_confirmatory_review import _cases, Invalid, E1_PROFILES, FUTURES, SPLI
 SCHEMA = 'hepta.stem-e1-three-candidate-panel.v1'
 OUT_SCHEMA = 'hepta.stem-e1-three-candidate-parity.v1'
 CANDIDATES = ('granite_97m_r2', 'mmbert_small', 'embeddinggemma_2_text')
+# The original public Gemma research panel remains unchanged. The core triad
+# requested for Hepta's Stem selection is a separate, incompatible schema.
+CORE_SCHEMA = 'hepta.stem-e1-core-granite-mmbert-modernbert.v1'
+CORE_OUT_SCHEMA = 'hepta.stem-e1-core-triad-parity.v1'
+CORE_CANDIDATES = ('granite_97m_r2', 'mmbert_small', 'modernbert_base')
+CORE_REVISIONS = {
+    'granite_97m_r2': '835ad14087e140460703cf0fae09f97d469d65c2',
+    'mmbert_small': '0eb3d056ec1d6333cf4e19b0966dfde342a41a3a',
+    'modernbert_base': 'fa3113d09d6dacfe5528708803dd92a62240237a',
+}
+
 MAX_CASES = 50000
 FAMILIES = ('zh', 'en', 'code')
 
@@ -50,12 +61,13 @@ def _case_fingerprint(row):
 
 
 def review(panel):
-    if (type(panel) is not dict or panel.get('schema') != SCHEMA or
+    if (type(panel) is not dict or panel.get('schema') not in (SCHEMA, CORE_SCHEMA) or
             panel.get('authority') != 'DENY_ALL' or
             panel.get('production_promotion_permitted') is not False):
         raise Invalid('invalid/nonresearch E1 panel')
     for key in ('plan_sha256', 'dataset_sha256', 'no_change_producer_sha256'):
         d256(panel.get(key))
+    cohort = CORE_CANDIDATES if panel['schema'] == CORE_SCHEMA else CANDIDATES
     scope=stable(panel.get('scope'))
     items=panel.get('candidates')
     if type(items) is not list or len(items) != 3:
@@ -66,7 +78,7 @@ def review(panel):
         if type(item) is not dict or set(item) != {'model', 'run_sha256', 'study', 'training', 'tokens'}:
             raise Invalid('malformed candidate record')
         model=item['model']
-        if model not in CANDIDATES or model in seen:
+        if model not in cohort or model in seen:
             raise Invalid('duplicate or unregistered Encoder')
         seen.add(model)
         run=d256(item['run_sha256'])
@@ -78,6 +90,8 @@ def review(panel):
         if study.get('dataset_sha256') != panel['dataset_sha256'] or study.get('plan_sha256') != panel['plan_sha256'] or study.get('scope') != scope:
             raise Invalid('dataset/plan/Scope mismatch')
         cases,arms=_cases(study)
+        if panel['schema'] == CORE_SCHEMA and study['upstream_revision'] != CORE_REVISIONS[model]:
+            raise Invalid('unapproved core Stem model revision')
         if not 3 <= len(cases) <= MAX_CASES or set(c['split'] for c in cases.values()) != set(SPLITS):
             raise Invalid('full cross-sectional + future/OOD cohort required')
         if any(c.get('modality') not in ('text','code') or c.get('language') not in FAMILIES or
@@ -102,6 +116,11 @@ def review(panel):
             raise Invalid('Head training mismatch/ceiling exceeded')
         if finite(t['learning_rate']) <= 0:
             raise Invalid('invalid learning rate')
+        # Full two-class linear Head weights and biases are private. A 768D
+        # arm cannot pretend it has the 384D Head parameter count.
+        if (panel['schema'] == CORE_SCHEMA and t['head_kind'] == 'linear' and
+                t['trainable_head_parameters'] != 2 * E1_PROFILES[model][0] + 2):
+            raise Invalid('incorrect complete two-class linear Head count')
         for k in ('train_case_sha256','minibatch_sha256'):d256(t[k])
         comparable=tuple((k,t[k]) for k in ('seed','steps','batch_size','learning_rate','head_kind','head_ceiling','optimizer','train_case_sha256','minibatch_sha256'))
         if shared_training is None:shared_training=comparable
@@ -132,14 +151,14 @@ def review(panel):
                          'token_count_max':max(tokens.values()),
                          'reported_lifecycle_ms':sum(learned[0]['resources'][k] for k in ('load_ms','encode_ms','bridge_fit_ms','head_train_ms','cache_ms','migration_ms','recompute_ms','serving_ms','evaluation_ms','checkpoint_ms')),
                          'reported_peak_rss_bytes':learned[0]['resources']['peak_rss_bytes']}
-    if seen != set(CANDIDATES):raise Invalid('three Stem candidates incomplete')
+    if seen != set(cohort):raise Invalid('three Stem candidates incomplete')
     rows_by_split=defaultdict(list)
     for case_id,fingerprint in canonical_cases.items():
         rows_by_split[fingerprint[3]].append((case_id,fingerprint[-3],fingerprint[1],fingerprint[-2]))
     descriptive={}
     for split in ('test',*FUTURES,'ood'):
         rows=rows_by_split[split];descriptive[split]={}
-        for model in CANDIDATES:
+        for model in cohort:
             desc={}
             for label,pred in predictions[model].items():
                 correct=sum(int((pred[k]>=.5)==bool(y)) for k,y,_,_ in rows)
@@ -150,9 +169,14 @@ def review(panel):
             desc['learned_minus_no_change_accuracy']=desc['learned_head']['accuracy']-desc['no_change']['accuracy']
             desc['family_case_counts']={f:sum(row[3]==f for row in rows) for f in FAMILIES}
             descriptive[split][model]=desc
-    return {'schema':OUT_SCHEMA,'models':evidence,'matched_source_cases':len(canonical_cases),
+    return {'schema': CORE_OUT_SCHEMA if panel['schema'] == CORE_SCHEMA else OUT_SCHEMA,
+            'models':evidence,'matched_source_cases':len(canonical_cases),
+            'core_triad_exact_revisions_declared':panel['schema'] == CORE_SCHEMA,
+            'production_no_change_source_independently_authenticated':False,
+            'independent_reader_and_future_outcome_authority':False,
             'matched_training_ceiling_and_schedule':True,
-            'unchanged_production_baseline_predictions_reused':True,
+            'matched_claimed_no_change_predictions_across_models':True,
+            'unchanged_production_baseline_predictions_reused':False,
             'descriptive_split_metrics':descriptive,
             'reader_sufficient_accuracy_independently_verified':False,
             'model_weight_origin_and_physical_execution_verified':False,

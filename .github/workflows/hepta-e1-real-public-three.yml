@@ -75,6 +75,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install FFmpeg 6 system shared libraries for pinned TorchCodec
+        run: |
+          set -euo pipefail
+          # Prior hosted failure was missing libavutil.so.58, not a model
+          # inference / learner failure. Pin the Ubuntu 24.04 FFmpeg 6 ABI.
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libavutil58 libavcodec60 libavformat60 libswresample4 \
+            libswscale7 libavfilter9 libavdevice60
+          python3 - <<'PY'
+          import ctypes
+          for soname in ('libavutil.so.58','libavcodec.so.60',
+                         'libavformat.so.60','libswresample.so.4',
+                         'libswscale.so.7','libavfilter.so.9',
+                         'libavdevice.so.60'):
+              ctypes.CDLL(soname)
+          PY
+          dpkg-query -W -f='${binary:Package} ${Version}\n' \
+            libavutil58 libavcodec60 libavformat60 libswresample4 \
+            libswscale7 libavfilter9 libavdevice60 \
+            > "$RUNNER_TEMP/e1-ffmpeg-system-runtime.txt"
       - name: Install pinned CPU-only research runtime
         run: |
           set -euo pipefail
@@ -240,4 +261,5 @@ jobs:
             ${{ runner.temp }}/e1-public/*.json
             ${{ runner.temp }}/e1-public/*.failed.txt
             ${{ runner.temp }}/e1-pinned-runtime.txt
+            ${{ runner.temp }}/e1-ffmpeg-system-runtime.txt
           retention-days: 7

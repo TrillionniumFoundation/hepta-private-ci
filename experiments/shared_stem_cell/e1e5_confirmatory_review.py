@@ -21,6 +21,7 @@ FUTURES = ('future1','future2','future3')
 SPLITS = ('train','calibration','test','future1','future2','future3','ood')
 E1_PROFILES = {'granite_97m_r2': (384, 'cls_l2'),
                'mmbert_small': (384, 'mean_l2'),
+               'modernbert_base': (768, 'mean_l2'),
                'embeddinggemma_2_text': (256, 'matryoshka_256_l2')}
 STAGE_COMPARISONS = {
     'E1': {'learned_head': ('no_change','frozen_head')},

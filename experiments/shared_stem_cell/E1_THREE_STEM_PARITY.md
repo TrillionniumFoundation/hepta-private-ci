@@ -38,3 +38,45 @@ This tool computes matched test/future1/future2/future3/OOD binary accuracy and 
 **Blocking before E1 scientific acceptance:** real source-licensed Chinese/English/code tasks in three genuinely future chronological windows, externally audited original labels and Reader four-condition sufficiency; exact reviewed model/tokenizer weight files; genuine train-only updates and predictions sealed before future labels; matched no-change baseline physically executed; no-collapse / OOD / old-task forgetting; independent cost/energy/quality evidence and the exact-SHA native Worker/FinalUse/WAL owner, security and `blocking-ci`. Each is outside this advisory validator. `production_promotion_permitted=false` and `authority=DENY_ALL` are unconditional.
 
 **Test scope:** 22 locally passed deterministic, synthetic parity/fault tests, source blob SHA `412962cf4b705985d068e2332b3b1d2f491848bc`, tests SHA `2900ab077a954ebb9986f4b7c9d1bdf7aacd680d`; exact-HEAD hosted CI required separately. These tests do not demonstrate Granite/mmBERT/Gemma physical learning.
+
+## 2026-10-15 core three-Stem parity extension (97M / 140M / 149M)
+
+The previous `hepta.stem-e1-three-candidate-panel.v1` explicitly remains the
+**Granite/mmBERT/EmbeddingGemma** research panel. It is NOT the requested
+smallest-vs-multilingual-vs-code/general core Encoder comparison.
+
+The separate `hepta.stem-e1-core-granite-mmbert-modernbert.v1` panel requires
+exactly Granite R2 **97M** (`835ad14087e140460703cf0fae09f97d469d65c2`,
+384D CLS+L2), mmBERT-small **140M**
+(`0eb3d056ec1d6333cf4e19b0966dfde342a41a3a`, 384D mean+L2),
+and ModernBERT-base **149M**
+(`fa3113d09d6dacfe5528708803dd92a62240237a`, 768D mean+L2
+as an explicit proposed research readout, **not** an independently validated
+deployment ABI). Both panel types use the existing E1 nested observations,
+strict same-source/source-group/label/Scope and chronology match, same
+training schedule and frozen/no-change controls. The new model revision
+identities are exact pins, not cryptographic proof of loaded weights.
+
+The new observational result schema is `hepta.stem-e1-core-triad-parity.v1`.
+It refuses Gemma as the third member; no substitution or stitching of the
+unmatched existing public AG News Gemma experiment with the 128-example
+mmBERT/ModernBERT trial in PR #1835 is permitted. That earlier pair used
+different case counts, multi-class labels and optimizer settings than the
+224-example binary trial. **It cannot produce a valid three-way comparison
+without re-running all three on one frozen source and training protocol.**
+
+This extension adds no weight download, training, physical model forward,
+target-host resource attestation, authentic future windows, real NDU or
+independent no-change provenance. Its tests are deterministic synthetic
+contract/fault tests only; `production_no_change_source_independently_authenticated=false`,
+`stem_winner_selected=false`, `production_promotion_permitted=false` and
+`authority=DENY_ALL` remain hardcoded. E0 independent deployed baseline,
+E2 Token Matrix vs pooled features, E3 D0-D3 specialization, E4 future/negative
+transfer, E5 modalities, and E6 signed native 64/256/1024/4096 physical
+measurements must be completed before any Stem selection. Any real run
+must use the same independently frozen source, pinned model weights,
+full lifecycle receipts and a separate blinded evaluator.
+
+## Full private Head accounting and untrusted no-change claims
+
+For the new core trio, binary **linear** Head private parameter counts must be exactly `2*feature_width+2`: Granite **770**, mmBERT **770**, and ModernBERT **1,538**, all below the matched 2K ceiling. This protects against reporting the 384D/770-weight bill for a 768D classifier. Other Head kinds still report their entire privately trained tensors and share the same ceiling, with physical proof pending. The observational receipt now distinguishes `matched_claimed_no_change_predictions_across_models=true` from `unchanged_production_baseline_predictions_reused=false`. Matching untrusted probabilities is not authentication of a deployed, frozen no-change baseline.
