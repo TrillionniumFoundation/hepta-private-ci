@@ -1,0 +1,183 @@
+name: MemoryCell actual Git cross-file static integrity (no model)
+on:
+  push:
+    branches:
+      - codex/memory-original-crossfile-trace-20261015
+    paths:
+      - scripts/memory_cell/real_source_reader_probe.py
+      - scripts/memory_cell/test_real_source_reader_probe.py
+      - scripts/memory_cell/memory_original_crossfile_trace.py
+      - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/memory_original_http_runtime.py
+      - scripts/memory_cell/memory_original_http_worker.py
+      - scripts/memory_cell/test_memory_original_http_runtime.py
+      - scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
+      - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+      - scripts/memory_cell/memory_original_nonparam_pair.py
+      - scripts/memory_cell/test_memory_original_nonparam_pair.py
+      - scripts/memory_cell/memory_original_evidence_completion.py
+      - scripts/memory_cell/test_memory_original_evidence_completion.py
+      - scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
+      - .github/workflows/hepta-memory-original-crossfile-static.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell/real_source_reader_probe.py
+      - scripts/memory_cell/test_real_source_reader_probe.py
+      - scripts/memory_cell/memory_original_crossfile_trace.py
+      - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/memory_original_http_runtime.py
+      - scripts/memory_cell/memory_original_http_worker.py
+      - scripts/memory_cell/test_memory_original_http_runtime.py
+      - scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
+      - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+      - scripts/memory_cell/memory_original_nonparam_pair.py
+      - scripts/memory_cell/test_memory_original_nonparam_pair.py
+      - scripts/memory_cell/memory_original_evidence_completion.py
+      - scripts/memory_cell/test_memory_original_evidence_completion.py
+      - scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
+      - .github/workflows/hepta-memory-original-crossfile-static.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-crossfile-static-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  cross-file-static-integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      MEMORY_REAL_SOURCE_ZIP: /tmp/crossfile-static/source.zip
+      MEMORY_REOPEN_ZIP: /tmp/crossfile-static/reopen.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Exact-source SHA and independent source download
+        env:
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          mkdir -p /tmp/crossfile-static/review
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o "$MEMORY_REAL_SOURCE_ZIP"
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o "$MEMORY_REOPEN_ZIP"
+          echo 'a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  /tmp/crossfile-static/source.zip' | sha256sum --check
+          echo '59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  /tmp/crossfile-static/reopen.zip' | sha256sum --check
+      - name: Reader premise-support and existing causal admission regressions (no model)
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/real_source_reader_probe.py scripts/memory_cell/test_real_source_reader_probe.py
+          python3 -m unittest \
+            test_real_source_reader_probe test_factorial_evidence_gate \
+            test_memory_trial_admission test_memory_trial_independent_score \
+            test_memory_trial_preexposure_freeze test_memory_trial_program_replay \
+            -v 2>&1 | tee /tmp/crossfile-static/review/reader-premise-tests.txt
+      - name: All 18 negative regression tests on the original bytes
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_crossfile_trace.py scripts/memory_cell/test_memory_original_crossfile_trace.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_crossfile_trace.py -v
+      - name: Execute exact pinned CPython original module in a bounded offline child
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_http_runtime.py scripts/memory_cell/memory_original_http_worker.py scripts/memory_cell/test_memory_original_http_runtime.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_http_runtime.py -v
+          mkdir -p /tmp/crossfile-static/review
+          python3 scripts/memory_cell/memory_original_http_runtime.py \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --output /tmp/crossfile-static/review/verified-original-http-runtime.json
+          echo 'b847f79630c02e48aa174021a6c668f7882e90ee8d383302cef8b14374152f4b  /tmp/crossfile-static/review/verified-original-http-runtime.json' | sha256sum --check
+          cmp /tmp/crossfile-static/review/verified-original-http-runtime.json \
+            scripts/memory_cell/data/memory-original-cpython-http-offline-20261015.json
+      - name: Execute original-source nonparametric paired Top-1 evidence pre-registration
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_nonparam_pair.py scripts/memory_cell/test_memory_original_nonparam_pair.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_nonparam_pair.py -v \
+            2>&1 | tee /tmp/crossfile-static/review/nonparam-original-tests.txt
+          python3 scripts/memory_cell/memory_original_nonparam_pair.py prepare \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-twelve-plan.json
+          echo '7cb9d4cd47e4b0230ff746228cf238a72845207746061c94bd5eb80627172fa2  /tmp/crossfile-static/review/original-twelve-plan.json' | sha256sum --check
+          python3 scripts/memory_cell/memory_original_nonparam_pair.py rank \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-twelve-plan.json \
+            --plan-sha256 7cb9d4cd47e4b0230ff746228cf238a72845207746061c94bd5eb80627172fa2 \
+            --output /tmp/crossfile-static/review/original-twelve-ranked.json
+          echo '74968aea04b45c595c8d071ee52ab8dab440c8c44e0d24f3449c0ef432ddd6bd  /tmp/crossfile-static/review/original-twelve-ranked.json' | sha256sum --check
+      - name: Freeze and test two-source complete Git evidence without opening gold
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_evidence_completion.py scripts/memory_cell/test_memory_original_evidence_completion.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_evidence_completion.py -v \
+            2>&1 | tee /tmp/crossfile-static/review/original-top2-tests.txt
+          python3 scripts/memory_cell/memory_original_evidence_completion.py prepare \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --output /tmp/crossfile-static/review/original-top2-plan.json
+          echo '5f34ff721dfd502292bb215083f7f00a059529b037ff838f5b955b8fc12c3d59  /tmp/crossfile-static/review/original-top2-plan.json' | sha256sum --check
+          python3 scripts/memory_cell/memory_original_evidence_completion.py rank \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --output /tmp/crossfile-static/review/original-top2-ranked.json
+          echo 'cc7c806ea48d05a98a2964e7e01ed074ede550b0231c1053f10cc80d1310974e  /tmp/crossfile-static/review/original-top2-ranked.json' | sha256sum --check
+      - name: Independently regenerate exact, unsigned mechanical evidence
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/crossfile-static/review
+          python3 scripts/memory_cell/memory_original_crossfile_trace.py \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --output /tmp/crossfile-static/review/strict-original-links.json
+          echo '555c85a878e7c6e7c2fa95efaccf4c3c3143e534e8e5a61a84d5b8b352a53ec7  /tmp/crossfile-static/review/strict-original-links.json' | sha256sum --check
+          cmp /tmp/crossfile-static/review/strict-original-links.json \
+            scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
+          (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Independently score sealed source-first evidence against original Git oracle
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memory_original_nonparam_pair.py score \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-twelve-plan.json \
+            --plan-sha256 7cb9d4cd47e4b0230ff746228cf238a72845207746061c94bd5eb80627172fa2 \
+            --ranking /tmp/crossfile-static/review/original-twelve-ranked.json \
+            --ranking-sha256 74968aea04b45c595c8d071ee52ab8dab440c8c44e0d24f3449c0ef432ddd6bd \
+            --oracle /tmp/crossfile-static/review/strict-original-links.json \
+            --output /tmp/crossfile-static/review/original-twelve-scored.json
+          echo '8fffe9f574d84b55a907da4aae00c4ab7c1267421ae4869cd7e78db87831ab82  /tmp/crossfile-static/review/original-twelve-scored.json' | sha256sum --check
+          cmp /tmp/crossfile-static/review/original-twelve-scored.json \
+            scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
+          (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Reopen original cross-file oracle and independently score complete two-source set
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memory_original_evidence_completion.py score \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --ranking /tmp/crossfile-static/review/original-top2-ranked.json \
+            --oracle /tmp/crossfile-static/review/strict-original-links.json \
+            --output /tmp/crossfile-static/review/original-top2-scored.json
+          echo '29a3ab664f7f338589a23e62d33379fdafbb5fbbcf382b8eae917577f1b9d8b8  /tmp/crossfile-static/review/original-top2-scored.json' | sha256sum --check
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
+          (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-crossfile-static-audit
+          path: /tmp/crossfile-static/review
+          if-no-files-found: warn

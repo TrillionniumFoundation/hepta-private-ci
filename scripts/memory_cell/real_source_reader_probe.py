@@ -797,10 +797,19 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
             evidence = case["conditions"][row["condition"]]
             cited = re.findall(r"\[E[1-9][0-9]*\]", row["answer"]) if ok else []
             cited_ids = {int(x[2:-1]) for x in cited}
-            delivery = {
+            source_markers = {
                 i
                 for i, e in enumerate(evidence, 1)
                 if e["path"] == targets[row["case_id"]][1]
+            }
+            # The matched lesion deliberately retains the target file/marker.
+            # Credit a premise only when its original declaration is still in
+            # the delivered excerpt; a correct marker guess is not support.
+            delivery = {
+                i
+                for i, e in enumerate(evidence, 1)
+                if i in source_markers
+                and any(name == case["symbol"] for name, _ in declarations(e["text"]))
             }
             invalid_labels = len(cited_ids - set(range(1, len(evidence) + 1)))
             # An extra unrelated citation cannot qualify as a complete source chain.
@@ -812,6 +821,7 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
                     condition=row["condition"],
                     succeeded_call=ok,
                     strict_correct=correct,
+                    target_source_marker_delivered=bool(source_markers),
                     necessary_source_delivered=bool(delivery),
                     complete_original_citation=complete_cited,
                     invalid_citation_labels=invalid_labels,
@@ -841,6 +851,9 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
                     r["complete_original_citation"] for r in rows
                 ),
                 invalid_citation_labels=sum(r["invalid_citation_labels"] for r in rows),
+                required_source_marker_delivered=sum(
+                    r["target_source_marker_delivered"] for r in rows
+                ),
                 required_source_delivered=sum(
                     r["necessary_source_delivered"] for r in rows
                 ),
@@ -857,7 +870,8 @@ def score_outputs(plan: dict, sources: tuple, journals: dict):
             rows = {r["case_id"]: r for r in seen[tier] if r["condition"] == condition}
             require(len(rows) == len(plan["cases"]), "incomplete paired score cohort")
     return dict(
-        schema="hepta.memory.real-git-reader-mechanical-score.v1",
+        schema="hepta.memory.real-git-reader-mechanical-score.v2",
+        citation_support_rule="queried_declaration_in_delivered_target_source",
         source_outer_zip_sha256=SOURCE_SHA,
         source_independent_reopen_sha256=REOPEN_SHA,
         input_repository_family_proxies=len(EVALUATION),

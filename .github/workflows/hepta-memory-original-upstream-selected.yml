@@ -1,0 +1,106 @@
+name: MemoryCell real CPython upstream selected tests (research only)
+on:
+  push:
+    branches: [codex/memory-original-crossfile-trace-20261015]
+    paths:
+      - scripts/memory_cell/memory_original_upstream_worker.py
+      - scripts/memory_cell/memory_original_upstream_replay.py
+      - scripts/memory_cell/test_memory_original_upstream_replay.py
+      - .github/workflows/hepta-memory-original-upstream-selected.yml
+  pull_request:
+    paths:
+      - scripts/memory_cell/memory_original_upstream_worker.py
+      - scripts/memory_cell/memory_original_upstream_replay.py
+      - scripts/memory_cell/test_memory_original_upstream_replay.py
+      - .github/workflows/hepta-memory-original-upstream-selected.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-upstream-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-source-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      MEMORY_REAL_SOURCE_ZIP: /tmp/cpython-upstream-source/source.zip
+      MEMORY_REOPEN_ZIP: /tmp/cpython-upstream-source/reopen.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Assert original branch head and pinned interpreter
+        env:
+          PIN: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          python3 - <<'PY'
+          import sys
+          if sys.version_info[:2] != (3, 13):
+              raise ValueError('original source selected test runtime is pinned to Python 3.13')
+          PY
+          mkdir -p /tmp/cpython-upstream-source /tmp/cpython-upstream-evidence
+          git rev-parse HEAD > /tmp/cpython-upstream-evidence/source-head.txt
+      - name: Independently retrieve and hash two original Git archives
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o "$MEMORY_REAL_SOURCE_ZIP"
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o "$MEMORY_REOPEN_ZIP"
+          echo "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  $MEMORY_REAL_SOURCE_ZIP" | sha256sum --check
+          echo "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  $MEMORY_REOPEN_ZIP" | sha256sum --check
+      - name: Execute original source-backed negative regression suite (no model)
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/memory_original_upstream_worker.py \
+            scripts/memory_cell/memory_original_upstream_replay.py \
+            scripts/memory_cell/test_memory_original_upstream_replay.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_original_upstream_replay.py' -v 2>&1 \
+            | tee /tmp/cpython-upstream-evidence/negative-tests.log
+          python3 -O -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_original_upstream_replay.py' -v 2>&1 \
+            | tee /tmp/cpython-upstream-evidence/negative-tests-optimized.log
+      - name: Run unmodified original upstream test methods and retain all 5 original journals
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memory_original_upstream_replay.py run \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --journals /tmp/cpython-upstream-evidence/original-journals \
+            --output /tmp/cpython-upstream-evidence/initial-report.json
+          echo 'dc17462c33dbdf2ccef89f8d46fd2f93cefa6dd0d2374b0c8e9d3729b3da8892  /tmp/cpython-upstream-evidence/initial-report.json' | sha256sum --check
+      - name: Independent process reopens actual worker receipts and rejects false repair claims
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memory_original_upstream_replay.py score \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --journals /tmp/cpython-upstream-evidence/original-journals \
+            --output /tmp/cpython-upstream-evidence/independent-scored.json
+          echo 'dc17462c33dbdf2ccef89f8d46fd2f93cefa6dd0d2374b0c8e9d3729b3da8892  /tmp/cpython-upstream-evidence/independent-scored.json' | sha256sum --check
+          cmp /tmp/cpython-upstream-evidence/initial-report.json \
+              /tmp/cpython-upstream-evidence/independent-scored.json
+          (cd /tmp/cpython-upstream-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-cpython-upstream-diagnostic
+          path: /tmp/cpython-upstream-evidence
+          if-no-files-found: warn
