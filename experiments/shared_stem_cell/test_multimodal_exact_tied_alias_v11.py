@@ -61,6 +61,72 @@ class TiedAliasContractTests(unittest.TestCase):
         with self.assertRaisesRegex(UnmaterializedCheckpoint, "unloaded_buffer"):
             require_materialized(model, {"missing_keys": []})
 
+    def test_jhu_decoder_only_source_reconciles_one_physical_embedding_alias(self):
+        # Synthetic shared-storage mechanism, NOT a pretrained checkpoint.
+        class ModernBertForMaskedLM(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.config = SimpleNamespace(model_type="modernbert", tie_word_embeddings=True)
+                self.model = nn.Module()
+                self.model.embeddings = nn.Module()
+                self.model.embeddings.tok_embeddings = nn.Embedding(4, 3)
+                self.decoder = nn.Linear(3, 4, bias=False)
+                self.decoder.weight = self.model.embeddings.tok_embeddings.weight
+        ModernBertForMaskedLM.__module__ = "transformers.models.modernbert.modeling_modernbert"
+        model = ModernBertForMaskedLM()
+        self.assertTrue(same_physical_view(model.state_dict()[DECODER],
+                                           model.state_dict()[EMBEDDING]))
+        self.assertEqual(reconcile_loading_report(model, {"missing_keys": [EMBEDDING]},
+                                                  {DECODER}), [EMBEDDING])
+        self.assertEqual(reconcile_loading_report(model, {"missing_keys": [DECODER]},
+                                                  {EMBEDDING}), [DECODER])
+
+    def test_reverse_alias_rejects_absent_source_and_ambiguous_missing_keys(self):
+        class ModernBertForMaskedLM(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.config = SimpleNamespace(model_type="modernbert", tie_word_embeddings=True)
+                self.model = nn.Module()
+                self.model.embeddings = nn.Module()
+                self.model.embeddings.tok_embeddings = nn.Embedding(4, 3)
+                self.decoder = nn.Linear(3, 4, bias=False)
+                self.decoder.weight = self.model.embeddings.tok_embeddings.weight
+        ModernBertForMaskedLM.__module__ = "transformers.models.modernbert.modeling_modernbert"
+        model = ModernBertForMaskedLM()
+        cases = [
+            ({"missing_keys": [EMBEDDING]}, set()),
+            ({"missing_keys": [DECODER]}, {DECODER}),
+            ({"missing_keys": [EMBEDDING]}, {EMBEDDING, DECODER}),
+            ({"missing_keys": [EMBEDDING, DECODER]}, {DECODER}),
+            ({"missing_keys": [EMBEDDING, EMBEDDING]}, {DECODER}),
+            ({"missing_keys": ["mlm.hidden.weight"]}, {DECODER}),
+            ({"missing_keys": [EMBEDDING], "unexpected_keys": ["bad"]}, {DECODER}),
+        ]
+        for report, original_keys in cases:
+            with self.subTest(report=report, keys=original_keys), self.assertRaises(MissingTensorError):
+                reconcile_loading_report(model, report, original_keys)
+
+    def test_reverse_alias_rejects_equal_copied_not_tied_parameters(self):
+        class ModernBertForMaskedLM(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.config = SimpleNamespace(model_type="modernbert", tie_word_embeddings=True)
+                self.model = nn.Module()
+                self.model.embeddings = nn.Module()
+                self.model.embeddings.tok_embeddings = nn.Embedding(4, 3)
+                self.decoder = nn.Linear(3, 4, bias=False)
+                with torch.no_grad():
+                    self.decoder.weight.copy_(self.model.embeddings.tok_embeddings.weight)
+        ModernBertForMaskedLM.__module__ = "transformers.models.modernbert.modeling_modernbert"
+        model = ModernBertForMaskedLM()
+        self.assertTrue(torch.equal(model.state_dict()[DECODER], model.state_dict()[EMBEDDING]))
+        self.assertFalse(same_physical_view(model.state_dict()[DECODER],
+                                            model.state_dict()[EMBEDDING]))
+        for absent, source_key in ((EMBEDDING, DECODER), (DECODER, EMBEDDING)):
+            with self.subTest(absent=absent), self.assertRaisesRegex(
+                    MissingTensorError, "physical tied decoder"):
+                reconcile_loading_report(model, {"missing_keys": [absent]}, {source_key})
+
     def test_no_missing_weights_still_requires_a_complete_report(self):
         self.assertEqual(reconcile_loading_report(nn.Linear(2,2),{"missing_keys":[],
             "unexpected_keys":[],"mismatched_keys":[],"error_msgs":[]},set()),[])
