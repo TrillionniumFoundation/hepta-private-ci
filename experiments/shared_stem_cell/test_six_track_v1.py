@@ -153,8 +153,12 @@ class SixTrackValidation(unittest.TestCase):
     def test_p0_four_names_cannot_alias_one_model(self):
         self.rejected(lambda d: d["tracks"]["P0"]["laya_frozen"].update(
             model_sha256=d["tracks"]["P0"]["granite_frozen"]["model_sha256"]), "model")
-        self.rejected(lambda d: d["tracks"]["P0"]["laya_learned"].update(
-            model_sha256=d["tracks"]["P0"]["granite_learned"]["model_sha256"]), "alias")
+        def make_alias(d):
+            for role in ("frozen", "learned"):
+                d["tracks"]["P0"]["laya_" + role]["model_sha256"] = (
+                    d["tracks"]["P0"]["granite_" + role]["model_sha256"]
+                )
+        self.rejected(make_alias, "alias")
 
     def test_p0_model_comparison_same_training_schedule(self):
         self.rejected(lambda d: d["tracks"]["P0"]["laya_learned"].update(
