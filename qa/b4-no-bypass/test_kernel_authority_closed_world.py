@@ -560,6 +560,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertIn("remaining(started, budget)?", code)
         self.assertIn("MAX_FRAME_BYTES", code)
         self.assertIn("MAX_TRACKED_SCOPES", code)
+        self.assertIn("seen: BTreeMap<String, ObservedControlHighwater>", code)
+        self.assertIn("let key = scope_id.to_owned()", code)
+        self.assertIn("split_id: proof.split_id.clone()", code)
         self.assertIn("verify_strict(", code)
         self.assertIn("proof.challenge_nonce != nonce", code)
         self.assertIn("proof.sequence < previous.sequence", code)
@@ -588,6 +591,8 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "signed_same_sequence_cannot_rewrite_checkpoint_or_frozen_plan",
             "signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences",
             "valid_signed_control_wal_append_is_accepted_without_evicting_history",
+            "signed_new_split_id_cannot_reset_original_scope_wal_ratchet",
+            "new_split_may_follow_actual_same_inode_wal_append_without_erasing_scope_ratchet",
             "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",
             "missing_or_symlinked_socket_and_unbounded_timeout_fail_closed",
             "truncated_frame_times_out_within_bounded_read_budget",

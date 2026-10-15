@@ -59,6 +59,8 @@ pub struct CellSplitControlHighwaterRpcResponseV1 {
 /// through process restart, power loss and disaster recovery.
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct ObservedControlHighwater {
+    // A new Split ID does not create a new original Control WAL for its Scope.
+    split_id: String,
     // A single committed original WAL sequence must correspond to exactly
     // one complete signed state. Comparing only the terminal hash lets the
     // remote signer equivocate on checkpoint/plan/fence without a new commit.
@@ -82,6 +84,7 @@ struct ObservedControlHighwater {
 impl From<&CellSplitSignedControlHighwaterV1> for ObservedControlHighwater {
     fn from(proof: &CellSplitSignedControlHighwaterV1) -> Self {
         Self {
+            split_id: proof.split_id.clone(),
             plan_digest: proof.plan_digest.clone(),
             ndu_owner_id: proof.ndu_owner_id.clone(),
             ndu_snapshot_digest: proof.ndu_snapshot_digest.clone(),
@@ -109,7 +112,8 @@ pub struct CellSplitControlHighwaterUnixPortV1 {
     verifying_key: VerifyingKey,
     observer_id: String,
     timeout: Duration,
-    seen: BTreeMap<(String, String), ObservedControlHighwater>,
+    // Exactly one monotonic original WAL frontier per Scope across all Split IDs.
+    seen: BTreeMap<String, ObservedControlHighwater>,
 }
 
 impl CellSplitControlHighwaterUnixPortV1 {
@@ -233,13 +237,16 @@ impl CellSplitControlHighwaterUnixPortV1 {
             .map_err(|_| "independent Control Observer signature is invalid".to_owned())?;
         // Never evict a previously verified original domain to fit a new one.
         // A signed old or forked WAL proof is a refusal, not a new baseline.
-        let key = (split_id.to_owned(), scope_id.to_owned());
+        let key = scope_id.to_owned();
         let observed = ObservedControlHighwater::from(&proof);
         if let Some(previous) = self.seen.get(&key) {
-            // A new challenge may lawfully attest the same unchanged WAL
-            // sequence, but EVERY original Control field must then agree.
-            // An advanced sequence requires a physically longer WAL, a new
-            // terminal head and nondecreasing owner fences.
+            // A fresh challenge may attest an unchanged WAL only for the
+            // SAME Split and exactly the same signed original fields. An
+            // alternate Split ID cannot silently reuse/reset the same Scope
+            // frontier. A newer Split may begin only after the original WAL
+            // physically advances (not merely with a new plan digest).
+            // Keep the original NDU owner identity fixed: a new trust root
+            // needs an independently admitted handoff, not an RPC claim.
             if proof.sequence < previous.sequence
                 || (proof.sequence == previous.sequence && observed != *previous)
                 || (proof.sequence > previous.sequence
@@ -248,9 +255,10 @@ impl CellSplitControlHighwaterUnixPortV1 {
                         || proof.generation < previous.generation
                         || proof.route_fence < previous.route_fence
                         || proof.revocation_epoch < previous.revocation_epoch
-                        || proof.plan_digest != previous.plan_digest
                         || proof.ndu_owner_id != previous.ndu_owner_id
-                        || proof.ndu_snapshot_digest != previous.ndu_snapshot_digest))
+                        || (proof.split_id == previous.split_id
+                            && (proof.plan_digest != previous.plan_digest
+                                || proof.ndu_snapshot_digest != previous.ndu_snapshot_digest))))
                 || proof.wal_device != previous.wal_device
                 || proof.wal_inode != previous.wal_inode
                 || proof.marker_device != previous.marker_device
