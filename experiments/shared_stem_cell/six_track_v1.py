@@ -220,9 +220,9 @@ def check_arm(stage, name, arm, cases):
     for key in COSTS:
         number(costs[key], positive=(key == "peak_rss_bytes"))
     if stage == "P4":
+        # The registered compute ceiling is PER CASE. Do not compare total
+        # arm-level NDU milliseconds to one request's solver budget.
         number(arm.get("compute_budget_ms"), positive=True)
-        if costs["ndu_ms"] > arm["compute_budget_ms"] and name == "ndu_solver":
-            raise Invalid("NDU consumed more than its declared compute budget")
     rows = arm.get("results")
     if type(rows) is not list or len(rows) != len(cases):
         raise Invalid("missing/extra paired case results")
@@ -270,6 +270,12 @@ def check_arm(stage, name, arm, cases):
             by_split[case["split"]].append((case, row))
     if seen != set(cases):
         raise Invalid("missing case receipt")
+    if stage == "P4" and name == "ndu_solver":
+        actual_total_solver_ms = sum(
+            result["measured_solver_ms"] for result in per_case.values()
+        )
+        if costs["ndu_ms"] + 1e-6 < actual_total_solver_ms:
+            raise Invalid("NDU aggregate cost underreports measured per-case solver work")
     metrics = {}
     for split in EVAL_SPLITS:
         data = by_split[split]
