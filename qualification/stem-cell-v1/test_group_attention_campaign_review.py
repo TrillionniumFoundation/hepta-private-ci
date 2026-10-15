@@ -108,6 +108,9 @@ def fixture(directory):
         frozen_candidate_arms=list(ARMS), evaluation_cohorts=list(COHORTS),
         train_source_groups=[train["source_group"]], public_cases=cases,
         steps=3, seed=17,
+        training_profile="sgd_v1",
+        optimizer_policy={"core_optimizer_kind": "sgd", "core_learning_rate": 0.05},
+        optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",
         critic_fit_splits=["validation_fit", "validation_calibration"],
         live_system2_modes=["fixed", "ndu"])
     teacher = dict(source_groups_sha256=_digest([train["source_group"]]),
@@ -147,6 +150,8 @@ def fixture(directory):
                                   else hashlib.sha256(("initial:" + arm).encode()).hexdigest()),
             trained_model_sha256=material[arm]["model_sha256"],
             sample_and_depth_sha256="b" * 64,
+            optimizer_kind="sgd", optimizer_learning_rate=0.05,
+            optimizer="SGD_without_momentum", optimizer_bytes=0,
             attention_supervision_enabled=arm == "attention",
             attention_target_sha256="a" * 64 if arm == "attention" else None)
     rows, summaries, full_traces = [], {}, []
@@ -404,6 +409,30 @@ class PairedReviewTests(unittest.TestCase):
             raw = teacher.read_text()
             teacher.write_text('{"untrusted":1e999,' + raw.lstrip()[1:])
             with self.assertRaisesRegex(ValueError, "non-finite"):
+                review(root)
+
+
+    def test_reject_mislabeled_optimization_or_invented_optimizer_states(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            originals = fixture(root)
+            for mode, mutation in (
+                ("claimed_adam", lambda report: report["training"]["core"].update(
+                    optimizer_kind="adam", optimizer="Adam_unfused_nonforeach_beta_0.9_0.999",
+                    optimizer_bytes=128)),
+                ("invented_sgd_moments", lambda report: report["training"]["core"].update(
+                    optimizer_bytes=128)),
+            ):
+                changed = copy.deepcopy(originals["report"])
+                mutation(changed)
+                (root / "report.json").write_text(json.dumps(changed))
+                with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, "optimization"):
+                    review(root)
+            (root / "report.json").write_text(json.dumps(originals["report"]))
+            bad_policy = copy.deepcopy(originals["protocol"])
+            bad_policy["optimizer_policy"]["core_learning_rate"] = 0.5
+            (root / "protocol.json").write_text(json.dumps(bad_policy))
+            with self.assertRaisesRegex(ValueError, "optimizer policy"):
                 review(root)
 
 

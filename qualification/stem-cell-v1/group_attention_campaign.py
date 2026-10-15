@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import platform
 from pathlib import Path
 from dataclasses import replace as dataclass_replace
@@ -34,6 +35,12 @@ from paired_execution import PHASES
 from transformer_work import PROFILE
 
 
+OPTIMIZER_PROFILES = {
+    "sgd_v1": {"core_optimizer_kind": "sgd", "core_learning_rate": 0.05},
+    "adam_v1": {"core_optimizer_kind": "adam", "core_learning_rate": 0.008},
+}
+
+
 def summarize(rows):
     times = sorted(x["wall_ns"] for x in rows)
     return dict(n=len(rows), correct=sum(x["success"] for x in rows),
@@ -48,12 +55,14 @@ def summarize(rows):
 
 
 def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
-        steps=120, attention_weight=0.1):
+        steps=120, attention_weight=0.1, training_profile="sgd_v1"):
     if (type(seed) is not int or seed < 0 or type(train_count) is not int
             or not 16 <= train_count <= 2048 or type(heldout_count) is not int
             or not 12 <= heldout_count <= 256 or type(steps) is not int
             or not 1 <= steps <= 10000 or type(attention_weight) not in (int, float)
-            or not 0 < attention_weight <= 1):
+            or not math.isfinite(attention_weight) or not 0 < attention_weight <= 1
+            or type(training_profile) is not str
+            or training_profile not in OPTIMIZER_PROFILES):
         raise ValueError("registered finite bounded paired campaign required")
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
@@ -89,7 +98,11 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
                     "system2_execution.py", "ndu_continuation.py",
                     "paired_execution.py", "transformer_work.py", "next_round_matrix.py",
                     "group_checkpoint_audit.py")
+    frozen_optimizer = OPTIMIZER_PROFILES[training_profile]
     protocol = dict(schema="hepta.group.paired-step-campaign.v1",
+        training_profile=training_profile,
+        optimizer_policy=dict(frozen_optimizer),
+        optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",
         seed=seed, steps=steps, train_count=train_count,
         heldout_count=heldout_count, max_depth=4, attention_weight=attention_weight,
         train_source_groups=[t.source_group for t in tasks["train"]],
@@ -157,8 +170,13 @@ def run(snapshot, output, *, seed=41, train_count=256, heldout_count=96,
             ("wide", wide, 1, False),
             ("core", core, 4, False),
             ("attention", core, 4, True)):
+        optimizer_kind = ("sgd" if name in ("static", "wide")
+                          else frozen_optimizer["core_optimizer_kind"])
+        learning_rate = (0.05 if name in ("static", "wide")
+                         else frozen_optimizer["core_learning_rate"])
         models[name], training[name] = fit_model(
             model, x, mask, labels, steps=steps, seed=seed, max_depth=depth,
+            optimizer_kind=optimizer_kind, learning_rate=learning_rate,
             feedback_fn=feedback if depth > 1 else None,
             attention_targets=teacher if special else None,
             attention_weight=attention_weight)
@@ -351,13 +369,15 @@ def main():
     parser.add_argument("--heldout-count", type=int, default=96)
     parser.add_argument("--steps", type=int, default=120)
     parser.add_argument("--attention-weight", type=float, default=.1)
+    parser.add_argument("--training-profile", choices=sorted(OPTIMIZER_PROFILES),
+                        default="sgd_v1")
     parser.add_argument("--acquire", action="store_true")
     args = parser.parse_args()
     if args.acquire:
         acquire(args.snapshot)
     run(args.snapshot, args.output, seed=args.seed, train_count=args.train_count,
         heldout_count=args.heldout_count, steps=args.steps,
-        attention_weight=args.attention_weight)
+        attention_weight=args.attention_weight, training_profile=args.training_profile)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ The returned receipt describes this fitting call, never equal-budget equivalence
 """
 import copy
 import hashlib
+import math
 import random
 import time
 
@@ -114,17 +115,22 @@ class SplitCore(nn.Module):
 
 def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
               route_targets=None, max_depth=4, learning_rate=.05, batch_size=32,
-              feedback_fn=None, attention_targets=None, attention_weight=0.1):
+              feedback_fn=None, attention_targets=None, attention_weight=0.1,
+              optimizer_kind="sgd"):
     """Train only supplied fitting labels, then freeze an independent model.
 
     Route labels are optional, train-only family supervision. They never enter
     inference. Targets and feedback are never synthesized from evaluation data.
-    All eager forward/backward/SGD operations in this call are strictly metered.
+    All eager forward/backward/optimizer operations are strictly metered.
+    Adam is explicit, unfused, non-foreach and research-only.
     """
     if (type(steps) is not int or not 1 <= steps <= 10000 or not 1 <= max_depth <= 64
             or features.ndim != 3 or not len(features) or targets.shape != (features.shape[0],)
             or features.device.type != "cpu" or features.requires_grad
-            or not 1 <= batch_size <= 4096 or not 0 < learning_rate <= 1):
+            or not 1 <= batch_size <= 4096
+            or type(learning_rate) not in (int, float) or not math.isfinite(learning_rate)
+            or not 0 < learning_rate <= 1 or optimizer_kind not in ("sgd", "adam")
+            or type(optimizer_kind) is not str):
         raise ValueError("bounded CPU fitting data, steps and optimizer settings required")
     if route_targets is not None and (not hasattr(model, "route_logits") or route_targets.shape != targets.shape):
         raise ValueError("router and aligned training route labels required")
@@ -147,7 +153,11 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
     trained = copy.deepcopy(model).train()
     for parameter in trained.parameters():
         parameter.requires_grad_(True)
-    optimizer = torch.optim.SGD(trained.parameters(), lr=learning_rate)
+    if optimizer_kind == "sgd":
+        optimizer = torch.optim.SGD(trained.parameters(), lr=learning_rate)
+    else:
+        optimizer = torch.optim.Adam(trained.parameters(), lr=learning_rate,
+                                     foreach=False, fused=False)
     policy = {"schema": POLICY_SCHEMA, "mode": "strict", "wall_time_ns": 180_000_000_000,
               "max_process_rss_bytes": None, "rapl_zone": None, "rapl_max_power_watts": None}
     meter = WorkLedger(policy, dict.fromkeys(PHASES, 10**15))
@@ -234,7 +244,11 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
                "trained_model_sha256": model_parameter_digest(trained),
                "parameter_count": sum(p.numel() for p in trained.parameters()),
                "parameter_bytes": parameter_bytes, "optimizer_bytes": optimizer_bytes,
-               "last_gradient_tensor_bytes": gradient_bytes, "optimizer": "SGD_without_momentum",
+               "last_gradient_tensor_bytes": gradient_bytes,
+               "optimizer": ("SGD_without_momentum" if optimizer_kind == "sgd"
+                             else "Adam_unfused_nonforeach_beta_0.9_0.999"),
+               "optimizer_kind": optimizer_kind,
+               "optimizer_learning_rate": float(learning_rate),
                "wall_ns": time.perf_counter_ns() - wall, "cpu_ns": time.process_time_ns() - cpu,
                "work_observation": meter.report(), "route_supervision": route_targets is not None,
                "training_feedback_callback": feedback_fn is not None,

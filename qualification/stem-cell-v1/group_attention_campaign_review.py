@@ -152,6 +152,16 @@ def review(root):
     teacher = strict_json_file(root / "teacher.json")
     encoder = strict_json_file(root / "encoder.json")
     raw_traces = strict_json_file(root / "system2-traces.json")
+    registered_optimizer = {
+        "sgd_v1": {"core_optimizer_kind": "sgd", "core_learning_rate": 0.05},
+        "adam_v1": {"core_optimizer_kind": "adam", "core_learning_rate": 0.008},
+    }
+    selected_profile = protocol.get("training_profile")
+    if (selected_profile not in registered_optimizer
+            or protocol.get("optimizer_policy") != registered_optimizer[selected_profile]
+            or protocol.get("optimizer_comparison_scope") !=
+               "registered_training_regime_not_isolated_optimizer_effect"):
+        raise ValueError("unregistered or post-hoc optimizer policy")
     if (protocol["schema"] != "hepta.group.paired-step-campaign.v1"
             or report["schema"] != "hepta.group.paired-step-observation.v1"
             or report["protocol_sha256"] != _digest(protocol)
@@ -246,6 +256,18 @@ def review(root):
                 and all(ch in "0123456789abcdef" for ch in value))
     for name in DIRECT:
         receipt = training[name]
+        expected_kind = ("sgd" if name in ("static", "wide")
+                         else registered_optimizer[selected_profile]["core_optimizer_kind"])
+        expected_lr = (0.05 if name in ("static", "wide")
+                       else registered_optimizer[selected_profile]["core_learning_rate"])
+        expected_optimizer_id = ("SGD_without_momentum" if expected_kind == "sgd"
+                                 else "Adam_unfused_nonforeach_beta_0.9_0.999")
+        if (receipt.get("optimizer_kind") != expected_kind
+                or receipt.get("optimizer_learning_rate") != expected_lr
+                or receipt.get("optimizer") != expected_optimizer_id
+                or type(receipt.get("optimizer_bytes")) is not int
+                or (receipt["optimizer_bytes"] == 0) != (expected_kind == "sgd")):
+            raise ValueError("trained optimization bytes or source-registered schedule drift")
         if (receipt["status"] != "completed" or
                 receipt["completed_steps"] != protocol["steps"] or
                 receipt["seed"] != protocol["seed"] or

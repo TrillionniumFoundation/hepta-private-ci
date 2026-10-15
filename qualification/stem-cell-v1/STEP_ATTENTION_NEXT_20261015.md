@@ -112,3 +112,23 @@ evaluator/selection label access are prohibited.
 ## Strict independent JSON / archive admission hardening
 
 The latest research-only independent reviewer rejects duplicate JSON keys, NaN/Infinity (including overflowing exponent notation), oversized records, symlinked input files, and ambiguous safetensors headers before any hash or success comparison. This is a bounded structural negative control; canonical hashes and local checks are **not** independent model-execution or CI attestation.
+
+## Frozen optimizer-family research comparator
+
+The real pretrained workload now executes two **predeclared regimes** on each of seeds 41/47/53:
+\`sgd_v1\` (SGD without momentum, Core learning rate 0.05) and \`adam_v1\`
+(unfused/non-foreach Adam, Core learning rate 0.008). Both preserve identical
+public datasets, same initial Core bytes and 120 SGD/Adam optimizer steps,
+but not identical arithmetic, optimizer memory or learning rate. Cheap static
+arms still use the original SGD. Every fit reports actual optimizer-state
+bytes, live work ledger, sample/depth digest, trained-weight bytes and both
+CPU/wall cost. The independent stdlib reviewer checks the sealed profile
+and rejects parameter/state/schedule mismatch. These are **training-regime
+comparisons**, not a proof of a pure optimizer causal effect. No winner
+may be selected from test outcomes; no natural task, independent future
+source, matched-total-compute or production claim is made.
+
+A separate local CPU **synthetic mechanism** toy (not the pinned Granite97
+campaign) showed severe SGD underfitting and rapid Adam convergence across
+three seeds. That finding motivates this controlled experiment but does not
+rank real Stem candidates or qualify a deployed Cell.
