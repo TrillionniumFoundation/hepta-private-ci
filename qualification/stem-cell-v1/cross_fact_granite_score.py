@@ -6,6 +6,7 @@ this is process-phase separation and immutable evidence, NOT cryptographic
 blind custody or trusted production authorization.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -74,14 +75,27 @@ def check_campaign_gates(root):
     return frozen
 
 
-def check_global_seals(root, case_ids_by_role):
-    """Verify every original case/feature seal without examining labels."""
+def case_roster_digest(case_ids):
+    return hashlib.sha256(json.dumps(case_ids, separators=(',', ':')).encode()).hexdigest()
+
+
+def check_prelabel_seals(root):
+    """Check the full sealed result inventory BEFORE loading any outcome labels."""
     root = Path(root).resolve()
-    require(set(case_ids_by_role) == set(ROLES), 'all roles required')
     frozen = check_campaign_gates(root)
+    plan = read(root / 'plan.json')
+    rosters = plan.get('fresh_case_roster_sha256')
+    require(isinstance(rosters, dict) and set(rosters) == set(ROLES),
+            'missing frozen prelabel source roster digests')
     result = {}
     for role in ROLES:
-        ids = case_ids_by_role[role]
+        first = read(root / f'sealed-{role}-{SEEDS[0]}-{ARMS[0]}.json')
+        ids = first['case_ids']
+        require(isinstance(ids, list) and len(ids) == 128
+                and len(set(ids)) == len(ids)
+                and all(isinstance(cid, str) and 0 < len(cid) <= 1024 for cid in ids)
+                and case_roster_digest(ids) == rosters[role],
+                'prelabel source roster does not match frozen original design')
         for seed in SEEDS:
             for arm in ARMS:
                 path, sealed = check_sealed_panel(root, role, seed, arm,
@@ -89,6 +103,25 @@ def check_global_seals(root, case_ids_by_role):
                 result[f'{role}/{seed}/{arm}'] = dict(
                     file=path.name, digest=_digest(path), predictions=sealed['probabilities'])
     return result
+
+
+def check_global_seals(root, case_ids_by_role):
+    """Verify every original case/feature seal without examining labels."""
+    root = Path(root).resolve()
+    require(set(case_ids_by_role) == set(ROLES), 'all roles required')
+    # The first pass verified every seal without importing labels at all.
+    sealed = check_prelabel_seals(root)
+    plan = read(root / 'plan.json')
+    for role in ROLES:
+        roster = case_ids_by_role[role]
+        require(case_roster_digest(roster) == plan['fresh_case_roster_sha256'][role],
+                'original scorer role roster differs from the frozen prelabel manifest')
+        for seed in SEEDS:
+            for arm in ARMS:
+                path = root / sealed[f'{role}/{seed}/{arm}']['file']
+                require(read(path)['case_ids'] == roster,
+                        'fresh scorer reordered or replaced the original prelabel roster')
+    return sealed
 
 
 def score_sealed(root):
@@ -102,7 +135,7 @@ def score_sealed(root):
     require(root.is_dir() and not root.is_symlink(), 'regular evidence directory required')
     # The whole training and exact-seal set must qualify first. Only then may
     # the separate phase load the frozen outcome protocol at all.
-    check_campaign_gates(root)
+    check_prelabel_seals(root)
     from binding_protocol import build_binding_protocol, score_binding_probabilities
 
     # Only the fixed original protocol supplies case ordering and truth. The
