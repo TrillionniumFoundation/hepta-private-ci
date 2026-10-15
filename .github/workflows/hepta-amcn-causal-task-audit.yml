@@ -1,0 +1,70 @@
+name: Hepta AMCN three-axis original task audit contracts (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_task_audit.py"
+      - "qualification/amcn-v1/test_amcn_causal_task_audit.py"
+      - "qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md"
+      - ".github/workflows/hepta-amcn-causal-task-audit.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_causal_task_audit.py"
+      - "qualification/amcn-v1/test_amcn_causal_task_audit.py"
+      - "qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md"
+      - ".github/workflows/hepta-amcn-causal-task-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-amcn-three-axis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit-synthetic-fault-contracts:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Execute exact-source standard library adversarial contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-three-axis-review
+          python3 -m compileall -q qualification/amcn-v1/amcn_causal_task_audit.py qualification/amcn-v1/test_amcn_causal_task_audit.py
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 -p 'test_amcn_causal_task_audit.py' -v \
+            2>&1 | tee /tmp/amcn-three-axis-review/tests.txt
+      - name: Preserve exact source and explicit failed capability claims
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-three-axis-review/source
+          git rev-parse HEAD > /tmp/amcn-three-axis-review/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-three-axis-review/source/tree.txt
+          python3 --version > /tmp/amcn-three-axis-review/python.txt
+          cp qualification/amcn-v1/amcn_causal_task_audit.py \
+             qualification/amcn-v1/test_amcn_causal_task_audit.py \
+             qualification/amcn-v1/CAUSAL_THREE_AXIS_EXPERIMENT.md \
+             .github/workflows/hepta-amcn-causal-task-audit.yml \
+             /tmp/amcn-three-axis-review/source/
+          printf '%s\n' 'synthetic_source_and_answers_only=true' \
+            'new_pretrained_reader_answers=0' 'new_physical_head_learning=0' \
+            'independent_semantic_judgments=0' 'production_accepted=false' \
+            'true_future_calendar_windows=0' 'strong_rag_task_gain=false' \
+            'three_axis_causal_superiority=false' \
+            > /tmp/amcn-three-axis-review/negative-capability.txt
+          (cd /tmp/amcn-three-axis-review && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-three-axis-source-only-negative-receipt
+          path: /tmp/amcn-three-axis-review
+          if-no-files-found: error
