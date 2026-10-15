@@ -188,3 +188,93 @@ fn zero_selected_digest_and_epoch_are_refused_before_read() {
         Err(StemCasError::InvalidSelection)
     ));
 }
+
+
+#[test]
+fn byte_verified_cas_and_shared_q24_views_preserve_legacy_v1_without_granting_execution() {
+    use codex_hepta_infer_core::SharedStemQ24BufferV1;
+    use codex_hepta_infer_core::StemAccessContextV1;
+    use codex_hepta_infer_core::StemFeatureBindingError;
+    use codex_hepta_infer_core::StemHeadBindingV1;
+    use codex_hepta_infer_core::bind_stem_feature_request_v1;
+    use codex_hepta_infer_core::stem_encoder_pipeline_digest_v1;
+
+    let root = protected_root();
+    let source = sample_source();
+    store(root.path(), &source);
+    // Byte-integrity is checked by the actual CAS owner, not by a digest claim.
+    let verifier = StemArtifactCasVerifierV1::open(root.path(), 4096)
+        .expect("protected CAS root");
+    let proof = verifier.verify_selected(&source).expect("exact CAS bytes");
+    assert!(proof.matches_source(&source));
+    assert!(!proof.authority().grants_any());
+
+    let values = vec![1_i64 << 22, -(1_i64 << 21)];
+    let shared = SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone())
+        .expect("exact immutable Q24 buffer");
+    let access = StemAccessContextV1 {
+        scope_id: source.scope_id.clone(),
+        principal_id: source.principal_id.clone(),
+        stem_generation: source.stem_generation,
+        authority_epoch: source.authority_epoch,
+        now_ms: 900,
+        revocation_observed: false,
+    };
+    let head = StemHeadBindingV1 {
+        request_id: StableId::new("request.cell-a").expect("request identity"),
+        head_model_id: StableId::new("head.cell-a").expect("head identity"),
+        head_digest: Digest32::of_bytes(b"head-a"),
+        head_weights_digest: Digest32::of_bytes(b"head-a-weights"),
+        required_stem_model_id: source.stem_model_id.clone(),
+        required_stem_generation: source.stem_generation,
+        required_encoder_digest: stem_encoder_pipeline_digest_v1(&source),
+        required_tokenizer_digest: source.tokenizer_digest,
+        required_preprocessor_digest: source.preprocessor_digest,
+        required_projection_digest: source.projection_digest,
+        required_feature_width: source.feature_width,
+        expected_output_width: 5,
+    };
+    let mut other_head = head.clone();
+    other_head.request_id = StableId::new("request.cell-b").expect("second request");
+    other_head.head_model_id = StableId::new("head.cell-b").expect("second head");
+
+    let first = shared.borrow_for_head(&access, &head).expect("first allowed view");
+    let second = shared.borrow_for_head(&access, &other_head).expect("second allowed view");
+    assert!(std::ptr::eq(
+        first.feature_vector_q24().as_ptr(),
+        second.feature_vector_q24().as_ptr()
+    ));
+    assert_eq!(first.feature_vector_q24(), values.as_slice());
+    assert!(!first.authority().grants_any());
+    assert!(!second.authority().grants_any());
+
+    let owned = shared
+        .materialize_owned_for_head(&access, &head)
+        .expect("freshly checked owned V1 request");
+    let baseline = bind_stem_feature_request_v1(&source, &access, head.clone(), &values)
+        .expect("legacy exact owned V1 request");
+    assert_eq!(owned, baseline);
+
+    // Cached bytes and a historical CAS proof never override a current denial.
+    let mut stale = access.clone();
+    stale.authority_epoch += 1;
+    assert_eq!(
+        shared.borrow_for_head(&stale, &head),
+        Err(StemFeatureBindingError::AuthorityEpochMismatch)
+    );
+    stale = access;
+    stale.revocation_observed = true;
+    assert_eq!(
+        shared.materialize_owned_for_head(&stale, &head),
+        Err(StemFeatureBindingError::Revoked)
+    );
+
+    // The CAS proof binds read bytes; a later file change must not be treated
+    // as a valid fresh load merely because an old digest was retained.
+    fs::write(root.path().join(source.stem_weights_digest.to_string()), b"mutated-weight")
+        .expect("mutate fixture blob");
+    assert!(matches!(
+        verifier.verify_selected(&source),
+        Err(StemCasError::DigestMismatch)
+    ));
+}
