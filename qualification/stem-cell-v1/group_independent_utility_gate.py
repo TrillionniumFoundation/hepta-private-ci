@@ -66,7 +66,7 @@ class PairedRow:
 def review(rows, *, preregistered_arms=("recurrent", "ndu", "split"),
            cost_weight=1.0, min_groups=20, max_group_loss=0.05,
            min_improvement=0.0, alpha=0.05):
-    """Source-group paired conservative gate; no adaptive candidate search.
+    """Source-group paired conservative diagnostic gate; no promotion.
 
     Costs are required in externally pre-registered normalized task-utility
     units, rather than mixing seconds and bytes. Group-level bounded paired
@@ -142,7 +142,9 @@ def review(rows, *, preregistered_arms=("recurrent", "ndu", "split"),
                     and all(v >= -max_group_loss for v in strata.values())
                     and "deleted" in strata and "composition" in strata)
         report["arms"][arm] = {
-            "decision": "candidate_admissible" if accepted else "reject_or_insufficient_evidence",
+            "decision": ("diagnostic_lower_bound_pass_unverified" if accepted
+                         else "reject_or_insufficient_evidence"),
+            "topology_or_model_selection_authorized": False,
             "paired_mean_delta": mean, "conservative_lower": lower,
             "group_radius": radius, "source_groups": n, "cohort_mean_deltas": strata,
             "rescued": rescued, "harmed": harmed, "missing_critical_cohorts":
