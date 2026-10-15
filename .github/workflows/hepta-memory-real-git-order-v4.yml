@@ -16,7 +16,7 @@ permissions:
   actions: read
 concurrency:
   group: memory-source-order-v4-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   format:
     runs-on: ubuntu-24.04
@@ -46,6 +46,8 @@ jobs:
           path: /tmp/memory-order-v4-format.patch
           if-no-files-found: warn
   source-plan:
+    # One frozen real-model run per pushed HEAD. PRs perform formatting only.
+    if: github.event_name == 'push'
     needs: format
     runs-on: ubuntu-24.04
     timeout-minutes: 25

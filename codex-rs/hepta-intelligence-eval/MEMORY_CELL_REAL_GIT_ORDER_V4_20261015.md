@@ -34,3 +34,12 @@ python3 scripts/memory_cell/real_git_order_v4.py prepare \
   --source-zip ORIGINAL_ZIP --reopen-zip REOPEN_ZIP --plan NEW_PLAN.json
 sha256sum NEW_PLAN.json
 ```
+
+## Exact-HEAD resource guard
+
+The workflow runs full model inference only for the research branch's `push` event;
+`pull_request` runs check source formatting without launching an additional 36
+pretrained model calls. Its isolated source-order concurrency group cancels
+outdated v4 checks when a newer v4 commit arrives. This does not affect
+v3 PR #2067 or the ranking baseline PR #2156. Once generation is running,
+do not change the frozen branch head merely to force another execution.
