@@ -28,7 +28,7 @@ COST_KEYS = (
 
 def canonical(value):
     return json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode()
 
 
@@ -156,7 +156,7 @@ def analyze(plan, rows):
             "prompt hash missing",
         )
         require(
-            isinstance(row.get("tokens"), int)
+            type(row.get("tokens")) is int
             and 0 <= row["tokens"] <= plan["reader_budget"].get("total_tokens", -1),
             "incompatible reader token budget",
         )
@@ -166,7 +166,11 @@ def analyze(plan, rows):
             "full lifecycle cost required",
         )
         require(
-            all(type(costs[k]) in (float, int) and 0 <= costs[k] < 1e12 for k in COST_KEYS),
+            all(
+                costs[k] is None
+                or (type(costs[k]) in (float, int) and 0 <= costs[k] < 1e12)
+                for k in COST_KEYS
+            ),
             "invalid cost entry",
         )
         require(
@@ -191,6 +195,38 @@ def analyze(plan, rows):
                     len({x["prompt_digest"] for x in matched}) == 1,
                     "prompt changed across conditions",
                 )
+    # Whole-arm substitutions otherwise survive within-arm checks and produce
+    # spurious parameter or capacity gains. These are consistency checks only,
+    # not authentication of raw evidence, tools, review, or preregistration.
+    for reader in READERS:
+        require(
+            len({r["reader_revision"] for r in rows if r["reader"] == reader}) == 1,
+            "base reader changed between cases or memory arms",
+        )
+    for cid in cases:
+        for condition in CONDITIONS:
+            matched = [by_key[(cid, a, condition, r)] for a in ARMS for r in READERS]
+            require(
+                len({r["prompt_digest"] for r in matched}) == 1,
+                "common prompt template changed between memory arms or readers",
+            )
+            for arm in ARMS:
+                require(
+                    by_key[(cid, arm, condition, "frozen")]["source_digest"]
+                    == by_key[(cid, arm, condition, "reference")]["source_digest"],
+                    "reader capacity contrast changed delivered evidence",
+                )
+            for reader in READERS:
+                require(
+                    len(
+                        {
+                            by_key[(cid, arm, condition, reader)]["source_digest"]
+                            for arm in ("event_graph", "learned_read", "knowledge")
+                        }
+                    )
+                    == 1,
+                    "parameter contrast changed delivered evidence",
+                )
     out = {
         "schema": "hepta.memory-factorial.audit.v1",
         "plan_sha256": sha(plan),
@@ -200,6 +236,9 @@ def analyze(plan, rows):
         "independence_certified": False,
         "semantic_verifier_independent_certified": False,
         "production_qualified": False,
+        "parametric_learning_qualified": False,
+        "raw_evidence_authenticated": False,
+        "tool_parity_authenticated": False,
         "arms": {},
     }
     for arm in ARMS:
@@ -218,7 +257,15 @@ def analyze(plan, rows):
                     "diagnoses": sum(r["diagnostic_count"] for r in subset),
                     "recovery_rate": sum(r["recovery_success"] for r in subset)
                     / len(subset),
-                    "total_cost": {k: sum(r["cost"][k] for r in subset) for k in COST_KEYS},
+                    "total_cost": {
+                        k: None
+                        if any(r["cost"][k] is None for r in subset)
+                        else sum(r["cost"][k] for r in subset)
+                        for k in COST_KEYS
+                    },
+                    "missing_cost_measurements": {
+                        k: sum(r["cost"][k] is None for r in subset) for k in COST_KEYS
+                    },
                 }
     baseline = out["arms"]["hybrid_rag"]["frozen"]["hybrid"]["success_rate"]
     organized = out["arms"]["event_graph"]["frozen"]["hybrid"]["success_rate"]
@@ -234,7 +281,11 @@ def analyze(plan, rows):
         "knowledge_delta_vs_organized": knowledge - organized,
         "reader_capacity_gap": stronger - oracle,
         "learning_candidate_rejected": learned <= organized and knowledge <= organized,
-        "oracle_insufficient": oracle < 1,
+        "oracle_reader_error_observed": oracle < 1,
+        "candidate_rejected": {
+            "learned_read": learned <= organized,
+            "knowledge": knowledge <= organized,
+        },
     }
     return out
 
