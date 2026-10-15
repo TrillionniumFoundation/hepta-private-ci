@@ -1389,6 +1389,120 @@ fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check() {
 
 #[cfg(unix)]
 #[test]
+fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    // Exercise both the short-tail and MAX_ROW-clamped positional read.
+    // A corrupted terminal row must poison the original owner regardless
+    // of whether the durable WAL spans several bounded read windows.
+    for ticks in [1_usize, 8] {
+        let root = private_control_dir();
+        let path = root.path().join("stack-tail.wal");
+        let frozen = snapshot(3);
+        let owner = NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
+            .expect("original private Control owner");
+        let mut previous = Digest32::ZERO;
+        for i in 0..ticks {
+            let next = Digest32::of_bytes(format!("checkpoint-{i}").as_bytes());
+            owner
+                .compare_and_publish_checkpoint(
+                    &frozen,
+                    Digest32::of_bytes(format!("signed-read-{i}").as_bytes()),
+                    Digest32::of_bytes(format!("signed-tick-{i}").as_bytes()),
+                    previous,
+                    next,
+                )
+                .expect("actual fsynced Control checkpoint");
+            previous = next;
+        }
+
+        let original = std::fs::read(&path).expect("original WAL");
+        if ticks == 1 {
+            assert!(original.len() < MAX_ROW, "single P must fit a short tail");
+        } else {
+            assert!(
+                original.len() > MAX_ROW,
+                "multi-P history must cross the fixed tail buffer size"
+            );
+        }
+        assert_eq!(owner.current(), Ok((frozen.clone(), previous)));
+        let replayed = owner
+            .read_original_local_frontier_v1()
+            .expect("original full prefix must replay");
+        assert_eq!(replayed.sequence, ticks as u64 + 1);
+        assert_eq!(replayed.wal_bytes, original.len() as u64);
+        let inode = std::fs::metadata(&path).expect("original WAL inode").ino();
+
+        let mut tampered = original.clone();
+        let last_value_byte = tampered.len() - 2;
+        tampered[last_value_byte] = if tampered[last_value_byte] == b'0' {
+            b'1'
+        } else {
+            b'0'
+        };
+        std::fs::write(&path, tampered).expect("rewrite same WAL inode");
+        OpenOptions::new()
+            .write(true)
+            .open(&path)
+            .expect("existing original WAL")
+            .sync_all()
+            .expect("durably record terminal tamper");
+        assert_eq!(
+            std::fs::metadata(&path).expect("still same WAL").ino(),
+            inode
+        );
+        assert_eq!(
+            std::fs::metadata(&path).expect("unchanged WAL size").len(),
+            original.len() as u64
+        );
+        assert_eq!(
+            owner.current(),
+            Err(NduPublicationErrorV1::Indeterminate),
+            "fixed stack tail cannot treat equal-size terminal hash corruption as current"
+        );
+        assert_eq!(
+            owner.current(),
+            Err(NduPublicationErrorV1::Poisoned),
+            "a failed original Control verification must remain poisoned"
+        );
+    }
+}
+
+
+#[cfg(unix)]
+#[test]
+fn fixed_stack_control_owner_marker_matches_original_decimal_grammar() {
+    // An original marker is persisted by the bootstrap using format! but
+    // checked on every Neuron CAS/Observer read with a bounded stack buffer.
+    // Assert byte-for-byte equality across decimal carry and full u64 range.
+    for (device, inode) in [
+        (0_u64, 0_u64),
+        (1, 9),
+        (9, 10),
+        (10, 99),
+        (99, 100),
+        (u32::MAX as u64, u64::MAX),
+        (u64::MAX, u32::MAX as u64),
+        (u64::MAX, u64::MAX),
+    ] {
+        let (marker, length) =
+            encode_control_owner_marker_v1(device, inode).expect("bounded stack marker");
+        let original = format!("NDUW1|{device}|{inode}\n");
+        assert_eq!(&marker[..length], original.as_bytes());
+        assert!(
+            length <= MAX_CONTROL_OWNER_MARKER_BYTES,
+            "no original marker may exceed fixed bounded storage"
+        );
+        assert!(
+            marker[length..].iter().all(|byte| *byte == 0),
+            "unused stack bytes must not be exposed as a marker"
+        );
+    }
+}
+
+
+#[cfg(unix)]
+#[test]
 fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen() {
     use std::os::unix::fs::MetadataExt;
 

@@ -790,12 +790,27 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "Control must pin WAL length, monotonic sequence and fsynced head",
         )
         for assertion in (
-            "read_exact_at(&mut tail",
+            "let mut tail_storage = [0_u8; MAX_ROW]",
+            "let tail = &mut tail_storage[..tail_bytes]",
+            "read_exact_at(tail,",
             "last.sequence != expected_sequence",
             "last.head != expected_head",
             "last.head != event_hash(&last)",
         ):
             self.assertIn(assertion, code, f"Control WAL tail fence missing: {assertion}")
+        self.assertNotIn(
+            "vec![0_u8; tail_bytes]",
+            code,
+            "Control tick/readback cannot allocate a WAL tail Vec",
+        )
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories()",
+            native,
+            "real short/long fsynced WAL corruption tests must survive",
+        )
         self.assertNotIn("state.verify_original_paths()", code)
 
         body = self.locked_original_cns_receipt_body(code)
@@ -901,6 +916,33 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             body,
             "marker read must use a fixed bounded stack buffer",
         )
+        self.assertIn(
+            "encode_control_owner_marker_v1(device, inode)",
+            body,
+            "live marker identity must use the allocation-free bounded encoder",
+        )
+        encoder_start = code.find("fn encode_control_owner_marker_v1(")
+        encoder_end = code.find("fn control_parent_dir_identity(", encoder_start)
+        self.assertGreaterEqual(encoder_start, 0, "original marker encoder missing")
+        self.assertGreater(encoder_end, encoder_start, "marker encoder not bounded")
+        encoder = code[encoder_start:encoder_end]
+        for required in (
+            "let mut marker = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES]",
+            "let mut decimal = [0_u8; 20]",
+            ".checked_add(digits.len() + 1)",
+            "if end > marker.len()",
+        ):
+            self.assertIn(required, encoder)
+        for forbidden in ("format!(", "String::", "Vec::", "vec![", ".to_owned()"):
+            self.assertNotIn(forbidden, encoder, "no heap allocation per marker")
+        self.assertNotIn(
+            "format!(", body, "live owner must not allocate a marker String",
+        )
+        self.assertIn(
+            "recorded[..expected_len] != expected[..expected_len]",
+            body,
+            "original locked FD marker must match exact decimal bytes",
+        )
         recheck = body.rfind(
             "control_owner_file_identity(&self.owner_lock, &self.lock_path)?;"
         )
@@ -916,6 +958,11 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "fn live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check()",
             native,
             "same-byte different-inode owner marker fault regression is mandatory",
+        )
+        self.assertIn(
+            "fn fixed_stack_control_owner_marker_matches_original_decimal_grammar()",
+            native,
+            "original decimal marker must match u64 carry and maximum boundaries",
         )
 
     def test_original_control_wal_uses_pinned_dirfd_for_both_children(self) -> None:
