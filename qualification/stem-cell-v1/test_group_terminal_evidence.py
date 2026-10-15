@@ -96,6 +96,5 @@ class TerminalEvidenceTests(unittest.TestCase):
         self.assertEqual(linear_b.weight.grad[:, 0].abs().sum().item(), 0.)
         self.assertGreater(linear_a.weight.grad[:, 0].abs().sum().item(), 0.)
 
-
 if __name__ == "__main__":
     unittest.main()
