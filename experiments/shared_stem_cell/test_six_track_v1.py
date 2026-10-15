@@ -45,7 +45,7 @@ def make_fixture():
             elif stage == "P1":
                 family = name.split("_")[0]
                 frozen = name.endswith("_frozen")
-                initial = sha(stage + family + "-initial")
+                initial = sha(stage + "-common-initial")
             else:
                 family, frozen = stage, False
                 initial = sha(stage + "-initial-" + name)
@@ -55,10 +55,10 @@ def make_fixture():
                 "model_sha256": sha("one-base-" + (family if stage == "P0" else stage)),
                 "initial_head_sha256": initial,
                 "final_head_sha256": initial if frozen else sha(stage + name + "-final"),
-                "train_data_sha256": sha(stage + "-same-data"),
+                "train_data_sha256": sha(stage + "-more-data") if stage == "P2" and name == "parent_more_data" else sha(stage + "-same-data"),
                 "optimizer_sha256": sha(stage + "-same-optimizer"),
                 "train_cases": 128 if stage == "P2" and name == "parent_more_data" else 64,
-                "train_steps": 24,
+                "train_steps": 0 if frozen else 24,
                 "trainable_parameters": 9744,
                 "physical_forward_claimed": False,
                 "e2e_includes_one_time": False,
@@ -131,9 +131,67 @@ class SixTrackValidation(unittest.TestCase):
 
     def test_e2e_nearest_rank_and_amortized_once(self):
         out = target.audit(self.doc)["tracks"]["P5"]["arms"]["typed"]
-        self.assertEqual(out["future1"]["p99_ms"], 10.0)
-        # 5 one-time columns at 2ms, over 28 requests, not summed twice.
+        self.assertEqual(out["future1"]["p50_ms"], 10.0)
+        self.assertIsNone(out["future1"]["p95_ms"])
+        self.assertIsNone(out["future1"]["p99_ms"])
+        self.assertEqual(out["future1"]["distinct_task_count"], 4)
+        # 5 one-time columns at 2ms, over 112 requests, not summed twice.
         self.assertAlmostEqual(out["lifecycle"]["mean_e2e_plus_amortized_ms"], 10 + 10 / 112)
+
+    def test_frozen_head_cannot_claim_optimizer_steps(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["granite_frozen"].update(
+            train_steps=12), "frozen Head")
+
+    def test_learned_head_requires_real_update_steps(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_learned"].update(
+            train_steps=0), "learned Head has no optimizer")
+
+    def test_learned_head_requires_nonzero_trainable_parameters(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["shared_learned"].update(
+            trainable_parameters=0), "zero trainable")
+
+    def test_p0_four_names_cannot_alias_one_model(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_frozen"].update(
+            model_sha256=d["tracks"]["P0"]["granite_frozen"]["model_sha256"]), "model")
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_learned"].update(
+            model_sha256=d["tracks"]["P0"]["granite_learned"]["model_sha256"]), "alias")
+
+    def test_p0_model_comparison_same_training_schedule(self):
+        self.rejected(lambda d: d["tracks"]["P0"]["laya_learned"].update(
+            train_steps=48), "common training budget")
+        self.rejected(lambda d: d["tracks"]["P0"]["mmbert_learned"].update(
+            optimizer_sha256=sha("other-optimizer")), "common training budget")
+
+    def test_p1_shared_vs_replicated_head_same_initialization(self):
+        def alter(d):
+            for name in ("replicated_frozen", "replicated_learned"):
+                d["tracks"]["P1"][name]["initial_head_sha256"] = sha("different-initial")
+            d["tracks"]["P1"]["replicated_frozen"]["final_head_sha256"] = sha("different-initial")
+        self.rejected(alter, "initialization differs")
+
+    def test_p1_shared_vs_replicated_head_capacity(self):
+        self.rejected(lambda d: d["tracks"]["P1"]["replicated_learned"].update(
+            trainable_parameters=9750), "parameter budget differs")
+
+    def test_p2_more_data_cannot_reuse_smaller_dataset_sha(self):
+        self.rejected(lambda d: d["tracks"]["P2"]["parent_more_data"].update(
+            train_data_sha256=d["tracks"]["P2"]["split_children"]["train_data_sha256"]), "identical training dataset")
+
+    def test_ood_before_training_freeze_rejected(self):
+        self.rejected(lambda d: [c.update(observed_at=99) for c in d["cases"]
+                                 if c["split"] == "ood"], "OOD examples")
+
+    def test_p5_blocked_effect_cannot_be_success(self):
+        self.rejected(lambda d: d["tracks"]["P5"]["native_cpu"]["results"][0].update(
+            recovery_status="blocked"), "blocked effect")
+
+    def test_minimum_percentile_request_census(self):
+        self.assertIsNone(target.supported_nearest_rank([1, 2], .5, 3))
+        self.assertEqual(target.supported_nearest_rank([5, 1, 3], .5, 3), 3)
+        self.assertIsNone(target.supported_nearest_rank(list(range(19)), .95, 20))
+        self.assertEqual(target.supported_nearest_rank(list(range(20)), .95, 20), 19)
+        self.assertIsNone(target.supported_nearest_rank(list(range(99)), .99, 100))
+        self.assertEqual(target.supported_nearest_rank(list(range(100)), .99, 100), 98)
 
     def test_wrong_authority(self):
         self.rejected(lambda d: d.update(authority="GRANT"), "non-authorizing")
@@ -247,7 +305,7 @@ class SixTrackValidation(unittest.TestCase):
             p.write_text(json.dumps(self.doc, allow_nan=False), encoding="utf-8")
             obj, digest = target.load_json(p)
             self.assertEqual(digest, hashlib.sha256(p.read_bytes()).hexdigest())
-            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v1")
+            self.assertEqual(target.audit(obj)["schema"], "hepta.six-track-descriptive-adjudication.v2")
 
 
 if __name__ == "__main__":
