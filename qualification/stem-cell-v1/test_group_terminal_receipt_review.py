@@ -64,6 +64,5 @@ class TerminalGuardReviewTests(unittest.TestCase):
             with self.subTest(slots=slots),self.assertRaises(ValueError):
                 replay_terminal_guard(pp,tt,rr)
 
-
 if __name__=="__main__":
     unittest.main()
