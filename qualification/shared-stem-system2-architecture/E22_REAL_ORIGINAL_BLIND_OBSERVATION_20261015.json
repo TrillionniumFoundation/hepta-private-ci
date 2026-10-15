@@ -1,0 +1,66 @@
+{
+  "authority_posture": "DENY_ALL",
+  "candidate_accuracy_gain_established": false,
+  "e22_blind_source_summary_sha256": "43200c383de7fa4ed873c44af008f43954ee83a95bb095d1ab31162beed25547",
+  "four_original_held_fold_zip_sha256": [
+    "01ce78555923bd641b3c072157f89dc22f9105a070d0fe167bb945c210a429fc",
+    "035d1efa3e05c4a15d1dd31456bf571f2499e53de3fd783e0ab28f0028639271",
+    "2a84cb7e2cf4d1fafb478eba0fe3b0111067a844bc3a71ecb68376b4762871b3",
+    "6a0df6d14eb1fb5d8ddde40b448ddeb48551f214187dc056974e771c5ca28316"
+  ],
+  "full_NDU_system2_admitted": false,
+  "human_labels_accessed_in_this_study": false,
+  "new_head_training_updates": 0,
+  "new_pretrained_model_forwards": 0,
+  "note": "Only authentic archived pretrained/four E15 physical held-fold predictions rejoined without human labels; original-human ranking/complete-question requires independent E22 postseal scorer.",
+  "original_candidates": 33,
+  "original_human_question_quality_verified_in_this_study": false,
+  "original_passages": 4,
+  "original_prelabel_join_reconstructed_sha256": "afa0fc674b4608dceed8c0665efba1bc91604adb1c43de9ac155894f8f200084",
+  "original_pretrained_zip_artifact_id": 11946621518,
+  "original_pretrained_zip_sha256": "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17",
+  "original_questions": 8,
+  "per_arm_question_geometry": {
+    "conditioned": {
+      "exact_score_invariant_questions": 4,
+      "largest_probability_span": 8.9155426817e-05,
+      "single_hard_prediction_class_questions": 8,
+      "span_at_most_0p001_diagnostic_questions": 8
+    },
+    "learned_gated_3": {
+      "exact_score_invariant_questions": 0,
+      "largest_probability_span": 0.009482505821034,
+      "single_hard_prediction_class_questions": 8,
+      "span_at_most_0p001_diagnostic_questions": 0
+    },
+    "learned_linear_5": {
+      "exact_score_invariant_questions": 0,
+      "largest_probability_span": 0.005483107740554,
+      "single_hard_prediction_class_questions": 8,
+      "span_at_most_0p001_diagnostic_questions": 2
+    },
+    "mean_pool_query_fused": {
+      "exact_score_invariant_questions": 0,
+      "largest_probability_span": 0.017733240348181,
+      "single_hard_prediction_class_questions": 8,
+      "span_at_most_0p001_diagnostic_questions": 0
+    },
+    "no_evidence": {
+      "exact_score_invariant_questions": 0,
+      "largest_probability_span": 0.051715580239218,
+      "single_hard_prediction_class_questions": 7,
+      "span_at_most_0p001_diagnostic_questions": 0
+    },
+    "no_query": {
+      "exact_score_invariant_questions": 8,
+      "largest_probability_span": 0.0,
+      "single_hard_prediction_class_questions": 8,
+      "span_at_most_0p001_diagnostic_questions": 8
+    }
+  },
+  "production_accepted": false,
+  "reader_sufficient_information_proven": false,
+  "schema": "hepta.e22.real-original-archive-blind-observation.v1",
+  "source_group_independence_certified": false,
+  "source_material": "original archived real pretrained ModernBERT MultiRC and original trained E15 LOPO Heads"
+}
