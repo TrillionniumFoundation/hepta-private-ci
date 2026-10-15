@@ -4,7 +4,7 @@ import unittest
 import tempfile
 from pathlib import Path
 
-from cross_fact_granite_review import independent_training_score, read
+from cross_fact_granite_review import independent_training_score, independent_fresh_score, read
 
 
 @dataclass(frozen=True)
@@ -52,6 +52,24 @@ class IndependentScoringTests(unittest.TestCase):
             other.symlink_to(broken)
             with self.assertRaisesRegex(ValueError, 'regular bounded'):
                 read(other)
+
+    def test_fresh_seal_scoring_and_frozen_weight_identity(self):
+        probs = [.9, .1, .1, .9]
+        scores = independent_training_score(self.cases, probs)
+        sealed = dict(case_ids=[c.paragraph_id + '/' + c.candidate for c in self.cases],
+                      probabilities=probs, weights_sha256='a'*64,
+                      labels_entered_model=False, scoring_started=False)
+        cases = [type('C', (), dict(case_id=sealed['case_ids'][i],
+                    paragraph_id=c.paragraph_id, candidate=c.candidate, label=c.label))()
+                 for i,c in enumerate(self.cases)]
+        recorded = dict(predictions_sha256='b'*64, metrics=scores)
+        self.assertEqual(independent_fresh_score(cases, sealed, recorded, 'a'*64, 'b'*64), scores)
+        recorded['metrics'] = dict(scores, accuracy=0)
+        with self.assertRaisesRegex(ValueError, 'fresh independent scoring'):
+            independent_fresh_score(cases, sealed, recorded, 'a'*64, 'b'*64)
+        recorded['metrics'] = scores
+        with self.assertRaisesRegex(ValueError, 'frozen weight'):
+            independent_fresh_score(cases, sealed, recorded, 'c'*64, 'b'*64)
 
     def test_fabricated_flip_fails_full_pair(self):
         result = independent_training_score(self.cases, [.9, .1, .7, .9])
