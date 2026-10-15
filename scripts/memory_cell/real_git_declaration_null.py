@@ -125,6 +125,14 @@ def audit(v3: dict, original_sources: tuple) -> dict:
                 else None,
             ))
     require(len(results) == 54, "full v3/v4 source-only outcome census required")
+    # The reversed no-code rank null is independently rederived from the
+    # immutable v4 delivery order and Git-reopened original declaration target.
+    reversed_rank_only = sum(
+        v4_by_id[id_]["conditions"]["reverse_order"][0]["marker"]
+        == v3_by_id[id_]["conditions"]["hybrid_k4"][nulls[id_]["actual_target_rank"] - 1]["marker"]
+        for id_ in sorted(nulls)
+    )
+    require(reversed_rank_only == 1, "reversed rank-only source baseline drift")
     by_arm = {}
     for version, arm in VERSIONED_ARMS:
         observed = [r for r in results if r["version"] == version and r["condition"] == arm]
@@ -163,7 +171,7 @@ def audit(v3: dict, original_sources: tuple) -> dict:
         learned_head_or_encoder_tested=False,
         complete_lifecycle_tco=None, production_qualified=False,
         rank_only_first_original_correct=rank["fixed_rank_one_strict_correct"],
-        rank_only_first_reversed_correct=1,
+        rank_only_first_reversed_correct=reversed_rank_only,
         arms=by_arm, cases=results,
     )
 

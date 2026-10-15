@@ -64,8 +64,11 @@ sha256sum NEW_UNWRITTEN_REPORT.json
 ```
 
 The source-only GitHub workflow obtains the original two ZIPs with the fixed
-sha256 pins, runs 12 mutation/verification regressions and recomputes the
+sha256 pins, runs 13 mutation/verification regressions and recomputes the
 committed result byte-for-byte. It never downloads, stages or runs a Reader.
 Do **not** replace 72 pending v3 or 36 pending v4 inference outcomes with this
 zero-model source test, and do not alter the parent Reader branches or their
 mandatory CI checks. `production_qualified=false`.
+
+The rank-1 reversed-order count is rederived from the frozen v4 source list
+and original-Git target identities (not hardcoded) before claiming 1/9.

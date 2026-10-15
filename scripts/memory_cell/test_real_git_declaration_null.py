@@ -129,6 +129,23 @@ class DeclarationNullTests(unittest.TestCase):
         self.assertEqual(report["actual_model_generations"], 0)
         self.assertFalse(report["parameter_memory_benefit_established"])
 
+    def test_reversed_rank_null_is_computed_from_frozen_source_order(self):
+        if not os.environ.get("MEMORY_REAL_SOURCE_ZIP") or not os.environ.get("MEMORY_REOPEN_ZIP"):
+            self.skipTest("original Git files not present")
+        src = Path(os.environ["MEMORY_REAL_SOURCE_ZIP"])
+        reopen = Path(os.environ["MEMORY_REOPEN_ZIP"])
+        v3 = plan_from_archives(src, reopen)
+        v4 = build_order_plan(v3)
+        cases = {c["id"]: c for c in v4["cases"]}
+        root = {c["id"]: c for c in v3["cases"]}
+        observed = sum(
+            cases[id_]["conditions"]["reverse_order"][0]["marker"]
+            == next(e["marker"] for e in root[id_]["conditions"]["mechanical_support"])
+            for id_ in root
+        )
+        self.assertEqual(observed, 1)
+        self.assertEqual(audit(v3, real_source(src, reopen))["rank_only_first_reversed_correct"], observed)
+
     def test_original_git_mutation_rejected(self):
         changed = deepcopy(self.blobs)
         name = next(iter(changed))
