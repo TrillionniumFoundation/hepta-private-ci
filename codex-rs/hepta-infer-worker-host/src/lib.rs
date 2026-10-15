@@ -13,6 +13,9 @@ pub mod model_worker;
 /// Original WAL-bound composition for the existing signed Neuron batch owner.
 pub mod original_evidence_neuron;
 
+/// Pure Stem -> ORIGINAL signed batch request preview; never an effect owner.
+pub mod stem_original_batch_preview;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
