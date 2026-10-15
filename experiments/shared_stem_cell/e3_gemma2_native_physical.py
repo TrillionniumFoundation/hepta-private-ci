@@ -16,7 +16,7 @@ import time
 from e3_gemma2_budget import check_batch
 from e3_native_capacity_match import train_pair
 from e3_scienceqa_contract import (E3Error, canonical, read_jsonl, read_pinned,
-                                   sha, unit_probabilities, validate_labels,
+                                   sha, unit_probabilities, validate_probabilities, validate_labels,
                                    validate_source, write_new)
 
 MODEL = ("google/embeddinggemma-2", "914f7f89142e33e77833254d9c9b90c3cef7303b")
@@ -129,13 +129,17 @@ def compute(sources,labels,images,runner):
     matched_rows=[]
     for pos,i in enumerate(held):
         original=sources[i]
+        text_probs=matched["text_only_probabilities"][pos]
+        joint_probs=matched["joint_text_image_probabilities"][pos]
+        # train_pair already executed actual softmax; do not apply softmax
+        # to probabilities again and corrupt Brier/calibration evidence.
+        validate_probabilities(text_probs)
+        validate_probabilities(joint_probs)
         matched_rows.append({
             "id":original["id"],"group":original["group"],
             "source_input_sha256":sha(canonical(original)),
-            "text_only_probabilities":unit_probabilities(
-                matched["text_only_probabilities"][pos]),
-            "joint_text_image_probabilities":unit_probabilities(
-                matched["joint_text_image_probabilities"][pos]),
+            "text_only_probabilities":text_probs,
+            "joint_text_image_probabilities":joint_probs,
         })
     matched_sidecar={
         "schema":matched["schema"],
