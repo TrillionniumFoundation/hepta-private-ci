@@ -251,7 +251,7 @@ class SixTrackValidation(unittest.TestCase):
         self.assertIs(out["independent_source_groups_not_cryptographically_attested"], True)
         self.assertIs(out["production_promotion_permitted"], False)
 
-
+    def test_reader_counterfactual_missing(self):
         self.rejected(lambda d: d["cases"][33].update(reader_condition="none"), "repeated Reader")
 
     def test_reader_answer_flip(self):
