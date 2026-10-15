@@ -250,7 +250,7 @@ class PhysicalDedupFutureTests(unittest.TestCase):
 
     def test_real_signed_witness_outcomes_through_score_and_review(self):
         from precommit_future import score
-        wit={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
+        witness_payload={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
              'seal_sha256':self.seal_sha,'committed_at_utc':'2026-10-14T09:31:00Z',
              'host_id':'synthetic-host-not-authenticated','operation_id':'synthetic-op'}
         outcome={'schema':'hepta.neuron.five-arm-independent-outcomes.v1',
@@ -260,7 +260,7 @@ class PhysicalDedupFutureTests(unittest.TestCase):
                           'label':self.labels[row['case_id']],
                           'label_available_at_utc':'2026-10-14T09:32:00Z'}
                          for row in self.seal['rows']]}
-        witness,pub=signed(self.root,'witness',wit)
+        witness,pub=signed(self.root,'witness',witness_payload)
         outcomes,outpub=signed(self.root,'outcomes',outcome)
         args=argparse.Namespace(
             seal_file=str(self.seal_path),seal_sha256=self.seal_sha,
