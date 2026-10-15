@@ -1,7 +1,7 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015"]
+    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015", "fix/e3-advanced-byte-ledger-native-gemma-physical-arity-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
@@ -92,7 +92,7 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_converged_ci_gates.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_converged_ci_gates.py -v
-      - name: Normal original-style 28 fault controls
+      - name: Original five-arm 29 fault controls including native model identity
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
