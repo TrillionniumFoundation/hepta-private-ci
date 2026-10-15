@@ -1,0 +1,118 @@
+name: Hepta Group Exact-Run Raw Archive Replay (Research)
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py'
+      - 'qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py'
+      - '.github/workflows/hepta-group-feedback-raw-replay.yml'
+  workflow_dispatch:
+    inputs:
+      original_run_id:
+        description: 'Completed original Granite97 2x2 push workflow run ID'
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: group-raw-replay-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mechanism-raw-custody:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Compile independent raw archive entry and adversarial tests
+        run: |
+          python -m py_compile qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py
+          python -m py_compile qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py
+      - name: Reopen synthetic archives under ordinary and optimized Python
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python -S -m unittest test_group_feedback_factorial_raw_replay -v
+          python -S -O -m unittest test_group_feedback_factorial_raw_replay -v
+
+  replay-original-physical:
+    # PR execution intentionally fails closed while the original 24-arm run is queued.
+    # The exact failed job can be retried after original successful completion.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    needs: mechanism-raw-custody
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Authenticate immutable successful original push workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
+          RUN_METADATA: ${{ runner.temp }}/original-run.json
+        run: |
+          case "$RUN_ID" in ''|*[!0-9]*) echo 'invalid integer run ID' >&2; exit 2;; esac
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/runs/$RUN_ID" > "$RUN_METADATA"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          m = json.loads(Path(os.environ['RUN_METADATA']).read_text())
+          required = dict(
+              head_sha='d16fb15ef9d15a83dffa0886438d3e9432f97b66',
+              head_branch='research/group-feedback-factorial-20261015',
+              name='Hepta Group Feedback 2x2 Physical Qualification (Research)',
+              event='push', status='completed', conclusion='success',
+          )
+          if any(m.get(k) != v for k, v in required.items()):
+              raise SystemExit('original physical workflow not complete/successful on exact source')
+          if m.get('repository', {}).get('full_name') != 'TrillionniumFoundation/hepta-private-ci':
+              raise SystemExit('unexpected original workflow repository')
+          PY
+      - name: Download only exact successful original run artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
+          ORIGINAL_ARTIFACTS: ${{ runner.temp }}/hepta-original-archives
+        run: |
+          gh run download "$RUN_ID" --repo TrillionniumFoundation/hepta-private-ci --dir "$ORIGINAL_ARTIFACTS"
+      - name: Recompute all 24 original case/Head/critic/trace receipts
+        env:
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.original_run_id || '38738835065' }}
+          ORIGINAL_ARTIFACTS: ${{ runner.temp }}/hepta-original-archives
+          REPLAY_OUTPUT: ${{ runner.temp }}/hepta-exact-raw-replay.json
+        run: |
+          python -S qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py \
+            --artifacts-root "$ORIGINAL_ARTIFACTS" \
+            --run-id "$RUN_ID" \
+            --source-commit d16fb15ef9d15a83dffa0886438d3e9432f97b66 \
+            --output "$REPLAY_OUTPUT"
+          python -S - <<'PY'
+          import json, os
+          from pathlib import Path
+          x = json.loads(Path(os.environ['REPLAY_OUTPUT']).read_text())
+          if not (x['source_complete'] and x['all_original_24_model_checkpoints_reopened']
+                  and x['six_block_review']['passed'] is True
+                  and x['production_promotion_permitted'] is False
+                  and x['physical_execution_attested_independently'] is False):
+              raise SystemExit('original raw archive full replay not qualified')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-group-exact-original-raw-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-exact-raw-replay.json
+          if-no-files-found: warn
+          retention-days: 7
