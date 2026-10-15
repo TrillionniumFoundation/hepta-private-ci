@@ -81,6 +81,17 @@ class Tests(unittest.TestCase):
             self.assertEqual(res['arms'][kind]['train_receipt']['final_head_sha256'],
                              self.report['arms'][kind]['train_receipt']['final_head_sha256'])
 
+    def test_zero_or_nonunit_token_and_pool_rejected(self):
+        rows,bank=fixture()
+        bank['test-0']['tokens'][0].zero_()
+        with self.assertRaisesRegex(e.Invalid,'unit-L2'):
+            e.frozen_bank(rows,bank,width=384)
+        rows,bank=fixture()
+        p=bank['test-0']['native_pooled']
+        bank['test-0']['native_pooled']=torch.round(p*0.5*e.Q24)/e.Q24
+        with self.assertRaisesRegex(e.Invalid,'unit-L2'):
+            e.frozen_bank(rows,bank,width=384)
+
     def test_one_snapshot_per_case_is_required(self):
         rows,bank=fixture()
         bank['test-2']['native_pooled']=torch.ones(384)*9

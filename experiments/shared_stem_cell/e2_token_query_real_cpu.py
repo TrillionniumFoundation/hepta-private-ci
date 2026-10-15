@@ -109,7 +109,8 @@ def extract(cases: list[dict], backend, *, pooling: str, width: int,
             if (ids.ndim!=2 or tuple(mask.shape)!=tuple(ids.shape)
                     or ids.shape[0]!=len(group) or ids.shape[1]>MAX_TOKENS
                     or not bool(((mask==0)|(mask==1)).all())
-                    or not bool((mask[:,0]==1).all())):
+                    or not bool((mask[:,0]==1).all())
+                    or not bool((mask[:,1:]<=mask[:,:-1]).all())):
                 raise Invalid('invalid or truncated exact token matrix')
             t0=time.perf_counter_ns()
             with torch.inference_mode():

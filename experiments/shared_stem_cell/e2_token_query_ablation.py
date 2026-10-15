@@ -46,6 +46,9 @@ def _q24_tensor(t: torch.Tensor, *, width: int, matrix: bool):
             or not bool(torch.isfinite(t).all()) or not bool((t.abs() <= 8).all())
             or not bool(torch.equal(t * Q24, torch.round(t * Q24)))):
         raise Invalid("incomplete, noncanonical or unbounded frozen Q24 tensor")
+    norms = torch.linalg.vector_norm(t, dim=-1) if matrix else torch.linalg.vector_norm(t)
+    if not bool(((norms > 0.999) & (norms < 1.001)).all()):
+        raise Invalid('frozen token/native pooled vector missing unit-L2 normalization')
     return t
 
 

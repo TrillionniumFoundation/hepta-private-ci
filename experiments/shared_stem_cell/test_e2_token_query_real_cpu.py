@@ -64,6 +64,18 @@ class Tests(unittest.TestCase):
         with self.assertRaises(r.Invalid):
             r.extract(self.cases(),b,pooling='attention-mask-mean',width=384)
 
+    def test_noncontiguous_attention_mask_rejected(self):
+        backend=Backend()
+        native=backend.tokenizer
+        class HoleTokenizer:
+            def __call__(self, strings, **kwargs):
+                data=native(strings,**kwargs)
+                data['attention_mask'][0,1]=0
+                return data
+        backend.tokenizer=HoleTokenizer()
+        with self.assertRaisesRegex(r.Invalid, 'invalid or truncated'):
+            r.extract(self.cases(),backend,pooling='attention-mask-mean',width=384)
+
     def test_invalid_microbatch_rejected(self):
         with self.assertRaises(r.Invalid):
             r.extract(self.cases(),Backend(),pooling='attention-mask-mean',
