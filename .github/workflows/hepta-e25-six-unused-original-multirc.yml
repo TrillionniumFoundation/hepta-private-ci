@@ -1,0 +1,362 @@
+name: Hepta E25 frozen question-risk unseen passage pretrained Reader (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e25_*'
+      - 'qualification/shared-stem-system2-architecture/test_e25_*.py'
+      - 'qualification/shared-stem-system2-architecture/E25_*.md'
+      - '.github/workflows/hepta-e25-six-unused-original-multirc.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-human-material-owner:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      ORIGINAL: original-source/qualification/stem-cell-v1
+      PYTHONPATH: original-source/qualification/stem-cell-v1:qualification/shared-stem-system2-architecture
+      HISTORICAL: /tmp/hepta-e25-original-11946621518.zip
+      PUBLIC: /tmp/hepta-e25-public
+      OWNER: /tmp/hepta-e25-owner
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 6f8cf0930a51bce97fc22a09e3c5923a082abae9
+          path: original-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Freeze exact E25 proposal and independently pinned original source revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C original-source rev-parse HEAD)" = '6f8cf0930a51bce97fc22a09e3c5923a082abae9'
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          mkdir -p "$PUBLIC" "$OWNER"
+          git rev-parse HEAD | tee "$PUBLIC/head.txt"
+          sha256sum "$ROOT"/e25_*.py "$ROOT"/e25_frozen_policy.json > "$PUBLIC/e25-source-sha256.txt"
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+      - name: Acquire original successful pretrained research archive before opening new source material
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            -o "$HISTORICAL"
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $HISTORICAL" | sha256sum -c -
+      - name: Validate source contracts and independently re-fit both original historical 5-scalar Heads
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_E25_ORIGINAL: /tmp/hepta-e25-original-11946621518.zip
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s "$ROOT" -p 'test_e25_*.py' -v > "$PUBLIC/contracts-normal.txt" 2>&1 || { tail -90 "$PUBLIC/contracts-normal.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e25_*.py' -v > "$PUBLIC/contracts-optimized.txt" 2>&1 || { tail -90 "$PUBLIC/contracts-optimized.txt"; exit 1; }
+          mkdir -p /tmp/hepta-e25-historical-E15-owner
+          ids=(11949081037 11948881417 11948806536 11948681555)
+          shas=(cc1c13323cb8377cbd5cdfa5c806796cb85505746e8509f21432d83a1ac4fb2d \
+            8aa9f4b82a4478e9329cba5468adbea4a5a75bd9707b57358eb78a981cf0fd5e \
+            e097d3a3bd210c1b8a84736cc6c219ea2605763c5b83b2c823dd136c00dedec5 \
+            8565aa2c841ad067d58e9ca04222247277de509bb4bdac38eb42e7662d13c6b2)
+          args=()
+          for i in 0 1 2 3; do
+            file="/tmp/hepta-e25-historical-E15-owner/owner-${i}.zip"
+            curl --fail --location --retry 3 --max-time 240 \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${ids[$i]}/zip" -o "$file"
+            printf '%s  %s\n' "${shas[$i]}" "$file" | sha256sum -c -
+            args+=("--owner-${i}" "$file")
+          done
+          python "$ROOT/e25_independent_policy_refit.py" --archive "$HISTORICAL" \
+            --frozen-policy "$ROOT/e25_frozen_policy.json" "${args[@]}" \
+            --output "$PUBLIC/frozen-original-policy-refit.json"
+          test ! -e /tmp/hepta-e25-parquet-paths.json
+      - name: Now acquire immutable source for previously unused six validation passages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import json
+          files={}
+          for name, expected in (
+              ('train','ced6d731a335a0e4fbd29f6f382f291518952c0f449448361d294000c39e6728'),
+              ('val','5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada')):
+            p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+                revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+                filename=f'multirc/{"validation" if name=="val" else "train"}-00000-of-00001.parquet'))
+            if sha256(p.read_bytes()).hexdigest()!=expected:
+              raise SystemExit('actual dataset source drift')
+            files[name]=str(p)
+          Path('/tmp/hepta-e25-parquet-paths.json').write_text(json.dumps(files))
+          PY
+      - name: Select all six as-yet-unscored passage groups independent of truth and model prediction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,subprocess
+          files=json.load(open('/tmp/hepta-e25-parquet-paths.json'))
+          args=['python',os.environ['ROOT']+'/e25_unseen_material.py',
+            '--original-archive',os.environ['HISTORICAL'],
+            '--train-parquet',files['train'],'--validation-parquet',files['val'],
+            '--public-output','/tmp/hepta-e25-generated-public',
+            '--owner-output','/tmp/hepta-e25-generated-owner']
+          subprocess.run(args,check=True)
+          PY
+          cp /tmp/hepta-e25-generated-public/*.json "$PUBLIC/"
+          cp /tmp/hepta-e25-generated-owner/human-labels.json "$OWNER/"
+          test -s "$PUBLIC/source.json" && test -s "$OWNER/human-labels.json"
+          test ! -e "$PUBLIC/human-labels.json"
+          sha256sum "$PUBLIC"/*.json > "$PUBLIC/original-public-sha256.txt"
+          sha256sum "$OWNER"/*.json > "$OWNER/original-human-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e25-original-public-${{ matrix.profile }}
+          path: /tmp/hepta-e25-public/
+          retention-days: 14
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hepta-e25-original-owner-only-${{ matrix.profile }}
+          path: /tmp/hepta-e25-owner/
+          retention-days: 14
+          if-no-files-found: error
+
+  actual-original-pretrained-six-passage-model:
+    needs: original-human-material-owner
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      ORIGINAL: original-source/qualification/stem-cell-v1
+      PYTHONPATH: original-source/qualification/stem-cell-v1:qualification/shared-stem-system2-architecture
+      HISTORICAL: /tmp/hepta-e25-original-11946621518.zip
+      PUB: /tmp/hepta-e25-public-input
+      OUTPUT: /tmp/hepta-e25-physical
+      PYTHONDONTWRITEBYTECODE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 6f8cf0930a51bce97fc22a09e3c5923a082abae9
+          path: original-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e25-original-public-${{ matrix.profile }}
+          path: /tmp/hepta-e25-public-input
+      - name: Check original model identity and public-only source, never held human labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/head.txt"
+          test "$(git -C original-source rev-parse HEAD)" = '6f8cf0930a51bce97fc22a09e3c5923a082abae9'
+          test ! -e "$PUB/human-labels.json"
+          test ! -e /tmp/hepta-e25-original-validation.parquet
+          python -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip' \
+            -o "$HISTORICAL"
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $HISTORICAL" | sha256sum -c -
+          python "$ORIGINAL/public_encoder_probe.py" \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output /tmp/hepta-e25-public-encoder \
+            > "$OUTPUT/original-pretrained-acquisition.txt" 2>&1 || {
+              tail -80 "$OUTPUT/original-pretrained-acquisition.txt"; exit 1;
+            }
+      - name: Actually re-fit same four original Readers and forward unseen six-passage anchor cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ORIGINAL/multirc_reader_study.py" run \
+            --train-bundle "$PUB/train.json" \
+            --blind-eval-bundle "$PUB/blind_eval.json" \
+            --snapshot /tmp/hepta-e25-public-encoder/snapshot --steps 64 \
+            --output /tmp/hepta-e25-original-reader-run \
+            > "$OUTPUT/physical-reader-run.txt" 2>&1 || { tail -90 "$OUTPUT/physical-reader-run.txt"; exit 1; }
+      - name: Actually forward original frozen Readers on ALL genuine new candidate alternatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER_SEAL=$(python -c 'import json; print(json.load(open("/tmp/hepta-e25-original-reader-run/COMMITTED.json"))["seal_id"])')
+          python "$ORIGINAL/multirc_candidate_audit.py" run \
+            --train-bundle "$PUB/train.json" \
+            --blind-eval-bundle "$PUB/blind_eval.json" \
+            --candidate-slate "$PUB/blind_slate.json" \
+            --run-dir /tmp/hepta-e25-original-reader-run --expected-seal-id "$OWNER_SEAL" \
+            --snapshot /tmp/hepta-e25-public-encoder/snapshot \
+            --output /tmp/hepta-e25-native-candidate-audit \
+            > "$OUTPUT/physical-all-candidate-forwards.txt" 2>&1 || {
+              tail -90 "$OUTPUT/physical-all-candidate-forwards.txt"; exit 1;
+            }
+      - name: Apply previously frozen E24 .01 question-risk and matched Brier 4-fold Heads without human truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$PUB/human-labels.json"
+          test ! -e /tmp/hepta-e25-original-validation.parquet
+          python "$ROOT/e25_fixed_policy_transfer.py" \
+            --candidate-audit /tmp/hepta-e25-native-candidate-audit/audit.json \
+            --candidate-seal /tmp/hepta-e25-native-candidate-audit/COMMITTED.json \
+            --material-source "$PUB/source.json" \
+            --candidate-slate "$PUB/blind_slate.json" \
+            --owner-run /tmp/hepta-e25-original-reader-run/predictions.json \
+            --owner-seal /tmp/hepta-e25-original-reader-run/COMMITTED.json \
+            --frozen-policy "$ROOT/e25_frozen_policy.json" \
+            --historic-original-archive "$HISTORICAL" \
+            --output "$OUTPUT/sealed-new-six-blind-model-predictions.json" \
+            | tee "$OUTPUT/model-seal.txt"
+          cp /tmp/hepta-e25-native-candidate-audit/audit.json "$OUTPUT/new-original-candidate-audit.json"
+          cp /tmp/hepta-e25-original-reader-run/predictions.json "$OUTPUT/new-original-reader-training.json"
+          cp /tmp/hepta-e25-native-candidate-audit/COMMITTED.json "$OUTPUT/new-original-candidate-committed.json"
+          cp /tmp/hepta-e25-original-reader-run/COMMITTED.json "$OUTPUT/new-original-reader-committed.json"
+          sha256sum "$OUTPUT"/*.json > "$OUTPUT/pre-human-predictions.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e25-original-pretrained-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e25-physical/
+          retention-days: 14
+          if-no-files-found: warn
+
+  independent-original-human-unseen-six-question-score:
+    needs: actual-original-pretrained-six-passage-model
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e25-independent-human
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e25-original-public-${{ matrix.profile }}
+          path: /tmp/hepta-e25-public-input
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e25-original-pretrained-blind-${{ matrix.profile }}
+          path: /tmp/hepta-e25-physical-input
+      - name: Require source SHA and sealed new real model outputs BEFORE human truth download
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/head.txt"
+          test -s /tmp/hepta-e25-physical-input/sealed-new-six-blind-model-predictions.json
+          test -s /tmp/hepta-e25-physical-input/pre-human-predictions.sha256
+          python - <<'PYSEAL'
+          from pathlib import Path
+          from hashlib import sha256
+          receipts=Path('/tmp/hepta-e25-physical-input/pre-human-predictions.sha256').read_text().splitlines()
+          if len(receipts)!=5:raise SystemExit('original blind JSON inventory changed')
+          names=set()
+          for receipt in receipts:
+            digest,source=receipt.split('  ',1)
+            name=Path(source).name
+            target=Path('/tmp/hepta-e25-physical-input')/name
+            if name in names or sha256(target.read_bytes()).hexdigest()!=digest:
+              raise SystemExit('original physical pre-score bytes are not sealed')
+            names.add(name)
+          if names!={'sealed-new-six-blind-model-predictions.json','new-original-candidate-audit.json','new-original-reader-training.json','new-original-reader-committed.json','new-original-candidate-committed.json'}:
+            raise SystemExit('complete original model archive count changed')
+          PYSEAL
+          test ! -e /tmp/hepta-e25-human-validation.parquet
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e25-original-owner-only-${{ matrix.profile }}
+          path: /tmp/hepta-e25-owner-score-only
+      - name: Acquire independent original-human exact Parquet only in postseal scorer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import shutil
+          p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',
+            revision='4e14482c58d790d467ecfb29b6790e1917bf8756',
+            filename='multirc/validation-00000-of-00001.parquet'))
+          if sha256(p.read_bytes()).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+            raise SystemExit('original independent human Parquet changed')
+          shutil.copyfile(p,'/tmp/hepta-e25-human-validation.parquet')
+          PY
+      - name: Independently replay all new physical logits and compute original 12-question human success
+        shell: bash
+        run: |
+          set -euo pipefail
+          blind=/tmp/hepta-e25-physical-input/sealed-new-six-blind-model-predictions.json
+          sha=$(sha256sum "$blind" | cut -d' ' -f1)
+          python "$ROOT/e25_independent_score.py" \
+            --blind "$blind" --blind-sha256 "$sha" \
+            --candidate-audit /tmp/hepta-e25-physical-input/new-original-candidate-audit.json \
+            --candidate-slate /tmp/hepta-e25-public-input/blind_slate.json \
+            --frozen-policy "$ROOT/e25_frozen_policy.json" \
+            --owner-labels /tmp/hepta-e25-owner-score-only/human-labels.json \
+            --validation-parquet /tmp/hepta-e25-human-validation.parquet \
+            --output "$OUTPUT/fixed-pretrained-new-six-original-human-question-score.json" \
+            | tee "$OUTPUT/original-human-verdict.txt"
+          sha256sum "$OUTPUT"/*.json > "$OUTPUT/independent-verdict.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e25-independent-original-human-${{ matrix.profile }}
+          path: /tmp/hepta-e25-independent-human/
+          retention-days: 14
+          if-no-files-found: warn
