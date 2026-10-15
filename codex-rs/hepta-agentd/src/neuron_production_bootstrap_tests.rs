@@ -166,3 +166,56 @@ fn symlinked_parent_or_journal_is_refused_before_any_bootstrap_write() {
         b"original-effect"
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn original_wal_frontier_blocks_valid_empty_effect_header_against_evidence_history() {
+    use codex_hepta_neuron::NeuronEffectIntentStatusV1;
+    use codex_hepta_types::Digest32;
+
+    let effect = NeuronEffectIntentStatusV1 {
+        attempted_ticks: 0,
+        durable_records: 0,
+        unresolved_tick: None,
+        poisoned: false,
+    };
+    let evidence = codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1 {
+        sequence: 1,
+        head_digest: Digest32::of_bytes(b"original evidence head"),
+        committed_rows: 1,
+        journal_bytes: 256,
+        wal_device: 1,
+        wal_inode: 2,
+        marker_device: 1,
+        marker_inode: 3,
+    };
+    assert!(matches!(
+        require_recovered_effect_metrics_floor_v1(effect, evidence),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    assert!(matches!(
+        require_recovered_effect_metrics_floor_v1(
+            NeuronEffectIntentStatusV1 {
+                attempted_ticks: 1,
+                durable_records: 1,
+                ..effect
+            },
+            codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1 {
+                committed_rows: 0,
+                ..evidence
+            },
+        ),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    // This deliberately proves only the conservative local floor. Positive
+    // parity never grants serving without independent signed custody.
+    require_recovered_effect_metrics_floor_v1(
+        NeuronEffectIntentStatusV1 {
+            attempted_ticks: 1,
+            durable_records: 2,
+            ..effect
+        },
+        evidence,
+    )
+    .expect("two nonempty owners only pass the local diagnostic floor");
+}

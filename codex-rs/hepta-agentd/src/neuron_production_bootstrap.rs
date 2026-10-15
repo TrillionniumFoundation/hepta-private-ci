@@ -13,11 +13,15 @@ use std::path::Path;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
 #[cfg(unix)]
 use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
+#[cfg(unix)]
+use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_types::StableId;
@@ -112,7 +116,7 @@ fn require_existing_effect_metrics_v1(
     // A symlinked parent or an ancestor alias can silently switch the pair
     // onto different history. Reject it before either open() creates bytes.
     let directory = fs::symlink_metadata(parent)?;
-    if !directory.file_type().is_dir() || fs::canonicalize(parent)? != parent {
+    if !directory.file_type().is_dir() || fs::canonicalize(parent)?.as_path() != parent {
         return Err(NeuronProductionBootstrapErrorV1::InvalidPaths);
     }
 
@@ -139,6 +143,25 @@ fn require_existing_effect_metrics_v1(
         // namespace replacement all fail before the first new WAL write.
         _ => Err(NeuronProductionBootstrapErrorV1::NotReady),
     }
+}
+
+
+#[cfg(unix)]
+fn require_recovered_effect_metrics_floor_v1(
+    effect: NeuronEffectIntentStatusV1,
+    evidence: MetricsLocalFrontierV1,
+) -> Result<(), NeuronProductionBootstrapErrorV1> {
+    // A valid original WAL header alone is NOT evidence of its prior
+    // operation history. The other owner may still report fsynced events.
+    // This check is deliberately conservative and non-authorizing: even a
+    // matching nonzero pair cannot prove complete identity membership,
+    // independently signed custody or no coordinated rollback.
+    if (evidence.committed_rows > 0 && effect.durable_records == 0)
+        || (effect.attempted_ticks > 0 && evidence.committed_rows == 0)
+    {
+        return Err(NeuronProductionBootstrapErrorV1::NotReady);
+    }
+    Ok(())
 }
 
 /// Returns a Neuron owner only after independently recovering the exact
@@ -184,6 +207,16 @@ where
         /* group_size */ METRICS_GROUP_SIZE,
         /* flush_interval_ms */ METRICS_FLUSH_INTERVAL_MS,
     )?);
+    // Original-owner full replay at startup, not a hot-path content scan.
+    // This rejects a syntactically valid but EMPTY replaced ledger against
+    // the other original owner's fsynced nonempty frontier.
+    let evidence_frontier = sink
+        .read_local_frontier()
+        .map_err(|_| NeuronProductionBootstrapErrorV1::NotReady)?;
+    let effect_status = owner
+        .effect_intent_status()
+        .ok_or(NeuronProductionBootstrapErrorV1::NotReady)?;
+    require_recovered_effect_metrics_floor_v1(effect_status, evidence_frontier)?;
     // The parent fsync makes both journal names durable before effects.
     // A failed sync aborts construction; a model call cannot have occurred.
     let parent = effect_intent_path
