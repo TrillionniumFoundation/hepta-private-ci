@@ -27,6 +27,10 @@ use codex_hepta_types::NduSnapshotRefV1;
 
 const MAX_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_ROW: usize = 2048;
+// An original "NDUW1|<u64 device>|<u64 inode>\n" marker fits within 48 bytes.
+// Fixed stack storage avoids heap allocation in the hot Neuron CAS lane.
+#[cfg(unix)]
+const MAX_CONTROL_OWNER_MARKER_BYTES: usize = 64;
 const DOMAIN: &[u8] = b"hepta.control.ndu-publication.v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -298,12 +302,47 @@ impl State {
         expected_sequence: u64,
         expected_head: Digest32,
     ) -> Result<(), NduPublicationErrorV1> {
+        self.verify_original_paths_with_identity_hook(
+            expected_bytes,
+            expected_sequence,
+            expected_head,
+            || {},
+        )
+    }
+
+    /// The callback is only a deterministic filesystem fault-injection seam.
+    /// Production always supplies a no-op; it grants no mutation authority.
+    #[cfg(unix)]
+    fn verify_original_paths_with_identity_hook(
+        &self,
+        expected_bytes: u64,
+        expected_sequence: u64,
+        expected_head: Digest32,
+        after_first_identity: impl FnOnce(),
+    ) -> Result<(), NduPublicationErrorV1> {
         let (device, inode) = control_owner_file_identity(&self.file, &self.journal_path)?;
         control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
+        after_first_identity();
         let expected = format!("NDUW1|{device}|{inode}\n");
-        let recorded =
-            fs::read(&self.lock_path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
-        if recorded != expected.as_bytes()
+        if expected.len() > MAX_CONTROL_OWNER_MARKER_BYTES
+            || self
+                .owner_lock
+                .metadata()
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?
+                .len()
+                != expected.len() as u64
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        // Never resolve the owner-lock pathname again to read its contents.
+        // A renamed/replaced path after fstat/lstat can contain identical
+        // bytes on a DIFFERENT inode. Positional reads preserve the one
+        // original locked FD and do not mutate its shared cursor.
+        let mut recorded = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES];
+        self.owner_lock
+            .read_exact_at(&mut recorded[..expected.len()], 0)
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if &recorded[..expected.len()] != expected.as_bytes()
             || self
                 .file
                 .metadata()
@@ -355,6 +394,11 @@ impl State {
         {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
+        // A second filename-to-descriptor check rejects a directory entry
+        // swap after the first identity witness but before marker read/tail
+        // verification. This remains a local check, not independent custody.
+        control_owner_file_identity(&self.file, &self.journal_path)?;
+        control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
         Ok(())
     }
 
