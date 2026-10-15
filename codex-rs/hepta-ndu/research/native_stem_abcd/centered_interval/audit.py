@@ -14,6 +14,7 @@ from centered import old,cert,hybrid_lower,LAMBERT_DEPTH
 R21_SHA256='75b7f84db4fa749c48b502c4ff1fe23af02e8b7fa5fd045f99c487e80c1f1d99'
 R21_HEAD='77fc87181d0abe28150b8293070bf48112bcab54'
 
+
 def must(predicate,message):
     if not predicate:raise ValueError(message)
 
