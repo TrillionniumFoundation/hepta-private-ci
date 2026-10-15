@@ -15,6 +15,8 @@ on:
       - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
       - scripts/memory_cell/memory_original_nonparam_pair.py
       - scripts/memory_cell/test_memory_original_nonparam_pair.py
+      - scripts/memory_cell/memory_original_evidence_completion.py
+      - scripts/memory_cell/test_memory_original_evidence_completion.py
       - scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
       - .github/workflows/hepta-memory-original-crossfile-static.yml
   pull_request:
@@ -30,6 +32,8 @@ on:
       - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
       - scripts/memory_cell/memory_original_nonparam_pair.py
       - scripts/memory_cell/test_memory_original_nonparam_pair.py
+      - scripts/memory_cell/memory_original_evidence_completion.py
+      - scripts/memory_cell/test_memory_original_evidence_completion.py
       - scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
       - .github/workflows/hepta-memory-original-crossfile-static.yml
 permissions:
@@ -115,6 +119,22 @@ jobs:
             --plan-sha256 7cb9d4cd47e4b0230ff746228cf238a72845207746061c94bd5eb80627172fa2 \
             --output /tmp/crossfile-static/review/original-twelve-ranked.json
           echo '74968aea04b45c595c8d071ee52ab8dab440c8c44e0d24f3449c0ef432ddd6bd  /tmp/crossfile-static/review/original-twelve-ranked.json' | sha256sum --check
+      - name: Freeze and test two-source complete Git evidence without opening gold
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_evidence_completion.py scripts/memory_cell/test_memory_original_evidence_completion.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_evidence_completion.py -v \
+            2>&1 | tee /tmp/crossfile-static/review/original-top2-tests.txt
+          python3 scripts/memory_cell/memory_original_evidence_completion.py prepare \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --output /tmp/crossfile-static/review/original-top2-plan.json
+          echo '5f34ff721dfd502292bb215083f7f00a059529b037ff838f5b955b8fc12c3d59  /tmp/crossfile-static/review/original-top2-plan.json' | sha256sum --check
+          python3 scripts/memory_cell/memory_original_evidence_completion.py rank \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --output /tmp/crossfile-static/review/original-top2-ranked.json
+          echo 'cc7c806ea48d05a98a2964e7e01ed074ede550b0231c1053f10cc80d1310974e  /tmp/crossfile-static/review/original-top2-ranked.json' | sha256sum --check
       - name: Independently regenerate exact, unsigned mechanical evidence
         run: |
           set -euo pipefail
@@ -142,6 +162,18 @@ jobs:
           echo '8fffe9f574d84b55a907da4aae00c4ab7c1267421ae4869cd7e78db87831ab82  /tmp/crossfile-static/review/original-twelve-scored.json' | sha256sum --check
           cmp /tmp/crossfile-static/review/original-twelve-scored.json \
             scripts/memory_cell/data/memory-original-nonparam-twelve-20261015.json
+          (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Reopen original cross-file oracle and independently score complete two-source set
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memory_original_evidence_completion.py score \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --plan /tmp/crossfile-static/review/original-top2-plan.json \
+            --ranking /tmp/crossfile-static/review/original-top2-ranked.json \
+            --oracle /tmp/crossfile-static/review/strict-original-links.json \
+            --output /tmp/crossfile-static/review/original-top2-scored.json
+          echo '29a3ab664f7f338589a23e62d33379fdafbb5fbbcf382b8eae917577f1b9d8b8  /tmp/crossfile-static/review/original-top2-scored.json' | sha256sum --check
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
           (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
