@@ -3,9 +3,9 @@ import hashlib,json,os,shutil,subprocess,sys,tempfile,unittest
 from pathlib import Path
 import numpy as np
 HERE=Path(__file__).resolve().parent
-SOURCE=HERE.parent/'nonquotient_bnb'
-RUNS=HERE.parent/'runs'
-PROOF=HERE.parent/'CERTIFICATE.json'
+SOURCE=Path(os.environ.get('NDU_R19_SOURCE', HERE.parent/'nonquotient_bnb')).resolve()
+RUNS=Path(os.environ.get('NDU_R19_RUNS', HERE.parent/'runs')).resolve()
+PROOF=Path(os.environ.get('NDU_R19_PROOF', HERE.parent/'CERTIFICATE.json')).resolve()
 
 class Tests(unittest.TestCase):
     def try_attack(self,kind,phrase):
