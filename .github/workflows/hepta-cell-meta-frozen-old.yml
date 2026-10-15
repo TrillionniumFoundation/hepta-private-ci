@@ -62,7 +62,16 @@ jobs:
           set -euo pipefail
           python -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          # The physical FP32 weight sealing calls Tensor.numpy(); torch's
+          # CPU wheel alone does not guarantee NumPy is present in CI.
+          python -m pip install --only-binary=:all: 'numpy==2.2.6'
           python -m pip check
+          python - <<'PY'
+          import numpy
+          import torch
+          assert numpy.__version__ == '2.2.6'
+          assert torch.tensor([1.25], dtype=torch.float32).numpy().dtype == numpy.float32
+          PY
       - name: Compile exact own source and run physical/adversarial tests
         run: |
           set -euo pipefail
