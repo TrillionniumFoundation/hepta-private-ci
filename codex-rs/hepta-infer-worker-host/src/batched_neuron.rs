@@ -438,6 +438,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
         let effective_now = self.queue_effective_now_ms(now_ms);
+        if !self
+            .worker
+            .original_batch_resource_grant_current_v1(effective_now)
+        {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
         let mut entries = Vec::with_capacity(ordered.len());
         let mut original_bindings = Vec::with_capacity(ordered.len());
         let mut model_id: Option<&str> = None;
