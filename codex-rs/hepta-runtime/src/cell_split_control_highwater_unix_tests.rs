@@ -374,13 +374,23 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
     // Control records an original CNS receipt in an fsynced C row. A later
     // checkpoint P or cutover C can advance its binding but cannot erase it.
     // This is a signed Unix RPC test, not a local digest-only declaration.
-    for erased_binding in [true, false] {
+    for (new_split, erased_binding) in [
+        (false, true),
+        (true, true),
+        (false, false),
+        (true, false),
+    ] {
         let root = tempfile::tempdir().expect("separate signed Observer root");
         let (socket_path, listener) = socket(root.path());
         let server = thread::spawn(move || {
             for observation in 0..2 {
                 let (mut peer, _) = listener.accept().expect("original read-only request");
-                let request = read_request(&mut peer);
+                let split = if new_split && observation == 1 {
+                    "split-2"
+                } else {
+                    SPLIT
+                };
+                let request = read_request_for_split(&mut peer, split);
                 let mut claim = signed_proof(
                     &request,
                     &test_signer(),
@@ -395,6 +405,13 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
                 };
                 if observation == 1 {
                     claim.wal_bytes = 2_048;
+                    if new_split {
+                        claim.plan_digest = "ff".repeat(32);
+                        claim.ndu_snapshot_digest = "ee".repeat(32);
+                        claim.generation = 4;
+                        claim.route_fence = 8;
+                        claim.revocation_epoch = 10;
+                    }
                 }
                 claim.observer_signature_bytes = test_signer()
                     .sign(
@@ -412,7 +429,8 @@ fn signed_later_control_wal_cannot_forget_an_original_cns_receipt_binding() {
             .read_signed_highwater(SPLIT, SCOPE, &"33".repeat(32))
             .expect("signed original committed CNS binding");
         assert_eq!(first.original_cns_receipt_binding, Some("dd".repeat(32)));
-        let second = verifier.read_signed_highwater(SPLIT, SCOPE, &"44".repeat(32));
+        let successor_split = if new_split { "split-2" } else { SPLIT };
+        let second = verifier.read_signed_highwater(successor_split, SCOPE, &"44".repeat(32));
         if erased_binding {
             assert!(
                 second.is_err(),
