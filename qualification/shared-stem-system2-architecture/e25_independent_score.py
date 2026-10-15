@@ -151,6 +151,11 @@ def review(blind_path,blind_sha, audit_path,slate_path,policy_path,owner_labels_
         or blind.get('new_validation_passages')!=6 or blind.get('new_validation_questions')!=12
         or blind.get('policy_sha256')!=POLICY_SHA
         or blind.get('slate_id')!=slate['slate_id']
+        or blind.get('exhaustive_unused_eligible_passages_confirmed_before_model') is not True
+        or blind.get('source_issuer_independently_authenticated') is not False
+        or blind.get('eligible_unused_group_set_sha256')!=sha256(
+            json.dumps(sorted(row['source_group'] for row in slate['rows']),
+                       separators=(',',':')).encode()).hexdigest()
         or blind.get('historical_reader_weights_reproduced') is not True
         or blind.get('new_time_or_data_family') is not False
         or blind.get('learning_or_model_selected') is not False
@@ -212,6 +217,8 @@ def review(blind_path,blind_sha, audit_path,slate_path,policy_path,owner_labels_
        whole_service_training_inference_energy_and_verifier_cost_established=False,
        model_selected=False,all_source_original_human_labels_are_public_annotations=True,
        methods=summaries,paired=paired,blind_sha256=blind_sha,
+       exhaustive_unused_passage_census_bound_to_slate=True,
+       census_issuer_independently_authenticated=False,
        independent_reference_recomputed=True)
 
 
