@@ -5,6 +5,7 @@ on:
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_workflow_expressions.py"
       - "experiments/shared_stem_cell/e3_ocr_granite_physical.py"
       - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -13,6 +14,7 @@ on:
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
+      - "experiments/shared_stem_cell/test_e3_workflow_expressions.py"
       - "experiments/shared_stem_cell/e3_ocr_granite_physical.py"
       - "experiments/shared_stem_cell/e3_gemma2_native_physical.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -48,6 +50,9 @@ jobs:
           python3 -m py_compile experiments/shared_stem_cell/e3_five_arm_historical.py \
             experiments/shared_stem_cell/e3_ocr_granite_physical.py \
             experiments/shared_stem_cell/e3_gemma2_native_physical.py
+      - name: Verify E3 workflow expressions and exact-head checkouts
+        run: |
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e3_workflow_expressions.py' -v
       - name: Normal original-style 28 fault controls
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
