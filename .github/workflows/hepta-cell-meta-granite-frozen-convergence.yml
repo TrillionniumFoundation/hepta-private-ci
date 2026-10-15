@@ -48,6 +48,14 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --quiet
           git diff --cached --quiet
+          # Both immutable original research parents must be actual ancestors.
+          # A path-copy or digest assertion cannot substitute for ancestry.
+          git cat-file -e 'e7d03809986be376e3804888ab2b8ad3e6c4b6fe^{commit}'
+          git cat-file -e '18f4c60c690ae067b86bf879bd8e7dcf04307542^{commit}'
+          git merge-base --is-ancestor e7d03809986be376e3804888ab2b8ad3e6c4b6fe HEAD
+          git merge-base --is-ancestor 18f4c60c690ae067b86bf879bd8e7dcf04307542 HEAD
+          test "$(git show -s --format=%P 49e60cd9fc665f5edddbb89a38bc8f5844f8108b)" = \
+            'e7d03809986be376e3804888ab2b8ad3e6c4b6fe 18f4c60c690ae067b86bf879bd8e7dcf04307542'
       - name: Construct exact prospective merge for evaluation, not publication
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
