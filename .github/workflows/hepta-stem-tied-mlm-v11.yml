@@ -63,59 +63,11 @@ jobs:
           /tmp/hepta-v11-mlm-env/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_saved_tie_recovery_v18.py' -v \
             2>&1 | tee /tmp/hepta-v11-mlm/v18-offline.log
           grep -q 'Ran 6 tests' /tmp/hepta-v11-mlm/v18-offline.log
-          grep -q '^OK \
-            2>&1 | tee /tmp/hepta-v11-mlm/physical.log
-          grep -q 'Ran 1 test' /tmp/hepta-v11-mlm/physical.log
-          grep -q '^OK$' /tmp/hepta-v11-mlm/physical.log
-          if grep -Ei 'skipped[=: ]|skipped .+ required' /tmp/hepta-v11-mlm/physical.log; then exit 1; fi
-      - name: Retain exact-source and failure disposition
-        if: always()
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/hepta-v11-mlm
-          git rev-parse HEAD > /tmp/hepta-v11-mlm/commit.txt
-          git rev-parse HEAD^{tree} > /tmp/hepta-v11-mlm/tree.txt
-          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_meta_integrity_v14.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py \
-            experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py \
-            experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py \
-            experiments/shared_stem_cell/MODERNBERT_TIED_MLM_V11.md \
-            .github/workflows/hepta-stem-tied-mlm-v11.yml > /tmp/hepta-v11-mlm/source-SHA256SUMS
-          echo 'research-only; no pretrained efficacy or production authority' > /tmp/hepta-v11-mlm/disposition.txt
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: hepta-v11-tied-mlm-physical-not-pretrained-efficacy
-          path: /tmp/hepta-v11-mlm
-          if-no-files-found: error
- /tmp/hepta-v11-mlm/v18-offline.log
+          grep -q '^OK$' /tmp/hepta-v11-mlm/v18-offline.log
           /tmp/hepta-v11-mlm-env/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_saved_tie_material_v18.py' -v \
             2>&1 | tee /tmp/hepta-v11-mlm/v18-physical.log
           grep -q 'Ran 1 test' /tmp/hepta-v11-mlm/v18-physical.log
-          grep -q '^OK \
-            2>&1 | tee /tmp/hepta-v11-mlm/physical.log
-          grep -q 'Ran 1 test' /tmp/hepta-v11-mlm/physical.log
-          grep -q '^OK$' /tmp/hepta-v11-mlm/physical.log
-          if grep -Ei 'skipped[=: ]|skipped .+ required' /tmp/hepta-v11-mlm/physical.log; then exit 1; fi
-      - name: Retain exact-source and failure disposition
-        if: always()
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/hepta-v11-mlm
-          git rev-parse HEAD > /tmp/hepta-v11-mlm/commit.txt
-          git rev-parse HEAD^{tree} > /tmp/hepta-v11-mlm/tree.txt
-          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_meta_integrity_v14.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py \
-            experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py \
-            experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py \
-            experiments/shared_stem_cell/MODERNBERT_TIED_MLM_V11.md \
-            .github/workflows/hepta-stem-tied-mlm-v11.yml > /tmp/hepta-v11-mlm/source-SHA256SUMS
-          echo 'research-only; no pretrained efficacy or production authority' > /tmp/hepta-v11-mlm/disposition.txt
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: hepta-v11-tied-mlm-physical-not-pretrained-efficacy
-          path: /tmp/hepta-v11-mlm
-          if-no-files-found: error
- /tmp/hepta-v11-mlm/v18-physical.log
+          grep -q '^OK$' /tmp/hepta-v11-mlm/v18-physical.log
           if grep -Ei 'skipped[=: ]|skipped .+ required' /tmp/hepta-v11-mlm/v18-physical.log; then exit 1; fi
           /tmp/hepta-v11-mlm-env/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_modernbert_mlm_v11.py' -v \
             2>&1 | tee /tmp/hepta-v11-mlm/physical.log
@@ -129,9 +81,9 @@ jobs:
           mkdir -p /tmp/hepta-v11-mlm
           git rev-parse HEAD > /tmp/hepta-v11-mlm/commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-v11-mlm/tree.txt
-          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_meta_integrity_v14.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py \
+          sha256sum experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_meta_integrity_v14.py experiments/shared_stem_cell/multimodal_exact_tied_alias_v11.py experiments/shared_stem_cell/multimodal_saved_tie_recovery_v18.py \
             experiments/shared_stem_cell/test_multimodal_exact_tied_alias_v11.py \
-            experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py \
+            experiments/shared_stem_cell/test_multimodal_modernbert_mlm_v11.py experiments/shared_stem_cell/test_multimodal_saved_tie_recovery_v18.py experiments/shared_stem_cell/test_multimodal_saved_tie_material_v18.py experiments/shared_stem_cell/ORIGINAL_TIED_MATERIAL_V18.md \
             experiments/shared_stem_cell/MODERNBERT_TIED_MLM_V11.md \
             .github/workflows/hepta-stem-tied-mlm-v11.yml > /tmp/hepta-v11-mlm/source-SHA256SUMS
           echo 'research-only; no pretrained efficacy or production authority' > /tmp/hepta-v11-mlm/disposition.txt
