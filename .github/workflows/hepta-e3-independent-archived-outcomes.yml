@@ -15,7 +15,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-e3-independent-archive-{{ github.sha }}
+  group: hepta-e3-independent-archive-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   independent-original-archive:
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: {{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Compile read-only independent auditor and its exact arithmetic
         run: |
@@ -44,7 +44,7 @@ jobs:
           PY
       - name: Obtain original, pinned Actions run and Git commit metadata
         env:
-          GH_TOKEN: {{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -m 700 -p /tmp/e3-independent
@@ -53,7 +53,7 @@ jobs:
           gh api /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496 > /tmp/e3-independent/artifact.json
       - name: Fetch pinned archived original ZIP without forwarding token to storage redirect
         env:
-          GH_TOKEN: {{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
