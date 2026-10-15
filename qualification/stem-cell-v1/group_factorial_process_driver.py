@@ -128,7 +128,7 @@ def isolated_factorial(snapshot, output_root, *, seed=41, steps=120,
                      log=output_root / "independent-review.log",
                      timeout_seconds=timeout_seconds)
     review_path = output_root / "factorial-independent-review.json"
-    if not review_path.is_file() or review.pid in {v["pid"] for v in recorded.values()}:
+    if not review_path.is_file() or review["pid"] in {v["pid"] for v in recorded.values()}:
         raise ValueError("separate original scientific reviewer did not produce a report")
     # The validation rules here cannot replace the original source-owning reviewer.
     from group_checkpoint_audit import strict_json_file
