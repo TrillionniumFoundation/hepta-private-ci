@@ -68,6 +68,12 @@ jobs:
           set -euo pipefail
           cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --all-targets
 
+      - name: Non-test Operator library and compiled CLI deny unauthorised Split
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --test cell_split_legacy_cli_denied -- --nocapture --test-threads=1
+
       - name: Closed-world Operator, Agentd and physical CNS no-bypass audit
         shell: bash
         run: |
