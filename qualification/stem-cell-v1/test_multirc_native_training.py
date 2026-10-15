@@ -107,7 +107,8 @@ class NativeTrainingContrastTests(unittest.TestCase):
         self.assertEqual([r['source_group'] for r in different['rows']],
                          [r['source_group'] for r in self.train_slate['rows']])
         self.assertNotEqual(different['material_id'],self.train_slate['material_id'])
-        self.assertEqual(self.test_slate,self.test_slate)
+        self.assertEqual([[(q['original_task_id'],[c['task_id'] for c in q['candidates']]) for q in r['questions']] for r in different['rows']],
+                         [[(q['original_task_id'],[c['task_id'] for c in q['candidates']]) for q in r['questions']] for r in self.train_slate['rows']])
 
     def test_missing_real_alternative_cannot_train_on_partial_slate(self):
         corrupted=copy.deepcopy(self.train_rows)
@@ -126,6 +127,19 @@ class NativeTrainingContrastTests(unittest.TestCase):
             altered['material_id']=_digest({k:v for k,v in altered.items() if k!='material_id'})
             with self.subTest(defect=defect),self.assertRaises(ValueError):
                 validate_train_slate(self.train,altered)
+
+    def test_first_candidate_controls_exactly_replay_predecessor_v1_reader_weights(self):
+        from multirc_reader_study import train_then_predict
+        predecessor_encoder=DummyEncoder()
+        original,original_models=train_then_predict(self.train,lambda:copy.deepcopy(self.eval),
+            encoder=predecessor_encoder,question_encoder=predecessor_encoder.query,
+            checkpoint_sha256='c'*64,seed=7347,steps=4)
+        for readout in READOUTS:
+            with self.subTest(readout=readout):
+                self.assertEqual(state_digest(original_models[readout]),
+                                 state_digest(self.models['first_'+readout]))
+                self.assertEqual(original['training'][readout]['weights_sha256'],
+                                 self.obs['training']['first_'+readout]['weights_sha256'])
 
     def test_no_real_holdout_labels_accepted_in_source_eval_loader(self):
         bad=copy.deepcopy(self.test_slate)
