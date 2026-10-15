@@ -430,3 +430,125 @@ fn actual_pending_original_prepare_stays_quarantined_after_cold_replay() {
         original_evidence
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn resolved_original_tick_requires_exact_fsynchronized_neuron_evidence_membership() {
+    use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = tempfile::tempdir().expect("private original journal root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private permissions");
+    let intent_path = root.path().join("effect-intent.wal");
+    let evidence_path = root.path().join("original-evidence.wal");
+    let scope = JournalScope {
+        scope_digest: Digest32::of_bytes(b"original-scope"),
+        objective_digest: Digest32::of_bytes(b"original-objective"),
+    };
+    let generation = Generation::new(1).expect("generation");
+    let operation = Digest32::of_bytes(b"actually-resolved-business-tick");
+    {
+        let mut intent = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            &intent_path,
+            scope,
+            generation,
+            32,
+        )
+        .expect("protected original Intent owner");
+        intent
+            .prepare(operation, Digest32::ZERO)
+            .expect("durable original Prepare");
+        intent
+            .resolve(operation, Digest32::of_bytes(b"real-next-checkpoint"))
+            .expect("durable original Resolve");
+        let completed = intent
+            .completed_tick_digests_v1()
+            .expect("only fully resolved original identities");
+        assert_eq!(completed, vec![operation]);
+        let sink = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+            .expect("original WAL group-commit owner");
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: scope.scope_digest,
+            operation_digest: Digest32::of_bytes(b"unrelated-metric-tick"),
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 7,
+            succeeded: true,
+        })
+        .expect("unrelated original observation");
+        sink.flush().expect("original Evidence fsync");
+        let unrelated_frontier = sink.read_local_frontier().expect("original frontier");
+        assert!(matches!(
+            require_completed_effect_evidence_membership_v1(
+                &sink,
+                scope,
+                unrelated_frontier,
+                &completed
+            ),
+            Err(NeuronProductionBootstrapErrorV1::NotReady)
+        ));
+
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: scope.scope_digest,
+            operation_digest: operation,
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 8,
+            succeeded: true,
+        })
+        .expect("exact original tick observation");
+        sink.flush().expect("fsynced exact original Evidence");
+        let complete_frontier = sink.read_local_frontier().expect("complete frontier");
+        require_completed_effect_evidence_membership_v1(
+            &sink,
+            scope,
+            complete_frontier,
+            &completed,
+        )
+        .expect("one exact resolved original operation has a matching group-committed sample");
+    }
+
+    // The same exact operation identity must be verified again after BOTH
+    // separate original WAL owners close and replay their real bytes.
+    let recovered = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+        &intent_path,
+        scope,
+        generation,
+        32,
+    )
+    .expect("real original Effect recovery");
+    let evidence = DurablePhaseMetricSinkV1::open(&evidence_path, 8, 2, 100)
+        .expect("real original Evidence recovery");
+    let identities = recovered
+        .completed_tick_digests_v1()
+        .expect("read-only completed ID replay");
+    let frontier = evidence.read_local_frontier().expect("original marker readback");
+    require_completed_effect_evidence_membership_v1(&evidence, scope, frontier, &identities)
+        .expect("exact membership survives actual cold reopening");
+
+    // Two matching rows for one already-resolved tick are ambiguous.
+    evidence
+        .record(PhaseMetricEventV1 {
+            scope_digest: scope.scope_digest,
+            operation_digest: operation,
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 9,
+            succeeded: true,
+        })
+        .expect("duplicate original observation in test fixture");
+    evidence.flush().expect("fsynced duplicate fixture");
+    let duplicated = evidence.read_local_frontier().expect("new frontier");
+    assert!(matches!(
+        require_completed_effect_evidence_membership_v1(
+            &evidence,
+            scope,
+            duplicated,
+            &identities
+        ),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+}

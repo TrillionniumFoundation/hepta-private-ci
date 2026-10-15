@@ -120,7 +120,7 @@ jobs:
       - name: Require two executed non-test Agentd signed-boundary regressions
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-agentd-external.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --test signed_neuron_public_contract -- --nocapture --test-threads=1
       - name: Require ten original durable Evidence and Intent recovery regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-neuron-bootstrap.json" --minimum-tests 10 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-neuron-bootstrap.json" --minimum-tests 11 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1
       - name: Require six original Agentd signed metrics readiness regressions
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-agentd-metrics.json" --minimum-tests 6 -- cargo +1.95.0 test --locked -p codex-hepta-agentd --lib agentd_ -- --nocapture --test-threads=1
       - name: Strict Agentd all-target Clippy
