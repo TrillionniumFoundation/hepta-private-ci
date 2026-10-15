@@ -110,6 +110,33 @@ fn external_non_test_agentd_neuron_denies_before_journal_or_model_effect() {
         }
     }
 
+    // An attacker-supplied healthy Metrics trait object is not original
+    // Evidence custody. An unauthorized non-test Tick cannot emit even an
+    // admission or failure observation into such a writer.
+    #[derive(Debug)]
+    struct UntrustedTelemetry {
+        records: Arc<AtomicUsize>,
+        flushes: Arc<AtomicUsize>,
+    }
+    impl codex_hepta_types::PhaseMetricSinkV1 for UntrustedTelemetry {
+        fn record(
+            &self,
+            _sample: codex_hepta_types::PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            self.records.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }
+
+        fn healthy(&self) -> bool {
+            true
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            self.flushes.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }
+    }
+
     let directory = checked(tempfile::tempdir());
     checked(fs::set_permissions(
         directory.path(),
@@ -207,7 +234,14 @@ fn external_non_test_agentd_neuron_denies_before_journal_or_model_effect() {
     ));
     let original_journal = checked(fs::read(&file_path));
     let calls = Arc::new(AtomicUsize::new(0));
-    let mut owner = AgentdNeuronOwner::new(runtime, CountingPort(Arc::clone(&calls)));
+    let records = Arc::new(AtomicUsize::new(0));
+    let flushes = Arc::new(AtomicUsize::new(0));
+    let sink = Arc::new(UntrustedTelemetry {
+        records: Arc::clone(&records),
+        flushes: Arc::clone(&flushes),
+    });
+    let mut owner = AgentdNeuronOwner::new(runtime, CountingPort(Arc::clone(&calls)))
+        .with_metric_sink(sink);
     let features = vec![Q24 / 4, Q24 / 8, -Q24 / 8];
     let ndu_digest = Digest32::of_bytes(b"ndu");
     let input = NeuronTickInputV1 {
@@ -264,6 +298,17 @@ fn external_non_test_agentd_neuron_denies_before_journal_or_model_effect() {
         Err(NeuronRuntimeError::OriginalEffectOwnerUnverified)
     ));
     assert_eq!(calls.load(Ordering::SeqCst), 0, "no backend invocation");
+    assert_eq!(
+        records.load(Ordering::SeqCst),
+        0,
+        "unauthorized call cannot stage unbound original Evidence"
+    );
+    assert_eq!(
+        flushes.load(Ordering::SeqCst),
+        0,
+        "unauthorized call cannot flush an unbound telemetry writer"
+    );
+    assert!(!owner.production_metrics_ready());
     assert_eq!(
         checked(fs::read(&file_path)),
         original_journal,
