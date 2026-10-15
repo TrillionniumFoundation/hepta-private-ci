@@ -210,7 +210,7 @@ impl SharedMemoryQueueV1 {
         let frame = self.frames.front().ok_or(ActionErrorV1::QueueEmpty)?;
         let action = ActionFrameV1::decode(frame)?;
         let verified = self.verifier.verify_and_bind(&action)?;
-        self.frames.pop_front();
+        let _consumed_frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
         Ok(verified)
     }
 
