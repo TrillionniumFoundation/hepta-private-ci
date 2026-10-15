@@ -1,0 +1,211 @@
+name: Hepta original MiniLM full LoCoMo source-first retrieval (NO-GO)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_full_family_retrieval.py"
+      - "qualification/amcn-v1/test_amcn_original_full_family_retrieval.py"
+      - "qualification/amcn-v1/ORIGINAL_TEN_FAMILY_RETRIEVAL.md"
+      - "qualification/amcn-v1/ORIGINAL_TEN_FAMILY_RETRIEVAL_20261015.json"
+      - ".github/workflows/hepta-amcn-original-full-family-retrieval.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_full_family_retrieval.py"
+      - "qualification/amcn-v1/test_amcn_original_full_family_retrieval.py"
+      - "qualification/amcn-v1/ORIGINAL_TEN_FAMILY_RETRIEVAL.md"
+      - "qualification/amcn-v1/ORIGINAL_TEN_FAMILY_RETRIEVAL_20261015.json"
+      - ".github/workflows/hepta-amcn-original-full-family-retrieval.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-amcn-original-ten-family-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-full-family-physical-encoder:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      PYTHONPATH: qualification/amcn-v1
+      HEPTA_AMCN_ORIGINAL_ROOT: /tmp/hepta-amcn-ten-private/original
+      HEPTA_AMCN_FULL_RETRIEVAL_ROOT: /tmp/hepta-amcn-ten-private/staged
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install original CPU model runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-amcn-ten-venv
+          P=/tmp/hepta-amcn-ten-venv/bin
+          "$P/pip" install numpy==1.26.4
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install safetensors==0.7.0 regex==2024.11.6
+          "$P/pip" check
+          mkdir -p /tmp/hepta-amcn-ten-evidence
+          "$P/pip" freeze > /tmp/hepta-amcn-ten-evidence/environment.txt
+      - name: Acquire SHA-locked ORIGINAL archive, without public model uploads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PRIV=/tmp/hepta-amcn-ten-private
+          mkdir -p "$PRIV"
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output "$PRIV/source.zip"
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            "$PRIV/source.zip" | sha256sum --check -
+          unzip -p "$PRIV/source.zip" memory-inputs.tar.gz > "$PRIV/original.tar.gz"
+          python3 - <<'PY'
+          from pathlib import Path
+          import tarfile
+          base=Path('/tmp/hepta-amcn-ten-private/original')
+          expected={'locomo.json','encoder/model.safetensors','encoder/config.json',
+                    'encoder/vocab.txt','encoder/tokenizer.json'}
+          found=set()
+          with tarfile.open('/tmp/hepta-amcn-ten-private/original.tar.gz','r:gz') as tar:
+              for member in tar:
+                  if not member.isfile():continue
+                  name=member.name.removeprefix('memory-inputs/')
+                  if name not in expected:continue
+                  if name in found or member.size > 150*1024*1024:
+                      raise RuntimeError('duplicate/oversized original evidence/model')
+                  found.add(name)
+                  path=base/name
+                  path.parent.mkdir(parents=True,exist_ok=True)
+                  with tar.extractfile(member) as source,path.open('xb') as target:
+                      while block:=source.read(1048576):target.write(block)
+          if found!=expected:
+              raise RuntimeError('missing original archived files')
+          PY
+          (cd "$PRIV/original" && printf '%s  %s\n' \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4 locomo.json \
+            53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db encoder/model.safetensors \
+            07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3 encoder/vocab.txt \
+            be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037 encoder/tokenizer.json \
+            953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab05e5aa30f411572037 encoder/config.json \
+            | sha256sum --check -)
+      - name: Prepare label-free complete corpus, independently withhold publisher labels
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-ten-venv/bin/python
+          PRIVATE=/tmp/hepta-amcn-ten-private
+          mkdir -p "$HEPTA_AMCN_FULL_RETRIEVAL_ROOT" "$PRIVATE/evaluator"
+          "$P" -m compileall -q \
+            qualification/amcn-v1/amcn_original_full_family_retrieval.py \
+            qualification/amcn-v1/test_amcn_original_full_family_retrieval.py
+          "$P" qualification/amcn-v1/amcn_original_full_family_retrieval.py prepare \
+            --archive-root "$HEPTA_AMCN_ORIGINAL_ROOT" \
+            --public "$HEPTA_AMCN_FULL_RETRIEVAL_ROOT/public-sources-only.json" \
+            --withheld "$HEPTA_AMCN_FULL_RETRIEVAL_ROOT/withheld-publisher-weak-labels.json"
+          "$P" - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ['HEPTA_AMCN_FULL_RETRIEVAL_ROOT'])/'public-sources-only.json').read_bytes())
+          assert len(x['cases'])==1986 and len(x['source_families'])==10
+          assert sum(map(len,x['source_families'].values()))==5882
+          assert x['publisher_targets_not_included'] is True
+          assert 'publisher_answer' not in str(x) and 'publisher_support' not in str(x)
+          PY
+      - name: Perform ORIGINAL MiniLM Encoder physical inference and label-blind BM25/dense/RRF ranking
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-ten-venv/bin/python
+          ROOT="$HEPTA_AMCN_FULL_RETRIEVAL_ROOT"
+          PUBLIC_SHA=$(sha256sum "$ROOT/public-sources-only.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_full_family_retrieval.py rank \
+            --public "$ROOT/public-sources-only.json" --public-sha "$PUBLIC_SHA" \
+            --encoder "$HEPTA_AMCN_ORIGINAL_ROOT/encoder" \
+            --output "$ROOT/ten-family-real-original-minilm-rank.json" --batch 32 \
+            > /tmp/hepta-amcn-ten-evidence/physical-encoder-stdout.txt
+          "$P" - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['HEPTA_AMCN_FULL_RETRIEVAL_ROOT'])
+          r=json.loads((root/'ten-family-real-original-minilm-rank.json').read_bytes())
+          assert r['original_query_count']==1986 and r['original_source_count']==5882
+          assert r['original_encoder_calls']>=200 and r['original_encoder_token_positions']>=250000
+          assert len(r['case_predictions'])==1986
+          assert r['training_or_publisher_gold_accessed'] is False
+          assert r['real_original_pretrained_forward'] is True
+          assert r['official_hf_tokenizer_model_parity_proven'] is False
+          assert r['production_accepted'] is False
+          PY
+      - name: Post-seal independent publisher-weak label scoring and adversarial regressions
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-ten-venv/bin/python
+          ROOT="$HEPTA_AMCN_FULL_RETRIEVAL_ROOT"
+          PUBLIC_SHA=$(sha256sum "$ROOT/public-sources-only.json" | cut -d' ' -f1)
+          PRED_SHA=$(sha256sum "$ROOT/ten-family-real-original-minilm-rank.json" | cut -d' ' -f1)
+          GOLD_SHA=$(sha256sum "$ROOT/withheld-publisher-weak-labels.json" | cut -d' ' -f1)
+          "$P" qualification/amcn-v1/amcn_original_full_family_retrieval.py score \
+            --public "$ROOT/public-sources-only.json" --public-sha "$PUBLIC_SHA" \
+            --ranked "$ROOT/ten-family-real-original-minilm-rank.json" --ranked-sha "$PRED_SHA" \
+            --withheld "$ROOT/withheld-publisher-weak-labels.json" --withheld-sha "$GOLD_SHA" \
+            --output /tmp/hepta-amcn-ten-evidence/ten-family-score.json \
+            > /tmp/hepta-amcn-ten-evidence/score-stdout.json
+          "$P" -m unittest discover -s qualification/amcn-v1 \
+            -p 'test_amcn_original_full_family_retrieval.py' -v \
+            > /tmp/hepta-amcn-ten-evidence/tests.txt 2>&1
+          cat /tmp/hepta-amcn-ten-evidence/tests.txt
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/hepta-amcn-ten-evidence/ten-family-score.json').read_bytes())
+          assert x['complete_original_questions']==1986
+          assert x['original_source_turns']==5882
+          assert x['retrospective_future_partitions_are_calendar_future'] is False
+          assert x['independent_semantic_task_success'] is None
+          assert x['original_reader_answers_new']==0
+          assert x['three_axis_memory_cell_conclusions'] is None
+          assert x['production_accepted'] is False
+          t=Path('/tmp/hepta-amcn-ten-evidence/tests.txt').read_text()
+          assert 'Ran 9 tests' in t and 'skipped=' not in t and '\nOK\n' in t
+          PY
+      - name: Preserve exact source code and sanitized receipt, NEVER original dialogue, labels or weights
+        if: always()
+        run: |
+          set -euo pipefail
+          BASE=/tmp/hepta-amcn-ten-evidence
+          mkdir -p "$BASE/source"
+          git rev-parse HEAD > "$BASE/source/head.sha"
+          git rev-parse HEAD^{tree} > "$BASE/source/tree.sha"
+          cp qualification/amcn-v1/amcn_original_full_family_retrieval.py \
+             qualification/amcn-v1/test_amcn_original_full_family_retrieval.py \
+             qualification/amcn-v1/ORIGINAL_TEN_FAMILY_RETRIEVAL.md \
+             .github/workflows/hepta-amcn-original-full-family-retrieval.yml \
+             "$BASE/source/"
+          printf '%s\n' \
+            'source_families=10_historical_not_independent_future' \
+            'publisher_annotation_hit_at_k_not_answer_correctness=true' \
+            'no_new_original_reader_answers=true' \
+            'no_synthetic_original_encoder_substitution=true' \
+            'manual_WordPiece_and_BERT_HF_operator_parity_not_authenticated=true' \
+            'strong_hybrid_RAG_or_trained_Cell_graph_gain_unverified=true' \
+            'publisher_gold_original_corpus_and_model_weights_not_uploaded=true' \
+            'no_memory_cell_promotion=true' 'production_accepted=false' \
+            > "$BASE/negative-capability.txt"
+          (cd "$BASE" && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-original-ten-family-pretrained-retrieval-and-negative-receipt
+          path: /tmp/hepta-amcn-ten-evidence
+          if-no-files-found: error
