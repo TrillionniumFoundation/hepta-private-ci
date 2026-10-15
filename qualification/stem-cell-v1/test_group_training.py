@@ -5,7 +5,10 @@ import torch
 from torch.nn import functional as F
 
 from group_core import Core
+from execution_meter import WorkLedger
 from group_training import SplitCore, StaticHead, fit_model, matched_static
+from paired_execution import PHASES
+from test_execution_meter import policy
 
 
 class GroupTrainingTests(unittest.TestCase):
@@ -75,6 +78,31 @@ class GroupTrainingTests(unittest.TestCase):
         self.assertGreater(receipt["nonzero_feedback_batches"], 0)
         self.assertEqual(receipt["depth_supervision"], "mean_all_steps")
         self.assertEqual(receipt["work_observation"]["unknown_operators"], {})
+
+    def test_mixed_sparse_routes_train_both_heads_under_unchanged_strict_profile(self):
+        split = SplitCore(Core(8, 16))
+        split.router = torch.nn.Linear(8, 2, bias=False)
+        with torch.no_grad():
+            split.router.weight.zero_()
+            split.router.weight[0, :4] = 1
+            split.router.weight[1, 4:] = 1
+        meter = WorkLedger(policy("strict"), dict.fromkeys(PHASES, 10**9))
+        with meter.scope("train", "bank"):
+            logits = split(self.features, steps=2, mask=self.masks)
+            F.cross_entropy(logits, self.targets).backward()
+        self.assertEqual(split.routing_executions, [24, 24])
+        self.assertTrue(all(head.weight.grad is not None and head.weight.grad.abs().sum() > 0
+                            for head in split.readouts))
+        with torch.no_grad():
+            state, _ = split.core.step(self.features, mask=self.masks)
+            state, _ = split.core.step(self.features, state, mask=self.masks)
+            expected = torch.stack([split.readouts[int(label >= 4)](state[i])
+                                    for i, label in enumerate(self.targets.tolist())])
+        torch.testing.assert_close(logits, expected)
+        report = meter.report()
+        self.assertEqual(report["unknown_operators"], {})
+        self.assertGreater(report["phase_flops"]["train"], 0)
+        self.assertNotIn("aten.index_fill.int_Scalar", report["operators"])
 
 
 if __name__ == "__main__":

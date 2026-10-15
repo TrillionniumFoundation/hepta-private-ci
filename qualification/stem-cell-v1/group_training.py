@@ -77,13 +77,19 @@ class SplitCore(nn.Module):
     def step(self, tokens, state=None, feedback=None, mask=None):
         state, _ = self.core.step(tokens, state, feedback, mask)
         routes = self.route_logits(tokens, mask).argmax(dim=-1)
-        logits = state.new_zeros(state.shape[0], self.classes)
+        selected_logits, selected_indices = [], []
         for cell, readout in enumerate(self.readouts):
             indices = routes.eq(cell).nonzero().flatten()
             if indices.numel():
-                selected = readout(state.index_select(0, indices))
-                logits = logits.index_copy(0, indices, selected)
+                selected_logits.append(readout(state.index_select(0, indices)))
+                selected_indices.append(indices)
                 self.routing_executions[cell] += indices.numel()
+        # Concatenate active expert results, then restore original batch order.
+        # Chained index_copy backward emits index_fill on mixed routes, outside
+        # the frozen arithmetic profile. Sorting/index_select keeps exact sparse
+        # execution and has a fully covered backward without widening that profile.
+        order = torch.cat(selected_indices).argsort(stable=True)
+        logits = torch.cat(selected_logits).index_select(0, order)
         return state, logits
 
     def forward(self, tokens, steps=1, mask=None, feedback=None, reset_state=False):
