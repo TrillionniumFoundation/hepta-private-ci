@@ -28,8 +28,8 @@ Multiclass Brier lower is better. Selection uses original 64-row TRAIN-only OOF 
 | Seed | TRAIN-only OOF chosen steps | OOF Brier at choice vs 80 | Historical CAL correct chosen vs 80 | Historical CAL Brier chosen vs 80 |
 | --- | ---: | --- | --- | --- |
 | 41 | **8** | **0.430970 vs 0.443349** | **21/32 vs 24/32** | **0.447244 vs 0.437980** |
-| 47 | **4** | **0.418772 vs 0.422629** | **25/32 vs 24/32** | **0.323842 vs 0.434068** |
-| 53 | **8** | **0.505350 vs 0.510520** | **27/32 vs 24/32** | **0.266172 vs 0.437576** |
+| 47 | **4** | **0.418765 vs 0.422627** | **25/32 vs 24/32** | **0.323842 vs 0.434068** |
+| 53 | **8** | **0.505349 vs 0.510515** | **27/32 vs 24/32** | **0.266172 vs 0.437576** |
 
 The OOF selector **harms** Seed 41 CAL correctness, and Seed 47's 4-step OOF count (45/64) is *below* 80 steps (48/64) even though its OOF Brier is lower. These results show a realistic accuracy/calibration tradeoff, not a universal winner. TRAIN-only cross-validation across 64 same-family records and three random seeds is not equivalent to independent future-task generalization. **No deployment, automatic checkpoint switch, autonomous Cell training or CellSplit is permitted.**
 
