@@ -139,7 +139,6 @@ def exact_per_request_count_regressed(
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
         raise InvalidEvidence("unsupported schema")
-++ scripts/tests/test_hepta_ci_scope.py
     if not isinstance(packet.get("source_sha"), str) or not re.fullmatch(
         r"[0-9a-f]{40}", packet["source_sha"]
     ):
