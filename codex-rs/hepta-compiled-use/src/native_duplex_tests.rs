@@ -55,8 +55,12 @@ fn denies_empty_or_unbounded_sessions() {
 #[test]
 fn real_kernel_socket_pair_roundtrips_exactly_32_frames() {
     let (first, second) = UnixStream::pair().expect("pair");
-    first.set_read_timeout(Some(Duration::from_secs(3))).expect("timeout");
-    second.set_read_timeout(Some(Duration::from_secs(3))).expect("timeout");
+    first
+        .set_read_timeout(Some(Duration::from_secs(3)))
+        .expect("timeout");
+    second
+        .set_read_timeout(Some(Duration::from_secs(3)))
+        .expect("timeout");
     let thread = std::thread::spawn(move || {
         let mut worker = FrameDuplexV1::new(second, verifier(), 32).expect("worker");
         for _ in 0..32 {
@@ -73,7 +77,10 @@ fn real_kernel_socket_pair_roundtrips_exactly_32_frames() {
     }
     thread.join().expect("worker thread");
     assert!(!client.is_poisoned());
-    assert_eq!(client.send(&click(33)), Err(FrameWireErrorV1::LimitExceeded));
+    assert_eq!(
+        client.send(&click(33)),
+        Err(FrameWireErrorV1::LimitExceeded)
+    );
 }
 
 #[cfg(unix)]
@@ -82,7 +89,10 @@ fn wrong_sequence_and_capability_do_not_write_bytes() {
     let (first, second) = UnixStream::pair().expect("pair");
     let mut producer = FrameDuplexV1::new(first, verifier(), 2).expect("producer");
     let mut consumer = FrameDuplexV1::new(second, verifier(), 2).expect("consumer");
-    assert_eq!(producer.send(&click(2)), Err(FrameWireErrorV1::SequenceMismatch));
+    assert_eq!(
+        producer.send(&click(2)),
+        Err(FrameWireErrorV1::SequenceMismatch)
+    );
     let mut foreign = click(1);
     foreign.capability_digest = digest(b"foreign");
     assert_eq!(
@@ -90,7 +100,10 @@ fn wrong_sequence_and_capability_do_not_write_bytes() {
         Err(FrameWireErrorV1::Action(ActionErrorV1::CapabilityDenied))
     );
     producer.send(&click(1)).expect("valid send");
-    assert_eq!(consumer.receive().expect("valid inbound").frame(), &click(1));
+    assert_eq!(
+        consumer.receive().expect("valid inbound").frame(),
+        &click(1)
+    );
 }
 
 #[cfg(unix)]
@@ -100,13 +113,17 @@ fn corrupt_padding_denied_then_session_poisoned() {
     let mut consumer = FrameDuplexV1::new(second, verifier(), 2).expect("consumer");
     let mut bad = click(1).encode().expect("encode");
     bad[255] = 1;
-    raw.write_all(&bad).expect("write deliberately corrupted input");
+    raw.write_all(&bad)
+        .expect("write deliberately corrupted input");
     assert_eq!(
         consumer.receive().map(|_| ()),
         Err(FrameWireErrorV1::Action(ActionErrorV1::NonCanonicalPadding))
     );
     assert!(consumer.is_poisoned());
-    assert_eq!(consumer.receive().map(|_| ()), Err(FrameWireErrorV1::Poisoned));
+    assert_eq!(
+        consumer.receive().map(|_| ()),
+        Err(FrameWireErrorV1::Poisoned)
+    );
 }
 
 #[cfg(unix)]
@@ -121,7 +138,10 @@ fn truncated_frame_denied_then_session_poisoned() {
         Err(FrameWireErrorV1::Io(std::io::ErrorKind::UnexpectedEof))
     );
     assert!(consumer.is_poisoned());
-    assert_eq!(consumer.receive().map(|_| ()), Err(FrameWireErrorV1::Poisoned));
+    assert_eq!(
+        consumer.receive().map(|_| ()),
+        Err(FrameWireErrorV1::Poisoned)
+    );
 }
 
 #[cfg(unix)]
@@ -129,7 +149,11 @@ fn truncated_frame_denied_then_session_poisoned() {
 fn skipped_inbound_sequence_denied_then_session_poisoned() {
     let (mut raw, second) = UnixStream::pair().expect("pair");
     let mut consumer = FrameDuplexV1::new(second, verifier(), 2).expect("consumer");
-    raw.write_all(&click(2).encode().expect("encode")).expect("write");
-    assert_eq!(consumer.receive().map(|_| ()), Err(FrameWireErrorV1::SequenceMismatch));
+    raw.write_all(&click(2).encode().expect("encode"))
+        .expect("write");
+    assert_eq!(
+        consumer.receive().map(|_| ()),
+        Err(FrameWireErrorV1::SequenceMismatch)
+    );
     assert!(consumer.is_poisoned());
 }
