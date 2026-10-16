@@ -124,3 +124,58 @@ The readback owner, peer authentication, OS call deadlines, revocation and
 a live effect is possible. `DenyByDefaultSandboxV1` is unchanged.
 **DRAFT / SHADOW_ONLY / DENY_ALL.** Synthetic fixtures and a kernel socket
 microbenchmark do not establish production Computer Use gains.
+
+## Separate-process Unix Socket pilot (V4 research)
+
+The `two_process_unix_bench` example extends V3's real kernel
+`UnixStream::pair` two-thread measurement to **two distinct Unix processes**
+connected through an exclusive private (0700) Unix-socket directory. The
+source process spawns an unprivileged child copy of the same executable.
+Both sides independently decode and validate the original 256-byte
+`ActionFrameV1`, sequence, generation and capability *data*; the child only
+echoes exact frames. No user-interface access or native generated code occurs.
+
+The parent bounds connection establishment and socket read/write periods,
+records child setup and individual real 256B request/256B reply p50/p95/p99,
+checks byte-for-byte response equality, verifies the child exit code, and
+reaps the child even after a failed experiment. Its evidence reports
+`separate_processes=true`, `peer_authentication_verified=false`,
+`mcp_comparison=false`, `external_effects=false`, and
+`production_authorized=false`. The enclosing source-digest and capability
+checks DO NOT authenticate the actual OS peer. This is a limited transport
+measurement, **not** a tool-call replacement performance claim or a
+production-ready effect boundary.
+
+To reproduce on an authorized Unix Rust test host:
+
+```text
+cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example two_process_unix_bench -- --smoke
+```
+
+The new read-only exact-head workflow also runs package unit tests,
+Clippy and rustfmt and compares bounded JSON evidence to the required
+non-authorizing schema. No model, API, credential, OS UI port, JIT or GPU
+access is wired. `DenyByDefaultSandboxV1` is unchanged.
+
+
+### Two-mode exact-source RTT receipt (V4.1)
+
+The exact-head, source-only CI now performs two **separate original OS
+two-process** RTT runs using the same native executable:
+
+- A 64-roundtrip smoke profile to detect obvious transport/worker failure.
+- A 1024-roundtrip bounded profile to observe a larger latency distribution.
+
+The CI publishes a source-bound JSON envelope containing the actual Git HEAD,
+SHA256 of the benchmark Rust source and SHA256 of both original raw JSON
+results, plus the measured p50/p95/p99, process setup time and 256-byte
+per-direction payload counts. It refuses extra or missing output fields and
+keeps all effect/peer-authentication/model-vs-MCP/production flags false.
+
+An immutable Git SHA and a file digest establish *source consistency*, not
+trustworthy host attestation, statistical confidence in p99, API or MCP
+equivalence, GPU inference, model-generation time, or real OS/UI completion.
+Do not combine the two modes as independent task cases or claim a speedup
+over remote tools without paired end-to-end work under an equivalent
+environment. The latest exact-HEAD Action must finish before either receipt
+is treated as measured evidence.
