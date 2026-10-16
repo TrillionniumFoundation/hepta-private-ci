@@ -9,9 +9,13 @@
 #![forbid(unsafe_code)]
 
 mod action;
+mod guarded_wire;
 mod native_duplex;
 mod ui_guard;
 
+pub use guarded_wire::{
+    GuardedWireErrorV1, receive_guarded_shadow_data_v1, send_guarded_shadow_data_v1,
+};
 pub use native_duplex::{FrameDuplexV1, FrameWireErrorV1};
 
 pub use ui_guard::{
