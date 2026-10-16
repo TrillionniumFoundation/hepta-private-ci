@@ -8,6 +8,10 @@ on:
       - "scripts/memory_cell/delivered_candidate_reader.py"
       - "scripts/memory_cell/delivered_candidate_replay.py"
       - "scripts/memory_cell/test_delivered_candidate_reader.py"
+      - "scripts/memory_cell/source_delivered_local_receipt_gate.py"
+      - "scripts/memory_cell/test_source_delivered_local_receipt_gate.py"
+      - "scripts/memory_cell/data/source_delivered_original_local_20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_DELIVERED_LOCAL_ACTUAL_20261016.md"
       - "scripts/memory_cell/four_stage_evidence.py"
       - "scripts/memory_cell/test_four_stage_evidence.py"
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_DELIVERED_CANDIDATE_READER_20261016.md"
@@ -17,6 +21,10 @@ on:
       - "scripts/memory_cell/delivered_candidate_reader.py"
       - "scripts/memory_cell/delivered_candidate_replay.py"
       - "scripts/memory_cell/test_delivered_candidate_reader.py"
+      - "scripts/memory_cell/source_delivered_local_receipt_gate.py"
+      - "scripts/memory_cell/test_source_delivered_local_receipt_gate.py"
+      - "scripts/memory_cell/data/source_delivered_original_local_20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_DELIVERED_LOCAL_ACTUAL_20261016.md"
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_DELIVERED_CANDIDATE_READER_20261016.md"
       - ".github/workflows/hepta-memory-delivered-candidate-reader.yml"
 
@@ -58,15 +66,23 @@ jobs:
             scripts/memory_cell/test_four_stage_evidence.py \
             scripts/memory_cell/delivered_candidate_reader.py \
             scripts/memory_cell/delivered_candidate_replay.py \
-            scripts/memory_cell/test_delivered_candidate_reader.py
+            scripts/memory_cell/test_delivered_candidate_reader.py \
+            scripts/memory_cell/source_delivered_local_receipt_gate.py \
+            scripts/memory_cell/test_source_delivered_local_receipt_gate.py
           python -m unittest discover -s scripts/memory_cell -p 'test_four_stage_evidence.py' -v
           python -m unittest discover -s scripts/memory_cell -p 'test_delivered_candidate_reader.py' -v
+          python -m unittest discover -s scripts/memory_cell -p 'test_source_delivered_local_receipt_gate.py' -v
+          python scripts/memory_cell/source_delivered_local_receipt_gate.py \
+            scripts/memory_cell/data/source_delivered_original_local_20261016.json \
+            --output "$RUNNER_TEMP/source-delivered-receipt-audit.json"
           ruff check --select F,E9 \
             scripts/memory_cell/four_stage_evidence.py \
             scripts/memory_cell/test_four_stage_evidence.py \
             scripts/memory_cell/delivered_candidate_reader.py \
             scripts/memory_cell/delivered_candidate_replay.py \
-            scripts/memory_cell/test_delivered_candidate_reader.py
+            scripts/memory_cell/test_delivered_candidate_reader.py \
+            scripts/memory_cell/source_delivered_local_receipt_gate.py \
+            scripts/memory_cell/test_source_delivered_local_receipt_gate.py
       - name: Verify exact tested source and current worktree integrity
         run: |
           set -euo pipefail
