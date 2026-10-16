@@ -1,0 +1,43 @@
+name: hepta-stem-v19-physical-source-preflight-source-only
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v19_physical_source_preflight.py'
+      - 'qualification/stem-cell-v1/test_v19_physical_source_preflight.py'
+      - 'qualification/stem-cell-v1/STEM_V19_PHYSICAL_SOURCE_PREFLIGHT.md'
+      - '.github/workflows/hepta-stem-v19-physical-source-preflight.yml'
+      - '.github/workflows/hepta-neuron-next-round-matrix.yml'
+  push:
+    branches:
+      - 'research/stem-v19-physical-source-preflight-20261016'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v19-original-byte-reconstruction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact source and syntax
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/{v14_reader_sufficiency_gate,test_v14_reader_sufficiency_gate,v15_system2_split_shadow,test_v15_system2_split_shadow,v16_reader_system2_bridge,test_v16_reader_system2_bridge,v18_grounded_utility,test_v18_grounded_utility,v19_physical_source_preflight,test_v19_physical_source_preflight}.py
+      - name: Physical test-file rehash and inherited source-only protections
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          for pattern in test_v14_reader_sufficiency_gate.py test_v15_system2_split_shadow.py test_v16_reader_system2_bridge.py test_v18_grounded_utility.py test_v19_physical_source_preflight.py; do
+            python -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+            python -O -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+          done
+          git diff --exit-code
