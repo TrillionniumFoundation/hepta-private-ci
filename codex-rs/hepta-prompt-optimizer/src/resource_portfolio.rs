@@ -503,7 +503,7 @@ pub fn select_resource_portfolio_shadow_v1(
         }
         let pair_penalty = risk_aversion
             .checked_mul(pair_covariance)
-            .and_then(|value| value.checked_mul(FixedQ32::from_raw(2)))
+            .and_then(|value| value.checked_mul(FixedQ32::from_raw(2_i64 << 32)))
             .map_err(|_| ResourcePortfolioError::Arithmetic)?;
         let incremental = base_net
             .checked_sub(pair_penalty)
@@ -513,7 +513,7 @@ pub fn select_resource_portfolio_shadow_v1(
         }
         aggregate = next_resources;
         let covariance_increment = pair_covariance
-            .checked_mul(FixedQ32::from_raw(2))
+            .checked_mul(FixedQ32::from_raw(2_i64 << 32))
             .map_err(|_| ResourcePortfolioError::Arithmetic)?;
         variance_risk = variance_risk
             .checked_add(*variances.get(&action_id).ok_or_else(|| {
