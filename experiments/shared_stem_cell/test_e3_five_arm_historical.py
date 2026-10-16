@@ -59,6 +59,16 @@ def panel():
             "model":{"repo":m.GEMMA[0],"revision":m.GEMMA[1],
                      "pipeline_digest":SHA},
             "physical_joint_encode_batches":1,
+            "context_binding":{
+              "schema":"hepta.e3.gemma2-pinned-runtime-context.v1",
+              "original_sentence_transformer_max_seq_length":None,
+              "effective_sentence_transformer_max_seq_length":8192,
+              "underlying_transformer_max_seq_length":8192,
+              "actual_context_bound_from_exact_reviewed_model":True,
+              "image_token_count_physically_verified":False,
+              "model_origin_independently_signed":False,
+              "production_accepted":False,
+            },
             "native_joint_text_image":True,
             "audio_tower_loaded":False,
             "train_only_private_head_parameters":769,
@@ -127,6 +137,24 @@ class FiveArmContract(unittest.TestCase):
     def test_native_wrong_model_owner_denied(self):
         q=panel()
         q[2]["model"]["repo"]="not-original-google-model"
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
+    def test_missing_actual_native_context_denied(self):
+        q=panel()
+        del q[2]["context_binding"]
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
+    def test_fake_model_context_value_denied(self):
+        q=panel()
+        q[2]["context_binding"]["underlying_transformer_max_seq_length"]=None
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
+    def test_model_origin_false_signature_required(self):
+        q=panel()
+        q[2]["context_binding"]["model_origin_independently_signed"]=True
         with self.assertRaises(m.FiveArmError):
             compose(q)
 
