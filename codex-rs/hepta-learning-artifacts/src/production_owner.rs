@@ -396,8 +396,10 @@ impl ArtifactCasOwnerV1 {
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             metrics: None,
             metrics_binding_claimed: Arc::new(AtomicBool::new(false)),
-            metrics_epoch: Arc::new(AtomicU64::new(0)),
-            metrics_flushed_epoch: Arc::new(AtomicU64::new(u64::MAX)),
+            // Source epoch starts at one; the zero durable epoch cannot
+            // accidentally equal an unflushed epoch even near u64::MAX.
+            metrics_epoch: Arc::new(AtomicU64::new(1)),
+            metrics_flushed_epoch: Arc::new(AtomicU64::new(0)),
             metrics_in_flight: Arc::new(AtomicU64::new(0)),
             failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
@@ -418,7 +420,7 @@ impl ArtifactCasOwnerV1 {
     pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         if self.metrics.is_some()
             || self.failed_metric_records.load(Ordering::Acquire) != 0
-            || self.metrics_epoch.load(Ordering::Acquire) != 0
+            || self.metrics_epoch.load(Ordering::Acquire) != 1
             || self.metrics_in_flight.load(Ordering::Acquire) != 0
             || self.cas_latency.snapshot().observations != 0
             || self.signature_latency.snapshot().observations != 0
