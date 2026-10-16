@@ -303,7 +303,7 @@ pub fn evaluate_sequence_heads_v3(
             attention_pairs: pairs,
         });
     }
-    let actual_pairs = cells.iter().map(|cell| cell.attention_pairs).sum();
+    let actual_pairs: u64 = cells.iter().map(|cell| cell.attention_pairs).sum();
     if actual_pairs != expected_pairs {
         return Err(SequenceReadErrorV3::Arithmetic);
     }
