@@ -727,7 +727,10 @@ impl MetricsGroupCommitV1 {
                     let (Some(scope), Some(operation), Some(phase), Some(success)) =
                         (scope, operation, phase, success)
                     else {
-                        return Err(MetricsJournalErrorV1::Corrupt);
+                        // parse_group already validated the complete record.
+                        // Match the original single-query readback behavior:
+                        // an empty trailing separator is not a matching row.
+                        continue;
                     };
                     if let Some(&position) = index.get(&(scope, operation, phase, success)) {
                         counts[position] = counts[position]
