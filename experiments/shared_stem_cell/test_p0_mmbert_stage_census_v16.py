@@ -1,0 +1,247 @@
+"""Synthetic/stdlib stage-diagnostic regressions; no model-origin claim."""
+from __future__ import annotations
+import copy
+import hashlib
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from p0_mmbert_stage_census_v16 import (
+    Invalid, REVISION, SCHEMA, STAGES, StageLedger, read_preflight,
+    strict_pairs, write_create_only, mark_external_failure, loading_report_structure, LOADING_REPORT_FIELDS)
+
+HEAD = 'a' * 40
+
+
+def valid_preflight():
+    return {'schema': 'hepta.p0.independent-model-preflight-observations.v9',
+            'requested_models': ['mmbert_small'], 'scoped_single_candidate': True,
+            'models': {'mmbert_small': {'status':'source_materialized_not_model_qualified',
+                'snapshot_source':'original_hub_revision',
+                'source_revision': REVISION,
+                'publisher_lfs_files_checked': 3,
+                'complete_model_parameter_loading_verified_by_this_preflight': False}},
+            'whole_four_model_success': False, 'human_labels_accessed': False,
+            'production_promotion_permitted': False, 'authority':'DENY_ALL'}
+
+
+class SourceStageDiagnostics(unittest.TestCase):
+    def test_native_setup_is_separate_from_model_loading(self):
+        self.assertEqual(STAGES[0], 'pinned_source_preflight')
+        self.assertEqual(STAGES[1], 'runtime_checkout_and_imports')
+        self.assertEqual(STAGES[2], 'original_mlm_load')
+        self.assertEqual(STAGES[-1], 'original_frozen_cpu_forward')
+        self.assertEqual(len(STAGES), 9)
+
+    def test_native_import_failure_is_not_claimed_model_weight_failure(self):
+        led=StageLedger(HEAD, 34, 'source')
+        led.perform(STAGES[0],lambda: True)
+        with self.assertRaises(ModuleNotFoundError):
+            def missing():raise ModuleNotFoundError('private package/source location')
+            led.perform('runtime_checkout_and_imports', missing)
+        out=led.receipt()
+        self.assertEqual(out['first_failed_stage'], 'runtime_checkout_and_imports')
+        self.assertEqual(out['exception_class_only'], 'ModuleNotFoundError')
+        self.assertNotIn('private',json.dumps(out))
+        self.assertFalse(out['production_promotion_permitted'])
+
+    def test_safetensors_failure_is_not_misattributed_to_full_state(self):
+        led=StageLedger(HEAD, 34, 'merge')
+        for stage in STAGES[:STAGES.index('original_tied_table_bytes')]:
+            led.perform(stage,lambda:True)
+        with self.assertRaises(FileNotFoundError):
+            def missing():raise FileNotFoundError('never publish private weights path')
+            led.perform('original_tied_table_bytes',missing)
+        out=led.receipt()
+        self.assertEqual(out['first_failed_stage'], 'original_tied_table_bytes')
+        self.assertNotIn('never publish',json.dumps(out))
+        self.assertFalse(out['full_four_stem_original_human_efficacy_verified'])
+
+    def test_outside_model_stage_is_explicit_external_setup_only(self):
+        led=StageLedger(HEAD,34,'source')
+        led.perform(STAGES[0],lambda:True)
+        mark_external_failure(led,FileNotFoundError('/private/native/runtime'))
+        self.assertEqual(led.receipt()['first_failed_stage'],'external_setup')
+        self.assertEqual(led.receipt()['exception_class_only'],'FileNotFoundError')
+        self.assertEqual(led.receipt()['ordered_completed_stages'],[STAGES[0]])
+        self.assertNotIn('/private',json.dumps(led.receipt()))
+        with self.assertRaises(Invalid):mark_external_failure(led,ValueError('repeat'))
+        with self.assertRaises(Invalid):led.perform(STAGES[1],lambda:True)
+
+    def test_actual_hf_container_kinds_are_finite_and_label_free(self):
+        d=loading_report_structure({'missing_keys':set(['decoder.weight']),
+                                    'unexpected_keys':frozenset(),
+                                    'mismatched_keys':tuple(),
+                                    'error_msgs':list()})
+        self.assertEqual(tuple(d), LOADING_REPORT_FIELDS)
+        self.assertEqual(d['missing_keys'],{'container_kind':'set','bounded_count':1})
+        self.assertEqual(d['unexpected_keys'],{'container_kind':'frozenset','bounded_count':0})
+        self.assertEqual(d['mismatched_keys'],{'container_kind':'tuple','bounded_count':0})
+        self.assertEqual(d['error_msgs'],{'container_kind':'list','bounded_count':0})
+        self.assertNotIn('decoder.weight',json.dumps(d))
+
+    def test_null_missing_and_unknown_loading_containers_are_not_normalized(self):
+        info={'missing_keys':None,'unexpected_keys':{},'error_msgs':'',
+              'ignored_sensitive_model_tensor_name':'SECRET.MUST.NOT.LEAK'}
+        d=loading_report_structure(info)
+        self.assertEqual(d['missing_keys']['container_kind'],'none')
+        self.assertEqual(d['unexpected_keys']['container_kind'],'unsupported')
+        self.assertEqual(d['mismatched_keys']['container_kind'],'absent')
+        self.assertEqual(d['error_msgs']['container_kind'],'unsupported')
+        self.assertNotIn('SECRET',json.dumps(d))
+        self.assertEqual(loading_report_structure([])['missing_keys']['container_kind'], 'invalid_report')
+
+    def test_overlarge_loading_inventory_is_not_exposed(self):
+        d=loading_report_structure({'missing_keys':['shared.tensor']*8193})
+        self.assertEqual(d['missing_keys']['container_kind'],'list')
+        self.assertIsNone(d['missing_keys']['bounded_count'])
+        self.assertNotIn('shared.tensor',json.dumps(d))
+
+    def test_arbitrary_broken_object_never_gets_iterated_or_serialized(self):
+        class Poison:
+            def __iter__(self):raise AssertionError('must not iterate')
+            def __len__(self):raise AssertionError('must not count')
+            def __repr__(self):raise AssertionError('must not stringify')
+        d=loading_report_structure({'unexpected_keys':Poison()})
+        self.assertEqual(d['unexpected_keys']['container_kind'],'unsupported')
+        self.assertIsNone(d['unexpected_keys']['bounded_count'])
+        json.dumps(d)
+
+    def test_failed_strict_gate_preserves_type_census_without_authority(self):
+        led=StageLedger(HEAD,1234,'source')
+        for stage in STAGES[:STAGES.index('strict_alias_loading_report')]:
+            led.perform(stage,lambda:True)
+        led.original_loading_report_shape=loading_report_structure({
+            'unexpected_keys':set(['unregistered.secret.tensor'])})
+        with self.assertRaises(Invalid):
+            led.perform('strict_alias_loading_report',lambda:(_ for _ in ()).throw(Invalid('unsafe secret')))
+        receipt=led.receipt()
+        self.assertEqual(receipt['first_failed_stage'],'strict_alias_loading_report')
+        self.assertEqual(receipt['original_loading_report_shape']['unexpected_keys'],
+                         {'container_kind':'set','bounded_count':1})
+        self.assertFalse(receipt['production_promotion_permitted'])
+        self.assertNotIn('unregistered.secret',json.dumps(receipt))
+        self.assertNotIn('unsafe secret',json.dumps(receipt))
+
+    def test_finished_diagnostic_still_denies_production(self):
+        led = StageLedger(HEAD, 34, 'source')
+        for stage in STAGES:
+            self.assertEqual(led.perform(stage,lambda: 'observed'), 'observed')
+        r = led.receipt()
+        self.assertEqual(r['outcome'], 'all_stages_passed')
+        self.assertEqual(r['ordered_completed_stages'], list(STAGES))
+        self.assertFalse(r['production_promotion_permitted'])
+        self.assertFalse(r['physical_source_signer_independently_verified'])
+        self.assertFalse(r['full_four_stem_original_human_efficacy_verified'])
+        self.assertEqual(r['authority'], 'DENY_ALL')
+
+    def test_every_failure_stage_preserves_prior_boundaries(self):
+        for index,stage in enumerate(STAGES):
+            with self.subTest(stage=stage):
+                led=StageLedger(HEAD, 34, 'merge')
+                for previous in STAGES[:index]:led.perform(previous,lambda: True)
+                def fail():raise Invalid('do not serialize real exception text or tensors')
+                with self.assertRaises(Invalid):led.perform(stage,fail)
+                r=led.receipt()
+                self.assertEqual(r['first_failed_stage'],stage)
+                self.assertEqual(r['ordered_completed_stages'],list(STAGES[:index]))
+                self.assertEqual(r['exception_class_only'],'Invalid')
+                self.assertEqual(r['outcome'],'stage_failed')
+                self.assertNotIn('do not serialize',json.dumps(r))
+                self.assertNotIn('task_accuracy',r)
+                self.assertFalse(r['production_promotion_permitted'])
+                with self.assertRaises(Invalid):led.perform(stage,lambda: None)
+
+    def test_out_of_order_duplicate_and_missing_boundaries_denied(self):
+        led=StageLedger(HEAD,1,'source')
+        with self.assertRaises(Invalid):led.perform(STAGES[1],lambda:True)
+        self.assertEqual(led.receipt()['outcome'],'incomplete')
+        led.perform(STAGES[0],lambda: True)
+        with self.assertRaises(Invalid):led.perform(STAGES[0],lambda:True)
+
+    def test_injected_exception_raises_and_is_not_converted_to_success(self):
+        led=StageLedger(HEAD,3,'source')
+        def fail():raise FileNotFoundError('/private/model/path')
+        with self.assertRaises(FileNotFoundError):led.perform(STAGES[0],fail)
+        r=led.receipt()
+        self.assertEqual(r['exception_class_only'],'FileNotFoundError')
+        self.assertNotIn('/private',json.dumps(r))
+        self.assertEqual(r['outcome'],'stage_failed')
+
+    def test_source_run_identity_requirements(self):
+        for args in ((HEAD,0,'source'),('bad',4,'source'),(HEAD,True,'source'),
+                     (HEAD,2,'invalid'),(HEAD,2,'SOURCE')):
+            with self.subTest(args=args),self.assertRaises(Invalid):StageLedger(*args)
+        self.assertEqual(StageLedger(HEAD,3,'merge').receipt()['exact_source_head'],HEAD)
+
+    def write_doc(self, root, value):
+        path=Path(root)/'preflight.json'
+        path.write_text(json.dumps(value,sort_keys=True),encoding='utf8')
+        return path
+
+    def test_valid_source_preflight_is_sha_bound(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=self.write_doc(temp,valid_preflight())
+            data,sha=read_preflight(path)
+            self.assertEqual(sha,hashlib.sha256(path.read_bytes()).hexdigest())
+            self.assertEqual(data['models']['mmbert_small']['source_revision'],REVISION)
+
+    def test_original_source_revision_and_lfs_cannot_be_downgraded(self):
+        for key,value in (('source_revision','f'*40),('publisher_lfs_files_checked',0),
+                          ('status','unavailable'),('snapshot_source','fake'),
+                          ('complete_model_parameter_loading_verified_by_this_preflight',True)):
+            data=valid_preflight();data['models']['mmbert_small'][key]=value
+            with self.subTest(key=key),tempfile.TemporaryDirectory() as temp:
+                with self.assertRaises(Invalid):read_preflight(self.write_doc(temp,data))
+
+    def test_no_early_preflight_production_or_labels(self):
+        for key,value in (('authority','GRANTED'),('production_promotion_permitted',True),
+                          ('human_labels_accessed',True),('whole_four_model_success',True),
+                          ('scoped_single_candidate',False)):
+            data=valid_preflight();data[key]=value
+            with self.subTest(key=key),tempfile.TemporaryDirectory() as temp:
+                with self.assertRaises(Invalid):read_preflight(self.write_doc(temp,data))
+
+    def test_duplicate_json_keys_are_refused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'preflight.json';p.write_text('{"x": 1, "x": 2}',encoding='utf8')
+            with self.assertRaises(Invalid):read_preflight(p)
+        with self.assertRaises(Invalid):strict_pairs([('x',1),('x',2)])
+
+    def test_unexpected_source_inventory_refused(self):
+        for update in ({'requested_models':['granite_97m_r2']},
+                       {'schema':'unknown'}, {'models':{}},
+                       {'requested_models':['mmbert_small','granite_97m_r2']}):
+            val=valid_preflight();val.update(update)
+            with tempfile.TemporaryDirectory() as temp,self.assertRaises(Invalid):
+                read_preflight(self.write_doc(temp,val))
+
+    def test_symlink_source_and_output_refused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base=Path(temp);p=self.write_doc(temp,valid_preflight())
+            sym=base/'preflight-link.json';sym.symlink_to(p)
+            with self.assertRaises(Invalid):read_preflight(sym)
+            out=base/'result.json';out.symlink_to(base/'missing')
+            with self.assertRaises(FileExistsError):write_create_only(out,StageLedger(HEAD,1,'source').receipt())
+
+    def test_create_once_then_cold_reopen_and_no_overwrite(self):
+        with tempfile.TemporaryDirectory() as temp:
+            p=Path(temp)/'diagnostic.json';r=StageLedger(HEAD,12,'merge').receipt()
+            write_create_only(p,r)
+            self.assertEqual(json.loads(p.read_text()),r)
+            with self.assertRaises(FileExistsError):write_create_only(p,r)
+
+    def test_corrupted_nan_or_oversized_receipt_refused(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(ValueError):write_create_only(Path(temp)/'x.json',{'bad':float('nan')})
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(Invalid):write_create_only(Path(temp)/'x.json',{'big':'x'*30000})
+
+    def test_model_execution_is_not_imported_by_mechanism_suite(self):
+        import sys
+        self.assertNotIn('transformers',sys.modules)
+        self.assertNotIn('p0_mmbert_tied_load_contract_v15',sys.modules)
+
+
+if __name__=='__main__':unittest.main()

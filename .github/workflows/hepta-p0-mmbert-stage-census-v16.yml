@@ -1,0 +1,141 @@
+name: Hepta P0 mmBERT strict-stage source diagnosis v16 (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/p0_mmbert_stage_census_v16.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_stage_census_v16.py'
+      - 'experiments/shared_stem_cell/P0_MMBERT_STAGE_CENSUS_V16.md'
+      - 'experiments/shared_stem_cell/p0_hf519_loading_report_abi_v17.py'
+      - 'experiments/shared_stem_cell/test_p0_hf519_loading_report_abi_v17.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_hf_cache_blob_v18.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_hf_cache_blob_v18.py'
+      - 'experiments/shared_stem_cell/P0_HF519_LOADING_REPORT_ABI_V17.md'
+      - '.github/workflows/hepta-p0-mmbert-stage-census-v16.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stage-census:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact original implementation and no-label source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          D=experiments/shared_stem_cell
+          python -m py_compile "$D/p0_mmbert_stage_census_v16.py" "$D/test_p0_mmbert_stage_census_v16.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_stage_census_v16.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_stage_census_v16.py -v
+          # Independent source-only 5.19 ABI fixture; the actual upstream ABI
+          # is verified separately AFTER installing the pinned Python wheel.
+          python -m py_compile "$D/p0_hf519_loading_report_abi_v17.py" \
+            "$D/test_p0_hf519_loading_report_abi_v17.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_hf519_loading_report_abi_v17.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_hf519_loading_report_abi_v17.py -v
+          mkdir -p "$RUNNER_TEMP/mmbert-stage-v16"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mmbert-stage-v16/source-identity.txt"
+      - name: Install exact original CPU runtime and replay synthetic byte guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pyarrow==21.0.0' 'pillow==11.3.0'
+          python -m pip check
+          D=experiments/shared_stem_cell
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_tied_load_contract_v15.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_tied_load_contract_v15.py -v
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
+          python -m pip freeze > "$RUNNER_TEMP/mmbert-stage-v16/pinned-runtime.txt"
+      - name: Verify actual pinned Transformers 5.19 loader-report ABI (no weights)
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/shared_stem_cell
+          PYTHONPATH="$D" python "$D/p0_hf519_loading_report_abi_v17.py" \
+            --output "$RUNNER_TEMP/mmbert-stage-v16/hf519-loader-report-abi-v17.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'mmbert-stage-v16/hf519-loader-report-abi-v17.json'
+          a=json.loads(p.read_text())
+          if (a['schema']!='hepta.p0.hf519-original-load-report-abi.v17' or
+              a['installed_transformers_required_version']!='5.19.0' or
+              a['strict_denial_cases_tested']!=5 or
+              a['observed_report_collection_kinds']!={'missing_keys':'set',
+                  'unexpected_keys':'set','mismatched_keys':'set','error_msgs':'list'} or
+              a['actual_model_weights_loaded_by_this_probe'] or
+              a['complete_original_tensor_byte_comparison_by_this_probe'] or
+              a['production_accepted'] or a['model_selected'] or
+              a['authority']!='DENY_ALL'):
+              raise ValueError('unqualified pinned upstream HF loader ABI')
+          PY
+      - name: Require original immutable revision and strict publisher LFS bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/mmbert-stage-v16"
+          python experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+            --model mmbert_small --output-root "$ROOT"
+          python - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_mmbert_stage_census_v16 import read_preflight
+          root=Path(os.environ['RUNNER_TEMP'])/'mmbert-stage-v16'
+          a,sha=read_preflight(root/'compact-preflight-v9.json')
+          assert len(sha)==64 and a['authority']=='DENY_ALL'
+          PY
+      - name: Strict physical failure-stage census, NEVER ignore a failed byte gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/p0_mmbert_stage_census_v16.py \
+            --preflight "$RUNNER_TEMP/mmbert-stage-v16/compact-preflight-v9.json" \
+            --compact-checkout pinned-compact \
+            --source-head "$(git rev-parse HEAD)" \
+            --run-id '${{ github.run_id }}' \
+            --candidate '${{ matrix.candidate }}' \
+            --output "$RUNNER_TEMP/mmbert-stage-v16/stage-census-v16.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p0-mmbert-stage-v16-${{ matrix.candidate }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/mmbert-stage-v16/stage-census-v16.json
+            ${{ runner.temp }}/mmbert-stage-v16/source-identity.txt
+            ${{ runner.temp }}/mmbert-stage-v16/hf519-loader-report-abi-v17.json
+            ${{ runner.temp }}/mmbert-stage-v16/compact-preflight-v9.json
+          retention-days: 14
+          if-no-files-found: warn

@@ -140,6 +140,12 @@ class FrozenMMBert:
             raise Invalid("unexpected mmBERT architecture or absent tying policy")
         weights = hf_hub_download(repo_id=repo, filename="model.safetensors",
                                   revision=revision, local_files_only=True)
+        # HF 1.33 returns snapshots/<SHA>/model.safetensors as a symlink.
+        # Resolve only its exact content-addressed blob after validating the
+        # original revision and blob SHA256; unchanged physical tied-table
+        # and EVERY source tensor byte verifier below still run on the bytes.
+        from p0_mmbert_hf_cache_blob_v18 import resolve_pinned_hf_cache_blob
+        weights = resolve_pinned_hf_cache_blob(weights, revision)
         self.pretrained_weight_receipt = verify_tied_pretrained_table(torch, mlm, weights)
         self.complete_weight_receipt = verify_complete_pretrained_state(torch, mlm, weights)
         self.model = mlm.model.eval()
