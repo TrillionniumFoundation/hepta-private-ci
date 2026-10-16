@@ -5,6 +5,8 @@ on:
     paths:
       - 'qualification/codex-exec-p2e/**'
       - 'scripts/hepta_exec_p2e.py'
+      - 'scripts/hepta_exec_p2e_release_lock.py'
+      - 'scripts/tests/test_hepta_exec_p2e_release_lock.py'
       - 'scripts/tests/test_hepta_exec_p2e.py'
       - 'codex-rs/hepta-contracts/tests/exec_upstream_p2e.rs'
       - 'codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs'
@@ -99,6 +101,23 @@ jobs:
           python3 -m unittest discover -s scripts/tests -p test_hepta_exec_p2e.py -v
           python3 scripts/hepta_exec_p2e.py --corpus qualification/codex-exec-p2e/corpus.json --validate-only
           python3 scripts/verify_cargo_lock.py
+          python3 -m unittest discover -s scripts/tests -p test_hepta_exec_p2e_release_lock.py -v
+
+      - name: Qualify only original upstream workspace release versions in a separate worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C upstream worktree add --detach "$GITHUB_WORKSPACE/upstream-qualified" "$UPSTREAM_SHA"
+          test "$(git -C upstream-qualified rev-parse HEAD)" = "$UPSTREAM_SHA"
+          mkdir -p upstream-qualified/qualification/codex-exec-p2e upstream-qualified/codex-rs/exec-server-protocol/tests
+          cp source/qualification/codex-exec-p2e/{corpus.json,native_probe.rs} upstream-qualified/qualification/codex-exec-p2e/
+          cp source/qualification/codex-exec-p2e/upstream_probe.rs upstream-qualified/codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs
+          cmp upstream/qualification/codex-exec-p2e/corpus.json upstream-qualified/qualification/codex-exec-p2e/corpus.json
+          cmp upstream/qualification/codex-exec-p2e/native_probe.rs upstream-qualified/qualification/codex-exec-p2e/native_probe.rs
+          cmp upstream/codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs upstream-qualified/codex-rs/exec-server-protocol/tests/hepta_exec_p2e.rs
+          python3 source/scripts/hepta_exec_p2e_release_lock.py \
+            --upstream-root upstream --qualified-root upstream-qualified --mode apply \
+            --report "$RUNNER_TEMP/p2e/qualified-lock-report.json"
 
       - name: Native Hepta formatting, build, original regression and strict lint
         working-directory: source/codex-rs
@@ -121,12 +140,13 @@ jobs:
           cargo test --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/p2e/local.log"
 
       - name: Run pinned upstream actual WireExecParams ingress
-        working-directory: upstream/codex-rs
+        working-directory: upstream-qualified/codex-rs
         shell: bash
         run: |
           set -euo pipefail
           rustc --version --verbose
           cargo fmt -p codex-exec-server-protocol -- --check
+          cargo metadata --locked --no-deps --format-version 1 > /dev/null
           cargo test --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/p2e/upstream.log"
           cargo clippy --locked -p codex-exec-server-protocol --test hepta_exec_p2e -- -D warnings
 
@@ -134,12 +154,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 source/scripts/hepta_exec_p2e_release_lock.py \
+            --upstream-root upstream --qualified-root upstream-qualified --mode verify \
+            --report "$RUNNER_TEMP/p2e/qualified-lock-report.json"
           python3 source/scripts/hepta_exec_p2e.py \
             --corpus source/qualification/codex-exec-p2e/corpus.json \
             --hepta-log "$RUNNER_TEMP/p2e/hepta.log" \
             --local-log "$RUNNER_TEMP/p2e/local.log" \
             --upstream-log "$RUNNER_TEMP/p2e/upstream.log" \
-            --source-root source --upstream-root upstream --output "$RUNNER_TEMP/p2e/report.json"
+            --source-root source --upstream-root upstream \
+            --upstream-lock-report "$RUNNER_TEMP/p2e/qualified-lock-report.json" \
+            --output "$RUNNER_TEMP/p2e/report.json"
           git -C source diff --exit-code HEAD
           test -z "$(git -C source ls-files --others --exclude-standard)"
           git -C upstream diff --exit-code HEAD
@@ -149,19 +174,24 @@ jobs:
           git -C upstream ls-files --others --exclude-standard | sort > "$RUNNER_TEMP/p2e/actual-untracked"
           diff -u "$RUNNER_TEMP/p2e/expected-untracked" "$RUNNER_TEMP/p2e/actual-untracked"
 
-      - name: Diagnose immutable upstream Cargo.lock drift (failure evidence only)
+      - name: Retain pinned original and strictly qualified lock differences on failure
         if: failure()
         shell: bash
         run: |
+          set -uo pipefail
           mkdir -p "$RUNNER_TEMP/p2e"
-          printf 'source=%s\n' "$UPSTREAM_SHA" > "$RUNNER_TEMP/p2e/upstream-lock-diagnostic.txt"
-          git -C upstream rev-parse HEAD:codex-rs/Cargo.lock >> "$RUNNER_TEMP/p2e/upstream-lock-diagnostic.txt"
-          scratch="$RUNNER_TEMP/upstream-lock-diagnostic"
-          git -C upstream worktree add --detach "$scratch" "$UPSTREAM_SHA"
-          (cd "$scratch/codex-rs" && timeout 180s cargo metadata --format-version 1 > /dev/null) \
-            > "$RUNNER_TEMP/p2e/upstream-resolve.stdout" 2> "$RUNNER_TEMP/p2e/upstream-resolve.stderr" || true
-          git -C "$scratch" diff HEAD -- codex-rs/Cargo.lock > "$RUNNER_TEMP/p2e/upstream-lock-diff.patch"
-          git -C upstream diff --exit-code HEAD
+          git -C upstream rev-parse HEAD:codex-rs/Cargo.lock \
+            > "$RUNNER_TEMP/p2e/upstream-original-lock-blob.txt" || true
+          if [ -f upstream-qualified/codex-rs/Cargo.lock ]; then
+            git -C upstream-qualified diff -- codex-rs/Cargo.lock \
+              > "$RUNNER_TEMP/p2e/qualified-lock-diff.patch" || true
+            sha256sum upstream-qualified/codex-rs/Cargo.lock \
+              > "$RUNNER_TEMP/p2e/qualified-lock-failure-sha256.txt" || true
+          fi
+          if [ -f upstream/codex-rs/Cargo.lock ]; then
+            sha256sum upstream/codex-rs/Cargo.lock \
+              > "$RUNNER_TEMP/p2e/original-lock-failure-sha256.txt" || true
+          fi
 
       - name: Retain raw native logs including failures
         if: always()

@@ -138,6 +138,7 @@ def main() -> None:
     parser.add_argument("--upstream-log", type=Path)
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--upstream-root", type=Path)
+    parser.add_argument("--upstream-lock-report", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     corpus = load_corpus(args.corpus)
@@ -146,11 +147,35 @@ def main() -> None:
                           "native_tests_executed": False, "authority": "DENY_ALL"}))
         return
     if any(value is None for value in (args.hepta_log, args.local_log, args.upstream_log,
-                                       args.source_root, args.upstream_root, args.output)):
+                                       args.source_root, args.upstream_root, args.output,
+                                       args.upstream_lock_report)):
         parser.error("native logs, both checked-out sources and create-only output are required")
+    qualification = json.loads(read_bytes(args.upstream_lock_report),
+                               object_pairs_hook=unique_object)
+    if (qualification.get("schema") != 1
+            or qualification.get("upstream_commit") != UPSTREAM
+            or qualification.get("original_lock_git_blob")
+               != "1cee1174c2e937758713df47683521233a36b4f7"
+            or qualification.get("replacement_count") != 161
+            or qualification.get("replacement_from") != "0.0.0"
+            or qualification.get("replacement_to") != "0.162.1"
+            or qualification.get("external_package_changes") != 0
+            or qualification.get("original_upstream_checkout_modified") is not False
+            or qualification.get("tracked_upstream_source_changes")
+               != ["codex-rs/Cargo.lock"]
+            or qualification.get("effect_authority") != "DENY_ALL"):
+        raise ValueError("unreviewed upstream lock qualification")
     report = audit(corpus, rows(args.hepta_log, "P2E_HEPTA_ROW "),
                    rows(args.local_log, "P2E_NATIVE_ROW "),
                    rows(args.upstream_log, "P2E_NATIVE_ROW "))
+    report["upstream_lock_qualification"] = {
+        "original_upstream_lock_git_blob": qualification["original_lock_git_blob"],
+        "derived_upstream_lock_git_blob": qualification["qualified_lock_git_blob"],
+        "derived_upstream_lock_sha256": qualification["qualified_lock_sha256"],
+        "normalized_local_workspace_packages": qualification["replacement_count"],
+        "original_upstream_lock_natively_usable_without_normalization": False,
+        "upstream_original_tracked_sources_unchanged": True,
+    }
     if git(args.upstream_root, "rev-parse", "HEAD") != UPSTREAM:
         raise ValueError("upstream checkout drift")
     git(args.source_root, "merge-base", "--is-ancestor", PARENT, "HEAD")
