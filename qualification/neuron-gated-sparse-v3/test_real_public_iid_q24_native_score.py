@@ -5,11 +5,16 @@ No native Rust call or actual public pretrained Encoder is mocked as evidence.
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from real_public_iid_q24_native_score import (
     Refused, bin_metrics, frozen_single_case_trace, independent_head_margin,
     nearest_rank_us, run, bind_original_public_fit_and_heldout,
+    verify_original_physical_public_q24_features,
 )
 
 
@@ -103,6 +108,92 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         held["rows"][0]["case_id"] = "foreign-heldout-case"
         with self.assertRaisesRegex(Refused,"heldout source"):
             bind_original_public_fit_and_heldout(original,fit,held,plan)
+
+    def _physical_feature_fixture(self, root: Path):
+        original, fit, held, plan = self._public_fit_fixture()
+        from real_public_iid_q24_native_score import digest
+        rows = [
+            {
+                "case_id": row["case_id"],
+                "split": row["split"],
+                "source_text_sha256": row["source_text_sha256"],
+                "feature_q24": row["feature_q24"],
+            }
+            for row in fit["rows"]+held["rows"]
+        ]
+        encode = lambda obj: (
+            json.dumps(obj,sort_keys=True,indent=2,allow_nan=False)+"\\n"
+        ).encode("utf-8")
+        registry = {
+            "fit_case_ids": [r["case_id"] for r in fit["rows"]],
+            "heldout_case_ids": [r["case_id"] for r in held["rows"]],
+        }
+        saved_registry = encode(registry)
+        projector = b"mock projectors not genuine ModernBERT weights"
+        encoder_sha = digest(b"mock pretrained Encoder only")
+        snapshot = {
+            "schema": "hepta.neuron.public-encoder-q24-feature-snapshot.v1",
+            "encoder_sha256": encoder_sha,
+            "projection_sha256": digest(projector),
+            "registry_sha256": digest(saved_registry),
+            "projection_fit_case_ids": registry["fit_case_ids"],
+            "feature_rows": rows,
+            "claimed_independent_provenance": False,
+            "production_qualification": False,
+            "ndu_eligible": False,
+        }
+        snapshot_raw=encode(snapshot)
+        frozen_sha=digest(snapshot_raw)
+        fit["input_feature_snapshot_sha256"]=frozen_sha
+        held["input_feature_snapshot_sha256"]=frozen_sha
+        producer={
+            "schema": "hepta.neuron.actual-public-encoder-q24-producer.v1",
+            "encoder_snapshot_sha256": encoder_sha,
+            "projection_safetensors_sha256": digest(projector),
+            "registry_sha256": digest(saved_registry),
+            "snapshot_sha256": frozen_sha,
+            "original_public_input_id": original["input_id"],
+            "real_pretrained_encoder_invoked": True,
+            "physical_encoder_invocations": 96,
+            "train_only_projection_fit_count": 64,
+            "heldout_projection_fit_count": 0,
+            "projection_owner_signature_verified": False,
+            "production_qualification": False,
+            "ndu_eligible": False,
+        }
+        for name, raw in {
+            "snapshot.json": snapshot_raw,
+            "registry.json": saved_registry,
+            "projection.safetensors": projector,
+            "producer-receipt.json": encode(producer),
+        }.items():
+            (root/name).write_bytes(raw)
+        return original,fit,held
+
+    def test_physical_q24_feature_receipt_requires_exact_96_vectors(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            original,fit,held=self._physical_feature_fixture(root)
+            report=verify_original_physical_public_q24_features(root,fit,held,original)
+            self.assertTrue(report["all_96_fit_and_heldout_vectors_reopened_and_equal"])
+            self.assertFalse(report["independently_signed_encoder_or_projection_verified"])
+            self.assertEqual(report["authority"],"DENY_ALL")
+
+    def test_swapped_heldout_q24_feature_cannot_retain_original_sha(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            original,fit,held=self._physical_feature_fixture(root)
+            held["rows"][0]["feature_q24"][0]+=1
+            with self.assertRaisesRegex(Refused,"differs from physical Encoder"):
+                verify_original_physical_public_q24_features(root,fit,held,original)
+
+    def test_swapped_physical_projector_bytes_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            original,fit,held=self._physical_feature_fixture(root)
+            (root/"projection.safetensors").write_bytes(b"forged other projector")
+            with self.assertRaisesRegex(Refused,"substituted"):
+                verify_original_physical_public_q24_features(root,fit,held,original)
 
     def test_expensive_scorer_cannot_shadow_module_path_constructor(self):
         # This catches the actual source bug where run() referenced Path
