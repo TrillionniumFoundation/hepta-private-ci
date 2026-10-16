@@ -18,7 +18,6 @@ from pathlib import Path
 
 ORIGINAL_SHA="e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7"
 OCR_SHA="96ba4117a37689eeafe2415661e028a9170b7ccdd8c345b6b8d6241b7a928885"
-LABEL_SHA="b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3"
 SOURCE_SHA="a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202"
 OCR_MODEL=("ibm-granite/granite-embedding-97m-multilingual-r2","835ad14087e140460703cf0fae09f97d469d65c2")
 SCHEMA="hepta.e3-ocr-original-independent-heldout-review.v1"
@@ -146,7 +145,7 @@ def outcome(original,ocr,held):
         rescues+=int(decision==[0,1]);harms+=int(decision==[1,0])
     require(both_correct+both_wrong+rescues+harms==64,"paired original decision partition")
     return {"schema":SCHEMA,"original_text_predictions_sha256":ORIGINAL_SHA,
-        "actual_ocr_predictions_sha256":OCR_SHA,"original_held_labels_sha256":LABEL_SHA,
+        "actual_ocr_predictions_sha256":OCR_SHA,"original_held_labels_sha256":None,
         "source_sha256":SOURCE_SHA,"cases":64,"ocr_calls":ocr["physical_ocr_calls"],
         "ocr_nonempty_cases":ocr["ocr_nonempty_cases"],
         "ocr_granite_forward_batches":ocr["physical_granite_forward_batches"],
@@ -166,11 +165,13 @@ def main():
     a=argparse.ArgumentParser(description=__doc__)
     for name in ("original","ocr","held","output"):
         a.add_argument("--"+name,required=True,type=Path)
+    a.add_argument("--held-sha256",required=True)
     args=a.parse_args()
     original=parse(pinned(args.original,ORIGINAL_SHA))
     ocr=parse(pinned(args.ocr,OCR_SHA))
-    held=[parse(line) for line in pinned(args.held,LABEL_SHA).splitlines()]
+    held=[parse(line) for line in pinned(args.held,args.held_sha256).splitlines()]
     result=outcome(original,ocr,held)
+    result["original_held_labels_sha256"]=args.held_sha256
     output=args.output
     require(not output.exists() and not output.is_symlink(),"non-overwrite independent score required")
     with output.open("x",encoding="utf-8") as stream:
