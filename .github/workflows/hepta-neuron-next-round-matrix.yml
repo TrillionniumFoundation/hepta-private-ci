@@ -14,6 +14,12 @@ on:
 permissions:
   contents: read
 
+# Drop superseded CI for the same PR head; keep separate PRs parallel.
+# Push runs get unique groups so no main evidence is silently cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   preregistration:
     runs-on: ubuntu-latest
