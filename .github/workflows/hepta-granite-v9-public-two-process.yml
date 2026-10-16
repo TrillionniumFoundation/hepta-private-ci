@@ -347,70 +347,26 @@ jobs:
         with:
           name: granite-v9-exact-material-and-constructed-source
           path: ${{ runner.temp }}/granite-v9-original
-      - name: Rehash authentic material and stage a NEW data-only session
+      - name: Rehash original material and stage a distinct new data-only session
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py restage \
+            --original-root "$RUNNER_TEMP/granite-v9-original" \
+            --fresh-root "$RUNNER_TEMP/granite-v9-fresh"
           python - <<'PY'
-          import json
-          import os
-          import shutil
-          import sys
-          import time
+          import json,os
           from pathlib import Path
-          root=Path(os.environ["RUNNER_TEMP"])
-          sys.path.insert(0,"qualification/stem-cell-v1")
-          import granite97_v9_public_physical as v9
-          previous=root/"granite-v9-original"
-          fresh=root/"granite-v9-fresh"
-          new_model=fresh/"model"
-          new_model.mkdir(parents=True,exist_ok=False)
-          former,_=v9._json(previous/"lock.json",8192)
-
-          # Former lease might have expired in the queue. Do NOT treat it
-          # as a current owner approval. Re-hash original files/source and
-          # establish a separate, create-only research DATA session instead.
-          _,original_digest=v9.calculate_material(previous/"model")
-          if (former.get("model_id")!=v9.MODEL_ID
-              or former.get("revision")!=v9.REVISION
-              or former.get("source_sha256")!=v9.SOURCE_SHA
-              or former.get("material_sha256")!=original_digest
-              or former.get("authority")!="DENY_ALL"
-              or former.get("production_authorized") is not False
-              or former.get("model_selected") is not False
-              or former.get("upstream_commit_pinned") is not True
-              or former.get("independent_model_owner_authenticated") is not False
-              or former.get("independent_source_owner_authenticated") is not False):
-              raise SystemExit("original model/source cannot be independently re-staged")
-          source=v9.source_bytes(previous/"source.txt")
-          for name in v9.FILES:
-              old=previous/"model"/name
-              if old.is_symlink() or not old.is_file():
-                  raise SystemExit("original source model is not a regular file")
-              with old.open("rb") as src, (new_model/name).open("xb") as dst:
-                  shutil.copyfileobj(src,dst,1024*1024)
-          with (fresh/"source.txt").open("xb") as dst:
-              dst.write(source)
-          if v9.calculate_material(new_model)[1]!=original_digest:
-              raise SystemExit("fresh model bytes differ from frozen source")
-          new_lock=v9.prepare(fresh/"source.txt",new_model,
-                              fresh/"lock.json",now_ms=time.time_ns()//1_000_000)
-          if (new_lock["material_sha256"]!=original_digest
-              or new_lock["source_sha256"]!=v9.SOURCE_SHA
-              or new_lock["feature_adapter"]!="rational8-v1"
-              or new_lock["authority"]!="DENY_ALL"
-              or new_lock["production_authorized"] is not False):
-              raise SystemExit("unapproved data-only session")
-          print(json.dumps({
-              "schema":"hepta.stem.granite97-fresh-session-metadata.v1",
-              "fresh_material_rehash":True,
-              "expired_lock_reused_or_extended":False,
-              "material_sha256":original_digest,
-              "source_sha256":v9.SOURCE_SHA,
-              "adapter":new_lock["feature_adapter"],
-              "model_or_source_signer_authenticated":False,
-              "production_authorized":False,
-              "authority":"DENY_ALL"},sort_keys=True))
+          fresh=Path(os.environ["RUNNER_TEMP"])/"granite-v9-fresh"
+          receipt=json.loads((fresh/"session.json").read_text())
+          if (receipt.get("schema")!="hepta.stem.granite97-fresh-session-metadata.v1"
+              or receipt.get("new_research_data_session") is not True
+              or receipt.get("expired_lock_reused_or_extended") is not False
+              or receipt.get("independent_model_or_source_signer_verified") is not False
+              or receipt.get("production_authorized") is not False
+              or receipt.get("authority")!="DENY_ALL"):
+              raise SystemExit("fresh research data session cannot acquire authority")
+          print(json.dumps(receipt,sort_keys=True))
           PY
       - name: Install original pretrained CPU and frozen Rust toolchain
         shell: bash
@@ -495,6 +451,7 @@ jobs:
           if-no-files-found: warn
           path: |
             ${{ runner.temp }}/granite-v9-fresh/lock.json
+            ${{ runner.temp }}/granite-v9-fresh/session.json
             ${{ runner.temp }}/granite-v9-fresh/export.json
             ${{ runner.temp }}/granite-v9-fresh/review.json
             ${{ runner.temp }}/granite-v9-fresh/unsigned-admission.json
