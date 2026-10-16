@@ -8,6 +8,7 @@
 
 // Compatibility exports of the sole server-side extension implementation.
 use codex_hepta_prompt_extension as runtime_prompt;
+mod execution_port;
 mod wire;
 
 use std::error::Error as StdError;
@@ -32,6 +33,8 @@ use codex_hepta_types::StableId;
 use codex_hepta_types::PromptDeliveryErrorV1;
 pub use codex_hepta_types::PromptDeliveryObservationV1;
 pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
+pub use execution_port::ExecutionPortAdapterErrorV1;
+pub use execution_port::adapt_execution_port_request_v1;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2;
 
 pub use runtime_prompt::PromptRuntimeAttachmentV1;
@@ -702,3 +705,7 @@ mod deadline_digest_tests;
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "execution_port_tests.rs"]
+mod execution_port_tests;

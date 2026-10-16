@@ -51,7 +51,7 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
-use codex_hepta_codex_adapter::adapt_request;
+use codex_hepta_codex_adapter::adapt_execution_port_request_v1;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
@@ -67,6 +67,7 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ExecutionPortIntentV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -595,7 +596,19 @@ impl AppServerModelDriver {
                 connection_id,
             }),
         };
-        let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
+        // The backend-neutral borrowed intent is validated against the exact
+        // App Server turn/start intent before the original Final-use claim.
+        // This adds no executor, process hop, durable writer or capability.
+        let port_intent = ExecutionPortIntentV1 {
+            operation_id: &adapter_intent.operation_id,
+            source_admission_digest,
+            generation: Generation::new(self.config.generation)?,
+            payload_digest,
+            lease_payload_digest: payload_digest,
+            deadline_ms: adapter_intent.deadline_ms,
+        };
+        let request_receipt =
+            adapt_execution_port_request_v1(adapted_at_ms, &port_intent, adapter_intent.clone())?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,
