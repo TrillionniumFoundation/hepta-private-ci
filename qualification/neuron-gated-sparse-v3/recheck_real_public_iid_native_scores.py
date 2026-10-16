@@ -24,6 +24,20 @@ from real_public_iid_q24_native_score import bin_metrics, canonical
 SCHEMA = "hepta.neuron.independent-public-iid-q24-heldout-recheck.v1"
 ARMS = ("v2", "v3", "ssm", "min_gru")
 BUDGETS = (8192, 32768)
+# Independent, immutable native Rust byte-profile admissions for F32 Adapter/
+# Head and I64 Q24 temporal tensor payload; no Torch, zero-template planner
+# import, or reviewer-side learning code may redefine these physical limits.
+# (private width, physically realized parameter count, file bytes)
+REGISTERED_BYTE_GEOMETRY = {
+    (8192, "v2"): (54, 1891, 8148),
+    (8192, "v3"): (45, 1711, 8172),
+    (8192, "ssm"): (47, 1740, 8052),
+    (8192, "min_gru"): (38, 1559, 8156),
+    (32768, "v2"): (224, 7841, 32644),
+    (32768, "v3"): (191, 7259, 32716),
+    (32768, "ssm"): (201, 7438, 32708),
+    (32768, "min_gru"): (166, 6807, 32756),
+}
 SHA_HEX = frozenset("0123456789abcdef")
 MAX_BYTES = 2_000_000
 
@@ -139,8 +153,15 @@ def recheck_report(report: dict, original_inputs: dict,
              "duplicate or unsupported public model task/capacity/arm")
         seen.add(key)
         width = record["hidden_width"]
-        need(type(width) is int and 5 <= width <= 256,
-             "invalid physical trained model width")
+        required_width, required_parameters, required_bytes = (
+            REGISTERED_BYTE_GEOMETRY[(budget, arm)]
+        )
+        need(type(width) is int and width == required_width
+             and type(summary.get("realized_private_parameters")) is int
+             and summary["realized_private_parameters"] == required_parameters
+             and type(summary.get("physical_safetensors_file_bytes")) is int
+             and summary["physical_safetensors_file_bytes"] == required_bytes,
+             "registered physical native Q24 Cell shape/parameters/file bytes drift")
         need(summary.get("task_id") == task
              and summary.get("serialized_byte_budget") == budget
              and summary.get("arm") == arm
