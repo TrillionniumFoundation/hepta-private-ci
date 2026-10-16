@@ -35,6 +35,12 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/P0_RUNNER_STAGE_DIAG_V12.md'
       - 'experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py'
       - 'experiments/shared_stem_cell/P0_ISOLATED_MATRIX_ARTIFACT_V11.md'
+      - 'experiments/shared_stem_cell/e1_mmbert_tied_loader.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py'
+      - 'experiments/shared_stem_cell/P0_MMBERT_STRICT_ALIAS_V15.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
   workflow_dispatch:
 permissions:
@@ -76,6 +82,11 @@ jobs:
             experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
             experiments/shared_stem_cell/test_p0_real_preflight_v9.py \
+            experiments/shared_stem_cell/e1_mmbert_tied_loader.py \
+            experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py \
+            experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py \
+            experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py \
+            experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py \
             experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py \
@@ -138,6 +149,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_mmbert*_v15.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_mmbert*_v15.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
