@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/hepta-memory-format-repair-export.yml"
+      - "scripts/memory_cell/reconstruct_prompt_representation_raw.py"
+      - "scripts/memory_cell/test_historical_reader_format_source.py"
 permissions:
   contents: read
 concurrency:

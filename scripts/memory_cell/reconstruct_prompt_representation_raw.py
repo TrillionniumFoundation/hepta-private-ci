@@ -73,15 +73,15 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
                 messages, selected = prompt.build_messages(
                     case, arm, style, sources
                 )
-                prompt = tokenizer.render(messages)
-                ids = tokenizer.encode(prompt)
+                rendered_prompt = tokenizer.render(messages)
+                ids = tokenizer.encode(rendered_prompt)
                 if len(ids) > 2048:
                     raise ValueError("original prompt budget drift")
                 generated = value[0]
                 row.update(
                     status="succeeded",
                     messages=messages,
-                    prompt=prompt,
+                    prompt=rendered_prompt,
                     input_ids=ids,
                     input_digest=reader.digest(ids),
                     selected=selected,

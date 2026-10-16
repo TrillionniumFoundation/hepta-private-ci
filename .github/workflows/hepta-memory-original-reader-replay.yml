@@ -42,7 +42,7 @@ jobs:
           python -m venv "$RUNNER_TEMP/reader-replay-venv"
           source "$RUNNER_TEMP/reader-replay-venv/bin/activate"
           python -m pip install --no-cache-dir torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --no-cache-dir safetensors==0.6.2 Jinja2==3.1.6 regex==2026.9.29
+          python -m pip install --no-cache-dir safetensors==0.6.2 Jinja2==3.1.6 regex==2026.9.29 packaging==25.0 numpy==1.26.4
           python -m pip freeze > "$RUNNER_TEMP/reader-format-replay/environment.txt"
           python -m unittest discover -s scripts/memory_cell \
             -p 'test_historical_reader_format_source.py' -v \
