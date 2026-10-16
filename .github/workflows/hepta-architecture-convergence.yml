@@ -227,7 +227,7 @@ jobs:
           set -euo pipefail
           # Cheap exact-source Rustfmt failure before native inference and
           # long Worker/Evidence suites. Later full gates remain mandatory.
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -p codex-hepta-operator-acceptance -- --check
       - name: Early original Control WAL canonical path native regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
