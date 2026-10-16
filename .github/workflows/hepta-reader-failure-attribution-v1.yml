@@ -1,0 +1,39 @@
+name: hepta-reader-failure-attribution-v1 (source-only DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/reader_failure_attribution_v1.py"
+      - "qualification/stem-cell-v1/test_reader_failure_attribution_v1.py"
+      - "qualification/stem-cell-v1/READER_FAILURE_ATTRIBUTION_V1.md"
+      - ".github/workflows/hepta-reader-failure-attribution-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contract-and-adversarial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Validate exact source and all negative receipts (no model download)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git hash-object qualification/stem-cell-v1/reader_failure_attribution_v1.py \
+            qualification/stem-cell-v1/test_reader_failure_attribution_v1.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_reader_failure_attribution_v1.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_reader_failure_attribution_v1.py' -v
+          python -m py_compile \
+            qualification/stem-cell-v1/reader_failure_attribution_v1.py \
+            qualification/stem-cell-v1/test_reader_failure_attribution_v1.py
