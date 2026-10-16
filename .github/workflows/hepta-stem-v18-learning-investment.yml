@@ -1,0 +1,40 @@
+name: hepta-stem-v18-learning-investment
+on:
+  push:
+    branches:
+      - research/stem-learning-investment-v18-20261016
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/learning_investment_gate_v18.py
+      - qualification/stem-cell-v1/test_learning_investment_gate_v18.py
+      - qualification/stem-cell-v1/STEM_V18_LEARNING_INVESTMENT_20261016.md
+      - .github/workflows/hepta-stem-v18-learning-investment.yml
+permissions:
+  contents: read
+jobs:
+  source-only-v18:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python source-only contract and adversarial checks
+        run: |
+          set -euo pipefail
+          cd qualification/stem-cell-v1
+          python3 -m py_compile learning_investment_gate_v18.py test_learning_investment_gate_v18.py
+          python3 -m unittest -q test_learning_investment_gate_v18
+          python3 -O -m unittest -q test_learning_investment_gate_v18
+      - name: Confirm research-only no authority
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "qualification/stem-cell-v1")
+          from learning_investment_gate_v18 import audit
+          from test_learning_investment_gate_v18 import packet
+          result = audit(packet())
+          assert result["decision"] == "DENY_ALL_UNATTESTED_RESEARCH"
+          assert result["production_authorized"] is False
+          assert result["cell_split_authorized"] is False
+          PY
