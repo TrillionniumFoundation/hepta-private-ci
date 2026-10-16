@@ -5,8 +5,12 @@ on:
   push:
     branches: [main]
 
+# Keep main pushes single-flight. A poisoned old PR head must not hold the
+# concurrency group for every later commit on that PR; allow exact-head
+# qualifications to dispatch independently. Duplicate runs for the *same*
+# immutable head still share a concurrency group and cancel each other.
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: blocking-ci-${{ github.event.pull_request.number || github.ref_name }}-${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: true
 
 permissions:
