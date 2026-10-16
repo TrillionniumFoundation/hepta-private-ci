@@ -43,7 +43,7 @@ jobs:
           # Exact original #2145 source blobs, not newly substituted owners.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "3db3c41b645910fde7d55c294c7371198327ee03"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "5c473b4714056bb0a3911be7b82853d71b07aac3"
-          test "$(git rev-parse HEAD:codex-rs/hepta-evidence/src/metrics_group_commit.rs)" = "31ef03abe0374c7812ccb035fcdd94f82e2fbfee"
+          test "$(git rev-parse HEAD:codex-rs/hepta-evidence/src/metrics_group_commit.rs)" = "b4515c2d83b335c98554fdf4f2366185eebc1bf4"
           test "$(git rev-parse HEAD:codex-rs/hepta-evidence/src/metrics_sink.rs)" = "2b1091fe45b05a66bdce89a6a5fe1df41a4ea537"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "b62d0d9430c51beb505558457855a5922ca89006"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
