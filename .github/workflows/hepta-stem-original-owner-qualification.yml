@@ -117,7 +117,10 @@ jobs:
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
       - name: Execute original Context Delivery provider-evidence regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
+        # YAML plain scalars cannot contain `:: `; a quoted block is required.
+        # The prior bare command caused zero-job workflow-parse failures.
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
       - name: Strict Context Delivery provider-verifier Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
       - name: Strict original Worker Clippy including bridge tests
