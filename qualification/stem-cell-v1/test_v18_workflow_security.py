@@ -55,6 +55,11 @@ class WorkflowSecurity(unittest.TestCase):
         self.assertIn("  workflow_dispatch:", self.source)
         self.assertIn("research/stem-learning-investment-v18-20261016", self.source)
 
+    def test_exact_pr_head_checkout(self):
+        self.assertIn("ref: ${{ github.event.pull_request.head.sha || github.sha }}", self.source)
+        self.assertIn("SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}", self.source)
+        self.assertIn('test "$(git rev-parse HEAD)" = "$SOURCE_SHA"', self.source)
+
     def test_true_physical_and_independent_review(self):
         for filename in ("v18_original_feature_paired.py", "v18_original_independent_review.py",
                          "v18_paired_damage.py", "test_v18_original_independent_review"):
