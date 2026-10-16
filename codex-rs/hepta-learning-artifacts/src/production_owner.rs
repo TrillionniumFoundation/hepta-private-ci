@@ -1557,6 +1557,91 @@ mod tests {
         assert!(!owner.flush_production_metrics());
     }
 
+    #[test]
+    fn two_phase_cas_operation_cannot_be_flushed_between_payload_and_signature() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.full-operation"),
+            SigningKey::from_bytes(&[34; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(owner.flush_production_metrics());
+
+        let operation = owner.begin_metrics_activity();
+        let first: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.full-operation"),
+            Digest32::of_bytes(b"operation.full-operation"),
+            PhaseMetricKindV1::Cas,
+            || Ok(11),
+        );
+        assert_eq!(first, Ok(11));
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+
+        let signed: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.full-operation"),
+            Digest32::of_bytes(b"operation.full-operation"),
+            PhaseMetricKindV1::Signature,
+            || Ok(12),
+        );
+        assert_eq!(signed, Ok(12));
+        assert!(!owner.production_metrics_ready());
+        drop(operation);
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 0);
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+    }
+
+    #[test]
+    fn panicking_cas_closure_unwinds_guards_but_permanently_poisons_readiness() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-panic"),
+            SigningKey::from_bytes(&[35; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+
+        let caught = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let _operation = owner.begin_metrics_activity();
+            let _: Result<u32, ()> = owner.timed(
+                Digest32::of_bytes(b"scope.metrics-panic"),
+                Digest32::of_bytes(b"operation.metrics-panic"),
+                PhaseMetricKindV1::Cas,
+                || panic!("injected CAS effect uncertainty"),
+            );
+        }));
+        assert!(caught.is_err());
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 0);
+        assert!(owner.failed_metric_records.load(Ordering::Acquire) >= 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+    }
+
+    #[test]
+    fn exhausted_in_flight_count_is_never_allowed_to_wrap_to_zero() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-saturated"),
+            SigningKey::from_bytes(&[36; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(owner.flush_production_metrics());
+        owner.metrics_in_flight.store(u64::MAX, Ordering::Release);
+
+        let saturated = owner.begin_metrics_activity();
+        assert!(!saturated.registered);
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), u64::MAX);
+        drop(saturated);
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), u64::MAX);
+        assert!(owner.failed_metric_records.load(Ordering::Acquire) >= 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
