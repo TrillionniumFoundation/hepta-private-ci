@@ -1,0 +1,99 @@
+{
+  "corpus_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "decision": "HOLD_NO_GO",
+  "files": [
+    {
+      "bytes": 19560,
+      "git_blob_sha": "e8aadb3b35264a8c9e2a31a2bf329368ab868177",
+      "path": "qualification/stem-cell-v1/v16_literal_witness_reader.py",
+      "sha256": "a4f13520e318c8de8e294aee8b943bd61f1598e2d087b3ac9b67d7c1332f0c0c"
+    },
+    {
+      "bytes": 4837,
+      "git_blob_sha": "e0e5337106c210b9e888542a94a2a959de27b75f",
+      "path": "qualification/stem-cell-v1/v16_original_reader_recount.py",
+      "sha256": "95438fc3234e2ad5de856bb809872f4ef0c2228c1eff96c9b7f34d05175702a0"
+    },
+    {
+      "bytes": 5679,
+      "git_blob_sha": "aee192d81242c74e817c6f8c75a7fb2091970eed",
+      "path": "qualification/stem-cell-v1/v16_independent_gold_recount.py",
+      "sha256": "8e558eb0cae11e94da0d5e798b5b51be2c6986d0f77561d752ab624794f0b7c9"
+    },
+    {
+      "bytes": 2689,
+      "git_blob_sha": "c3f2274c41121da7ee7e12bccd6d2501c4cd1f15",
+      "path": "qualification/stem-cell-v1/v16_repeat_review.py",
+      "sha256": "fd90c6d0e9db4805ecd9d03e1e19b0801b2bb68f0f0568322cd02076906ab8d4"
+    },
+    {
+      "bytes": 5605,
+      "git_blob_sha": "5edfad0e0d0bd54b230d15435be82bba582e8cca",
+      "path": "qualification/stem-cell-v1/v16_public_no_go.py",
+      "sha256": "643dcf89a9a446e533e82d4f487ecaa3208f9fcdf85244e12071494b17f5d619"
+    },
+    {
+      "bytes": 7380,
+      "git_blob_sha": "3d576d5509915b133e0b127a681b6e518acba0db",
+      "path": "qualification/stem-cell-v1/test_v16_literal_witness_reader.py",
+      "sha256": "8437c51d2440c9f55c9ba9315778e16db81a52a3cdec13cd98665f6261fff1cb"
+    },
+    {
+      "bytes": 6097,
+      "git_blob_sha": "6883b902c5fa42db8f12e3489a9199dcac831ee9",
+      "path": "qualification/stem-cell-v1/test_v16_public_no_go.py",
+      "sha256": "3ad8126218ff534fe4be5ea7b9367b9a8f7874efd4890bc0475cfcd902bdf81f"
+    },
+    {
+      "bytes": 1926,
+      "git_blob_sha": "d1ac84e5aad5571582910f5f09b0afc2656bd074",
+      "path": ".github/workflows/hepta-stem-v16-literal-witness-audit.yml",
+      "sha256": "ae76dba8d93b20602175ffab3a705d3e60dcac4dc2567206c73fb28d2bbc10ce"
+    },
+    {
+      "bytes": 9813,
+      "git_blob_sha": "b2a286121db9e0ac8b9800c1010880e1e66e237c",
+      "path": "qualification/stem-cell-v1/STEM_V16_ORIGINAL_LITERAL_WITNESS_DIAGNOSTIC.md",
+      "sha256": "d3a1a96c90642429ed55a26005c758afcb4d39550a83dcd88e1350f4887a19a0"
+    },
+    {
+      "bytes": 5604,
+      "git_blob_sha": "f0e81a9b31b9e089a7d073f9b6bb9dbbcbb59ffa",
+      "path": "qualification/stem-cell-v1/V16_LITERAL_READER_ORIGINAL_NEGATIVE_20261016.json",
+      "sha256": "5446645be7827af8337830921f9bbd819fe86b5ff01b618e41e450f58a6ac2da"
+    },
+    {
+      "bytes": 730,
+      "git_blob_sha": "7a8f48f7d1c3c728cd46360d622d9c01ad2c354d",
+      "path": "qualification/stem-cell-v1/V16_ORIGINAL_BYTE_RECOUNT_20261016.json",
+      "sha256": "fc2064a066f8eedae47ba1bf5ac013597203369151fd54fd1f217b8b7e57331f"
+    },
+    {
+      "bytes": 829,
+      "git_blob_sha": "137e65e4d4e7b615d22d50e2e1d48f3061fe9e90",
+      "path": "qualification/stem-cell-v1/V16_ORIGINAL_GOLD_RECOUNT_20261016.json",
+      "sha256": "ccbd11791f406eda9801caced6dfec5f99197860b0bd121e531c7aea2c41361d"
+    },
+    {
+      "bytes": 816,
+      "git_blob_sha": "8c5fa75f0a325adb7cef978f4e39a0c1fad7b121",
+      "path": "qualification/stem-cell-v1/V16_ORIGINAL_DOUBLE_REPLAY_20261016.json",
+      "sha256": "dec90efa970c95e377c6855c15ef8c924dff1b6563e5c292aba58442235c4243"
+    }
+  ],
+  "independently_human_verified_sufficient_evidence": false,
+  "measured_reader_forwards_each_process": 2951,
+  "official_hf_tokenizer_operator_parity": false,
+  "outer_artifact_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+  "production_authorized": false,
+  "prospective_future_windows": 0,
+  "reader_tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+  "reader_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "real_reader_requests_each_process": 128,
+  "research_parent_pr": 2429,
+  "schema": "hepta.stem.v16.original-literal-witness-delivery.v1",
+  "second_process_all_output_bytes_matched": 128,
+  "source_branch": "research/stem-v15-original-reader-witness-20261016",
+  "source_first_private_plan_sha256": "26a4d5a4883c98d61d9405f739dda7e49f433370c30290275f0f04441d7067c8",
+  "stronger_reference_reader_physically_executed": false
+}
