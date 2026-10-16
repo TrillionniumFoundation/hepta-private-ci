@@ -64,6 +64,17 @@ impl MatrixSdkPaths {
         create_private_directory(&root)?;
         create_private_directory(&state)?;
         create_private_directory(&cache)?;
+        // SQLite follows existing database and journal links independently of
+        // the enclosing directories. Keep every SDK-owned store in this Agent.
+        for (directory, database) in [
+            (&state, "matrix-sdk-state.sqlite3"),
+            (&state, "matrix-sdk-crypto.sqlite3"),
+            (&cache, "matrix-sdk-event-cache.sqlite3"),
+        ] {
+            for suffix in ["", "-wal", "-shm", "-journal"] {
+                validate_store_file(&directory.join(format!("{database}{suffix}")))?;
+            }
+        }
         Ok(Self {
             root,
             state,
@@ -102,13 +113,51 @@ pub enum MatrixSidecarConfigError {
 }
 
 fn create_private_directory(path: &Path) -> Result<(), MatrixSidecarConfigError> {
-    fs::create_dir_all(path).map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+    // Check each ancestor before creating a child: create_dir_all followed by
+    // canonicalize would already have created children through an ancestor link.
+    for directory in path.ancestors().collect::<Vec<_>>().into_iter().rev() {
+        match fs::symlink_metadata(directory) {
+            Ok(metadata) if metadata.file_type().is_dir() => {}
+            Ok(_) => return Err(MatrixSidecarConfigError::Unavailable),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                fs::create_dir(directory).map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+            }
+            Err(_) => return Err(MatrixSidecarConfigError::Unavailable),
+        }
+    }
+    if path
+        .canonicalize()
+        .map_err(|_| MatrixSidecarConfigError::Unavailable)?
+        != path
+    {
+        return Err(MatrixSidecarConfigError::Unavailable);
+    }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
 
         fs::set_permissions(path, fs::Permissions::from_mode(0o700))
             .map_err(|_| MatrixSidecarConfigError::Unavailable)?;
+    }
+    Ok(())
+}
+
+fn validate_store_file(path: &Path) -> Result<(), MatrixSidecarConfigError> {
+    let metadata = match fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(_) => return Err(MatrixSidecarConfigError::Unavailable),
+    };
+    if !metadata.file_type().is_file() {
+        return Err(MatrixSidecarConfigError::Unavailable);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+
+        if metadata.nlink() != 1 {
+            return Err(MatrixSidecarConfigError::Unavailable);
+        }
     }
     Ok(())
 }
