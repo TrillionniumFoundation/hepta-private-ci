@@ -47,7 +47,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   sdks:
-    runs-on: ubuntu-24.04
+    # This is an isolated test branch only. Real x64 Bazel + SDK build must
+    # succeed on 26.04 before any production workflow changes are considered.
+    runs-on: ubuntu-26.04
     timeout-minutes: 60
     environment:
       name: bazel
