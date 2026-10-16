@@ -1,4 +1,5 @@
 """Preserve the historic ORIGINAL source byte and callable identities."""
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -11,8 +12,13 @@ class ReaderFormatHistoricalTests(unittest.TestCase):
     def test_old_source_bytes_are_pinned_not_latest_formatted_code(self):
         prompt, reader, sha = locked_reader_format()
         self.assertEqual(set(sha), set(SOURCE_PINS))
-        self.assertEqual(sha["prompt_representation_probe.py"], SOURCE_PINS["prompt_representation_probe.py"][1])
-        self.assertEqual(sha["offline_smol_reader.py"], SOURCE_PINS["offline_smol_reader.py"][1])
+        self.assertEqual(
+            sha["prompt_representation_probe.py"],
+            SOURCE_PINS["prompt_representation_probe.py"][1],
+        )
+        self.assertEqual(
+            sha["offline_smol_reader.py"], SOURCE_PINS["offline_smol_reader.py"][1]
+        )
         self.assertEqual(tuple(prompt.STYLES), ("verbatim", "normalized"))
         self.assertTrue(reader.PINS["model.safetensors"])
 

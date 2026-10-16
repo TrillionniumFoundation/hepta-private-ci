@@ -70,9 +70,7 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
                     reader_identity=reader.digest(reader.PINS),
                     reader_profile=reader.PROFILE,
                 )
-                messages, selected = prompt.build_messages(
-                    case, arm, style, sources
-                )
+                messages, selected = prompt.build_messages(case, arm, style, sources)
                 rendered_prompt = tokenizer.render(messages)
                 ids = tokenizer.encode(rendered_prompt)
                 if len(ids) > 2048:
