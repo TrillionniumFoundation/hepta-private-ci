@@ -1,0 +1,45 @@
+name: GitHub standard x64 runner pool diagnostic
+
+on:
+  push:
+    branches: [ci/gha-runner-isolation-20261016]
+    paths:
+      - .github/workflows/gha-x64-standard-pool-probe.yml
+
+permissions:
+  contents: read
+
+# Exactly three real Python CI jobs, rather than synthetic sleep loops.
+# Distinct public standard Linux x64 runner images can reveal whether only
+# one pool is starved; never infer a quota solely from these small samples.
+concurrency:
+  group: gha-x64-standard-pool-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-real-ci:
+    name: Real scope tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Runner identity and actual CI regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s os=%s started=%s\n' \
+            "$RUNNER_NAME" "$RUNNER_ARCH" "$(cat /etc/os-release | grep '^PRETTY_NAME=')" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_ci_scope \
+            scripts.tests.test_hepta_ci_dependencies \
+            scripts.test_hepta_readiness_semantics
+      - name: Assert CI checkout stayed clean
+        uses: ./.github/actions/check-clean-worktree
