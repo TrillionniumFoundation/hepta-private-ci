@@ -148,7 +148,8 @@ class BridgeTests(unittest.TestCase):
     def test_forecast_calibration_can_be_good_without_promotion(self):
         parts=copy.deepcopy(self.parts)
         for row in parts[6]['results']:
-            if row['arm']=='stop':row['correct']=True
+            if row['arm']=='stop' or (row['case_id']=='q2' and row['arm']=='ndu_shadow'):
+                row['correct']=True
         parts[2]=v14_judgments(parts[0],parts[1],parts[6])
         r=report(parts)
         self.assertEqual(r['sufficient_reader_descriptive']['candidate_correct'],2)
@@ -244,6 +245,30 @@ class BridgeTests(unittest.TestCase):
         self.invalid(2,lambda v:v['results'][0].update(answer_sha256=h('changed')))
     def test_v14_reviewer_claims_verified(self):
         self.invalid(2,lambda v:v.update(reviewer_independence_unverified=False))
+    def test_same_terminal_ndu_ghost_gain_denied_by_bridge(self):
+        parts=copy.deepcopy(self.parts)
+        for row in parts[5]['records']:
+            if row['case_id']=='q2' and row['arm']=='ndu_shadow':
+                row['answer_sha256']=h('ghost-positive-output')
+        parts[6]=control_judgments(parts[3],parts[5])
+        with self.assertRaisesRegex(ValueError,'same terminal Reader'):
+            report(parts)
+
+    def test_same_nonroot_terminal_duplicate_output_denied(self):
+        parts=copy.deepcopy(self.parts)
+        for row in parts[5]['records']:
+            if row['case_id']=='q2' and row['arm']=='greedy_one':
+                row['answer_sha256']=h('different-frozen-content')
+        parts[6]=control_judgments(parts[3],parts[5])
+        with self.assertRaisesRegex(ValueError,'same terminal Reader'):
+            report(parts)
+
+    def test_bridge_reports_only_true_terminal_changes(self):
+        values=report(self.parts)['system2_vs_baselines_descriptive']
+        self.assertEqual(values['stop']['unchanged_terminal_quality_delta'],0)
+        self.assertEqual(values['stop']['changed_terminal_cases'],1)
+        self.assertEqual(values['stop']['changed_answer_cases'],1)
+
     def test_v15_changed_policy(self):
         self.invalid(4,lambda v:v['cases'][0]['policies']['ndu_shadow'].update(root='stop'))
     def test_v15_model_output_tamper(self):

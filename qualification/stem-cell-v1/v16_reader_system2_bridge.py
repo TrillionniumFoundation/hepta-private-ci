@@ -187,7 +187,17 @@ def review_bridge(v14_plan, v14_predictions, v14_adjudication,
                          .encode('ascii')).hexdigest()[:16],16)
         leave_one_out = [Fraction(total - v['net_micro'],count-v['cases'])
             for v in groups.values() if count>v['cases']]
+        # These are *descriptive* contrasts, not independent causal claims.
+        # Zero changed terminal request means any asserted answer improvement
+        # is a protocol defect already denied by V15's cross-arm validation.
+        v15_contrast = v15_review['ndu_paired_deltas'][ref]
+        require(v15_contrast['unchanged_terminal_quality_delta'] == 0,
+                'unchanged terminal must not manufacture accuracy gain')
         comparisons[ref] = {
+            'changed_terminal_cases':v15_contrast['changed_terminal_cases'],
+            'changed_answer_cases':v15_contrast['changed_answer_cases'],
+            'unchanged_terminal_quality_delta':
+                v15_contrast['unchanged_terminal_quality_delta'],
             'paired_cases':count,
             'claimed_independent_families_not_authenticated':root_count,
             'net_micro_delta':total,

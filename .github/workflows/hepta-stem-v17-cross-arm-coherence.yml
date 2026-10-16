@@ -1,0 +1,41 @@
+name: hepta-stem-v17-cross-arm-coherence-source-only
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v14_reader_sufficiency_gate.py'
+      - 'qualification/stem-cell-v1/v15_system2_split_shadow.py'
+      - 'qualification/stem-cell-v1/test_v15_system2_split_shadow.py'
+      - 'qualification/stem-cell-v1/v16_reader_system2_bridge.py'
+      - 'qualification/stem-cell-v1/test_v16_reader_system2_bridge.py'
+      - 'qualification/stem-cell-v1/STEM_V17_CROSS_ARM_COHERENCE.md'
+      - '.github/workflows/hepta-stem-v17-cross-arm-coherence.yml'
+  push:
+    branches:
+      - 'research/stem-v17-cross-arm-coherence-20261016'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v17-frozen-inference-coherence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact source SHA and canonical imports
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/{v14_reader_sufficiency_gate,test_v14_reader_sufficiency_gate,v15_system2_split_shadow,test_v15_system2_split_shadow,v16_reader_system2_bridge,test_v16_reader_system2_bridge}.py
+      - name: Run actual V14 and V15/V16 regression suite, normal and optimized
+        run: |
+          export PYTHONPATH=qualification/stem-cell-v1
+          for pattern in test_v14_reader_sufficiency_gate.py test_v15_system2_split_shadow.py test_v16_reader_system2_bridge.py; do
+            python -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+            python -O -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+          done
+          git diff --exit-code

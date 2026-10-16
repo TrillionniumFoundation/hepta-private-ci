@@ -288,6 +288,11 @@ def validate_control_execution(study, sealed, executed):
     cases = {c['id']:c for c in study['cases']}
     policies = {s['case_id']:s['policies'] for s in sealed['cases']}
     used = {}
+    # An immutable terminal request names one deterministic Reader result per
+    # case, regardless of the policy arm that reached it. A request digest is
+    # not proof that the original call happened; this checks cross-arm claims.
+    terminal_outputs = {}
+    observed_transitions = {}
     for row in records:
         exact(row, ('case_id','arm','input_sha256','reader_sha256',
                     'answer_sha256','terminal_request_sha256',
@@ -337,6 +342,25 @@ def validate_control_execution(study, sealed, executed):
             remaining_tok -= action['tokens']
             require(visits[i+1] in [e['node'] for e in action['outcomes']],
                     'impossible observed transition')
+            # This source-only qualification declares deterministic observed
+            # transitions. Unpinned stochastic environments need a *new* seed/
+            # observation-bound schema; do not silently treat a different
+            # successor as a policy benefit.
+            transition_key = (key[0], node_id, a_id)
+            successor = visits[i+1]
+            if transition_key in observed_transitions:
+                require(observed_transitions[transition_key] == successor,
+                        'same source/action observed conflicting successors')
+            else:
+                observed_transitions[transition_key] = successor
+        terminal_key = (key[0], row['terminal_request_sha256'])
+        terminal_claim = (row['answer_sha256'],
+                          row['citations_entailed_claimed'])
+        if terminal_key in terminal_outputs:
+            require(terminal_outputs[terminal_key] == terminal_claim,
+                    'same terminal Reader request claimed conflicting outputs')
+        else:
+            terminal_outputs[terminal_key] = terminal_claim
         # The actually metered end-to-end spend is separate from modelled
         # incremental work; require a ceiling, but never pretend they match.
         require(row['cpu_ms'] <= study['limits']['max_total_cpu_ms']
@@ -371,6 +395,19 @@ def review_control(study, sealed, executed, adjudication):
                 and type(r['citations_entailed']) is bool,
                 'invalid/duplicated judgment')
         judged[key] = r
+    # Cross-arm self-consistency: the same case + request + answer cannot
+    # acquire different post-seal correctness or citation judgments merely
+    # because the research policy label changed.
+    terminal_judgments = {}
+    for (cid, arm), score in judged.items():
+        row = outputs[cid, arm]
+        terminal_key = cid, row['terminal_request_sha256'], row['answer_sha256']
+        assessed = score['correct'], score['citations_entailed']
+        if terminal_key in terminal_judgments:
+            require(terminal_judgments[terminal_key] == assessed,
+                    'same terminal Reader answer received conflicting judgments')
+        else:
+            terminal_judgments[terminal_key] = assessed
     tally = {arm:dict(cases=0,correct=0,entailed=0,cpu_ms=0,tokens=0,
                      net_micro=0) for arm in ARMS}
     for (cid,arm),row in outputs.items():
@@ -393,8 +430,25 @@ def review_control(study, sealed, executed, adjudication):
             b=judged[cid,ref]['correct']
             plus += int(a and not b)
             minus += int(b and not a)
-        deltas[ref]={'ndu_only_correct':plus,'reference_only_correct':minus,
-                     'net_micro_delta':tally['ndu_shadow']['net_micro']-tally[ref]['net_micro']}
+        changed = [c['id'] for c in study['cases']
+            if outputs[c['id'],'ndu_shadow']['terminal_request_sha256'] !=
+               outputs[c['id'],ref]['terminal_request_sha256']]
+        different_answers = [c['id'] for c in study['cases']
+            if outputs[c['id'],'ndu_shadow']['answer_sha256'] !=
+               outputs[c['id'],ref]['answer_sha256']]
+        require(set(different_answers) <= set(changed),
+                'changed answer without changed frozen Reader input')
+        deltas[ref]={
+            'ndu_only_correct':plus,
+            'reference_only_correct':minus,
+            'net_micro_delta':tally['ndu_shadow']['net_micro']-tally[ref]['net_micro'],
+            'changed_terminal_cases':len(changed),
+            'changed_answer_cases':len(different_answers),
+            'unchanged_terminal_quality_delta':sum(
+                 int(judged[c['id'],'ndu_shadow']['correct']) -
+                 int(judged[c['id'],ref]['correct']) for c in study['cases']
+                 if c['id'] not in changed),
+        }
     return {
         'schema':PREFIX+'.control-review',
         'study_sha256':sha_obj(study),
