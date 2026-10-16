@@ -11,7 +11,6 @@ use std::fmt;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use codex_hepta_infer_core::sequence_feature_v3::ImmutableFeatureSequenceV3;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -97,8 +96,8 @@ struct IndependentPhysicalReviewV1 {
 }
 
 fn decode_sha(value: &str) -> Result<Digest32, ReviewedGraniteErrorV6> {
-    let digest = Digest32::from_str(value)
-        .map_err(|_| ReviewedGraniteErrorV6::InvalidReviewContents)?;
+    let digest =
+        Digest32::from_str(value).map_err(|_| ReviewedGraniteErrorV6::InvalidReviewContents)?;
     if digest.is_zero() || digest.to_string() != value {
         return Err(ReviewedGraniteErrorV6::InvalidReviewContents);
     }
@@ -158,14 +157,11 @@ pub fn read_independently_reviewed_granite_v6(
 
     // Reject stale/mixed original material and source before parsing the
     // potentially large, unsigned feature tensor.
-    if decode_sha(&review.source_sha256)?
-        != Digest32::of_bytes(&admission.feature.source_bytes)
-        || decode_sha(&review.input_digest)?
-            != admission.feature.identity.base.input_digest
+    if decode_sha(&review.source_sha256)? != Digest32::of_bytes(&admission.feature.source_bytes)
+        || decode_sha(&review.input_digest)? != admission.feature.identity.base.input_digest
         || decode_sha(&review.export_sha256)? != export_sha
         || decode_sha(&review.material_sha256)? != admission.feature.material_digest
-        || decode_sha(&review.encoder_digest)?
-            != admission.feature.identity.base.encoder_digest
+        || decode_sha(&review.encoder_digest)? != admission.feature.identity.base.encoder_digest
     {
         return Err(ReviewedGraniteErrorV6::InvalidReviewContents);
     }

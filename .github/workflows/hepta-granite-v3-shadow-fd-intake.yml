@@ -1,0 +1,48 @@
+name: hepta-granite-v3-shadow-fd-intake (research DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-worker-host/src/bin/hepta-granite-v3-shadow.rs"
+      - "qualification/stem-cell-v1/GRANITE97_V3_NATIVE_SHADOW_V7.md"
+      - ".github/workflows/hepta-granite-v3-shadow-fd-intake.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head-unix-fd-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Show exact source SHA and affected Git blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git hash-object codex-rs/hepta-infer-worker-host/src/bin/hepta-granite-v3-shadow.rs
+      - name: Use repository-pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Binary regression tests for real nofollow file descriptors
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --bin hepta-granite-v3-shadow -- --nocapture
+      - name: Check all owner-local Rust targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --all-targets
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --all-targets -- -D warnings

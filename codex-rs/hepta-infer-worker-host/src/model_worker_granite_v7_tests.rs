@@ -142,8 +142,14 @@ fn rewrite_admission(f: &mut Fixture, key: &str, value: Value) {
 fn verified_bytes_feed_two_independent_heads_with_source_free_receipt() {
     let f = fixture();
     let result = evaluate(&f, 10).expect("data-plane only");
-    assert_eq!(result, evaluate(&f, 10).expect("idempotent Q24 calculations"));
-    assert_eq!(result.schema, "hepta.stem.granite-v3-local-shadow-result.v7");
+    assert_eq!(
+        result,
+        evaluate(&f, 10).expect("idempotent Q24 calculations")
+    );
+    assert_eq!(
+        result.schema,
+        "hepta.stem.granite-v3-local-shadow-result.v7"
+    );
     assert_eq!(result.authority, "DENY_ALL");
     assert!(!result.model_selected && !result.production_authorized);
     assert_eq!(result.claimed_reviewer_encoder_forwards, 1);
@@ -154,8 +160,14 @@ fn verified_bytes_feed_two_independent_heads_with_source_free_receipt() {
     assert_eq!(result.cells[1].score_q24, Q24 / 4);
     assert_eq!(result.q24_payload_bytes, 3 * (STEM_WIDTH * 8 + 1 + 12));
     assert_ne!(result.cells[0].head_digest, result.cells[1].head_digest);
-    assert_eq!(result.original_source_digest, Digest32::of_bytes(&f.source).to_string());
-    assert_eq!(result.admission_bytes_digest, Digest32::of_bytes(&f.admission).to_string());
+    assert_eq!(
+        result.original_source_digest,
+        Digest32::of_bytes(&f.source).to_string()
+    );
+    assert_eq!(
+        result.admission_bytes_digest,
+        Digest32::of_bytes(&f.admission).to_string()
+    );
     assert!(!result.gate_receipt_digest.is_empty());
     let output = serde_json::to_value(&result).expect("redacted response");
     assert!(output.get("source_bytes").is_none());
@@ -168,7 +180,11 @@ fn owner_original_source_and_exact_file_digests_are_independently_fenced() {
     f.source.extend_from_slice(b" changed");
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::InvalidSource));
     let mut f = fixture();
-    rewrite_admission(&mut f, "export_bytes_digest", json!(Digest32::of_bytes(b"x").to_string()));
+    rewrite_admission(
+        &mut f,
+        "export_bytes_digest",
+        json!(Digest32::of_bytes(b"x").to_string()),
+    );
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::InvalidReview));
     let mut f = fixture();
     rewrite_admission(
@@ -191,10 +207,20 @@ fn scope_generation_model_and_expiry_do_not_leak_between_calls() {
     rewrite_admission(&mut f, "generation", json!(8));
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::InvalidReview));
     let mut f = fixture();
-    rewrite_admission(&mut f, "material_digest", json!(Digest32::of_bytes(b"other").to_string()));
+    rewrite_admission(
+        &mut f,
+        "material_digest",
+        json!(Digest32::of_bytes(b"other").to_string()),
+    );
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::InvalidReview));
-    assert_eq!(evaluate(&fixture(), 150), Err(ShadowAdmissionErrorV7::InvalidReview));
-    assert_eq!(evaluate(&fixture(), 200), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&fixture(), 150),
+        Err(ShadowAdmissionErrorV7::InvalidReview)
+    );
+    assert_eq!(
+        evaluate(&fixture(), 200),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
 }
 
 #[test]
@@ -209,7 +235,10 @@ fn altered_heads_and_resource_budgets_are_not_admitted() {
     assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::InvalidReview));
     let mut f = fixture();
     rewrite_admission(&mut f, "maximum_attention_pairs", json!(2_000_001));
-    assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&f, 10),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
     let mut f = fixture();
     let mut config: Value = serde_json::from_slice(&f.admission).expect("admission");
     config["heads"][1]["cell_id"] = json!("cell:a");
@@ -223,19 +252,31 @@ fn untrusted_structure_missing_fields_and_oversized_admission_fail_closed() {
     let mut config: Value = serde_json::from_slice(&f.admission).expect("admission");
     config.as_object_mut().expect("object").remove("purpose_id");
     f.admission = serde_json::to_vec(&config).expect("serialize");
-    assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&f, 10),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
     let mut f = fixture();
     rewrite_admission(&mut f, "production_authorized", json!(true));
-    assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&f, 10),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
     let mut f = fixture();
     f.admission = vec![b' '; MAX_ADMISSION_BYTES + 1];
-    assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&f, 10),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
     let mut f = fixture();
     let mut config: Value = serde_json::from_slice(&f.admission).expect("admission");
     let repeated = config["heads"][0].clone();
     config["heads"] = json!(vec![repeated; MAX_HEADS + 1]);
     f.admission = serde_json::to_vec(&config).expect("serialize");
-    assert_eq!(evaluate(&f, 10), Err(ShadowAdmissionErrorV7::MalformedAdmission));
+    assert_eq!(
+        evaluate(&f, 10),
+        Err(ShadowAdmissionErrorV7::MalformedAdmission)
+    );
 }
 
 #[test]
@@ -246,6 +287,9 @@ fn changed_owner_resource_budget_binds_a_new_result_receipt() {
     rewrite_admission(&mut b, "maximum_attention_pairs", json!(24));
     let changed = evaluate(&b, 10).expect("larger allowed budget");
     assert_eq!(original.cells, changed.cells);
-    assert_ne!(original.admission_bytes_digest, changed.admission_bytes_digest);
+    assert_ne!(
+        original.admission_bytes_digest,
+        changed.admission_bytes_digest
+    );
     assert_ne!(original.gate_receipt_digest, changed.gate_receipt_digest);
 }

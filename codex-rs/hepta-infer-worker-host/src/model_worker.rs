@@ -933,7 +933,6 @@ pub use sequence_cpu_v3::SequenceReadErrorV3;
 pub use sequence_cpu_v3::SequenceReadFenceV3;
 pub use sequence_cpu_v3::evaluate_sequence_heads_v3;
 
-
 #[path = "model_worker_stem_v4.rs"]
 mod frozen_stem_v4;
 pub use frozen_stem_v4::FrozenProjectionProfileV4;

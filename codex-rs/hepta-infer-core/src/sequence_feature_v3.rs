@@ -129,7 +129,9 @@ impl ImmutableFeatureSequenceV3 {
         if rows == 0 || rows > MAX_ROWS || width == 0 || width > MAX_WIDTH {
             return Err(SequenceFeatureErrorV3::InvalidShape);
         }
-        let cells = rows.checked_mul(width).ok_or(SequenceFeatureErrorV3::Overflow)?;
+        let cells = rows
+            .checked_mul(width)
+            .ok_or(SequenceFeatureErrorV3::Overflow)?;
         if values_q24.len() != cells || mask.len() != rows || coordinates.len() != rows {
             return Err(SequenceFeatureErrorV3::InvalidShape);
         }
@@ -139,7 +141,10 @@ impl ImmutableFeatureSequenceV3 {
         let mut previous_time = None;
         for row in 0..rows {
             let vector = &values_q24[row * width..(row + 1) * width];
-            if vector.iter().any(|value| !(-Q24_LIMIT..=Q24_LIMIT).contains(value)) {
+            if vector
+                .iter()
+                .any(|value| !(-Q24_LIMIT..=Q24_LIMIT).contains(value))
+            {
                 return Err(SequenceFeatureErrorV3::InvalidValue);
             }
             let coord = coordinates[row];
@@ -267,9 +272,7 @@ impl SequenceFeatureCacheV3 {
         maximum_entries: usize,
         maximum_payload_bytes: usize,
     ) -> Result<Self, SequenceFeatureErrorV3> {
-        if maximum_entries == 0
-            || maximum_entries > MAX_CACHE_ENTRIES
-            || maximum_payload_bytes == 0
+        if maximum_entries == 0 || maximum_entries > MAX_CACHE_ENTRIES || maximum_payload_bytes == 0
         {
             return Err(SequenceFeatureErrorV3::CapacityExceeded);
         }
@@ -384,6 +387,11 @@ impl SequenceFeatureCacheV3 {
     }
 
     #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.snapshots.is_empty()
+    }
+
+    #[must_use]
     pub fn resident_payload_bytes(&self) -> usize {
         self.resident_payload_bytes
     }
@@ -391,11 +399,7 @@ impl SequenceFeatureCacheV3 {
     fn retain(&mut self, keep: impl Fn(&ImmutableFeatureSequenceV3) -> bool) -> usize {
         let before = self.snapshots.len();
         self.snapshots.retain(|_, item| keep(item));
-        self.resident_payload_bytes = self
-            .snapshots
-            .values()
-            .map(|item| item.payload_bytes)
-            .sum();
+        self.resident_payload_bytes = self.snapshots.values().map(|item| item.payload_bytes).sum();
         before - self.snapshots.len()
     }
 }
@@ -463,6 +467,25 @@ mod tests {
     }
 
     #[test]
+    fn cache_is_empty_matches_insert_and_expiry() {
+        let mut cache = SequenceFeatureCacheV3::new(2, 100).expect("cache");
+        assert!(cache.is_empty());
+        assert_eq!(cache.len(), 0);
+        assert_eq!(cache.resident_payload_bytes(), 0);
+
+        let id = identity("principal-a", FeatureModalityV3::Text);
+        let item = cache.insert(10, make(id)).expect("insert");
+        assert!(!cache.is_empty());
+        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.resident_payload_bytes(), item.payload_bytes());
+
+        assert_eq!(cache.purge_expired(100), 1);
+        assert!(cache.is_empty());
+        assert_eq!(cache.len(), 0);
+        assert_eq!(cache.resident_payload_bytes(), 0);
+    }
+
+    #[test]
     fn tokenizer_adapter_modality_and_source_bind_identity() {
         let a = identity("p", FeatureModalityV3::Text);
         let mut b = a.clone();
@@ -502,8 +525,16 @@ mod tests {
             Arc::from([1_i64, 2, 3, 4]),
             Arc::from([1_u8, 1]),
             Arc::from([
-                FeatureCoordinatesV3 { x: 1, y: 0, time_micros: 7 },
-                FeatureCoordinatesV3 { x: 2, y: 0, time_micros: 9 },
+                FeatureCoordinatesV3 {
+                    x: 1,
+                    y: 0,
+                    time_micros: 7,
+                },
+                FeatureCoordinatesV3 {
+                    x: 2,
+                    y: 0,
+                    time_micros: 9,
+                },
             ]),
         )
         .expect("coordinates");
@@ -514,15 +545,33 @@ mod tests {
     fn malformed_padding_and_temporal_regression_reject_before_caching() {
         let id = identity("p", FeatureModalityV3::Audio);
         let bad_pad = ImmutableFeatureSequenceV3::build(
-            id.clone(), 100, 2, 1, Arc::from([1_i64, 7]),
-            Arc::from([1_u8, 0]), Arc::from([FeatureCoordinatesV3::default(); 2]),
+            id.clone(),
+            100,
+            2,
+            1,
+            Arc::from([1_i64, 7]),
+            Arc::from([1_u8, 0]),
+            Arc::from([FeatureCoordinatesV3::default(); 2]),
         );
         assert_eq!(bad_pad, Err(SequenceFeatureErrorV3::InvalidMask));
         let regression = ImmutableFeatureSequenceV3::build(
-            id, 100, 2, 1, Arc::from([1_i64, 2]),
-            Arc::from([1_u8, 1]), Arc::from([
-                FeatureCoordinatesV3 { x: 0, y: 0, time_micros: 8 },
-                FeatureCoordinatesV3 { x: 0, y: 0, time_micros: 7 },
+            id,
+            100,
+            2,
+            1,
+            Arc::from([1_i64, 2]),
+            Arc::from([1_u8, 1]),
+            Arc::from([
+                FeatureCoordinatesV3 {
+                    x: 0,
+                    y: 0,
+                    time_micros: 8,
+                },
+                FeatureCoordinatesV3 {
+                    x: 0,
+                    y: 0,
+                    time_micros: 7,
+                },
             ]),
         );
         assert_eq!(regression, Err(SequenceFeatureErrorV3::InvalidCoordinate));
@@ -534,23 +583,46 @@ mod tests {
         let id = identity("p", FeatureModalityV3::Text);
         let first = cache.insert(1, make(id.clone())).expect("first");
         assert_eq!(
-            cache.insert(2, ImmutableFeatureSequenceV3::build(
-                id.clone(), 150, 1, 1,
-                Arc::from([2_i64]), Arc::from([1_u8]),
-                Arc::from([FeatureCoordinatesV3::default()]),
-            ).expect("other")),
+            cache.insert(
+                2,
+                ImmutableFeatureSequenceV3::build(
+                    id.clone(),
+                    150,
+                    1,
+                    1,
+                    Arc::from([2_i64]),
+                    Arc::from([1_u8]),
+                    Arc::from([FeatureCoordinatesV3::default()]),
+                )
+                .expect("other")
+            ),
             Err(SequenceFeatureErrorV3::ConflictingSnapshot)
         );
-        let second = cache.insert(100, ImmutableFeatureSequenceV3::build(
-            id.clone(), 200, 1, 1,
-            Arc::from([2_i64]), Arc::from([1_u8]),
-            Arc::from([FeatureCoordinatesV3::default()]),
-        ).expect("replacement")).expect("insert");
+        let second = cache
+            .insert(
+                100,
+                ImmutableFeatureSequenceV3::build(
+                    id.clone(),
+                    200,
+                    1,
+                    1,
+                    Arc::from([2_i64]),
+                    Arc::from([1_u8]),
+                    Arc::from([FeatureCoordinatesV3::default()]),
+                )
+                .expect("replacement"),
+            )
+            .expect("insert");
         assert_eq!(
             cache.get(101, &id, first.content_digest()),
             Err(SequenceFeatureErrorV3::ContentMismatch)
         );
-        assert!(cache.get(101, &id, second.content_digest()).expect("get").is_some());
+        assert!(
+            cache
+                .get(101, &id, second.content_digest())
+                .expect("get")
+                .is_some()
+        );
         assert_eq!(first.values_q24(), &[1, 2, 3, 4]);
     }
 

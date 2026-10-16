@@ -98,8 +98,18 @@ fn one_immutable_sequence_feeds_independent_cells_without_reencoding_or_authorit
     let id = identity(FeatureModalityV3::Text);
     let sequence = two_rows(id.clone());
     let heads = [
-        head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]),
-        head(&id, "cell:b", SequenceAttentionPolicyV3::Causal, vec![0, Q24]),
+        head(
+            &id,
+            "cell:a",
+            SequenceAttentionPolicyV3::Causal,
+            vec![Q24, 0],
+        ),
+        head(
+            &id,
+            "cell:b",
+            SequenceAttentionPolicyV3::Causal,
+            vec![0, Q24],
+        ),
     ];
     assert_eq!(heads[0].parameter_count(), 9);
     let original_count = Arc::strong_count(&sequence);
@@ -125,7 +135,12 @@ fn reversing_two_facts_changes_a_causal_readout_not_just_its_digest() {
         vec![1, 1],
         vec![FeatureCoordinatesV3::default(); 2],
     );
-    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:a",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let first = evaluate_sequence_heads_v3(&fence(&a), &a, &[Arc::clone(&cell)]).expect("a");
     let reversed = evaluate_sequence_heads_v3(&fence(&b), &b, &[cell]).expect("b");
     assert_eq!(first.cells[0].score_q24, 10_485_760);
@@ -143,11 +158,15 @@ fn masked_padding_never_adds_context_or_changes_the_numeric_readout() {
         vec![1, 1, 0],
         vec![FeatureCoordinatesV3::default(); 3],
     );
-    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:a",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let before = evaluate_sequence_heads_v3(&fence(&original), &original, &[Arc::clone(&cell)])
         .expect("original");
-    let after = evaluate_sequence_heads_v3(&fence(&padded), &padded, &[cell])
-        .expect("padded");
+    let after = evaluate_sequence_heads_v3(&fence(&padded), &padded, &[cell]).expect("padded");
     assert_eq!(before.cells[0].score_q24, after.cells[0].score_q24);
     assert_eq!(before.attention_pairs, after.attention_pairs);
     assert_ne!(before.feature_content_digest, after.feature_content_digest);
@@ -163,7 +182,10 @@ fn patch_and_time_coordinates_change_relational_scores() {
         vec![1, 1],
         vec![
             FeatureCoordinatesV3::default(),
-            FeatureCoordinatesV3 { x: 1024, ..FeatureCoordinatesV3::default() },
+            FeatureCoordinatesV3 {
+                x: 1024,
+                ..FeatureCoordinatesV3::default()
+            },
         ],
     );
     let image_head = head(
@@ -172,12 +194,9 @@ fn patch_and_time_coordinates_change_relational_scores() {
         SequenceAttentionPolicyV3::Bidirectional,
         vec![Q24, 0],
     );
-    let result_a = evaluate_sequence_heads_v3(
-        &fence(&same_place),
-        &same_place,
-        &[Arc::clone(&image_head)],
-    )
-    .expect("nearby");
+    let result_a =
+        evaluate_sequence_heads_v3(&fence(&same_place), &same_place, &[Arc::clone(&image_head)])
+            .expect("nearby");
     let result_b = evaluate_sequence_heads_v3(&fence(&moved_patch), &moved_patch, &[image_head])
         .expect("distant");
     assert_eq!(result_a.attention_pairs, 4);
@@ -191,7 +210,10 @@ fn patch_and_time_coordinates_change_relational_scores() {
         vec![1, 1],
         vec![
             FeatureCoordinatesV3::default(),
-            FeatureCoordinatesV3 { time_micros: 500_000, ..FeatureCoordinatesV3::default() },
+            FeatureCoordinatesV3 {
+                time_micros: 500_000,
+                ..FeatureCoordinatesV3::default()
+            },
         ],
     );
     let audio_head = head(
@@ -210,7 +232,12 @@ fn patch_and_time_coordinates_change_relational_scores() {
 fn stale_source_cross_principal_and_changed_full_input_are_rejected() {
     let id = identity(FeatureModalityV3::Text);
     let sequence = two_rows(id.clone());
-    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:a",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let mut request = fence(&sequence);
 
     request.now_ms = sequence.expires_at_ms();
@@ -243,7 +270,12 @@ fn stale_source_cross_principal_and_changed_full_input_are_rejected() {
 fn invalid_tensor_model_binding_duplicate_cell_and_work_budget_fail_closed() {
     let id = identity(FeatureModalityV3::Text);
     let seq = two_rows(id.clone());
-    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:a",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let duplicate = vec![Arc::clone(&cell), Arc::clone(&cell)];
     assert_eq!(
         evaluate_sequence_heads_v3(&fence(&seq), &seq, &duplicate),
@@ -324,7 +356,12 @@ fn extreme_q24_inputs_saturate_and_receipt_remains_deterministic() {
         vec![1, 1],
         vec![FeatureCoordinatesV3::default(); 2],
     );
-    let cell = head(&id, "cell:extreme", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:extreme",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let report = evaluate_sequence_heads_v3(&fence(&seq), &seq, &[cell]).expect("bounded");
     assert!(report.cells[0].score_q24.abs() <= Q24_BOUND);
     assert!(!report.observation_digest.is_zero());
@@ -348,11 +385,15 @@ fn same_feature_bytes_with_extended_expiry_cannot_reuse_prior_result_receipt() {
         .expect("extended snapshot"),
     );
     assert_eq!(first.content_digest(), extended.content_digest());
-    let cell = head(&id, "cell:a", SequenceAttentionPolicyV3::Causal, vec![Q24, 0]);
+    let cell = head(
+        &id,
+        "cell:a",
+        SequenceAttentionPolicyV3::Causal,
+        vec![Q24, 0],
+    );
     let a = evaluate_sequence_heads_v3(&fence(&first), &first, &[Arc::clone(&cell)])
         .expect("short-lived");
-    let b = evaluate_sequence_heads_v3(&fence(&extended), &extended, &[cell])
-        .expect("extended");
+    let b = evaluate_sequence_heads_v3(&fence(&extended), &extended, &[cell]).expect("extended");
     assert_eq!(a.cells, b.cells);
     assert_ne!(a.observation_digest, b.observation_digest);
 }

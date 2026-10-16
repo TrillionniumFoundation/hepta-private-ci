@@ -10,8 +10,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use codex_hepta_infer_core::sequence_feature_v3::{
-    FeatureCoordinatesV3, FeatureModalityV3, FeatureSequenceIdentityV3,
-    ImmutableFeatureSequenceV3,
+    FeatureCoordinatesV3, FeatureModalityV3, FeatureSequenceIdentityV3, ImmutableFeatureSequenceV3,
 };
 use codex_hepta_types::{AuthorityPosture, Digest32};
 use serde::Deserialize;
@@ -174,7 +173,11 @@ pub fn import_granite97_token_v5(
     {
         return Err(GraniteFeatureImportErrorV5::InvalidGeometry);
     }
-    if record.values_q24.iter().any(|x| !(-Q24_BOUND..=Q24_BOUND).contains(x)) {
+    if record
+        .values_q24
+        .iter()
+        .any(|x| !(-Q24_BOUND..=Q24_BOUND).contains(x))
+    {
         return Err(GraniteFeatureImportErrorV5::InvalidValue);
     }
     if record.expires_at_ms <= expected.now_ms
