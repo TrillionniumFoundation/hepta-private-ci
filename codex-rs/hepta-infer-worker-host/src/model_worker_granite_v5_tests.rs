@@ -34,6 +34,8 @@ fn input() -> (GraniteFeatureExpectationV5, Value) {
         adapter_digest: Digest32::of_bytes(b"identity adapter"),
     };
     let row = vec![1 << 23; WIDTH];
+    // Build the complete row-major tensor before serde_json::json! parsing.
+    let values_q24 = [row.clone(), row.clone(), row].concat();
     let record = json!({
         "schema": SCHEMA,
         "model_id": MODEL_ID,
@@ -53,7 +55,7 @@ fn input() -> (GraniteFeatureExpectationV5, Value) {
         "authority_epoch": id.base.authority_epoch,
         "input_ids": token_ids,
         "attention_mask": mask,
-        "values_q24": [row.clone(),row.clone(),row].concat(),
+        "values_q24": values_q24,
         "width": WIDTH,
         "expires_at_ms": 150,
         "encoder_forwards": 1,
