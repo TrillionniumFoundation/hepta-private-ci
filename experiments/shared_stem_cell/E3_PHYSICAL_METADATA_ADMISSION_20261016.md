@@ -87,6 +87,86 @@ original model input-byte pre/post, real resource measurements and
 prospective external evaluation. Passing this gate cannot enable original
 NDU, FinalUse, production Stem, CAS/CNS/Worker or Cell Split.
 
+## Actual historical ZIP byte-audit (separate, stronger original evidence)
+
+New source-only `e3_archive_byte_audit.py` (SHA-pinned, bounded ZIP
+scanner) and its 20 negative/positive tests form a **separate layer**
+from the metadata gate. The metadata gate verifies the original
+GitHub API run/job/artifact **records**; the ZIP byte audit actually
+opens the archived numerical files and compares cryptographic
+digests and original per-case source bindings.
+
+**Original physically completed anchors (historical, not new clean run):**
+
+- Granite/DINO pretrained original run 38678847948, artifact 11947722496,
+  ZIP SHA256
+  `f421f20cdb5d35becf5e93ed63e58996d48701c2b27b979d608e2b05b6b61f30`,
+  sealed prediction member SHA256
+  `e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7`.
+- Real 192-original-image Tesseract+Granite run 38825811927,
+  artifact 12027769435, ZIP SHA256
+  `c80d5b9cda23a8a6ee144aeba459dc516b6b67c854c2c5fe86d3b2ba94884964`,
+  sealed OCR predictions member SHA256
+  `96ba4117a37689eeafe2415661e028a9170b7ccdd8c345b6b8d6241b7a928885`.
+- Both sources are original ScienceQA-IMG
+  `a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202`;
+  original frozen Granite97 upstream revision is
+  `835ad14087e140460703cf0fae09f97d469d65c2`
+  and DINOv2 upstream revision is
+  `ed25f3a31f01632728cabb09d1542f84ab7b0056`.
+
+The ZIP verifier checks original archives' SHA256, bounded and safe
+ZIP members, the baseline's complete internal SHA256SUMS, model
+revisions and physical forward/call counts, and 64 original
+source/group/sample-ID parity, including the original image-masked
+negative control. It **does not read or infer the original heldout
+TEST labels**.
+
+**Already executed in the local Linux/Python container** against the
+above actual ZIP bytes: all 64 original test case/group/source
+triples join exactly; old OCR changed original text argmax 21/64;
+learned visual gate changed 38/64; both changed on 18/64;
+masked negative control is equal to text-only for 64/64; old
+original 192 OCR calls (110 nonempty), 60 original frozen
+Granite forward batches, mean OCR-vs-text total variation
+0.010508824227240665. Output is a create-only
+`DENY_ALL` report with `accuracy_observed=false`.
+20 archive/source-tamper synthetic test methods passed in ordinary
+Python and the same 20 passed under `python -O`. Submitted source and
+tests were re-fetched from GitHub and verified byte-identical to the
+actual executed local files by their Git Blob SHA values; this is
+local evidence, not a new hosted CI PASS.
+
+**Hosted exact-archive execution:** The independent
+`audit-completed-historical-granite-ocr-zip-bytes` workflow Job,
+separate from the 23 REST metadata tests, downloads two **previously
+completed** original GitHub Actions artifacts via authenticated GitHub
+API. It explicitly *does not forward the token* to the allow-listed
+HTTPS storage redirect, bounds the transfer to 1 MiB and checks
+both SHA256s before running the same read-only byte audit. It publishes
+only the small numeric `DENY_ALL` report. It neither changes source
+models nor fetches new pretrained weights.
+
+Local equivalent (requires the two actual, existing ZIP files):
+
+```bash
+python3 experiments/shared_stem_cell/e3_archive_byte_audit.py \
+  --baseline-zip original-38678847948.zip \
+  --ocr-zip original-ocr-38825811927.zip \
+  --out original-ocr-byte-audit-deny-all.json
+```
+
+**Important:** Historical old OCR was executed in a TEST-target-visible
+workspace, so byte-validating those original predictions does NOT
+retroactively satisfy the stricter #2461/#2468 TEST-redacted 196-file
+input-tree evidence. This new ZIP audit is deliberately **historical
+mode only**; it does not claim to validate the four future clean-model
+archive ZIPs. Those need separate original provenance, 196-byte
+pre/post receipts, independent held TEST label reviewer, true
+four-archive cross-run byte checks, and genuine future-window
+evaluation before model selection. The current extra step never
+permits production promotion or NDU/FinalUse.
+
 ## Testing
 
 `test_e3_physical_run_metadata_admission.py` contains 23
