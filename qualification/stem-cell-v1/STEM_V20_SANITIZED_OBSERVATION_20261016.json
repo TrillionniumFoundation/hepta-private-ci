@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.stem.v20.sanitized-original-adam-audit.v1",
+  "date": "2026-10-16",
+  "frozen_parent_pr": 2530,
+  "original_v19_head_sha": "bab39533fd81f7dd460812664fadd3d3d2bcce29",
+  "original_artifact_id": 11890616195,
+  "original_archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "original_feature_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+  "original_prepared_input_sha256": "d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a",
+  "model_family": "mmBERT-small original cached FP32, not fresh Encoder physical forward",
+  "original_source_family_count": 1,
+  "prospective_time_windows": 0,
+  "train_cases": 64,
+  "historical_calibration_cases": 32,
+  "blind_unscored_cases": 32,
+  "four_fold_train_only_seed_count": 3,
+  "original_head_optimizations_reproduced": 1200,
+  "actual_original_head_checkpoints_verified": 105,
+  "max_abs_weight_difference": 1.341104507446289e-7,
+  "max_abs_bias_difference": 7.450580596923828e-8,
+  "max_abs_output_difference": 0.00000476837158203125,
+  "weight_tolerance": 0.000002,
+  "output_tolerance": 0.00002,
+  "two_distinct_original_run_numerical_verdicts_match": true,
+  "independent_reimplementation": "NumPy FP32 Adam/softmax gradient and independent C++ CPU MT19937 compatible bounded sampling; no Torch import",
+  "ordinary_mechanism_tests_passed": 12,
+  "optimized_mechanism_tests_passed": 12,
+  "original_evidence_tests_per_run_per_mode": 12,
+  "independent_reference_passed": true,
+  "original_paid_train_cpu_seconds_run_A": 0.413634819,
+  "cost_scope": "Actual V19 Head-only training CPU for 1200 updates; excludes original pretrained Encoder, dataset, Reader, OS dispatch, WAL, independent observer, GPU and energy. Update counts below are arithmetic counterfactuals and not measured full-service time.",
+  "controls": [
+    {
+      "candidate": "fixed_4_steps_per_seed",
+      "optimizer_updates_for_three_seeds": 12,
+      "original_historical_cal_brier_mean": 0.328555751,
+      "original_historical_cal_correct_across_reused_cases_and_seeds": 75
+    },
+    {
+      "candidate": "fixed_8_steps_per_seed",
+      "optimizer_updates_for_three_seeds": 24,
+      "original_historical_cal_brier_mean": 0.334147311,
+      "original_historical_cal_correct_across_reused_cases_and_seeds": 73
+    },
+    {
+      "candidate": "fixed_80_steps_per_seed",
+      "optimizer_updates_for_three_seeds": 240,
+      "original_historical_cal_brier_mean": 0.436540869,
+      "original_historical_cal_correct_across_reused_cases_and_seeds": 72
+    },
+    {
+      "candidate": "train_only_fourfold_selector_prepaid_full_search",
+      "optimizer_updates_for_three_seeds": 1200,
+      "original_historical_cal_brier_mean": 0.345752483,
+      "original_historical_cal_correct_across_reused_cases_and_seeds": 73
+    }
+  ],
+  "warning": "All comparisons reuse the same historical 32 CAL cases across 3 seeds; the count 75 is not 75 independent questions. Fixed4 was examined after historical results, so neither fixed4 nor the OOF selector is an accepted future policy.",
+  "independent_gradients_reproduced": true,
+  "independent_publisher_attestation": false,
+  "independent_future_efficacy": false,
+  "full_lifecycle_cost_qualified": false,
+  "target_host_scale_4096_verified": false,
+  "automatic_cell_split_authorized": false,
+  "model_selection_authorized": false,
+  "production_authorized": false,
+  "decision": "RESEARCH_NO_GO_NO_PROSPECTIVE_POLICY"
+}

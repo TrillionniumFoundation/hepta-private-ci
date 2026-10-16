@@ -1,0 +1,132 @@
+name: hepta-stem-v20-independent-adam
+
+on:
+  push:
+    branches:
+      - research/stem-independent-adam-v20-20261016
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/v20_independent_numpy_training.py
+      - qualification/stem-cell-v1/test_v20_training_core.py
+      - qualification/stem-cell-v1/test_v20_original_training.py
+      - qualification/stem-cell-v1/STEM_V20_INDEPENDENT_ADAM_20261016.md
+      - qualification/stem-cell-v1/STEM_V20_SANITIZED_OBSERVATION_20261016.json
+      - .github/workflows/hepta-stem-v20-independent-adam.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  original-independent-adam:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Exact PR source and independently tested blobs
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cd qualification/stem-cell-v1
+          test "$(git hash-object v20_independent_numpy_training.py)" = '0362e04ad36f90d4bd46626a7d5b85a1f03ee835'
+          test "$(git hash-object test_v20_training_core.py)" = '14ab552020745c1ffbffe0a1d01a015e2b387392'
+          test "$(git hash-object test_v20_original_training.py)" = '321ba5153584a01ac2816ca00ccdeed1bf7c3830'
+          test "$(git hash-object v19_train_only_budget.py)" = '95f64850e9e7ca14a48707f7c1a0a1d99d8db34f'
+          test "$(git hash-object v19_independent_numpy_review.py)" = '1d5e6aed8f6d84bbb6237d116545bcf901c5dbf8'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pinned original CPU dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Independent reference-only negative tests
+        run: |
+          set -euo pipefail
+          cd qualification/stem-cell-v1
+          python -m py_compile v20_independent_numpy_training.py test_v20_training_core.py test_v20_original_training.py
+          python -m unittest -q test_v20_training_core
+          python -O -m unittest -q test_v20_training_core
+      - name: Actual original 1200-update producer plus independent Torch-free Adam
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          # Authenticate only to the GitHub REST endpoint; do not send token
+          # with the cross-domain signed Artifact download.
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' \
+            --max-redirs 0 --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$work/headers" --output /dev/null \
+            --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          test "$status" = 302
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/headers" | tr -d '\r')"
+          case "$location" in
+            https://*) ;;
+            *) echo 'Invalid original HTTPS Artifact redirect' >&2; exit 1 ;;
+          esac
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' \
+            --output "$work/original.zip" "$location"
+          unset location
+          printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' "$work/original.zip" | sha256sum -c -
+          python qualification/stem-cell-v1/stem_counterfactual_split_v14.py prepare \
+            --archive "$work/original.zip" --out "$work/inputs" --labels-out "$work/held-labels.json"
+          rm -- "$work/held-labels.json"
+          cd qualification/stem-cell-v1
+          python v19_train_only_budget.py --inputs "$work/inputs" --output "$work/v19-A.json" --private "$work/private-A.json"
+          python v19_independent_numpy_review.py --inputs "$work/inputs" \
+            --report "$work/v19-A.json" --private "$work/private-A.json" --output "$work/numeric-A.json"
+          python v20_independent_numpy_training.py --inputs "$work/inputs" \
+            --report "$work/v19-A.json" --private "$work/private-A.json" --output "$work/v20-A.json"
+          HEPTA_V20_ORIGINAL_INPUTS="$work/inputs" \
+            HEPTA_V20_ORIGINAL_REPORT="$work/v19-A.json" \
+            HEPTA_V20_ORIGINAL_PRIVATE="$work/private-A.json" \
+            python -m unittest -q test_v20_original_training
+          python -O v19_train_only_budget.py --inputs "$work/inputs" --output "$work/v19-B.json" --private "$work/private-B.json"
+          python -O v19_independent_numpy_review.py --inputs "$work/inputs" \
+            --report "$work/v19-B.json" --private "$work/private-B.json" --output "$work/numeric-B.json"
+          python -O v20_independent_numpy_training.py --inputs "$work/inputs" \
+            --report "$work/v19-B.json" --private "$work/private-B.json" --output "$work/v20-B.json"
+          HEPTA_V20_ORIGINAL_INPUTS="$work/inputs" \
+            HEPTA_V20_ORIGINAL_REPORT="$work/v19-B.json" \
+            HEPTA_V20_ORIGINAL_PRIVATE="$work/private-B.json" \
+            python -O -m unittest -q test_v20_original_training
+          python - "$work/v20-A.json" "$work/v20-B.json" "$work/v19-A.json" "$work/v19-B.json" <<'PY'
+          import json, sys
+          a, b, oa, ob = [json.load(open(f, encoding='utf-8')) for f in sys.argv[1:]]
+          for x in (a,b):
+              if (x['decision'] != 'NUMPY_SGD_REPLAY_CONSISTENT_NO_PROMOTION'
+                      or x['complete_original_parameter_checkpoints_replayed'] != 105
+                      or x['independent_optimizer_updates_replayed'] != 1200
+                      or x['max_abs_weight_difference'] > 2e-6
+                      or x['max_abs_logits_difference'] > 2e-5
+                      or x['production_authorized'] is not False):
+                  raise SystemExit('V20 independent original Adam proof failed')
+          for seed in ('41','47','53'):
+              for arm in ('fixed4_historical_cal','fixed8_historical_cal','fixed80_historical_cal','selected_historical_cal'):
+                  if a['compared_cheap_controls'][seed][arm] != b['compared_cheap_controls'][seed][arm]:
+                      raise SystemExit('V20 original historical comparator changed across interpreters')
+          for old,new in zip(oa['seeds'],ob['seeds']):
+              if (old['train_only_chosen_budget'] != new['train_only_chosen_budget']
+                      or old['historical_calibration_scores_exploratory'] != new['historical_calibration_scores_exploratory']):
+                  raise SystemExit('V19 actual original learned model changed across interpreters')
+          print('V20 original 105 checkpoints, 1200 NumPy optimizer updates, two physical processes: DENY_ALL')
+          PY
+          # Do NOT publish original source, model weights, per-case IDs,
+          # labels, original feature tensors, or model prediction packets.
