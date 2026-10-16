@@ -160,7 +160,10 @@ def verify_model_files(folder, spec):
     path = Path(folder)
     if not path.is_dir() or path.is_symlink():
         raise ValueError('missing/symlink model snapshot')
-    actual = {p.name for p in path.iterdir() if p.is_file()}
+    entries = list(path.iterdir())
+    if any(not p.is_file() or p.is_symlink() for p in entries):
+        raise ValueError('model snapshot contains nonregular or symlink entries')
+    actual = {p.name for p in entries}
     if actual != set(hashes):
         raise ValueError('model snapshot contains unexpected/missing files')
     for name, want in hashes.items():

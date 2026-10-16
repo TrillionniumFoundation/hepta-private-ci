@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import copy
-from hashlib import sha256
+from hashlib import sha1, sha256
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -24,7 +24,8 @@ def publisher(revision=physical.REVISION, missing=False, mismatched=False):
         publisher_hash = sha256(payload).hexdigest()
         if name == 'model.safetensors' and mismatched:
             publisher_hash = '0' * 64
-        siblings.append(SimpleNamespace(rfilename=name,
+        siblings.append(SimpleNamespace(rfilename=name, size=len(payload),
+            blob_id=sha1(b'blob '+str(len(payload)).encode()+b'\x00'+payload).hexdigest(),
             lfs={'sha256': publisher_hash} if name == 'model.safetensors' else None))
     return SimpleNamespace(sha=revision, siblings=siblings)
 
@@ -71,6 +72,35 @@ class Material(unittest.TestCase):
         with self.assertRaises(ValueError): self.stage(publisher(mismatched=True))
         self.assertFalse(self.destination.exists())
         self.assertFalse(self.manifest.exists())
+
+
+    def test_refuse_mutated_non_lfs_tokenizer(self):
+        # Same advertised size and revision but wrong source text is a hard reject.
+        self.sources['config.json'].write_bytes(b'Q' * len(self.sources['config.json'].read_bytes()))
+        with self.assertRaisesRegex(ValueError,'publisher Git blob bytes differ'):
+            self.stage()
+        self.assertFalse(self.destination.exists())
+
+    def test_refuse_publisher_missing_blob_oid(self):
+        info = publisher()
+        next(s for s in info.siblings if s.rfilename == 'config.json').blob_id = None
+        with self.assertRaisesRegex(ValueError,'Git blob identity unavailable'):
+            self.stage(info)
+        self.assertFalse(self.destination.exists())
+
+    def test_refuse_publisher_missing_size(self):
+        info = publisher()
+        next(s for s in info.siblings if s.rfilename == 'tokenizer.json').size = None
+        with self.assertRaisesRegex(ValueError,'size or Git blob identity unavailable'):
+            self.stage(info)
+        self.assertFalse(self.destination.exists())
+
+    def test_refuse_publisher_size_mismatch(self):
+        info = publisher()
+        next(s for s in info.siblings if s.rfilename == 'model.safetensors').size += 1
+        with self.assertRaisesRegex(ValueError,'size differs from publisher'):
+            self.stage(info)
+        self.assertFalse(self.destination.exists())
 
     def test_refuse_cache_symlink_escape(self):
         external = self.root / 'external'

@@ -117,6 +117,16 @@ class Reference(unittest.TestCase):
         (self.root/'model.safetensors').unlink()
         (self.root/'model.safetensors').symlink_to(self.root/'config.json')
         with self.assertRaises(ValueError):p.verify_model_files(self.root,self.spec)
+    def test_reject_hidden_directory_in_model_snapshot(self):
+        (self.root / 'scripts').mkdir()
+        with self.assertRaisesRegex(ValueError, 'nonregular'):
+            p.verify_model_files(self.root, self.spec)
+
+    def test_reject_extra_symlink_directory(self):
+        (self.root / 'payload').symlink_to(self.root, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'nonregular'):
+            p.verify_model_files(self.root, self.spec)
+
     def test_reject_wrong_revision(self):
         self.spec['revision']='main'
         with self.assertRaises(ValueError):p.verify_model_files(self.root,self.spec)

@@ -8,7 +8,7 @@ attestation, model efficacy certificate or production grant.
 from __future__ import annotations
 
 import argparse
-from hashlib import sha256
+from hashlib import sha1, sha256
 import json
 import os
 from pathlib import Path
@@ -26,7 +26,14 @@ NAMES = set(REQUIRED + OPTIONAL)
 
 
 def frozen_roster(info):
-    """Reject a changed revision or incomplete weight provenance before download."""
+    """Bind each official file to its content, not just its local cache path.
+
+    The Hub's `blob_id` is the Git blob OID; for an LFS/Xet payload the OID
+    addresses its pointer, not the downloaded bytes. In that case require the
+    publisher's separate SHA256 of the real object. Ordinary Git-managed files
+    must reproduce the publisher's Git blob OID. All files must match the
+    publisher's byte length, whether LFS/Xet or Git-managed.
+    """
     if getattr(info, 'sha', None) != REVISION:
         raise ValueError('publisher revision not the requested immutable commit')
     siblings = getattr(info, 'siblings', None)
@@ -41,19 +48,22 @@ def frozen_roster(info):
             raise ValueError('duplicate publisher file entry')
         if type(name) is not str or '/' in name or '\\' in name:
             raise ValueError('unsafe publisher path')
+        size = getattr(item, 'size', None)
+        blob_id = getattr(item, 'blob_id', None)
+        if (type(size) is not int or not 0 < size <= MAX_FILE_BYTES
+            or type(blob_id) is not str or re.fullmatch(r'[0-9a-f]{40}', blob_id) is None):
+            raise ValueError('publisher size or Git blob identity unavailable')
         lfs = getattr(item, 'lfs', None)
         publisher_sha = (lfs.get('sha256') if isinstance(lfs, dict)
                          else getattr(lfs, 'sha256', None))
-        if publisher_sha is not None and (type(publisher_sha) is not str
+        if lfs is not None and (type(publisher_sha) is not str
             or re.fullmatch(r'[0-9a-f]{64}', publisher_sha) is None):
             raise ValueError('malformed publisher LFS sha256')
-        files[name] = publisher_sha
+        files[name] = {'size': size, 'blob_id': blob_id,
+                       'lfs_sha256': publisher_sha}
     if not set(REQUIRED).issubset(files):
         raise ValueError('required model files missing at pinned revision')
-    # For the weight bytes specifically, the official immutable revision must
-    # provide a publisher-recorded LFS object hash. Text configs still get
-    # independently recorded local SHA256, not a false publisher SHA256.
-    if not files['model.safetensors']:
+    if not files['model.safetensors']['lfs_sha256']:
         raise ValueError('weight publisher LFS SHA256 unavailable')
     return files
 
@@ -71,9 +81,9 @@ def safe_cache_file(source, cache_root, limit=MAX_FILE_BYTES):
 
 
 def _copy_regular(source, target, expected):
-    # Destination is private, exclusive, regular and never a symlink.
+    """Stream publisher digest and Git blob digest without trusting cache metadata."""
     fd = os.open(str(target), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    hashed = sha256()
+    physical_hash = sha256()
     total = 0
     try:
         with os.fdopen(fd, 'wb') as fout, Path(source).open('rb') as fin:
@@ -82,21 +92,30 @@ def _copy_regular(source, target, expected):
                 if not block:
                     break
                 total += len(block)
-                if total > MAX_FILE_BYTES:
-                    raise ValueError('model file exceeded allowed size')
-                hashed.update(block)
+                if total > MAX_FILE_BYTES or total > expected['size']:
+                    raise ValueError('model file exceeded publisher size')
+                physical_hash.update(block)
                 fout.write(block)
             fout.flush()
             os.fsync(fout.fileno())
+        if total != expected['size']:
+            raise ValueError('model file size differs from publisher revision')
+        actual = physical_hash.hexdigest()
+        if expected['lfs_sha256'] is not None:
+            if actual != expected['lfs_sha256']:
+                raise ValueError('publisher LFS bytes differ: ' + str(target))
+        else:
+            git_hash = sha1()
+            git_hash.update(b'blob ' + str(total).encode('ascii') + b'\x00')
+            with Path(target).open('rb') as f:
+                for part in iter(lambda: f.read(1024 * 1024), b''):
+                    git_hash.update(part)
+            if git_hash.hexdigest() != expected['blob_id']:
+                raise ValueError('publisher Git blob bytes differ: ' + str(target))
+        return actual
     except BaseException:
         Path(target).unlink(missing_ok=True)
         raise
-    if total == 0:
-        raise ValueError('empty model file')
-    actual = hashed.hexdigest()
-    if expected is not None and actual != expected:
-        raise ValueError('publisher LFS bytes differ: ' + str(target))
-    return actual
 
 
 def materialize(fetch_info, download_file, directory, cache_dir, spec_path):

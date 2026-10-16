@@ -6,6 +6,10 @@ on:
       - "qualification/stem-cell-v1/v18_reference_material_stage.py"
       - "qualification/stem-cell-v1/test_v18_reference_material_stage.py"
       - "qualification/stem-cell-v1/STEM_V18_REFERENCE_MATERIAL_AND_CENSORING.md"
+      - "qualification/stem-cell-v1/v19_original_archive_preflight.py"
+      - "qualification/stem-cell-v1/test_v19_original_archive_preflight.py"
+      - "qualification/stem-cell-v1/V19_ORIGINAL_ARCHIVE_BYTE_RECEIPT_20261016.json"
+      - "qualification/stem-cell-v1/STEM_V19_ARCHIVE_AND_UPSTREAM_BLOB_ADMISSION.md"
       - "qualification/stem-cell-v1/test_v17_reference_reader.py"
       - "qualification/stem-cell-v1/STEM_V17_REFERENCE_READER_PHYSICAL.md"
       - ".github/workflows/hepta-stem-v17-reference-reader-source-audit.yml"
@@ -24,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile and run 30 source/adversarial contracts, standard and optimized
+      - name: Compile and run source, publisher-byte and archive-admission contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -34,7 +38,9 @@ jobs:
             qualification/stem-cell-v1/v17_reference_independent_review.py \
             qualification/stem-cell-v1/test_v17_reference_reader.py \
             qualification/stem-cell-v1/v18_reference_material_stage.py \
-            qualification/stem-cell-v1/test_v18_reference_material_stage.py
+            qualification/stem-cell-v1/test_v18_reference_material_stage.py \
+            qualification/stem-cell-v1/v19_original_archive_preflight.py \
+            qualification/stem-cell-v1/test_v19_original_archive_preflight.py
           python -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v17_reference_reader.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \
@@ -43,6 +49,16 @@ jobs:
             -p 'test_v18_reference_material_stage.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v18_reference_material_stage.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v19_original_archive_preflight.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v19_original_archive_preflight.py' -v
+      - name: Verify no-go public source digest receipt without private archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v19_original_archive_preflight.py \
+            --public-receipt qualification/stem-cell-v1/V19_ORIGINAL_ARCHIVE_BYTE_RECEIPT_20261016.json
       - name: Retain source-only privacy/no-physical-claim profile
         shell: bash
         run: |
