@@ -61,6 +61,17 @@ class FleetV3Tests(unittest.TestCase):
             verify(r,self.raw,3,feature_sha256=self.sha,
                    review_sha256='a'*64,expected_sizes=(64,))
 
+    def test_unknown_authority_and_extra_work_are_rejected(self):
+        for target in ('parent', 'result'):
+            r=copy.deepcopy(self.result)
+            if target=='parent':
+                r['final_use_authorized']=True
+            else:
+                r['results'][0]['unmetered_forward_count']=999
+            with self.subTest(target=target), self.assertRaises(ReviewError):
+                verify(r,self.raw,3,feature_sha256=self.sha,
+                       review_sha256='a'*64,expected_sizes=(64,))
+
     def test_shape_limits_and_tampered_q24(self):
         with self.assertRaises(FleetError):pool_q24(b'bad',3)
         raw=bytearray(self.raw);raw[0:8]=struct.pack('>q',9*Q24)
