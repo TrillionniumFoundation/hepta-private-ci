@@ -1,0 +1,75 @@
+name: Hepta Native Compute Cell V6 real CPU and IPC controls (research only)
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-compiled-use/**'
+      - 'qualification/native-cell-v1/**'
+      - '.github/workflows/hepta-native-compute-cell-v6.yml'
+  push:
+    branches:
+      - 'research/fastcell-native-compute-v6-20261016'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-compute-v6-${{ github.event.pull_request.number || github.ref_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  compiled-native-cpu-shadow:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source and host
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+          uname -m
+      - name: Independent source-only adversarial receipt tests
+        run: |
+          python3 -m unittest discover -s qualification/native-cell-v1 -p 'test_native_compute_receipt.py' -v
+          python3 -O -m unittest discover -s qualification/native-cell-v1 -p 'test_native_compute_receipt.py' -v
+      - name: Real Rust crate + example tests on exact source
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example native_compute_paired
+      - name: Strict Clippy and formatting on exact source
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check
+      - name: Real paired 16-lane CPU computation local vs another OS process
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 90s cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example native_compute_paired -- --smoke | tee "$RUNNER_TEMP/native-compute-smoke.json"
+          timeout 90s cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example native_compute_paired | tee "$RUNNER_TEMP/native-compute-full.json"
+          python3 qualification/native-cell-v1/native_compute_receipt.py \
+            --smoke "$RUNNER_TEMP/native-compute-smoke.json" \
+            --full "$RUNNER_TEMP/native-compute-full.json" \
+            --source codex-rs/hepta-compiled-use/examples/native_compute_paired.rs \
+            --head "$(git rev-parse HEAD)" \
+            --architecture "$(uname -m)" \
+            --out "$RUNNER_TEMP/native-compute-v6-receipt.json"
+          git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-native-compute-v6-${{ matrix.os }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/native-compute-smoke.json
+            ${{ runner.temp }}/native-compute-full.json
+            ${{ runner.temp }}/native-compute-v6-receipt.json
+          if-no-files-found: warn

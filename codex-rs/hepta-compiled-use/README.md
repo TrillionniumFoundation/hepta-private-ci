@@ -247,3 +247,21 @@ peer identity, trusted observation provenance, current external permissions
 or completed OS actions. It has no model, JIT, GPU or external effect port.
 The guarded mode has its own preamble and is not covered by the existing
 V3/V4/V5 latency measurements. Keep DRAFT / DENY_ALL / NO FINALUSE.
+
+## V6: Actual compiled native CPU Cell with same-work local-vs-IPC controls
+
+This is a separate **research-only/DENY_ALL** child of the V5 binary-vs-JSON
+transport. `native_compute.rs` performs real built-in Rust CPU Q24-dot16
+arithmetic, with a canonical 256-byte bounded feature+kernel frame and 64-byte
+result frame. It never accepts arbitrary machine code or grants OS UI effects.
+`examples/native_compute_paired.rs` evaluates the **same native CPU task**
+in-process and in a separately spawned native Unix socket process, with identical
+original request inputs, verifier, output hashes, 16 warmups, 64/1024 measured
+calls, 2 repetitions per arm and reversed order. The data-only receipt parser
+and exact-source x64/ARM64 CI are in
+[`qualification/native-cell-v1/README.md`](../../qualification/native-cell-v1/README.md).
+
+The experiment does **not** compare MCP, actual Computer Use, OS UI completion,
+GPU, Wasm/JIT, pretrained model generation, device attestation, revocation or
+FinalUse. It is not a production executable code path. Physical latency results
+and all native test claims require a passing workflow at this exact candidate.

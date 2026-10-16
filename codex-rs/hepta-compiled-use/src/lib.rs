@@ -10,11 +10,19 @@
 
 mod action;
 mod guarded_wire;
+mod native_compute;
 mod native_duplex;
 mod ui_guard;
 
 pub use guarded_wire::{
     GuardedWireErrorV1, receive_guarded_shadow_data_v1, send_guarded_shadow_data_v1,
+};
+pub use native_compute::{
+    NATIVE_COMPUTE_FRAME_BYTES_V1, NATIVE_COMPUTE_MAX_LANES_V1,
+    NATIVE_COMPUTE_RESULT_BYTES_V1, NativeComputeErrorV1, NativeComputeFrameV1,
+    NativeComputeObservationV1, NativeComputeVerifierV1,
+    approved_q24_dot_kernel_digest_v1, decode_shadow_native_result_v1,
+    run_shadow_native_compute_v1,
 };
 pub use native_duplex::{FrameDuplexV1, FrameWireErrorV1};
 
