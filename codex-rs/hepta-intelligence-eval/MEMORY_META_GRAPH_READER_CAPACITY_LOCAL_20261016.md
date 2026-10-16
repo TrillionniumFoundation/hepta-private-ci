@@ -71,8 +71,10 @@ upper-bound probe only, not a deployable retriever.
   checkpointed batches with sync-before-ack.
 - Complete 20-record unscored answer journal SHA-256:
   `2a691d8618a55f521241cd654160cc7f730616873cb42f2555e32707d33b8a57`.
-  The protected answer scorer opened labels only after this final journal
-  was sealed. The journal contains original responses without correction,
+  The answer-scoring step executed only after the final journal was
+  sealed, **but the same privileged process had already loaded annotations**
+  to choose publisher evidence. This does not satisfy physical label
+  isolation. The journal contains original responses without correction,
   citation insertion, or semantic relabeling.
 
 An earlier separately sealed *post-hoc* literal-in-evidence diagnostic
