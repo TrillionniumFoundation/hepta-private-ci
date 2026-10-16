@@ -58,11 +58,29 @@ jobs:
           umask 077
           work="$(mktemp -d)"
           trap 'rm -rf "$work"' EXIT
-          curl --fail --location --silent --show-error --retry 2 \
+          # Authenticated API call must NOT forward GH_TOKEN to the cross-host
+          # pre-signed artifact URL. Fetch and parse exactly one HTTPS redirect.
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' \
+            --max-redirs 0 \
             --header 'Accept: application/vnd.github+json' \
             --header "Authorization: Bearer $GH_TOKEN" \
-            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip' \
-            --output "$work/original.zip"
+            --dump-header "$work/github-redirect.headers" \
+            --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          if [ "$status" != '302' ]; then
+            echo 'GitHub original artifact requires exactly one redirect' >&2
+            exit 1
+          fi
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/github-redirect.headers" | tr -d '\r')"
+          case "$location" in
+            https://*) ;;
+            *) echo 'Original artifact redirect must be HTTPS' >&2; exit 1 ;;
+          esac
+          # This second request deliberately has NO Authorization header.
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' \
+            --output "$work/original.zip" "$location"
+          unset location
           printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' "$work/original.zip" | sha256sum -c -
           python qualification/stem-cell-v1/stem_counterfactual_split_v14.py prepare \
             --archive "$work/original.zip" --out "$work/inputs" --labels-out "$work/held-gold.json"
