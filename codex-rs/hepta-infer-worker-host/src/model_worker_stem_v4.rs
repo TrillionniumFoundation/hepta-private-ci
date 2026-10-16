@@ -209,13 +209,10 @@ impl FrozenQ24ProjectionStemV4 {
         // before expensive Encoder arithmetic, and also by V3 snapshot build.
         let mut previous_time = None;
         let mut active = 0_u64;
-        for (row, (&mask, coordinate)) in
-            input.mask.iter().zip(&input.coordinates).enumerate()
-        {
+        for (row, (&mask, coordinate)) in input.mask.iter().zip(&input.coordinates).enumerate() {
             if mask == 0 {
                 if *coordinate != FeatureCoordinatesV3::default()
-                    || input.values_q24
-                        [row * input.input_width..(row + 1) * input.input_width]
+                    || input.values_q24[row * input.input_width..(row + 1) * input.input_width]
                         .iter()
                         .any(|value| *value != 0)
                 {
@@ -243,9 +240,7 @@ impl FrozenQ24ProjectionStemV4 {
             }
             if matches!(
                 expected.modality,
-                FeatureModalityV3::Audio
-                    | FeatureModalityV3::Video
-                    | FeatureModalityV3::Multimodal
+                FeatureModalityV3::Audio | FeatureModalityV3::Video | FeatureModalityV3::Multimodal
             ) {
                 if previous_time.is_some_and(|time| coordinate.time_micros < time) {
                     return Err(StemPhysicalErrorV4::InvalidSource);
@@ -277,17 +272,16 @@ impl FrozenQ24ProjectionStemV4 {
             if input.mask[row] == 0 {
                 continue;
             }
-            let raw = &input.values_q24
-                [row * input.input_width..(row + 1) * input.input_width];
+            let raw = &input.values_q24[row * input.input_width..(row + 1) * input.input_width];
             for out in 0..width {
                 let weights = &self.profile.weights_q24
                     [out * input.input_width..(out + 1) * input.input_width];
-                let total = weights.iter().zip(raw).fold(
-                    0_i128,
-                    |acc, (weight, value)| {
+                let total = weights
+                    .iter()
+                    .zip(raw)
+                    .fold(0_i128, |acc, (weight, value)| {
                         acc + i128::from(*weight) * i128::from(*value)
-                    },
-                );
+                    });
                 let projected = round_q24(total)?
                     .saturating_add(self.profile.bias_q24[out])
                     .clamp(-MAX_Q24, MAX_Q24);
@@ -437,9 +431,7 @@ fn round_q24(product: i128) -> Result<i64, StemPhysicalErrorV4> {
     let divisor = i128::from(Q24);
     let quotient = magnitude / divisor;
     let remainder = magnitude % divisor;
-    let increment = if remainder * 2 > divisor
-        || (remainder * 2 == divisor && quotient % 2 != 0)
-    {
+    let increment = if remainder * 2 > divisor || (remainder * 2 == divisor && quotient % 2 != 0) {
         1_i128
     } else {
         0_i128

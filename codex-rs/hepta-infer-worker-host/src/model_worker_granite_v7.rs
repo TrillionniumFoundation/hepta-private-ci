@@ -1,10 +1,10 @@
 //! Research-only user-space admission of original Granite97 export, reviewed
 //! physical-replay bytes and independent Cell Head artifacts into one V3 Reader.
- //!
- //! The JSON admission record is NOT an authority grant. Callers must obtain its
- //! exact bytes, model/source identities and physical review SHA from their own
- //! independent owner. Even internally matching digests can be fabricated by
- //! an untrusted single producer; selection/FinalUse remain inaccessible.
+//!
+//! The JSON admission record is NOT an authority grant. Callers must obtain its
+//! exact bytes, model/source identities and physical review SHA from their own
+//! independent owner. Even internally matching digests can be fabricated by
+//! an untrusted single producer; selection/FinalUse remain inaccessible.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -161,10 +161,10 @@ pub fn read_shadow_granite_v3_v7(
     }
     let principal = StableId::new(admitted.principal_id)
         .map_err(|_| ShadowAdmissionErrorV7::InvalidIdentity)?;
-    let purpose = StableId::new(admitted.purpose_id)
+    let purpose =
+        StableId::new(admitted.purpose_id).map_err(|_| ShadowAdmissionErrorV7::InvalidIdentity)?;
+    let generation = Generation::new(admitted.generation)
         .map_err(|_| ShadowAdmissionErrorV7::InvalidIdentity)?;
-    let generation =
-        Generation::new(admitted.generation).map_err(|_| ShadowAdmissionErrorV7::InvalidIdentity)?;
     let material = digest(&admitted.material_digest)?;
     let encoder = super::granite97_encoder_identity_v5(material);
     let tokenizer = digest(&admitted.tokenizer_digest)?;

@@ -153,13 +153,7 @@ fn fixture() -> Fixture {
 }
 
 fn execute(f: &Fixture) -> Result<ReviewedGraniteBatchV6, ReviewedGraniteErrorV6> {
-    read_independently_reviewed_granite_v6(
-        &f.export,
-        &f.review,
-        &f.admission,
-        &f.heads,
-        12,
-    )
+    read_independently_reviewed_granite_v6(&f.export, &f.review, &f.admission, &f.heads, 12)
 }
 
 fn mutate_review(f: &mut Fixture, key: &str, value: Value) {
@@ -185,7 +179,10 @@ fn admitted_review_and_export_compose_with_two_real_q24_cell_heads() {
     assert_eq!(result.reviewer_encoder_forwards, 1);
     assert_eq!(result.reviewer_original_tensor_count, 74);
     assert!(!result.receipt_digest.is_zero());
-    assert_eq!(f.admission.feature.source_bytes.as_slice(), b"hello Granite v3");
+    assert_eq!(
+        f.admission.feature.source_bytes.as_slice(),
+        b"hello Granite v3"
+    );
 }
 
 #[test]
@@ -196,7 +193,10 @@ fn independent_digest_is_required_and_modified_review_cannot_reuse_it() {
     f = fixture();
     let original = f.admission.admitted_review_digest;
     f.review.push(b' ');
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewDigest));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidReviewDigest)
+    );
     f.admission.admitted_review_digest = original;
 }
 
@@ -207,9 +207,15 @@ fn exact_producer_export_digest_is_required_before_tensor_parsing() {
     assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::MissingAdmission));
     f = fixture();
     f.export.push(b' ');
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidExportDigest));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidExportDigest)
+    );
     f.export = vec![b' '; MAX_EXPORT_BYTES + 1];
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidExportDigest));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidExportDigest)
+    );
 }
 
 #[test]
@@ -238,9 +244,18 @@ fn incomplete_or_self_promoting_reviewer_cannot_open_cell_execution() {
 #[test]
 fn rehashed_forged_contents_do_not_match_external_model_source_or_q24() {
     for (field, value) in [
-        ("material_sha256", json!(Digest32::of_bytes(b"other").to_string())),
-        ("input_digest", json!(Digest32::of_bytes(b"other-input").to_string())),
-        ("feature_q24_sha256", json!(Digest32::of_bytes(b"other-q24").to_string())),
+        (
+            "material_sha256",
+            json!(Digest32::of_bytes(b"other").to_string()),
+        ),
+        (
+            "input_digest",
+            json!(Digest32::of_bytes(b"other-input").to_string()),
+        ),
+        (
+            "feature_q24_sha256",
+            json!(Digest32::of_bytes(b"other-q24").to_string()),
+        ),
         ("producer_claimed_cpu_ns", json!(102)),
         ("producer_claimed_wall_ns", json!(203)),
     ] {
@@ -259,22 +274,34 @@ fn duplicate_missing_extra_or_oversized_review_fails_closed() {
     let mut f = fixture();
     f.review = br#"{"schema":"a","schema":"b"}"#.to_vec();
     f.admission.admitted_review_digest = Digest32::of_bytes(&f.review);
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewSchema));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidReviewSchema)
+    );
     for field in ["schema", "reviewer_encoder_cpu_ns"] {
         let mut f = fixture();
         let mut body: Value = serde_json::from_slice(&f.review).expect("review");
         body.as_object_mut().expect("object").remove(field);
         f.review = serde_json::to_vec(&body).expect("updated");
         f.admission.admitted_review_digest = Digest32::of_bytes(&f.review);
-        assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewSchema));
+        assert_eq!(
+            execute(&f),
+            Err(ReviewedGraniteErrorV6::InvalidReviewSchema)
+        );
     }
     let mut f = fixture();
     mutate_review(&mut f, "unexpected_input", json!(true));
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewSchema));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidReviewSchema)
+    );
     let mut f = fixture();
     f.review = vec![b' '; MAX_REVIEW_BYTES + 1];
     f.admission.admitted_review_digest = Digest32::of_bytes(&f.review);
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewSchema));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidReviewSchema)
+    );
 }
 
 #[test]
@@ -285,7 +312,10 @@ fn parent_source_scope_model_and_ttl_cannot_be_reinterpreted() {
     assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidFeature));
     let mut f = fixture();
     f.admission.feature.source_bytes.push(b'!');
-    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidReviewContents));
+    assert_eq!(
+        execute(&f),
+        Err(ReviewedGraniteErrorV6::InvalidReviewContents)
+    );
     let mut f = fixture();
     f.admission.feature.now_ms = 150;
     assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidFeature));
@@ -295,9 +325,7 @@ fn parent_source_scope_model_and_ttl_cannot_be_reinterpreted() {
 fn admitted_review_does_not_bypass_reader_head_compatibility_or_budget() {
     let mut f = fixture();
     assert_eq!(
-        read_independently_reviewed_granite_v6(
-            &f.export, &f.review, &f.admission, &f.heads, 2
-        ),
+        read_independently_reviewed_granite_v6(&f.export, &f.review, &f.admission, &f.heads, 2),
         Err(ReviewedGraniteErrorV6::ReaderRejected)
     );
     f.heads.push(Arc::clone(&f.heads[0]));

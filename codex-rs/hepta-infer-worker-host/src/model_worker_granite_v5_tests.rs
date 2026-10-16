@@ -5,8 +5,8 @@ use codex_hepta_types::{Generation, StableId};
 use serde_json::{Value, json};
 
 use crate::model_worker::{
-    SequenceAttentionPolicyV3, SequenceCellHeadV3, SequenceHeadBindingV3,
-    SequenceHeadParametersV3, SequenceReadFenceV3, evaluate_sequence_heads_v3,
+    SequenceAttentionPolicyV3, SequenceCellHeadV3, SequenceHeadBindingV3, SequenceHeadParametersV3,
+    SequenceReadFenceV3, evaluate_sequence_heads_v3,
 };
 
 fn input() -> (GraniteFeatureExpectationV5, Value) {
@@ -76,10 +76,7 @@ fn import(
     expected: &GraniteFeatureExpectationV5,
     record: &Value,
 ) -> Result<ImportedGraniteFeaturesV5, GraniteFeatureImportErrorV5> {
-    import_granite97_token_v5(
-        &serde_json::to_vec(record).expect("JSON fixture"),
-        expected,
-    )
+    import_granite97_token_v5(&serde_json::to_vec(record).expect("JSON fixture"), expected)
 }
 
 #[test]
@@ -91,10 +88,16 @@ fn python_rust_cross_language_complete_token_input_golden() {
     );
     let first = import(&expected, &record).expect("admit");
     let second = import(&expected, &record).expect("repeat");
-    assert_eq!(first.snapshot.content_digest(), second.snapshot.content_digest());
+    assert_eq!(
+        first.snapshot.content_digest(),
+        second.snapshot.content_digest()
+    );
     assert_eq!(first.snapshot.shape(), (3, WIDTH));
     assert_eq!(first.snapshot.values_q24().len(), 3 * WIDTH);
-    assert_eq!(first.complete_model_input_digest, expected.identity.base.input_digest);
+    assert_eq!(
+        first.complete_model_input_digest,
+        expected.identity.base.input_digest
+    );
     assert_eq!(first.material_digest, expected.material_digest);
     assert_eq!(first.claimed_encoder_forwards, 1);
     assert_eq!(first.authority, AuthorityPosture::DENY_ALL);
@@ -194,8 +197,7 @@ fn stale_cross_scope_oversized_and_missing_producer_claims_fail_closed() {
         Err(GraniteFeatureImportErrorV5::Expired)
     ));
     let (mut expected, record) = input();
-    expected.identity.base.principal_id =
-        StableId::new("principal:other").expect("principal");
+    expected.identity.base.principal_id = StableId::new("principal:other").expect("principal");
     // Binding prevents cross-scope replay but remains non-authorizing.
     assert!(matches!(
         import(&expected, &record),

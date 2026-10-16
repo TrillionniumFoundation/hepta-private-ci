@@ -107,7 +107,6 @@ fn read_one(_path: &str, _maximum: u64) -> Result<Vec<u8>, Box<dyn StdError>> {
     Err("research CLI's descriptor-fenced local admission requires Unix".into())
 }
 
-
 fn main() -> Result<(), Box<dyn StdError>> {
     let mut admission = None;
     let mut source = None;
@@ -194,9 +193,7 @@ mod fd_intake_tests {
         assert!(read_one(linked_path.to_str().expect("path"), 3).is_err());
         let linked_dir = dir.path().join("owner-link");
         symlink(&original_dir, &linked_dir).expect("parent link");
-        assert!(
-            read_one(linked_dir.join("source.json").to_str().expect("path"), 3).is_err()
-        );
+        assert!(read_one(linked_dir.join("source.json").to_str().expect("path"), 3).is_err());
         let hardlink_path = dir.path().join("hardlink.json");
         fs::hard_link(&original, &hardlink_path).expect("hardlink");
         assert!(read_one(hardlink_path.to_str().expect("path"), 3).is_err());

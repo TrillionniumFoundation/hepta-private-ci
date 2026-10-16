@@ -252,9 +252,7 @@ pub fn evaluate_sequence_heads_v3(
     if heads.is_empty() || heads.len() > MAX_ACTIVE_HEADS {
         return Err(SequenceReadErrorV3::BudgetExceeded);
     }
-    if fence.maximum_attention_pairs == 0
-        || fence.maximum_attention_pairs > MAX_ATTENTION_PAIRS
-    {
+    if fence.maximum_attention_pairs == 0 || fence.maximum_attention_pairs > MAX_ATTENTION_PAIRS {
         return Err(SequenceReadErrorV3::BudgetExceeded);
     }
     let identity_digest = fence
@@ -368,8 +366,7 @@ fn score_head(
         let mut weight_total = 0_i128;
         for source in 0..rows {
             if mask[source] == 0
-                || (head.binding.attention == SequenceAttentionPolicyV3::Causal
-                    && source > target)
+                || (head.binding.attention == SequenceAttentionPolicyV3::Causal && source > target)
             {
                 continue;
             }
@@ -402,17 +399,17 @@ fn score_head(
 }
 
 fn dot(weights: &[i64], features: &[i64]) -> Result<i64, SequenceReadErrorV3> {
-    let sum = weights.iter().zip(features).fold(0_i128, |acc, (weight, feature)| {
-        acc + i128::from(*weight) * i128::from(*feature)
-    });
+    let sum = weights
+        .iter()
+        .zip(features)
+        .fold(0_i128, |acc, (weight, feature)| {
+            acc + i128::from(*weight) * i128::from(*feature)
+        });
     Ok(round_div(sum, i128::from(Q24))?.clamp(-Q24_BOUND, Q24_BOUND))
 }
 
 fn mul_q24(lhs: i64, rhs: i64) -> Result<i64, SequenceReadErrorV3> {
-    round_div(
-        i128::from(lhs) * i128::from(rhs),
-        i128::from(Q24),
-    )
+    round_div(i128::from(lhs) * i128::from(rhs), i128::from(Q24))
 }
 
 fn round_div(value: i128, divisor: i128) -> Result<i64, SequenceReadErrorV3> {
@@ -422,8 +419,7 @@ fn round_div(value: i128, divisor: i128) -> Result<i64, SequenceReadErrorV3> {
     let magnitude = value.abs();
     let quotient = magnitude / divisor;
     let remainder = magnitude % divisor;
-    let round_up = remainder * 2 > divisor
-        || (remainder * 2 == divisor && quotient % 2 != 0);
+    let round_up = remainder * 2 > divisor || (remainder * 2 == divisor && quotient % 2 != 0);
     let increment = if round_up { 1_i128 } else { 0_i128 };
     let signed = (quotient + increment) * value.signum();
     i64::try_from(signed).map_err(|_| SequenceReadErrorV3::Arithmetic)
@@ -436,8 +432,7 @@ fn relative_distance_divisor(
     source: codex_hepta_infer_core::sequence_feature_v3::FeatureCoordinatesV3,
     target: codex_hepta_infer_core::sequence_feature_v3::FeatureCoordinatesV3,
 ) -> i64 {
-    let spatial = u64::from(source.x.abs_diff(target.x))
-        + u64::from(source.y.abs_diff(target.y));
+    let spatial = u64::from(source.x.abs_diff(target.x)) + u64::from(source.y.abs_diff(target.y));
     let temporal = source.time_micros.abs_diff(target.time_micros);
     let distance = match modality {
         FeatureModalityV3::Text => 0,
