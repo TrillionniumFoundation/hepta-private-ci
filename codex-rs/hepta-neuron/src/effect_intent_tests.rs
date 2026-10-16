@@ -16,6 +16,9 @@ use std::time::UNIX_EPOCH;
 static NEXT_TEST_FILE: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(unix)]
+type TestResult = Result<(), Box<dyn std::error::Error>>;
+
+#[cfg(unix)]
 fn test_scope() -> JournalScope {
     JournalScope {
         scope_digest: Digest32::of_bytes(b"scope"),
@@ -48,7 +51,7 @@ fn reopen(path: &std::path::Path) -> std::io::Result<File> {
 
 #[cfg(unix)]
 #[test]
-fn tick_scope_binding_cannot_cross_objective_subject_or_generation() -> Result<(), Box<dyn std::error::Error>> {
+fn tick_scope_binding_cannot_cross_objective_subject_or_generation() -> TestResult {
     let subject = StableId::new("subject").unwrap();
     let (path, file) = fixture_file()?;
     let objective = Digest32::of_bytes(b"objective");
@@ -77,7 +80,7 @@ fn tick_scope_binding_cannot_cross_objective_subject_or_generation() -> Result<(
 
 #[cfg(unix)]
 #[test]
-fn durable_prepare_quarantines_recovery_and_reissued_nonce() -> Result<(), Box<dyn std::error::Error>> {
+fn durable_prepare_quarantines_recovery_and_reissued_nonce() -> TestResult {
     let (path, file) = fixture_file()?;
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
@@ -117,7 +120,7 @@ fn durable_prepare_quarantines_recovery_and_reissued_nonce() -> Result<(), Box<d
 
 #[cfg(unix)]
 #[test]
-fn committed_tick_is_deduplicated_across_new_authorization_and_restart() -> Result<(), Box<dyn std::error::Error>> {
+fn committed_tick_is_deduplicated_across_new_authorization_and_restart() -> TestResult {
     let (path, file) = fixture_file()?;
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
@@ -158,7 +161,7 @@ fn committed_tick_is_deduplicated_across_new_authorization_and_restart() -> Resu
 
 #[cfg(unix)]
 #[test]
-fn file_scope_generation_and_exclusive_owner_are_fenced() -> Result<(), Box<dyn std::error::Error>> {
+fn file_scope_generation_and_exclusive_owner_are_fenced() -> TestResult {
     let (path, file) = fixture_file()?;
     let owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
@@ -188,7 +191,7 @@ fn file_scope_generation_and_exclusive_owner_are_fenced() -> Result<(), Box<dyn 
 
 #[cfg(unix)]
 #[test]
-fn torn_record_is_detected_and_denied_without_rollback() -> Result<(), Box<dyn std::error::Error>> {
+fn torn_record_is_detected_and_denied_without_rollback() -> TestResult {
     let (path, file) = fixture_file()?;
     let mut owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
@@ -218,7 +221,7 @@ fn torn_record_is_detected_and_denied_without_rollback() -> Result<(), Box<dyn s
 
 #[cfg(unix)]
 #[test]
-fn capacity_reserves_resolution_slot_before_effect() -> Result<(), Box<dyn std::error::Error>> {
+fn capacity_reserves_resolution_slot_before_effect() -> TestResult {
     let (path, file) = fixture_file()?;
     let mut owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 2)
@@ -239,15 +242,9 @@ fn capacity_reserves_resolution_slot_before_effect() -> Result<(), Box<dyn std::
 
 #[cfg(unix)]
 #[test]
-fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() -> Result<(), Box<dyn std::error::Error>> {
+fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() -> TestResult {
     let (path, file) = fixture_file()?;
-    let owner = DurableNeuronEffectIntentV1::open(
-        file,
-        test_scope(),
-        Generation::new(2)?,
-        8,
-    )
-    ?;
+    let owner = DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2)?, 8)?;
     assert_eq!(
         owner.verify_bound_owner_path(),
         Err(NeuronEffectIntentErrorV1::UnsafeFile),
