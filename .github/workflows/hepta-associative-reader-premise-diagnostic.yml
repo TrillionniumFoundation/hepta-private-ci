@@ -1,0 +1,225 @@
+name: Hepta MemoryCell privileged Reader premise diagnostic (research only)
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_reader_premise.py'
+      - 'scripts/memory_cell/test_associative_reader_premise.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_READER_PREMISE_DIAGNOSTIC.md'
+      - '.github/workflows/hepta-associative-reader-premise-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: mcell-premise-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  privileged-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU package runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/premise-python
+          /tmp/premise-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/premise-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/premise-receipts
+          /tmp/premise-python/bin/pip freeze > /tmp/premise-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/premise-ranked
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/premise-native-input
+      - name: Recover pinned reference in trusted planning job only
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/premise-original
+          tar -C /tmp/premise-original -xzf /tmp/premise-native-input/memory-inputs.tar.gz \
+            memory-inputs/locomo.json
+          test "$(sha256sum /tmp/premise-original/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+          /tmp/premise-python/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/premise-original/memory-inputs/locomo.json /tmp/premise-trusted \
+            > /tmp/premise-receipts/trusted-reconstruction.json
+          test "$(sha256sum /tmp/premise-trusted/public.json | cut -d ' ' -f1)" = \
+            e3c9fe407afcc08a153eeb0122b107314443335cb8f153b6557693bdbf900455
+          test "$(sha256sum /tmp/premise-ranked/rank/journal.json | cut -d ' ' -f1)" = \
+            0683fa983bebba19a21a9d4cf2b3064120c3be243a10c88eb45fe3e7635541f6
+          cmp /tmp/premise-trusted/public.json /tmp/premise-ranked/public/public.json
+          cmp /tmp/premise-trusted/manifest.json /tmp/premise-ranked/public/manifest.json
+      - name: Construct sealed annotation-selected evidence and one-premise lesion
+        env:
+          HEPTA_ASSOC_FULLSOURCE_PREPARED: /tmp/premise-trusted
+          HEPTA_ASSOC_FULLSOURCE_RANK: /tmp/premise-ranked/rank
+        run: |
+          set -euo pipefail
+          /tmp/premise-python/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_reader_premise.py' -v 2>&1 | tee /tmp/premise-receipts/tests.log
+          /tmp/premise-python/bin/python scripts/memory_cell/associative_reader_premise.py \
+            plan /tmp/premise-trusted /tmp/premise-ranked/rank /tmp/premise-plan \
+            > /tmp/premise-receipts/plan-summary.json
+          test ! -e /tmp/premise-plan/private.json
+          test "$(find /tmp/premise-plan -maxdepth 1 -type f | wc -l)" -eq 2
+      - name: Retain source and plan digests
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/premise-receipts/exact-commit.txt
+          (cd /tmp/premise-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: privileged-premise-admission-not-memory-gain
+          path: /tmp/premise-receipts
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: privileged-premise-reader-inputs-no-answers
+          path: /tmp/premise-plan
+          if-no-files-found: error
+  frozen-premise-reader:
+    needs: privileged-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exactly registered CPU model environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/premise-reader-python
+          /tmp/premise-reader-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/premise-reader-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/premise-reader-receipts
+          /tmp/premise-reader-python/bin/pip freeze > /tmp/premise-reader-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: privileged-premise-reader-inputs-no-answers
+          path: /tmp/premise-reader-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-frozen-reader-weights-only
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/premise-reader-weights
+      - name: Validate frozen Reader and physically separated labels
+        run: |
+          set -euo pipefail
+          (cd /tmp/premise-reader-weights && sha256sum -c SHA256SUMS)
+          rm /tmp/premise-reader-weights/SHA256SUMS
+          test ! -e /tmp/premise-reader-plan/private.json
+          test ! -e /tmp/premise-reader-plan/answers.json
+          test "$(find /tmp/premise-reader-plan -maxdepth 1 -type f | wc -l)" -eq 2
+      - name: Execute frozen Reader on both annotation-selected conditions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/premise-reader-receipts/resources.txt \
+            /tmp/premise-reader-python/bin/python scripts/memory_cell/associative_reader_premise.py \
+              reader /tmp/premise-reader-plan /tmp/premise-reader-weights /tmp/premise-reader-run \
+              > /tmp/premise-reader-receipts/native-reader-summary.json
+          cp /tmp/premise-reader-run/{reader-journal,reader-seal}.json /tmp/premise-reader-receipts/
+      - name: Retain exact source and evidence only
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/premise-reader-receipts/exact-commit.txt
+          (cd /tmp/premise-reader-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: privileged-premise-unscored-reader-no-acceptance
+          path: /tmp/premise-reader-receipts
+          if-no-files-found: error
+  independent-diagnostic-review:
+    needs: frozen-premise-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned reviewer runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/premise-review-python
+          /tmp/premise-review-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/premise-review-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/premise-review-receipts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/premise-review-pinned
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/premise-review-ranking
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: privileged-premise-reader-inputs-no-answers
+          path: /tmp/premise-review-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: privileged-premise-unscored-reader-no-acceptance
+          path: /tmp/premise-review-output
+      - name: Independently recompute gold selection and score unmodified answers
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/premise-review-original
+          tar -C /tmp/premise-review-original -xzf /tmp/premise-review-pinned/memory-inputs.tar.gz \
+            memory-inputs/locomo.json
+          test "$(sha256sum /tmp/premise-review-original/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+          /tmp/premise-review-python/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/premise-review-original/memory-inputs/locomo.json /tmp/premise-review-trusted \
+            > /tmp/premise-review-receipts/prepared-summary.json
+          /tmp/premise-review-python/bin/python scripts/memory_cell/associative_reader_premise.py \
+            review /tmp/premise-review-trusted /tmp/premise-review-ranking/public \
+              /tmp/premise-review-ranking/rank /tmp/premise-review-plan /tmp/premise-review-output \
+              /tmp/premise-review-receipts/diagnostic-review.json \
+            > /tmp/premise-review-receipts/review-summary.json
+      - name: Record exact SHA256 evidence, no claim of production acceptance
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/premise-review-receipts/exact-commit.txt
+          (cd /tmp/premise-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: privileged-premise-diagnostic-not-independent-acceptance
+          path: /tmp/premise-review-receipts
+          if-no-files-found: error
