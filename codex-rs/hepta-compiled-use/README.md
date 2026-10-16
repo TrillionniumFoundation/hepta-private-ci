@@ -93,3 +93,34 @@ Run targeted unit, lint and format on a native Rust-enabled host:
 `cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings`
 
 `cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check`
+
+## Actual Unix socket-pair fixed-frame pilot (V3, data only)
+
+`FrameDuplexV1` sends and receives the existing canonical 256-byte ActionFrame
+over a generic safe Rust `Read + Write` byte transport, with independent
+monotonic send/receive sequences, bounded session length (up to 4096),
+generation and capability revalidation, and fail-closed poisoning after
+malformed inbound bytes or partial I/O failures. `receive()` only binds data;
+it does **not** grant permission to execute actions.
+
+The companion `unix_duplex_bench` uses an actual `UnixStream::pair` with
+**two threads inside the same process**. Each original 256-byte action is
+echoed as a verified 256-byte response through OS socket syscalls. It
+reports descriptive p50/p95/p99 round-trip latency on an exact runner. It
+does not compare against MCP, span separate processes, run a model,
+invoke any OS UI effect, create machine code or execute a GPU Kernel.
+
+Run on a Unix Rust host:
+
+```text
+cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use
+cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings
+cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check
+cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example unix_duplex_bench -- --smoke
+```
+
+The readback owner, peer authentication, OS call deadlines, revocation and
+`VerifiedUseToken` must be integrated by independent authority owners before
+a live effect is possible. `DenyByDefaultSandboxV1` is unchanged.
+**DRAFT / SHADOW_ONLY / DENY_ALL.** Synthetic fixtures and a kernel socket
+microbenchmark do not establish production Computer Use gains.
