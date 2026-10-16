@@ -19,6 +19,7 @@ on:
       - "codex-rs/hepta-cell-roles/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-evidence/**"
       - ".github/workflows/hepta-architecture-convergence.yml"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
@@ -123,6 +124,15 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
       - name: Strict Context Delivery provider-verifier Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
+      # The original Worker brings this CAS/State owner in transitively; do
+      # not permit a passing Core check to hide its strict-Clippy failures.
+      - name: Require original Learning Artifacts owner Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-learning-artifacts -- --check
+      - name: Require ten executed original CAS/State owner regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-learning-owner.json" --minimum-tests 10 -- cargo +1.95.0 test --locked -p codex-hepta-learning-artifacts --lib production_owner::tests:: -- --test-threads=1
+      - name: Strict original Learning Artifacts all-target Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       # cargo test exits 0 for a filter that matches ZERO tests. Count actual
