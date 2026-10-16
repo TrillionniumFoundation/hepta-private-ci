@@ -1,0 +1,10 @@
+name: Ubuntu ARM64 repository-integrity exact workflow qualification
+on:
+  push:
+    branches: [ci/gha-repository-integrity-arm-20261016]
+    paths: [.github/workflows/gha-qualify-repository-integrity-arm.yml]
+permissions:
+  contents: read
+jobs:
+  exact-repository-integrity:
+    uses: ./.github/workflows/hepta-repository-integrity.yml
