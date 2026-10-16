@@ -24,12 +24,9 @@ fn test_scope() -> JournalScope {
 }
 
 #[cfg(unix)]
-fn fixture_file() -> (std::path::PathBuf, File) {
+fn fixture_file() -> Result<(std::path::PathBuf, File), Box<dyn std::error::Error>> {
     use std::os::unix::fs::OpenOptionsExt;
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_nanos();
+    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let suffix = NEXT_TEST_FILE.fetch_add(1, Ordering::Relaxed);
     let path = std::env::temp_dir().join(format!(
         "hepta-effect-intent-{}-{nonce}-{suffix}.bin",
@@ -40,25 +37,20 @@ fn fixture_file() -> (std::path::PathBuf, File) {
         .write(true)
         .create_new(true)
         .mode(0o600)
-        .open(&path)
-        .expect("exclusive fixture");
-    (path, file)
+        .open(&path)?;
+    Ok((path, file))
 }
 
 #[cfg(unix)]
-fn reopen(path: &std::path::Path) -> File {
-    OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .expect("reopen")
+fn reopen(path: &std::path::Path) -> std::io::Result<File> {
+    OpenOptions::new().read(true).write(true).open(path)
 }
 
 #[cfg(unix)]
 #[test]
-fn tick_scope_binding_cannot_cross_objective_subject_or_generation() {
+fn tick_scope_binding_cannot_cross_objective_subject_or_generation() -> Result<(), Box<dyn std::error::Error>> {
     let subject = StableId::new("subject").unwrap();
-    let (path, file) = fixture_file();
+    let (path, file) = fixture_file()?;
     let objective = Digest32::of_bytes(b"objective");
     let scope = JournalScope {
         scope_digest: crate::runtime_types::subject_scope_digest(&subject).unwrap(),
@@ -79,13 +71,14 @@ fn tick_scope_binding_cannot_cross_objective_subject_or_generation() {
     ));
     assert!(!owner.matches_tick_scope(&subject, objective, Generation::new(3).unwrap()));
     drop(owner);
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn durable_prepare_quarantines_recovery_and_reissued_nonce() {
-    let (path, file) = fixture_file();
+fn durable_prepare_quarantines_recovery_and_reissued_nonce() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
         let mut owner =
@@ -100,7 +93,7 @@ fn durable_prepare_quarantines_recovery_and_reissued_nonce() {
     }
     {
         let mut recovered = DurableNeuronEffectIntentV1::open(
-            reopen(&path),
+            reopen(&path)?,
             test_scope(),
             Generation::new(2).unwrap(),
             8,
@@ -118,13 +111,14 @@ fn durable_prepare_quarantines_recovery_and_reissued_nonce() {
             Err(NeuronEffectIntentErrorV1::PendingReconciliation)
         );
     }
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn committed_tick_is_deduplicated_across_new_authorization_and_restart() {
-    let (path, file) = fixture_file();
+fn committed_tick_is_deduplicated_across_new_authorization_and_restart() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
         let mut owner =
@@ -139,7 +133,7 @@ fn committed_tick_is_deduplicated_across_new_authorization_and_restart() {
     }
     {
         let mut reopened = DurableNeuronEffectIntentV1::open(
-            reopen(&path),
+            reopen(&path)?,
             test_scope(),
             Generation::new(2).unwrap(),
             8,
@@ -158,19 +152,20 @@ fn committed_tick_is_deduplicated_across_new_authorization_and_restart() {
             .unwrap();
         assert_eq!(reopened.status().attempted_ticks, 2);
     }
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn file_scope_generation_and_exclusive_owner_are_fenced() {
-    let (path, file) = fixture_file();
+fn file_scope_generation_and_exclusive_owner_are_fenced() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
             .unwrap();
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path),
+            reopen(&path)?,
             test_scope(),
             Generation::new(2).unwrap(),
             8
@@ -180,20 +175,21 @@ fn file_scope_generation_and_exclusive_owner_are_fenced() {
     drop(owner);
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path),
+            reopen(&path)?,
             test_scope(),
             Generation::new(3).unwrap(),
             8
         ),
         Err(NeuronEffectIntentErrorV1::Corrupt)
     ));
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn torn_record_is_detected_and_denied_without_rollback() {
-    let (path, file) = fixture_file();
+fn torn_record_is_detected_and_denied_without_rollback() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let mut owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
             .unwrap();
@@ -209,20 +205,21 @@ fn torn_record_is_detected_and_denied_without_rollback() {
         .unwrap();
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path),
+            reopen(&path)?,
             test_scope(),
             Generation::new(2).unwrap(),
             8
         ),
         Err(NeuronEffectIntentErrorV1::Corrupt)
     ));
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn capacity_reserves_resolution_slot_before_effect() {
-    let (path, file) = fixture_file();
+fn capacity_reserves_resolution_slot_before_effect() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let mut owner =
         DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 2)
             .unwrap();
@@ -236,20 +233,21 @@ fn capacity_reserves_resolution_slot_before_effect() {
         Err(NeuronEffectIntentErrorV1::Capacity)
     );
     drop(owner);
-    std::fs::remove_file(path).unwrap();
+    std::fs::remove_file(path)?;
+    Ok(())
 }
 
 #[cfg(unix)]
 #[test]
-fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() {
-    let (path, file) = fixture_file();
+fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() -> Result<(), Box<dyn std::error::Error>> {
+    let (path, file) = fixture_file()?;
     let owner = DurableNeuronEffectIntentV1::open(
         file,
         test_scope(),
-        Generation::new(2).expect("generation"),
+        Generation::new(2)?,
         8,
     )
-    .expect("raw low-level journal");
+    ?;
     assert_eq!(
         owner.verify_bound_owner_path(),
         Err(NeuronEffectIntentErrorV1::UnsafeFile),
@@ -262,5 +260,6 @@ fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() {
             .is_ok(),
     );
     drop(owner);
-    std::fs::remove_file(path).expect("remove fixture");
+    std::fs::remove_file(path)?;
+    Ok(())
 }
