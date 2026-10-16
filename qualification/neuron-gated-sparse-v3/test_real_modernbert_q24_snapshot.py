@@ -8,7 +8,7 @@ import hashlib
 from pathlib import Path
 import tempfile
 import unittest
-import torch
+import os
 import real_modernbert_q24_snapshot as p
 
 
@@ -17,6 +17,7 @@ class DeterministicFixtureEncoder:
     calls=0
 
     def encode(self,row):
+        import torch
         self.calls+=1
         seed=int.from_bytes(hashlib.sha256(row['state'].encode()).digest()[:8],'big')
         generator=torch.Generator().manual_seed(seed)
@@ -26,6 +27,10 @@ class DeterministicFixtureEncoder:
         return None
 
 
+@unittest.skipUnless(
+    os.environ.get('HEPTA_NEURON_PHYSICAL_TESTS') == '1',
+    'physical Torch snapshot suite requires pinned CPU job',
+)
 class ModelSnapshotResearchTests(unittest.TestCase):
     def prepare(self):
         fit=[{'id':f'fit:{i}', 'text':f'synthetic train {i}', 'label':i%4} for i in range(64)]
@@ -59,6 +64,7 @@ class ModelSnapshotResearchTests(unittest.TestCase):
             self.assertNotIn('label',snapshot['feature_rows'][0])
 
     def test_projection_is_train_only_even_if_heldout_changes(self):
+        import torch
         torch.manual_seed(87)
         fit=torch.randn(64,768)
         held=torch.randn(32,768)
