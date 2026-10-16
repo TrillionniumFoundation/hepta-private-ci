@@ -916,6 +916,13 @@ async fn reopen_rejects_0008_migration_checksum_drift_without_repair() {
 
 #[tokio::test]
 async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection() {
+    // On Windows, the runner temporary root can contain a reparse-point ancestor.
+    // Exercise the real canonical-path security gate using the checkout volume
+    // instead; never relax CognitiveStore path/reparse validation.
+    #[cfg(windows)]
+    let temp = TempDir::new_in(std::env::current_dir().expect("canonical checkout cwd"))
+        .expect("migration temp dir in real workspace");
+    #[cfg(not(windows))]
     let temp = TempDir::new().expect("migration temp dir");
     let owner = agent_id(84);
     let agent_layout = layout(&temp, &owner);
