@@ -1,0 +1,32 @@
+name: hepta-stem-v15-original-reader-witness-source-audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v15_*'
+      - 'qualification/stem-cell-v1/test_v15_*'
+      - 'qualification/stem-cell-v1/V15_ORIGINAL_CANDIDATE_SANITIZED_20261016.json'
+      - '.github/workflows/hepta-stem-v15-original-reader-witness.yml'
+  push:
+    branches:
+      - research/stem-v15-original-reader-witness-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  negative-source-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check exact source and original public negative report, no private model claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v15_*.py qualification/stem-cell-v1/test_v15_*.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v15_*.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v15_*.py' -v
+          python qualification/stem-cell-v1/v15_public_no_go.py --receipt qualification/stem-cell-v1/V15_ORIGINAL_CANDIDATE_SANITIZED_20261016.json
