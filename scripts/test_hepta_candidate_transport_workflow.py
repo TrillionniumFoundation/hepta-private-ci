@@ -37,7 +37,11 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         self.assertIn("!cancelled()", block)
         self.assertIn("steps.scope.outcome == 'success'", block)
         self.assertNotIn("continue-on-error", workflow)
-        self.assertIn("needs: qualification", workflow)
+        # Rustfmt is a separate fail-closed prerequisite, not a reason to
+        # omit the original native qualification or its source/merge lanes.
+        self.assertIn("    needs: p0_rustfmt", workflow)
+        self.assertIn("    needs: [p0_rustfmt, qualification]", workflow)
+        self.assertIn('test "$FORMAT_RESULT" = success', workflow)
         self.assertIn('test "$RESULT" = success', workflow)
 
     def test_prerequisites_and_lock_check_precede_native_builds(self):
