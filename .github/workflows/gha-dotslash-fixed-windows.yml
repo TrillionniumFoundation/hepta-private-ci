@@ -42,8 +42,8 @@ jobs:
             echo "::error::DotSlash pinned release digest mismatch; refusing to execute."
             exit 60
           fi
-          tar -tzf "$binary_dir/$asset"
-          tar -xOzf "$binary_dir/$asset" > "$binary_dir/dotslash.exe"
+          tar --force-local -tzf "$binary_dir/$asset"
+          tar --force-local -xOzf "$binary_dir/$asset" > "$binary_dir/dotslash.exe"
           chmod +x "$binary_dir/dotslash.exe"
           "$binary_dir/dotslash.exe" --version
           echo "$binary_dir" >> "$GITHUB_PATH"
