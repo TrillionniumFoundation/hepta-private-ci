@@ -60,6 +60,12 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(Refused,"sign margin"):
             bin_metrics(truth,rows)
 
+    def test_zero_logit_cannot_be_accepted_as_negative(self):
+        truth,rows=good()
+        rows[-1]={"logit_q24":0,"status":"ACCEPT_NEGATIVE_RESEARCH_ONLY"}
+        with self.assertRaisesRegex(Refused,"sign margin"):
+            bin_metrics(truth,rows)
+
     def test_no_missing_positive_labels_or_rows(self):
         truth,rows=good()
         with self.assertRaises(Refused):
