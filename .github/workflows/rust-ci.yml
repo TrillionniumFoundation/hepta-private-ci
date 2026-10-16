@@ -9,7 +9,7 @@ permissions:
 jobs:
   # --- Detect what changed so the fast PR workflow only runs relevant jobs ----
   changed:
-    timeout-minutes: 30
+    timeout-minutes: 15
     name: Detect changed areas
     # Exact PR base/head history fetch and 20 selector regressions passed on
     # ubuntu-slim (isolated run 38852455881); native Cargo/Bazel stay on VMs.
@@ -80,7 +80,8 @@ jobs:
   workspace_manifest:
     timeout-minutes: 15
     name: Cargo manifest preflight
-    runs-on: ubuntu-24.04
+    # ARM64 validated with real locked Cargo metadata (run 38853074844).
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     steps:
@@ -106,7 +107,8 @@ jobs:
   general:
     timeout-minutes: 30
     name: Rust format
-    runs-on: ubuntu-24.04
+    # The exact pinned setup-ci/rustfmt/cargo fmt path passed on ARM64.
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     defaults:
@@ -245,7 +247,9 @@ jobs:
         argument_comment_lint_package,
       ]
     if: always()
-    runs-on: ubuntu-24.04
+    # Bash-only fan-in, no checkout/native toolchain. Keep required verdict on
+    # a lightweight x64 runner without changing any dependency conditions.
+    runs-on: ubuntu-slim
     steps:
       - name: Summarize
         shell: bash
