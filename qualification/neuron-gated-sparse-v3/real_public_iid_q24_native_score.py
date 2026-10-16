@@ -352,6 +352,16 @@ def run(args) -> dict:
         "real_pretrained_encoder_feature_source_sha256":
             original["real_public_q24_feature_snapshot_sha256"],
         "original_heldout_cases": 32,
+        "static_label_prior_control": {
+            "name": "ZERO_PARAMETER_ALWAYS_NEGATIVE_ONE_VS_REST",
+            "true_negative_cases": 24,
+            "true_positive_cases": 8,
+            "correct_cases": 24,
+            "delivered_accuracy": 0.75,
+            "positive_recall": 0.0,
+            "not_original_deployed_v1_no_change": True,
+            "not_a_temporal_learning_or_ndu_baseline": True,
+        },
         "four_binary_tasks": 4, "trained_private_models": 32,
         "fresh_rust_os_process_invocations": receipts,
         "all_independent_q24_adapter_head_integer_checks": True,
