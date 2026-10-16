@@ -462,12 +462,7 @@ mod tests {
 
     fn v1() -> NeuralCircuitCandidateV1 {
         NeuralCircuitCandidateV1::new(
-            NeuralCircuitIdentityV1::new(
-                "retrieval-control",
-                1,
-                None,
-                "observe",
-            ),
+            NeuralCircuitIdentityV1::new("retrieval-control", 1, None, "observe"),
             vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
@@ -586,12 +581,7 @@ mod tests {
     #[test]
     fn circuit_reuses_taskflow_cycle_and_terminal_rejection() {
         let result = NeuralCircuitCandidateV1::new(
-            NeuralCircuitIdentityV1::new(
-                "loop",
-                1,
-                None,
-                "a",
-            ),
+            NeuralCircuitIdentityV1::new("loop", 1, None, "a"),
             vec![
                 CircuitNodeV1::new("a", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("b", CircuitNodeRoleV1::TransformGuard),
