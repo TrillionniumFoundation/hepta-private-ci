@@ -223,8 +223,6 @@ def run(args) -> dict:
     need(type(models) is list and len(models) == 32 and
          len({(m["task_id"], m["physical_byte_ceiling"], m["arm"]) for m in models}) == 32,
          "missing or duplicate trained Q24 model slot")
-    import tempfile
-    from pathlib import Path
     binary = Path(args.binary)
     sha_file(binary, args.binary_sha256)
     # Do not upload raw heldout feature vectors or original labels. Trace JSON
