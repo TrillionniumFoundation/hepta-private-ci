@@ -21,6 +21,9 @@ on:
       - "qualification/stem-cell-v1/STEM_V21_*"
       - "qualification/stem-cell-v1/*v22_*"
       - "qualification/stem-cell-v1/STEM_V22_*"
+      - "qualification/stem-cell-v1/*v23_original_feature_batch_cost*.py"
+      - "qualification/stem-cell-v1/v23_original_feature_cpu_summary.py"
+      - "qualification/stem-cell-v1/STEM_V23_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -44,6 +47,9 @@ on:
       - "qualification/stem-cell-v1/STEM_V21_*"
       - "qualification/stem-cell-v1/*v22_*"
       - "qualification/stem-cell-v1/STEM_V22_*"
+      - "qualification/stem-cell-v1/*v23_original_feature_batch_cost*.py"
+      - "qualification/stem-cell-v1/v23_original_feature_cpu_summary.py"
+      - "qualification/stem-cell-v1/STEM_V23_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -107,6 +113,9 @@ jobs:
           python -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
           python -O -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
           python -m py_compile v22_case_bound_cost_witness.py test_v22_case_bound_cost_witness.py
+          python -m unittest -v test_v23_original_feature_batch_cost.Mechanism
+          python -O -m unittest -v test_v23_original_feature_batch_cost.Mechanism
+          python -m py_compile v23_original_feature_batch_cost.py v23_original_feature_batch_cost_review.py v23_original_feature_cpu_summary.py test_v23_original_feature_batch_cost.py
           python v22_case_bound_cost_witness.py --protocol STEM_V22_FROZEN_CASE_COST_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --out "$RUNNER_TEMP/v22-pr-hold.json"
           python v21_prospective_cost_gate.py --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --output "$RUNNER_TEMP/v21-pr-hold.json"
           python v20_original_material_challenge.py --retrospective STEM_V18_SOURCE_FIRST_20261016.json --output "$RUNNER_TEMP/v20-pr-HOLD.json"
@@ -332,6 +341,63 @@ jobs:
         with:
           name: v22-case-bound-host-HOLD-${{ github.sha }}
           path: ${{ runner.temp }}/v22-case-cost-HOLD.json
+          if-no-files-found: error
+      - name: V23 physical original-feature CPU fleets and two independent read-only reviews
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V23_ORIGINAL_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V23_ORIGINAL_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V23_ORIGINAL_V16="$RUNNER_TEMP/v16-candidates"
+          for replica in A B; do
+            for n in 64 256 1024 4096; do
+              python v23_original_feature_batch_cost.py \
+                --inputs "$HEPTA_V23_ORIGINAL_INPUTS" \
+                --v15 "$HEPTA_V23_ORIGINAL_V15" \
+                --v16 "$HEPTA_V23_ORIGINAL_V16" \
+                --cells "$n" --rounds 128 --out "$RUNNER_TEMP/v23-${replica}-${n}.json"
+            done
+            python v23_original_feature_batch_cost_review.py \
+              --inputs "$HEPTA_V23_ORIGINAL_INPUTS" \
+              --v15 "$HEPTA_V23_ORIGINAL_V15" \
+              --v16 "$HEPTA_V23_ORIGINAL_V16" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-64.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-256.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-1024.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-4096.json" \
+              --out "$RUNNER_TEMP/v23-${replica}-independent-review.json"
+          done
+          python v23_original_feature_cpu_summary.py \
+            --evidence "$RUNNER_TEMP" --out "$RUNNER_TEMP/v23-sanitized-summary.json"
+          for n in 64 256 1024 4096; do
+            export "HEPTA_V23_RECEIPT_${n}=$RUNNER_TEMP/v23-A-${n}.json"
+          done
+          export HEPTA_V23_RUN_SUMMARY="$RUNNER_TEMP/v23-sanitized-summary.json"
+          python -m unittest -v test_v23_original_feature_batch_cost
+          python -O -m unittest -v test_v23_original_feature_batch_cost
+          python - "$RUNNER_TEMP/v23-sanitized-summary.json" <<'PY_V23_NO_GO'
+          import json,sys
+          r=json.load(open(sys.argv[1],encoding="utf-8"))
+          if not (r.get("authority_posture")=="DENY_ALL"
+                  and r.get("scientific_promotion_authorized") is False
+                  and r.get("production_authorized") is False
+                  and r.get("independent_numpy_source_and_logits_replay") is True
+                  and r.get("target_device_host_attestation") is False
+                  and r.get("new_independent_future_source_families")==0
+                  and set(r.get("per_size",{}))=={"64","256","1024","4096"}):
+              raise SystemExit("V23 source-only CPU mechanism cannot authorize Cell promotion")
+          PY_V23_NO_GO
+      - name: Upload only V23 sanitized CPU summary, no original model/features
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v23-original-feature-packed-cpu-summary-${{ github.sha }}
+          path: ${{ runner.temp }}/v23-sanitized-summary.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
