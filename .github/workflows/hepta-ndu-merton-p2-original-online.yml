@@ -25,6 +25,12 @@ jobs:
           python -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates/merton/physical_online_p2 -p 'test_*.py' -v
           python -O -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates/merton/physical_online_p2 -p 'test_*.py' -v
           python -m compileall -q experiments/ndu_tree_fbsde_gates/merton/physical_online_p2
+      - name: Verify original P1 finite solver and independent label-blind replay at exact merged source
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1"
+          python -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1 -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1 -p 'test_*.py' -v
   original-source-stage:
     needs: source-contract
     runs-on: ubuntu-24.04
