@@ -263,16 +263,16 @@ jobs:
             --name hepta-e3-same-original-native --dir "$RUNNER_TEMP/e3-native"
           echo 'Original 64-case pretrained baseline + genuine OCR and Gemma2 receipts must ALL exist'
           sha256sum "$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json" \
-            "$RUNNER_TEMP/e3-ocr/sealed-ocr-predictions.json" \
-            "$RUNNER_TEMP/e3-native/sealed-native-predictions.json"
+            "$RUNNER_TEMP/e3-ocr/e3-ocr-observed/sealed-ocr-predictions.json" \
+            "$RUNNER_TEMP/e3-native/e3-native-observed/sealed-native-predictions.json"
           test "$(sha256sum "$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json" | cut -d' ' -f1)" \
             = e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7
       - name: Seal exactly all five source-matched arms before opening heldout labels
         run: |
           set -euo pipefail
           OLD="$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json"
-          OCR="$RUNNER_TEMP/e3-ocr/sealed-ocr-predictions.json"
-          GEM="$RUNNER_TEMP/e3-native/sealed-native-predictions.json"
+          OCR="$RUNNER_TEMP/e3-ocr/e3-ocr-observed/sealed-ocr-predictions.json"
+          GEM="$RUNNER_TEMP/e3-native/e3-native-observed/sealed-native-predictions.json"
           python3 experiments/shared_stem_cell/e3_five_arm_historical.py compose \
             --original "$OLD" --original-sha "$(sha256sum "$OLD" | cut -d' ' -f1)" \
             --ocr "$OCR" --ocr-sha "$(sha256sum "$OCR" | cut -d' ' -f1)" \
@@ -324,7 +324,7 @@ jobs:
         run: |
           set -euo pipefail
           PRED="$RUNNER_TEMP/e3-complete-five-arm-predictions.json"
-          MAT="$RUNNER_TEMP/e3-native/sealed-native-matched-controls.json"
+          MAT="$RUNNER_TEMP/e3-native/e3-native-observed/sealed-native-matched-controls.json"
           HELD="$RUNNER_TEMP/e3-review-source/private_labels/test_labels.jsonl"
           test -s "$MAT"
           python3 experiments/shared_stem_cell/e3_native_capacity_review.py \
