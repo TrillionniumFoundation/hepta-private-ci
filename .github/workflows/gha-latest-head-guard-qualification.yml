@@ -1,0 +1,34 @@
+name: Isolated GitHub latest PR head read-authorization test
+on:
+  push:
+    branches: [ci/gha-latest-head-guard-qualification-20261016]
+    paths: [.github/workflows/gha-latest-head-guard-qualification.yml]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  latest-head-authorization:
+    name: Query authenticated latest PR HEAD and reject obsolete SHA
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Test exact PR head identity comparison
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: "2410"
+          KNOWN_OBSOLETE_SHA: "dc460393e9450b06af2ebf3efa2d1495b6f01296"
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          [[ "$current" =~ ^[0-9a-f]{40}$ ]]
+          is_latest_head() { [[ "$1" == "$current" ]]; }
+          is_latest_head "$current"
+          if is_latest_head "$KNOWN_OBSOLETE_SHA"; then
+            echo "::error::obsolete PR head passed current-head guard"
+            exit 1
+          fi
+          echo "Authenticated current-head read succeeded; obsolete PR head correctly refused"
