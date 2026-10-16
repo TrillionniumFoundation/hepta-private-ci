@@ -1,0 +1,139 @@
+name: hepta-stem-v25-native-stack-tile-deny-all
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/native_v25_stack_tile.rs"
+      - "qualification/stem-cell-v1/v25_native_stack_review.py"
+      - "qualification/stem-cell-v1/test_v25_native_stack_review.py"
+      - "qualification/stem-cell-v1/STEM_V25_*"
+      - ".github/workflows/hepta-stem-v25-rust-stack-tile.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/native_v25_stack_tile.rs"
+      - "qualification/stem-cell-v1/v25_native_stack_review.py"
+      - "qualification/stem-cell-v1/test_v25_native_stack_review.py"
+      - "qualification/stem-cell-v1/STEM_V25_*"
+      - ".github/workflows/hepta-stem-v25-rust-stack-tile.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-bound-rust-original-shadow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact original SHA and locked Python/Rust toolchain
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 cryptography==46.0.4
+      - name: Physically compile both original and stack-tiled Rust test binaries
+        shell: bash
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 -C opt-level=2 --test native_v24_packed_head.rs -o "$RUNNER_TEMP/v25-original-rust-tests"
+          rustc --edition=2021 -C opt-level=2 --test native_v25_stack_tile.rs -o "$RUNNER_TEMP/v25-stack-rust-tests"
+          "$RUNNER_TEMP/v25-original-rust-tests" --test-threads=1
+          "$RUNNER_TEMP/v25-stack-rust-tests" --test-threads=1
+          python -m unittest -v test_v25_native_stack_review.SourceOnly
+          python -O -m unittest -v test_v25_native_stack_review.SourceOnly
+          python -m py_compile v25_native_stack_review.py test_v25_native_stack_review.py
+      - name: Retrieve immutable original mmBERT artifact (push/dispatch only)
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11890616195/zip" > "$RUNNER_TEMP/v25-original.zip"
+          echo "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  $RUNNER_TEMP/v25-original.zip" | sha256sum --check
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install packaging==25.0
+      - name: Original physical model → Rust V24/V25 crossed CPU processes → independent NumPy
+        if: github.event_name != 'pull_request'
+        shell: bash
+        working-directory: qualification/stem-cell-v1
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 -C opt-level=3 native_v24_packed_head.rs -o "$RUNNER_TEMP/v25-rust-v24"
+          rustc --edition=2021 -C opt-level=3 native_v25_stack_tile.rs -o "$RUNNER_TEMP/v25-rust-v25"
+          python stem_counterfactual_split_v14.py prepare \
+            --archive "$RUNNER_TEMP/v25-original.zip" \
+            --out "$RUNNER_TEMP/v25-original-input" \
+            --labels-out "$RUNNER_TEMP/v25-private-original-held-labels.json"
+          rm -f "$RUNNER_TEMP/v25-private-original-held-labels.json"
+          python stem_stable_router_v15.py --inputs "$RUNNER_TEMP/v25-original-input" --output "$RUNNER_TEMP/v25-v15"
+          python stem_specialization_v16.py --inputs "$RUNNER_TEMP/v25-original-input" --v15 "$RUNNER_TEMP/v25-v15" --output "$RUNNER_TEMP/v25-v16"
+          export HEPTA_V25_INPUTS="$RUNNER_TEMP/v25-original-input"
+          export HEPTA_V25_V15="$RUNNER_TEMP/v25-v15"
+          export HEPTA_V25_V16="$RUNNER_TEMP/v25-v16"
+          python -m unittest -v test_v25_native_stack_review
+          python -O -m unittest -v test_v25_native_stack_review
+          python v24_rust_original_handoff.py \
+            --inputs "$HEPTA_V25_INPUTS" --v15 "$HEPTA_V25_V15" \
+            --v16 "$HEPTA_V25_V16" --output "$RUNNER_TEMP/v25-private"
+          for n in 64 256 1024 4096; do
+            frame="$RUNNER_TEMP/v25-private/frame-${n}.bin"
+            "$RUNNER_TEMP/v25-rust-v24" "$frame" \
+              "$RUNNER_TEMP/v25-private/v24-A-rust-logits-${n}.bin" \
+              "$RUNNER_TEMP/v25-private/v24-A-rust-report-${n}.json"
+            "$RUNNER_TEMP/v25-rust-v25" "$frame" \
+              "$RUNNER_TEMP/v25-private/v25-A-rust-logits-${n}.bin" \
+              "$RUNNER_TEMP/v25-private/v25-A-rust-report-${n}.json"
+            "$RUNNER_TEMP/v25-rust-v25" "$frame" \
+              "$RUNNER_TEMP/v25-private/v25-B-rust-logits-${n}.bin" \
+              "$RUNNER_TEMP/v25-private/v25-B-rust-report-${n}.json"
+            "$RUNNER_TEMP/v25-rust-v24" "$frame" \
+              "$RUNNER_TEMP/v25-private/v24-B-rust-logits-${n}.bin" \
+              "$RUNNER_TEMP/v25-private/v24-B-rust-report-${n}.json"
+          done
+          python v25_native_stack_review.py \
+            --inputs "$HEPTA_V25_INPUTS" --v15 "$HEPTA_V25_V15" \
+            --v16 "$HEPTA_V25_V16" --root "$RUNNER_TEMP/v25-private" \
+            --output "$RUNNER_TEMP/v25-original-rust-sanitized-review.json"
+          python - "$RUNNER_TEMP/v25-original-rust-sanitized-review.json" <<'PY_HOLD'
+          import json,sys
+          with open(sys.argv[1],encoding="utf-8") as f: x=json.load(f)
+          if not (x.get("v25_native_rust_execution_and_original_numeric_replay_verified") is True
+              and x.get("decision") == "HOLD_NATIVE_RESEARCH_NO_Q24_OR_FUTURE_OWNER_EVIDENCE"
+              and x.get("production_authorized") is False
+              and x.get("worker_execution_owner_integrated") is False
+              and x.get("q24_policy_parity_verified") is False
+              and x.get("independent_future_case_roots") == 0
+              and all(set(v)=={"64","256","1024","4096"}
+                  for v in x.get("comparisons",{}).values())):
+              raise SystemExit("native V25 original task arithmetic does NOT authorize Cell or Final-use promotion")
+          PY_HOLD
+      - name: Upload only sanitized independent Rust numerical and performance review
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v25-original-rust-stack-tile-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v25-original-rust-sanitized-review.json
+          if-no-files-found: error
+      - name: Exact source remains unchanged
+        run: git diff --exit-code && git diff --cached --exit-code

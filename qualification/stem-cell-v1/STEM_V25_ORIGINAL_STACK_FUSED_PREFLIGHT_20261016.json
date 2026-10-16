@@ -1,0 +1,58 @@
+{
+  "decision": "HOLD_RUST_NATIVE_COMPILATION_AND_END_TO_END_WAL_CAS_FINALUSE",
+  "evidence_date": "2026-10-16",
+  "feature_width": 384,
+  "frozen_original_feature_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+  "frozen_original_v16_head_model_sha256": "4dc71c47b4ec297ce65a221adabd8ad7888cdd1c1ce2f67a7aee3986d4a1433e",
+  "frozen_v15_mean_sha256": "ce35cf92094aa1ed560654bb7bb80cb12d7dfd4e4f22723b043e2c3c243f5dbc",
+  "future_model_utility_verified": false,
+  "hosted_compile_or_rust_output_verified": false,
+  "immutable_v24_source_git_blob_sha": "d44f4e0a46362a79bd304cf992c490e536949e63",
+  "independent_review_sha256": "24aa89d58492bbb712f8aa4c76ae58e70f12b0b871d193eca1c2fe39a0c0d7d1",
+  "independently_trained_head_values": 2,
+  "local_python_numeric_contract_max_abs_error": 0.0,
+  "local_python_source_and_original_regression_tests_normal": 24,
+  "local_python_source_and_original_regression_tests_optimized": 24,
+  "local_rustc_present": false,
+  "measured_rust_cpu": false,
+  "new_independent_future_roots": 0,
+  "original_feature_rows": 4,
+  "physical_head_slot_profiles": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "physical_head_weight_bytes": {
+    "1024": 6307840,
+    "256": 1576960,
+    "4096": 25231360,
+    "64": 394240
+  },
+  "production_authorized": false,
+  "q24_equivalence_verified": false,
+  "rust_worker_original_owner_modified": false,
+  "schema": "hepta.stem.v25.original-stack-fused-source-preflight.local",
+  "selected_32_head_cache_bytes": 197120,
+  "source_calculated_removed_per_128_rounds": {
+    "1024": 8192,
+    "256": 2048,
+    "4096": 32768,
+    "64": 512
+  },
+  "source_calculated_removed_per_full_packed_call_tile_heap_vecs": {
+    "1024": 64,
+    "256": 16,
+    "4096": 256,
+    "64": 4
+  },
+  "source_reuses_original_readonly_v24_frame": true,
+  "source_sha256": "69b5a8210074a4864880f9440efb413b766a065e0b8388c0d55a6fe009bb7206",
+  "tile_fixed_scratch_bytes": 512,
+  "v24_original_frame_sha256": {
+    "1024": "c248e3cc6dd38f786e9c27f35888f8ff476220f979c338dddf1e3f41be4a3c54",
+    "256": "fef24f6b8891d8f03efab71bd7fe5e3d1c41bdd51e701a5dec8934d8452fd599",
+    "4096": "03809d37b7b7230e9fd0ce865313abda262ea6dd8b4cf6ea16ffd2f06c8270b9",
+    "64": "e10b8c802bf04629525fb0979d529d8c34eac38ccd721818d337d056ac63a950"
+  }
+}
