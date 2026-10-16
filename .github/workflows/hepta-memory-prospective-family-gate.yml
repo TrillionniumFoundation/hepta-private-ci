@@ -5,6 +5,9 @@ on:
     paths:
       - "scripts/memory_cell/prospective_family_gate.py"
       - "scripts/memory_cell/test_prospective_family_gate.py"
+      - "scripts/memory_cell/paired_source_cut.py"
+      - "scripts/memory_cell/test_paired_source_cut.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_CUT_BINDING_20261016.md"
       - ".github/workflows/hepta-memory-prospective-family-gate.yml"
   push:
     branches:
@@ -12,6 +15,9 @@ on:
     paths:
       - "scripts/memory_cell/prospective_family_gate.py"
       - "scripts/memory_cell/test_prospective_family_gate.py"
+      - "scripts/memory_cell/paired_source_cut.py"
+      - "scripts/memory_cell/test_paired_source_cut.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_CUT_BINDING_20261016.md"
       - ".github/workflows/hepta-memory-prospective-family-gate.yml"
 
 permissions:
@@ -29,5 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_prospective_family_gate.py' -v
-          python3 -m compileall -q scripts/memory_cell/prospective_family_gate.py
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_four_stage_evidence.py' -v
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover -s scripts/memory_cell -p 'test_paired_source_cut.py' -v
+          python3 -m compileall -q scripts/memory_cell/prospective_family_gate.py scripts/memory_cell/paired_source_cut.py
           git diff --exit-code
