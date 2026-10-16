@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'qualification/stem-cell-v1/granite97_v9_public_physical.py'
+      - 'qualification/stem-cell-v1/granite97_v3_export.py'
+      - 'qualification/stem-cell-v1/granite97_v3_independent_review.py'
+      - 'qualification/stem-cell-v1/test_granite97_v3_export.py'
+      - 'qualification/stem-cell-v1/test_granite97_v3_independent_review.py'
       - 'qualification/stem-cell-v1/test_granite97_v9_public_physical.py'
       - 'qualification/stem-cell-v1/granite97_v9_residency.py'
       - 'qualification/stem-cell-v1/test_granite97_v9_residency.py'
@@ -42,9 +46,14 @@ jobs:
             qualification/stem-cell-v1/test_granite97_v9_public_physical.py \
             qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt
           cd qualification/stem-cell-v1
-          python -m unittest -v test_granite97_v9_public_physical.py
-          python -O -m unittest -v test_granite97_v9_public_physical.py
-          python -m py_compile granite97_v9_public_physical.py test_granite97_v9_public_physical.py
+          python -m unittest -v test_granite97_v9_public_physical.py \
+            test_granite97_v3_export.py test_granite97_v3_independent_review.py
+          python -O -m unittest -v test_granite97_v9_public_physical.py \
+            test_granite97_v3_export.py test_granite97_v3_independent_review.py
+          python -m py_compile granite97_v9_public_physical.py \
+            granite97_v3_export.py granite97_v3_independent_review.py \
+            test_granite97_v9_public_physical.py \
+            test_granite97_v3_export.py test_granite97_v3_independent_review.py
 
   material-source-freeze:
     needs: source-negative-tests
@@ -133,6 +142,7 @@ jobs:
             --source "$RUNNER_TEMP/granite-v9/source.txt" \
             --source-sha256 "$SHA" --expected-material-sha256 "$MAT" \
             --expires-at-ms "$EXP" --max-tokens 192 \
+            --feature-adapter rational8-v1 \
             --principal-id research:granite97-public-v9 \
             --purpose-id research:constructed-source-only \
             --generation 9 --authority-epoch 1 \
@@ -186,6 +196,7 @@ jobs:
             --principal-id research:granite97-public-v9 \
             --purpose-id research:constructed-source-only \
             --generation 9 --authority-epoch 1 --max-tokens 192 \
+            --feature-adapter rational8-v1 \
             --output "$RUNNER_TEMP/granite-v9/review.json"
       - uses: actions/upload-artifact@v4
         with:
