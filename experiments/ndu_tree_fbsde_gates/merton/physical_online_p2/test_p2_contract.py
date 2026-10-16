@@ -1,5 +1,9 @@
 """Source-only mechanics tests using a fake Reader. NEVER physical model evidence."""
 import copy
+import os
+import stat
+from unittest import mock
+from collections import Counter
 from fractions import Fraction
 import json
 import tempfile
@@ -181,6 +185,29 @@ class PhysicalContractTests(unittest.TestCase):
             review(self.manifest,self.train,self.held,self.gold,plan,completed,
                    out/'original-starts-and-dones.jsonl')
 
+    def test_frozen_schedule_balances_policy_position_across_tasks(self):
+        out,plan,completed,summary=self.run_complete()
+        schedule=plan['selected_request_schedule']
+        self.assertEqual(len(schedule),56)
+        by_task={tid:[] for tid in sorted(r['task_id'] for r in self.held['rows'])}
+        for item in schedule:
+            by_task[item['task_id']].append(item['policy'])
+        self.assertTrue(all(set(x)==set(POLICIES) for x in by_task.values()))
+        counts=Counter((i,policy) for x in by_task.values() for i,policy in enumerate(x))
+        self.assertTrue(all(1<=counts[i,p]<=2 for i in range(7) for p in POLICIES))
+        self.assertEqual([(r['policy'],r['task_id'],r['action']) for r in completed['actual_policy_trace']],
+            [(r['policy'],r['task_id'],r['action']) for r in schedule])
+
+    def test_substituted_prelabel_schedule_denied_even_if_resealed(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['selected_request_schedule'][0],plan['selected_request_schedule'][1] = (
+            plan['selected_request_schedule'][1],plan['selected_request_schedule'][0])
+        from public_source import encoded, sha
+        completed['frozen_plan_sha256']=sha(encoded(plan))
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
     def test_unplanned_held_call_refused(self):
         out,plan,completed,summary=self.run_complete()
         completed['actual_policy_trace'][0]['action']='verify'
@@ -234,6 +261,25 @@ class PhysicalContractTests(unittest.TestCase):
         self.assertIsNone(parse_answer('I think FINAL=1'))
         self.assertIsNone(parse_answer('FINAL=4'))
         self.assertIsNone(parse_answer('FINAL=1; FINAL=2'))
+
+    def test_source_owner_requires_parent_directory_fsync(self):
+        with tempfile.TemporaryDirectory() as d:
+            seen=[]
+            fsync_original=os.fsync
+            def audited_fsync(fd):
+                seen.append(stat.S_ISDIR(os.fstat(fd).st_mode))
+                return fsync_original(fd)
+            with mock.patch('public_source.os.fsync', side_effect=audited_fsync):
+                new_json(Path(d)/'source.json',{'x':'y'})
+            self.assertIn(True,seen)
+            self.assertIn(False,seen)
+
+    def test_directory_sync_failure_stops_before_original_forward(self):
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch('physical_online.sync_dir', side_effect=OSError('lost directory fsync')):
+                with self.assertRaises(OSError):
+                    run_online(self.manifest,self.train,self.held,self.reader,Path(d)/'new')
+            self.assertEqual(self.reader.calls,[])
 
     def test_create_only_source_packets(self):
         with tempfile.TemporaryDirectory() as d:

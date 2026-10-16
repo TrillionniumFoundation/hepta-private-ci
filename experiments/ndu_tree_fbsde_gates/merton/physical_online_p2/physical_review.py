@@ -75,7 +75,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         raise Invalid('gold/source text lineage is not original')
     if type(plan) is not dict or set(plan) != {'schema','manifest_sha256','train_source_sha256',
             'held_public_sha256','train_original_calls','train_original_outputs_sha256',
-            'train_record','public_record','portfolio_attempt','reader','research_only_deny_all'}:
+            'train_record','public_record','portfolio_attempt','selected_request_schedule',
+            'reader','research_only_deny_all'}:
         raise Invalid('frozen plan structural drift')
     if plan['schema'] != SCHEMA+'.frozen-plan' or plan['research_only_deny_all'] is not True:
         raise Invalid('invalid frozen plan authority')
@@ -85,6 +86,20 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         plan['public_record'] != public or
         plan['portfolio_attempt'] != run(manifest_doc,plan['train_record'],public)):
         raise Invalid('frozen plan consumed changed TRAIN or PUBLIC material')
+    # Independent derivation from the frozen P1 policy assignments; do not
+    # accept an execution worker's preferred order even with a matching seal.
+    arms = plan['portfolio_attempt']['attempt']['policies']
+    if [p['policy'] for p in arms] != list(POLICIES):
+        raise Invalid('frozen policy arms changed')
+    expected_schedule = []
+    for i, case in enumerate(sorted(public['cases'], key=lambda x: x['task_id'])):
+        tid = case['task_id']
+        for j in range(len(arms)):
+            arm = arms[(i+j) % len(arms)]
+            expected_schedule.append({'policy': arm['policy'], 'task_id': tid,
+                                      'action': arm['assignments'][tid]})
+    if plan['selected_request_schedule'] != expected_schedule:
+        raise Invalid('frozen physical policy schedule substitution')
     frozen_sha=sha(encoded(plan))
     if type(completed) is not dict or set(completed) != {
         'schema','frozen_plan_sha256','manifest_sha256','train_original_sha256',
@@ -154,8 +169,7 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
     if {'schema':'hepta.p1.train.v1','rows':recalculated} != plan['train_record']:
         raise Invalid('original TRAIN success was not independently recounted')
     if [(r['policy'],r['task_id'],r['action']) for r in served] != [
-        (p['policy'],tid,action) for p in plan['portfolio_attempt']['attempt']['policies']
-        for tid,action in sorted(p['assignments'].items())]:
+        (r['policy'],r['task_id'],r['action']) for r in expected_schedule]:
         raise Invalid('non-precommitted on-policy model request(s)')
     for r in served:
         check_output(r)

@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from portfolio import Invalid, POLICIES, digest as p1_digest, manifest, public_cases, run
-from public_source import SCHEMA as SOURCE_SCHEMA, encoded, new_json, sha, original_manifest
+from public_source import SCHEMA as SOURCE_SCHEMA, encoded, new_json, sha, original_manifest, sync_dir
 
 SCHEMA = 'hepta.ndu-merton.p2.physical-on-policy.v1'
 MODEL_REPO = 'Qwen/Qwen3-0.6B'
@@ -220,6 +220,26 @@ def attempt(reader, text: str, action: str, task_id: str, policy: str) -> dict[s
             'source_kind':'original_physical' if reader.physical is True else 'synthetic_fixture'}
 
 
+def balanced_request_schedule(frozen: dict[str, Any], cases) -> list[dict[str, str]]:
+    """Precommit a source-independent rotation so no policy always goes first.
+
+    All seven policies must receive independent physical model calls; the
+    schedule is a deterministic Latin rotation over canonical task IDs, not a
+    free outcome reuse or a post-hoc performance-based scheduler.
+    """
+    policies = frozen['attempt']['policies']
+    if len(policies) != len(POLICIES) or [p['policy'] for p in policies] != list(POLICIES):
+        raise Invalid('portfolio arm inventory changed')
+    ids = sorted(c.task_id for c in cases)
+    ordered = []
+    for i, tid in enumerate(ids):
+        for j in range(len(policies)):
+            arm = policies[(i + j) % len(policies)]
+            ordered.append({'policy': arm['policy'], 'task_id': tid,
+                            'action': arm['assignments'][tid]})
+    return ordered
+
+
 def run_online(manifest_doc: Any, train: Any, held: Any, reader,
                outdir: Path) -> dict[str,Any]:
     acts,budget,latency,fee=manifest(manifest_doc)
@@ -232,12 +252,14 @@ def run_online(manifest_doc: Any, train: Any, held: Any, reader,
     if outdir.exists():
         raise FileExistsError('original attempted result path already exists')
     outdir.mkdir(parents=True,exist_ok=False,mode=0o700)
+    sync_dir(outdir.parent)  # retain original attempt directory across power loss
     plan_path=outdir/'frozen-plan.json'
     journal=outdir/'original-starts-and-dones.jsonl'
     train_log=[];train_rows=[]
     train_sorted=sorted(train['rows'],key=lambda r:r['task_id'])
     infer_started=time.process_time();infer_wall=time.perf_counter()
     with journal.open('x',encoding='utf-8') as f:
+        sync_dir(outdir)  # retain journal name before a physical model call
         def record(event: dict[str,Any]):
             f.write(encoded(event).decode()+'\n');f.flush();os.fsync(f.fileno())
         for row in train_sorted:
@@ -252,6 +274,7 @@ def run_online(manifest_doc: Any, train: Any, held: Any, reader,
                     'success':int(result['predicted_class']==row['label'])})
         train_doc={'schema':'hepta.p1.train.v1','rows':train_rows}
         frozen=run(manifest_doc,train_doc,public)
+        request_schedule = balanced_request_schedule(frozen, cases)
         plan={'schema':SCHEMA+'.frozen-plan',
               'manifest_sha256':p1_digest(manifest_doc),
               'train_source_sha256':sha(encoded(train)),
@@ -260,6 +283,7 @@ def run_online(manifest_doc: Any, train: Any, held: Any, reader,
               'train_original_outputs_sha256':sha(encoded(train_log)),
               'train_record':train_doc,'public_record':public,
               'portfolio_attempt':frozen,
+              'selected_request_schedule':request_schedule,
               'reader':reader.identity,
               'research_only_deny_all':True}
         new_json(plan_path,plan)  # must be durable BEFORE any held model forward
@@ -267,16 +291,16 @@ def run_online(manifest_doc: Any, train: Any, held: Any, reader,
         record({'event':'plan_frozen','sha256':plan_sha})
         held_map={row['task_id']:row for row in held['rows']}
         results=[]
-        for policy in frozen['attempt']['policies']:
-            pname=policy['policy']
-            for tid,action_name in sorted(policy['assignments'].items()):
-                eid={'stage':'held','policy':pname,'task_id':tid,'action':action_name,
-                     'plan_sha256':plan_sha}
-                record({'event':'start',**eid})
-                # No held labels in process arguments or available held source.
-                result=attempt(reader,held_map[tid]['text'],action_name,tid,pname)
-                record({'event':'done',**eid,'output_sha256':sha(encoded(result))})
-                results.append(result)
+        for scheduled in request_schedule:
+            pname, tid, action_name = (scheduled['policy'], scheduled['task_id'], scheduled['action'])
+            eid={'stage':'held','policy':pname,'task_id':tid,'action':action_name,
+                 'plan_sha256':plan_sha}
+            record({'event':'start',**eid})
+            # No held labels in process arguments or available held source.
+            # Even equal-profile arms invoke the original Reader again.
+            result=attempt(reader,held_map[tid]['text'],action_name,tid,pname)
+            record({'event':'done',**eid,'output_sha256':sha(encoded(result))})
+            results.append(result)
     if len(results) != len(cases)*len(POLICIES) or len(train_log) != len(train_sorted)*len(acts):
         raise AssertionError('incomplete original physical model attempts')
     physical=reader.physical is True

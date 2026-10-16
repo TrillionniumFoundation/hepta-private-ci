@@ -30,6 +30,16 @@ def encoded(obj) -> bytes:
                       separators=(',', ':'), allow_nan=False).encode('utf-8')
 
 
+def sync_dir(path: Path) -> None:
+    # A synced file alone does not persist a newly created directory entry.
+    # Original evidence requires the named Linux filesystem durability step.
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def new_json(path: Path, payload) -> None:
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
     fd = os.open(path, flags, 0o600)
@@ -37,6 +47,7 @@ def new_json(path: Path, payload) -> None:
         f.write(encoded(payload) + b'\n')
         f.flush()
         os.fsync(f.fileno())
+    sync_dir(path.parent)
 
 
 def validate_rows(records, split: str):
