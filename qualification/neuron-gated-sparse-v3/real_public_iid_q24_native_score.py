@@ -15,6 +15,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 
 from matched_train import sha_file, unique_json
 from near_matched_physical_native_oracle import physically_load, verify
@@ -44,6 +45,17 @@ def digest(raw: bytes) -> str:
 def canonical(obj) -> bytes:
     return (json.dumps(obj, sort_keys=True, separators=(",", ":"),
                        allow_nan=False) + "\n").encode("utf-8")
+
+
+def nearest_rank_us(ns: list[int], percentile: int) -> int:
+    """Descriptive fresh-process wall p50/p95/p99, NOT worker tick SLO."""
+    need(type(ns) is list and len(ns) == 64
+         and type(percentile) is int and percentile in (50, 95, 99)
+         and all(type(value) is int and value > 0 for value in ns),
+         "unbound fresh-native-process wall latency census")
+    order = sorted(ns)
+    index = (len(order) * percentile + 99) // 100 - 1
+    return max(1, (order[index] + 999) // 1000)
 
 
 def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
@@ -260,6 +272,7 @@ def run(args) -> dict:
             }
             weights = physically_load(root / str(task), check_row)
             found = []
+            subprocess_wall_nanos = []
             for trace_file, trace_sha, trace in traces:
                 argv = [
                     str(binary.resolve()), "--arm", arm,
@@ -275,10 +288,14 @@ def run(args) -> dict:
                     argv += ["--rank", str(m["rank"])]
                 native_runs = []
                 for _ in range(2):
+                    wall_started = time.perf_counter_ns()
                     proc = subprocess.run(
                         argv, stdin=subprocess.DEVNULL,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                         check=False, timeout=30,
+                    )
+                    subprocess_wall_nanos.append(
+                        max(1, time.perf_counter_ns() - wall_started)
                     )
                     need(proc.returncode == 0 and
                          0 < len(proc.stdout) <= 1_000_000,
@@ -299,6 +316,14 @@ def run(args) -> dict:
             truth = [int(y == task) for y in label_values]
             summary = bin_metrics(truth, found)
             summary.update({
+                "isolated_cold_process_wall_p50_micros":
+                    nearest_rank_us(subprocess_wall_nanos, 50),
+                "isolated_cold_process_wall_p95_micros":
+                    nearest_rank_us(subprocess_wall_nanos, 95),
+                "isolated_cold_process_wall_p99_micros":
+                    nearest_rank_us(subprocess_wall_nanos, 99),
+                "process_wall_includes_binary_startup_model_load_and_json": True,
+                "full_encoder_worker_runtime_or_target_host_slo_verified": False,
                 "task_id": task, "positive_intent": CLASSES[task],
                 "arm": arm, "serialized_byte_budget": cap,
                 "physical_model_sha256": m["weight_sha256"],
