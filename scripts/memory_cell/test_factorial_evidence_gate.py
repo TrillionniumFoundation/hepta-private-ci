@@ -50,6 +50,7 @@ class FactorialAuditTest(unittest.TestCase):
         plan, rows = fixture()
         report = analyze(plan, rows)
         self.assertEqual(report["observations"], 160)
+        self.assertEqual(report["source_families_claimed"], 2)
         self.assertEqual(report["arms"]["hybrid_rag"]["frozen"]["oracle"]["success_rate"], 1)
         self.assertEqual(report["arms"]["hybrid_rag"]["frozen"]["hybrid"]["total_cost"]["raw_storage"], 4)
         self.assertFalse(report["production_qualified"])

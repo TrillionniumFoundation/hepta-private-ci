@@ -107,7 +107,7 @@ def analyze(plan, rows):
                 require(len({x["prompt_digest"] for x in matched}) == 1, "prompt changed across conditions")
     out = {"schema": "hepta.memory-factorial.audit.v1", "plan_sha256": sha(plan),
            "observations": len(rows), "cases": len(cases),
-           "source_families_claimed": len({c["root"] for c in cases}),
+           "source_families_claimed": len({c["root"] for c in cases.values()}),
            "independence_certified": False, "semantic_verifier_independent_certified": False,
            "production_qualified": False, "arms": {}}
     for arm in ARMS:

@@ -74,6 +74,12 @@ jobs:
           set -euo pipefail
           /tmp/memory-qc-env/bin/python -m unittest discover -s scripts/memory_cell \
             -p 'test_associative_question_conditioned.py' -v 2>&1 | tee /tmp/memory-qc-receipts/tests.log
+      - name: Verify strict Reader model transport integrity regressions
+        run: |
+          set -euo pipefail
+          /tmp/memory-qc-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_reader_weight_transport.py' -v 2>&1 \
+            | tee /tmp/memory-qc-receipts/reader-transport-tests.log
       - name: Execute mandatory frozen Encoder parity against Transformers
         run: |
           set -euo pipefail
@@ -137,7 +143,7 @@ jobs:
           mkdir -p /tmp/qc-reader-weights-only
           cp /tmp/qc-source/memory-inputs/reader/* /tmp/qc-reader-weights-only/
           test "$(find /tmp/qc-reader-weights-only -maxdepth 1 -type f | wc -l)" -eq 8
-          (cd /tmp/qc-reader-weights-only && find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          (cd /tmp/qc-reader-weights-only && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: qc-frozen-reader-weights-only
@@ -179,7 +185,8 @@ jobs:
       - name: Verify only frozen reader model files; no original source archive
         run: |
           set -euo pipefail
-          (cd /tmp/qc-reader-model && sha256sum -c SHA256SUMS)
+          /tmp/qc-reader-env/bin/python -m reader_weight_transport /tmp/qc-reader-model \
+            > /tmp/qc-reader-receipts/reader-weight-verification.json
           rm /tmp/qc-reader-model/SHA256SUMS
           test ! -e /tmp/qc-reader-inputs/public/private.json
           test ! -e /tmp/qc-reader-model/memory-inputs.tar.gz

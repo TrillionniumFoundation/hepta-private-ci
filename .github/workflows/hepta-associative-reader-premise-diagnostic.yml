@@ -132,7 +132,9 @@ jobs:
       - name: Validate frozen Reader and physically separated labels
         run: |
           set -euo pipefail
-          (cd /tmp/premise-reader-weights && sha256sum -c SHA256SUMS)
+          /tmp/premise-reader-python/bin/python -m reader_weight_transport \
+            /tmp/premise-reader-weights --legacy-self-entry \
+            > /tmp/premise-reader-receipts/reader-weight-verification.json
           rm /tmp/premise-reader-weights/SHA256SUMS
           test ! -e /tmp/premise-reader-plan/private.json
           test ! -e /tmp/premise-reader-plan/answers.json
