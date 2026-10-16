@@ -758,6 +758,53 @@ fn incomplete_completion_check_rejects_tampered_local_frozen_identity() {
 }
 
 #[test]
+fn pending_original_effect_cannot_be_reported_as_incomplete_or_empty_transcript() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.drop_ack = true;
+    {
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(owner.completed_steps(), 0);
+        assert!(matches!(
+            owner.verified_complete(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert!(matches!(
+            owner.verified_transcript(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(state.borrow().executions, 1, "never repeat uncertain effect");
+        assert!(root.path().join("cell-split-00-prepared.json").is_file());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+    }
+
+    // Cold read-only inspection must retain the same ambiguous interpretation;
+    // it cannot repair the effect or assert no work was performed.
+    let mut reader = CellSplitExecutionOwnerV1::open_existing(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("read-only cold reopen");
+    assert!(matches!(
+        reader.verified_complete(),
+        Err(CellSplitExecutionErrorV1::Ambiguous)
+    ));
+    assert!(matches!(
+        reader.verified_transcript(),
+        Err(CellSplitExecutionErrorV1::Ambiguous)
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn completed_history_must_be_verified_against_current_original_owners() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
