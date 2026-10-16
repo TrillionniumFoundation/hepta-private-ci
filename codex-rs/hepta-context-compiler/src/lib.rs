@@ -38,6 +38,7 @@ pub use v2::ContextDeliveryDispositionV2;
 pub use v2::ContextDeliveryObservationV2;
 pub use v2::ContextDeliveryPreparationV2;
 pub use v2::ContextDeliveryReceiptV2;
+pub use v2::ContextDeliveryStampV2;
 pub use v2::ContextModelProfileV2;
 pub use v2::ContextProviderDeliveryDecisionV2;
 pub use v2::ContextProviderDeliveryVerifierV2;
