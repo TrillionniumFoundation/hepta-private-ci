@@ -54,7 +54,14 @@ def _read_regular(path: Path, limit: int) -> bytes:
         named = path.lstat()
     except OSError as error:
         raise InvalidEvidence(f"{path.name}: unavailable evidence: {error}") from error
-    identity = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+    def identity(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+        return (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_size,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
     if (
         len(raw) > limit
         or len(raw) != before.st_size
