@@ -179,3 +179,71 @@ Do not combine the two modes as independent task cases or claim a speedup
 over remote tools without paired end-to-end work under an equivalent
 environment. The latest exact-HEAD Action must finish before either receipt
 is treated as measured evidence.
+
+
+## V5 paired binary vs canonical JSON-hex control
+
+This research-only extension quantifies one narrow hypothesis: how much of a
+local, two-process verified-action RTT comes from canonical JSON text
+framing versus the same underlying typed 256-byte binary ActionFrame.
+
+The `paired_binary_json_control` example runs two subprocess
+arms **with the same action bytes, verifier digest, generation, sequence,
+one private 0700 Unix Socket directory and the same kernel process boundary**:
+
+- `binary`: the existing SHA/digest-verified 256-byte transport.
+- `json_hex`: strictly canonical, 4-byte-length-prefixed JSON with
+  the exact same 256-byte action represented as lowercase hex; it parses
+  exactly the registered schema and rechecks the same original ABI/digest,
+  capability, generation and contiguous sequence. No general JSON parser
+  or external tool-call system is exercised.
+
+The JSON control performs one OS write per request/response, like the
+binary arm, but still uses a separate bounded length-prefix read and a
+larger text payload. This is a transport/framing/codec comparison, not an
+isolated serialization-only measurement or a normalized equal-byte trial.
+
+Each arm warms up 16 real request/response pairs before 64 or 1,024
+measured pairs, with two repetitions and reversed execution order
+(binary, JSON, JSON, binary). Each repetition separately records process
+startup/accept cost and p50/p95/p99 RTT. The exact-head GitHub Action
+runs the same protocol on x64 and ARM64 **as two separate host studies**:
+its files are labeled by architecture, and no cross-architecture RTT
+ratio is admissible.
+
+The goal is an *internally matched encoding-control study*, **NOT an MCP
+comparison**. JSON-hex represents a byte frame as text; it is not a
+complete tool schema, MCP server, network RPC, LLM inference, OS computer
+use, user-permitted effect, compiled JIT, native machine-code generation or
+GPU kernel. Even if one encoding is faster, no claim about a real
+end-to-end Computer Use speedup is supported without paired actual UI
+tasks and full capture/model/effect/feedback costs.
+
+The new 5 native source-level negative tests reject changed grants,
+wrong sequence, oversized/noncanonical JSON and undeclared modes.
+The read-only CI requires original native crate tests, strict Clippy,
+rustfmt, a 64-case smoke and 1,024-case actual two-process workload
+on each runner class. Raw results are sealed by exact source SHA and
+actual Git HEAD, and the receipt retains false authority and false
+MCP-comparison indicators.
+
+No production compiler, effect port or capability owner is altered.
+**DRAFT / SHADOW_ONLY / DENY_ALL / NO MAIN MERGE / NO FINALUSE.**
+
+## Research-only guarded IPC
+
+The new HGP1 data-only path binds one bounded sequence of 256-byte action
+frames to the same prevalidated UI readback and proposal digest on both sides
+of a Unix stream. The receiver returns a batch only when the entire proposal
+matches. Eight negative and source-consistency tests include an actual Unix
+socket pair, stale observation and truncated-frame cases.
+
+The queue's independently reviewed #2353 correctness change is also
+incorporated: failed validation retains the original queued head, and a
+separately supplied current verifier is checked before consumption.
+
+These are software consistency checks only. The protocol does not establish
+peer identity, trusted observation provenance, current external permissions
+or completed OS actions. It has no model, JIT, GPU or external effect port.
+The guarded mode has its own preamble and is not covered by the existing
+V3/V4/V5 latency measurements. Keep DRAFT / DENY_ALL / NO FINALUSE.

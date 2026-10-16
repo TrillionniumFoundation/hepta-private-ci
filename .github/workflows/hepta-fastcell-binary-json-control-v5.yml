@@ -1,0 +1,110 @@
+name: Hepta FastCell paired binary-vs-JSON process controls (research only)
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-compiled-use/**'
+      - '.github/workflows/hepta-fastcell-binary-json-control-v5.yml'
+  push:
+    branches:
+      - research/fastcell-binary-json-control-v5-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fastcell-binary-json-${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  actual-native-paired-control:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Exact code and runner identity
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+          uname -m
+      - name: Existing ABI/security and paired control unit tests
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example paired_binary_json_control
+      - name: Strict native lint and rustfmt
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check
+      - name: Original two-process 64 and 1024 matched binary-vs-JSON frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 60s cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example paired_binary_json_control -- --smoke | tee "$RUNNER_TEMP/paired-smoke.json"
+          timeout 60s cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example paired_binary_json_control | tee "$RUNNER_TEMP/paired-full.json"
+          python3 - "$RUNNER_TEMP" "$(git rev-parse HEAD)" "$(uname -m)" <<'PY'
+          import hashlib,json,pathlib,sys
+          root=pathlib.Path(sys.argv[1]); head=sys.argv[2]; architecture=sys.argv[3]
+          assert len(head)==40 and all(x in '0123456789abcdef' for x in head)
+          assert architecture
+          source=pathlib.Path('codex-rs/hepta-compiled-use/examples/paired_binary_json_control.rs')
+          results={}
+          for key,size in (('smoke',64),('full',1024)):
+              raw=(root/f'paired-{key}.json').read_bytes()
+              x=json.loads(raw)
+              assert x['schema']=='hepta.fastcell.paired-binary-json-control.v1'
+              assert x['measured_roundtrips_per_replica']==size
+              assert x['warmup_roundtrips']==16 and x['replicas_per_arm']==2
+              assert x['binary_payload_bytes']==256
+              assert type(x['json_control_payload_bytes']) is int
+              assert 512 < x['json_control_payload_bytes'] < 1024
+              for flag in ('separate_processes','same_verified_original_action',
+                           'same_capability_verifier'):
+                  assert x[flag] is True
+              for flag in ('mcp_comparison','model_executed','external_effects',
+                           'peer_authentication_verified','production_authorized'):
+                  assert x[flag] is False
+              for arm in ('binary','json_hex'):
+                  assert type(x[arm]) is list and len(x[arm])==2
+                  for row in x[arm]:
+                      assert set(row)=={'setup_ns','p50_ns','p95_ns','p99_ns'}
+                      assert all(type(v) is int and v>0 for v in row.values())
+                      assert row['p50_ns']<=row['p95_ns']<=row['p99_ns']
+              results[key]={'raw_sha256':hashlib.sha256(raw).hexdigest(),'observed':x}
+          receipt={
+              'schema':'hepta.fastcell.paired-control-source-receipt.v1',
+              'exact_head_sha':head,'runner_architecture':architecture,
+              'benchmark_source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+              'arms':results,
+              'cross_host_latency_directly_comparable':False,
+              'MCP_or_model_to_tool_comparison_performed':False,
+              'host_identity_cryptographically_attested':False,
+              'OS_UI_effect_executed':False,'production_authorized':False,
+          }
+          with (root/'paired-source-receipt.json').open('x',encoding='utf-8') as f:
+              json.dump(receipt,f,indent=2,sort_keys=True,allow_nan=False)
+          print(json.dumps({'head':head,'architecture':architecture,
+                            'source_sha256':receipt['benchmark_source_sha256'],
+                            'sizes':[64,1024],
+                            'mcp_comparison':False,'production_authorized':False},
+                           sort_keys=True))
+          PY
+          git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fastcell-binary-json-${{ matrix.os }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/paired-smoke.json
+            ${{ runner.temp }}/paired-full.json
+            ${{ runner.temp }}/paired-source-receipt.json
+          if-no-files-found: warn
