@@ -137,6 +137,8 @@ def head_logit(bank: dict, activation: list[int]) -> int:
     return bias[0] + sum(product(w, x) for w, x in zip(weights, activation))
 
 def verify(receipt: dict, trace: dict, row: dict, bank: dict, trace_sha: str) -> dict:
+    require(type(receipt) is dict and type(row) is dict,
+            'untrusted native result or physical row must be an object')
     budget_kind = row.get('budget_kind', 'PRIVATE_PARAMETER_COUNT')
     correct_cap_binding = (
         receipt.get('budget_kind') == 'SERIALIZED_SAFETENSORS_BYTES'
