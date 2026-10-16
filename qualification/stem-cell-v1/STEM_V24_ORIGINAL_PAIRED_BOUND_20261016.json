@@ -1,0 +1,101 @@
+{
+  "archived_labels_independently_reopened": false,
+  "arm_diagnostics": {
+    "bridge_equal_fusion": {
+      "changed_top1_vs_text": 26,
+      "historical_both_wrong_on_changed_predictions_inferred": 15,
+      "historical_correct_reported_by_original_reviewer": 16,
+      "historical_harms_reported": 6,
+      "historical_rescues_reported": 5,
+      "impossible_answer_oracle_pair_correct_ceiling": 22,
+      "unadjusted_exact_mcnemar": 1.0
+    },
+    "bridge_image_only": {
+      "changed_top1_vs_text": 50,
+      "historical_both_wrong_on_changed_predictions_inferred": 22,
+      "historical_correct_reported_by_original_reviewer": 21,
+      "historical_harms_reported": 12,
+      "historical_rescues_reported": 16,
+      "impossible_answer_oracle_pair_correct_ceiling": 33,
+      "unadjusted_exact_mcnemar": 0.5715881884098053
+    },
+    "calibrated_fusion": {
+      "changed_top1_vs_text": 0,
+      "historical_both_wrong_on_changed_predictions_inferred": 0,
+      "historical_correct_reported_by_original_reviewer": 17,
+      "historical_harms_reported": 0,
+      "historical_rescues_reported": 0,
+      "impossible_answer_oracle_pair_correct_ceiling": 17,
+      "unadjusted_exact_mcnemar": 1.0
+    },
+    "image_masked": {
+      "changed_top1_vs_text": 0,
+      "historical_correct_reported_by_original_reviewer": 17
+    },
+    "rotated_equal_fusion": {
+      "changed_top1_vs_text": 28,
+      "historical_both_wrong_on_changed_predictions_inferred": 16,
+      "historical_correct_reported_by_original_reviewer": 19,
+      "historical_harms_reported": 5,
+      "historical_rescues_reported": 7,
+      "impossible_answer_oracle_pair_correct_ceiling": 24,
+      "unadjusted_exact_mcnemar": 0.7744140625
+    },
+    "text_only": {
+      "changed_top1_vs_text": 0,
+      "historical_correct_reported_by_original_reviewer": 17
+    },
+    "train_gate": {
+      "changed_top1_vs_text": 38,
+      "historical_both_wrong_on_changed_predictions_inferred": 17,
+      "historical_correct_reported_by_original_reviewer": 24,
+      "historical_harms_reported": 7,
+      "historical_rescues_reported": 14,
+      "impossible_answer_oracle_pair_correct_ceiling": 31,
+      "unadjusted_exact_mcnemar": 0.18924713134765625
+    },
+    "unaligned_equal_fusion": {
+      "changed_top1_vs_text": 33,
+      "historical_both_wrong_on_changed_predictions_inferred": 16,
+      "historical_correct_reported_by_original_reviewer": 10,
+      "historical_harms_reported": 12,
+      "historical_rescues_reported": 5,
+      "impossible_answer_oracle_pair_correct_ceiling": 22,
+      "unadjusted_exact_mcnemar": 0.143463134765625
+    }
+  },
+  "authority_posture": "DENY_ALL",
+  "cases": 64,
+  "claimed_source_groups": 64,
+  "decision": "HOLD_LABELS_AND_CAUSAL_NECESSITY_UNOBSERVED",
+  "independent_future_windows": 0,
+  "model_modality_causal_necessity_established": false,
+  "new_encoder_forwards": 0,
+  "new_model_training_updates": 0,
+  "original_archive_sha256": "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30",
+  "original_commit": "b8b2f10fe38506972301e77e3836729a90200673",
+  "original_model_executed_this_run": false,
+  "original_prediction_sha256": "c91824b378357c60f6272b785233854eaa762efd8fadc421bf99b996a58dd8e4",
+  "original_source_sha256": "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202",
+  "production_authorized": false,
+  "schema": "hepta.stem.v24.historical-modality-identification-limits.v1",
+  "scientific_promotion_authorized": false,
+  "stem_winner_verified": false,
+  "text_margin_conditional_image_route": {
+    "actual_conditional_route_accuracy": null,
+    "changed_top1_after_conditional_route": 19,
+    "conditional_image_calls_planned": 21,
+    "counterfactual_encoder_calls_not_physically_executed": true,
+    "energy_joules": null,
+    "method": "text-only margin < threshold, then archived image-arm prediction; no label access",
+    "p99_ms": null,
+    "pairwise_only_bounds_reported_by_original_reviewer": {
+      "interpretation": "tight_pairwise_aggregate_identification_interval_not_measured_accuracy",
+      "maximum_consistent_correct": 33,
+      "minimum_consistent_correct": 5
+    },
+    "physical_rss_bytes": null,
+    "predeclared_margin_threshold": 0.005,
+    "text_only_decisions": 64
+  }
+}
