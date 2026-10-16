@@ -83,7 +83,12 @@ def unique(items):
 
 def parse(raw):
     def bad_constant(x): raise MissingPhysicalReceipt("nonfinite JSON "+x)
-    value=json.loads(raw,object_pairs_hook=unique,parse_constant=bad_constant)
+    def finite_float(value):
+        number=float(value)
+        need(math.isfinite(number), "nonfinite JSON exponent")
+        return number
+    value=json.loads(raw,object_pairs_hook=unique,parse_constant=bad_constant,
+                     parse_float=finite_float)
     need(type(value) is dict, "REST response object missing")
     return value
 
