@@ -29,6 +29,7 @@ struct Observed {
 struct FixturePort {
     observed: Rc<RefCell<Observed>>,
     drop_ack: bool,
+    fail_reconcile: bool,
     reject_signature: bool,
     tamper_frozen_during_preflight: Option<std::path::PathBuf>,
     tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
@@ -42,6 +43,7 @@ impl FixturePort {
         Self {
             observed,
             drop_ack: false,
+            fail_reconcile: false,
             reject_signature: false,
             tamper_frozen_during_preflight: None,
             tamper_during_live_readback: Rc::new(RefCell::new(None)),
@@ -117,6 +119,9 @@ impl CellSplitExecutionPortV1 for FixturePort {
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, Self::Error> {
+        if self.fail_reconcile {
+            return Err("original owner readback transport unavailable");
+        }
         Ok(self
             .observed
             .borrow()
@@ -385,7 +390,7 @@ fn transcript_only_reopen_must_not_reconcile_lost_ack_into_a_commit() {
             .expect("open effect owner");
         assert!(matches!(
             writer.advance(),
-            Err(CellSplitExecutionErrorV1::External(_))
+            Err(CellSplitExecutionErrorV1::Ambiguous)
         ));
         assert_eq!(state.borrow().executions, 1);
     }
@@ -432,7 +437,7 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
             CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
         assert!(matches!(
             owner.advance(),
-            Err(CellSplitExecutionErrorV1::External(_))
+            Err(CellSplitExecutionErrorV1::Ambiguous)
         ));
         assert_eq!(owner.completed_steps(), 0);
         assert_eq!(state.borrow().executions, 1);
@@ -456,6 +461,82 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
     );
     assert_eq!(state.borrow().executions, 1);
     assert_eq!(owner.completed_steps(), 1);
+}
+
+/// A transport error after the prepared frame may hide a committed effect.
+/// Neither immediate execution nor a later read-only owner RPC failure can
+/// report an ordinary external error or dispatch Execute for the same key.
+#[test]
+fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("open original writer");
+            for _ in 0..completed {
+                owner.advance().expect("original predecessor effect");
+            }
+        }
+        {
+            let mut port = FixturePort::new(state.clone());
+            port.drop_ack = true;
+            let mut owner =
+                CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                    .expect("open original writer");
+            assert!(matches!(
+                owner.advance(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert_eq!(owner.completed_steps(), completed);
+            assert_eq!(state.borrow().executions, completed + 1);
+        }
+        let prepared = root
+            .path()
+            .join(format!("cell-split-{completed:02}-prepared.json"));
+        let committed = root
+            .path()
+            .join(format!("cell-split-{completed:02}-committed.json"));
+        let frozen_bytes = fs::read(&prepared).expect("original fsynced intent");
+        {
+            let mut port = FixturePort::new(state.clone());
+            port.fail_reconcile = true;
+            let mut owner =
+                CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                    .expect("reopen original pending writer");
+            assert!(matches!(
+                owner.advance(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert!(matches!(
+                owner.verified_complete(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert_eq!(owner.completed_steps(), completed);
+            assert_eq!(state.borrow().executions, completed + 1);
+            assert_eq!(fs::read(&prepared).expect("unchanged intent"), frozen_bytes);
+            assert!(!committed.exists(), "an unknown ACK is not a commit");
+        }
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("reopen original owner for recovery");
+        let receipt = recovered
+            .advance()
+            .expect("read-only reconciliation")
+            .expect("signed original owner effect");
+        assert_eq!(receipt.intent.step.index(), completed);
+        assert_eq!(state.borrow().executions, completed + 1, "never replay Execute");
+        assert!(committed.is_file(), "only live readback can close intent");
+    }
 }
 
 #[test]
@@ -647,7 +728,7 @@ fn lost_ack_pending_intent_cannot_change_during_remote_predecessor_readback() {
             CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("reopen");
         assert!(matches!(
             owner.advance(),
-            Err(CellSplitExecutionErrorV1::External(_))
+            Err(CellSplitExecutionErrorV1::Ambiguous)
         ));
         assert_eq!(state.borrow().executions, 2);
     }
@@ -819,7 +900,7 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
                 .expect("reopen original writer");
             assert!(matches!(
                 writer.advance(),
-                Err(CellSplitExecutionErrorV1::External(_))
+                Err(CellSplitExecutionErrorV1::Ambiguous)
             ));
             let before = state.borrow().verifications;
             assert!(matches!(
