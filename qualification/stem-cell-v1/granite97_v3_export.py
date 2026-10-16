@@ -24,6 +24,8 @@ SCHEMA = "hepta.stem.granite97-token-export.v5"
 INPUT_DOMAIN = b"hepta.stem.granite97.complete-token-input.v5\0"
 MODEL_DOMAIN = b"hepta.stem.granite97.frozen-model.v5\0"
 Q24 = 1 << 24
+FEATURE_ADAPTERS = ("identity", "rational8-v1")
+RATIONAL8_DOMAIN = b"hepta.granite97.rational8-adapter.v6\0"
 
 
 def sha(data):
@@ -36,24 +38,32 @@ def canonical_json(value):
 
 
 def profile_digests(material_digest, material, *, max_tokens, torch_version,
-                    transformers_version):
+                    transformers_version, feature_adapter="identity"):
     """Opaque, immutable identities; all output-affecting profiles are included."""
     if not 1 <= max_tokens <= 256:
         raise ValueError("token ceiling outside V3")
+    if feature_adapter not in FEATURE_ADAPTERS:
+        raise ValueError("unregistered original feature adapter")
     tokenizer_files = {key: material["sha256"][key] for key in FILES
                        if "token" in key or key == "special_tokens_map.json"}
+    preprocessing = dict(
+        max_tokens=max_tokens, truncation=False, add_special_tokens=True,
+        padding=False, precision="fp32", attention="eager",
+        output="last_hidden_state", tokenizer=tokenizer_files,
+        torch_version=torch_version, transformers_version=transformers_version,
+        model_config_sha256=material["sha256"]["config.json"])
+    if feature_adapter == "rational8-v1":
+        # Versioned, mathematically explicit transform: 8*x/(8+abs(x)).
+        # Identity V5 stays byte-identical and still rejects original |x|>8.
+        preprocessing["feature_adapter"] = feature_adapter
     return dict(
         encoder_digest=sha(MODEL_DOMAIN + bytes.fromhex(material_digest)),
         tokenizer_digest=sha(b"hepta.granite97.tokenizer.v5\0" + canonical_json(tokenizer_files)),
         normalizer_digest=sha(b"hepta.granite97.identity-normalizer.v5"),
         quantization_digest=sha(b"hepta.granite97.fp32-q24-ties-even.v5"),
-        preprocessing_digest=sha(b"hepta.granite97.preprocessing.v5\0" + canonical_json(dict(
-            max_tokens=max_tokens, truncation=False, add_special_tokens=True,
-            padding=False, precision="fp32", attention="eager",
-            output="last_hidden_state", tokenizer=tokenizer_files,
-            torch_version=torch_version, transformers_version=transformers_version,
-            model_config_sha256=material["sha256"]["config.json"]))),
-        adapter_digest=sha(b"hepta.granite97.identity-adapter.v5"),
+        preprocessing_digest=sha(b"hepta.granite97.preprocessing.v5\0" + canonical_json(preprocessing)),
+        adapter_digest=sha(b"hepta.granite97.identity-adapter.v5"
+                           if feature_adapter == "identity" else RATIONAL8_DOMAIN),
     )
 
 
@@ -114,8 +124,15 @@ def complete_input_digest(original, ids, mask):
     return sha(stream)
 
 
-def quantize_rows(rows, mask):
-    """No clipping or token dropping. Reject NaN, Inf and |feature| > 8."""
+def quantize_rows(rows, mask, *, feature_adapter="identity"):
+    """Q24 ties-even. Legacy identity refuses |x|>8; rational8 is opt-in.
+
+    Rational8 is a bounded, continuous, monotone representation transform,
+    not truncation/clipping or a claim that raw token values are preserved.
+    Its new adapter/preprocessing digests prevent same-identity cache reuse.
+    """
+    if feature_adapter not in FEATURE_ADAPTERS:
+        raise ValueError("unregistered feature adapter")
     if (not isinstance(rows, (list, tuple)) or not 1 <= len(rows) <= 256
             or len(rows) != len(mask)):
         raise ValueError("invalid token row count")
@@ -127,9 +144,16 @@ def quantize_rows(rows, mask):
             raise ValueError("nonbinary token mask")
         for value in features:
             v = float(value)
-            if not math.isfinite(v) or abs(v) > 8:
-                raise ValueError("nonfinite/out-of-range physical feature")
+            if not math.isfinite(v):
+                raise ValueError("nonfinite physical feature")
+            if feature_adapter == "identity":
+                if abs(v) > 8:
+                    raise ValueError("nonfinite/out-of-range physical feature")
+            else:
+                v = (8.0 * v) / (8.0 + abs(v))
             q = round(v * Q24)
+            if not -(8 * Q24) <= q <= (8 * Q24):
+                raise ValueError("noncanonical bounded Q24 feature")
             if keep == 0 and q != 0:
                 raise ValueError("noncanonical padded feature row")
             output.append(q)
@@ -140,7 +164,8 @@ def quantize_rows(rows, mask):
 
 def build_record(original, token_ids, mask, hidden, identity, material_digest,
                  expires_at_ms, forward_cpu_ns, forward_wall_ns, *,
-                 principal_id, purpose_id, generation, authority_epoch):
+                 principal_id, purpose_id, generation, authority_epoch,
+                 feature_adapter="identity"):
     if type(expires_at_ms) is not int or expires_at_ms <= 0:
         raise ValueError("positive expiry required")
     if any(type(x) is not int or x <= 0 for x in (forward_cpu_ns, forward_wall_ns)):
@@ -158,7 +183,7 @@ def build_record(original, token_ids, mask, hidden, identity, material_digest,
                 material_digest=material_digest, source_sha256=sha(original),
                 input_digest=input_digest, input_ids=list(token_ids),
                 attention_mask=list(mask), width=384,
-                values_q24=quantize_rows(hidden, mask),
+                values_q24=quantize_rows(hidden, mask, feature_adapter=feature_adapter),
                 expires_at_ms=expires_at_ms, encoder_forwards=1,
                 encoder_cpu_ns=forward_cpu_ns, encoder_wall_ns=forward_wall_ns,
                 **identity)
@@ -185,7 +210,7 @@ def check_loaded_tensors(torch, model, model_path):
 
 def physical_export(root, original, *, max_tokens, expires_at_ms,
                     principal_id, purpose_id, generation, authority_epoch,
-                    expected_material_digest):
+                    expected_material_digest, feature_adapter="identity"):
     import torch
     import transformers
     from transformers import AutoConfig, AutoModel, AutoTokenizer
@@ -196,7 +221,8 @@ def physical_export(root, original, *, max_tokens, expires_at_ms,
         raise ValueError("pretrained material differs from independent pinned manifest")
     identities = profile_digests(
         material_digest, material, max_tokens=max_tokens,
-        torch_version=torch.__version__, transformers_version=transformers.__version__)
+        torch_version=torch.__version__, transformers_version=transformers.__version__,
+        feature_adapter=feature_adapter)
     config = AutoConfig.from_pretrained(str(root), local_files_only=True,
                                         trust_remote_code=False)
     if config.model_type != "modernbert" or config.hidden_size != 384:
@@ -244,7 +270,8 @@ def physical_export(root, original, *, max_tokens, expires_at_ms,
                         identities, material_digest, expires_at_ms,
                         forward_cpu, forward_wall,
                         principal_id=principal_id, purpose_id=purpose_id,
-                        generation=generation, authority_epoch=authority_epoch)
+                        generation=generation, authority_epoch=authority_epoch,
+                        feature_adapter=feature_adapter)
 
 
 def main():
@@ -256,6 +283,7 @@ def main():
     cli.add_argument("--output", required=True)
     cli.add_argument("--expires-at-ms", required=True, type=int)
     cli.add_argument("--max-tokens", type=int, default=192)
+    cli.add_argument("--feature-adapter", choices=FEATURE_ADAPTERS, default="identity")
     cli.add_argument("--principal-id", required=True)
     cli.add_argument("--purpose-id", required=True)
     cli.add_argument("--generation", required=True, type=int)
@@ -277,7 +305,8 @@ def main():
                              purpose_id=args.purpose_id,
                              generation=args.generation,
                              authority_epoch=args.authority_epoch,
-                             expected_material_digest=args.expected_material_sha256)
+                             expected_material_digest=args.expected_material_sha256,
+                             feature_adapter=args.feature_adapter)
     payload = canonical_json(record) + b"\n"
     if len(payload) > 2_500_000:
         raise SystemExit("export size exceeds Rust admission bound")
