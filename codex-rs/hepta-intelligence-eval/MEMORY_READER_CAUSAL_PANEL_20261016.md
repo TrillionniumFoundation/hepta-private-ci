@@ -27,7 +27,7 @@ This locally demonstrates **separate processes and input files**, not a separate
 - Postseal model review SHA-256: `fbc1ab204019caa22e67cd857fc9edb4294584aeaac59b1b1c90b99a83f80dbf`.
 - Common-denominator paired review SHA-256: `316a1448bcc536489831b6a5e895da6f1853860997bcc1b972ea51e6b88ec0c0`.
 
-| Arm | Conditional scorable questions | Conditional mean diagnostic Token-F1 | Real summed Reader CPU model seconds |
+| Arm | Conditional scorable questions | Conditional mean diagnostic Token-F1 | Summed per-request model wall seconds (CPU host) |
 |---|---:|---:|---:|
 | Empty | 15 | 0.046318 | 40.3561 |
 | BM25 | 15 | 0.038982 | 86.4647 |
