@@ -164,51 +164,79 @@ performs hardware effects, activates NDU, changes production model selection or
 bypasses `blocking-ci`.
 
 
-## V4: independent retrospective public-source and original-prediction recount
+## V4 independent historical public-label scoring (no new model claims)
 
-The old historical ZIP contains physically learned CellBank weights and all original
-prediction logits, **but not raw publisher TEST labels**. The new read-only
-\`public_source_recount.py\` requires the original pinned BANKING77 train/test CSV
-bytes, reconstructs the full 64-FIT/32-HELD case identities with the unchanged
-source selection convention, then independently scores all original *before*
-and *after* logits. It rejects ambiguous CSV, unexpected bytes, duplicate
-or changed case identity, incomplete predictions, nonfinite logits and drift
-from the archived accuracy/NLL/Brier/per-class metric census.
+The original GitHub Actions ZIP has no raw BANKING77 test-label CSV, so the
+existing ZIP-only `original_canary_audit.py` correctly reports that it **cannot**
+independently score the reported accuracies. The new *separate*
+`public_source_recount.py` explicitly obtains the **original fixed publisher**
+train/test CSV bytes at commit `57ec275d8078af65b7731c2a98be812d844a6d6b`,
+requires exact SHA-256 for both files, independently reconstructs original
+case selection/normalization and IDs, and scores the **unaltered** archival
+per-case logits (both before and after training). It checks accuracy, NLL,
+multiclass Brier and per-class accuracy against the old report and fails closed
+on any discrepancy, missing prediction, source mismatch or numerical error.
+This retrospective scorer is an audit process, **not** an Encoder/Head worker;
+no raw publisher CSV, test labels, or selected source text are committed or
+uploaded with the new HDCF model-training artifacts. It outputs aggregate
+measures only.
 
-Fixed publisher Git revision:
-\`57ec275d8078af65b7731c2a98be812d844a6d6b\`.
-Verified source SHA-256: train
-\`b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b\`;
-test \`d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d\`.
+Run against original files in an isolated review environment:
 
-The historical retained results reconstructed from the fixed original CSV,
-selected IDs and archived prediction logits are:
-- Dense16: before 8/32, after **23/32**; final mean NLL
-  0.6915541568258448; multiclass Brier 0.3820432498685225.
-- Sparse16 Top-2: before 9/32, after **17/32**; final mean NLL
-  1.0150894535640618; multiclass Brier 0.5770228329211649.
-
-Reproduce separately from any model-training job:
-
-\`\`\`sh
+```sh
 python3 public_source_recount.py \
-  --train /private/pinned-source/train.csv \
-  --test /private/pinned-source/test.csv \
-  --archive /private/original-11877613315.zip \
-  --out /private/new-original-recount.json
-\`\`\`
+  --train /private/verified-original/train.csv \
+  --test /private/verified-original/test.csv \
+  --archive /private/11877613315.zip \
+  --out /new/independent-historical-review.json
+```
 
-The source-only regressions use synthetic fixtures and reject unpinned originals.
-The original-byte workflow obtains both exact publisher CSVs at the immutable
-revision, verifies each SHA-256 and writes only **aggregated** historical
-scores, never raw CSVs, TEXT, or held-label mappings, to the diagnostic artifact.
-Importantly, this new historical reviewer **does consume the TRAIN CSV** to
-reconstruct source exclusions; that does not make it an appropriate model
-worker or a fresh independent future-label custodian.
+Verified original public source SHA-256: train
+`b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b`,
+test `d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d`.
+The historic 32 heldout case IDs were reconstructed from the actual published
+CSV bytes and matched one by one to the exact source-selected IDs from the
+archived producer. Recomputing metrics directly from the archive predicts:
 
-This is **retrospective same-dataset public model evidence**. Reconstructing the
-32 original labels now closes the old ZIP-only accuracy-recount deficiency;
-it does **not** grant original model publisher signature authenticity,
-source-family independence, prospective new task efficacy, HDCF V3 five-arm
-benefit, NDU/System2 reasoning advantage, complete service TCO, Cell Split,
-FinalUse, GPU execution or any native computer-use authority.
+| Historical arm | Before | After | After mean NLL | After multiclass Brier |
+| --- | ---: | ---: | ---: | ---: |
+| Dense16 | 8/32 | 23/32 | 0.6915541568258448 | 0.3820432498685225 |
+| Sparse Top-2 | 9/32 | 17/32 | 1.0150894535640618 | 0.5770228329211649 |
+
+These numbers are **historical retrospective on the same public dataset**;
+there is one publisher/family and no prospective future source. They do not
+establish independent model publishing/signatures, real HDCF V3 five-arm benefit,
+production eligibility, head-selection advantage at matched total cost, or
+NDU/System2 effectiveness. The exact-source GitHub Actions job executes the
+full raw-CSV-to-archived-prediction verification on current research source.
+
+## V5 independently replayed physical Head updates and source-preflight fence
+
+`independent_head_replay.py` is a separate scalar implementation of the
+existing original five-arm mathematical training procedure. It receives only
+one immutable, source-identified feature bundle, the producer's terminal trial
+JSON and an **externally preregistered** `{steps=256, seed=7347, lr=0.05}`
+training profile. It independently reconstructs actual float64 initial weights,
+training example order, each scalar SGD update, final physical parameter bytes
+and all 160 held-case probabilities. A changed parameter digest, wrong example,
+forged prediction, altered budget, inconsistent train CPU counters or missing
+arm is rejected. The `independent-blind-review` task now requires this replay
+**before** releasing blind aggregate scores. The sample replay itself does not
+authenticate original model features, physical host, process duration, end-to-end
+cost or future-task generalization.
+
+The original pretrained Bridge also verifies the immutable historical
+BANKING77 selection ID `95dc97bd0700165b431d140e77c35500713bc95dd3f6c31b6dabb9e021d26fad`
+and original train/test CSV SHA, recomputes the original input content digest,
+and verifies both binary labels are represented in each preregistered Cell type.
+For the **real CLI only**, these checks reject wrong source bytes before actual
+model work; mock tests retain an explicitly non-authorizing source seam. This
+preflight never searches for a better source partition or retunes Cell routing.
+
+Local regression scope (not a GitHub workflow-pass claim): the 52 available V3/V4/V5
+CPU/bridge/archive tests passed normally and with Python `-O`, including the
+original pinned 2.9 MiB archive without skips when its environment path was
+supplied. The first V1 `test_hdcf_gates.py` suite is a separate retained CI
+source test and was not mounted in this isolated local checkout. Hosted
+exact-head HDCF, source-plus-merge architecture, and blocking CI must all
+complete before scoped source qualification. Production stays **DENY_ALL**.

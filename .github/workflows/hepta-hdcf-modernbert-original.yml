@@ -33,8 +33,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile *.py
-          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount
-          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay
       - name: Fetch only original artifact 11877613315 and independently byte-recount it
         env:
           GH_TOKEN: ${{ github.token }}
@@ -241,6 +241,23 @@ jobs:
             --features "$RUNNER_TEMP/frozen/features.json" \
             --feature-receipt "$RUNNER_TEMP/frozen/feature-receipt.json" \
             --trial "$RUNNER_TEMP/trial/trial.json" --out "$RUNNER_TEMP/review.json"
+      - name: Assert deterministic Head replay, without claiming full model TCO
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          record=json.loads((Path(os.environ['RUNNER_TEMP'])/'review.json').read_text())
+          replay=record['independent_head_sgd_replay']
+          assert replay['original_prediction_rows_replayed']==160
+          assert len(replay['original_trained_weights_recomputed'])==5
+          assert replay['independent_model_source_authenticated'] is False
+          assert replay['actual_cpu_time_independently_verified'] is False
+          assert replay['production_authorized'] is False
+          assert record['production_authorized'] is False
+          print({'replayed':replay['original_prediction_rows_replayed'],
+                 'trial':replay['trial_identity'],'production_authorized':False})
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: hdcf-original-modernbert-blind-review

@@ -83,12 +83,26 @@ class OriginalBridgeTests(unittest.TestCase):
         self.assertFalse(any('text' in row for row in self.priv['targets']))
 
     def test_mock_review_structural_contract_does_not_claim_real_model(self):
-        review=review_original(self.pub,self.priv,self.bundle,self.receipt,self.trial)
+        review=review_original(self.pub,self.priv,self.bundle,self.receipt,self.trial,expected_steps=24)
         self.assertEqual(review['observed_encoder_forward_calls'],96)
         self.assertFalse(review['pretrained_publisher_signature_independently_verified'])
         self.assertFalse(review['out_of_publisher_future_window_verified'])
         self.assertFalse(review['production_authorized'])
         self.assertEqual(set(review['score']['results']), {'frozen','shared_dense','shared_one_touch','split','swapped'})
+
+    def test_unsigned_input_and_source_identity_cannot_claim_exact_public_pretraining(self):
+        # A synthetic mock is internally well-formed, but is not the original
+        # publisher-selected 96-case sample and must fail pinned admission.
+        with self.assertRaisesRegex(Denied,'exact archived'):
+            validate_public(self.pub,exact_original_source=True)
+        changed=copy.deepcopy(self.pub)
+        changed['fit'][0]['text']='swapped source text'
+        with self.assertRaisesRegex(Denied,'content-to-input'):
+            validate_public(changed)
+        another=copy.deepcopy(self.pub)
+        another['source_material_sha256']={'train':'c'*64,'test':'d'*64}
+        with self.assertRaisesRegex(Denied,'exact archived'):
+            validate_public(another,exact_original_source=True)
 
     def test_original_held_label_cannot_enter_public_feature_input(self):
         bad=copy.deepcopy(self.pub)
@@ -115,20 +129,35 @@ class OriginalBridgeTests(unittest.TestCase):
                           ('feature_bundle_digest','b'*64),('held_labels_loaded_in_encoder_producer',True)]:
             r=copy.deepcopy(self.receipt);r[key]=value
             with self.subTest(key=key),self.assertRaises(Denied):
-                review_original(self.pub,self.priv,self.bundle,r,self.trial)
+                review_original(self.pub,self.priv,self.bundle,r,self.trial,expected_steps=24)
+
+    def test_forged_head_predictions_or_training_cost_denied(self):
+        for which in ("prediction", "cost", "weights", "budget"):
+            trial=copy.deepcopy(self.trial)
+            params={"expected_steps":24}
+            if which=="prediction":
+                trial["predictions"]["split"][0]["p1"]+=.025
+            elif which=="cost":
+                trial["arms"]["shared_one_touch"]["estimated_parameter_touches"]-=1
+            elif which=="weights":
+                trial["arms"]["split"]["weights_digest"]="f"*64
+            else:
+                params["expected_steps"]=23
+            with self.subTest(which=which),self.assertRaises(Denied):
+                review_original(self.pub,self.priv,self.bundle,self.receipt,trial,**params)
 
     def test_swapped_private_type_denied(self):
         p=copy.deepcopy(self.priv);p['targets'][0]['type']='evil'
         with self.assertRaises(Denied):
-            review_original(self.pub,p,self.bundle,self.receipt,self.trial)
+            review_original(self.pub,p,self.bundle,self.receipt,self.trial,expected_steps=24)
 
     def test_missing_label_row_and_bundle_drift_denied(self):
         p=copy.deepcopy(self.priv);p['targets'].pop()
         with self.assertRaises(Denied):
-            review_original(self.pub,p,self.bundle,self.receipt,self.trial)
+            review_original(self.pub,p,self.bundle,self.receipt,self.trial,expected_steps=24)
         bundle=copy.deepcopy(self.bundle);bundle['held'][0]['vector'][0]+=0.01
         with self.assertRaises(Denied):
-            review_original(self.pub,self.priv,bundle,self.receipt,self.trial)
+            review_original(self.pub,self.priv,bundle,self.receipt,self.trial,expected_steps=24)
 
 
 if __name__=='__main__':
@@ -169,7 +198,7 @@ class MockPhysicalEncoderMechanics(unittest.TestCase):
         self.assertEqual(bundle['dimension'],4)
         self.assertFalse(any('target' in row for row in bundle['held']))
         t=train(bundle,steps=16)
-        r=review_original(pub,priv,bundle,receipt,t)
+        r=review_original(pub,priv,bundle,receipt,t,expected_steps=16)
         self.assertEqual(set(r['score']['results']), {'frozen','shared_dense','shared_one_touch','split','swapped'})
         self.assertFalse(r['production_authorized'])
 

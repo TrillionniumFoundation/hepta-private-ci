@@ -32,9 +32,9 @@ jobs:
         working-directory: qualification/hdcf-research
         run: |
           set -euo pipefail
-          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py public_source_recount.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
-          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount
-          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount
+          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py public_source_recount.py independent_head_replay.py test_independent_head_replay.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount test_independent_head_replay
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount test_independent_head_replay
       - name: Recount local synthetic original learning controls
         working-directory: qualification/hdcf-research
         run: |
@@ -42,9 +42,12 @@ jobs:
           python3 - <<'PY'
           from test_physical_bank import original
           from physical_bank import train, score
+          from independent_head_replay import audit_head_replay
           b, held = original()
           trial = train(b)
           blind = score(trial, held)
+          replay = audit_head_replay(b, trial)
+          assert replay["original_prediction_rows_replayed"] == 160
           assert trial['production_authorized'] is False
           assert trial['encoder_forward_count'] == 0
           assert trial['pretrained_model_provenance_verified'] is False

@@ -21,11 +21,17 @@ from typing import Any
 
 from physical_bank import SCHEMA, Denied, digest, train, score, validate_bundle
 from physical_cli import read_document, write_once
+from independent_head_replay import audit_head_replay
 
 ORIGINAL_CODE_SHA = '758205d3de23ccbf76649b1446c271101dc917b0'
 ORIGINAL_SOURCE = '57ec275d8078af65b7731c2a98be812d844a6d6b'
 ORIGINAL_MODEL = '8949b909ec900327062f0ebf497f51aef5e6f0c8'
 ORIGINAL_MODEL_SNAPSHOT = '43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d'
+ORIGINAL_SELECTED_INPUT_ID = '95dc97bd0700165b431d140e77c35500713bc95dd3f6c31b6dabb9e021d26fad'
+ORIGINAL_CSV_SHA256 = {
+    'train': 'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+    'test': 'd12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d',
+}
 INTENTS = ('card_arrival','cash_withdrawal_not_recognised','exchange_rate','lost_or_stolen_phone')
 PUBLIC_SCHEMA = 'hepta.hdcf.banking77-public-inputs.v1'
 BLIND_SCHEMA = 'hepta.hdcf.banking77-blind-targets.v1'
@@ -120,7 +126,7 @@ def stage_original(inputs, observer, selection):
     return pub, priv
 
 
-def validate_public(pub):
+def validate_public(pub, *, exact_original_source=False):
     _require(type(pub) is dict and set(pub)=={'schema','input_id','source_revision','original_code_sha',
              'source_material_sha256','stage_digest','intents','fit','heldout',
              'cell_type_method','source_family_independence_verified','production_authorized'} and
@@ -144,6 +150,23 @@ def validate_public(pub):
             if split=='fit':
                 _require(type(row['label']) is int and 0<=row['label']<4, 'unvalidated fit label')
     _require(len(seen)==96,'source-count mismatch')
+    # Recompute public source identity from every original input byte and label.
+    # This does not authorize a publisher or make an unsigned SHA a signature.
+    original_input={'schema':'hepta.banking77-four-intent-inputs.v1',
+                    'intents':pub['intents'], 'fit':pub['fit'], 'heldout':pub['heldout']}
+    _require(_original_digest(original_input)==pub['input_id'],
+             'original content-to-input identity mismatch')
+    counts={t:{0:0,1:0} for t in ('hash0','hash1')}
+    for row in pub['fit']:
+        counts[_cell_type(row['id'])][row['label']%2]+=1
+    _require(all(counts[t][y] for t in counts for y in (0,1)),
+             'unsupported Cell-type and label train combinations')
+    held_type={_cell_type(r['id']) for r in pub['heldout']}
+    _require(held_type=={'hash0','hash1'},'missing held Cell-type population')
+    if exact_original_source:
+        _require(pub['input_id']==ORIGINAL_SELECTED_INPUT_ID and
+                 pub['source_material_sha256']==ORIGINAL_CSV_SHA256,
+                 'public data does not equal exact archived immutable source')
 
 
 def _source_checkout(upstream_root: str):
@@ -187,14 +210,14 @@ def _feature_vector(backend, row):
     return out,length
 
 
-def produce_original(pub, backend, *, clock=time):
+def produce_original(pub, backend, *, clock=time, exact_original_source=False):
     """Execute physically loaded pinned Encoder under an independent producer.
 
     `backend` is a test seam; only CLI's pinned LocalHFEncoder supplies real
     runtime receipts. This function does not authenticate a caller-supplied
     backend and must never be used as an independent model witness.
     """
-    validate_public(pub)
+    validate_public(pub, exact_original_source=exact_original_source)
     _require(type(backend.dimension) is int and 1<=backend.dimension<=1024 and
              type(backend.calls) is int and backend.calls==0, 'bad physical producer state')
     _require(backend.receipt['snapshot_sha256']==ORIGINAL_MODEL_SNAPSHOT and
@@ -242,8 +265,8 @@ def produce_original(pub, backend, *, clock=time):
     return out,receipt
 
 
-def review_original(pub, priv, bundle, receipt, trial):
-    validate_public(pub)
+def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, expected_seed=7347, expected_lr=0.05, exact_original_source=False):
+    validate_public(pub, exact_original_source=exact_original_source)
     _require(type(priv) is dict and set(priv)=={'schema','input_id','source_revision','stage_digest',
              'source_material_sha256','original_code_sha','public_content_digest','targets','original_four_class_labels_not_exported',
              'binary_target_definition','production_authorized'} and
@@ -295,6 +318,7 @@ def review_original(pub, priv, bundle, receipt, trial):
              'blind label target/type/identity mismatch')
     targets={'schema':'hepta.hdcf.blind-targets.v1','bundle_digest':digest(bundle),
              'targets':priv['targets']}
+    replay=audit_head_replay(bundle,trial,steps=expected_steps,seed=expected_seed,lr=expected_lr)
     verified=score(trial,targets)
     return {'schema':'hepta.hdcf.original-pretrained-head-review.v1',
             'source_stage_digest':pub['stage_digest'], 'real_feature_receipt_digest':digest(receipt),
@@ -303,6 +327,7 @@ def review_original(pub, priv, bundle, receipt, trial):
             'observed_encoder_forward_calls':96,
             'head_training_measured_separately':True,
             'score':verified,
+            'independent_head_sgd_replay':replay,
             'pretrained_publisher_signature_independently_verified':False,
             'original_labels_independent_of_public_source':False,
             'out_of_publisher_future_window_verified':False,
@@ -333,6 +358,7 @@ def main():
             inputs,observer,selection=prepare((data/'banking_data/train.csv').read_bytes(),
                                                (data/'banking_data/test.csv').read_bytes())
             pub,priv=stage_original(inputs,observer,selection)
+            validate_public(pub, exact_original_source=True)
             write_once(args.out_public,pub);write_once(args.out_private,priv)
         elif args.cmd=='produce':
             _source_checkout(args.upstream_checkout)
@@ -348,11 +374,11 @@ def main():
                  'encoder_profile':ENCODER_PROFILE, 'upstream_revision':ORIGINAL_MODEL,
                  'material_approval_sha256':None}
             backend=LocalHFEncoder(model_dir,cfg,{'stem':'smaller_control'})
-            bundle,receipt=produce_original(read_document(args.public),backend)
+            bundle,receipt=produce_original(read_document(args.public),backend,exact_original_source=True)
             write_once(args.out_features,bundle);write_once(args.out_receipt,receipt)
         else:
             out=review_original(read_document(args.public),read_document(args.private),
-                 read_document(args.features),read_document(args.feature_receipt),read_document(args.trial))
+                 read_document(args.features),read_document(args.feature_receipt),read_document(args.trial),exact_original_source=True)
             write_once(args.out,out)
     except (Denied,OSError,ValueError) as exc:
         ap.exit(2,f'DENY_ALL: {type(exc).__name__}: {exc}\n')
