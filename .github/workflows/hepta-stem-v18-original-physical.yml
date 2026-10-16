@@ -1,0 +1,152 @@
+name: hepta-stem-v18-original-physical
+on:
+  push:
+    branches:
+      - research/stem-learning-investment-v18-20261016
+    paths:
+      - qualification/stem-cell-v1/v18_original_feature_paired.py
+      - qualification/stem-cell-v1/v18_original_independent_review.py
+      - qualification/stem-cell-v1/test_v18_original_feature_paired.py
+      - qualification/stem-cell-v1/test_v18_original_independent_review.py
+      - qualification/stem-cell-v1/v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_workflow_security.py
+      - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
+      - .github/workflows/hepta-stem-v18-original-physical.yml
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/v18_original_feature_paired.py
+      - qualification/stem-cell-v1/v18_original_independent_review.py
+      - qualification/stem-cell-v1/v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_original_feature_paired.py
+      - qualification/stem-cell-v1/test_v18_original_independent_review.py
+      - qualification/stem-cell-v1/test_v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_workflow_security.py
+      - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
+      - .github/workflows/hepta-stem-v18-original-physical.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-physical-research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact event HEAD
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded CPU research dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Source-only zero-delta and negative conformance
+        run: |
+          set -euo pipefail
+          cd qualification/stem-cell-v1
+          python -m unittest -q test_v18_original_feature_paired
+          python -O -m unittest -q test_v18_original_feature_paired
+          python -m unittest -q test_v18_paired_damage
+          python -O -m unittest -q test_v18_paired_damage
+          python -m unittest -q test_v18_workflow_security
+          python -O -m unittest -q test_v18_workflow_security
+      - name: Acquire exact original public pretrained archive and run physical A/B
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          # Authenticated API call must NOT forward GH_TOKEN to the cross-host
+          # pre-signed artifact URL. Fetch and parse exactly one HTTPS redirect.
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' \
+            --max-redirs 0 \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$work/github-redirect.headers" \
+            --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          if [ "$status" != '302' ]; then
+            echo 'GitHub original artifact requires exactly one redirect' >&2
+            exit 1
+          fi
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/github-redirect.headers" | tr -d '\r')"
+          case "$location" in
+            https://*) ;;
+            *) echo 'Original artifact redirect must be HTTPS' >&2; exit 1 ;;
+          esac
+          # This second request deliberately has NO Authorization header.
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' \
+            --output "$work/original.zip" "$location"
+          unset location
+          printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' "$work/original.zip" | sha256sum -c -
+          python qualification/stem-cell-v1/stem_counterfactual_split_v14.py prepare \
+            --archive "$work/original.zip" --out "$work/inputs" --labels-out "$work/held-gold.json"
+          rm -- "$work/held-gold.json"
+          cd qualification/stem-cell-v1
+          python v18_original_feature_paired.py --inputs "$work/inputs" \
+            --output "$work/physical-A.json" --private-logits "$work/private-A.json"
+          python v18_original_independent_review.py --archive "$work/original.zip" \
+            --report "$work/physical-A.json" --private-logits "$work/private-A.json" \
+            --output "$work/review-A.json"
+          python v18_paired_damage.py --archive "$work/original.zip" \
+            --physical "$work/physical-A.json" --private-logits "$work/private-A.json" \
+            --output "$work/damage-A.json"
+          HEPTA_V18_ORIGINAL_ZIP="$work/original.zip" \
+            HEPTA_V18_ORIGINAL_REPORT="$work/physical-A.json" \
+            HEPTA_V18_ORIGINAL_PRIVATE_LOGITS="$work/private-A.json" \
+            python -m unittest -q test_v18_original_independent_review
+          python -O v18_original_feature_paired.py --inputs "$work/inputs" \
+            --output "$work/physical-B.json" --private-logits "$work/private-B.json"
+          python -O v18_original_independent_review.py --archive "$work/original.zip" \
+            --report "$work/physical-B.json" --private-logits "$work/private-B.json" \
+            --output "$work/review-B.json"
+          python -O v18_paired_damage.py --archive "$work/original.zip" \
+            --physical "$work/physical-B.json" --private-logits "$work/private-B.json" \
+            --output "$work/damage-B.json"
+          HEPTA_V18_ORIGINAL_ZIP="$work/original.zip" \
+            HEPTA_V18_ORIGINAL_REPORT="$work/physical-B.json" \
+            HEPTA_V18_ORIGINAL_PRIVATE_LOGITS="$work/private-B.json" \
+            python -O -m unittest -q test_v18_original_independent_review
+          python - "$work/physical-A.json" "$work/physical-B.json" "$work/damage-A.json" "$work/damage-B.json" <<'PY'
+          import json, sys
+          a, b, da, db = [json.load(open(path, encoding="utf-8")) for path in sys.argv[1:]]
+          if len(a["seeds"]) != len(b["seeds"]) or len(a["seeds"]) != 3:
+              raise SystemExit("incomplete genuine original seeds")
+          for old, new in zip(a["seeds"], b["seeds"]):
+              if old["seed"] != new["seed"] or set(old["arms"]) != set(new["arms"]):
+                  raise SystemExit("seed/arm provenance drift")
+              for arm in old["arms"]:
+                  if old["arms"][arm]["logit_sha256"] != new["arms"][arm]["logit_sha256"]:
+                      raise SystemExit("pretrained-feature output digest mismatch")
+                  if old["arms"][arm]["metrics"] != new["arms"][arm]["metrics"]:
+                      raise SystemExit("scored original metric mismatch")
+          if a["decision"] != b["decision"] or a["decision"] != "DENY_ALL_HISTORICAL_CALIBRATION_ONLY":
+              raise SystemExit("false model-selection authority")
+          if da["decision"] != db["decision"] or da["decision"] != "NO_INVEST_FROM_EXPOSED_HISTORICAL_CALIBRATION":
+              raise SystemExit("false specialization authority")
+          for seed in ("41", "47", "53"):
+              for arm in ("linear", "gated_residual", "continued_single", "split_router"):
+                  one = da["per_seed_paired_damage"][seed][arm]
+                  two = db["per_seed_paired_damage"][seed][arm]
+                  fields = ("cases", "rescued_baseline_errors", "damaged_baseline_correct",
+                            "net_correct_change", "mean_brier_delta_candidate_minus_baseline",
+                            "historical_gate_would_pass")
+                  if any(one[field] != two[field] for field in fields):
+                      raise SystemExit("original paired damage is nonreproducible")
+          print("15/15 original outputs and paired damage match; research DENY_ALL")
+          PY
+          # Never publish private logits, original text, source labels or learned weights.
