@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.stem.v19.sanitized-observation.v1",
+  "source_commit": "4133d6ac5bd3f8d4200c56fffb09e6aba004a084",
+  "original_artifact_id": 11890616195,
+  "original_archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "original_pretrained_feature_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+  "original_prepared_input_sha256": "d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a",
+  "original_aggregated_local_result_sha256": "6b82582a62d8884ccab0474e4a92dd19b754518690a03963b0ad600748a1cbeb",
+  "original_independent_numpy_review_sha256": "a22dab7be3af4a5791798a81d4ed3225c2bb7a35d421eb247d59dd97398b82bb",
+  "source_family_count": 1,
+  "prospective_time_window_count": 0,
+  "training_cases": 64,
+  "historical_exposed_calibration_cases": 32,
+  "blind_unscored_cases": 32,
+  "feature_shape": [
+    128,
+    384
+  ],
+  "encoder_forwards_in_continuation": 0,
+  "registered_budgets": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    80
+  ],
+  "selection_rule": "TRAIN_ONLY_OOF_MIN_PLUS_0.02_SMALLEST",
+  "fold_count": 4,
+  "seed_count": 3,
+  "optimizer_steps_total_paid": 1200,
+  "exact_reproducible_model_forward_records": 105,
+  "source_only_tests_per_mode": 11,
+  "original_material_adversarial_tests_per_mode": 11,
+  "executed_tests_both_modes": 44,
+  "per_seed": [
+    {
+      "seed": 41,
+      "chosen_budget": 8,
+      "oof_chosen": {
+        "correct": 46,
+        "denominator": 64,
+        "brier": 0.430970371
+      },
+      "oof_80": {
+        "correct": 43,
+        "denominator": 64,
+        "brier": 0.443348914
+      },
+      "historical_cal_chosen": {
+        "correct": 21,
+        "denominator": 32,
+        "brier": 0.44724384
+      },
+      "historical_cal_80": {
+        "correct": 24,
+        "denominator": 32,
+        "brier": 0.437979549
+      }
+    },
+    {
+      "seed": 47,
+      "chosen_budget": 4,
+      "oof_chosen": {
+        "correct": 45,
+        "denominator": 64,
+        "brier": 0.418765128
+      },
+      "oof_80": {
+        "correct": 48,
+        "denominator": 64,
+        "brier": 0.422627389
+      },
+      "historical_cal_chosen": {
+        "correct": 25,
+        "denominator": 32,
+        "brier": 0.323841542
+      },
+      "historical_cal_80": {
+        "correct": 24,
+        "denominator": 32,
+        "brier": 0.434067607
+      }
+    },
+    {
+      "seed": 53,
+      "chosen_budget": 8,
+      "oof_chosen": {
+        "correct": 44,
+        "denominator": 64,
+        "brier": 0.5053491
+      },
+      "oof_80": {
+        "correct": 43,
+        "denominator": 64,
+        "brier": 0.510515094
+      },
+      "historical_cal_chosen": {
+        "correct": 27,
+        "denominator": 32,
+        "brier": 0.266172022
+      },
+      "historical_cal_80": {
+        "correct": 24,
+        "denominator": 32,
+        "brier": 0.437575579
+      }
+    }
+  ],
+  "model_parameters_per_head": 1540,
+  "full_lifecycle_cost_qualified": false,
+  "independent_model_host_attested": false,
+  "independent_original_label_custody": false,
+  "independent_gradients_retrained": false,
+  "production_authorized": false,
+  "model_selection_authorized": false,
+  "cell_split_authorized": false,
+  "decision": "RESEARCH_HISTORICAL_ONLY_DENY_ALL"
+}
