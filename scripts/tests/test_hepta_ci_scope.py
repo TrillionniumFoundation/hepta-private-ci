@@ -247,7 +247,7 @@ class ScopeTests(unittest.TestCase):
         self.assertIn(
             "--all-targets -- -D clippy::expect-used",
             gate,
-            "source-head must run the strict Bazel-equivalent Clippy check",
+            "native source-head must run the Bazel-rejected strict lint",
         )
         fixtures = (
             Path(__file__).resolve().parents[2]
@@ -256,7 +256,7 @@ class ScopeTests(unittest.TestCase):
         self.assertIn(
             "fn fixture_file() -> std::io::Result<(",
             fixtures,
-            "original Neuron test helpers must propagate typed errors",
+            "original Neuron helpers must propagate fixture failures",
         )
         self.assertIn(
             "fn reopen(path: &std::path::Path) -> std::io::Result<File>",
@@ -265,7 +265,7 @@ class ScopeTests(unittest.TestCase):
         self.assertNotIn(
             ".expect(",
             fixtures.split("#[test]", 1)[0],
-            "no helper-level expect_used bypass or unchecked recovery",
+            "helper-level expect-used must be removed, not waived",
         )
         self.assertIn("neuron-original-effect-non-test-deny.json", gate)
         self.assertIn("--minimum-tests 1", gate)

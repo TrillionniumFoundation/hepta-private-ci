@@ -665,9 +665,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// Even a negative answer must reauthenticate the frozen ledger and each
     /// committed original-owner effect. Otherwise an externally revoked
     /// predecessor or a corrupted pending frame could be reported as harmless
-    /// incompleteness without any live owner readback.
+    /// incompleteness without any live owner readback. A still-prepared intent
+    /// is ambiguous until the original owner is reconciled: it is never a
+    /// safe, verified false result.
     pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
         self.verify_committed_prefix()?;
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         Ok(self.is_complete())
     }
 

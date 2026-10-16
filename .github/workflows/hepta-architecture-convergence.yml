@@ -316,8 +316,8 @@ jobs:
           # compiled Neuron library and a real private-Journal denial fixture.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-original-effect-product-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib
-          # Fail early on the exact strict Clippy check seen in cross-target
-          # Bazel; original durable Neuron fixture helpers must propagate IO.
+          # Mirror strict Bazel Clippy in a native early owner gate: fixture
+          # helpers must propagate typed I/O errors, never waive expect-used.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-strict-test-fixtures-clippy.json" --minimum-tests 0 -- cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D clippy::expect-used
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-original-effect-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
       - name: Early Supervisor original-Control non-test retirement denial
@@ -366,6 +366,7 @@ jobs:
           # corruption, and dual-lock Stop ACK handoff. No signer is issued.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-original-highwater-product.json" --minimum-tests 6 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --test evidence_wal_original_highwater -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-durable-execution-owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_owner -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-verified-completion-pending.json" --minimum-tests 3 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib verified_completion -- --nocapture
           # An integration test compiles the Operator library WITHOUT cfg(test)
           # and proves the public callback-only seam cannot admit a new effect.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-public-callback-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --test cell_split_public_admission_denied -- --nocapture

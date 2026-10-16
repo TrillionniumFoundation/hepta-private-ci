@@ -796,6 +796,80 @@ fn incomplete_verified_completion_must_reject_injected_uncommitted_frame() {
 }
 
 #[test]
+fn unresolved_prepared_verified_completion_requires_reconcile() {
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut writer = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("open original effect writer");
+            for _ in 0..completed {
+                writer.advance().expect("signed predecessor effect");
+            }
+        }
+        {
+            let mut port = FixturePort::new(state.clone());
+            port.drop_ack = true;
+            let mut writer = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("reopen original writer");
+            assert!(matches!(
+                writer.advance(),
+                Err(CellSplitExecutionErrorV1::External(_))
+            ));
+            let before = state.borrow().verifications;
+            assert!(matches!(
+                writer.verified_complete(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert_eq!(state.borrow().verifications - before, completed);
+            assert_eq!(state.borrow().executions, completed + 1);
+        }
+        {
+            let mut observer = CellSplitExecutionOwnerV1::open_existing(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("read-only reopen of unresolved intent");
+            assert!(matches!(
+                observer.verified_complete(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert!(
+                !root
+                    .path()
+                    .join(format!("cell-split-{completed:02}-committed.json"))
+                    .exists()
+            );
+            assert_eq!(state.borrow().executions, completed + 1);
+        }
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("reopen writer for read-only effect reconciliation");
+        let receipt = recovered
+            .advance()
+            .expect("reconcile original effect")
+            .expect("original receipt");
+        assert_eq!(receipt.intent.step.index(), completed);
+        assert_eq!(state.borrow().executions, completed + 1, "no re-execution");
+        assert_eq!(
+            recovered.verified_complete().expect("live original prefix"),
+            completed + 1 == 4
+        );
+    }
+}
+
+#[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
