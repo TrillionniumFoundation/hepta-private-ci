@@ -76,7 +76,7 @@ def control_outputs(study, sealed):
             rows.append({'case_id':cid,'arm':arm,
                          'input_sha256':case_lookup[cid]['input_sha256'],
                          'reader_sha256':study['model']['reader_sha256'],
-                         'answer_sha256':h(cid+'-'+arm),
+                         'answer_sha256':h(cid+'-frozen-terminal-'+v[-1]),
                          'terminal_request_sha256':next(n['request_sha256'] for n in
                               case_lookup[cid]['nodes'] if n['id']==v[-1]),
                          'visited_nodes':v,'actions_taken':a,
@@ -275,6 +275,70 @@ class ControlTests(unittest.TestCase):
         self.assertBadExecution(lambda e:e.update(production_authorized=True))
     def test_reject_changed_answer_for_review(self):
         self.assertBadJudgment(lambda j:j['results'][0].update(answer_sha256=h('tamper')))
+    def test_same_root_terminal_different_answer_rejected(self):
+        def mutate(e):
+            row = next(r for r in e['records'] if
+                       r['case_id']=='q2' and r['arm']=='ndu_shadow')
+            row['answer_sha256']=h('invented-NDU-gain-with-identical-request')
+        self.assertBadExecution(mutate)
+
+    def test_same_nonroot_terminal_different_answer_rejected(self):
+        def mutate(e):
+            row = next(r for r in e['records'] if
+                       r['case_id']=='q2' and r['arm']=='greedy_one')
+            row['answer_sha256']=h('invented-greedy-gain-with-identical-request')
+        self.assertBadExecution(mutate)
+
+    def test_same_terminal_forged_citation_claim_rejected(self):
+        def mutate(e):
+            row = next(r for r in e['records'] if
+                       r['case_id']=='q2' and r['arm']=='ndu_shadow')
+            row['citations_entailed_claimed']=True
+        self.assertBadExecution(mutate)
+
+    def test_same_terminal_contradictory_correctness_rejected(self):
+        def mutate(j):
+            row = next(r for r in j['results'] if
+                       r['case_id']=='q2' and r['arm']=='ndu_shadow')
+            row['correct']=True
+        self.assertBadJudgment(mutate)
+
+    def test_same_terminal_contradictory_entailment_rejected(self):
+        def mutate(j):
+            row = next(r for r in j['results'] if
+                       r['case_id']=='q2' and r['arm']=='ndu_shadow')
+            row['citations_entailed']=True
+        self.assertBadJudgment(mutate)
+
+    def test_same_node_action_must_not_change_observed_successor(self):
+        # Two policies may execute the same predeclared action at root. The
+        # current V15 profile has no stochastic environment seed/observation
+        # contract, so contradictory claimed successors must be denied.
+        study = control_study()
+        first = study['cases'][0]
+        first['nodes'].append(node('other',5500))
+        branch = first['nodes'][0]['actions'][0]
+        branch['outcomes'] = [{'node':'mid','p_bps':9500},
+                              {'node':'other','p_bps':500}]
+        policy = plan_control(study)
+        self.assertEqual(policy['cases'][0]['policies']['ndu_shadow']['root'],'a')
+        execution = control_outputs(study,policy)
+        target = next(r for r in execution['records'] if
+                      r['case_id']=='q1' and r['arm']=='fixed_one')
+        target['visited_nodes']=['root','other']
+        target['terminal_request_sha256']=h('state-other')
+        target['answer_sha256']=h('q1-frozen-terminal-other')
+        with self.assertRaisesRegex(ValueError,'conflicting successors'):
+            validate_control_execution(study,policy,execution)
+
+    def test_changed_answer_only_on_changed_terminal(self):
+        report=review_control(self.study,self.policy,
+                              self.execution,self.adjudication)
+        for result in report['ndu_paired_deltas'].values():
+            self.assertEqual(result['unchanged_terminal_quality_delta'],0)
+            self.assertLessEqual(result['changed_answer_cases'],
+                                 result['changed_terminal_cases'])
+
     def test_reject_changed_adjudication_lineage(self):
         self.assertBadJudgment(lambda j:j.update(execution_sha256=h('tamper')))
     def test_reject_fake_reviewer_authority(self):
