@@ -130,7 +130,9 @@ def independent_head_margin(front: dict, width: int) -> dict:
     return {"logit_q24": logit, "status": status}
 
 
-def frozen_single_case_trace(row: dict) -> dict:
+def frozen_single_case_trace(row: dict, *, task_id: int) -> dict:
+    need(type(task_id) is int and 0 <= task_id < 4,
+         "unregistered one-vs-rest public objective")
     need(type(row) is dict and set(row) == {
         "case_id", "source_text_sha256", "feature_q24", "split",
     } and row.get("split") == "heldout",
@@ -143,7 +145,9 @@ def frozen_single_case_trace(row: dict) -> dict:
     return {
         "schema": "hepta.neuron.physical-q24-shadow-trace.v1",
         "scope_digest": digest(b"iid-one-case-scope:" + identity),
-        "objective_digest": digest(b"no-production-public-one-vs-rest-objective"),
+        "objective_digest": digest(
+            b"no-production-public-one-vs-rest-objective:" + str(task_id).encode()
+        ),
         "ndu_digest": digest(b"NO_NDU_IN_PUBLIC_STATIC_EVALUATION"),
         "body_digest": digest(b"frozen-real-public-Q24-text-input:" + identity),
         "events": [{
@@ -229,14 +233,17 @@ def run(args) -> dict:
     receipts = 0
     with tempfile.TemporaryDirectory() as temp:
         trace_dir = Path(temp)
-        traces = []
-        for index, row in enumerate(rows):
-            trace = frozen_single_case_trace(row)
-            raw = canonical(trace)
-            path = trace_dir / f"case-{index:02d}.json"
-            with path.open("xb") as stream:
-                stream.write(raw)
-            traces.append((path, digest(raw), trace))
+        traces_by_task = {}
+        for task_id in range(4):
+            traces = []
+            for index, row in enumerate(rows):
+                trace = frozen_single_case_trace(row, task_id=task_id)
+                raw = canonical(trace)
+                path = trace_dir / f"task-{task_id}-case-{index:02d}.json"
+                with path.open("xb") as stream:
+                    stream.write(raw)
+                traces.append((path, digest(raw), trace))
+            traces_by_task[task_id] = traces
         for m in models:
             task, cap, arm = (
                 m["task_id"], m["physical_byte_ceiling"], m["arm"],
@@ -273,7 +280,7 @@ def run(args) -> dict:
             weights = physically_load(root / str(task), check_row)
             found = []
             subprocess_wall_nanos = []
-            for trace_file, trace_sha, trace in traces:
+            for trace_file, trace_sha, trace in traces_by_task[task]:
                 argv = [
                     str(binary.resolve()), "--arm", arm,
                     "--model", str(path.resolve()),
