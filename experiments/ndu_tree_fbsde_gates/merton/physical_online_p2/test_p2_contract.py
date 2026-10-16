@@ -120,6 +120,13 @@ class PhysicalContractTests(unittest.TestCase):
         plan['reader']['revision']='forged'
         with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
 
+    def test_train_prompt_substitution_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['original_train_trace'][0]['prompt_sha256']='f'*64
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
     def test_unplanned_held_call_refused(self):
         out,plan,completed,summary=self.run_complete()
         completed['actual_policy_trace'][0]['action']='verify'
