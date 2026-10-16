@@ -9,6 +9,9 @@ on:
       # build. Their source changes must never reuse predecessor cargo-deny and
       # current-main merge receipts from a different integrated SHA.
       - "codex-rs/hepta-agentd/**"
+      # Shared Windows ACL/path-utils security feeds both the Matrix and
+      # Neuron owners; require Matrix/cargo-deny on the exact patched tree.
+      - "codex-rs/utils/path-utils/**"
       - "codex-rs/core-plugins/**"
       - "codex-rs/external-agent-migration/**"
       - ".github/workflows/hepta-yaml-security-parser-qualification.yml"
