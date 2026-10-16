@@ -6,16 +6,11 @@ on:
       - 'qualification/stem-cell-v1/v15_*.py'
       - 'qualification/stem-cell-v1/test_v15_hotpot.py'
       - '.github/workflows/hepta-v15-natural-hotpot.yml'
-  pull_request:
-    paths:
-      - 'qualification/stem-cell-v1/v15_*.py'
-      - 'qualification/stem-cell-v1/test_v15_hotpot.py'
-      - '.github/workflows/hepta-v15-natural-hotpot.yml'
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-v15-natural-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-v15-natural-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   source-contract:
