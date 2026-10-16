@@ -1,0 +1,67 @@
+name: Hepta E3 original physical job metadata admission (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-physical-run-metadata-gate-20261016"]
+    paths:
+      - "experiments/shared_stem_cell/e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_METADATA_ADMISSION_20261016.md"
+      - ".github/workflows/hepta-e3-physical-run-metadata-gate.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_METADATA_ADMISSION_20261016.md"
+      - ".github/workflows/hepta-e3-physical-run-metadata-gate.yml"
+permissions:
+  contents: read
+concurrency:
+  group: e3-physical-metadata-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  pure-stdlib-physical-receipt-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact source without write token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify exact checkout and no dirty Git source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Compile the independent GH API metadata admission and tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            experiments/shared_stem_cell/e3_physical_run_metadata_admission.py \
+            experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py
+      - name: Reject source fixtures with skipped/queued OCR, native or original reviewer jobs
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_physical_run_metadata_admission.py -v
+      - name: Reject the same metadata misrepresentation with Python assertions disabled
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_physical_run_metadata_admission.py -v
+      - name: Metadata PASS never implies model scientific selection
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import e3_physical_run_metadata_admission as a
+          assert a.SCHEMA.endswith('gh-job-metadata-audit.v1')
+          assert len(a.REQUIRED) == 5 and len(a.ARTIFACTS) == 4
+          assert 'physical-ocr-granite' in a.REQUIRED
+          assert 'physical-native-gemma2' in a.REQUIRED
+          print('GH_API_METADATA_CONTRACT_ONLY / ACTUAL_MODEL_FORWARD_NOT_TESTED / DENY_ALL')
+          PY
