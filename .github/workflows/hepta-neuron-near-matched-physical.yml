@@ -46,7 +46,17 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
-          python -m pip install "safetensors==0.7.0"
+          # CPU wheel mirror omits optional NumPy and safetensors' packaging dependency.
+          # Bind both on PyPI rather than relying on ambient runner packages.
+          python -m pip install "safetensors==0.7.0" "packaging==25.0" "numpy==2.2.6"
+          python - <<'PY'
+          import numpy, packaging, safetensors, torch
+          assert numpy.__version__ == "2.2.6"
+          assert packaging.__version__ == "25.0"
+          assert torch.__version__.startswith("2.10.0")
+          assert safetensors.__version__ == "0.7.0"
+          print("PINNED_PHYSICAL_TENSOR_DEPENDENCIES_READY")
+          PY
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
       - name: Native source format, all tests, strict Clippy and executable
