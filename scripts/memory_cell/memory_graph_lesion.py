@@ -4,7 +4,7 @@ from collections import deque
 import hashlib
 import json
 
-KINDS = frozenset({"supports", "precedes", "requires", "contradicts"})
+KINDS = frozenset({"supports", "precedes", "requires", "contradicts", "temporal_neighbor"})
 
 
 @dataclass(frozen=True)
