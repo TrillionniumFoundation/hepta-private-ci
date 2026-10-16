@@ -5,6 +5,8 @@
 //! authority. The caller must not retry an external effect after a telemetry
 //! failure without independently reconciling that effect.
 
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -624,6 +626,154 @@ impl MetricsGroupCommitV1 {
         #[cfg(not(unix))]
         {
             let _ = query;
+            Err(MetricsJournalErrorV1::UnsafePath)
+        }
+    }
+
+
+    /// Verify up to one native Batch of exact committed membership queries
+    /// in ONE complete original WAL/marker history traversal. Repeatedly
+    /// calling read_committed_sample would rescan the entire protected WAL
+    /// for every Cell (N * journal_size). This explicit Observer-side path
+    /// instead costs one full verified scan plus O(log N) bounded row joins.
+    ///
+    /// It never flushes staging, signs an effect or grants final-use. Results
+    /// share the same locally verified original file and high-water frontier.
+    /// The issuer/Control owner must independently verify that frontier.
+    pub fn read_committed_samples(
+        &mut self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, MetricsJournalErrorV1> {
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if queries.is_empty() || queries.len() > MAX_GROUP_ROWS {
+            return Err(MetricsJournalErrorV1::Capacity);
+        }
+        if queries
+            .iter()
+            .any(|query| query.scope_digest.is_zero() || query.operation_digest.is_zero())
+        {
+            return Err(MetricsJournalErrorV1::EmptyDigest);
+        }
+        let mut identities = BTreeSet::new();
+        for query in queries {
+            if !identities.insert((
+                query.scope_digest,
+                query.operation_digest,
+                query.phase as u8,
+                query.succeeded,
+            )) {
+                return Err(MetricsJournalErrorV1::Capacity);
+            }
+        }
+        let read = self.read_committed_samples_checked(queries);
+        if read.is_err() {
+            // Corrupt historical WAL, altered original inodes or unreadable
+            // owner marker is a sticky failure, never a diagnostic to ignore.
+            self.poisoned = true;
+        }
+        read
+    }
+
+    fn read_committed_samples_checked(
+        &self,
+        queries: &[MetricsCommittedSampleQueryV1],
+    ) -> Result<Vec<Option<MetricsCommittedSampleReadbackV1>>, MetricsJournalErrorV1> {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt as _;
+
+            let needles = queries
+                .iter()
+                .map(|query| {
+                    (
+                        query.scope_digest.to_string(),
+                        query.operation_digest.to_string(),
+                        (query.phase as u8).to_string(),
+                        u8::from(query.succeeded).to_string(),
+                    )
+                })
+                .collect::<Vec<_>>();
+            let mut index = BTreeMap::new();
+            for (i, (scope, operation, phase, success)) in needles.iter().enumerate() {
+                index.insert(
+                    (
+                        scope.as_str(),
+                        operation.as_str(),
+                        phase.as_str(),
+                        success.as_str(),
+                    ),
+                    i,
+                );
+            }
+            let mut counts = vec![0_u64; queries.len()];
+            let mut first_sequences = vec![0_u64; queries.len()];
+            let mut last_sequences = vec![0_u64; queries.len()];
+            let mut last_heads = vec![Digest32::ZERO; queries.len()];
+            self.verify_original_frontier()?;
+            self.verify_complete_marker_history(|sequence, head, line| {
+                let payload = line
+                    .split('|')
+                    .nth(5)
+                    .ok_or(MetricsJournalErrorV1::Corrupt)?;
+                for encoded in payload.split(';') {
+                    let mut columns = encoded.split(':');
+                    let scope = columns.next();
+                    let operation = columns.next();
+                    let phase = columns.next();
+                    let _latency = columns.next();
+                    let success = columns.next();
+                    let (Some(scope), Some(operation), Some(phase), Some(success)) =
+                        (scope, operation, phase, success)
+                    else {
+                        return Err(MetricsJournalErrorV1::Corrupt);
+                    };
+                    if let Some(&position) = index.get(&(scope, operation, phase, success)) {
+                        counts[position] = counts[position]
+                            .checked_add(1)
+                            .ok_or(MetricsJournalErrorV1::Capacity)?;
+                        if first_sequences[position] == 0 {
+                            first_sequences[position] = sequence;
+                        }
+                        last_sequences[position] = sequence;
+                        last_heads[position] = head;
+                    }
+                }
+                Ok(())
+            })?;
+            self.verify_original_frontier()?;
+
+            let wal = self.file.metadata()?;
+            let marker = self.owner_marker.metadata()?;
+            let frontier = MetricsLocalFrontierV1 {
+                sequence: self.sequence,
+                head_digest: self.head,
+                committed_rows: self.committed_rows,
+                journal_bytes: self.bytes,
+                wal_device: wal.dev(),
+                wal_inode: wal.ino(),
+                marker_device: marker.dev(),
+                marker_inode: marker.ino(),
+            };
+            Ok(queries
+                .iter()
+                .enumerate()
+                .map(|(i, &query)| {
+                    (counts[i] != 0).then_some(MetricsCommittedSampleReadbackV1 {
+                        query,
+                        matching_rows: counts[i],
+                        first_group_sequence: first_sequences[i],
+                        last_group_sequence: last_sequences[i],
+                        last_group_head: last_heads[i],
+                        frontier,
+                    })
+                })
+                .collect())
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = queries;
             Err(MetricsJournalErrorV1::UnsafePath)
         }
     }
