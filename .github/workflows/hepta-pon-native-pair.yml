@@ -295,10 +295,14 @@ jobs:
         env:
           CARGO_NET_RETRY: "5"
           CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
         run: |
-          # Use the same working directory, pinned toolchain and Cargo config as just test.
-          # This prepares dependencies only. No native test failure is retried.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && exec cargo fetch --locked'
+          # Network-only prefetch, before unchanged offline native tests.
+          # A failed fetch does not grant test credit; retry the identical locked
+          # dependency set a bounded three times within the original 600s owner.
+          # Avoid shared HTTP/2 streams after the actual radix_trie curl(16) failure.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- \
+            bash -c 'cd codex-rs || exit; for attempt in 1 2 3; do cargo fetch --locked && exit 0; code=$?; if test "$attempt" -eq 3; then exit "$code"; fi; printf "locked Cargo prefetch attempt %s failed with exit %s; retrying\n" "$attempt" "$code" >&2; sleep 3; done'
       - name: Require all original Fleet controls on the exact paired source
         env:
           CARGO_NET_OFFLINE: "true"
