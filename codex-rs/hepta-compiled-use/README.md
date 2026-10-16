@@ -156,3 +156,26 @@ The new read-only exact-head workflow also runs package unit tests,
 Clippy and rustfmt and compares bounded JSON evidence to the required
 non-authorizing schema. No model, API, credential, OS UI port, JIT or GPU
 access is wired. `DenyByDefaultSandboxV1` is unchanged.
+
+
+### Two-mode exact-source RTT receipt (V4.1)
+
+The exact-head, source-only CI now performs two **separate original OS
+two-process** RTT runs using the same native executable:
+
+- A 64-roundtrip smoke profile to detect obvious transport/worker failure.
+- A 1024-roundtrip bounded profile to observe a larger latency distribution.
+
+The CI publishes a source-bound JSON envelope containing the actual Git HEAD,
+SHA256 of the benchmark Rust source and SHA256 of both original raw JSON
+results, plus the measured p50/p95/p99, process setup time and 256-byte
+per-direction payload counts. It refuses extra or missing output fields and
+keeps all effect/peer-authentication/model-vs-MCP/production flags false.
+
+An immutable Git SHA and a file digest establish *source consistency*, not
+trustworthy host attestation, statistical confidence in p99, API or MCP
+equivalence, GPU inference, model-generation time, or real OS/UI completion.
+Do not combine the two modes as independent task cases or claim a speedup
+over remote tools without paired end-to-end work under an equivalent
+environment. The latest exact-HEAD Action must finish before either receipt
+is treated as measured evidence.
