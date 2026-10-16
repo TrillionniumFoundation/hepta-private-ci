@@ -67,8 +67,8 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
         if status == "QUANTIZATION_AMBIGUOUS_ABSTAIN":
             abstain += 1
             continue
-        need(status in ("ACCEPT_POSITIVE_RESEARCH_ONLY", "ACCEPT_NEGATIVE_RESEARCH_ONLY") and
-             (result > 0) == (status == "ACCEPT_POSITIVE_RESEARCH_ONLY"),
+        need((result > 0 and status == "ACCEPT_POSITIVE_RESEARCH_ONLY")
+             or (result < 0 and status == "ACCEPT_NEGATIVE_RESEARCH_ONLY"),
              "unknown or false accepted quantized Head sign margin")
         answers += 1
         predicted = int(result > 0)
@@ -267,9 +267,26 @@ def run(args) -> dict:
                      and check["verified_native_adapter_head_event_count"] == 1,
                      "independent real-public Q24 numeric parity failed")
                 front = native_runs[0]["frontier"][0]
+                activation = front["activation_q24"]
+                logit = front["quantized_head_logit_q24"]
+                need(type(activation) is list and
+                     len(activation) == m["hidden_width"] and
+                     type(logit) is int,
+                     "invalid native Head activation/logit")
+                # Separate from the Rust routine: bound the maximum
+                # same-activation F32->Q24 Head sign error in half-LSB units.
+                twice_bound = len(activation) * 9 + 1
+                expected_status = (
+                    "QUANTIZATION_AMBIGUOUS_ABSTAIN"
+                    if 2 * abs(logit) <= twice_bound
+                    else ("ACCEPT_POSITIVE_RESEARCH_ONLY" if logit > 0
+                          else "ACCEPT_NEGATIVE_RESEARCH_ONLY")
+                )
+                need(front["head_sign_margin_twice_q24_lsb"] == twice_bound and
+                     front["head_sign_margin_status"] == expected_status,
+                     "physical Rust Head margin differs from independent Q24 bound")
                 found.append({
-                    "logit_q24": front["quantized_head_logit_q24"],
-                    "status": front["head_sign_margin_status"],
+                    "logit_q24": logit, "status": expected_status,
                 })
                 receipts += 2
             truth = [int(y == task) for y in label_values]
