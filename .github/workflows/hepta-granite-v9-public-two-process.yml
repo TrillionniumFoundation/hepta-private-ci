@@ -5,6 +5,9 @@ on:
     paths:
       - 'qualification/stem-cell-v1/granite97_v9_public_physical.py'
       - 'qualification/stem-cell-v1/test_granite97_v9_public_physical.py'
+      - 'qualification/stem-cell-v1/granite97_v9_residency.py'
+      - 'qualification/stem-cell-v1/test_granite97_v9_residency.py'
+      - 'qualification/stem-cell-v1/GRANITE97_V9_REAL_RESIDENCY_LOCAL.json'
       - 'qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt'
       - 'qualification/stem-cell-v1/GRANITE97_V9_PHYSICAL_RUNBOOK.md'
       - '.github/workflows/hepta-granite-v9-public-two-process.yml'
@@ -251,3 +254,65 @@ jobs:
             ${{ runner.temp }}/granite-v9/public-nogo-audit.json
             ${{ runner.temp }}/granite-v9/native-shadow.json
             ${{ runner.temp }}/granite-v9/unsigned-admission.json
+
+  weight-residency-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact-source offline physical accounting negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git hash-object qualification/stem-cell-v1/granite97_v9_residency.py \
+            qualification/stem-cell-v1/test_granite97_v9_residency.py \
+            qualification/stem-cell-v1/GRANITE97_V9_REAL_RESIDENCY_LOCAL.json
+          cd qualification/stem-cell-v1
+          python -m unittest -v test_granite97_v9_residency.py
+          python -O -m unittest -v test_granite97_v9_residency.py
+          python -m py_compile granite97_v9_residency.py test_granite97_v9_residency.py
+
+  actual-weight-residency:
+    needs: [material-source-freeze, weight-residency-contract]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          path: ${{ runner.temp }}/granite-v9
+      - name: Install pinned CPU tensor/residency dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'safetensors==0.6.2' 'psutil==7.0.0'
+      - name: Material-hash-fenced six-arm actual BF16 storage/Head census
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          python qualification/stem-cell-v1/granite97_v9_residency.py \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json" \
+            --output "$RUNNER_TEMP/granite-v9/weight-residency.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: granite-v9-real-bf16-residency-denyall
+          retention-days: 1
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/granite-v9/weight-residency.json
