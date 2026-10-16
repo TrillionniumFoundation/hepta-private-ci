@@ -145,7 +145,10 @@ class DisjointArchivedRecoveryTests(unittest.TestCase):
     def test_exact_outer_bytes_and_safe_zip_members(self):
         name = "memory-evaluation-0-0"
         for file_name in ("raw-answers.jsonl", "../escape", "/root", "dup/../escape"):
-            with self.subTest(file_name=file_name), tempfile.TemporaryDirectory() as temp:
+            with (
+                self.subTest(file_name=file_name),
+                tempfile.TemporaryDirectory() as temp,
+            ):
                 root = Path(temp)
                 archive = root / "source.zip"
                 with zipfile.ZipFile(archive, "w") as stream:
@@ -160,7 +163,9 @@ class DisjointArchivedRecoveryTests(unittest.TestCase):
                 destination = root / "safe"
                 if file_name == "raw-answers.jsonl":
                     self.assertEqual(extract_one(pins, name, archive, destination), 1)
-                    self.assertEqual((destination / file_name).read_text(), "original-answer\n")
+                    self.assertEqual(
+                        (destination / file_name).read_text(), "original-answer\n"
+                    )
                 else:
                     with self.assertRaises(ValueError):
                         extract_one(pins, name, archive, destination)

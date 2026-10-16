@@ -7,6 +7,10 @@ on:
       - "scripts/memory_cell/test_reviewed*.py"
       - "scripts/memory_cell/test_source_audit*.py"
       - ".github/workflows/hepta-memory-review-format-final.yml"
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 jobs:
