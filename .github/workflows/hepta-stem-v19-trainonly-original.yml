@@ -1,0 +1,139 @@
+name: hepta-stem-v19-trainonly-original
+
+on:
+  push:
+    branches:
+      - research/stem-trainonly-budget-v19-20261016
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/v19_train_only_budget.py
+      - qualification/stem-cell-v1/v19_independent_numpy_review.py
+      - qualification/stem-cell-v1/test_v19_budget.py
+      - qualification/stem-cell-v1/test_v19_original_replay.py
+      - qualification/stem-cell-v1/STEM_V19_TRAIN_ONLY_BUDGET_20261016.md
+      - .github/workflows/hepta-stem-v19-trainonly-original.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  original-cache-head-budget:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source HEAD and physically tested Git blob identities
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cd qualification/stem-cell-v1
+          test "$(git hash-object v19_train_only_budget.py)" = '95f64850e9e7ca14a48707f7c1a0a1d99d8db34f'
+          test "$(git hash-object v19_independent_numpy_review.py)" = '1d5e6aed8f6d84bbb6237d116545bcf901c5dbf8'
+          test "$(git hash-object test_v19_budget.py)" = 'cb9a5c325f6bd1e8c49fbd9d39b9078e407342c5'
+          test "$(git hash-object test_v19_original_replay.py)" = '7e238b1f1eb65e7b1bc99bf75086cbe0e97db9e3'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned CPU research environment
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --disable-pip-version-check \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Source-only mechanism and negative tests (no model-use claim)
+        run: |
+          set -euo pipefail
+          cd qualification/stem-cell-v1
+          python -m py_compile v19_train_only_budget.py v19_independent_numpy_review.py test_v19_budget.py test_v19_original_replay.py
+          python -m unittest -q test_v19_budget
+          python -O -m unittest -q test_v19_budget
+      - name: Physical original pretrained-feature OOF + independent NumPy review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          # Follow the reviewed V18 authenticated-API -> uncredentialed HTTPS
+          # signed-artifact URL boundary. Never forward the repository token.
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' \
+            --max-redirs 0 \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$work/original-redirect.headers" \
+            --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          if [ "$status" != '302' ]; then
+            echo 'Exact original artifact must return one GitHub redirect' >&2
+            exit 1
+          fi
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/original-redirect.headers" | tr -d '\r')"
+          case "$location" in
+            https://*) ;;
+            *) echo 'Artifact redirect must be HTTPS' >&2; exit 1 ;;
+          esac
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' \
+            --output "$work/original.zip" "$location"
+          unset location
+          printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' "$work/original.zip" | sha256sum -c -
+          # V14's original source-owner staging deliberately exports a separate
+          # holdout label file. Delete immediately without passing it to training
+          # or reviewer. This is process separation, NOT independent label custody.
+          python qualification/stem-cell-v1/stem_counterfactual_split_v14.py prepare \
+            --archive "$work/original.zip" --out "$work/inputs" --labels-out "$work/held-gold.json"
+          rm -- "$work/held-gold.json"
+          cd qualification/stem-cell-v1
+          python v19_train_only_budget.py --inputs "$work/inputs" \
+            --output "$work/result-A.json" --private "$work/private-A.json"
+          python v19_independent_numpy_review.py --inputs "$work/inputs" \
+            --report "$work/result-A.json" --private "$work/private-A.json" \
+            --output "$work/review-A.json"
+          HEPTA_V19_INPUTS="$work/inputs" HEPTA_V19_REPORT="$work/result-A.json" \
+            HEPTA_V19_PRIVATE="$work/private-A.json" \
+            python -m unittest -q test_v19_original_replay
+          python -O v19_train_only_budget.py --inputs "$work/inputs" \
+            --output "$work/result-B.json" --private "$work/private-B.json"
+          python -O v19_independent_numpy_review.py --inputs "$work/inputs" \
+            --report "$work/result-B.json" --private "$work/private-B.json" \
+            --output "$work/review-B.json"
+          HEPTA_V19_INPUTS="$work/inputs" HEPTA_V19_REPORT="$work/result-B.json" \
+            HEPTA_V19_PRIVATE="$work/private-B.json" \
+            python -O -m unittest -q test_v19_original_replay
+          python - "$work/result-A.json" "$work/result-B.json" \
+            "$work/private-A.json" "$work/private-B.json" \
+            "$work/review-A.json" "$work/review-B.json" <<'PY'
+          import json
+          import sys
+          a, b, pa, pb, ra, rb = [json.load(open(p, encoding="utf-8")) for p in sys.argv[1:]]
+          if len(pa["records"]) != len(pb["records"]) or len(pa["records"]) != 105:
+              raise SystemExit("missing physically learned original checkpoint")
+          for one, two in zip(pa["records"], pb["records"]):
+              keys = ("seed", "kind", "fold", "budget", "case_ids", "logit_sha256", "weights_sha256")
+              if any(one[k] != two[k] for k in keys):
+                  raise SystemExit("original case/weight/output identity mismatch across processes")
+          if len(a["seeds"]) != len(b["seeds"]) or len(a["seeds"]) != 3:
+              raise SystemExit("incomplete source-only OOF learning census")
+          for one, two in zip(a["seeds"], b["seeds"]):
+              keys = ("seed", "fold_train_only_oof_scores", "train_only_chosen_budget",
+                      "historical_calibration_scores_exploratory")
+              if any(one[k] != two[k] for k in keys):
+                  raise SystemExit("nonreproducible source-only Head budget selection")
+          if a["physical_training_updates"] != b["physical_training_updates"] or a["physical_training_updates"] != 1200:
+              raise SystemExit("unpaid optimizer pilot or missing original training step")
+          if a["decision"] != b["decision"] or a["decision"] != "RESEARCH_HISTORICAL_ONLY_DENY_ALL":
+              raise SystemExit("false model promotion")
+          if ra != rb or ra["decision"] != "HOLD_SOURCE_ONLY_OOF_NO_PROSPECTIVE_AUTHORITY":
+              raise SystemExit("original independent numerical reviewer disagree")
+          print("V19 original real features: 105/105 model-output digests, 1200 updates; DENY_ALL")
+          PY
+          # Do NOT upload original source, raw Head weights/logits, source text,
+          # heldout labels, per-case IDs, private packets or dataset material.
