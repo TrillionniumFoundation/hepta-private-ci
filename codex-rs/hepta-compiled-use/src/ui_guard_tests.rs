@@ -53,13 +53,12 @@ fn plan() -> UiGuardedPlanV1 {
 
 #[test]
 fn guarded_shadow_round_trips_with_no_authority() {
-    let p = propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_999)
-        .expect("shadow");
+    let p =
+        propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_999).expect("shadow");
     assert!(!p.authority.grants_any());
     assert!(!p.proposed_actions.authority.grants_any());
     assert_ne!(p.guarded_digest, p.proposed_actions.proposal_digest);
-    verify_ui_guarded_shadow_v1(verifier(), &p, &readback(), 100_999)
-        .expect("verify");
+    verify_ui_guarded_shadow_v1(verifier(), &p, &readback(), 100_999).expect("verify");
 }
 #[test]
 fn different_principal_or_tree_is_rejected() {
@@ -125,15 +124,14 @@ fn invalid_action_sequence_or_capability_denied() {
 }
 #[test]
 fn modified_proposal_and_binding_are_denied() {
-    let mut p = propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100)
-        .expect("shadow");
+    let mut p =
+        propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100).expect("shadow");
     p.proposed_actions.actions[0].arguments = ActionArgumentsV1::Scroll { delta: 3 };
     assert_eq!(
         verify_ui_guarded_shadow_v1(verifier(), &p, &readback(), 100_101),
         Err(UiGuardErrorV1::Action(ActionErrorV1::DigestMismatch))
     );
-    p = propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100)
-        .expect("shadow");
+    p = propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100).expect("shadow");
     p.guarded_digest = h(b"not-its-source");
     assert_eq!(
         verify_ui_guarded_shadow_v1(verifier(), &p, &readback(), 100_101),
@@ -142,8 +140,8 @@ fn modified_proposal_and_binding_are_denied() {
 }
 #[test]
 fn replaced_observer_and_stale_recheck_are_denied() {
-    let p = propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100)
-        .expect("shadow");
+    let p =
+        propose_ui_guarded_shadow_v1(verifier(), &plan(), &readback(), 100_100).expect("shadow");
     let mut forged = readback();
     forged.observer_digest = h(b"not-the-observer");
     assert_eq!(

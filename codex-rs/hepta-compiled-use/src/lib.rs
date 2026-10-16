@@ -12,13 +12,13 @@ mod action;
 mod ui_guard;
 
 pub use ui_guard::{
-    propose_ui_guarded_shadow_v1, verify_ui_guarded_shadow_v1, UiGuardErrorV1,
-    UiGuardedPlanV1, UiGuardedShadowProposalV1, UiReadbackV1,
+    UiGuardErrorV1, UiGuardedPlanV1, UiGuardedShadowProposalV1, UiReadbackV1,
+    propose_ui_guarded_shadow_v1, verify_ui_guarded_shadow_v1,
 };
 
 pub use action::{
-    ActionArgumentsV1, ActionErrorV1, ActionFrameV1, ActionOpcodeV1, CapabilityGrantV1,
-    CapabilityV1, ACTION_ABI_VERSION_V1, ACTION_FRAME_BYTES_V1,
+    ACTION_ABI_VERSION_V1, ACTION_FRAME_BYTES_V1, ActionArgumentsV1, ActionErrorV1, ActionFrameV1,
+    ActionOpcodeV1, CapabilityGrantV1, CapabilityV1,
 };
 
 use std::collections::VecDeque;
@@ -122,7 +122,9 @@ impl ActionVerifierV1 {
             return Err(ActionErrorV1::GenerationMismatch);
         }
         if action.capability_digest != self.grant.digest
-            || !self.grant.allows(action.arguments.opcode().required_capability())
+            || !self
+                .grant
+                .allows(action.arguments.opcode().required_capability())
         {
             return Err(ActionErrorV1::CapabilityDenied);
         }
@@ -197,7 +199,12 @@ impl SharedMemoryQueueV1 {
             .next_sequence
             .checked_add(u64::try_from(actions.len()).map_err(|_| ActionErrorV1::SequenceMismatch)?)
             .ok_or(ActionErrorV1::SequenceMismatch)?;
-        if self.frames.len().checked_add(actions.len()).is_none_or(|length| length > self.capacity) {
+        if self
+            .frames
+            .len()
+            .checked_add(actions.len())
+            .is_none_or(|length| length > self.capacity)
+        {
             return Err(ActionErrorV1::QueueFull);
         }
         self.frames.extend(encoded);

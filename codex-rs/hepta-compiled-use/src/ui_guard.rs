@@ -5,8 +5,8 @@
 //! authority/revocation checks remain mandatory. This file does not execute.
 
 use crate::{
-    propose_compiled_use_v1, verify_compiled_use_proposal_v1, ActionErrorV1,
-    ActionFrameV1, ActionVerifierV1, CompiledUseProposalV1,
+    ActionErrorV1, ActionFrameV1, ActionVerifierV1, CompiledUseProposalV1, propose_compiled_use_v1,
+    verify_compiled_use_proposal_v1,
 };
 use codex_hepta_types::{AuthorityPosture, Digest32};
 use std::error::Error as StdError;

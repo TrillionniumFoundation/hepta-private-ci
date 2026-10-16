@@ -37,6 +37,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let verified = queue.pop()?;
     let mut sandbox = DenyByDefaultSandboxV1;
     let result = sandbox.submit(verified);
-    println!("queued_click={:?} sandbox_result={result:?}", action.arguments);
+    println!(
+        "queued_click={:?} sandbox_result={result:?}",
+        action.arguments
+    );
     Ok(())
 }
