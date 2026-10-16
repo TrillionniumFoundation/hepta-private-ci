@@ -329,3 +329,7 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "subagents_tests.rs"]
+mod tests;
