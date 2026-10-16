@@ -1,0 +1,177 @@
+{
+  "actual_model_forwards": 2951,
+  "actual_original_reader_requests": 128,
+  "cohorts_selected_using_publisher_answers": true,
+  "decision": "HOLD_NO_GO",
+  "full_lifecycle_cost_matched": false,
+  "independent_semantic_answer_correctness": null,
+  "independently_human_verified_sufficiency": false,
+  "literal_occurrence_does_not_establish_semantic_sufficiency": true,
+  "official_HF_operator_parity": false,
+  "original_answer_journal_sha256": "3801ba1cafca5928be5b8b69e85301efe2402019034b54f9b7b9ea3cf3c8b429",
+  "original_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "original_model_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+  "per_cohort_arm": {
+    "literal_in_annotated_source": {
+      "lesion": {
+        "bad_citations": 1,
+        "cases": 16,
+        "citation_syntax": 16,
+        "input_tokens": 1984,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 0,
+        "literal_unknown": 0,
+        "output_tokens": 374,
+        "publisher_witness_delivered": 0
+      },
+      "none": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 0,
+        "input_tokens": 967,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 0,
+        "literal_unknown": 0,
+        "output_tokens": 340,
+        "publisher_witness_delivered": 0
+      },
+      "retrieved": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 12,
+        "input_tokens": 2534,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 0,
+        "literal_unknown": 0,
+        "output_tokens": 361,
+        "publisher_witness_delivered": 0
+      },
+      "witness": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 10,
+        "input_tokens": 2678,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 8,
+        "literal_unknown": 0,
+        "output_tokens": 370,
+        "publisher_witness_delivered": 16
+      }
+    },
+    "not_literal_in_annotated_source": {
+      "lesion": {
+        "bad_citations": 2,
+        "cases": 16,
+        "citation_syntax": 12,
+        "input_tokens": 1973,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 1,
+        "literal_unknown": 0,
+        "output_tokens": 367,
+        "publisher_witness_delivered": 0
+      },
+      "none": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 0,
+        "input_tokens": 969,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 0,
+        "literal_unknown": 0,
+        "output_tokens": 305,
+        "publisher_witness_delivered": 0
+      },
+      "retrieved": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 13,
+        "input_tokens": 2510,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 1,
+        "literal_unknown": 0,
+        "output_tokens": 370,
+        "publisher_witness_delivered": 0
+      },
+      "witness": {
+        "bad_citations": 0,
+        "cases": 16,
+        "citation_syntax": 10,
+        "input_tokens": 2649,
+        "literal_target_exact_casefold": 0,
+        "literal_target_substring": 0,
+        "literal_unknown": 0,
+        "output_tokens": 368,
+        "publisher_witness_delivered": 16
+      }
+    }
+  },
+  "per_original_family": {
+    "conv-47": {
+      "literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 3
+      },
+      "not_literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 0
+      }
+    },
+    "conv-48": {
+      "literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 2
+      },
+      "not_literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 0
+      }
+    },
+    "conv-49": {
+      "literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 2
+      },
+      "not_literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 3,
+        "changed_witness_to_lesion": 3,
+        "witness_target_substring": 0
+      }
+    },
+    "conv-50": {
+      "literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 1
+      },
+      "not_literal_in_annotated_source": {
+        "cases": 4,
+        "changed_retrieved_to_witness": 4,
+        "changed_witness_to_lesion": 4,
+        "witness_target_substring": 0
+      }
+    }
+  },
+  "plan_sha256": "26a4d5a4883c98d61d9405f739dda7e49f433370c30290275f0f04441d7067c8",
+  "production_authorized": false,
+  "prospective_calendar_windows": 0,
+  "reader_execution_cpu_seconds": 436.355115514,
+  "reader_execution_wall_seconds": 227.12585237800005,
+  "reference_reader_actual_calls": 0,
+  "retrospective_question_count": 32,
+  "schema": "hepta.stem.v16.original-literal-answer-witness.shadow.v1.sanitized-historical-literal-diagnostic",
+  "stem_winner_verified": false,
+  "unique_original_source_families": 4,
+  "v6_seed41_retention_fixed": false
+}

@@ -1,0 +1,73 @@
+{
+  "base_commit": "66f80b18c72dc41e67dad554a426357d5a0de6e1",
+  "ci_source_only_does_not_attest_physical_pretrained_inference": true,
+  "external_human_review_complete": false,
+  "independent_future_windows": 0,
+  "parent_pr": 2429,
+  "physical_pretrained_original_executed_in_isolated_host": true,
+  "production_authorized": false,
+  "publisher_answer_literal_is_not_semantic_accuracy": true,
+  "schema": "hepta.stem.v18.original-factorial-source-manifest.v1",
+  "source_and_artifact_files": [
+    {
+      "git_blob_sha1": "07aa286e4163247d60b7a2f3595788276437ae7d",
+      "path": "qualification/stem-cell-v1/v18_factorial_original_reader.py",
+      "sha256": "a2402bd78176eeb696f3b2ef57b569a82a42bb81646d620a5835a38d26b0392d",
+      "size_bytes": 8270
+    },
+    {
+      "git_blob_sha1": "4b0af9e76f1d27f8349276d504b9dcc6587d1f22",
+      "path": "qualification/stem-cell-v1/v18_independent_original_review.py",
+      "sha256": "2a007695232eadba5afee3a1e7b57e72fd36930218a0a8f58286aabc07b29feb",
+      "size_bytes": 12379
+    },
+    {
+      "git_blob_sha1": "584a11e8fda9f721ea211481bc0f29c4ae08fa37",
+      "path": "qualification/stem-cell-v1/v18_blind_review_tickets.py",
+      "sha256": "239ab53bef0f164c3045048042c1d1664c007d0cc1e9e05aa03ed3ff5ac5e5cc",
+      "size_bytes": 3839
+    },
+    {
+      "git_blob_sha1": "a2fa727215687032a0e6ce7ebbaa5606fc1e35c0",
+      "path": "qualification/stem-cell-v1/v18_public_no_go.py",
+      "sha256": "ce1486e7b8e126fbcb62bb925f5341bcd4c7655300300d224b62fbf81edcad98",
+      "size_bytes": 7502
+    },
+    {
+      "git_blob_sha1": "da2e65d7837307667017de1e3276a4be2c7eaf1c",
+      "path": "qualification/stem-cell-v1/test_v18_factorial_contract.py",
+      "sha256": "5536010afb3cc35d2745bd8979bd7ce811ae81dcebea3b016f0afc54a08a7e40",
+      "size_bytes": 7770
+    },
+    {
+      "git_blob_sha1": "f1b2c67ac0f380bc3fd85ec67bbd6bc176cbe83b",
+      "path": "qualification/stem-cell-v1/test_v18_blind_review.py",
+      "sha256": "b611df21439aa1b9372075736c1959849a644b676bc98a051b3d6f4981a6d8b4",
+      "size_bytes": 1805
+    },
+    {
+      "git_blob_sha1": "1dd786f1a6b1414c39404beacec16f48d27d5de9",
+      "path": "qualification/stem-cell-v1/test_v18_public_no_go.py",
+      "sha256": "76bd84655b3a71e3e35d3e01c357948264fa70e08617b39cc26accf2eacc7c89",
+      "size_bytes": 2512
+    },
+    {
+      "git_blob_sha1": "b120eba6eaf7accf59b19838a4e38858a33485b2",
+      "path": "qualification/stem-cell-v1/STEM_V18_FACTORIAL_ORIGINAL_NEGATIVE_20261016.json",
+      "sha256": "1cb49faa07cca61ac49d959a7c30f1dadf244f27fbd666f79ff5e3b422a8892e",
+      "size_bytes": 6705
+    },
+    {
+      "git_blob_sha1": "a222d9d19c7b0ce255c83bfec8adb094606f5cb7",
+      "path": "qualification/stem-cell-v1/STEM_V18_FACTORIAL_ISOLATION_20261016.md",
+      "sha256": "90b0783340657bb5a748979d826479074a0029e23fd3f4a9540013dab7e0499c",
+      "size_bytes": 7798
+    },
+    {
+      "git_blob_sha1": "1e7a2f9ac84b384645621ccfb7f5a2e4e7bc45a5",
+      "path": ".github/workflows/hepta-stem-v18-reader-factorial-audit.yml",
+      "sha256": "5ac86d9aeb864865f107bbc125fa515cff0aa4061fcb61a985e2ecf5f060420d",
+      "size_bytes": 1947
+    }
+  ]
+}

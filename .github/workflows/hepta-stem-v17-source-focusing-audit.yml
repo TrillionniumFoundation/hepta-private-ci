@@ -1,0 +1,54 @@
+name: hepta-stem-v17-source-focusing-audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v17_*.py'
+      - 'qualification/stem-cell-v1/test_v17_*.py'
+      - 'qualification/stem-cell-v1/STEM_V17_*.json'
+      - 'qualification/stem-cell-v1/STEM_V17_*.md'
+      - '.github/workflows/hepta-stem-v17-source-focusing-audit.yml'
+  push:
+    branches:
+      - research/stem-v15-original-reader-witness-20261016
+    paths:
+      - 'qualification/stem-cell-v1/v17_*.py'
+      - 'qualification/stem-cell-v1/test_v17_*.py'
+      - 'qualification/stem-cell-v1/STEM_V17_*.json'
+      - '.github/workflows/hepta-stem-v17-source-focusing-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-no-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve exact checkout
+        run: |
+          git rev-parse HEAD | tee "$RUNNER_TEMP/v17-head-sha.txt"
+      - name: Original source-only Python mechanism tests; no model claim
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v17_*.py' -v 2>&1 | tee "$RUNNER_TEMP/v17-tests.txt"
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v17_*.py' -v 2>&1 | tee "$RUNNER_TEMP/v17-opt-tests.txt"
+          python -m compileall -q qualification/stem-cell-v1/v17_source_focusing.py qualification/stem-cell-v1/v17_independent_original_review.py qualification/stem-cell-v1/v17_public_no_go.py
+          python qualification/stem-cell-v1/v17_public_no_go.py \
+            --receipt qualification/stem-cell-v1/STEM_V17_ORIGINAL_READER_FOCUS_NEGATIVE_20261016.json \
+              | tee "$RUNNER_TEMP/v17-negative-gate.txt"
+      - name: Retain only sanitized original-source mechanism observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v17-source-only-audit
+          path: |
+            ${{ runner.temp }}/v17-head-sha.txt
+            ${{ runner.temp }}/v17-tests.txt
+            ${{ runner.temp }}/v17-opt-tests.txt
+            ${{ runner.temp }}/v17-negative-gate.txt
+          if-no-files-found: ignore

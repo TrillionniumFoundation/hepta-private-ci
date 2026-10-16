@@ -1,0 +1,59 @@
+name: hepta-stem-v19-original-window-audit
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v19_*.py'
+      - 'qualification/stem-cell-v1/test_v19_*.py'
+      - 'qualification/stem-cell-v1/STEM_V19_*'
+      - '.github/workflows/hepta-stem-v19-context-window-negative.yml'
+  push:
+    branches:
+      - research/stem-v15-original-reader-witness-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-adversarial-and-original-negative:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile exact original audit source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile qualification/stem-cell-v1/v19_*.py qualification/stem-cell-v1/test_v19_*.py
+      - name: Execute source-only tests (no original model, no gold)
+        shell: bash
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          python -m unittest -v \
+            qualification/stem-cell-v1/test_v19_source_mechanisms.py \
+            qualification/stem-cell-v1/test_v19_public_no_go.py \
+            qualification/stem-cell-v1/test_v19_blind_review.py
+          python -O -m unittest -v \
+            qualification/stem-cell-v1/test_v19_source_mechanisms.py \
+            qualification/stem-cell-v1/test_v19_public_no_go.py \
+            qualification/stem-cell-v1/test_v19_blind_review.py
+      - name: Independently recount historical negative publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v19_public_no_go.py \
+            qualification/stem-cell-v1/STEM_V19_ORIGINAL_CONTEXT_WINDOWS_20261016.json \
+            | tee "$RUNNER_TEMP/v19-source-no-go.json"
+      - name: Preserve non-authorizing source-only decision
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v19-original-context-negative-source-only
+          path: ${{ runner.temp }}/v19-source-no-go.json
+          if-no-files-found: ignore

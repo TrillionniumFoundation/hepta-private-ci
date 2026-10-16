@@ -1,0 +1,41 @@
+name: hepta-stem-v16-literal-witness-audit
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v16_*.py"
+      - "qualification/stem-cell-v1/test_v16_*.py"
+      - "qualification/stem-cell-v1/STEM_V16_*.md"
+      - "qualification/stem-cell-v1/V16_*.json"
+      - ".github/workflows/hepta-stem-v16-literal-witness-audit.yml"
+  push:
+    branches:
+      - research/stem-v15-original-reader-witness-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile source and run normal and optimized negative contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v16_literal_witness_reader.py qualification/stem-cell-v1/v16_original_reader_recount.py qualification/stem-cell-v1/v16_independent_gold_recount.py qualification/stem-cell-v1/v16_repeat_review.py qualification/stem-cell-v1/v16_public_no_go.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v16_*.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v16_*.py' -v
+      - name: Independently enforce negative physical-source report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v16_public_no_go.py \
+            --report qualification/stem-cell-v1/V16_LITERAL_READER_ORIGINAL_NEGATIVE_20261016.json \
+            --byte-recount qualification/stem-cell-v1/V16_ORIGINAL_BYTE_RECOUNT_20261016.json \
+            --gold-recount qualification/stem-cell-v1/V16_ORIGINAL_GOLD_RECOUNT_20261016.json \
+            --repeat qualification/stem-cell-v1/V16_ORIGINAL_DOUBLE_REPLAY_20261016.json

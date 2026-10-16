@@ -1,0 +1,45 @@
+name: hepta-stem-v18-reader-factorial-audit
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v18_*.py"
+      - "qualification/stem-cell-v1/test_v18_*.py"
+      - "qualification/stem-cell-v1/STEM_V18_*.json"
+      - "qualification/stem-cell-v1/STEM_V18_*.md"
+      - ".github/workflows/hepta-stem-v18-reader-factorial-audit.yml"
+  push:
+    branches:
+      - research/stem-v15-original-reader-witness-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-negative:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Original-source negative mechanism/contract tests (no pretrained downloads)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/v18-exact-sha.txt"
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v18_*.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v18_*.py' -v 2>&1 | tee "$RUNNER_TEMP/v18-contract.log"
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v18_*.py' -v 2>&1 | tee "$RUNNER_TEMP/v18-contract-optimized.log"
+          python qualification/stem-cell-v1/v18_public_no_go.py --receipt qualification/stem-cell-v1/STEM_V18_FACTORIAL_ORIGINAL_NEGATIVE_20261016.json > "$RUNNER_TEMP/v18-deny.json"
+      - name: Retain immutable source-only proof (not physical model verification)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v18-source-only-deny
+          path: |
+            ${{ runner.temp }}/v18-exact-sha.txt
+            ${{ runner.temp }}/v18-contract.log
+            ${{ runner.temp }}/v18-contract-optimized.log
+            ${{ runner.temp }}/v18-deny.json
+          if-no-files-found: ignore
