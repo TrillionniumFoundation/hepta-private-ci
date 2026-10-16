@@ -6,7 +6,6 @@ independent dataset/model publisher custody, gradient replay or future utility.
 import argparse
 import hashlib
 import json
-import math
 import zipfile
 from pathlib import Path
 
