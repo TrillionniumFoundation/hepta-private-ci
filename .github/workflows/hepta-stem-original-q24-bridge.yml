@@ -1,0 +1,148 @@
+name: hepta-stem-original-q24-bridge-research
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_q24_original_*"
+      - "qualification/stem-cell-v1/test_stem_q24_original_bridge_v1.py"
+      - "qualification/stem-cell-v1/STEM_ORIGINAL_Q24_BRIDGE_SCOPE_20261016.md"
+      - ".github/workflows/hepta-stem-original-q24-bridge.yml"
+  push:
+    branches:
+      - research/stem-original-q24-bridge-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-original-q24-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-q24-mechanism:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU numerical research dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Record exact code and run normal plus optimized adversarial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/original-q24-source.txt"
+          python -m unittest -v qualification/stem-cell-v1/test_stem_q24_original_bridge_v1.py 2>&1 | tee "$RUNNER_TEMP/original-q24-normal.log"
+          python -O -m unittest -v qualification/stem-cell-v1/test_stem_q24_original_bridge_v1.py 2>&1 | tee "$RUNNER_TEMP/original-q24-optimized.log"
+          python -m compileall -q qualification/stem-cell-v1/stem_q24_original_bridge_v1.py qualification/stem-cell-v1/stem_q24_original_review_v1.py
+      - name: Keep source/fixture logs, not model results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-original-q24-source-only
+          path: |
+            ${{ runner.temp }}/original-q24-source.txt
+            ${{ runner.temp }}/original-q24-normal.log
+            ${{ runner.temp }}/original-q24-optimized.log
+          if-no-files-found: warn
+
+  real-public-original-encoder:
+    needs: original-q24-mechanism
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact original CPU ModernBERT dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Physically acquire and validate pinned original ModernBERT
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/original-q24-physical-source.txt"
+          python qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public \
+            --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --output "$RUNNER_TEMP/public-pretrained-encoder" \
+            > "$RUNNER_TEMP/physical-encoder.log" 2>&1
+      - name: Acquire original BANKING77 with HELD labels separate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/stem_q24_original_bridge_v1.py stage \
+            --output "$RUNNER_TEMP/original-source" > "$RUNNER_TEMP/original-data.log" 2>&1
+      - name: Execute 96 original Encoder forwards and train Q24 Cells
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/stem_q24_original_bridge_v1.py produce \
+            --public-probe "$RUNNER_TEMP/public-pretrained-encoder" \
+            --inputs "$RUNNER_TEMP/original-source/producer-inputs.json" \
+            --output "$RUNNER_TEMP/original-q24-run" \
+            > "$RUNNER_TEMP/physical-q24-producer.log" 2>&1
+      - name: Independent NumPy readback of Q24 and Cell predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/stem_q24_original_review_v1.py \
+            --run "$RUNNER_TEMP/original-q24-run" \
+            --inputs "$RUNNER_TEMP/original-source/producer-inputs.json" \
+            --observer-labels "$RUNNER_TEMP/original-source/observer-labels.json" \
+            --output "$RUNNER_TEMP/original-q24-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          base=Path(os.environ['RUNNER_TEMP'])
+          producer=json.loads((base/'original-q24-run/PRODUCER.json').read_text())
+          review=json.loads((base/'original-q24-review.json').read_text())
+          assert producer['source_class']=='ORIGINAL_PUBLIC_MODERNBERT'
+          assert producer['encoder_forward_count']==96
+          assert review['q24_all_96_numerically_recomputed'] is True
+          assert review['independent_numpy_96_arm_predictions'] is True
+          assert review['authority']=='DENY_ALL'
+          assert review['production_authorized'] is False
+          assert review['decision']=='HOLD_NO_GO'
+          PY
+      - name: Publish sanitized physical fact/cost receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-original-public-q24-physical-receipts
+          path: |
+            ${{ runner.temp }}/original-q24-physical-source.txt
+            ${{ runner.temp }}/original-q24-run/PRODUCER.json
+            ${{ runner.temp }}/original-q24-review.json
+          if-no-files-found: warn
