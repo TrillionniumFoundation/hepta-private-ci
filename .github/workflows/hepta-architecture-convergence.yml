@@ -266,6 +266,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-current-euid.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib original_control_wal_requires_effective_uid_for_private_owner_and_reopen -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-bounded-tail.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-original-pending-begin-readonly.json" --minimum-tests 4 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib original_pending_begin_inspector_ -- --nocapture --test-threads=1
+      - name: Early Neuron effect-intent strict Clippy
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Repeat the actual Bazel-rejected severity before the expensive
+          # multi-platform graph; no allow or ignored diagnostic is permitted.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-strict-test-fixtures-clippy.json" --minimum-tests 0 -- cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D clippy::expect-used
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
