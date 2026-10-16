@@ -153,7 +153,9 @@ jobs:
   cargo_shear:
     timeout-minutes: 30
     name: cargo shear
-    runs-on: ubuntu-24.04
+    # The identical pinned tool and --locked policy passed on hosted ARM64.
+    # Isolated run 38854512686, job 116822866100.
+    runs-on: ubuntu-24.04-arm
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
     defaults:
