@@ -1,0 +1,247 @@
+{
+  "schema": "hepta.stem.stable-router.v15.executed-summary",
+  "source_parent": "ea9bab9f643047fa4a66fc6523b03b0c03f5d7a1",
+  "first_review": {
+    "archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+    "blind_probability_rows_replayed": 768,
+    "calibration_probability_rows_replayed": 768,
+    "candidate_resident_scalars": {
+      "centroid": 3848,
+      "continued": 1540,
+      "frozen": 1540,
+      "task": 4233,
+      "wide": 4267
+    },
+    "feature_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+    "future_utility_gain": null,
+    "held_labels_read": false,
+    "held_scores": null,
+    "independent_gradient_reexecution": false,
+    "independent_retention": null,
+    "input_sha256": "d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a",
+    "learned_parameter_bundles": 45,
+    "max_numeric_error": 3.2782554626464844e-07,
+    "model_files_replayed": 58,
+    "new_encoder_forwards": 0,
+    "normalizer_shared_scalars": 384,
+    "oof_teacher_logits_replayed": 1536,
+    "p99": null,
+    "producer_sha256": "7a998eebeab237b20c004f4cb4ef19adc48ad3e03ddb778658373049745decdd",
+    "production_authorized": false,
+    "prospective_efficacy_verified": false,
+    "schema": "hepta.stem.stable-router.v15.research.numpy-review",
+    "sealed_sha256": "5a01630458767c9a09f12d6fb531e982a3d36651e9c98d8175a8123f534b4744",
+    "seeds": {
+      "41": {
+        "calibration_brier": {
+          "centroid": 0.630271647720275,
+          "centroid_shuffled": 0.6282868300346167,
+          "centroid_swapped": 0.6552867330773888,
+          "continued": 0.5952982355367196,
+          "frozen": 0.6715509775713413,
+          "task": 0.6656285316630475,
+          "task_swapped": 0.6199298491346165,
+          "wide": 0.5954588647863994
+        },
+        "calibration_correct": {
+          "centroid": 18,
+          "centroid_shuffled": 18,
+          "centroid_swapped": 14,
+          "continued": 18,
+          "frozen": 10,
+          "task": 11,
+          "task_swapped": 21,
+          "wide": 18
+        },
+        "fit_loop_cpu_ns_reported": 475013742,
+        "old_train_brier": {
+          "centroid": 0.47915257943613687,
+          "continued": 0.476808850619811,
+          "frozen": 0.5797423942119204,
+          "task": 0.568394575495494,
+          "wide": 0.47554913073666916
+        },
+        "oof_target_counts": [
+          34,
+          30
+        ],
+        "optimizer_steps_reported": 1200,
+        "raw_calibration": {
+          "raw_continue": {
+            "brier": 0.558923602104187,
+            "correct": 23
+          },
+          "raw_parent": {
+            "brier": 1.6875,
+            "correct": 5
+          }
+        },
+        "raw_parent_loss_after": 255.3128204345703,
+        "selected_research_candidate": "continued",
+        "stable_parent_loss_after": 1.0749284029006958
+      },
+      "47": {
+        "calibration_brier": {
+          "centroid": 0.6354031188707568,
+          "centroid_shuffled": 0.6504832576496584,
+          "centroid_swapped": 0.64995119412759,
+          "continued": 0.6033997731106991,
+          "frozen": 0.6554431595058765,
+          "task": 0.664531317498716,
+          "task_swapped": 0.6208229954996308,
+          "wide": 0.6069826056906893
+        },
+        "calibration_correct": {
+          "centroid": 18,
+          "centroid_shuffled": 17,
+          "centroid_swapped": 14,
+          "continued": 17,
+          "frozen": 14,
+          "task": 18,
+          "task_swapped": 14,
+          "wide": 16
+        },
+        "fit_loop_cpu_ns_reported": 479391323,
+        "old_train_brier": {
+          "centroid": 0.47983718152024657,
+          "continued": 0.48016086865634255,
+          "frozen": 0.5749024984207809,
+          "task": 0.5683435606050893,
+          "wide": 0.4806770401282815
+        },
+        "oof_target_counts": [
+          29,
+          35
+        ],
+        "optimizer_steps_reported": 1200,
+        "raw_calibration": {
+          "raw_continue": {
+            "brier": 1.1875,
+            "correct": 13
+          },
+          "raw_parent": {
+            "brier": 1.375,
+            "correct": 10
+          }
+        },
+        "raw_parent_loss_after": 124.84998321533203,
+        "selected_research_candidate": "continued",
+        "stable_parent_loss_after": 1.0697453022003174
+      },
+      "53": {
+        "calibration_brier": {
+          "centroid": 0.6288818228896851,
+          "centroid_shuffled": 0.6561364112781554,
+          "centroid_swapped": 0.6542675121455124,
+          "continued": 0.595784973796891,
+          "frozen": 0.6593908261057213,
+          "task": 0.662354641589175,
+          "task_swapped": 0.6207946934460224,
+          "wide": 0.5973454177638664
+        },
+        "calibration_correct": {
+          "centroid": 17,
+          "centroid_shuffled": 15,
+          "centroid_swapped": 14,
+          "continued": 17,
+          "frozen": 15,
+          "task": 11,
+          "task_swapped": 20,
+          "wide": 16
+        },
+        "fit_loop_cpu_ns_reported": 474869316,
+        "old_train_brier": {
+          "centroid": 0.4826077091879721,
+          "continued": 0.4797612977320473,
+          "frozen": 0.5785769538713876,
+          "task": 0.5830393752560517,
+          "wide": 0.4801294469294753
+        },
+        "oof_target_counts": [
+          34,
+          30
+        ],
+        "optimizer_steps_reported": 1200,
+        "raw_calibration": {
+          "raw_continue": {
+            "brier": 0.7002847790718079,
+            "correct": 20
+          },
+          "raw_parent": {
+            "brier": 1.375,
+            "correct": 10
+          }
+        },
+        "raw_parent_loss_after": 140.462158203125,
+        "selected_research_candidate": "continued",
+        "stable_parent_loss_after": 1.076131820678711
+      }
+    },
+    "status": "CALIBRATION_ONLY_NO_EFFICACY_CLAIM",
+    "target_host_qualified": false,
+    "throughput_4096_cells": null
+  },
+  "second_seal_sha256": "dc6bdb17ee4bfd633e1dba0585133bdab9e04519f1d5b6e5e61a46823ac2f57c",
+  "replication": {
+    "replicas": [
+      {
+        "replica": "metered_a",
+        "exit_code": 0,
+        "wall_ns": 4536143880,
+        "user_cpu_seconds": 4.107827,
+        "system_cpu_seconds": 0.425442,
+        "peak_rss_bytes": 332451840,
+        "major_faults": 0,
+        "scope": "Linux wait4 whole child includes Python/Torch import, training, persistence; excludes original Encoder and preparation"
+      },
+      {
+        "replica": "metered_b",
+        "exit_code": 0,
+        "wall_ns": 4411248534,
+        "user_cpu_seconds": 4.030188,
+        "system_cpu_seconds": 0.375308,
+        "peak_rss_bytes": 332382208,
+        "major_faults": 0,
+        "scope": "Linux wait4 whole child includes Python/Torch import, training, persistence; excludes original Encoder and preparation"
+      }
+    ],
+    "model_file_sha_equal": 58,
+    "calibration_probability_rows_equal": 768,
+    "blind_probability_rows_equal": 768,
+    "out_of_fold_logits_equal": 1536,
+    "steps_per_campaign": 3600,
+    "held_labels_read": false,
+    "held_scores": null,
+    "production_authorized": false,
+    "target_host_qualified": false
+  },
+  "test_counts": {
+    "v15_normal": 36,
+    "v15_optimized": 36,
+    "v14_v15_normal": 66,
+    "skipped": 0,
+    "v14_v15_optimized": 66
+  },
+  "source_sha256": {
+    "stem_stable_router_v15.py": "7a998eebeab237b20c004f4cb4ef19adc48ad3e03ddb778658373049745decdd",
+    "stem_stable_router_v15_review.py": "a3026531adc42a6036c08a697e4eee77a61a2620cabbbe6e2e2a0ad7bb097464",
+    "test_stem_stable_router_v15.py": "a049925ebe1eca8fd876690c69bf5b632279679230aededdd07819f9b705d3cb"
+  },
+  "os_measurement_source_sha256": "ce96975145b915c29b2b9f2df5764052832d1fc024be324c529cdbbb7a4899e0",
+  "notes": [
+    "All reported quality numbers use the existing 32-row CALIBRATION set, not heldout/future data.",
+    "45 trained parameter bundles and 13 normalizer snapshots, 58 files total, per complete campaign.",
+    "Repeated real-feature runs are repeatability evidence, not new independent samples.",
+    "Whole-child OS costs include imports, training and checkpoint writes; exclude prior Encoder, preparation and independent reviewer.",
+    "Task-gate teachers are out-of-fold but fold expert IDs have only a numeric convention, not certified semantic alignment.",
+    "No original production model, native Q24, CAS/CNS/FinalUse or main changes."
+  ],
+  "hosted_ci_pass": false,
+  "production_authorized": false,
+  "held_scores": null,
+  "raw_train_norm_range": [
+    54.4135627746582,
+    65.83889770507812
+  ],
+  "normalized_train_max_norm": 1.0000001192092896
+}
