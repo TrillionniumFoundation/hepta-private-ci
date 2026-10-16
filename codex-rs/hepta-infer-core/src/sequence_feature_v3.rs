@@ -387,6 +387,11 @@ impl SequenceFeatureCacheV3 {
     }
 
     #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.snapshots.is_empty()
+    }
+
+    #[must_use]
     pub fn resident_payload_bytes(&self) -> usize {
         self.resident_payload_bytes
     }
@@ -459,6 +464,25 @@ mod tests {
                 .is_none()
         );
         assert_eq!(item.values_q24(), &[1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn cache_is_empty_matches_insert_and_expiry() {
+        let mut cache = SequenceFeatureCacheV3::new(2, 100).expect("cache");
+        assert!(cache.is_empty());
+        assert_eq!(cache.len(), 0);
+        assert_eq!(cache.resident_payload_bytes(), 0);
+
+        let id = identity("principal-a", FeatureModalityV3::Text);
+        let item = cache.insert(10, make(id)).expect("insert");
+        assert!(!cache.is_empty());
+        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.resident_payload_bytes(), item.payload_bytes());
+
+        assert_eq!(cache.purge_expired(100), 1);
+        assert!(cache.is_empty());
+        assert_eq!(cache.len(), 0);
+        assert_eq!(cache.resident_payload_bytes(), 0);
     }
 
     #[test]
