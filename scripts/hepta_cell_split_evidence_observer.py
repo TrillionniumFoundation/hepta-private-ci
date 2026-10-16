@@ -248,7 +248,9 @@ def main() -> int:
             sort_keys=True,
         )
     )
-    return 0
+    # Preserve negative raw evidence, but never give an orchestration gate a
+    # successful process status when the frozen comparison itself failed.
+    return 0 if ledger["comparative_gate_passed"] else 1
 
 
 if __name__ == "__main__":
