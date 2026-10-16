@@ -1267,6 +1267,70 @@ mod tests {
         assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
     }
 
+    #[test]
+    fn late_evidence_sink_cannot_back_certify_unmetered_cas() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-late"),
+            SigningKey::from_bytes(&[28; 32]),
+        )
+        .expect("owner");
+        let completed: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-late"),
+            Digest32::of_bytes(b"operation.metrics-late"),
+            PhaseMetricKindV1::Cas,
+            || Ok(9),
+        );
+        assert_eq!(completed, Ok(9));
+        assert_eq!(owner.latency_observations().cas.observations, 1);
+        assert!(!owner.production_metrics_ready());
+
+        let late = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(late.metrics.is_none());
+        assert!(!late.production_metrics_ready());
+        assert!(!late.flush_production_metrics());
+    }
+
+    #[test]
+    fn cross_clone_evidence_rebind_poisons_original_metrics_owner() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-clone"),
+            SigningKey::from_bytes(&[29; 32]),
+        )
+        .expect("owner");
+        let sibling = owner.clone();
+        let first = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(first.production_metrics_ready());
+
+        let conflicting = sibling.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(conflicting.metrics.is_none());
+        assert!(!conflicting.production_metrics_ready());
+        assert!(!first.production_metrics_ready());
+        assert!(!first.flush_production_metrics());
+    }
+
+    #[test]
+    fn unmetered_clone_revokes_previously_healthy_evidence_owner() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-sibling"),
+            SigningKey::from_bytes(&[30; 32]),
+        )
+        .expect("owner");
+        let unmetered_clone = owner.clone();
+        let active = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(active.production_metrics_ready());
+
+        let result: Result<(), ()> = unmetered_clone.timed(
+            Digest32::of_bytes(b"scope.metrics-sibling"),
+            Digest32::of_bytes(b"operation.metrics-sibling"),
+            PhaseMetricKindV1::Signature,
+            || Ok(()),
+        );
+        assert_eq!(result, Ok(()));
+        assert!(!active.production_metrics_ready());
+        assert!(!active.flush_production_metrics());
+        assert_eq!(active.latency_observations().signature.observations, 1);
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
