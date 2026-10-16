@@ -194,7 +194,6 @@ class IndependentByteCustodyTests(unittest.TestCase):
         self.assertFalse(ledger["comparative_gate_passed"])
         self.assertFalse(ledger["production_activation_authorized"])
 
-
     def test_cli_negative_comparison_exits_nonzero_without_erasing_custody(self):
         from hepta_cell_split_evidence_observer import main
 
