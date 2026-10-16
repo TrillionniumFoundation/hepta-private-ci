@@ -1,0 +1,122 @@
+name: Hepta P0 compact real pretrained paired AG News (DENY_ALL)
+on:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: p0-compact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  paired-real-checkpoints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      PYTHONHASHSEED: '0'
+      OUTPUT_ROOT: /tmp/p0-compact-output
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          path: p0-upstream
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact checkout and independent source provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT_ROOT" "$RUNNER_TEMP/p0-secret"
+          git rev-parse HEAD | tee "$OUTPUT_ROOT/current-source.sha"
+          test "$(git -C p0-upstream rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          git -C p0-upstream status --porcelain | tee "$OUTPUT_ROOT/upstream-status.txt"
+          test ! -s "$OUTPUT_ROOT/upstream-status.txt"
+          python --version
+          sha256sum experiments/ndu_tree_fbsde_gates/p0_compact*.py | tee "$OUTPUT_ROOT/script-digests.txt"
+      - name: Pin local-CPU pretrained runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --no-cache-dir transformers==4.57.1 huggingface-hub==0.36.0 safetensors==0.6.2 pyarrow==21.0.0 packaging==25.0
+          python -m pip check
+          python -m pip freeze | tee "$OUTPUT_ROOT/requirements-actually-installed.txt"
+      - name: Mechanism regressions before downloading models
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/ndu_tree_fbsde_gates python -W error::ResourceWarning -m unittest \
+            discover -s experiments/ndu_tree_fbsde_gates -p 'test_p0_compact_paired.py' -v \
+            2>&1 | tee "$OUTPUT_ROOT/offline-tests.log"
+      - name: Acquire two exact-hash public parquet inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/p0-upstream/qualification/neuron-dynamic-learning"
+          python p0-upstream/qualification/neuron-dynamic-learning/public_agnews_source.py \
+            --role train --destination "$RUNNER_TEMP/p0-secret/train.parquet" | tee "$OUTPUT_ROOT/train-input.json"
+          python p0-upstream/qualification/neuron-dynamic-learning/public_agnews_source.py \
+            --role calibration_test --destination "$RUNNER_TEMP/p0-secret/val1.parquet" | tee "$OUTPUT_ROOT/val1-input.json"
+          python p0-upstream/qualification/neuron-dynamic-learning/public_agnews_panel.py \
+            --train-parquet "$RUNNER_TEMP/p0-secret/train.parquet" \
+            --holdout-parquet "$RUNNER_TEMP/p0-secret/val1.parquet" \
+            --output "$RUNNER_TEMP/p0-secret/original-panel.json" \
+            --receipt "$OUTPUT_ROOT/original-panel-receipt.json"
+          echo "2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4  $RUNNER_TEMP/p0-secret/original-panel.json" | sha256sum -c -
+      - name: Reacquire exact successful Gemma/Laya historical artifact ZIP
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --retry-all-errors --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" \
+            -o "$RUNNER_TEMP/p0-secret/reference-11886761368.zip"
+          echo "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d  $RUNNER_TEMP/p0-secret/reference-11886761368.zip" | sha256sum -c -
+      - name: Freeze 128 train, 32 calibration, 64 prior test and 128 untouched val2 source-only inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/ndu_tree_fbsde_gates/p0_compact_paired.py prepare \
+            --original "$RUNNER_TEMP/p0-secret/original-panel.json" \
+            --artifact "$RUNNER_TEMP/p0-secret/reference-11886761368.zip" \
+            --output-source "$RUNNER_TEMP/p0-secret/source-only.json" \
+            --output-labels "$RUNNER_TEMP/p0-secret/future-labels.json" | tee "$OUTPUT_ROOT/source-freeze.json"
+      - name: Execute actual pinned Granite 97M and mmBERT small CPU encoders plus three Head arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          for m in granite97 mmbert_small; do
+            python experiments/ndu_tree_fbsde_gates/p0_compact_paired.py execute \
+              --model "$m" --source "$RUNNER_TEMP/p0-secret/source-only.json" \
+              --output "$OUTPUT_ROOT/$m.report.json" | tee "$OUTPUT_ROOT/$m.stdout.log"
+          done
+          sha256sum "$OUTPUT_ROOT/"*.report.json | tee "$OUTPUT_ROOT/pre-score-seals.sha256"
+      - name: Independently evaluate already sealed per-row predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/ndu_tree_fbsde_gates/p0_compact_score.py \
+            --source "$RUNNER_TEMP/p0-secret/source-only.json" \
+            --labels "$RUNNER_TEMP/p0-secret/future-labels.json" \
+            --granite "$OUTPUT_ROOT/granite97.report.json" \
+            --mmbert "$OUTPUT_ROOT/mmbert_small.report.json" \
+            --historical "$RUNNER_TEMP/p0-secret/reference-11886761368.zip" \
+            --output "$OUTPUT_ROOT/independent-scores.json" | tee "$OUTPUT_ROOT/score-stdout.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p0-compact-real-pretrained-deny-all-${{ github.run_id }}
+          path: /tmp/p0-compact-output/
+          retention-days: 7
+          if-no-files-found: warn
