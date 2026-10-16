@@ -197,12 +197,19 @@ The original OCR physical artifact:
   numbers are physical execution evidence, **NOT OCR accuracy or a
   statistically selected Stem**.
 
-The native Gemma2 failure was the fail-closed source Token preflight
+The first native Gemma2 failure was the fail-closed source Token preflight
 `NativeBudgetError: native SentenceTransformer context ceiling absent or
-unreviewed`. The pinned original model's public text Config contains a
-very large positional bound while the **loaded SentenceTransformer
-runtime's `max_seq_length` was None**; neither is independently proven
-to be the model's 8,192-token multimodal serving contract. The repaired
+unreviewed`. A second original physical attempt [#38868183394]
+(https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38868183394)
+**also failed before actual embedding computation**, now at
+`NativeBudgetError: unexpected pre-existing native context would silently truncate`.
+The exact upstream safetensors and SentenceTransformer loaded successfully;
+the checked original `max_seq_length` had a populated but apparently
+shorter-than-8,192 default. The failure log does **not expose the precise
+default value**, so no specific lower default value is claimed.
+The original model's public model card states an 8,192-token shared
+multimodal context. A default SentenceTransformer inference length need
+not be equal to that maximum. The repaired
 `bind_verified_native_context` must run only **after** verifying the
 exact original model snapshot, owner profile and tokenization components,
 and must explicitly set the supported SentenceTransformer runtime setter
@@ -230,6 +237,23 @@ Gemma2 physical forward **NOT YET PASS**, five-arm independent TEST
 **NOT YET PASS**, newest context fixes and 17 extra OCR-readout negative
 unit methods **await their exact-SHA CI results**. No source-only or
 CPU-standalone test may substitute for missing original model outcome.
+
+### Second runtime context admission repair
+
+After exact pinned source/owner/weights verification, permit an actual
+SentenceTransformer default of `None` or an **integral 128–262,144**
+as *original state only*; a shorter default (such as 512 or 1,024)
+is no longer itself mistaken for absence of the model's documented 8K
+capability. **Nothing is inferred from that default**: immediately
+set the SentenceTransformer public property to 8,192 and check its
+first Transformer module property has also changed to exactly 8,192
+BEFORE any model `encode`. Unregistered source/profile, non-integers,
+bool, unreasonably small defaults, longer than registered bound, missing
+setter or mismatched readback always fail closed. All actual input
+sequences are still independently tokenized without truncation, with
+the conservative 1,120-per-image budget. The exact-head CI and actual
+original-model forward are required; these new negative fixtures are
+not yet a real model pass.
 
 ## Next gates
 
