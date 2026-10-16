@@ -19,6 +19,7 @@ use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
+use codex_hepta_neuron::NeuronSignedEffectAdmissionV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
@@ -324,12 +325,14 @@ where
         self.runtime.tick_with_ndu_snapshot(
             &mut model,
             input,
-            snapshot,
-            authenticated_read_receipt_digest,
-            effect_intent,
-            owner_id,
-            authority,
-            signed_grant,
+            NeuronSignedEffectAdmissionV1 {
+                snapshot,
+                admitted_read_receipt_digest: authenticated_read_receipt_digest,
+                effect_intent,
+                neuron_owner_id: owner_id,
+                authority,
+                signed_grant,
+            },
             || {
                 read_verifier
                     .verify(signed_read)
