@@ -1,0 +1,28 @@
+name: Full CI exact format and benchmark on Ubuntu 26
+on:
+  push:
+    branches: [ci/gha-full-general-ubuntu26-20261016]
+    paths: [.github/workflows/gha-full-general-ubuntu26.yml]
+permissions:
+  contents: read
+jobs:
+  general:
+    timeout-minutes: 30
+    name: Format / etc
+    runs-on: ubuntu-26.04
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+      - name: cargo fmt
+        run: cargo fmt -- --config imports_granularity=Item --check
+      - name: Rust benchmark smoke test
+        run: just bench-smoke
+
