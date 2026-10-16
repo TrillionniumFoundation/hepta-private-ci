@@ -173,6 +173,11 @@ def check_adjudication(plan, predictions, adjudication):
         require(type(row['correct']) is bool
                 and type(row['citations_entailed']) is bool,
                 'invalid correctness judgment')
+        if row['citations_entailed']:
+            require(bool(outputs[key]['cited_evidence_ids'])
+                    and not outputs[key]['abstained']
+                    and row['arm'] != 'none',
+                    'unanchored citation-entailment claim')
         judged[key] = row
     require(len(judged) == len(outputs), 'incomplete judgment')
     return outputs, judged
@@ -181,7 +186,8 @@ def check_adjudication(plan, predictions, adjudication):
 def report(plan, predictions, adjudication):
     outputs, scored = check_adjudication(plan, predictions, adjudication)
     tally = defaultdict(lambda: dict(cases=0, correct=0, citations_entailed=0,
-                                     abstained=0, input_tokens=0, output_tokens=0,
+                                     grounded_correct=0, abstained=0,
+                                     input_tokens=0, output_tokens=0,
                                      cpu_ms=0, wall_ms=0))
     for (case_id, reader, arm), row in outputs.items():
         score = scored[(case_id,reader,arm)]
@@ -189,24 +195,52 @@ def report(plan, predictions, adjudication):
         t['cases'] += 1
         t['correct'] += int(score['correct'])
         t['citations_entailed'] += int(score['citations_entailed'])
+        t['grounded_correct'] += int(score['correct'] and score['citations_entailed']
+                                     and not row['abstained']
+                                     and bool(row['cited_evidence_ids']))
         t['abstained'] += int(row['abstained'])
         for field in ('input_tokens','output_tokens','cpu_ms','wall_ms'):
             t[field] += row[field]
     diagnosis = defaultdict(int)
+    family_pairs = defaultdict(lambda: dict(
+        cases=0, candidate_sufficient_grounded=0, reference_sufficient_grounded=0,
+        candidate_retrieved_grounded=0, candidate_lesion_grounded=0,
+        sufficient_minus_retrieved=0, sufficient_minus_lesion=0))
     for case in plan['cases']:
         cid = case['id']
-        success = lambda reader,arm: scored[(cid,reader,arm)]['correct']
-        if not success('candidate','sufficient'):
-            if success('reference','sufficient'):
+        def raw_correct(reader, arm):
+            return scored[(cid,reader,arm)]['correct']
+        def grounded(reader, arm):
+            judgment = scored[(cid,reader,arm)]
+            response = outputs[(cid,reader,arm)]
+            return (judgment['correct'] and judgment['citations_entailed']
+                    and not response['abstained']
+                    and bool(response['cited_evidence_ids']))
+        sufficient = grounded('candidate','sufficient')
+        retrieved = grounded('candidate','retrieved')
+        lesion = grounded('candidate','lesion')
+        reference = grounded('reference','sufficient')
+        if not sufficient:
+            if reference:
                 diagnosis['reader_capacity_candidate'] += 1
             else:
                 diagnosis['even_reference_fails_sufficient'] += 1
-        if success('candidate','sufficient') and not success('candidate','retrieved'):
+        if sufficient and not retrieved:
             diagnosis['retrieval_or_evidence_selection'] += 1
-        if success('candidate','sufficient') and not success('candidate','lesion'):
+        if sufficient and not lesion:
             diagnosis['lesion_sensitive'] += 1
-        if success('candidate','none') and success('candidate','sufficient'):
+        if raw_correct('candidate','none') and sufficient:
             diagnosis['succeeds_without_evidence_also'] += 1
+        if raw_correct('candidate','sufficient') and not sufficient:
+            diagnosis['candidate_correct_sufficient_without_entailment'] += 1
+        root = family_pairs[case['family']]
+        root['cases'] += 1
+        root['candidate_sufficient_grounded'] += int(sufficient)
+        root['reference_sufficient_grounded'] += int(reference)
+        root['candidate_retrieved_grounded'] += int(retrieved)
+        root['candidate_lesion_grounded'] += int(lesion)
+        root['sufficient_minus_retrieved'] += int(sufficient) - int(retrieved)
+        root['sufficient_minus_lesion'] += int(sufficient) - int(lesion)
     return {
         'schema': SCHEMA + '.research-report',
         'plan_sha256': sha_obj(plan),
@@ -217,10 +251,13 @@ def report(plan, predictions, adjudication):
         'windows_claimed_not_authenticated':sorted({c['window'] for c in plan['cases']}),
         'per_reader_arm': {reader:{arm:tally[(reader,arm)] for arm in ARMS}
                            for reader in READERS},
+        'per_claimed_family_paired_not_authenticated':dict(sorted(family_pairs.items())),
         'diagnostics':{name:diagnosis[name] for name in (
             'reader_capacity_candidate','even_reference_fails_sufficient',
             'retrieval_or_evidence_selection','lesion_sensitive',
-            'succeeds_without_evidence_also')},
+            'succeeds_without_evidence_also',
+            'candidate_correct_sufficient_without_entailment')},
+        'source_family_independence_verified':False,
         'independent_human_attestation_verified':False,
         'original_pretrained_execution_verified_by_this_tool':False,
         'causal_learning_gain_verified':False,
