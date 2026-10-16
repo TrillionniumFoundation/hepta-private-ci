@@ -501,6 +501,7 @@ pub fn select_resource_portfolio_shadow_v1(
                 .checked_add(pair_value)
                 .map_err(|_| ResourcePortfolioError::Arithmetic)?;
         }
+        // The multiplier is a Q32 value; raw=2 would be sub-unit and erase the penalty.
         let pair_penalty = risk_aversion
             .checked_mul(pair_covariance)
             .and_then(|value| value.checked_mul(FixedQ32::from_raw(2_i64 << 32)))
