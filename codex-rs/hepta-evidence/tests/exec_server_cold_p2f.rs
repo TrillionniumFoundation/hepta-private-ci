@@ -36,11 +36,10 @@ struct Corpus {
     cases: Vec<Case>,
 }
 
-fn corpus() -> Corpus {
+fn corpus() -> Result<Corpus, serde_json::Error> {
     let corpus: Corpus = serde_json::from_str(include_str!(
         "../../../qualification/codex-exec-p2e/corpus.json"
-    ))
-    .expect("frozen shared P2e corpus");
+    ))?;
     assert_eq!(corpus.schema, 1);
     assert_eq!(corpus.authority, "DENY_ALL");
     assert_eq!(corpus.cases.len(), 50);
@@ -52,11 +51,14 @@ fn corpus() -> Corpus {
             .count(),
         EXPECTED_ACCEPTED
     );
-    corpus
+    Ok(corpus)
 }
 
-fn intent_for(operation_id: &str, raw: &[u8]) -> ExecutionIntentV1 {
-    ExecutionIntentV1 {
+fn intent_for(
+    operation_id: &str,
+    raw: &[u8],
+) -> Result<ExecutionIntentV1, std::num::TryFromIntError> {
+    Ok(ExecutionIntentV1 {
         schema_version: EXECUTION_ENVELOPE_SCHEMA_VERSION_V1,
         operation_id: operation_id.into(),
         subject_id: "agent:p2f".into(),
@@ -67,31 +69,30 @@ fn intent_for(operation_id: &str, raw: &[u8]) -> ExecutionIntentV1 {
         fence: 4,
         authority_epoch: 5,
         payload_sha256: Sha256Digest::for_bytes(raw),
-        payload_bytes: u32::try_from(raw.len()).expect("P2c max physical bytes"),
+        payload_bytes: u32::try_from(raw.len())?,
         deadline_unix_ms: 1_800_000_000_000,
         max_wall_ms: 2000,
-    }
+    })
 }
 
-fn config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("test directory"),
-    )
+fn config(temp: &TempDir) -> Result<SqliteConfig, Box<dyn std::error::Error>> {
+    let path = AbsolutePathBuf::try_from(temp.path().to_path_buf())?;
+    Ok(SqliteConfig::new_for_testing(path))
 }
 
 #[tokio::test]
 async fn every_admitted_wire_survives_original_sqlite_cold_recovery_but_is_denied() {
     const { assert!(!CODEX_EXEC_SERVER_P2C_EFFECT_AUTHORITY) };
-    let corpus = corpus();
+    let corpus = corpus().expect("frozen shared P2e corpus");
     let mut admitted = 0_usize;
     for case in corpus.cases.iter().filter(|case| case.hepta_accepts) {
         let raw = case.raw.as_bytes();
-        let intent = intent_for(&corpus.operation_id, raw);
+        let intent = intent_for(&corpus.operation_id, raw).expect("bounded P2c wire");
         let observation = inspect_codex_exec_server_start_v1(&intent, raw)
             .unwrap_or_else(|error| panic!("{}: P2c inspection: {error}", case.id));
         assert_eq!(observation.original_wire_sha256, intent.payload_sha256);
         let temp = TempDir::new().expect("test directory");
-        let cfg = config(&temp);
+        let cfg = config(&temp).expect("test directory");
         let writer = HeptaEvidenceStore::open(&cfg)
             .await
             .expect("original writer");
@@ -161,18 +162,18 @@ async fn every_admitted_wire_survives_original_sqlite_cold_recovery_but_is_denie
 
 #[tokio::test]
 async fn indeterminate_original_after_cold_reopen_remains_denied_without_retry() {
-    let corpus = corpus();
+    let corpus = corpus().expect("frozen shared P2e corpus");
     let case = corpus
         .cases
         .iter()
         .find(|case| case.hepta_accepts)
         .expect("P2c admitted case");
     let raw = case.raw.as_bytes();
-    let intent = intent_for(&corpus.operation_id, raw);
+    let intent = intent_for(&corpus.operation_id, raw).expect("bounded P2c wire");
     inspect_codex_exec_server_start_v1(&intent, raw).expect("original P2c preflight");
 
     let temp = TempDir::new().expect("test directory");
-    let cfg = config(&temp);
+    let cfg = config(&temp).expect("test directory");
     let writer = HeptaEvidenceStore::open(&cfg)
         .await
         .expect("original writer");
@@ -215,11 +216,11 @@ async fn indeterminate_original_after_cold_reopen_remains_denied_without_retry()
 
 #[test]
 fn all_unadmitted_wires_are_rejected_before_test_only_evidence_composition() {
-    let corpus = corpus();
+    let corpus = corpus().expect("frozen shared P2e corpus");
     let mut excluded = 0_usize;
     for case in corpus.cases.iter().filter(|case| !case.hepta_accepts) {
         let raw = case.raw.as_bytes();
-        let intent = intent_for(&corpus.operation_id, raw);
+        let intent = intent_for(&corpus.operation_id, raw).expect("bounded P2c wire");
         assert!(
             inspect_codex_exec_server_start_v1(&intent, raw).is_err(),
             "unexpected admitted wire: {}",
