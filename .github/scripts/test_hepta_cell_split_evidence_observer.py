@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from hepta_cell_split_evidence_observer import (
     MAX_LOG_BYTES,
+    _write_exclusive,
     InvalidEvidence,
     observe,
 )
@@ -223,8 +224,71 @@ class IndependentByteCustodyTests(unittest.TestCase):
         ]
         with patch.object(sys, "argv", argv), redirect_stdout(StringIO()) as stdout:
             self.assertEqual(main(), 1)
-        self.assertFalse(json.loads(stdout.getvalue())["production_activation_authorized"])
+        self.assertFalse(
+            json.loads(stdout.getvalue())["production_activation_authorized"]
+        )
         self.assertTrue((self.output / "COMPLETE").is_file())
+
+    def test_mutating_earlier_raw_row_during_copy_cannot_seal_custody(self):
+        original_write = _write_exclusive
+        changed = False
+
+        def write_and_tamper(fd, name, data):
+            nonlocal changed
+            original_write(fd, name, data)
+            if not changed:
+                changed = True
+                path = self.capture / "64-no_split.json"
+                path.write_bytes(path.read_bytes() + b"\n")
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_tamper,
+        ):
+            with self.assertRaisesRegex(InvalidEvidence, "changed during custody"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
+    def test_replaced_capture_directory_cannot_join_different_runs(self):
+        original_write = _write_exclusive
+        changed = False
+
+        def write_and_replace(fd, name, data):
+            nonlocal changed
+            original_write(fd, name, data)
+            if not changed:
+                changed = True
+                self.capture.rename(self.root / "old-capture")
+                self.capture.mkdir()
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(InvalidEvidence, "pinned directory"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
+    def test_replaced_output_directory_cannot_receive_a_complete_marker(self):
+        original_write = _write_exclusive
+        changed = False
+
+        def write_and_replace(fd, name, data):
+            nonlocal changed
+            original_write(fd, name, data)
+            if not changed:
+                changed = True
+                self.output.rename(self.root / "orphaned-output")
+                self.output.mkdir()
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(InvalidEvidence, "pinned directory"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+        self.assertFalse((self.root / "orphaned-output" / "COMPLETE").exists())
 
 
 if __name__ == "__main__":
