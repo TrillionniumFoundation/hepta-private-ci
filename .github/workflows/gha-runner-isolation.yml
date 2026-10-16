@@ -1,0 +1,61 @@
+name: GitHub Actions ARM64/x64 isolated qualification
+
+on:
+  push:
+    branches: [ci/gha-runner-isolation-20261016]
+    paths:
+      - .github/workflows/gha-runner-isolation.yml
+
+permissions:
+  contents: read
+
+# Deliberately no workflow-level concurrency group: this is an isolated
+# one-commit investigation of a stuck PR concurrency/dispatcher state.
+# The workflow is branch-scoped and does not run on PRs or on main.
+jobs:
+  arm-codespell:
+    name: ARM64 pinned Codespell production-action qualification
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Report assigned runner identity
+        run: |
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
+      - uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
+        with:
+          ignore_words_file: .codespellignore
+      - uses: ./.github/actions/check-clean-worktree
+
+  arm-python:
+    name: ARM64 real blocking-scope Python tests
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run production scope and dependencies tests
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
+  x64-python:
+    name: Linux x64 real blocking-scope Python control
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run matching production scope and dependencies tests
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
