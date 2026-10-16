@@ -1,0 +1,42 @@
+name: hepta-stem-v14-primary-cost-audit
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v14_*.py"
+      - "qualification/stem-cell-v1/test_v14_*.py"
+      - "qualification/stem-cell-v1/STEM_V14_*"
+      - ".github/workflows/hepta-stem-v14-primary-cost-audit.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONHASHSEED: "7347"
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile source and test fail-closed synthetic contracts
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/v14_primary_only_cost.py qualification/stem-cell-v1/v14_original_parity_review.py qualification/stem-cell-v1/v14_public_cost_audit.py
+          python -m unittest -v qualification/stem-cell-v1/test_v14_primary_only_cost.py qualification/stem-cell-v1/test_v14_public_cost_audit.py
+          python -O -m unittest -v qualification/stem-cell-v1/test_v14_primary_only_cost.py qualification/stem-cell-v1/test_v14_public_cost_audit.py
+      - name: Independently validate original public cost negative receipt
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v14_public_cost_audit.py \
+            --public qualification/stem-cell-v1/STEM_V14_ORIGINAL_PRIMARY_COST_20261016.json \
+            --v13 qualification/stem-cell-v1/STEM_V13_CHEAP_RETRIEVAL_20261015.json

@@ -5,6 +5,8 @@ on:
     paths:
       - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
       - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - "qualification/stem-cell-v1/*stable_router_v15*.py"
+      - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -12,6 +14,8 @@ on:
     paths:
       - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
       - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - "qualification/stem-cell-v1/*stable_router_v15*.py"
+      - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -42,7 +46,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
       - name: Mechanism-only tests without original publisher data
         working-directory: qualification/stem-cell-v1
         env:
@@ -52,6 +56,9 @@ jobs:
           set -euo pipefail
           python -m unittest -v test_stem_counterfactual_split_v14.Mechanism
           python -O -m unittest -v test_stem_counterfactual_split_v14.Mechanism
+          python -m unittest -v test_stem_stable_router_v15.Mechanism
+          python -O -m unittest -v test_stem_stable_router_v15.Mechanism
+          python -m py_compile stem_stable_router_v15.py stem_stable_router_v15_review.py test_stem_stable_router_v15.py
           python -m py_compile stem_counterfactual_split_v14.py stem_counterfactual_split_v14_review.py test_stem_counterfactual_split_v14.py
       - name: Retrieve only the immutable original Actions archive
         if: github.event_name != 'pull_request'
@@ -81,6 +88,26 @@ jobs:
         with:
           name: v14-sanitized-review-${{ github.sha }}
           path: ${{ runner.temp }}/v14-sanitized-review.json
+          if-no-files-found: error
+      - name: V15 actual TRAIN-only fitting and independent unscored blind replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V14_ORIGINAL_ZIP="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_stem_stable_router_v15
+          python -O -m unittest -v test_stem_stable_router_v15
+          python stem_stable_router_v15.py --inputs "$RUNNER_TEMP/v14-input" --output "$RUNNER_TEMP/v15-candidates"
+          python stem_stable_router_v15_review.py --inputs "$RUNNER_TEMP/v14-input" --candidates "$RUNNER_TEMP/v15-candidates" --output "$RUNNER_TEMP/v15-sanitized-review.json"
+      - name: Upload only V15 aggregate review, no features or blind probabilities
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v15-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v15-sanitized-review.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
