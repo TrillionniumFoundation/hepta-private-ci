@@ -47,6 +47,8 @@ jobs:
           assert r['original_cases']==30 and r['source_roots']==10
           assert r['genuinely_new_original_unique_requests']==90
           assert r['genuinely_new_original_model_forward_calls']==1773
+          assert r['original_publisher_literal_evidence_profile']['literal_in_visible_annotated']==8
+          assert r['literal_presence_is_not_sufficient_evidence'] is True
           assert r['no_stronger_Qwen_reference_executed'] is True
           assert r['production_authorized'] is False
           assert all(x['literal_full_equal']==0 for x in r['arms'])
@@ -136,19 +138,26 @@ jobs:
             --previous-journal "$O/physical.json.starts.jsonl" --proposal "$O/proposal.json" \
             --physical "$O/v18-physical.json" --journal "$O/v18-physical.json.starts.jsonl" \
             --reader-dir "$INPUT/reader" --out "$RUNNER_TEMP/v18-independent-sanitized.json"
+          python "$D/v18_physical_repeat.py" \
+            --public "$O/public.json" --owner "$O/owner.json" --plan "$O/plan.json" \
+            --annotation "$O/annotation.json" --previous "$O/requests.json" \
+            --proposal "$O/proposal.json" --physical "$O/v18-physical.json" \
+            --reader-dir "$INPUT/reader" --out "$RUNNER_TEMP/v18-repeat.json"
           python "$D/v18_private_adversarial.py" \
             --scratch-dir "$RUNNER_TEMP" --reader-dir "$INPUT/reader" \
             --original "$INPUT/locomo.json" --v17-dir "$O" --v18-dir "$O" \
             --out "$RUNNER_TEMP/v18-adversarial-sanitized.json"
-          python -S - "$RUNNER_TEMP/v18-independent-sanitized.json" "$RUNNER_TEMP/v18-adversarial-sanitized.json" <<'PY'
+          python -S - "$RUNNER_TEMP/v18-independent-sanitized.json" "$RUNNER_TEMP/v18-adversarial-sanitized.json" "$RUNNER_TEMP/v18-repeat.json" <<'PY'
           import json,sys
-          a,b=[json.load(open(p)) for p in sys.argv[1:]]
+          a,b,c=[json.load(open(p)) for p in sys.argv[1:]]
           assert a['decision']=='HOLD_NO_GO' and a['original_cases']==30
           assert a['genuinely_new_original_unique_requests']==90
           assert a['genuinely_new_original_model_forward_calls']>=90
           assert a['no_stronger_Qwen_reference_executed'] is True
           assert a['reported_strict_matches_not_independent_semantic_correctness'] is True
           assert b['rejected_all'] is True and b['mutation_count']==9
+          assert c['repeated_requests']==12 and c['all_original_token_bytes_matched'] is True
+          assert c['fresh_original_model_forward_calls']>=12
           assert b['production_authorized'] is False
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -158,5 +167,6 @@ jobs:
           path: |
             ${{ runner.temp }}/v18-independent-sanitized.json
             ${{ runner.temp }}/v18-adversarial-sanitized.json
+            ${{ runner.temp }}/v18-repeat.json
           if-no-files-found: error
           retention-days: 5

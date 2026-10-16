@@ -87,6 +87,18 @@ def digest(obj):
 def textsha(obj):return sha256(obj.encode()).hexdigest()
 
 
+def literal_coverage(answer, witness_ids, docs):
+    """Postseal literal occurrence only; neither adequacy nor semantic entailment."""
+    if answer is None or str(answer).strip()=='':
+        return None
+    target=str(answer).strip().casefold()
+    if not witness_ids or any(i not in docs for i in witness_ids):
+        raise ValueError('unbound publisher citation')
+    full='\n'.join(docs[i]['text'] for i in witness_ids).casefold()
+    visible='\n'.join(docs[i]['text'][:240] for i in witness_ids).casefold()
+    return {'full':target in full,'visible':target in visible}
+
+
 def group_scores():
     return dict(cases=0,labeled=0,missing_publisher_answer=0,literal_substring=0,
         literal_full_equal=0,citation_tokens=0,
@@ -217,6 +229,12 @@ def run(public_path,owner_path,original_path,hidden_path,plan_path,annotation_pa
         raise ValueError('model forward count does not match physical generated tokens')
     score={arm:group_scores() for arm in (*BASELINES,*REGISTERED)}
     pairs=defaultdict(int)
+    label_strata={arm:dict(literal_in_visible=dict(cases=0,hits=0),
+                           literal_not_in_visible=dict(cases=0,hits=0))
+                  for arm in (*BASELINES,*REGISTERED)}
+    literal_evidence=dict(publisher_targets_present=0,publisher_targets_missing=0,
+                          literal_in_full_annotated=0,literal_in_visible_annotated=0,
+                          literal_lost_due_to_240_character_cap=0)
     for cid in plan['case_ids']:
         root=cid.split('/')[0];gold=hidden[root][cid]
         original_answer=gold.get('answer')
@@ -225,6 +243,14 @@ def run(public_path,owner_path,original_path,hidden_path,plan_path,annotation_pa
         group=groups[root]
         docs={x['id']:x for x in group['utterances']}
         witness=annot['source_ids'][cid]
+        coverage=literal_coverage(original_answer,witness,docs)
+        if coverage is None:
+            literal_evidence['publisher_targets_missing']+=1
+        else:
+            literal_evidence['publisher_targets_present']+=1
+            literal_evidence['literal_in_full_annotated']+=int(coverage['full'])
+            literal_evidence['literal_in_visible_annotated']+=int(coverage['visible'])
+            literal_evidence['literal_lost_due_to_240_character_cap']+=int(coverage['full'] and not coverage['visible'])
         old_annot_req=prev['requests'][cid+'|annotated']
         old_annot=old['physical_outputs'][old_annot_req['request_sha256']]['original_answer']
         for arm in (*BASELINES,*REGISTERED):
@@ -241,6 +267,9 @@ def run(public_path,owner_path,original_path,hidden_path,plan_path,annotation_pa
                 s['labeled']+=1
                 s['literal_substring']+=int(target.casefold() in answer.casefold())
                 s['literal_full_equal']+=int(target.casefold()==answer.strip().casefold())
+                k='literal_in_visible' if coverage['visible'] else 'literal_not_in_visible'
+                label_strata[arm][k]['cases']+=1
+                label_strata[arm][k]['hits']+=int(target.casefold() in answer.casefold())
             else:s['missing_publisher_answer']+=1
             s['input_tokens']+=output['input_tokens'];s['output_tokens']+=output['output_tokens']
             s['physical_requests']+=1
@@ -271,6 +300,9 @@ def run(public_path,owner_path,original_path,hidden_path,plan_path,annotation_pa
         genuinely_new_original_unique_requests=90,
         arms=[dict(arm=arm,**score[arm]) for arm in (*BASELINES,*REGISTERED)],
         paired_changes=dict(pairs),
+        original_publisher_literal_evidence_profile=literal_evidence,
+        arm_weak_literal_strata=label_strata,
+        literal_presence_is_not_sufficient_evidence=True,
         model_weight_sha256=WEIGHTS,original_archive_sha256=v17.ARCHIVE_SHA,
         reported_strict_matches_not_independent_semantic_correctness=True,
         missing_answer_cases_are_unknown_not_wrong=True,

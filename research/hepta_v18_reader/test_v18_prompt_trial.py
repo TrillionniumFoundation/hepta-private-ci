@@ -12,6 +12,7 @@ from unittest.mock import patch
 import source_first as spec
 import v18_prompt_trial as producer
 import v18_independent_review as auditor
+import v18_physical_repeat as fresh
 
 
 class SourceFixtures(unittest.TestCase):
@@ -70,6 +71,30 @@ class SourceFixtures(unittest.TestCase):
         entry['request_sha256']=spec.digest(entry['proposed'])
         entry['proposal_sha256']=spec.digest({k:v for k,v in entry.items() if k!='proposal_sha256'})
         return entry
+
+    def test_literal_evidence_presence_is_a_weak_label_only(self):
+        d={'A':dict(text='Outside text. Witness = moss green. ',speaker='Alice')}
+        self.assertEqual(auditor.literal_coverage('moss green',['A'],d),dict(full=True,visible=True))
+        self.assertEqual(auditor.literal_coverage('never found',['A'],d),dict(full=False,visible=False))
+        self.assertIsNone(auditor.literal_coverage(None,['A'],d))
+
+    def test_original_cap_can_remove_a_literal_witness(self):
+        d={'B':dict(text='a'*260+' exact answer marker',speaker='Alice')}
+        self.assertEqual(auditor.literal_coverage('exact answer marker',['B'],d),dict(full=True,visible=False))
+
+    def test_fresh_model_repeat_roster_has_four_per_prompt_arm(self):
+        selected=fresh.repeat_roster(self.proposal)
+        self.assertEqual(len(selected),12)
+        self.assertEqual(len({p for p,_ in selected}),12)
+        for arm in producer.ARMS:
+            self.assertEqual(sum(x.endswith('|'+arm) for _,x in selected),4)
+
+    def test_fresh_repeat_roster_rejects_colliding_prompts(self):
+        tampered=copy.deepcopy(self.proposal)
+        qids=self.frozen['case_ids']
+        first=tampered['proposed'][qids[0]+'|plain_none']['prompt_sha256']
+        tampered['proposed'][qids[1]+'|plain_none']['prompt_sha256']=first
+        with self.assertRaises(ValueError): fresh.repeat_roster(tampered)
 
     def test_30_original_cases_and_all_90_prompts(self):
         self.assertEqual(len(self.proposal['proposed']),90)
