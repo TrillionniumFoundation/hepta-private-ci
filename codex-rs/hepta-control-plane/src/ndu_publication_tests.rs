@@ -625,6 +625,122 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 
 #[cfg(unix)]
 #[test]
+fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash() {
+    let dir = private_control_dir();
+    let path = dir.path().join("observed-orphan.wal");
+    let original = snapshot(3);
+    let successor = snapshot(4);
+    let migrated = Digest32::of_bytes(b"orphan-migrated-checkpoint");
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original durable Control owner");
+    let effect = owner.publish_cutover_with_external_effect(
+        &original,
+        Digest32::ZERO,
+        successor.clone(),
+        migrated,
+        || -> Result<((), Vec<u8>), &'static str> {
+            Err("CNS effect is ambiguous after durable Begin")
+        },
+    );
+    assert_eq!(effect, Err(NduPublicationErrorV1::Indeterminate));
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::WriterUnavailable)
+    ));
+    drop(owner);
+    let wal_before = std::fs::read(&path).expect("immutable original WAL");
+    let marker = path.with_file_name("observed-orphan.wal.owner-lock");
+    let marker_before = std::fs::read(&marker).expect("original owner marker");
+    let observed =
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO)
+            .expect("read-only recovery observation of the original pending Begin");
+    assert_eq!(
+        observed.predecessor_semantic_digest,
+        original.semantic_digest().unwrap()
+    );
+    assert_eq!(
+        observed.successor_semantic_digest,
+        successor.semantic_digest().unwrap()
+    );
+    assert_eq!(observed.previous_checkpoint, Digest32::ZERO);
+    assert_eq!(observed.migrated_checkpoint, migrated);
+    assert_eq!(observed.sequence, 2, "genesis plus fsynced Begin only");
+    assert_eq!(observed.wal_bytes, wal_before.len() as u64);
+    assert!(!observed.head.is_zero());
+    assert_eq!(
+        observed,
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,)
+            .expect("second read from exactly the same original history")
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), wal_before);
+    assert_eq!(std::fs::read(&marker).unwrap(), marker_before);
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ),
+        "observation cannot resolve quarantine or mint Control Commit"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
+    use std::io::Write as _;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("pending-probe-denial.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original Control WAL genesis");
+    drop(owner);
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::Stale)
+    ));
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original re-open");
+    let _ = owner.publish_cutover_with_external_effect(
+        &original,
+        Digest32::ZERO,
+        snapshot(4),
+        Digest32::of_bytes(b"orphan"),
+        || -> Result<((), Vec<u8>), &'static str> { Err("missing original CNS receipt") },
+    );
+    drop(owner);
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+                &path,
+                &snapshot(8),
+                Digest32::ZERO,
+            ),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ),
+        "wrong frozen predecessor cannot describe a pending Begin"
+    );
+
+    // Corrupt the first history row, leaving the actual last Begin in place.
+    // A last-hash-only probe would falsely accept this tampered prefix.
+    let mut wal = std::fs::read(&path).expect("durable WAL");
+    assert!(wal.len() > 300, "genesis and Begin");
+    wal[1] ^= 1;
+    let mut original_fd = std::fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .expect("test-only original inode tamper");
+    original_fd
+        .write_all(&wal)
+        .expect("overwrite original inode");
+    original_fd.sync_all().expect("fsync original tamper");
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = private_control_dir();
     let path = dir.path().join("unknown-physical-effect.wal");

@@ -627,6 +627,25 @@ impl State {
     }
 }
 
+/// Local, unsigned observation of the original Control WAL's last durable
+/// Begin. This is useful to an independently controlled recovery Observer,
+/// but it is NOT an original CNS effect receipt, a signature, a Final-use
+/// grant, evidence that cutover succeeded, or authority to append Commit.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NduPublicationPendingBeginV1 {
+    pub predecessor_semantic_digest: Digest32,
+    pub previous_checkpoint: Digest32,
+    pub successor_semantic_digest: Digest32,
+    pub migrated_checkpoint: Digest32,
+    pub sequence: u64,
+    pub head: Digest32,
+    pub wal_bytes: u64,
+    pub wal_device: u64,
+    pub wal_inode: u64,
+    pub marker_device: u64,
+    pub marker_inode: u64,
+}
+
 /// Per-scope durable Control owner. A canonical recovered snapshot and
 /// checkpoint MUST be independently authenticated before opening this journal.
 #[derive(Debug)]
@@ -905,6 +924,230 @@ impl NduPublicationOwnerV1 {
         _snapshot: NduSnapshotRefV1,
         _checkpoint: Digest32,
     ) -> Result<Self, NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
+    }
+
+    /// Inspect one orphaned fsynced Begin without opening a writable Control
+    /// owner, clearing quarantine, minting a Commit or invoking a CNS effect.
+    /// The caller must independently pin the predecessor NDU snapshot and
+    /// checkpoint. The answer is local and unsigned: an external Observer
+    /// must still acquire the ORIGINAL CNS receipt, prove its signature and
+    /// serving-route readback, and resolve the ambiguous result separately.
+    ///
+    /// Acquire shared OS locks in the same marker-then-WAL order as the writer.
+    /// An active writer must cause WriterUnavailable, not a partial snapshot.
+    /// Every row is replayed from one pinned read-only descriptor before an
+    /// orphan Begin can be described; no last-row-only or digest-only shortcut.
+    #[cfg(unix)]
+    pub fn inspect_original_pending_begin_v1(
+        path: &Path,
+        expected_predecessor: &NduSnapshotRefV1,
+        expected_checkpoint: Digest32,
+    ) -> Result<NduPublicationPendingBeginV1, NduPublicationErrorV1> {
+        use rustix::fs::{self as unixfs, Mode, OFlags};
+        use std::os::unix::fs::MetadataExt;
+
+        expected_predecessor
+            .validate()
+            .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        if !path.is_absolute()
+            || path.file_name().is_none()
+            || path
+                .components()
+                .any(|part| matches!(part, Component::CurDir | Component::ParentDir))
+        {
+            return Err(NduPublicationErrorV1::UnsafePath);
+        }
+        let parent = path.parent().ok_or(NduPublicationErrorV1::UnsafePath)?;
+        if parent
+            .canonicalize()
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+            != parent
+        {
+            return Err(NduPublicationErrorV1::UnsafePath);
+        }
+        let directory = File::from(
+            unixfs::open(
+                parent,
+                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::empty(),
+            )
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?,
+        );
+        control_parent_dir_identity(&directory, parent)?;
+        let mut marker_name = path.as_os_str().to_os_string();
+        marker_name.push(".owner-lock");
+        let marker_path = PathBuf::from(marker_name);
+        let flags = OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+        let marker = File::from(
+            unixfs::openat(
+                &directory,
+                marker_path
+                    .file_name()
+                    .ok_or(NduPublicationErrorV1::UnsafePath)?,
+                flags,
+                Mode::empty(),
+            )
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?,
+        );
+        control_owner_file_identity(&marker, &marker_path)?;
+        marker
+            .try_lock_shared()
+            .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        let file = File::from(
+            unixfs::openat(
+                &directory,
+                path.file_name().ok_or(NduPublicationErrorV1::UnsafePath)?,
+                flags,
+                Mode::empty(),
+            )
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?,
+        );
+        control_owner_file_identity(&file, path)?;
+        file.try_lock_shared()
+            .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        control_parent_dir_identity(&directory, parent)?;
+        let (wal_device, wal_inode) = control_owner_file_identity(&file, path)?;
+        let (marker_device, marker_inode) = control_owner_file_identity(&marker, &marker_path)?;
+        let (expected_marker, marker_len) = encode_control_owner_marker_v1(wal_device, wal_inode)?;
+        if marker
+            .metadata()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?
+            .len()
+            != marker_len as u64
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let mut recorded = [0_u8; MAX_CONTROL_OWNER_MARKER_BYTES];
+        marker
+            .read_exact_at(&mut recorded[..marker_len], 0)
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if recorded[..marker_len] != expected_marker[..marker_len] {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+
+        let before = file
+            .metadata()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        let wal_bytes = before.len();
+        if wal_bytes == 0 || wal_bytes > MAX_BYTES {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let mut reader = BufReader::new(&file);
+        let mut row = Vec::new();
+        let mut read_bytes = 0_u64;
+        let mut sequence = 0_u64;
+        let mut head = Digest32::ZERO;
+        let mut current = None;
+        let mut checkpoint = Digest32::ZERO;
+        let mut pending = None;
+        loop {
+            row.clear();
+            let read = (&mut reader)
+                .take((MAX_ROW + 1) as u64)
+                .read_until(b'\n', &mut row)
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            if read == 0 {
+                break;
+            }
+            read_bytes = read_bytes
+                .checked_add(read as u64)
+                .ok_or(NduPublicationErrorV1::Indeterminate)?;
+            if read > MAX_ROW || read_bytes > wal_bytes || row.pop() != Some(b'\n') {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+            let encoded =
+                std::str::from_utf8(&row).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            let event = decode(encoded).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            if event.sequence
+                != sequence
+                    .checked_add(1)
+                    .ok_or(NduPublicationErrorV1::Indeterminate)?
+                || event.previous != head
+                || event.head != event_hash(&event)
+            {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+            validate_replay(&event, current, checkpoint, pending)
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            sequence = event.sequence;
+            head = event.head;
+            match event.kind {
+                'B' => {
+                    pending = Some(PendingCutover {
+                        successor: event.snapshot,
+                        previous_checkpoint: event.before,
+                        migrated_checkpoint: event.after,
+                    });
+                }
+                'C' => {
+                    pending = None;
+                    current = Some(event.snapshot);
+                    checkpoint = event.after;
+                }
+                _ => {
+                    current = Some(event.snapshot);
+                    checkpoint = event.after;
+                }
+            }
+        }
+        drop(reader);
+        let pending = pending.ok_or(NduPublicationErrorV1::Stale)?;
+        let predecessor = expected_predecessor
+            .semantic_digest()
+            .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        if read_bytes != wal_bytes
+            || sequence < 2
+            || current != Some(predecessor)
+            || checkpoint != expected_checkpoint
+            || pending.previous_checkpoint != expected_checkpoint
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+
+        // Detect same-inode truncation/rewrite and pathname/marker replacement
+        // while the independent reader was replaying the original prefix.
+        let after = file
+            .metadata()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if before.len() != after.len()
+            || before.mtime() != after.mtime()
+            || before.mtime_nsec() != after.mtime_nsec()
+            || before.ctime() != after.ctime()
+            || before.ctime_nsec() != after.ctime_nsec()
+            || control_owner_file_identity(&file, path)? != (wal_device, wal_inode)
+            || control_owner_file_identity(&marker, &marker_path)? != (marker_device, marker_inode)
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        marker
+            .read_exact_at(&mut recorded[..marker_len], 0)
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if recorded[..marker_len] != expected_marker[..marker_len] {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        control_parent_dir_identity(&directory, parent)?;
+        Ok(NduPublicationPendingBeginV1 {
+            predecessor_semantic_digest: predecessor,
+            previous_checkpoint: expected_checkpoint,
+            successor_semantic_digest: pending.successor,
+            migrated_checkpoint: pending.migrated_checkpoint,
+            sequence,
+            head,
+            wal_bytes,
+            wal_device,
+            wal_inode,
+            marker_device,
+            marker_inode,
+        })
+    }
+
+    #[cfg(not(unix))]
+    pub fn inspect_original_pending_begin_v1(
+        _path: &Path,
+        _expected_predecessor: &NduSnapshotRefV1,
+        _expected_checkpoint: Digest32,
+    ) -> Result<NduPublicationPendingBeginV1, NduPublicationErrorV1> {
         Err(NduPublicationErrorV1::Unsupported)
     }
 
