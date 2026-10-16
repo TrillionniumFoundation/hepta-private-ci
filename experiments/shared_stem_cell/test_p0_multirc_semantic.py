@@ -85,6 +85,42 @@ class SourceTests(unittest.TestCase):
     def setUp(self):
         self.train,self.validation,self.fit,self.blind,self.owner=setup()
 
+    def test_real_parquet_off_panel_short_cells_do_not_abort_qualification(self):
+        # Reproduce the original hosted failure class: off-panel short/empty
+        # original rows may exist in the fully pinned Parquet. The actual
+        # eligibility rule must still select exactly the same 12/4/8 passages,
+        # WITHOUT using held labels or changing an eligible original row.
+        off_panel=[
+            {'paragraph':'short', 'question':'?', 'answer':'', 'label':0,
+             'idx':{'paragraph':99999,'question':0,'answer':0}},
+            {'paragraph':self.train[0]['paragraph'],'question':'?',
+             'answer':'A','label':1,
+             'idx':{'paragraph':1,'question':999,'answer':999}}
+        ]
+        fit,blind,owner=build(self.train+off_panel,self.validation,
+                              train_sha=A,validation_sha=B)
+        self.assertEqual(fit,self.fit)
+        self.assertEqual(blind,self.blind)
+        self.assertEqual(owner,self.owner)
+        validate(fit,blind)
+
+    def test_short_only_source_still_refuses_insufficient_real_passages(self):
+        invalid=[{'paragraph':'tiny','question':'?','answer':'','label':0,
+                  'idx':{'paragraph':90000,'question':0,'answer':0}}]
+        self.assertEqual(candidates(invalid),[])
+        with self.assertRaisesRegex(Invalid,'insufficient source-disjoint'):
+            build(invalid,self.validation,train_sha=A,validation_sha=B)
+
+    def test_original_raw_upper_bounds_and_label_authenticity_still_fail_closed(self):
+        oversized=copy.deepcopy(self.train)
+        oversized[0]['answer']='x'*4097
+        with self.assertRaisesRegex(Invalid,'oversized original raw source'):
+            candidates(oversized)
+        wrong=copy.deepcopy(self.train)
+        wrong[0]['label']=True
+        with self.assertRaisesRegex(Invalid,'untyped authentic labels'):
+            candidates(wrong)
+
     def test_complete_and_disjoint(self):
         x,y=validate(self.fit,self.blind)
         self.assertEqual(len(self.owner['original_human_candidate_labels']),COUNTS['test']*2*2)

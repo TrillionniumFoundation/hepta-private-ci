@@ -1,0 +1,112 @@
+name: Hepta P0 mmBERT strict pretrained physical replay v15 (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e1_mmbert_tied_loader.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py'
+      - '.github/workflows/hepta-p0-mmbert-strict-physical-v15.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict-mmbert-probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          path: pinned-compact
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Immutable source and 23 adversarial mechanism tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          mkdir -p "$RUNNER_TEMP/p0-mmbert-v15-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/p0-mmbert-v15-evidence/source-head.txt"
+          D=experiments/shared_stem_cell
+          python -m py_compile "$D/p0_mmbert_tied_load_contract_v15.py" \
+            "$D/p0_mmbert_original_physical_probe_v15.py" \
+            "$D/test_p0_mmbert_tied_load_contract_v15.py" \
+            "$D/test_p0_mmbert_original_physical_probe_v15.py"
+          for mode in normal optimized; do
+            flags=(); if test "$mode" = optimized; then flags=(-O); fi
+            PYTHONPATH="$D" python "${flags[@]}" -m unittest discover -s "$D" \
+              -p 'test_p0_mmbert*_v15.py' -v 2>&1 | tee "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
+            grep -F 'Ran 23 tests' "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
+          done
+      - name: Pin original exact P0 physical runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pyarrow==21.0.0' 'pillow==11.3.0'
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/p0-mmbert-v15-evidence/pinned-runtime.txt"
+      - name: Original SHA/LFS snapshot gate (no synthetic fallback)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/p0-mmbert-v15-source"
+          python experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+            --model mmbert_small --output-root "$RUNNER_TEMP/p0-mmbert-v15-source"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ['RUNNER_TEMP'])/'p0-mmbert-v15-source/compact-preflight-v9.json').read_text())
+          if (x['models']['mmbert_small']['status']!='source_materialized_not_model_qualified' or
+              x['models']['mmbert_small']['publisher_lfs_files_checked']<2 or
+              x['authority']!='DENY_ALL' or x['production_promotion_permitted']):
+              raise ValueError('actual pinned original source material unavailable')
+          PY
+      - name: Execute original strict byte-checked MLM and real CPU forward
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py \
+            --compact-checkout pinned-compact \
+            --output "$RUNNER_TEMP/p0-mmbert-v15-evidence/strict-original.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'p0-mmbert-v15-evidence/strict-original.json'
+          x=json.loads(p.read_text())
+          if (x['source_tensor_count']!=137 or
+              x['strict_frozen_cpu_encoder_forward_executed'] is not True or
+              x['production_accepted'] or x['model_selected'] or
+              x['task_outcome_verified'] or x['authority']!='DENY_ALL'):
+              raise ValueError('incomplete physical proof or mistaken authority')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p0-mmbert-original-physical-v15-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/p0-mmbert-v15-evidence
+          retention-days: 14
+          if-no-files-found: error

@@ -1,0 +1,84 @@
+name: Hepta P0 mmBERT original key-mapping diagnosis (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/p0_mmbert_mapping_diagnostic_v14.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_mapping_diagnostic_v14.py'
+      - '.github/workflows/hepta-p0-mmbert-key-diagnostic-v14.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pretrained-key-diagnostic:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Source-only strict tests, normal and optimized
+        run: |
+          set -euo pipefail
+          D=experiments/shared_stem_cell
+          python -m py_compile "$D/p0_mmbert_mapping_diagnostic_v14.py" "$D/test_p0_mmbert_mapping_diagnostic_v14.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_mapping_diagnostic_v14.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_mapping_diagnostic_v14.py -v
+      - name: Obtain original pinned source through existing strict LFS preflight
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' 'numpy==2.2.6' 'packaging==25.0'
+          mkdir -p "$RUNNER_TEMP/mmbert-diagnostic"
+          python experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
+            --model mmbert_small --output-root "$RUNNER_TEMP/mmbert-diagnostic"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path(os.environ['RUNNER_TEMP'])/'mmbert-diagnostic/compact-preflight-v9.json'
+          a=json.loads(f.read_text())
+          if a['models']['mmbert_small']['status']!='source_materialized_not_model_qualified':
+              raise ValueError('original SHA/LFS preflight unavailable; fail closed')
+          if a['production_promotion_permitted'] or a['authority']!='DENY_ALL':
+              raise ValueError('invalid source authority')
+          PY
+      - name: Inspect exact original loader mapping, never accept model
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            'transformers==5.19.0'
+          python -m pip install --disable-pip-version-check --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+          python experiments/shared_stem_cell/p0_mmbert_mapping_diagnostic_v14.py \
+            --output "$RUNNER_TEMP/mmbert-diagnostic/mmbert-key-report.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'mmbert-diagnostic/mmbert-key-report.json'
+          a=json.loads(p.read_text())
+          if a['authority']!='DENY_ALL' or a['production_accepted'] or not a.get('diagnostic_only'):
+              raise ValueError('source diagnostic cannot grant model qualification')
+          if a.get('diagnostic_status')=='unavailable':
+              raise ValueError('original pinned model key diagnostic failed')
+          if not isinstance(a.get('missing_loader_keys'),list):
+              raise ValueError('missing original model loading inventory')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p0-mmbert-original-key-observation-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/mmbert-diagnostic/*.json
+          retention-days: 14
+          if-no-files-found: error

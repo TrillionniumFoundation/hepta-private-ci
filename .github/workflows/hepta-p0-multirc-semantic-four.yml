@@ -35,6 +35,12 @@ name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
       - 'experiments/shared_stem_cell/P0_RUNNER_STAGE_DIAG_V12.md'
       - 'experiments/shared_stem_cell/test_p0_isolated_artifact_intake_v11.py'
       - 'experiments/shared_stem_cell/P0_ISOLATED_MATRIX_ARTIFACT_V11.md'
+      - 'experiments/shared_stem_cell/e1_mmbert_tied_loader.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py'
+      - 'experiments/shared_stem_cell/P0_MMBERT_STRICT_ALIAS_V15.md'
       - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
   workflow_dispatch:
 permissions:
@@ -76,6 +82,11 @@ jobs:
             experiments/shared_stem_cell/p0_partial_pretrained_diagnostic_v8.py \
             experiments/shared_stem_cell/p0_pretrained_checkpoint_preflight_v9.py \
             experiments/shared_stem_cell/test_p0_real_preflight_v9.py \
+            experiments/shared_stem_cell/e1_mmbert_tied_loader.py \
+            experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py \
+            experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py \
+            experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py \
+            experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py \
             experiments/shared_stem_cell/p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/test_p0_parallel_model_collector_v10.py \
             experiments/shared_stem_cell/p0_isolated_artifact_intake_v11.py \
@@ -138,6 +149,10 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
           PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_p0_runner_stage_diag_v12.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_mmbert*_v15.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_mmbert*_v15.py' -v
 
   original-human-materials:
     needs: semantic-source-tests
@@ -181,6 +196,31 @@ jobs:
           (Path(os.environ['RUNNER_TEMP'])/'human-source/source-lock.json').write_text(
               json.dumps(out,sort_keys=True),encoding='utf-8')
           PY
+      - name: Record pinned original raw-text length census, never held labels
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_multirc_semantic_material import original_rows
+          root=Path(os.environ['RUNNER_TEMP'])/'human-source'
+          lock=json.loads((root/'source-lock.json').read_text())
+          summary={'schema':'hepta.p0.raw-source-length-census.v13',
+                   'source_revision':lock['revision'],'splits':{}}
+          for split in ('train','validation'):
+              rows=original_rows(root/(split+'.parquet'),lock['original_file_sha256'][split])
+              summary['splits'][split]={
+                'original_rows':len(rows),
+                'paragraph_short_lt30':sum(len(r['paragraph'])<30 for r in rows),
+                'question_short_lt2':sum(len(r['question'])<2 for r in rows),
+                'answer_empty':sum(len(r['answer'])==0 for r in rows),
+                'paragraph_over65536':sum(len(r['paragraph'])>65536 for r in rows),
+                'question_over8192':sum(len(r['question'])>8192 for r in rows),
+                'answer_over4096':sum(len(r['answer'])>4096 for r in rows)}
+          (root/'raw-length-census-v13.json').write_text(json.dumps(summary,sort_keys=True)+'\n')
+          print(json.dumps(summary,sort_keys=True))
+          PY
       - name: Construct real human labels separately from model blind material
         run: |
           set -euo pipefail
@@ -220,6 +260,7 @@ jobs:
           path: |
             ${{ runner.temp }}/human-source/source-lock.json
             ${{ runner.temp }}/human-source/preparation-summary.json
+            ${{ runner.temp }}/human-source/raw-length-census-v13.json
           if-no-files-found: warn
           retention-days: 7
 
@@ -303,7 +344,11 @@ jobs:
             'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
             'pyarrow==21.0.0' 'pillow==11.3.0'
           if [ "$MODEL" = laya421_nochange ]; then
-            "$PY" -m pip install --only-binary=:all: 'laya==0.3.20'
+            mkdir -p "$ROOT/laya-wheel"
+            "$PY" -m pip download --disable-pip-version-check --only-binary=:all: --no-deps -d "$ROOT/laya-wheel" 'laya==0.3.29'
+            printf '%s  %s\n' '41a51775eae4bd624688f13425d71ce66aa0f6b9a49a922a775a92dc4a85c885' "$ROOT/laya-wheel/laya-0.3.29-py3-none-any.whl" | sha256sum -c -
+            "$PY" -m pip install --only-binary=:all: "$ROOT/laya-wheel/laya-0.3.29-py3-none-any.whl"
+            "$PY" -c 'import inspect,importlib.metadata as m,laya,sys; sys.exit(0 if m.version("laya")=="0.3.29" and "revision" in inspect.signature(laya.load).parameters else 4)'
           fi
           "$PY" -m pip check
           "$PY" -m pip freeze > "$ROOT/$MODEL.runtime.txt"

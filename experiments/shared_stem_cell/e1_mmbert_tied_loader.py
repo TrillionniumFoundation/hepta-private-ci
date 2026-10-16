@@ -129,13 +129,11 @@ class FrozenMMBert:
         if type(loaded) is not tuple or len(loaded) != 2 or type(loaded[1]) is not dict:
             raise Invalid("full pretrained MLM parameter load report required")
         mlm, info = loaded
-        if any(info.get(key) for key in ("unexpected_keys", "mismatched_keys", "error_msgs")):
-            raise Invalid("unexpected or mismatched pretrained MLM checkpoint tensor")
-        missing = info.get("missing_keys", [])
-        if type(missing) not in (list, tuple) or len(missing) > 1 or any(
-                key not in ("decoder.weight", "model.embeddings.tok_embeddings.weight")
-                for key in missing):
-            raise Invalid("non-tied pretrained MLM parameter initialized randomly")
+        # The report may list either or both proven tied-table aliases.
+        # This is only metadata admission: the mandatory full-table and ALL
+        # serialized source-tensor byte comparisons below remain unchanged.
+        from p0_mmbert_tied_load_contract_v15 import require_alias_only_loading_report
+        require_alias_only_loading_report(info)
         mlm = mlm.to(device).eval()
         if (getattr(mlm.config, "hidden_size", None) != 384 or
                 getattr(mlm.config, "tie_word_embeddings", None) is not True):
