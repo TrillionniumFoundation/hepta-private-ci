@@ -5,6 +5,11 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+      - "codex-rs/hepta-evidence/src/metrics_sink.rs"
+      - "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs"
+      - "codex-rs/hepta-memory/src/production_writer.rs"
+      - "codex-rs/hepta-memory/src/local_lease_outbox.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron_group.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron_group_tests.rs"
@@ -102,6 +107,14 @@ jobs:
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Check exact transitive Control, Evidence and Memory formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-control-plane --package codex-hepta-evidence --package codex-hepta-memory -- --check
+      - name: Require Strict Clippy on the exact transitive owner libraries
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-control-plane -p codex-hepta-evidence -p codex-hepta-memory --lib -- -D warnings
+      - name: Recheck actual original Control owner and Evidence tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-control-plane -p codex-hepta-evidence --lib
+      - name: Recheck durable Memory CAS and replay transition tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-memory --lib
       - name: Run typed Stem to original signed Batch ABI parity tests
         run: "cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::"
       - name: Prove actual original Worker Arc sharing and one native backend batch
