@@ -29,13 +29,16 @@ mod unix {
             io.set_read_timeout(Some(Duration::from_secs(5)))?;
             io.set_write_timeout(Some(Duration::from_secs(5)))?;
         }
-        let worker = std::thread::spawn(move || {
-            let mut stream = FrameDuplexV1::new(second, verifier, count).expect("worker");
+        let worker = std::thread::spawn(move || -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+            let mut stream = FrameDuplexV1::new(second, verifier, count)?;
             for _ in 0..count {
-                let verified = stream.receive().expect("read");
-                stream.send(verified.frame()).expect("echo");
+                let verified = stream.receive()?;
+                stream.send(verified.frame())?;
             }
-            assert!(!stream.is_poisoned());
+            if stream.is_poisoned() {
+                return Err("data-only frame stream unexpectedly poisoned".into());
+            }
+            Ok(())
         });
         let mut client = FrameDuplexV1::new(first, verifier, count)?;
         let mut samples = Vec::with_capacity(count as usize);
@@ -59,7 +62,10 @@ mod unix {
             black_box(reply.frame().sequence);
             samples.push(started.elapsed().as_nanos());
         }
-        worker.join().expect("worker thread");
+        worker
+            .join()
+            .map_err(|_| std::io::Error::other("benchmark worker panicked"))?
+            .map_err(std::io::Error::other)?;
         samples.sort_unstable();
         let quantile = |percent: usize| samples[(samples.len() - 1) * percent / 100];
         println!(
