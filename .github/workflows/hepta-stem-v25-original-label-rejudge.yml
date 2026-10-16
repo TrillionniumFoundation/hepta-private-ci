@@ -1,0 +1,149 @@
+name: hepta-stem-v25-original-public-ScienceQA-label-rejudge-DENY_ALL
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v25_original_publisher_rejudge.py'
+      - 'qualification/stem-cell-v1/test_v25_original_publisher_rejudge.py'
+      - 'qualification/stem-cell-v1/STEM_V25_*'
+      - '.github/workflows/hepta-stem-v25-original-label-rejudge.yml'
+  push:
+    branches:
+      - research/stem-v25-publisher-label-rejudge-20261016
+    paths:
+      - 'qualification/stem-cell-v1/v25_original_publisher_rejudge.py'
+      - 'qualification/stem-cell-v1/test_v25_original_publisher_rejudge.py'
+      - 'qualification/stem-cell-v1/STEM_V25_*'
+      - '.github/workflows/hepta-stem-v25-original-label-rejudge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v25-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  immutable-label-replay:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      HEPTA_V25_ORIGINAL_ZIP: /tmp/hepta-v25-original-e3-sha11945106672.zip
+      HEPTA_V25_ORIGINAL_SOURCES: /tmp/hepta-v25-public-source/inputs/sources.jsonl
+      HEPTA_V25_ORIGINAL_LABELS: /tmp/hepta-v25-public-source/private_labels/test_labels.jsonl
+      HEPTA_V25_ORIGINAL_STAGE_SEALS: /tmp/hepta-v25-public-source/source-seals.json
+    steps:
+      - name: Exact current V25 source checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Exact-current-SHA mechanism tests cannot use fake published labels
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m py_compile v24_multimodal_causal_bounds.py v25_original_publisher_rejudge.py test_v25_original_publisher_rejudge.py
+          python -m unittest -q test_v25_original_publisher_rejudge.SyntheticContracts
+          python -O -m unittest -q test_v25_original_publisher_rejudge.SyntheticContracts
+          # The following negative test MUST fail closed when the public publisher bytes are absent.
+          test ! -e "$HEPTA_V25_ORIGINAL_SOURCES"
+          test ! -e "$HEPTA_V25_ORIGINAL_LABELS"
+      - name: Download exactly the old genuine E3 model output (branch push only)
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$HEPTA_V25_ORIGINAL_ZIP"
+          echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $HEPTA_V25_ORIGINAL_ZIP" | sha256sum -c -
+      - name: Reopen original byte-exact archive with no publisher label material
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          python -m unittest -q test_v25_original_publisher_rejudge.OriginalArchive
+          python -O -m unittest -q test_v25_original_publisher_rejudge.OriginalArchive
+          python v25_original_publisher_rejudge.py --archive "$HEPTA_V25_ORIGINAL_ZIP" --output "$RUNNER_TEMP/v25-historical-missing-label-HOLD.json"
+          cmp "$RUNNER_TEMP/v25-historical-missing-label-HOLD.json" STEM_V25_ORIGINAL_LABELS_HOLD_20261016.json
+      - name: Read-only exact original source stager checkout, never use default branch
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: b8b2f10fe38506972301e77e3836729a90200673
+          path: original-e3-stager
+          persist-credentials: false
+      - name: Verify old checked-out code source SHAs prior to any public download
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          test "$(git -C original-e3-stager rev-parse HEAD)" = "b8b2f10fe38506972301e77e3836729a90200673"
+          test "$(git -C original-e3-stager hash-object experiments/shared_stem_cell/e3_scienceqa_stage.py)" = "3ca8f55ed6b7143729258e4a1e53693614460950"
+          test "$(git -C original-e3-stager hash-object experiments/shared_stem_cell/e3_scienceqa_contract.py)" = "bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a"
+      - name: Install pinned original public-source-only dependencies (no pretrained model)
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          python -m pip install numpy==1.26.4 datasets==3.6.0 pyarrow==19.0.1 Pillow==11.3.0 huggingface-hub==0.35.3 packaging==25.0
+          python -m pip check
+          python - <<'PY'
+          from datasets import load_dataset, Image
+          from huggingface_hub import HfApi
+          import numpy, pyarrow
+          assert numpy.__version__ == '1.26.4'
+          assert pyarrow.__version__ == '19.0.1'
+          print('PINNED_PUBLIC_SOURCE_RUNTIME_READY')
+          PY
+      - name: Reacquire the same public ScienceQA images/labels and regenerate exact seals
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          python original-e3-stager/experiments/shared_stem_cell/e3_scienceqa_stage.py --output /tmp/hepta-v25-public-source
+          # The original sources and labels are held only inside this runner and never uploaded.
+          echo "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202  $HEPTA_V25_ORIGINAL_SOURCES" | sha256sum -c -
+          echo "b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3  $HEPTA_V25_ORIGINAL_LABELS" | sha256sum -c -
+      - name: Independent TEST-only rejudgment, original ordinary and optimized contracts
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          python -m unittest -q test_v25_original_publisher_rejudge.OriginalPublisherPhysical
+          python -O -m unittest -q test_v25_original_publisher_rejudge.OriginalPublisherPhysical
+          python v25_original_publisher_rejudge.py --archive "$HEPTA_V25_ORIGINAL_ZIP" \
+            --sources "$HEPTA_V25_ORIGINAL_SOURCES" \
+            --labels "$HEPTA_V25_ORIGINAL_LABELS" \
+            --stage-seals "$HEPTA_V25_ORIGINAL_STAGE_SEALS" \
+            --output "$RUNNER_TEMP/v25-public-label-historical-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'v25-public-label-historical-review.json').read_text())
+          assert d['original_publisher_labels_independently_rescored'] is True
+          assert d['authority_posture']=='DENY_ALL'
+          assert d['original_model_recomputed_in_this_run'] is False
+          assert d['scientific_promotion_authorized'] is False
+          assert d['production_authorized'] is False
+          print('ORIGINAL_HISTORICAL_PUBLISHER_LABEL_RECOUNT_ONLY_DENY_ALL')
+          PY
+      - name: Publish only historical aggregate review (never raw image/source/labels)
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-v25-original-publisher-historical-recount-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/v25-historical-missing-label-HOLD.json
+            ${{ runner.temp }}/v25-public-label-historical-review.json
+          if-no-files-found: error
