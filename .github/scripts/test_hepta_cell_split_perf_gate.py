@@ -7,7 +7,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from hepta_cell_split_perf_gate import InvalidEvidence, MODES, SCOPES, analyze
+from hepta_cell_split_perf_gate import (
+    InvalidEvidence,
+    MODES,
+    SCOPES,
+    analyze,
+    strict_json_loads,
+)
 
 
 def synthetic_matrix():
@@ -56,6 +62,16 @@ def synthetic_matrix():
 
 
 class CellSplitPerformanceGateTests(unittest.TestCase):
+    def test_cli_and_capture_share_one_ambiguous_json_rejection(self):
+        for raw, message in (
+            ('{"model_digest":"a","model_digest":"b"}', "duplicate JSON field"),
+            ('{"runs":[{"completed":10,"completed":11}]}', "duplicate JSON field"),
+            ('{"p99_ms":NaN}', "non-finite JSON literal"),
+        ):
+            with self.subTest(raw=raw):
+                with self.assertRaisesRegex(InvalidEvidence, message):
+                    strict_json_loads(raw)
+
     def test_complete_four_by_four_matrix_remains_diagnostic(self):
         result = analyze(synthetic_matrix())
         self.assertTrue(result["comparative_gate_passed"])

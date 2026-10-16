@@ -661,12 +661,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
 
     /// Demand a fresh readback of all four original durable owners before
     /// reporting a complete current lifecycle. No activation authority.
+    ///
+    /// Even a negative answer must reauthenticate the frozen ledger and each
+    /// committed original-owner effect. Otherwise an externally revoked
+    /// predecessor or a corrupted pending frame could be reported as harmless
+    /// incompleteness without any live owner readback.
     pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
-        if !self.is_complete() {
-            return Ok(false);
-        }
         self.verify_committed_prefix()?;
-        Ok(true)
+        Ok(self.is_complete())
     }
 
     /// Export a four-effect proof only while every original commit is still
