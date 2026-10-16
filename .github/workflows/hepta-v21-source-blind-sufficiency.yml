@@ -1,0 +1,50 @@
+name: Hepta V21 original blinded evidence sufficiency (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-v21-blind-sufficiency-20261016]
+    paths:
+      - 'research/hepta_v21_reader/**'
+      - '.github/workflows/hepta-v21-source-blind-sufficiency.yml'
+  pull_request:
+    paths:
+      - 'research/hepta_v21_reader/**'
+      - '.github/workflows/hepta-v21-source-blind-sufficiency.yml'
+permissions:
+  contents: read
+concurrency:
+  group: hepta-v21-blind-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  strict-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Verify original source-blind science contracts in normal and optimized modes
+        shell: bash
+        env:
+          PYTHONPATH: research/hepta_v17_reader:research/hepta_v19_reader:research/hepta_v21_reader
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -S -m unittest discover -s research/hepta_v21_reader -p 'test_blinded_sufficiency.py' -v
+          python -O -S -m unittest discover -s research/hepta_v21_reader -p 'test_blinded_sufficiency.py' -v
+          python -S research/hepta_v21_reader/blinded_sufficiency.py verify-public \
+            --receipt research/hepta_v21_reader/V21_ORIGINAL_BLINDED_EVIDENCE_OBSERVATION_20261016.json
+          python -m compileall -q research/hepta_v21_reader/blinded_sufficiency.py research/hepta_v21_reader/test_blinded_sufficiency.py
+          git diff --exit-code
+      - name: Assert no private review corpus or model results in source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e research/hepta_v21_reader/blinded-private.json
+          test ! -e research/hepta_v21_reader/identity-private.json
+          test ! -e research/hepta_v21_reader/hidden.json
+          test ! -e research/hepta_v21_reader/qwen-physical-private.json
+          git diff --exit-code
