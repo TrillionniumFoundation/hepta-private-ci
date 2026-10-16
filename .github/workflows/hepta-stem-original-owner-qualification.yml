@@ -81,6 +81,14 @@ jobs:
     name: Actual immutable Arc reuse, digest separation, Rust fmt/test/Clippy
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    # The shared execution-evidence wrapper rejects empty source/test SHA and
+    # missing source-head lane even after a successful cargo test. The exact
+    # checkout below is the same PR head, NEVER GitHub's synthetic PR merge.
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: source-head
     defaults:
       run:
         working-directory: codex-rs
