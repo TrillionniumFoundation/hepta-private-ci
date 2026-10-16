@@ -35,10 +35,10 @@ jobs:
       HF_HUB_ENABLE_HF_TRANSFER: '0'
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
-      HEPTA_V25_ORIGINAL_ZIP: ${{ runner.temp }}/original-e3-sha11945106672.zip
-      HEPTA_V25_ORIGINAL_SOURCES: ${{ runner.temp }}/v25-public-source/inputs/sources.jsonl
-      HEPTA_V25_ORIGINAL_LABELS: ${{ runner.temp }}/v25-public-source/private_labels/test_labels.jsonl
-      HEPTA_V25_ORIGINAL_STAGE_SEALS: ${{ runner.temp }}/v25-public-source/source-seals.json
+      HEPTA_V25_ORIGINAL_ZIP: /tmp/hepta-v25-original-e3-sha11945106672.zip
+      HEPTA_V25_ORIGINAL_SOURCES: /tmp/hepta-v25-public-source/inputs/sources.jsonl
+      HEPTA_V25_ORIGINAL_LABELS: /tmp/hepta-v25-public-source/private_labels/test_labels.jsonl
+      HEPTA_V25_ORIGINAL_STAGE_SEALS: /tmp/hepta-v25-public-source/source-seals.json
     steps:
       - name: Exact current V25 source checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -111,7 +111,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
-          python original-e3-stager/experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/v25-public-source"
+          python original-e3-stager/experiments/shared_stem_cell/e3_scienceqa_stage.py --output /tmp/hepta-v25-public-source
           # The original sources and labels are held only inside this runner and never uploaded.
           echo "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202  $HEPTA_V25_ORIGINAL_SOURCES" | sha256sum -c -
           echo "b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3  $HEPTA_V25_ORIGINAL_LABELS" | sha256sum -c -
