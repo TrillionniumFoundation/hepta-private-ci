@@ -938,15 +938,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             )?;
             self.pending = true;
         }
+        // The prepared intent is already fsynced. From this point onward,
+        // any RPC/transport failure may hide a committed original effect.
+        // Recovery must preserve the same intent and use read-only readback.
         let receipt = if pending {
             self.port
                 .reconcile(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
                 .ok_or(CellSplitExecutionErrorV1::Ambiguous)?
         } else {
             self.port
                 .execute(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
         };
         validate_receipt(&intent, &receipt)?;
         self.trust.verify(&intent, &receipt)?;
