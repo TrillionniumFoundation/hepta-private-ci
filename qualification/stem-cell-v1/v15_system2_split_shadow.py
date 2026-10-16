@@ -578,6 +578,5 @@ def main():
                          load_json(a.adjudication))
     print(json.dumps(out,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False))
 
-
 if __name__=='__main__':
     main()
