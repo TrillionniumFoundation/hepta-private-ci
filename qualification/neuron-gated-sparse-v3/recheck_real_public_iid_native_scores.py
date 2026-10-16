@@ -197,6 +197,7 @@ def recheck_report(report: dict, original_inputs: dict,
          control.get("true_positive_cases") == 8 and
          control.get("true_negative_cases") == 24 and
          control.get("delivered_accuracy") == .75 and
+         control.get("balanced_accuracy") == .5 and
          control.get("positive_recall") == 0.0 and
          control.get("not_original_deployed_v1_no_change") is True and
          control.get("not_a_temporal_learning_or_ndu_baseline") is True,
