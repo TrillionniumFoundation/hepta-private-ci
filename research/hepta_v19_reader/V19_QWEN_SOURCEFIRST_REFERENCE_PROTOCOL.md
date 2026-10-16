@@ -68,6 +68,20 @@ Exact source fingerprints:
 
 ## 3. Material and model execution authorization boundary
 
+The original Actions artifact downloader now disables redirects for the
+GitHub bearer-authorized API request and accepts only an HTTPS signed
+object-store redirect on a narrow host allowlist. The object ZIP is fetched by a
+separate **unauthenticated** request, streamed with a hard size cap, 0600
+create-once output, and independently checked complete SHA256; forged
+redirect hosts, authorization header propagation, truncated/changed bytes and
+repeated output writes are adversarially rejected. Signed URLs are never logged.
+This is a source/mechanism security gate, not a model-success claim.
+ A pinned 376,363,859-byte
+original ZIP was physically streamed through a **local simulated 302** object
+path with complete SHA256 verification and no object-request bearer token.
+This was not a fresh GitHub API retrieval nor new model inference. The
+sanitized record is `V19_SECURE_ORIGINAL_ARCHIVE_TRANSPORT_20261016.json`.
+
 Only SHA-pinned original GitHub ZIP is accepted. `v19_recover_original.py`
 streams preselected original filenames from TAR; it never extracts untrusted
 paths. Every known file has a byte-length and SHA256 check. No silently

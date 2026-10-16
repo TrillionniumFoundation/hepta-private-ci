@@ -68,10 +68,7 @@ jobs:
           umask 077
           TMP="$RUNNER_TEMP/hepta-v19"
           mkdir -m700 "$TMP"
-          curl -fLsS --retry 3 --connect-timeout 25 --max-time 1200 \
-            -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer $GH_TOKEN" \
-            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip' \
-            -o "$TMP/original.zip"
+          python research/hepta_v19_reader/v19_artifact_fetch.py --out "$TMP/original.zip"
           D=research/hepta_v19_reader; P=research/hepta_v17_reader
           python "$D/v19_recover_original.py" --zip "$TMP/original.zip" --out "$TMP/original" \
             --mode source-and-reader
@@ -130,10 +127,7 @@ jobs:
           TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader;P=research/hepta_v17_reader
           test -s "$S/reader-135m-private.json" && test -s "$S/qwen-physical-private.json"
           test -s "$S/qwen-physical-private.json.starts.jsonl"
-          curl -fLsS --retry 3 --connect-timeout 25 --max-time 1200 \
-            -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer $GH_TOKEN" \
-            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip' \
-            -o "$TMP/postseal-original.zip"
+          python research/hepta_v19_reader/v19_artifact_fetch.py --out "$TMP/postseal-original.zip"
           python "$D/v19_recover_original.py" --zip "$TMP/postseal-original.zip" \
             --out "$TMP/postseal-original" --mode source-only
           python "$P/source_first.py" prepare --source "$TMP/postseal-original/locomo.json" \

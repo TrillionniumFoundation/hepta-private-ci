@@ -2,6 +2,9 @@
 import copy
 from hashlib import sha1,sha256
 import json
+import io
+import stat
+import urllib.error
 import os
 from pathlib import Path
 import subprocess
@@ -14,6 +17,7 @@ from unittest.mock import patch
 import source_first as v17
 import v19_qwen_reference as q
 import v19_qwen_material as mat
+import v19_artifact_fetch as fetch
 import v19_reference_review as reviewer
 
 
@@ -258,6 +262,136 @@ class MaterialTests(unittest.TestCase):
             (root/'model'/'config.json').symlink_to(cache/'config.json')
             with self.assertRaises(ValueError):
                 mat.verify_snapshot(root/'model',json.loads((root/'manifest.json').read_text()))
+
+
+class OriginalArtifactTransportTests(unittest.TestCase):
+    """Physical temporary-byte checks, no network, no original model execution."""
+
+    LOCATION = 'https://productionresults99.blob.core.windows.net/case/archive.zip?sv=1&sig=fake'
+
+    def simulate(self, body=b'bounded fake original archive', url=None, code=302):
+        """Return test-only redirect and unauthenticated object client."""
+        first_headers = []
+        second_headers = []
+        class RedirectClient:
+            def open(self, request, timeout):
+                first_headers.append({k.casefold():v for k,v in request.header_items()})
+                raise urllib.error.HTTPError(fetch.URL, code, 'redirect',
+                    {'Location': url or OriginalArtifactTransportTests.LOCATION}, None)
+        def open_object(request, timeout):
+            second_headers.append({k.casefold():v for k,v in request.header_items()})
+            return io.BytesIO(body)
+        return RedirectClient(), open_object, first_headers, second_headers
+
+    def test_actual_temporary_archive_bytes_auth_separated_and_source_sha(self):
+        packet=b'not-an-original-publisher-archive-\x00-test-only'
+        orig, obj, auth, redir = self.simulate(packet)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(fetch,'ZIP_SHA',sha256(packet).hexdigest()):
+            target=Path(tmp)/'received.zip'
+            report=fetch.download(target,'research-read-token',opener=orig,object_open=obj)
+            self.assertEqual(target.read_bytes(),packet)
+            self.assertEqual(report['zip_bytes'],len(packet))
+            self.assertFalse(report['production_authorized'])
+            self.assertFalse(report['original_model_executed'])
+            self.assertEqual(len(auth),1)
+            self.assertEqual(auth[0]['authorization'],'Bearer research-read-token')
+            self.assertEqual(len(redir),1)
+            self.assertNotIn('authorization',redir[0])
+            self.assertEqual(stat.S_IMODE(target.stat().st_mode),0o600)
+            with self.assertRaises(ValueError):
+                fetch.download(target,'research-read-token',opener=orig,object_open=obj)
+
+    def test_changed_original_archive_digest_rejected_and_output_cleaned(self):
+        orig,obj,auth,redir=self.simulate(b'tampered bytes')
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'never-published.zip'
+            with self.assertRaisesRegex(ValueError,'SHA256 changed'):
+                fetch.download(target,'research-read-token',opener=orig,object_open=obj)
+            self.assertFalse(target.exists())
+            self.assertEqual(len(redir),1)
+            self.assertNotIn('authorization',redir[0])
+
+    def test_forged_external_signed_artifact_redirect_rejected_without_open(self):
+        invalid=(
+            'http://productionresults99.blob.core.windows.net/case?sig=x',
+            'https://localhost/case?sig=x',
+            'https://objects.githubusercontent.com.evil.invalid/archive?sig=x',
+            'https://objects.githubusercontent.com:8443/archive?sig=x',
+            'https://user:pass@objects.githubusercontent.com/archive?sig=x',
+            'https://objects.githubusercontent.com/archive',
+            'https://objects.githubusercontent.com/archive?sig=x\nBearer stolen',
+            '/relative/redirect?sig=x',
+            'https://s3.amazonaws.com.evil.invalid/archive?sig=x',
+        )
+        for location in invalid:
+            with self.subTest(url=location):
+                orig,obj,auth,redir=self.simulate(url=location)
+                with tempfile.TemporaryDirectory() as tmp:
+                    target=Path(tmp)/'denied.zip'
+                    with self.assertRaises(ValueError):
+                        fetch.download(target,'research-read-token',opener=orig,object_open=obj)
+                    self.assertFalse(target.exists())
+                    self.assertEqual(redir,[])
+
+    def test_github_auth_token_not_accepted_empty_or_header_injection(self):
+        orig,obj,auth,redir=self.simulate()
+        for token in ('', 'a\rb', 'a\nb', None):
+            with self.subTest(token=token), tempfile.TemporaryDirectory() as tmp:
+                with self.assertRaises(ValueError):
+                    fetch.download(Path(tmp)/'bad.zip',token,opener=orig,object_open=obj)
+        self.assertEqual(auth,[])
+
+    def test_original_artifact_api_status_is_not_silent_success(self):
+        for status in (301,401,403,404,500):
+            orig,obj,auth,redir=self.simulate(code=status)
+            with self.subTest(status=status),tempfile.TemporaryDirectory() as tmp:
+                with self.assertRaises(ValueError):
+                    fetch.download(Path(tmp)/'none.zip','research-read-token',opener=orig,object_open=obj)
+                self.assertEqual(redir,[])
+
+    def test_model_zip_object_size_bound_prevents_unbounded_capture(self):
+        body=b'test-fixture-only-10-bytes'
+        orig,obj,auth,redir=self.simulate(body)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(fetch,'MAX_SIZE',len(body)-1):
+            target=Path(tmp)/'bounded.zip'
+            with self.assertRaisesRegex(ValueError,'unbounded'):
+                fetch.download(target,'research-read-token',opener=orig,object_open=obj)
+            self.assertFalse(target.exists())
+            self.assertEqual(len(redir),1)
+
+    def test_object_store_error_redacts_sensitive_signed_query(self):
+        orig,_,auth,_=self.simulate()
+        private_link=self.LOCATION+'&oauth_secret=DO_NOT_LOG'
+        def unsafe_object_open(request,timeout):
+            raise urllib.error.URLError('temporary signed URL blocked: '+private_link)
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'denied.zip'
+            with self.assertRaises(ValueError) as error:
+                fetch.download(target,'test-token',opener=orig,object_open=unsafe_object_open)
+            self.assertIn('URL withheld',str(error.exception))
+            self.assertNotIn(private_link,str(error.exception))
+            self.assertFalse(target.exists())
+
+    def test_local_real_archive_transport_receipt_denies_inference_claim(self):
+        observation=json.loads(Path(__file__).with_name(
+            'V19_SECURE_ORIGINAL_ARCHIVE_TRANSPORT_20261016.json').read_text())
+        self.assertEqual(observation['historical_original_zip_sha256'],fetch.ZIP_SHA)
+        self.assertEqual(observation['original_zip_streamed_bytes'],376363859)
+        self.assertTrue(observation['exact_archive_sha256_verified_on_real_local_bytes'])
+        self.assertTrue(observation['simulated_github_redirect_only'])
+        self.assertFalse(observation['actual_github_auth_api_request_on_this_trial'])
+        self.assertFalse(observation['bearer_sent_to_simulated_object_request'])
+        self.assertEqual(observation['real_qwen_model_forwards_this_increment'],0)
+        self.assertFalse(observation['production_authorized'])
+        self.assertEqual(observation['decision'],'HOLD_NO_GO')
+
+    def test_source_file_transport_excludes_original_user_media(self):
+        source=Path(fetch.__file__).read_text(encoding='utf-8')
+        self.assertIn('class NoRedirect',source)
+        self.assertIn('O_EXCL',source)
+        self.assertIn('NoRedirect()',source)
+        self.assertIn("'github_token_sent_to_object_store':False",source)
+
 
 
 if __name__=='__main__':unittest.main()
