@@ -399,6 +399,7 @@ jobs:
           BINARY_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
           python qualification/neuron-gated-sparse-v3/real_public_iid_q24_native_score.py \
             --models-root "$RUNNER_TEMP/hepta-public-iid-trained" \
+            --fit "$ROOT/fit-only-q24.json" \
             --heldout "$ROOT/heldout-unlabeled-q24.json" \
             --plan "$ROOT/predeclared-iid-plan.json" \
             --original-source original-public-source \
@@ -412,6 +413,9 @@ jobs:
               "hepta-public-iid-heldout-score.json").read_text())
           assert report["trained_private_models"] == 32
           assert report["fresh_rust_os_process_invocations"] == 2048
+          assert report["original_public_fit_label_source_census"]["real_public_train_sample_count"] == 64
+          assert report["original_public_fit_label_source_census"]["actual_fit_label_identities_bound_to_original_dataset"] is True
+          assert report["original_public_fit_label_source_census"]["signed_independent_source_owner_verified"] is False
           assert report["original_heldout_cases"] == 32
           assert report["four_binary_tasks"] == 4
           assert report["all_independent_q24_adapter_head_integer_checks"] is True
