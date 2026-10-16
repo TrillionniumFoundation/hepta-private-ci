@@ -686,6 +686,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
         let receipts = self.read_verified_prefix(true)?;
+        // A fsynced prepared intent can already have caused a physical
+        // effect whose acknowledgement was lost. The read-only transcript
+        // path is also an operator status API: reporting None would hide an
+        // unresolved original owner and misclassify it as safe incompleteness.
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         if !self.is_complete() {
             return Ok(None);
         }
