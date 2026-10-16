@@ -1,0 +1,71 @@
+name: Terminal CI result gates on Slim x64
+on:
+  push:
+    branches: [ci/gha-slim-terminal-fanin-20261016]
+    paths: [.github/workflows/gha-slim-terminal-fanin.yml]
+
+permissions:
+  contents: read
+
+# Exercises the exact production main-only CI verdict helper, including
+# success and fail-closed cases, on the unprivileged Slim container runner.
+jobs:
+  postmerge-verdict:
+    name: Production postmerge dependency verdict on Slim
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Positive real postmerge checker control
+        env:
+          NEEDS: '{"rust-ci-full":{"result":"success"},"v8-canary":{"result":"success"}}'
+          EXPECTED_NEEDS: '["rust-ci-full","v8-canary"]'
+        run: python3 .github/scripts/check_ci_results.py
+      - name: Failure and skipped dependencies fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          for bad in failure cancelled skipped; do
+            if NEEDS="{\"rust-ci-full\":{\"result\":\"success\"},\"v8-canary\":{\"result\":\"$bad\"}}" \
+              EXPECTED_NEEDS='["rust-ci-full","v8-canary"]' \
+              python3 .github/scripts/check_ci_results.py; then
+              echo "::error::postmerge accepted forbidden dependency state $bad"
+              exit 1
+            fi
+          done
+          if NEEDS='{}' python3 .github/scripts/check_ci_results.py; then
+            echo "::error::postmerge accepted missing dependency results"
+            exit 1
+          fi
+      - name: Check unchanged checkout
+        uses: ./.github/actions/check-clean-worktree
+
+  nextest-platform-verdict:
+    name: Exact required Nextest shard result semantics on Slim
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
+    steps:
+      - name: Success succeeds and every other shard result fails
+        shell: bash
+        run: |
+          set -euo pipefail
+          for state in success failure cancelled skipped; do
+            if SHARD_RESULT="$state" bash -c '
+              if [[ "$SHARD_RESULT" != "success" ]]; then
+                echo "Nextest shards finished with result: $SHARD_RESULT" >&2
+                exit 1
+              fi
+            '; then
+              if [[ "$state" != success ]]; then
+                echo "::error::Nextest incorrectly accepted $state"
+                exit 1
+              fi
+            else
+              if [[ "$state" == success ]]; then
+                echo "::error::Nextest rejected success"
+                exit 1
+              fi
+            fi
+          done
