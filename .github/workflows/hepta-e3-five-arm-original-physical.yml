@@ -1,7 +1,7 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-predictor-target-isolation-20261016"]
+    branches: ["research/e3-five-arm-byte-mutation-audit-20261016"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
@@ -18,6 +18,14 @@ on:
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
       - "experiments/shared_stem_cell/e3_source_target_partition.py"
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py"
+      - "experiments/shared_stem_cell/E3_IN_AUDIT_SOURCE_MUTATION_GUARD_20261015.md"
+      - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_196_BYTE_CONVERGENCE_20261016.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
   pull_request:
@@ -37,6 +45,14 @@ on:
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
       - "experiments/shared_stem_cell/e3_source_target_partition.py"
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py"
+      - "experiments/shared_stem_cell/E3_IN_AUDIT_SOURCE_MUTATION_GUARD_20261015.md"
+      - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
+      - "experiments/shared_stem_cell/E3_FIVE_ARM_196_BYTE_CONVERGENCE_20261016.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 permissions:
@@ -63,6 +79,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Require exact source SHA and pristine original source checkout
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
       - name: Compile all original research-only producers and independent scorer
         run: |
           set -euo pipefail
@@ -74,7 +96,12 @@ jobs:
             experiments/shared_stem_cell/e3_native_capacity_review.py \
             experiments/shared_stem_cell/e3_ocr_original_audit.py \
             experiments/shared_stem_cell/e3_source_target_partition.py \
-            experiments/shared_stem_cell/e3_scienceqa_stage.py
+            experiments/shared_stem_cell/e3_scienceqa_stage.py \
+            experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            experiments/shared_stem_cell/e3_model_entry_resnapshot.py \
+            experiments/shared_stem_cell/test_e3_model_entry_ledger.py \
+            experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py \
+            experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py
       - name: Separate independent two-Head readout tests before model work
         run: |
           set -euo pipefail
@@ -89,6 +116,24 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
+      - name: Verify 196 byte-bound original model input entries and mutation re-snapshot
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_ledger.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_ledger.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
+      - name: Check original 196-byte-source workflow graph and independent-owner ordering
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_byte_ci_convergence_20261016.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_byte_ci_convergence_20261016.py -v
       - name: Normal original-style 28 fault controls
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
@@ -240,6 +285,15 @@ jobs:
           assert q['raw_image_count']==192 and q['production_accepted'] is False
           print('SAME ORIGINAL SCIENCEQA SOURCE IDENTITY — NOT A FUTURE WINDOW')
           PY
+      - name: Validate no-TEST-target source tree BEFORE OCR/Granite97 inference
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
+          python3 experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            --staged "$RUNNER_TEMP/e3-original-sources" \
+            --source-sha256 "$SOURCE_SHA" --fit-sha256 "$FIT_SHA" \
+            --out "$RUNNER_TEMP/e3-ocr-pre-view.json"
+          test -s "$RUNNER_TEMP/e3-ocr-pre-view.json"
       - name: Physically OCR all 192 sources and encode with original Granite97
         run: |
           set -euo pipefail
@@ -250,6 +304,16 @@ jobs:
             --images "$RUNNER_TEMP/e3-original-sources/images" \
             --out "$RUNNER_TEMP/e3-ocr-observed"
           test -s "$RUNNER_TEMP/e3-ocr-observed/sealed-ocr-predictions.json"
+      - name: Independently recheck source tree AFTER OCR/Granite97 inference
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
+          python3 experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            --staged "$RUNNER_TEMP/e3-original-sources" \
+            --source-sha256 "$SOURCE_SHA" --fit-sha256 "$FIT_SHA" \
+            --out "$RUNNER_TEMP/e3-ocr-post-view.json"
+          cmp "$RUNNER_TEMP/e3-ocr-pre-view.json" "$RUNNER_TEMP/e3-ocr-post-view.json"
+          sha256sum "$RUNNER_TEMP/e3-ocr-pre-view.json" "$RUNNER_TEMP/e3-ocr-post-view.json"
       - name: Save numeric OCR predictions, no media/model/labels
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -258,6 +322,8 @@ jobs:
           path: |
             ${{ runner.temp }}/e3-ocr-observed/sealed-ocr-predictions.json
             ${{ runner.temp }}/e3-ocr-packages.txt
+            ${{ runner.temp }}/e3-ocr-pre-view.json
+            ${{ runner.temp }}/e3-ocr-post-view.json
           if-no-files-found: warn
   physical-native-gemma2:
     if: github.event_name == 'push'
@@ -326,6 +392,15 @@ jobs:
           assert not (Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/private_labels/test_labels.jsonl').exists()
           print('NATIVE MODEL COHORT MATCHES ORIGINAL GRANITE/DINO')
           PY
+      - name: Validate no-TEST-target source tree BEFORE native Gemma2 inference
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
+          python3 experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            --staged "$RUNNER_TEMP/e3-original-sources" \
+            --source-sha256 "$SOURCE_SHA" --fit-sha256 "$FIT_SHA" \
+            --out "$RUNNER_TEMP/e3-native-pre-view.json"
+          test -s "$RUNNER_TEMP/e3-native-pre-view.json"
       - name: Download and verify reviewed native Google model snapshot
         run: |
           set -euo pipefail
@@ -350,6 +425,16 @@ jobs:
             --out "$RUNNER_TEMP/e3-native-observed"
           test -s "$RUNNER_TEMP/e3-native-observed/sealed-native-predictions.json"
           test -s "$RUNNER_TEMP/e3-native-observed/sealed-native-matched-controls.json"
+      - name: Independently recheck source tree AFTER native Gemma2 inference
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
+          python3 experiments/shared_stem_cell/e3_model_entry_ledger.py \
+            --staged "$RUNNER_TEMP/e3-original-sources" \
+            --source-sha256 "$SOURCE_SHA" --fit-sha256 "$FIT_SHA" \
+            --out "$RUNNER_TEMP/e3-native-post-view.json"
+          cmp "$RUNNER_TEMP/e3-native-pre-view.json" "$RUNNER_TEMP/e3-native-post-view.json"
+          sha256sum "$RUNNER_TEMP/e3-native-pre-view.json" "$RUNNER_TEMP/e3-native-post-view.json"
       - name: Save numeric native predictions, no raw weights/media/heldout targets
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -360,6 +445,8 @@ jobs:
             ${{ runner.temp }}/e3-native-observed/sealed-native-matched-controls.json
             ${{ runner.temp }}/e3-native-packages.txt
             ${{ runner.temp }}/e3-native-snapshot-receipt.json
+            ${{ runner.temp }}/e3-native-pre-view.json
+            ${{ runner.temp }}/e3-native-post-view.json
           if-no-files-found: warn
   independent-five-arm-review:
     if: github.event_name == 'push'
@@ -392,6 +479,40 @@ jobs:
             "$RUNNER_TEMP/e3-native/e3-native-observed/sealed-native-predictions.json"
           test "$(sha256sum "$RUNNER_TEMP/e3-prior/sealed-source-bound-predictions.json" | cut -d' ' -f1)" \
             = e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7
+      - name: Independently verify both physical model jobs excluded TEST label bytes before source scoring
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os
+          temp=Path(os.environ['RUNNER_TEMP'])
+          records=[]
+          for name,folder in (('ocr','e3-ocr'),('native','e3-native')):
+              original=temp/folder/f'e3-{name}-pre-view.json'
+              successor=temp/folder/f'e3-{name}-post-view.json'
+              assert original.is_file() and successor.is_file()
+              assert original.read_bytes()==successor.read_bytes()
+              result=json.loads(original.read_bytes())
+              assert result['schema']=='hepta.e3-model-input-filetree-audit.v1'
+              assert result['tree_fingerprint_profile']=='hepta.e3-path-byte-sha256.v2'
+              assert result['tree_fingerprint_file_count']==196
+              assert len(result['tree_fingerprint'])==64
+              assert result['source_sha256']==os.environ['SOURCE_SHA']
+              assert result['fit_sha256']==os.environ['FIT_SHA']
+              assert (result['source_count'],result['train_cal_count'],
+                      result['test_label_count'],result['image_count'])==(192,128,0,192)
+              assert result['authority']=='DENY_ALL' and result['production_accepted'] is False
+              for key in ('test_target_bytes_or_digest_admitted',
+                          'unknown_parquet_or_arrow_file_present',
+                          'raw_model_media_uploaded','independent_publisher_attested'):
+                  assert result[key] is False
+              records.append(result)
+          for field in ('tree_fingerprint','tree_fingerprint_profile',
+                        'tree_fingerprint_file_count',
+                        'original_source_receipt_sha256','image_bytes_total'):
+              assert records[0][field]==records[1][field]
+          print('E3_ORIGINAL_MODEL_INPUT_INDEPENDENT_PREPOST_PARITY / DENY_ALL')
+          PY
       - name: Seal exactly all five source-matched arms before opening heldout labels
         run: |
           set -euo pipefail
