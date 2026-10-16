@@ -867,8 +867,15 @@ fn incomplete_verified_completion_must_reject_injected_uncommitted_frame() {
 
     // A read-only status query must not misclassify an unrecognized intent
     // as a safe empty/incomplete split, nor dispatch an external effect.
-    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}")
-        .expect("inject unrecognized persisted intent");
+    // Inject a *validly private and fsynced* but semantically unrecognized
+    // original frame. Ordinary fs::write may create a 0644 file on hosted
+    // runners, making secure_read reject permissions with Durable before
+    // this test reaches the intended non-prefix history check.
+    crate::durable::write_private_new(
+        &root.path().join("cell-split-00-prepared.json"),
+        b"{}",
+    )
+    .expect("inject private unrecognized persisted intent");
     assert!(matches!(
         owner.verified_complete(),
         Err(CellSplitExecutionErrorV1::Invalid(_))
