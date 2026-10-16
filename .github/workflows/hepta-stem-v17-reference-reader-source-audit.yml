@@ -1,0 +1,49 @@
+name: hepta-stem-v17-reference-reader-source-audit
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v17_reference_*.py"
+      - "qualification/stem-cell-v1/test_v17_reference_reader.py"
+      - "qualification/stem-cell-v1/STEM_V17_REFERENCE_READER_PHYSICAL.md"
+      - ".github/workflows/hepta-stem-v17-reference-reader-source-audit.yml"
+  push:
+    branches:
+      - research/stem-v17-qwen-reference-sourcefirst-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-contracts-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and run 30 source/adversarial contracts, standard and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q \
+            qualification/stem-cell-v1/v17_reference_reader_physical.py \
+            qualification/stem-cell-v1/v17_reference_independent_review.py \
+            qualification/stem-cell-v1/test_v17_reference_reader.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v17_reference_reader.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v17_reference_reader.py' -v
+      - name: Retain source-only privacy/no-physical-claim profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          flow = Path('.github/workflows/hepta-stem-v17-reference-reader-source-audit.yml').read_text()
+          audited_steps = flow.split('      - name: Retain source-only privacy/no-physical-claim profile')[0]
+          for forbidden in ('upload-artifact@', 'huggingface_hub', 'model.generate(', 'gh api', 'HF_TOKEN'):
+              if forbidden in audited_steps:
+                  raise SystemExit('source workflow unexpectedly touches private models')
+          assert 'contents: read' in flow
+          PY
