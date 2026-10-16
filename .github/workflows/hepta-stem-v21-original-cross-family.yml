@@ -1,0 +1,116 @@
+name: hepta-stem-v21-original-cross-family
+
+on:
+  push:
+    branches:
+      - research/stem-second-family-proof-v21-20261016
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/v21_banking77_cross_family_audit.py
+      - qualification/stem-cell-v1/test_v21_banking77_source.py
+      - qualification/stem-cell-v1/test_v21_banking77_original.py
+      - qualification/stem-cell-v1/STEM_V21_SECOND_FAMILY_20261016.md
+      - qualification/stem-cell-v1/STEM_V21_SANITIZED_OBSERVATION_20261016.json
+      - .github/workflows/hepta-stem-v21-original-cross-family.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  original-source-reconstruction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact source tree and locally tested Python blobs
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd qualification/stem-cell-v1
+          test "$(git hash-object v21_banking77_cross_family_audit.py)" = '672615478c107777c20735c3f8ad8539899de3f9'
+          test "$(git hash-object test_v21_banking77_source.py)" = 'f5e2b7cbc85ded11af823391bebf7ec415ee7db0'
+          test "$(git hash-object test_v21_banking77_original.py)" = '0b77a453c00bab456724b6c4f5207f4fc7e240d9'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-only threat-model and numerical tests
+        run: |
+          set -euo pipefail
+          cd qualification/stem-cell-v1
+          python -m py_compile v21_banking77_cross_family_audit.py test_v21_banking77_source.py test_v21_banking77_original.py
+          python -m unittest -q test_v21_banking77_source
+          python -O -m unittest -q test_v21_banking77_source
+      - name: Download fixed published inputs, verify original hashes, physically recount
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$(mktemp -d)"
+          trap 'rm -rf "$work"' EXIT
+          # Only REST API sees GH_TOKEN, never follow its cross-host response with it.
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' \
+            --max-redirs 0 \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$work/headers" --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11877613315/zip')"
+          test "$status" = '302'
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/headers" | tr -d '\r')"
+          case "$location" in
+            https://*) ;;
+            *) echo 'Original artifact must use signed HTTPS transport' >&2; exit 1 ;;
+          esac
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' \
+            --output "$work/banking.zip" "$location"
+          unset location
+          printf '%s  %s\n' 'fd89f174057d98bd2d4f03447d5d5dd9372723e70128ccdf2dcbe73f67a0a03a' "$work/banking.zip" | sha256sum -c -
+          # Separate original issuer, exact Git SHA, raw source CSV (not model archive labels).
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          curl --fail --silent --show-error --retry 2 --proto '=https' --max-redirs 0 \
+            --output "$work/train.csv" \
+            "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/$revision/banking_data/train.csv"
+          curl --fail --silent --show-error --retry 2 --proto '=https' --max-redirs 0 \
+            --output "$work/test.csv" \
+            "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/$revision/banking_data/test.csv"
+          printf '%s  %s\n' 'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b' "$work/train.csv" | sha256sum -c -
+          printf '%s  %s\n' 'd12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d' "$work/test.csv" | sha256sum -c -
+          cd qualification/stem-cell-v1
+          python v21_banking77_cross_family_audit.py \
+            --archive "$work/banking.zip" --train-csv "$work/train.csv" \
+            --test-csv "$work/test.csv" --output "$work/recount-A.json"
+          HEPTA_V21_BANKING_ARCHIVE="$work/banking.zip" \
+          HEPTA_V21_BANKING_TRAIN_CSV="$work/train.csv" \
+          HEPTA_V21_BANKING_TEST_CSV="$work/test.csv" \
+            python -m unittest -q test_v21_banking77_original
+          python -O v21_banking77_cross_family_audit.py \
+            --archive "$work/banking.zip" --train-csv "$work/train.csv" \
+            --test-csv "$work/test.csv" --output "$work/recount-B.json"
+          HEPTA_V21_BANKING_ARCHIVE="$work/banking.zip" \
+          HEPTA_V21_BANKING_TRAIN_CSV="$work/train.csv" \
+          HEPTA_V21_BANKING_TEST_CSV="$work/test.csv" \
+            python -O -m unittest -q test_v21_banking77_original
+          python - "$work/recount-A.json" "$work/recount-B.json" <<'PY'
+          import json, sys
+          a, b = [json.load(open(p, encoding='utf-8')) for p in sys.argv[1:]]
+          if a != b or a['decision'] != 'SECOND_FAMILY_DESCRIPTIVE_NOT_CROSS_MODEL_TRANSFER':
+              raise SystemExit('source label identity or independent numerical score drift')
+          if (a['source_family_count_in_pair'] != 2 or a['independent_future_calendar_windows'] != 0
+                  or a['same_stem_or_budget_cross_family_comparison_verified'] is not False
+                  or a['production_authorized'] is not False):
+              raise SystemExit('unsupported cross-model transfer or promotion assertion')
+          arms=a['modernbert_banking77_original_score_recount']
+          if arms['dense16']['after']['correct'] != 23 or arms['sparse16_top2']['after']['correct'] != 17:
+              raise SystemExit('actual original scores not reproduced')
+          print('Banking77 original 32/32 publisher IDs + 2 arms scored; no cross-model future win')
+          PY
+          # Do NOT upload downloaded CSVs, original source text, model weights,
+          # original per-case logits, labels, private notes, or credentials.
