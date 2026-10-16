@@ -384,6 +384,8 @@ impl TrustFixture {
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(not(unix))]
+    let _ = path;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

@@ -16,7 +16,7 @@ use crate::AcceptanceError;
 
 #[cfg(windows)]
 #[path = "durable_windows.rs"]
-mod windows;
+pub(crate) mod windows;
 
 pub(crate) const MAX_SMALL_FILE_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_ARTIFACT_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -71,7 +71,13 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(invalid(format!("{label} must be a real directory")));
     }
-    verify_private_mode(&metadata, label)
+    #[cfg(unix)]
+    verify_private_mode(&metadata, label)?;
+    #[cfg(windows)]
+    windows::capture_directory(path, label)?;
+    #[cfg(not(any(unix, windows)))]
+    return Err(invalid("private owner ACLs unavailable on this platform"));
+    Ok(())
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
@@ -88,6 +94,8 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
     let before = file.metadata()?;
     verify_regular_metadata(&before, "input artifact")?;
     #[cfg(windows)]
+    windows::verify_private_acl_handle(&file, "input artifact")?;
+    #[cfg(windows)]
     let windows_before = windows::FileSnapshot::capture(&file, "input artifact")?;
     if before.len() > max_bytes as u64 {
         return Err(invalid("input artifact exceeds its read bound"));
@@ -100,7 +108,10 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
         return Err(invalid("input artifact exceeds its read bound"));
     }
     #[cfg(windows)]
-    windows::verify_unchanged(&file, path, &windows_before, "input artifact")?;
+    {
+        windows::verify_unchanged(&file, path, &windows_before, "input artifact")?;
+        windows::verify_private_acl_handle(&file, "input artifact")?;
+    }
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
@@ -127,6 +138,8 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
     let before = file.metadata()?;
     verify_regular_metadata(&before, "manifest artifact")?;
     #[cfg(windows)]
+    windows::verify_private_acl_handle(&file, "manifest artifact")?;
+    #[cfg(windows)]
     let windows_before = windows::FileSnapshot::capture(&file, "manifest artifact")?;
     if before.len() > MAX_ARTIFACT_BYTES {
         return Err(invalid("manifest artifact exceeds the 2 GiB bound"));
@@ -141,7 +154,10 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
         hasher.update(&buffer[..count]);
     }
     #[cfg(windows)]
-    windows::verify_unchanged(&file, path, &windows_before, "manifest artifact")?;
+    {
+        windows::verify_unchanged(&file, path, &windows_before, "manifest artifact")?;
+        windows::verify_private_acl_handle(&file, "manifest artifact")?;
+    }
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
@@ -160,6 +176,8 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
     verify_secure_directory(parent, "sidecar directory")?;
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(windows)]
+    let windows_parent_before = windows::capture_directory(parent, "sidecar directory")?;
     let mut options = OpenOptions::new();
     options.create_new(true).read(true).write(true);
     #[cfg(unix)]
@@ -172,6 +190,8 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     #[cfg(windows)]
     windows::configure_open(&mut options);
     let mut file = options.open(path)?;
+    #[cfg(windows)]
+    windows::verify_private_acl_handle(&file, "new sidecar artifact")?;
     file.write_all(bytes)?;
     file.sync_all()?;
     let fd_after = file.metadata()?;
@@ -200,6 +220,8 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
+    #[cfg(windows)]
+    windows::verify_directory_unchanged(parent, &windows_parent_before, "sidecar directory")?;
     File::open(parent)?.sync_all()?;
     Ok(())
 }
@@ -225,6 +247,8 @@ pub(crate) fn write_private_atomic_replace(
     }
     write_private_new(temporary_path, bytes)?;
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(windows)]
+    let windows_parent_before = windows::capture_directory(parent, "sidecar directory")?;
     let rename_result = std::fs::rename(temporary_path, path);
     if rename_result.is_err() {
         let _ = std::fs::remove_file(temporary_path);
@@ -234,6 +258,8 @@ pub(crate) fn write_private_atomic_replace(
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during atomic replace"));
     }
+    #[cfg(windows)]
+    windows::verify_directory_unchanged(parent, &windows_parent_before, "sidecar directory")?;
     let persisted = secure_read(path, bytes.len())?;
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
@@ -281,6 +307,8 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
     let path_metadata = std::fs::metadata(&path)?;
     let link_metadata = std::fs::symlink_metadata(&path)?;
     verify_regular_metadata(&fd_metadata, "sidecar lock")?;
+    #[cfg(windows)]
+    windows::verify_private_acl_handle(&file, "sidecar lock")?;
     if link_metadata.file_type().is_symlink()
         || !same_file_snapshot(&fd_metadata, &path_metadata)
         || !same_file_snapshot(&fd_metadata, &link_metadata)
@@ -289,6 +317,9 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
     }
     #[cfg(windows)]
     windows::verify_unchanged(&file, &path, &windows_before, "sidecar lock")?;
+    #[cfg(windows)]
+    file.try_lock()
+        .map_err(|_| invalid("another Windows operator-acceptance owner holds the sidecar lock"))?;
     #[cfg(unix)]
     {
         use std::os::fd::AsRawFd;
@@ -346,7 +377,9 @@ fn verify_regular_metadata(
             return Err(invalid(format!("{label} must have exactly one hard link")));
         }
     }
-    verify_private_mode(metadata, label)
+    #[cfg(unix)]
+    verify_private_mode(metadata, label)?;
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -367,11 +400,6 @@ fn verify_private_mode(metadata: &std::fs::Metadata, label: &str) -> Result<(), 
             "{label} must be owned by the effective user"
         )));
     }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
     Ok(())
 }
 
