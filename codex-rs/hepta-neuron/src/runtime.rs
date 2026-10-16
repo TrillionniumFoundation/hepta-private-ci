@@ -58,6 +58,18 @@ pub fn neuron_tick_final_use_binding_v1(
     })
 }
 
+/// Exact original signed effect admission bundle. Groups a borrowed,
+/// never-authorizing NDU read and the distinct business intent / Final-use
+/// owners; only the original Control/CNS composition can authenticate it.
+pub struct NeuronSignedEffectAdmissionV1<'a> {
+    pub snapshot: &'a NduSnapshotRefV1,
+    pub admitted_read_receipt_digest: Digest32,
+    pub effect_intent: &'a mut DurableNeuronEffectIntentV1,
+    pub neuron_owner_id: &'a StableId,
+    pub authority: &'a FinalUseAuthority,
+    pub signed_grant: &'a SignedFinalUseGrant,
+}
+
 #[derive(Clone)]
 struct PendingWitness {
     input_digest: Digest32,
@@ -298,12 +310,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
-        snapshot: &NduSnapshotRefV1,
-        admitted_read_receipt_digest: Digest32,
-        effect_intent: &mut DurableNeuronEffectIntentV1,
-        neuron_owner_id: &StableId,
-        authority: &FinalUseAuthority,
-        signed_grant: &SignedFinalUseGrant,
+        admission: NeuronSignedEffectAdmissionV1<'_>,
         mut verify_live_ndu_read: impl FnMut() -> Result<Digest32, NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         // No production authority is derived from a caller-provided NDU read
@@ -315,6 +322,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if !cfg!(test) {
             return Err(NeuronRuntimeError::OriginalEffectOwnerUnverified);
         }
+        let NeuronSignedEffectAdmissionV1 {
+            snapshot,
+            admitted_read_receipt_digest,
+            effect_intent,
+            neuron_owner_id,
+            authority,
+            signed_grant,
+        } = admission;
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
             &input.subject_id,

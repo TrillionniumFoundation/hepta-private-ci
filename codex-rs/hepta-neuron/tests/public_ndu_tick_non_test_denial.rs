@@ -22,6 +22,7 @@ use codex_hepta_neuron::NeuronModelPort;
 use codex_hepta_neuron::NeuronModelRequestV1;
 use codex_hepta_neuron::NeuronResourceEnvelopeV1;
 use codex_hepta_neuron::NeuronRuntime;
+use codex_hepta_neuron::NeuronSignedEffectAdmissionV1;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronTickInputV1;
@@ -296,12 +297,14 @@ fn public_callback_cannot_claim_product_model_use_without_original_control_and_e
     let denied = runtime.tick_with_ndu_snapshot(
         &mut model,
         input,
-        &snapshot,
-        receipt_digest,
-        &mut intent,
-        &checked(StableId::new("neuron.owner.fixture")),
-        &authority,
-        &signed,
+        NeuronSignedEffectAdmissionV1 {
+            snapshot: &snapshot,
+            admitted_read_receipt_digest: receipt_digest,
+            effect_intent: &mut intent,
+            neuron_owner_id: &checked(StableId::new("neuron.owner.fixture")),
+            authority: &authority,
+            signed_grant: &signed,
+        },
         || {
             callback_calls += 1;
             Ok(receipt_digest)
