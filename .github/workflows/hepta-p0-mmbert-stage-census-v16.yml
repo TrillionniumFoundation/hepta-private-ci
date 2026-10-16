@@ -5,6 +5,9 @@ name: Hepta P0 mmBERT strict-stage source diagnosis v16 (DENY_ALL)
       - 'experiments/shared_stem_cell/p0_mmbert_stage_census_v16.py'
       - 'experiments/shared_stem_cell/test_p0_mmbert_stage_census_v16.py'
       - 'experiments/shared_stem_cell/P0_MMBERT_STAGE_CENSUS_V16.md'
+      - 'experiments/shared_stem_cell/p0_hf519_loading_report_abi_v17.py'
+      - 'experiments/shared_stem_cell/test_p0_hf519_loading_report_abi_v17.py'
+      - 'experiments/shared_stem_cell/P0_HF519_LOADING_REPORT_ABI_V17.md'
       - '.github/workflows/hepta-p0-mmbert-stage-census-v16.yml'
   workflow_dispatch:
 permissions:
@@ -44,6 +47,12 @@ jobs:
           python -m py_compile "$D/p0_mmbert_stage_census_v16.py" "$D/test_p0_mmbert_stage_census_v16.py"
           PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_stage_census_v16.py -v
           PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_stage_census_v16.py -v
+          # Independent source-only 5.19 ABI fixture; the actual upstream ABI
+          # is verified separately AFTER installing the pinned Python wheel.
+          python -m py_compile "$D/p0_hf519_loading_report_abi_v17.py" \
+            "$D/test_p0_hf519_loading_report_abi_v17.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_hf519_loading_report_abi_v17.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_hf519_loading_report_abi_v17.py -v
           mkdir -p "$RUNNER_TEMP/mmbert-stage-v16"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mmbert-stage-v16/source-identity.txt"
       - name: Install exact original CPU runtime and replay synthetic byte guards
@@ -65,6 +74,29 @@ jobs:
           PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
           PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
           python -m pip freeze > "$RUNNER_TEMP/mmbert-stage-v16/pinned-runtime.txt"
+      - name: Verify actual pinned Transformers 5.19 loader-report ABI (no weights)
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/shared_stem_cell
+          PYTHONPATH="$D" python "$D/p0_hf519_loading_report_abi_v17.py" \
+            --output "$RUNNER_TEMP/mmbert-stage-v16/hf519-loader-report-abi-v17.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'mmbert-stage-v16/hf519-loader-report-abi-v17.json'
+          a=json.loads(p.read_text())
+          if (a['schema']!='hepta.p0.hf519-original-load-report-abi.v17' or
+              a['installed_transformers_required_version']!='5.19.0' or
+              a['strict_denial_cases_tested']!=5 or
+              a['observed_report_collection_kinds']!={'missing_keys':'set',
+                  'unexpected_keys':'set','mismatched_keys':'set','error_msgs':'list'} or
+              a['actual_model_weights_loaded_by_this_probe'] or
+              a['complete_original_tensor_byte_comparison_by_this_probe'] or
+              a['production_accepted'] or a['model_selected'] or
+              a['authority']!='DENY_ALL'):
+              raise ValueError('unqualified pinned upstream HF loader ABI')
+          PY
       - name: Require original immutable revision and strict publisher LFS bytes
         shell: bash
         run: |
@@ -99,6 +131,7 @@ jobs:
           path: |
             ${{ runner.temp }}/mmbert-stage-v16/stage-census-v16.json
             ${{ runner.temp }}/mmbert-stage-v16/source-identity.txt
+            ${{ runner.temp }}/mmbert-stage-v16/hf519-loader-report-abi-v17.json
             ${{ runner.temp }}/mmbert-stage-v16/compact-preflight-v9.json
           retention-days: 14
           if-no-files-found: warn
