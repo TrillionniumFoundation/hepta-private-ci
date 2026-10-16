@@ -143,6 +143,24 @@ mod unix {
         }
     }
 
+    fn wait_worker_bounded(child: &mut Child) -> io::Result<std::process::ExitStatus> {
+        let deadline = Instant::now() + IO_TIMEOUT;
+        loop {
+            if let Some(status) = child.try_wait()? {
+                return Ok(status);
+            }
+            if Instant::now() >= deadline {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "worker exceeded bounded shutdown window",
+                ));
+            }
+            thread::sleep(Duration::from_millis(1));
+        }
+    }
+
     fn quantile(sorted: &[u128], pct: usize) -> u128 {
         sorted[(sorted.len() - 1) * pct / 100]
     }
@@ -176,7 +194,7 @@ mod unix {
             black_box(echoed.frame().sequence);
             samples.push(begin.elapsed().as_nanos());
         }
-        let status = worker.0.wait()?;
+        let status = wait_worker_bounded(&mut worker.0)?;
         if !status.success() || wire.is_poisoned() {
             return Err("two-process worker failed or transport was poisoned".into());
         }
