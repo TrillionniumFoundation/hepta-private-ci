@@ -70,9 +70,50 @@ fn read_only_descriptor(security: &SECURITY_ATTRIBUTES) -> io::Result<()> {
             "security fixture returned a null ACE",
         ));
     }
-    let header = unsafe { &*(ace as *const ACE_HEADER) };
+    // Fixtures must use the same checked Win32 ACL span as production before
+    // inspecting or modifying the returned ACE. Never assume GetAce's pointer
+    // can be dereferenced based on non-null alone.
+    if unsafe { IsValidAcl(dacl) } == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "security fixture returned an invalid ACL",
+        ));
+    }
+    let mut info: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
+    if unsafe {
+        GetAclInformation(
+            dacl,
+            (&mut info as *mut ACL_SIZE_INFORMATION).cast(),
+            std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
+            AclSizeInformation,
+        )
+    } == 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    let acl_start = dacl as usize;
+    let ace_start = ace as usize;
+    let acl_bytes_in_use = info.AclBytesInUse as usize;
+    if !ace_span_fits_acl(
+        acl_start,
+        acl_bytes_in_use,
+        ace_start,
+        std::mem::size_of::<ACE_HEADER>(),
+    ) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "security fixture ACE header lies outside the ACL",
+        ));
+    }
+    let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };
     if header.AceType != ACCESS_ALLOWED_ACE_TYPE
         || !sid_length_fits_ace(usize::from(header.AceSize), 0)
+        || !ace_span_fits_acl(
+            acl_start,
+            acl_bytes_in_use,
+            ace_start,
+            usize::from(header.AceSize),
+        )
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -81,7 +122,10 @@ fn read_only_descriptor(security: &SECURITY_ATTRIBUTES) -> io::Result<()> {
     }
     // Restrict only this new fixture's descriptor before creation. No existing
     // object is made public or has its owner/security changed for this test.
-    unsafe { (*(ace as *mut ACCESS_ALLOWED_ACE)).Mask = FILE_GENERIC_READ };
+    // Write the checked Mask field without forming an unchecked ACE reference.
+    let mask_offset = std::mem::offset_of!(ACCESS_ALLOWED_ACE, Mask);
+    let mask = unsafe { ace.cast::<u8>().add(mask_offset).cast::<u32>() };
+    unsafe { ptr::write_unaligned(mask, FILE_GENERIC_READ) };
     Ok(())
 }
 
