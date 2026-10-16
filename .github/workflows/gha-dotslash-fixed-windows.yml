@@ -30,8 +30,15 @@ jobs:
           mkdir -p "$binary_dir"
           gh release download "$version" --repo facebook/dotslash \
             --pattern "$asset" --dir "$binary_dir"
-          actual_sha256="$(sha256sum "$binary_dir/$asset" | cut -d' ' -f1)"
-          test "$actual_sha256" = "$expected_sha256"
+          echo "Downloaded release asset:"
+          ls -la "$binary_dir"
+          sha256sum "$binary_dir/$asset"
+          actual_sha256="$(sha256sum "$binary_dir/$asset" | awk '{print $1}')"
+          printf 'expected_sha256=%s observed_sha256=%s\n' "$expected_sha256" "$actual_sha256"
+          if [[ "$actual_sha256" != "$expected_sha256" ]]; then
+            echo "::error::DotSlash pinned release digest mismatch; refusing to execute."
+            exit 60
+          fi
           tar -tzf "$binary_dir/$asset"
           tar -xOzf "$binary_dir/$asset" > "$binary_dir/dotslash.exe"
           chmod +x "$binary_dir/dotslash.exe"
