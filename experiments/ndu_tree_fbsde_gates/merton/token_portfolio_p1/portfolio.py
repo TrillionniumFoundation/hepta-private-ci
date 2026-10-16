@@ -217,8 +217,8 @@ def allocate(cases: tuple[Case, ...], acts: tuple[Action, ...], token_budget: in
                         candidate[0] == incumbent[0] and candidate[1] < incumbent[1]
                     ):
                         nxt[tt, ll] = candidate
-            if len(nxt) > MAX_STATES:
-                raise Invalid("unavailable: DP state bound exceeded")
+                        if len(nxt) > MAX_STATES:
+                            raise Invalid("unavailable: DP state bound exceeded")
             dp = nxt
         _, _, (_, choice) = min(
             ((t,l,pair) for (t,l),pair in dp.items()),
