@@ -72,6 +72,42 @@ class GraniteExportV5Tests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     quantize_rows(rows, [1, 1, 1])
 
+    def test_opt_in_rational8_adapter_maintains_distinct_cache_identity(self):
+        # Former V5 failure remains a failure unless the owner chooses
+        # the separately versioned, bounded and non-clipping transform.
+        rows = [[0.0] * 384 for _ in range(2)]
+        rows[0][0], rows[0][1] = 16.0, -64.0
+        with self.assertRaisesRegex(ValueError, "out-of-range"):
+            quantize_rows(rows, [1, 1])
+        bounded = quantize_rows(rows, [1, 1], feature_adapter="rational8-v1")
+        self.assertEqual(bounded[0], round((8.0 * 16.0) / (8.0 + 16.0) * Q24))
+        self.assertEqual(bounded[1], round((8.0 * -64.0) / (8.0 + 64.0) * Q24))
+        self.assertLess(abs(bounded[1]), 8 * Q24)
+        self.assertEqual(len(bounded), 2 * 384)
+        for value in (float("nan"), float("inf"), float("-inf")):
+            rows[0][0] = value
+            with self.assertRaises(ValueError):
+                quantize_rows(rows, [1, 1], feature_adapter="rational8-v1")
+        with self.assertRaises(ValueError):
+            quantize_rows([[0.0] * 384], [1], feature_adapter="unknown")
+
+        model = {"sha256": {k: sha(k.encode()) for k in FILES}}
+        v5 = profile_digests(sha(b"original"), model, max_tokens=192,
+                            torch_version="2.10.0+cpu", transformers_version="4.57.1")
+        v6 = profile_digests(sha(b"original"), model, max_tokens=192,
+                            torch_version="2.10.0+cpu", transformers_version="4.57.1",
+                            feature_adapter="rational8-v1")
+        self.assertEqual(v5["encoder_digest"], v6["encoder_digest"])
+        self.assertEqual(v5["tokenizer_digest"], v6["tokenizer_digest"])
+        self.assertEqual(v5["quantization_digest"], v6["quantization_digest"])
+        self.assertNotEqual(v5["preprocessing_digest"], v6["preprocessing_digest"])
+        self.assertNotEqual(v5["adapter_digest"], v6["adapter_digest"])
+        with self.assertRaises(ValueError):
+            profile_digests(sha(b"original"), model, max_tokens=192,
+                            torch_version="2.10.0+cpu",
+                            transformers_version="4.57.1",
+                            feature_adapter="unregistered")
+
     def test_no_truncation_or_mask_surgery(self):
         with self.assertRaises(ValueError):
             complete_input_digest(b"source", list(range(257)), [1] * 257)

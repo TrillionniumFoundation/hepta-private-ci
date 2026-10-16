@@ -11,6 +11,7 @@ diagnostic-only (DENY_ALL); never a producer signature or execution grant.
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import time
@@ -31,6 +32,30 @@ DOMAIN_INPUT = b"hepta.stem.granite97.complete-token-input.v5\0"
 DOMAIN_MATERIAL = b"hepta.stem.granite97.material.v5\0"
 DOMAIN_MODEL = b"hepta.stem.granite97.frozen-model.v5\0"
 Q24 = 1 << 24
+FEATURE_ADAPTERS = ("identity", "rational8-v1")
+RATIONAL8_DOMAIN = b"hepta.granite97.rational8-adapter.v6\0"
+
+
+def independently_project_feature(value, adapter):
+    """Independent numeric implementation, never import/exporter code.
+
+    Identity v5 is still strict, rational8 is a separately versioned,
+    monotone bounded transform (not a source-neutral reconstruction).
+    """
+    v = float(value)
+    if not math.isfinite(v):
+        raise ValueError("nonfinite original Encoder feature")
+    if adapter == "identity":
+        if abs(v) > 8:
+            raise ValueError("original Encoder exceeds strict V5 Q24 range")
+    elif adapter == "rational8-v1":
+        v = (8.0 * v) / (8.0 + abs(v))
+    else:
+        raise ValueError("unregistered independent feature adapter")
+    q = round(v * Q24)
+    if not -(8 * Q24) <= q <= (8 * Q24):
+        raise ValueError("projected original feature exceeds Q24")
+    return q
 
 
 def sha(payload):
@@ -184,12 +209,15 @@ def inspect_original_material(root, independent_digest):
 
 
 def verify_preprocessing_profile(export, manifest, *, maximum_tokens,
-                                 torch_version, transformers_version):
+                                 torch_version, transformers_version,
+                                 feature_adapter="identity"):
     """Independently recompute each public parameterization/profile digest.
 
     Matching tokenizer IDs alone cannot authorize a different normalization,
     truncation, precision or runtime configuration.
     """
+    if feature_adapter not in FEATURE_ADAPTERS:
+        raise ValueError("unregistered reviewer feature adapter")
     file_shas = manifest["sha256"]
     tokenizer_files = {
         key: file_shas[key] for key in FILES
@@ -198,21 +226,23 @@ def verify_preprocessing_profile(export, manifest, *, maximum_tokens,
     canonical = lambda value: json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
         allow_nan=False).encode()
+    preprocessing = dict(
+        max_tokens=maximum_tokens, truncation=False, add_special_tokens=True,
+        padding=False, precision="fp32", attention="eager",
+        output="last_hidden_state", tokenizer=tokenizer_files,
+        torch_version=torch_version, transformers_version=transformers_version,
+        model_config_sha256=file_shas["config.json"])
+    if feature_adapter == "rational8-v1":
+        preprocessing["feature_adapter"] = feature_adapter
     profile = dict(
         tokenizer_digest=sha(
             b"hepta.granite97.tokenizer.v5\0" + canonical(tokenizer_files)),
         normalizer_digest=sha(b"hepta.granite97.identity-normalizer.v5"),
         quantization_digest=sha(b"hepta.granite97.fp32-q24-ties-even.v5"),
         preprocessing_digest=sha(
-            b"hepta.granite97.preprocessing.v5\0"
-            + canonical(dict(
-                max_tokens=maximum_tokens, truncation=False,
-                add_special_tokens=True, padding=False, precision="fp32",
-                attention="eager", output="last_hidden_state",
-                tokenizer=tokenizer_files, torch_version=torch_version,
-                transformers_version=transformers_version,
-                model_config_sha256=file_shas["config.json"]))),
-        adapter_digest=sha(b"hepta.granite97.identity-adapter.v5"),
+            b"hepta.granite97.preprocessing.v5\0" + canonical(preprocessing)),
+        adapter_digest=sha(b"hepta.granite97.identity-adapter.v5"
+                           if feature_adapter == "identity" else RATIONAL8_DOMAIN),
     )
     for name, value in profile.items():
         if export[name] != value:
@@ -240,7 +270,8 @@ def verify_real_weights(torch, model, model_root):
     return len(observed)
 
 
-def independent_replay(export, source, root, *, material_sha256, maximum_tokens):
+def independent_replay(export, source, root, *, material_sha256, maximum_tokens,
+                       feature_adapter="identity"):
     """A separately loaded, frozen real forward; no shared exporter callbacks."""
     import torch
     import transformers
@@ -252,7 +283,8 @@ def independent_replay(export, source, root, *, material_sha256, maximum_tokens)
     material, _ = load_json_file(Path(root) / "material.json", 16384)
     verify_preprocessing_profile(
         export, material, maximum_tokens=maximum_tokens,
-        torch_version=torch.__version__, transformers_version=transformers.__version__)
+        torch_version=torch.__version__, transformers_version=transformers.__version__,
+        feature_adapter=feature_adapter)
     config = AutoConfig.from_pretrained(str(root), local_files_only=True,
                                         trust_remote_code=False)
     if config.model_type != "modernbert" or config.hidden_size != 384:
@@ -290,9 +322,7 @@ def independent_replay(export, source, root, *, material_sha256, maximum_tokens)
     actual = []
     for row in y[0].detach().cpu().tolist():
         for number in row:
-            if not -8 <= number <= 8:
-                raise ValueError("native Q24 range exceeded; no clipping")
-            actual.append(round(number * Q24))
+            actual.append(independently_project_feature(number, feature_adapter))
     if actual != export["values_q24"]:
         raise ValueError("model did not physically reproduce submitted Q24 tokens")
     if inspect_original_material(root, material_sha256) != material_sha256:
@@ -324,7 +354,7 @@ def run(args):
         now_ms=observed_now_ms, maximum_expiry_ms=args.maximum_expiry_ms)
     proof = independent_replay(
         export, source, args.model_root, material_sha256=args.expected_material_sha256,
-        maximum_tokens=args.max_tokens)
+        maximum_tokens=args.max_tokens, feature_adapter=args.feature_adapter)
     output = dict(schema="hepta.stem.granite97-independent-physical-review.v1",
                   source_sha256=expected["source_digest"],
                   input_digest=expected["input_digest"],
@@ -357,6 +387,7 @@ def main():
     for field in ("generation", "authority-epoch", "now-ms", "maximum-expiry-ms"):
         parser.add_argument("--" + field, required=True, type=int)
     parser.add_argument("--max-tokens", type=int, default=192)
+    parser.add_argument("--feature-adapter", choices=FEATURE_ADAPTERS, default="identity")
     args = parser.parse_args()
     run(args)
 
