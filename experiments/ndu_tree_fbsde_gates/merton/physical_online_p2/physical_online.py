@@ -21,8 +21,18 @@ from public_source import SCHEMA as SOURCE_SCHEMA, encoded, new_json, sha, origi
 SCHEMA = 'hepta.ndu-merton.p2.physical-on-policy.v1'
 MODEL_REPO = 'Qwen/Qwen3-0.6B'
 MODEL_REV = '16706fc57485378d4ffaf54139b29ccc66ae08fa'
+MODEL_WEIGHTS_SHA256 = 'f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b'
+MODEL_TOKENIZER_SHA256 = 'aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4'
 MAX_CASES = 16
 MAX_SOURCE_CHARS = 2500
+
+
+def assert_original_checkpoint_hashes(weights_sha256: str, tokenizer_sha256: str) -> None:
+    # Independently pinned original Hugging Face Xet payload SHA256 values.
+    # A self-recorded SHA alone is not evidence that the expected checkpoint ran.
+    if (weights_sha256 != MODEL_WEIGHTS_SHA256 or
+            tokenizer_sha256 != MODEL_TOKENIZER_SHA256):
+        raise Invalid('pretrained model/tokenizer bytes differ from independently pinned originals')
 LABEL = re.compile(r'\A\s*(?:FINAL\s*[:=]\s*)?([0123])\s*\Z', re.I)
 ACTION_MAX = {'direct':12, 'reason':32, 'verify':32}
 
@@ -67,6 +77,17 @@ def validate_source(train: Any, held: Any):
                 type(text) is not str or not 16 <= len(text) <= MAX_SOURCE_CHARS or
                 row['text_sha256'] != sha(text.encode()) or row['text_sha256'] in texts):
                 raise Invalid('invalid source identity or content digest')
+            # State coordinates and source-group identities must be derived from
+            # the original public row identity, not chosen by a prospective policy.
+            prefix = 'train' if is_train else 'held'
+            import re as _re
+            if not _re.fullmatch(prefix+r'-[0-9]{5}', tid):
+                raise Invalid('source row id not in original publisher cohort')
+            index = int(tid.split('-')[1])
+            if group != f'{prefix}-row-parity-{index%2}':
+                raise Invalid('source group substituted')
+            if bucket != ('short' if len(text) <= 180 else 'long'):
+                raise Invalid('observable task bucket substituted')
             texts.add(row['text_sha256'])
             current = train_ids if is_train else held_ids
             if tid in current or (tid in held_ids if is_train else tid in train_ids):
@@ -123,15 +144,18 @@ class QwenReader:
         self.torch=torch
         self.tok=AutoTokenizer.from_pretrained(local,local_files_only=True,
                    use_fast=True,trust_remote_code=False)
-        self.model=AutoModelForCausalLM.from_pretrained(local,local_files_only=True,
-                   trust_remote_code=False,use_safetensors=True,torch_dtype=torch.float32).eval()
         model_file=Path(local)/'model.safetensors'
         tokenizer_file=Path(local)/'tokenizer.json'
         if not model_file.is_file() or not tokenizer_file.is_file():
             raise Invalid('original pretrained weights/tokenizer absent')
+        weights_hash, tokenizer_hash = file_sha(model_file), file_sha(tokenizer_file)
+        # Fail before model deserialization if cached or downloaded bytes drift.
+        assert_original_checkpoint_hashes(weights_hash, tokenizer_hash)
+        self.model=AutoModelForCausalLM.from_pretrained(local,local_files_only=True,
+                   trust_remote_code=False,use_safetensors=True,torch_dtype=torch.float32).eval()
         self.identity={'repo':MODEL_REPO,'revision':MODEL_REV,
-             'weights_sha256':file_sha(model_file),
-             'tokenizer_sha256':file_sha(tokenizer_file),
+             'weights_sha256':weights_hash,
+             'tokenizer_sha256':tokenizer_hash,
              'runtime':'transformers/torch cpu deterministic greedy no-thinking',
              'actual_pretrained_model_loaded':True}
         self.load_cpu=time.process_time()-start_cpu
