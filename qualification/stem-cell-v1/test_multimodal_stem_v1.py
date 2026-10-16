@@ -92,6 +92,32 @@ class StemBoundaryTests(unittest.TestCase):
             with self.assertRaises(AdmissionError):
                 select_cells([CellHead("a",(0.0,)*WIDTH,0.0)],row)
 
+    def test_unique_admission_is_not_a_physical_forward(self):
+        ledger = ReuseLedger()
+        raw = b"real feature bytes"
+        self.assertFalse(ledger.access(envelope(), raw))
+        self.assertTrue(ledger.access(envelope(), raw))
+        self.assertEqual(ledger.unique_feature_admissions, 1)
+        self.assertEqual(ledger.reused_requests, 1)
+        self.assertFalse(hasattr(ledger, "physical_forward_claims"))
+
+    def test_boolean_generations_and_coordinates_denied(self):
+        for fields in ({"generation": True}, {"epoch": False},
+                       {"timestamps": (True,)},
+                       {"regions": ((0, 0, True, 1),)}):
+            base = envelope(modality="image" if "regions" in fields else "video")
+            with self.subTest(fields=fields), self.assertRaises(AdmissionError):
+                dataclasses.replace(base, **fields).validate()
+
+    def test_nonfinite_final_head_scores_denied(self):
+        huge = CellHead("unsafe", (1e308,) * WIDTH, 0)
+        with self.assertRaises(AdmissionError):
+            select_cells([huge], [[8.0] * WIDTH])
+
+    def test_empty_cell_fleet_denied(self):
+        with self.assertRaises(AdmissionError):
+            select_cells([], [[0.0] * WIDTH])
+
     def test_split_cannot_self_authorize(self):
         r=audit_split([0]*200,[1]*200,[1]*200,1.2)
         self.assertEqual(r["delta_future"],1.0)
