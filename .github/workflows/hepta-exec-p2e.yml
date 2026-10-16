@@ -149,6 +149,20 @@ jobs:
           git -C upstream ls-files --others --exclude-standard | sort > "$RUNNER_TEMP/p2e/actual-untracked"
           diff -u "$RUNNER_TEMP/p2e/expected-untracked" "$RUNNER_TEMP/p2e/actual-untracked"
 
+      - name: Diagnose immutable upstream Cargo.lock drift (failure evidence only)
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/p2e"
+          printf 'source=%s\n' "$UPSTREAM_SHA" > "$RUNNER_TEMP/p2e/upstream-lock-diagnostic.txt"
+          git -C upstream rev-parse HEAD:codex-rs/Cargo.lock >> "$RUNNER_TEMP/p2e/upstream-lock-diagnostic.txt"
+          scratch="$RUNNER_TEMP/upstream-lock-diagnostic"
+          git -C upstream worktree add --detach "$scratch" "$UPSTREAM_SHA"
+          (cd "$scratch/codex-rs" && timeout 180s cargo metadata --format-version 1 > /dev/null) \
+            > "$RUNNER_TEMP/p2e/upstream-resolve.stdout" 2> "$RUNNER_TEMP/p2e/upstream-resolve.stderr" || true
+          git -C "$scratch" diff HEAD -- codex-rs/Cargo.lock > "$RUNNER_TEMP/p2e/upstream-lock-diff.patch"
+          git -C upstream diff --exit-code HEAD
+
       - name: Retain raw native logs including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
