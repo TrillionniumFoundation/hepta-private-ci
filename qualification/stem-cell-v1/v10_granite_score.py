@@ -4,6 +4,7 @@ A strong restricted symbolic solver is an honest null, not a neural teacher.
 The V9 synthetic task is not original-human MultiRC or a future-time cohort.
 """
 from collections import Counter, defaultdict
+from hashlib import sha256
 import argparse
 import json
 import math
@@ -13,7 +14,14 @@ import time
 from v9_typed_graph import digest, solve, verify_proof
 from v9_independent_review import reference_semantics
 from v10_granite_features import load, save_new, validate_public, MODEL, REVISION
-from v10_granite_reader import ARMS, SEEDS, sha_file
+# Independently registered. Never import the TRAINER into the heldout reviewer.
+ARMS = ('base', 'bridge', 'endpoint')
+SEEDS = (41, 47, 53)
+
+
+def sha_file(path):
+    with Path(path).open('rb') as stream:
+        return sha256(stream.read()).hexdigest()
 from v10_training_audit import verify_trace
 
 
