@@ -10,6 +10,9 @@
 
 mod action;
 mod ui_guard;
+mod native_duplex;
+
+pub use native_duplex::{FrameDuplexV1, FrameWireErrorV1};
 
 pub use ui_guard::{
     UiGuardErrorV1, UiGuardedPlanV1, UiGuardedShadowProposalV1, UiReadbackV1,
