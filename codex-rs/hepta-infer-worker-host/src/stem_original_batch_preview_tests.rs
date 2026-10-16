@@ -405,3 +405,178 @@ fn two_logical_cells_retain_one_stem_source_but_distinct_original_signed_binding
         fx.generic.as_slice().as_ptr()
     );
 }
+
+#[test]
+fn no_copy_preview_matches_exact_legacy_v1_binding_and_original_arc_allocation() {
+    let fx = fixture(512);
+    let owned = prepare_stem_original_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("legacy typed owned V1 preview");
+    let shared = prepare_stem_original_shared_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("exact immutable Arc-backed original Batch preview");
+
+    assert_eq!(
+        shared.exact_final_use_binding,
+        owned.exact_final_use_binding
+    );
+    assert_eq!(shared.model_id, owned.model_id);
+    assert!(shared.request.feature_vector_q24.is_empty());
+    assert_eq!(shared.request.authorization, owned.request.authorization);
+    assert_eq!(shared.request.input_digest, owned.request.input_digest);
+    assert_eq!(shared.request.encoder_digest, owned.request.encoder_digest);
+    assert_eq!(shared.request.head_digest, owned.request.head_digest);
+    assert_eq!(shared.request.weights_digest, owned.request.weights_digest);
+    assert_eq!(
+        shared.request.expected_output_width,
+        owned.request.expected_output_width
+    );
+    assert!(shared.shared_features.shares_allocation_with(&fx.generic));
+    assert_eq!(
+        shared.shared_features.as_slice(),
+        owned.request.feature_vector_q24
+    );
+    assert!(!shared.authority.grants_any());
+}
+
+#[test]
+fn original_shared_preview_denies_equal_bytes_in_different_allocations_and_forged_stem() {
+    let fx = fixture(8);
+    let copied = SharedFeatureBufferV1::from_vec(fx.generic.as_slice().to_vec())
+        .expect("same numeric bytes in DIFFERENT Arc allocation");
+    assert_eq!(copied.digest(), fx.generic.digest());
+    assert!(!copied.shares_allocation_with(&fx.generic));
+    assert_eq!(
+        prepare_stem_original_shared_batch_preview_v1(
+            "worker.1",
+            &fx.source,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &copied,
+            &fx.key,
+            &fx.authorization,
+        ),
+        Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
+    );
+
+    let mut forged = fx.source.clone();
+    forged.lease_expires_at_ms += 250;
+    assert_eq!(
+        prepare_stem_original_shared_batch_preview_v1(
+            "worker.1",
+            &forged,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &fx.authorization,
+        ),
+        Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
+    );
+
+    let mut forged_digest = fx.source.clone();
+    forged_digest.feature_digest = fx.generic.digest();
+    assert_eq!(
+        prepare_stem_original_shared_batch_preview_v1(
+            "worker.1",
+            &forged_digest,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &fx.authorization,
+        ),
+        Err(StemOriginalBatchPreviewErrorV1::InvalidSource)
+    );
+
+    let mut bad_payload = fx.authorization.clone();
+    bad_payload.lease_payload_digest = digest(b"wrong authorization bytes").to_string();
+    assert_eq!(
+        prepare_stem_original_shared_batch_preview_v1(
+            "worker.1",
+            &fx.source,
+            &fx.access,
+            &fx.head,
+            &fx.stem,
+            &fx.generic,
+            &fx.key,
+            &bad_payload,
+        ),
+        Err(StemOriginalBatchPreviewErrorV1::PayloadMismatch)
+    );
+}
+
+#[test]
+fn two_cells_share_exact_q24_arc_but_keep_distinct_original_signed_request_identities() {
+    let fx = fixture(512);
+    let mut head_two = fx.head.clone();
+    head_two.request_id = id("request.cell.two");
+    let mut auth_two = fx.authorization.clone();
+    auth_two.request_id = head_two.request_id.to_string();
+    auth_two.reservation_id = "reservation.cell.two".to_string();
+
+    let first = prepare_stem_original_shared_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &fx.head,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &fx.authorization,
+    )
+    .expect("first independently signed original pending intent");
+    let second = prepare_stem_original_shared_batch_preview_v1(
+        "worker.1",
+        &fx.source,
+        &fx.access,
+        &head_two,
+        &fx.stem,
+        &fx.generic,
+        &fx.key,
+        &auth_two,
+    )
+    .expect("second independently signed original pending intent");
+
+    assert!(
+        first
+            .shared_features
+            .shares_allocation_with(&second.shared_features)
+    );
+    assert!(first.shared_features.shares_allocation_with(&fx.generic));
+    assert_eq!(
+        first.shared_features.as_slice().as_ptr(),
+        second.shared_features.as_slice().as_ptr()
+    );
+    assert!(first.request.feature_vector_q24.is_empty());
+    assert!(second.request.feature_vector_q24.is_empty());
+    assert_eq!(first.request.input_digest, second.request.input_digest);
+    assert_ne!(
+        first.exact_final_use_binding.request_sha256,
+        second.exact_final_use_binding.request_sha256
+    );
+    assert_eq!(
+        first.exact_final_use_binding.scope_sha256,
+        second.exact_final_use_binding.scope_sha256
+    );
+    assert!(!first.authority.grants_any());
+    assert!(!second.authority.grants_any());
+}

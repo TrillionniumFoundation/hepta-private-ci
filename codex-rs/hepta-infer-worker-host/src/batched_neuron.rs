@@ -182,7 +182,7 @@ pub fn neuron_batch_final_use_binding_v1(
 
 /// Revalidate final-use using the identical, immutable Arc-backed Q24 slice
 /// that was sealed at admission. Never rematerialize an owned request to hash.
-fn neuron_batch_final_use_binding_with_slice_v1(
+pub(crate) fn neuron_batch_final_use_binding_with_slice_v1(
     worker_id: &str,
     key: &MicrobatchKeyV1,
     request: &NeuronFeatureRequest,
@@ -420,6 +420,46 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
+        self.enqueue_with_optional_shared_features(now_ms, model_id, request, key, signed, None)
+    }
+
+    /// Admit an externally prepared immutable Q24 buffer under the SAME
+    /// original Model/Scope/CNS, independently signed Final-use, Evidence
+    /// and replay gates as the legacy owned request.
+    ///
+    /// The request MUST be metadata-only (its feature Vec empty); its signed
+    /// payload is recomputed from these exact immutable shared bytes.
+    /// Original EvidenceBoundNeuronWorkerV1 is the product-facing owner.
+    pub fn enqueue_shared_features(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
+        request: NeuronFeatureRequest,
+        shared_features: SharedFeatureBufferV1,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        self.enqueue_with_optional_shared_features(
+            now_ms,
+            model_id,
+            request,
+            key,
+            signed,
+            Some(shared_features),
+        )
+    }
+
+    // One and only one queue admission and metric/replay owner for legacy
+    // owned and previously validated Arc-backed feature buffers.
+    fn enqueue_with_optional_shared_features(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
+        request: NeuronFeatureRequest,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+        shared_features: Option<SharedFeatureBufferV1>,
+    ) -> Result<(), BatchWorkerErrorV1> {
         self.frontier_binding_frozen = true;
         if self.metric_sink.is_none() {
             self.unmetered_activity = true;
@@ -431,9 +471,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         // Keep failed Admission telemetry observable without allowing an
         // invalid caller clock to consume a queue ID or a Final-use nonce.
-        let result = self
-            .validate_caller_now_ms(caller_now_ms)
-            .and_then(|()| self.enqueue_inner(now_ms, model_id, request, key, signed));
+        let result = self.validate_caller_now_ms(caller_now_ms).and_then(|()| {
+            self.enqueue_inner(now_ms, model_id, request, key, signed, shared_features)
+        });
         let queued = result.is_ok();
         if queued {
             self.last_caller_now_ms = Some(caller_now_ms);
@@ -472,6 +512,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         mut request: NeuronFeatureRequest,
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
+        shared_features: Option<SharedFeatureBufferV1>,
     ) -> Result<(), BatchWorkerErrorV1> {
         if !self.metrics_available_for_effect() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
@@ -497,13 +538,31 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
-        let binding = neuron_batch_final_use_binding_v1(self.worker.worker_id(), &key, &request)?;
+        // The old V1 request owns its feature Vec. The Arc-backed variant
+        // MUST own no request-side Vec, preventing two conflicting payloads
+        // from being smuggled past the signed original binding.
+        if shared_features.is_some() && !request.feature_vector_q24.is_empty() {
+            return Err(BatchWorkerErrorV1::InvalidRequest);
+        }
+        let binding = match &shared_features {
+            Some(shared) => neuron_batch_final_use_binding_with_slice_v1(
+                self.worker.worker_id(),
+                &key,
+                &request,
+                shared.as_slice(),
+            )?,
+            None => neuron_batch_final_use_binding_v1(self.worker.worker_id(), &key, &request)?,
+        };
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
-        let feature =
-            SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
-                .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
+        let feature = match shared_features {
+            Some(shared) => shared,
+            None => {
+                SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
+                    .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?
+            }
+        };
         self.scheduler
             .enqueue(
                 now_ms,
