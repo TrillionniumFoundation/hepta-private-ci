@@ -1,0 +1,52 @@
+{
+  "authority_posture": "DENY_ALL",
+  "codepaths": {
+    ".github/workflows/hepta-stem-v24-rust-original-head-shadow.yml": {
+      "bytes": 6321,
+      "git_blob_sha1": "348e3691467bdf52b3aaf56ab8501eea8f91dcb3",
+      "sha256": "8a34f10dd6b8d500f7f46c81c0304013c7072f9849f4eef63a059e66beb70947"
+    },
+    "STEM_V24_ORIGINAL_RUST_CPU_SHADOW_20261016.md": {
+      "bytes": 6945,
+      "git_blob_sha1": "30f74589236579b165b597881c48955456e61a5e",
+      "sha256": "f1e654f9ac77b51ae6bfdd5e5fd8238146e6f92300c2ba950f08dce6a1caabcc"
+    },
+    "STEM_V24_ORIGINAL_SOURCE_READBACK_20261016.json": {
+      "bytes": 1844,
+      "git_blob_sha1": "68a5824defa855445cb552428f51747719a00e66",
+      "sha256": "8c866ff001f1dc8fcb8881d790dc0cc42e1faf9e15176800e0f59ba62b347a7e"
+    },
+    "native_v24_packed_head.rs": {
+      "bytes": 17714,
+      "git_blob_sha1": "d44f4e0a46362a79bd304cf992c490e536949e63",
+      "sha256": "89c8cf668b7cd79eb88aea6b34854147d6322d088080d6bb68a8013a7f7c7ab8"
+    },
+    "test_v24_original_rust_handoff.py": {
+      "bytes": 6679,
+      "git_blob_sha1": "8138ba674575652171bbd4367c95c38fff40f066",
+      "sha256": "71d884dc47d16a59216b2c68afbcb00a9fc217377e80d7c66211dc8891b43f5e"
+    },
+    "v24_rust_original_handoff.py": {
+      "bytes": 7031,
+      "git_blob_sha1": "bdf13e1db2d4b5f5f478feb2f6afbf02831400f9",
+      "sha256": "76f15c821bbc97f5a0e6efeb232a00f53848228b8f73a78936f1a3669f3eeeaa"
+    },
+    "v24_rust_original_review.py": {
+      "bytes": 11140,
+      "git_blob_sha1": "9993f6a74a1ce226bb16d9cacc2d3bbbe28c9592",
+      "sha256": "ded5a0ef13e200d9d75dab58a2f38877dca80e4f25c557166aead9376ae4182f"
+    }
+  },
+  "hosted_exact_sha_rust_required": true,
+  "no_new_future_sources": true,
+  "production_authorized": false,
+  "rust_compile_executed_local": false,
+  "rust_executable_original_model_run_local": false,
+  "schema": "hepta.stem.v24.original-source-native-rust-delivery-manifest",
+  "source_parent_sha": "79bb561e5daa0c980193290fe87d49ac6be734ba",
+  "tests_local_source_only": {
+    "legacy_v23_mechanism": "15/15 PASS",
+    "ordinary": "13/13 PASS zero skipped",
+    "python_O": "13/13 PASS zero skipped"
+  }
+}
