@@ -8,7 +8,9 @@ from pathlib import Path
 
 from portfolio import Invalid, POLICIES
 from public_source import SCHEMA as SRC, split_original, encoded, sha, new_json
-from physical_online import ACTION_MAX, MODEL_REPO,MODEL_REV, run_online, validate_source, parse_answer, make_prompt
+from physical_online import (ACTION_MAX, MODEL_REPO, MODEL_REV, MODEL_WEIGHTS_SHA256,
+    MODEL_TOKENIZER_SHA256, assert_original_checkpoint_hashes, run_online,
+    validate_source, parse_answer, make_prompt)
 from physical_review import review
 
 
@@ -17,10 +19,12 @@ class MockReader:
     # inability to independently attest hardware. This MUST NOT be published as a run.
     physical=True
     identity={'repo':MODEL_REPO,'revision':MODEL_REV,
-       'weights_sha256':'a'*64,'tokenizer_sha256':'b'*64,
+       'weights_sha256':MODEL_WEIGHTS_SHA256,'tokenizer_sha256':MODEL_TOKENIZER_SHA256,
        'actual_pretrained_model_loaded':True,'runtime':'FAKE CONTRACT TEST NOT PHYSICAL'}
     load_cpu=0.01;load_wall=0.01
-    def __init__(self):self.calls=[]
+    def __init__(self):
+        self.identity=copy.deepcopy(type(self).identity)
+        self.calls=[]
     def infer(self,article,action):
         self.calls.append((sha(article.encode()),action))
         prompt=make_prompt(article,action)
@@ -65,6 +69,29 @@ class PhysicalContractTests(unittest.TestCase):
         plan=json.loads((out/'frozen-plan.json').read_text())
         summary=review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
         return out,plan,completed,summary
+
+    def test_original_checkpoint_sha256_pins(self):
+        assert_original_checkpoint_hashes(MODEL_WEIGHTS_SHA256,MODEL_TOKENIZER_SHA256)
+        with self.assertRaises(Invalid):
+            assert_original_checkpoint_hashes('f'*64,MODEL_TOKENIZER_SHA256)
+        with self.assertRaises(Invalid):
+            assert_original_checkpoint_hashes(MODEL_WEIGHTS_SHA256,'0'*64)
+
+    def test_held_source_group_alias_rejected(self):
+        self.held['rows'][0]['group']='held-row-parity-0' if self.held['rows'][0]['group'] != 'held-row-parity-0' else 'held-row-parity-1'
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_held_source_bucket_alias_rejected(self):
+        self.held['rows'][0]['bucket']='long' if self.held['rows'][0]['bucket']=='short' else 'short'
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_forged_checkpoint_identity_rejected_postseal(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['reader']['weights_sha256']='0'*64
+        completed['physical_model_identity']['weights_sha256']='0'*64
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
 
     def test_original_source_partition(self):
         self.assertEqual(len(self.train['rows']),16)
