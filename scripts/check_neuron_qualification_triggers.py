@@ -77,9 +77,18 @@ def direct_local_inputs(root: Path) -> set[str]:
                     if not isinstance(spec, dict):
                         continue
                     if spec.get("workspace") is True:
-                        inherited = aliases.get(name)
-                        if not isinstance(inherited, dict):
+                        # Cargo workspace aliases may be external version strings
+                        # (e.g. serde_json = "1") or structured tables. Only
+                        # workspace entries with a local path are trigger inputs.
+                        # A missing alias still fails closed: absence must not
+                        # silently erase a required local-source path.
+                        if name not in aliases:
                             raise ValueError(f"missing workspace dependency definition: {name}")
+                        inherited = aliases[name]
+                        if isinstance(inherited, str):
+                            continue
+                        if not isinstance(inherited, dict):
+                            raise ValueError(f"invalid workspace dependency definition: {name}")
                         dependency = inherited
                         dependency_base = root / "codex-rs"
                     else:
