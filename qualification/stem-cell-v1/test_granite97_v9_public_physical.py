@@ -30,7 +30,7 @@ class StudyTest(unittest.TestCase):
                     'input_digest':'2'*64, 'material_digest':self.lock['material_sha256'],
                     'encoder_digest':'3'*64, 'tokenizer_digest':'4'*64,
                     'normalizer_digest':'5'*64, 'quantization_digest':'6'*64,
-                    'preprocessing_digest':'7'*64, 'adapter_digest':'8'*64,
+                    'preprocessing_digest':'7'*64, 'adapter_digest':v9.ADAPTER_DIGEST,
                     'expires_at_ms':self.lock['expires_at_ms'], 'encoder_forwards':1,
                     'input_ids':[101], 'values_q24':self.v}
         self.exportfile = self.root / 'export.json'
@@ -79,7 +79,8 @@ class StudyTest(unittest.TestCase):
 
     def test_lock_cannot_claim_authority(self):
         for field,val in [('production_authorized',True),('authority','ALLOW'),
-                          ('independent_hardware_attested',True),('independent_model_owner_authenticated',True)]:
+                          ('independent_hardware_attested',True),('independent_model_owner_authenticated',True),
+                          ('feature_adapter','identity'),('adapter_digest','0'*64)]:
             x=dict(self.lock);x[field]=val
             with self.subTest(field=field),self.assertRaises(ValueError):v9.check_lock(x)
 
@@ -94,6 +95,20 @@ class StudyTest(unittest.TestCase):
         self.assertEqual(len(result['heads'][1]['local_q24']),384)
         self.assertEqual(result['heads'][1]['local_q24'][0],v9.Q24)
         self.assertNotIn('production_authorized',result)
+
+    def test_resealed_identity_adapter_cannot_replace_registered_rational8(self):
+        self.assertEqual(self.lock['feature_adapter'], v9.FEATURE_ADAPTER)
+        self.assertEqual(self.lock['adapter_digest'], v9.ADAPTER_DIGEST)
+        self.exp['adapter_digest'] = hashlib.sha256(
+            b'hepta.granite97.identity-adapter.v5').hexdigest()
+        self.write(self.exportfile, self.exp)
+        # Even if a colluding reviewer rehashes altered export bytes, the
+        # independent source-first owner policy still refuses the adapter.
+        self.review['export_sha256'] = hashlib.sha256(
+            self.exportfile.read_bytes()).hexdigest()
+        self.write(self.reviewfile, self.review)
+        with self.assertRaisesRegex(ValueError, 'source/work/expiry'):
+            self.admit()
 
     def test_missing_review_fails(self):
         self.reviewfile.unlink()
