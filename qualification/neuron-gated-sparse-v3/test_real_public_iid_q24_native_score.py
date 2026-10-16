@@ -8,7 +8,7 @@ import copy
 import unittest
 
 from real_public_iid_q24_native_score import (
-    Refused, bin_metrics, frozen_single_case_trace,
+    Refused, bin_metrics, frozen_single_case_trace, independent_head_margin,
 )
 
 
@@ -99,6 +99,45 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         self.assertNotIn("future",trace)
         self.assertTrue(all(len(trace[key])==64 for key in
                             ("scope_digest","objective_digest","ndu_digest","body_digest")))
+
+    def test_independent_head_sign_boundary_and_abstention(self):
+        width=16
+        boundary=width*9+1
+        for logit,status in (
+            (0,"QUANTIZATION_AMBIGUOUS_ABSTAIN"),
+            (boundary//2,"QUANTIZATION_AMBIGUOUS_ABSTAIN"),
+            (boundary//2+1,"ACCEPT_POSITIVE_RESEARCH_ONLY"),
+            (-(boundary//2+1),"ACCEPT_NEGATIVE_RESEARCH_ONLY"),
+        ):
+            result=independent_head_margin({
+                "activation_q24":[0]*width,
+                "quantized_head_logit_q24":logit,
+                "head_sign_margin_twice_q24_lsb":boundary,
+                "head_sign_margin_status":status,
+            },width)
+            self.assertEqual(result["logit_q24"],logit)
+            self.assertEqual(result["status"],status)
+
+    def test_forged_native_head_margin_and_boolean_types_fail(self):
+        row={
+            "activation_q24":[0]*16,
+            "quantized_head_logit_q24":1000000,
+            "head_sign_margin_twice_q24_lsb":145,
+            "head_sign_margin_status":"ACCEPT_POSITIVE_RESEARCH_ONLY",
+        }
+        self.assertEqual(independent_head_margin(row,16)["status"],
+                         "ACCEPT_POSITIVE_RESEARCH_ONLY")
+        for change in (
+            {"head_sign_margin_twice_q24_lsb":144},
+            {"head_sign_margin_twice_q24_lsb":True},
+            {"head_sign_margin_status":"QUANTIZATION_AMBIGUOUS_ABSTAIN"},
+            {"quantized_head_logit_q24":True},
+            {"activation_q24":[0]*15},
+            {"activation_q24":[0]*15+[True]},
+        ):
+            corrupted=dict(row,**change)
+            with self.assertRaises(Refused):
+                independent_head_margin(corrupted,16)
 
     def test_true_public_heldout_label_field_is_forbidden(self):
         original=row()
