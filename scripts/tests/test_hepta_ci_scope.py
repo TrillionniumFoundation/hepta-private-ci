@@ -67,6 +67,30 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
 
+    def test_cell_split_python_preflight_is_early_and_keeps_real_regressions(self):
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        title = "      - name: Early CellSplit Python matrix and comparison regressions\n"
+        native = "      - name: Prepare native prerequisites\n"
+        self.assertEqual(workflow.count(title), 1)
+        self.assertEqual(workflow.count(native), 1)
+        preflight = workflow.split(title, 1)[1].split(native, 1)[0]
+        self.assertNotIn("if:", preflight, "Python syntax is mandatory for both lanes")
+        for record, pattern in (
+            ("cell-split-perf-python-preflight.json", "test_hepta_cell_split_perf_gate.py"),
+            ("cell-split-matrix-python-preflight.json", "test_hepta_cell_split_matrix_capture.py"),
+        ):
+            self.assertIn(record, preflight)
+            self.assertIn(pattern, preflight)
+        self.assertEqual(preflight.count("--minimum-tests 1"), 2)
+        self.assertLess(workflow.index(title), workflow.index(native))
+        self.assertLess(
+            workflow.index(title),
+            workflow.index("Early locked CellSplit Control/CNS Rustfmt preflight"),
+        )
+
     def test_original_control_euid_product_build_is_source_scoped(self):
         # A Control-only original-owner change may have no learning scope.
         # The non-test rustix::process EUID path must still compile.
