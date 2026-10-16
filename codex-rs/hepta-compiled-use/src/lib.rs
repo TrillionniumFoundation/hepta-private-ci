@@ -9,6 +9,12 @@
 #![forbid(unsafe_code)]
 
 mod action;
+mod ui_guard;
+
+pub use ui_guard::{
+    propose_ui_guarded_shadow_v1, verify_ui_guarded_shadow_v1, UiGuardErrorV1,
+    UiGuardedPlanV1, UiGuardedShadowProposalV1, UiReadbackV1,
+};
 
 pub use action::{
     ActionArgumentsV1, ActionErrorV1, ActionFrameV1, ActionOpcodeV1, CapabilityGrantV1,
