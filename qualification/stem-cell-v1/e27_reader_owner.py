@@ -11,8 +11,9 @@ import json
 from pathlib import Path
 import time
 
-from e27_token_interaction import (AUTHORITY, SCHEMA, MAX_TOKENS,
-    validate_material, make_feature_bank, train_head, blind_predict, canonical_sha)
+from e27_material_contract import (
+    AUTHORITY, SCHEMA, MAX_TOKENS, validate_material, canonical_sha,
+)
 
 MODEL_ID = 'answerdotai/ModernBERT-base'
 MODEL_REV = '8949b909ec900327062f0ebf497f51aef5e6f0c8'
@@ -205,6 +206,9 @@ class OriginalModernBERT:
 
 
 def execute(train_material, held_material, *, embedder):
+    # Material-owner imports must stay Torch-free. Only the registered blind
+    # computation path loads physical trainable Cell operations.
+    from e27_token_interaction import make_feature_bank, train_head, blind_predict
     train_ids, train_questions, train_cases = validate_material(train_material, mode='train')
     held_ids, held_questions, held_cases = validate_material(held_material, mode='held')
     if train_ids & held_ids or train_material['source_revision'] != held_material['source_revision']:

@@ -19,7 +19,8 @@ jobs:
         profile: [source_head, synthetic_merge]
     env:
       ROOT: qualification/stem-cell-v1
-      PYTHONPATH: qualification/stem-cell-v1
+      DONOR_ROOT: e27-donor/qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1:e27-donor/qualification/stem-cell-v1
       PYTHONDONTWRITEBYTECODE: '1'
       OMP_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
@@ -27,6 +28,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - name: Checkout immutable original Reader dependency closure (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 50f9a77cecb1ddc18b4d674db15a22a873726663
+          path: e27-donor
+          persist-credentials: false
+      - name: Enforce exact donor source and no source shadowing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C e27-donor rev-parse HEAD)" = 50f9a77cecb1ddc18b4d674db15a22a873726663
+          test ! -e "$ROOT/multirc_materials.py"
+          test ! -e "$ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/multirc_materials.py"
+          test -s "$DONOR_ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/hf_complete_checkpoint.py"
+          test -s "$DONOR_ROOT/matrix_materials.py"
+          sha256sum "$DONOR_ROOT/multirc_materials.py" "$DONOR_ROOT/public_encoder_probe.py"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -72,15 +92,46 @@ jobs:
         profile: [source_head, synthetic_merge]
     env:
       ROOT: qualification/stem-cell-v1
-      PYTHONPATH: qualification/stem-cell-v1
+      DONOR_ROOT: e27-donor/qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1:e27-donor/qualification/stem-cell-v1
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - name: Checkout immutable original Reader dependency closure (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 50f9a77cecb1ddc18b4d674db15a22a873726663
+          path: e27-donor
+          persist-credentials: false
+      - name: Enforce exact donor source and no source shadowing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C e27-donor rev-parse HEAD)" = 50f9a77cecb1ddc18b4d674db15a22a873726663
+          test ! -e "$ROOT/multirc_materials.py"
+          test ! -e "$ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/multirc_materials.py"
+          test -s "$DONOR_ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/hf_complete_checkpoint.py"
+          test -s "$DONOR_ROOT/matrix_materials.py"
+          sha256sum "$DONOR_ROOT/multirc_materials.py" "$DONOR_ROOT/public_encoder_probe.py"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Prove source owner imports without Torch or Transformers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -S - <<'PY'
+          import sys
+          import e27_reader_owner
+          assert 'torch' not in sys.modules
+          assert 'transformers' not in sys.modules
+          print('E27 material owner import is Torch-free')
+          PY
       - name: Install pinned original publisher parquet reader only
         run: python -m pip install pyarrow==20.0.0 huggingface-hub==0.36.0
       - name: Fetch exact publisher train/validation parquet and freeze raw SHA
@@ -144,7 +195,8 @@ jobs:
         profile: [source_head, synthetic_merge]
     env:
       ROOT: qualification/stem-cell-v1
-      PYTHONPATH: qualification/stem-cell-v1
+      DONOR_ROOT: e27-donor/qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1:e27-donor/qualification/stem-cell-v1
       PYTHONDONTWRITEBYTECODE: '1'
       OMP_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
@@ -154,6 +206,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - name: Checkout immutable original Reader dependency closure (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 50f9a77cecb1ddc18b4d674db15a22a873726663
+          path: e27-donor
+          persist-credentials: false
+      - name: Enforce exact donor source and no source shadowing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C e27-donor rev-parse HEAD)" = 50f9a77cecb1ddc18b4d674db15a22a873726663
+          test ! -e "$ROOT/multirc_materials.py"
+          test ! -e "$ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/multirc_materials.py"
+          test -s "$DONOR_ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/hf_complete_checkpoint.py"
+          test -s "$DONOR_ROOT/matrix_materials.py"
+          sha256sum "$DONOR_ROOT/multirc_materials.py" "$DONOR_ROOT/public_encoder_probe.py"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -170,7 +241,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/e27-blind"
-          python "$ROOT/public_encoder_probe.py" --acquire-public \
+          python "$DONOR_ROOT/public_encoder_probe.py" --acquire-public \
             --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
             --compare-arithmetic --output "$RUNNER_TEMP/e27-pretrained" \
             > "$RUNNER_TEMP/e27-blind/model-acquisition.log" 2>&1 || { tail -35 "$RUNNER_TEMP/e27-blind/model-acquisition.log"; exit 1; }
@@ -212,12 +283,32 @@ jobs:
         profile: [source_head, synthetic_merge]
     env:
       ROOT: qualification/stem-cell-v1
-      PYTHONPATH: qualification/stem-cell-v1
+      DONOR_ROOT: e27-donor/qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1:e27-donor/qualification/stem-cell-v1
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - name: Checkout immutable original Reader dependency closure (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          ref: 50f9a77cecb1ddc18b4d674db15a22a873726663
+          path: e27-donor
+          persist-credentials: false
+      - name: Enforce exact donor source and no source shadowing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C e27-donor rev-parse HEAD)" = 50f9a77cecb1ddc18b4d674db15a22a873726663
+          test ! -e "$ROOT/multirc_materials.py"
+          test ! -e "$ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/multirc_materials.py"
+          test -s "$DONOR_ROOT/public_encoder_probe.py"
+          test -s "$DONOR_ROOT/hf_complete_checkpoint.py"
+          test -s "$DONOR_ROOT/matrix_materials.py"
+          sha256sum "$DONOR_ROOT/multirc_materials.py" "$DONOR_ROOT/public_encoder_probe.py"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
