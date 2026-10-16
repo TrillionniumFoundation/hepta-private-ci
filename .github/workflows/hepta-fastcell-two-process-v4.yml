@@ -92,7 +92,8 @@ jobs:
                   results['full']['measured']['roundtrips']
               ],
               'source_sha256':receipt['source_sha256'],
-              'source_first_original':True,
+              'fixed_abi_echo_original_bytes_verified':True,
+              'real_UI_or_model_source_executed':False,
               'production_authorized':False,
           },sort_keys=True))
           PY
