@@ -187,8 +187,32 @@ class SourceBoundRuntimeContext(unittest.TestCase):
         b.bind_verified_native_context(owner)
         self.assertEqual(owner.model.max_seq_length,8192)
 
-    def test_reject_smaller_existing_runtime_context(self):
+    def test_short_sentence_transformer_default_is_rebound_without_truncation(self):
         owner = self.make_owner(first_limit=1024)
+        receipt=b.bind_verified_native_context(owner)
+        self.assertEqual(receipt["original_sentence_transformer_max_seq_length"],1024)
+        self.assertEqual(receipt["effective_sentence_transformer_max_seq_length"],8192)
+        self.assertEqual(receipt["underlying_transformer_max_seq_length"],8192)
+        self.assertIs(receipt["image_token_count_physically_verified"],False)
+
+    def test_512_default_is_rebound(self):
+        owner = self.make_owner(first_limit=512)
+        receipt=b.bind_verified_native_context(owner)
+        self.assertEqual(receipt["original_sentence_transformer_max_seq_length"],512)
+        self.assertEqual(owner.model[0].max_seq_length,8192)
+
+    def test_tiny_unreviewed_default_rejected(self):
+        owner = self.make_owner(first_limit=64)
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_boolean_default_denied(self):
+        owner = self.make_owner(first_limit=True)
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_overlarge_unreviewed_default_denied(self):
+        owner = self.make_owner(first_limit=262145)
         with self.assertRaises(b.NativeBudgetError):
             b.bind_verified_native_context(owner)
 
