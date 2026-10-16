@@ -163,6 +163,35 @@ def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
         raise ValueError("expired research material lock")
 
 
+def verify_live_reviewed_material(lock_file: Path, model_root: Path,
+                                  source_file: Path, *,
+                                  now_ms: int | None = None) -> dict:
+    """Original physical-model bytes are checked at each consumer boundary.
+
+    The reference SHA comes from a separate local historical audit, not an
+    IBM/HF signature, hardware attestation, or approval to run tools.
+    """
+    lock, _ = _json(lock_file, 8192)
+    check_lock(lock, now_ms=now_ms)
+    source = source_bytes(source_file)
+    _, material_digest = calculate_material(model_root)
+    if (material_digest != REVIEWED_MATERIAL_SHA256
+            or material_digest != lock["material_sha256"]):
+        raise ValueError("real pretrained material fails reviewed byte baseline")
+    if sha(source) != lock["source_sha256"]:
+        raise ValueError("complete source changed after material freeze")
+    return {
+        "schema": "hepta.stem.granite97-real-material-preflight.v1",
+        "source_sha256": SOURCE_SHA,
+        "material_sha256": material_digest,
+        "source_owner_verified": False,
+        "model_publisher_signature_verified": False,
+        "production_authorized": False,
+        "model_selected": False,
+        "authority": "DENY_ALL",
+    }
+
+
 def restage_fresh_physical_session(previous: Path, fresh: Path, *,
                                    now_ms: int,
                                    expected_reviewed_material_sha256: str | None = None) -> dict:
@@ -358,6 +387,9 @@ def main() -> None:
     for key in ("model-root", "source", "lock-output"):
         stage.add_argument("--" + key, required=True)
     stage.add_argument("--material-baseline-sha256", required=True)
+    verification = commands.add_parser("verify")
+    for key in ("model-root", "source", "lock"):
+        verification.add_argument("--" + key, required=True)
     renewed = commands.add_parser("restage")
     renewed.add_argument("--original-root", required=True)
     renewed.add_argument("--fresh-root", required=True)
@@ -377,6 +409,10 @@ def main() -> None:
             raise ValueError("physical model differs from prior real-material audit")
         prepare(Path(args.source), Path(args.model_root), Path(args.lock_output),
                 now_ms=time.time_ns() // 1_000_000)
+    elif args.cmd == "verify":
+        observed = verify_live_reviewed_material(
+            Path(args.lock), Path(args.model_root), Path(args.source))
+        print(json.dumps(observed, sort_keys=True))
     elif args.cmd == "restage":
         restage_fresh_physical_session(
             Path(args.original_root), Path(args.fresh_root),

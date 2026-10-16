@@ -192,6 +192,19 @@ class StudyTest(unittest.TestCase):
         # Existing synthetic negative controls remain allowed to use a
         # self-consistent fake material fixture only as SOURCE-ONLY tests.
 
+    def test_each_real_consumer_rejects_self_attested_fake_and_expired_model(self):
+        now=time.time_ns()//1_000_000
+        with self.assertRaisesRegex(ValueError,"reviewed byte baseline"):
+            v9.verify_live_reviewed_material(
+                self.lockfile,self.model,self.source,now_ms=now)
+        forged=dict(self.lock)
+        forged["expires_at_ms"]=1
+        self.write(self.lockfile,forged)
+        with self.assertRaisesRegex(ValueError,"expired"):
+            v9.verify_live_reviewed_material(
+                self.lockfile,self.model,self.source,now_ms=now)
+        self.assertEqual(json.loads(self.lockfile.read_text()),forged)
+
     def test_missing_review_fails(self):
         self.reviewfile.unlink()
         with self.assertRaises(ValueError):self.admit()

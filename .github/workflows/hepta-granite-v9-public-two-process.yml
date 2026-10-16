@@ -127,6 +127,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json"
           python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
           read -r MAT SHA EXP < <(python - <<'PY'
@@ -178,6 +182,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json"
           python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
           read -r MAT SHA EXP < <(python - <<'PY'
@@ -233,6 +241,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json"
           python qualification/stem-cell-v1/granite97_v9_public_physical.py admit \
             --lock "$RUNNER_TEMP/granite-v9/lock.json" \
             --source "$RUNNER_TEMP/granite-v9/source.txt" \
@@ -315,6 +327,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json"
           export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
           python qualification/stem-cell-v1/granite97_v9_residency.py \
             --model-root "$RUNNER_TEMP/granite-v9/model" \
@@ -380,6 +396,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9-fresh/model" \
+            --source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9-fresh/lock.json"
           read -r MAT SHA EXP < <(python - <<'PY'
           import json,os
           from pathlib import Path
@@ -402,6 +422,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py verify \
+            --model-root "$RUNNER_TEMP/granite-v9-fresh/model" \
+            --source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --lock "$RUNNER_TEMP/granite-v9-fresh/lock.json"
           read -r MAT SHA EXP < <(python - <<'PY'
           import json,os
           from pathlib import Path
