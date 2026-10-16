@@ -1,0 +1,146 @@
+name: Hepta Granite97 R2 physical shared Stem (research only)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/granite97_pinned_real_canary.py"
+      - "qualification/stem-cell-v1/test_granite97_pinned_real_canary.py"
+      - "qualification/stem-cell-v1/group_encoder.py"
+      - "qualification/stem-cell-v1/hf_encoder_kernel.py"
+      - "qualification/stem-cell-v1/token_features.py"
+      - "qualification/stem-cell-v1/token_protocol.py"
+      - "qualification/stem-cell-v1/cross_fact_bridge.py"
+      - "qualification/stem-cell-v1/cross_fact_joint_fit.py"
+      - "qualification/stem-cell-v1/test_cross_fact_joint_fit.py"
+      - ".github/workflows/hepta-granite97-r2-physical-stem.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: granite97-r2-physical-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  profile-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove checkout identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install Python for model-free identity checks
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Check pinned checkpoint profile in both interpreter modes
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest test_granite97_pinned_real_canary -v
+          PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest test_granite97_pinned_real_canary -v
+          python -m py_compile qualification/stem-cell-v1/granite97_pinned_real_canary.py
+          git diff --exit-code
+
+  actual-public-pretrained-forward:
+    needs: profile-contract
+    # The physical canary downloads only a fixed public Apache-2.0 checkpoint.
+    # Do not let untrusted fork PRs execute expensive public downloads.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Confirm physical experiment matches PR HEAD
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Install fixed public-model CPU environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install CPU PyTorch and exact Granite loader dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -m pip install numpy==2.3.5 transformers==4.57.1 \
+            huggingface-hub==0.36.0 tokenizers==0.22.1 safetensors==0.7.0
+          python -m pip freeze > "$RUNNER_TEMP/granite97-python-environment.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/granite97-exact-source.txt"
+      - name: Exercise 384D synchronized CPU Reader before the expensive public download
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest test_cross_fact_joint_fit -v
+          PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest test_cross_fact_joint_fit -v
+      - name: Download pinned public checkpoint, verify all pretrained tensors and run real CPU Head steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python \
+            qualification/stem-cell-v1/granite97_pinned_real_canary.py \
+            --acquire-public --output "$RUNNER_TEMP/granite97-physical" \
+            2>&1 | tee "$RUNNER_TEMP/granite97-real-execution.log"
+      - name: Verify bounded physical evidence before any result claim
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/granite97-physical/probe.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          result=json.loads(Path(sys.argv[1]).read_text())
+          assert result['schema']=='hepta.granite97.physical-shared-stem-canary.v1'
+          assert result['model']['revision']=='835ad14087e140460703cf0fae09f97d469d65c2'
+          assert result['model']['parameter_count']==97441152
+          assert result['model']['hidden_width']==384
+          assert result['encoder_frozen'] is True
+          assert result['physical_forward_executed'] is True
+          assert result['physical_encoder_forward_batches']>0
+          assert result['direct_train_cases']==16
+          assert result['joint_training_status'] in {'max_updates_reached','train_gate_passed'}
+          assert result['one_input_batch_per_paired_update'] is True
+          assert result['shared_input_batch_materializations']==2
+          assert result['single_joint_training_cpu_ns']>0
+          assert result['single_joint_training_wall_ns']>0
+          assert result['nested_head_costs_additive'] is False
+          assert result['original_v5_train_only_full_fit_established'] is False
+          assert set(result['head_comparators'])=={'cross_fact','local'}
+          for arm in result['head_comparators'].values():
+              assert arm['steps']==2 and arm['exposures']==32
+              assert arm['parameter_count']>4096
+              assert arm['optimizer_tensor_bytes']>0
+              assert arm['synchronized_input_batch'] is True
+          assert result['original_full_six_arm_campaign_executed'] is False
+          assert result['future_multirc_or_natural_efficacy_established'] is False
+          assert result['production_authorized'] is False
+          PY
+      - name: Retain digests and actual measurements, never publish weights or raw inputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: granite97-physical-stem-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/granite97-exact-source.txt
+            ${{ runner.temp }}/granite97-python-environment.txt
+            ${{ runner.temp }}/granite97-real-execution.log
+            ${{ runner.temp }}/granite97-physical/probe.json
+            ${{ runner.temp }}/granite97-physical/FAILED.json
+            ${{ runner.temp }}/granite97-physical/pinned-public-model/source-lock.json
+            ${{ runner.temp }}/granite97-physical/pinned-public-model/material.json
+          if-no-files-found: warn
