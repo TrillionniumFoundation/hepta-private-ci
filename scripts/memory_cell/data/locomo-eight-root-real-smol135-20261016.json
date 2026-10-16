@@ -1,0 +1,66 @@
+{
+  "actual_reader_source_git_blob": "c9567b43e5d15ca428baeb3a972b70435bcc7ed7",
+  "by_arm": {
+    "annotated_witness": {
+      "input_tokens": 1809,
+      "mean_diagnostic_token_f1": 0.0125,
+      "model_succeeded": 8,
+      "model_wall_seconds": 13.8304927639997,
+      "output_tokens": 189,
+      "planned": 8,
+      "strict_correct": 0,
+      "structurally_valid_citation": 0,
+      "token_f1_sum": 0.1
+    },
+    "bm25_top3": {
+      "input_tokens": 1720,
+      "mean_diagnostic_token_f1": 0.0125,
+      "model_succeeded": 8,
+      "model_wall_seconds": 13.70006626599934,
+      "output_tokens": 192,
+      "planned": 8,
+      "strict_correct": 0,
+      "structurally_valid_citation": 0,
+      "token_f1_sum": 0.1
+    },
+    "empty": {
+      "input_tokens": 497,
+      "mean_diagnostic_token_f1": 0.020833333333333332,
+      "model_succeeded": 8,
+      "model_wall_seconds": 9.059940188999917,
+      "output_tokens": 153,
+      "planned": 8,
+      "strict_correct": 0,
+      "structurally_valid_citation": 0,
+      "token_f1_sum": 0.16666666666666666
+    },
+    "witness_lesion": {
+      "input_tokens": 1281,
+      "mean_diagnostic_token_f1": 0.0125,
+      "model_succeeded": 8,
+      "model_wall_seconds": 12.795412516999932,
+      "output_tokens": 192,
+      "planned": 8,
+      "strict_correct": 0,
+      "structurally_valid_citation": 0,
+      "token_f1_sum": 0.1
+    }
+  },
+  "complete_lifecycle_cost_usd": null,
+  "human_semantic_evidence_review": false,
+  "independent_future_windows": 0,
+  "independent_source_roots_not_authenticated": 8,
+  "original_model_zip_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+  "original_published_benchmark_preexposed": true,
+  "original_raw_journal_sha256": "1e36a1dcfefabf8d8912b81e215a9e7383bc4eb08a63e2dc592a0b46ce65aab3",
+  "original_reader_frozen": true,
+  "production_accepted": false,
+  "program_execution_tasks": 0,
+  "real_neural_model_attempts": 32,
+  "reference_stronger_reader_executed": false,
+  "schema": "hepta.memory.locomo-eight-family-physical-smol135.v1",
+  "source_and_prompts_sha256": "fa7d9e676f9aca8f7c524e6f592cabb88a22c490a8c441db4bd6a8e05fbc6033",
+  "source_json_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "successful_neural_model_attempts": 32,
+  "trained_parameter_memory": false
+}
