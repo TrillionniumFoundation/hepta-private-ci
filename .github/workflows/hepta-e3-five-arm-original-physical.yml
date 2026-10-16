@@ -22,6 +22,7 @@ on:
       - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
       - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
       - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py"
       - "experiments/shared_stem_cell/E3_IN_AUDIT_SOURCE_MUTATION_GUARD_20261015.md"
       - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -47,6 +48,7 @@ on:
       - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
       - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
       - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py"
       - "experiments/shared_stem_cell/E3_IN_AUDIT_SOURCE_MUTATION_GUARD_20261015.md"
       - "experiments/shared_stem_cell/E3_MODEL_ENTRY_FILETREE_PREPOST_20261015.md"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
@@ -90,7 +92,8 @@ jobs:
             experiments/shared_stem_cell/e3_model_entry_ledger.py \
             experiments/shared_stem_cell/e3_model_entry_resnapshot.py \
             experiments/shared_stem_cell/test_e3_model_entry_ledger.py \
-            experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py
+            experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py \
+            experiments/shared_stem_cell/test_e3_byte_ci_convergence_20261016.py
       - name: Separate independent two-Head readout tests before model work
         run: |
           set -euo pipefail
@@ -116,6 +119,13 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
+      - name: Check original 196-byte-source workflow graph and independent-owner ordering
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_byte_ci_convergence_20261016.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_byte_ci_convergence_20261016.py -v
       - name: Normal original-style 28 fault controls
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
