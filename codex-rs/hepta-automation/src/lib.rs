@@ -32,6 +32,7 @@ mod taskflow_step;
 mod timer_lifecycle;
 
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
+pub use authorized_effect::AuthorizedEffectAdmissionV1;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDriverError;
