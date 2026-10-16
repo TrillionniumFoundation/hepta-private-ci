@@ -962,6 +962,70 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
     }
 }
 
+/// A local 0–3 step prefix can look valid while the next ORIGINAL owner
+/// already holds a signed effect that this coordinator never prepared.
+#[test]
+fn verified_completion_rejects_unprepared_original_effect_at_every_step() {
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open original owner");
+
+        let plan = plan();
+        let digest = plan.digest().expect("frozen plan digest");
+        let mut previous = digest.clone();
+        for _ in 0..completed {
+            let receipt = owner
+                .advance()
+                .expect("original predecessor effect")
+                .expect("signed original receipt");
+            previous = receipt.receipt_digest;
+        }
+        assert!(!owner.verified_complete().expect("no external drift"));
+        assert!(owner.verified_transcript().expect("local incomplete prefix").is_none());
+
+        let step = super::CellSplitExecutionStepV1::at(completed)
+            .expect("only four original steps");
+        let intent = super::make_intent(&plan, &digest, step, &previous);
+        let unledgered = FixturePort::receipt(&intent);
+        state
+            .borrow_mut()
+            .commits
+            .insert(intent.idempotency_key.clone(), unledgered);
+        let executions = state.borrow().executions;
+
+        assert!(matches!(
+            owner.verified_complete(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert!(matches!(
+            owner.verified_transcript(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, executions);
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed:02}-prepared.json"))
+                .exists(),
+            "verified status must never adopt or create an unledgered intent"
+        );
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed:02}-committed.json"))
+                .exists(),
+            "an out-of-band original effect is not a local commit"
+        );
+    }
+}
+
 #[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     let root = private_tempdir();
