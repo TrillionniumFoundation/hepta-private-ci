@@ -6,6 +6,9 @@ on:
       - 'scripts/memory_cell/memory_graph_lesion.py'
       - 'scripts/memory_cell/memory_graph_source_trial.py'
       - 'scripts/memory_cell/test_memory_graph_source_trial.py'
+      - 'scripts/memory_cell/memory_graph_independent_audit.py'
+      - 'scripts/memory_cell/test_memory_graph_independent_audit.py'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_META_GRAPH_ORIGINAL_LOCAL_AUDIT_20261016.md'
       - 'codex-rs/hepta-intelligence-eval/MEMORY_META_GRAPH_SOURCE_TRIAL_20261016.md'
       - '.github/workflows/hepta-memory-meta-graph-source-trial.yml'
   workflow_dispatch:
@@ -156,6 +159,14 @@ jobs:
           python3 scripts/memory_cell/memory_graph_source_trial.py review \
             /tmp/mg-rebuilt /tmp/mg-run /tmp/mg-review-receipts/review.json \
             > /tmp/mg-review-receipts/summary.json
+          HEPTA_MEMORY_ORIGINAL=/tmp/mg-review-source/memory-inputs/locomo.json \
+            python3 -m unittest discover -s scripts/memory_cell \
+              -p 'test_memory_graph_independent_audit.py' -v \
+              > /tmp/mg-review-receipts/independent-contract-tests.log 2>&1
+          python3 scripts/memory_cell/memory_graph_independent_audit.py \
+            /tmp/mg-review-source/memory-inputs/locomo.json /tmp/mg-public \
+            /tmp/mg-run /tmp/mg-review-receipts/review.json \
+            > /tmp/mg-review-receipts/independent-audit.json
           git rev-parse HEAD > /tmp/mg-review-receipts/exact-head.txt
           (cd /tmp/mg-review-receipts && find . -type f ! -name SHA256SUMS -print0 \
             | sort -z | xargs -0 sha256sum > SHA256SUMS)
