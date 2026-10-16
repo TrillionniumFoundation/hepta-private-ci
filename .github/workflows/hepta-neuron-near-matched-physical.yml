@@ -83,6 +83,10 @@ jobs:
             -p 'test_near_matched_byte_budget.py' -v
           python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
             -p 'test_near_matched_byte_budget.py' -v
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
           python qualification/neuron-gated-sparse-v3/near_matched_byte_budget.py \
             --output "$RUNNER_TEMP/hepta-physical-byte-plan.json"
       - name: Freeze create-only distinct synthetic training and native trace
