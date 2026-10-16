@@ -8,7 +8,9 @@ permissions:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    # All original production steps passed on ARM64 (isolated run 38854922587).
+    # Leave native-paths x64/Windows/macOS checks on their target architectures.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     env:
       NODE_OPTIONS: --max-old-space-size=4096
