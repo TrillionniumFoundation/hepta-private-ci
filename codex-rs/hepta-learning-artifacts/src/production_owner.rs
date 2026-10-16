@@ -1284,6 +1284,8 @@ mod tests {
         )
         .expect("owner")
         .with_metrics_sink(sink.clone());
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
         assert!(owner.production_metrics_ready());
 
         let invocation_count = AtomicU64::new(0);
@@ -1341,6 +1343,8 @@ mod tests {
         .expect("owner");
         let sibling = owner.clone();
         let first = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!first.production_metrics_ready());
+        assert!(first.flush_production_metrics());
         assert!(first.production_metrics_ready());
 
         let conflicting = sibling.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
@@ -1359,6 +1363,8 @@ mod tests {
         .expect("owner");
         let unmetered_clone = owner.clone();
         let active = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!active.production_metrics_ready());
+        assert!(active.flush_production_metrics());
         assert!(active.production_metrics_ready());
 
         let result: Result<(), ()> = unmetered_clone.timed(
@@ -1441,6 +1447,8 @@ mod tests {
         let owner = ArtifactCasOwnerV1::new(id("artifact.owner"), key.clone())
             .expect("owner")
             .with_metrics_sink(metric_sink.clone());
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
         assert!(owner.production_metrics_ready());
         let manifest = crate::ArtifactManifest {
             artifact_id: id("artifact.payload"),
