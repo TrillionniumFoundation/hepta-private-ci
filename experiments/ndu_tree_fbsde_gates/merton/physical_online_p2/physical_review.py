@@ -184,7 +184,9 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
             'request_wall_p95_ms':round(1000*quantile([r['measured_wall_seconds'] for r in rows],.95),3),
             'request_wall_p99_ms':round(1000*quantile([r['measured_wall_seconds'] for r in rows],.99),3),
             'task_rescues_against_direct':wins,'task_losses_against_direct':losses,
-            'external_correct_minus_FULL_serving_token_tariff':str(correct - tariff*counted)})
+            'external_correct_minus_FULL_serving_token_tariff':str(correct - tariff*counted),
+            'illustrative_single_arm_cold_start_net_tokens_only':str(correct - tariff*(counted+training_tokens)),
+            'cold_start_calibration_fee_shared_not_summable':True})
     # Same objective has same frozen decisions; physically executed copies may still differ.
     if (plan['portfolio_attempt']['attempt']['policies'][-2]['assignments'] !=
         plan['portfolio_attempt']['attempt']['policies'][-1]['assignments']):
@@ -199,6 +201,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
        'actual_training_cpu_seconds':round(training_cpu,9),
        'actual_model_load_cpu_seconds':completed['model_load_cpu_seconds'],
        'actual_model_load_wall_seconds':completed['model_load_wall_seconds'],
+       'original_total_execution_cpu_seconds':completed['execution_cpu_seconds'],
+       'original_total_execution_wall_seconds':completed['execution_wall_seconds'],
        'seven_policy_results':scores,
        'historical_public_test_set_not_future_window':True,
        'independent_hardware_attestation':False,
