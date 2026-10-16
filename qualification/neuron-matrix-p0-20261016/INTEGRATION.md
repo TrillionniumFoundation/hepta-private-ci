@@ -4,6 +4,15 @@ This is a **non-authorizing** source-integration candidate, not evidence of a pr
 
 ## Verified source parents
 
+**Current follow-up merge parents (exact Git SHA):**
+
+- Integrated parent `99792103cc642936bfc57a429466303db30aaf2e` (previous paired Draft tree)
+- Matrix security parent `346374c1f290b5a1636de1a54b3e16f57512f7bc` (PR #1372)
+- Neuron owner parent `068bb070d49d87c6a878951c5a1723e2779f666b` (PR #1498)
+
+Both latest source branches have one and only one file difference from the prior paired source tree: `codex-rs/hepta-memory/src/cognitive_store_tests.rs`. Both give that file the same Git blob `2339cc1cde558eca0d54c6b997f79574ca44871a`. The merged V15 fixture uses a checkout-volume Windows temp directory while retaining the unchanged production canonical-path/reparse enforcement. All other merged source bytes remain the previous paired tree; no new production authority is granted.
+
+
 - Previous paired integration source: `91a20ee74833c484f3a400e675be0a74486a5bac` (Draft #1507).
 - Matrix security source: `11c9c8f55774a2bd21315f4af6a4589887c8ac7d` (Draft #1372).
 - Neuron shared-feature/worker source: `96f290ca1e3eade759d5c20e0433c62c2311c878` (Draft #1498).
