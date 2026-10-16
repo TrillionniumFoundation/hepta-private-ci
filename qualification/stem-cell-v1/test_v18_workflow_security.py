@@ -63,7 +63,7 @@ class WorkflowSecurity(unittest.TestCase):
         self.assertIn("NO_INVEST_FROM_EXPOSED_HISTORICAL_CALIBRATION", self.source)
 
     def test_bash_blocks_parse(self):
-        blocks = re.findall(r"(?m)^        run: \\|\\n((?:^          .*\\n|^\\n)*)", self.source)
+        blocks = re.findall(r"(?m)^        run: \|\n((?:^          .*\n|^\n)*)", self.source)
         # Use source text, not an artificial shell fixture.
         self.assertGreaterEqual(len(blocks), 3)
         for block in blocks:
