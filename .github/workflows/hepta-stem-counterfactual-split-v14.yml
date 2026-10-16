@@ -7,6 +7,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
       - "qualification/stem-cell-v1/*stable_router_v15*.py"
       - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
+      - "qualification/stem-cell-v1/*specialization_v16*.py"
+      - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -16,6 +18,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
       - "qualification/stem-cell-v1/*stable_router_v15*.py"
       - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
+      - "qualification/stem-cell-v1/*specialization_v16*.py"
+      - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -58,7 +62,10 @@ jobs:
           python -O -m unittest -v test_stem_counterfactual_split_v14.Mechanism
           python -m unittest -v test_stem_stable_router_v15.Mechanism
           python -O -m unittest -v test_stem_stable_router_v15.Mechanism
+          python -m unittest -v test_stem_specialization_v16.Mechanism
+          python -O -m unittest -v test_stem_specialization_v16.Mechanism
           python -m py_compile stem_stable_router_v15.py stem_stable_router_v15_review.py test_stem_stable_router_v15.py
+          python -m py_compile stem_specialization_v16.py stem_specialization_v16_review.py test_stem_specialization_v16.py
           python -m py_compile stem_counterfactual_split_v14.py stem_counterfactual_split_v14_review.py test_stem_counterfactual_split_v14.py
       - name: Retrieve only the immutable original Actions archive
         if: github.event_name != 'pull_request'
@@ -108,6 +115,27 @@ jobs:
         with:
           name: v15-sanitized-review-${{ github.sha }}
           path: ${{ runner.temp }}/v15-sanitized-review.json
+          if-no-files-found: error
+      - name: V16 actual source-bound specialist routing and independent NumPy reviewer
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V16_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V16_V15="$RUNNER_TEMP/v15-candidates"
+          python -m unittest -v test_stem_specialization_v16
+          python -O -m unittest -v test_stem_specialization_v16
+          python stem_specialization_v16.py --inputs "$HEPTA_V16_INPUTS" --v15 "$HEPTA_V16_V15" --output "$RUNNER_TEMP/v16-candidates"
+          python stem_specialization_v16_review.py --inputs "$HEPTA_V16_INPUTS" --v15 "$HEPTA_V16_V15" --candidate "$RUNNER_TEMP/v16-candidates" --output "$RUNNER_TEMP/v16-sanitized-review.json"
+      - name: Upload only V16 sanitized aggregate no raw/held/model tensors
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v16-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v16-sanitized-review.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
