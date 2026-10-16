@@ -10,6 +10,16 @@ Additive candidate atop the frozen #2403 native owner repair line. Its sole orig
 
 The only allowed model is `ibm-granite/granite-embedding-97m-multilingual-r2` at upstream revision `835ad14087e140460703cf0fae09f97d469d65c2`, with five original named material files and bounded 512 MB complete physical inventory. The job independently hashes every local file and pins an exact `material.json` with the **original pre-existing** V5 domain-separated digest. Downloading bytes from an immutable upstream revision and hashing them in the same workflow is *not an independently signed original model/material owner*. There are no access tokens and no capability to authorize effects.
 
+## V9.1 actual pretrained overflow, explicit bounded feature adapter
+
+The first real producer in GitHub Actions [run 38868419309](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38868419309) loaded the SHA-pinned authentic Granite97, performed a physical frozen Encoder forward and then **correctly failed** the legacy unmodified FP32-to-Q24 V5 contract. Its genuine token hidden features exceeded the existing Native ±8 Q24 input range. The failed run is retained; it must not be reported as a successful export or reviewer.
+
+The follow-up keeps the default exporter/reviewer V5 **identity** adapter unchanged: original values outside [-8, 8] still reject. For this specifically registered shadow experiment, both independent producer and reviewer must explicitly opt into \`--feature-adapter rational8-v1\`. On every finite raw FP32 value \(x\), the transform is \(r(x)=8x/(8+|x|)\). It is deterministic, bounded, continuous and strictly monotone on finite reals, but it **changes the representation** and Q24 quantization may lose distinctions. This is **not** a semantic equivalence guarantee, a trained encoder, hard clipping or transparent repair of the old V5 result.
+
+The new adapter has a separate domain-separated SHA and an independent preprocessing profile digest. Thus the same raw input/model tokens with \`identity\` and \`rational8-v1\` cannot be admitted or cached as the same \`FeatureSequenceIdentityV3\`. The serialization envelope remains V5 (same verified fields); its adapter profile is versioned separately, with no V1/V2/V3 Rust ABI weakening. An unrecognized adapter, NaN/Inf, wrong whole source, exceeded Q24 after projection or mismatch against the *independent reviewer's own* numerical implementation fails closed.
+
+The reviewer does not import the producer's projection function; it reloads all real original model weights, runs a second FP32 forward, reconstructs its chosen adapter/profile from the explicit CLI policy and compares the complete ordered Q24 tensor. Original material/source signatures remain **unverified**, even if both software executions agree. A successful run proves physical data-path compatibility for a **transformed** frozen representation only—not original untransformed embedding parity, retrieval quality, multi-hop reasoning or NDU gain.
+
 ## Execution sequence and distinct measurements
 
 The read-only workflow `.github/workflows/hepta-granite-v9-public-two-process.yml` performs these stages in different GitHub Actions jobs, each against its exact candidate HEAD:
