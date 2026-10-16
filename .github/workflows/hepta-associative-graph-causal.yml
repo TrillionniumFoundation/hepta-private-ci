@@ -1,0 +1,162 @@
+name: Hepta MemoryCell source-only Graph Causal shadow (DENY_ALL)
+on:
+  pull_request:
+    branches: [codex/associative-cell-type-split-20261015]
+    paths:
+      - 'scripts/memory_cell/associative_graph_causal.py'
+      - 'scripts/memory_cell/test_associative_graph_causal.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_GRAPH_CAUSAL_20261016.md'
+      - '.github/workflows/hepta-associative-graph-causal.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-assoc-graph-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  privileged-source-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Source-only and adversarial contracts (no pretrained models)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/graph-source-receipts
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_graph_causal.py' -v 2>&1 | tee /tmp/graph-source-receipts/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/graph-original-staged
+      - name: Admit pinned original LoCoMo with private reference physically excluded from export
+        run: |
+          set -euo pipefail
+          mkdir /tmp/graph-original
+          tar -C /tmp/graph-original -xzf /tmp/graph-original-staged/memory-inputs.tar.gz \
+            memory-inputs/locomo.json
+          test "$(sha256sum /tmp/graph-original/memory-inputs/locomo.json | cut -d' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py \
+            prepare /tmp/graph-original/memory-inputs/locomo.json /tmp/graph-prepared \
+            > /tmp/graph-source-receipts/prepare.json
+          mkdir -p /tmp/graph-public
+          cp /tmp/graph-prepared/{public,manifest}.json /tmp/graph-public/
+          test ! -e /tmp/graph-public/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: graph-public-label-free-only
+          path: /tmp/graph-public/
+          if-no-files-found: error
+      - name: Exact source receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/graph-source-receipts
+          git rev-parse HEAD > /tmp/graph-source-receipts/head.txt
+          (cd /tmp/graph-source-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: graph-source-only-tests-not-acceptance
+          path: /tmp/graph-source-receipts/
+          if-no-files-found: error
+  blind-graph-execution:
+    needs: privileged-source-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: graph-public-label-free-only
+          path: /tmp/graph-public
+      - name: Execute frozen five-arm graph lesion against entire label-blind cohort
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/graph-public/private.json
+          mkdir -p /tmp/graph-model-receipts
+          /usr/bin/time -v -o /tmp/graph-model-receipts/resources.txt \
+            python3 scripts/memory_cell/associative_graph_causal.py \
+              run /tmp/graph-public /tmp/graph-sealed-run \
+            > /tmp/graph-model-receipts/execution.json
+          cp /tmp/graph-sealed-run/{predictions,seal}.json /tmp/graph-model-receipts/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: graph-original-unscored-complete
+          path: /tmp/graph-sealed-run/
+          if-no-files-found: error
+      - name: Exact source and resource receipts
+        if: always()
+        run: |
+          mkdir -p /tmp/graph-model-receipts
+          git rev-parse HEAD > /tmp/graph-model-receipts/head.txt
+          (cd /tmp/graph-model-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: graph-original-execution-resources-not-acceptance
+          path: /tmp/graph-model-receipts/
+          if-no-files-found: error
+  independent-postseal-scoring:
+    needs: blind-graph-execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: graph-public-label-free-only
+          path: /tmp/graph-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: graph-original-unscored-complete
+          path: /tmp/graph-sealed-run
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/graph-original-staged
+      - name: Reopen references strictly after sealed independent prediction
+        run: |
+          set -euo pipefail
+          mkdir /tmp/graph-verifier-original /tmp/graph-review-receipts
+          tar -C /tmp/graph-verifier-original -xzf /tmp/graph-original-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          python3 scripts/memory_cell/associative_graph_causal.py \
+            prepare /tmp/graph-verifier-original/memory-inputs/locomo.json /tmp/graph-verifier-prepared \
+            > /tmp/graph-review-receipts/rebuilt.json
+          cmp /tmp/graph-verifier-prepared/public.json /tmp/graph-public/public.json
+          cmp /tmp/graph-verifier-prepared/manifest.json /tmp/graph-public/manifest.json
+          python3 scripts/memory_cell/associative_graph_causal.py \
+            review /tmp/graph-verifier-prepared /tmp/graph-sealed-run /tmp/graph-review-receipts/review.json \
+            > /tmp/graph-review-receipts/summary.json
+      - name: Exact reviewed source receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/graph-review-receipts
+          git rev-parse HEAD > /tmp/graph-review-receipts/head.txt
+          (cd /tmp/graph-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: graph-complete-postseal-score-not-acceptance
+          path: /tmp/graph-review-receipts/
+          if-no-files-found: error
