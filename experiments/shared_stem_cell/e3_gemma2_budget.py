@@ -57,9 +57,14 @@ def bind_verified_native_context(owner):
         old = model.max_seq_length
     except (KeyError, IndexError, TypeError, AttributeError) as error:
         raise NativeBudgetError("source model has no inspectable sequence setter") from error
+    # SentenceTransformer can expose a conservative default such as 512 or
+    # 2048 even for this exact publisher model with documented 8192 context.
+    # The default is NOT accepted for inference: the verified owner must
+    # explicitly set and re-read both runtime/module limits at 8192 below.
+    # Refuse nonintegral, tiny and unsupported oversized original limits.
     check(old is None or
-          (type(old) is int and CONTEXT <= old <= 262144),
-          "unexpected pre-existing native context would silently truncate")
+          (type(old) is int and 128 <= old <= 262144),
+          "unreviewed original native context metadata; expected None or 128..262144")
     try:
         model.max_seq_length = CONTEXT
         actual = model.max_seq_length
