@@ -24,6 +24,7 @@ from real_public_iid_q24_inputs import (
     CLASSES, read_original_public_inputs, verify_local_original_source,
 )
 from real_encoder_q24_snapshot_gate import read
+from real_public_iid_q24_physical_train import validate_fit
 
 ARMS = ("v2", "v3", "ssm", "min_gru")
 REPORT_SCHEMA = "hepta.neuron.real-public-iid-native-q24-heldout.v1"
@@ -159,6 +160,61 @@ def frozen_single_case_trace(row: dict, *, task_id: int) -> dict:
     }
 
 
+def bind_original_public_fit_and_heldout(
+    original_inputs: dict, frozen_fit: dict, blind_heldout: dict, plan: dict,
+) -> dict:
+    """Recompute registered train identity and labels *after* fitting.
+
+    This is the independent research scorer's source-checking step, not an
+    evaluator-owner signature or permission to retrain a selected runtime.
+    """
+    trained_rows, source_sha = validate_fit(frozen_fit, plan)
+    need(type(original_inputs) is dict and
+         type(original_inputs.get("fit")) is list and
+         type(original_inputs.get("heldout")) is list and
+         len(original_inputs["fit"]) == len(trained_rows) == 64 and
+         len(original_inputs["heldout"]) == 32,
+         "incomplete public source vs fit ledger")
+    need(frozen_fit.get("source_input_id") ==
+         blind_heldout.get("source_input_id") ==
+         original_inputs.get("input_id"),
+         "original public case registry not shared across train and heldout")
+    need(frozen_fit.get("input_feature_snapshot_sha256") ==
+         blind_heldout.get("input_feature_snapshot_sha256") ==
+         source_sha == plan.get("same_frozen_feature_source"),
+         "frozen public Encoder Q24 source differs between model and observer")
+    need(type(blind_heldout.get("rows")) is list and
+         len(blind_heldout["rows"]) == 32,
+         "incomplete originally registered blind heldout cases")
+    for original, trained in zip(original_inputs["fit"], trained_rows, strict=True):
+        need(type(trained) is dict and
+             trained["case_id"] == original["id"] and
+             trained["split"] == "fit" and
+             trained["source_text_sha256"] ==
+                 digest(original["text"].encode("utf-8")) and
+             trained["train_label"] == original["label"],
+             "Q24 training weights not bound to original 64 source case labels")
+    for original, blind in zip(original_inputs["heldout"],
+                                blind_heldout["rows"], strict=True):
+        need(type(blind) is dict and
+             set(blind) == {"case_id","source_text_sha256","feature_q24","split"}
+             and blind["case_id"] == original["id"] and
+             blind["split"] == "heldout" and
+             blind["source_text_sha256"] ==
+                 digest(original["text"].encode("utf-8")),
+             "Q24 heldout source/registry differs from original text identity")
+    need(not {r["case_id"] for r in trained_rows}.intersection(
+        r["case_id"] for r in blind_heldout["rows"]),
+        "registered training/heldout leakage")
+    return {
+        "real_public_train_sample_count": 64,
+        "real_public_unlabeled_heldout_count": 32,
+        "actual_fit_label_identities_bound_to_original_dataset": True,
+        "source_text_hash_bound_in_both_partitions": True,
+        "signed_independent_source_owner_verified": False,
+    }
+
+
 def run(args) -> dict:
     # No model training API, no fit/optimizer arguments. The original official
     # heldout targets only enter this separate process AFTER the models exist.
@@ -180,6 +236,10 @@ def run(args) -> dict:
          and original.get("production_qualification") is False,
          "untrusted, mixed, or privileged physical Q24 public-training receipt")
     frozen_plan = unique_json(read(Path(args.plan)))
+    frozen_fit_raw = read(Path(args.fit))
+    frozen_fit = unique_json(frozen_fit_raw)
+    need(digest(frozen_fit_raw) == original.get("train_source_sha256"),
+         "Q24 physically consumed training source SHA differs from frozen model receipt")
     held = unique_json(read(Path(args.heldout)))
     need(digest(read(Path(args.plan))) == original["predeclared_plan_sha256"]
          and frozen_plan.get("same_frozen_feature_source") ==
@@ -198,6 +258,9 @@ def run(args) -> dict:
     # software/process separation, NOT cryptographically independent custody.
     original_owner = verify_local_original_source(args.original_source)
     original_inputs = read_original_public_inputs(original_owner, args.public_data)
+    frozen_source_audit = bind_original_public_fit_and_heldout(
+        original_inputs, frozen_fit, held, frozen_plan
+    )
     need(original_inputs["input_id"] == held.get("source_input_id"),
          "original public source input differs from frozen heldout")
     import banking77_material
@@ -345,6 +408,8 @@ def run(args) -> dict:
         "schema": REPORT_SCHEMA,
         "decision": "NO_MODEL_SELECTION", "authority": "DENY_ALL",
         "training_receipt_sha256": digest(training_raw),
+        "physical_train_input_sha256": digest(frozen_fit_raw),
+        "original_public_fit_label_source_census": frozen_source_audit,
         "heldout_source_sha256": digest(read(Path(args.heldout))),
         "original_public_source_input_id": original_inputs["input_id"],
         "real_pretrained_encoder_feature_source_sha256":
@@ -378,6 +443,7 @@ def main() -> int:
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--models-root", type=Path, required=True)
     ap.add_argument("--heldout", type=Path, required=True)
+    ap.add_argument("--fit", type=Path, required=True)
     ap.add_argument("--plan", type=Path, required=True)
     ap.add_argument("--original-source", type=Path, required=True)
     ap.add_argument("--public-data", type=Path, required=True)
