@@ -645,18 +645,13 @@ fn original_pending_begin_inspector_fifo_marker_is_nonblocking_and_denied() {
 #[cfg(unix)]
 #[test]
 fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied() {
+    use std::io::Write as _;
+    use std::os::unix::fs::MetadataExt as _;
     use std::os::unix::fs::OpenOptionsExt as _;
 
     let dir = private_control_dir();
     let path = dir.path().join("pending-fifo-journal.wal");
     let marker = dir.path().join("pending-fifo-journal.wal.owner-lock");
-    let _marker_file = OpenOptions::new()
-        .create_new(true)
-        .read(true)
-        .write(true)
-        .mode(0o600)
-        .open(&marker)
-        .expect("real private ordinary marker");
     let directory = std::fs::File::open(dir.path()).expect("private directory FD");
     rustix::fs::mkfifoat(
         &directory,
@@ -664,6 +659,27 @@ fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied() {
         rustix::fs::Mode::from_bits_truncate(0o600),
     )
     .expect("actual FIFO WAL injection");
+    // Bind an otherwise valid original marker to the *FIFO's* real inode.
+    // Without this setup the inspection fails on the empty marker before
+    // ever attempting the potentially blocking WAL open, a hollow test.
+    let fifo_metadata = std::fs::symlink_metadata(&path).expect("injected FIFO inode");
+    let mut marker_file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .mode(0o600)
+        .open(&marker)
+        .expect("real private ordinary marker");
+    write!(
+        marker_file,
+        "NDUW1|{}|{}\n",
+        fifo_metadata.dev(),
+        fifo_metadata.ino()
+    )
+    .expect("original marker bound to FIFO inode");
+    marker_file
+        .sync_all()
+        .expect("durable original marker bytes");
     let denied = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
         &path,
         &snapshot(3),

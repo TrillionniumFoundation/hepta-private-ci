@@ -1092,6 +1092,38 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 native,
                 "observer must reject a real injected FIFO without blocking an open",
             )
+        # The WAL case must reach the real FIFO open after a correct original
+        # marker read. A test with an empty marker is a false positive.
+        fifo_test = native.split(
+            "fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied()", 1
+        )[1].split("fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash()", 1)[0]
+        for required in (
+            "rustix::fs::mkfifoat(",
+            "std::fs::symlink_metadata(&path)",
+            "fifo_metadata.dev()",
+            "fifo_metadata.ino()",
+            "NDUW1|",
+            "NduPublicationOwnerV1::inspect_original_pending_begin_v1(",
+        ):
+            self.assertIn(
+                required,
+                fifo_test,
+                "FIFO WAL test must pass original marker validation before denial",
+            )
+        # Rustfmt is allowed to wrap a method chain across lines. Keep
+        # the security invariant stronger than a fragile literal substring:
+        # the actual marker fsync must precede the first forensic inspection.
+        marker_fsync = re.search(r"marker_file\s*\.\s*sync_all\s*\(\s*\)", fifo_test)
+        self.assertIsNotNone(
+            marker_fsync,
+            "the real FIFO inode marker must be fsynced before original WAL read",
+        )
+        assert marker_fsync is not None
+        self.assertLess(
+            marker_fsync.end(),
+            fifo_test.index("NduPublicationOwnerV1::inspect_original_pending_begin_v1("),
+            "no original FIFO read may precede its durable marker commitment",
+        )
         self.assertIn(
             "fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory()",
             native,

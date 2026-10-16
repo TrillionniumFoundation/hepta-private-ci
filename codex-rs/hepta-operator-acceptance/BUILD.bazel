@@ -1,5 +1,13 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
+# Cargo's current-EUID operator config check uses the already-locked rustix
+# 1.1.4 only on Unix. Keep Bazel's product and native test crate in sync;
+# a Cargo PASS alone does not qualify the release-build/clippy targets.
+_UNIX_RUSTIX_DEPS = select({
+    "@platforms//os:windows": [],
+    "//conditions:default": ["@crates//:rustix"],
+})
+
 rust_library(
     name = "hepta-operator-acceptance-lib",
     srcs = glob(["src/**/*.rs"]),
@@ -18,7 +26,7 @@ rust_library(
         "@crates//:serde_json",
         "@crates//:sha2",
         "@crates//:thiserror",
-    ] + select({
+    ] + _UNIX_RUSTIX_DEPS + select({
         "@platforms//os:windows": ["@crates//:winapi-util"],
         "//conditions:default": [],
     }),
@@ -37,7 +45,7 @@ rust_test(
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
-    ],
+    ] + _UNIX_RUSTIX_DEPS,
 )
 
 rust_binary(
