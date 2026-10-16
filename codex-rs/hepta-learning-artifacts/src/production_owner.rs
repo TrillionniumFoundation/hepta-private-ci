@@ -1379,6 +1379,110 @@ mod tests {
         assert_eq!(active.latency_observations().signature.observations, 1);
     }
 
+    #[derive(Debug)]
+    struct BlockingOnceFlushMetrics {
+        entered: Arc<std::sync::Barrier>,
+        release: Arc<std::sync::Barrier>,
+        first_flush: AtomicBool,
+    }
+
+    impl PhaseMetricSinkV1 for BlockingOnceFlushMetrics {
+        fn healthy(&self) -> bool {
+            true
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            if self.first_flush.swap(false, Ordering::AcqRel) {
+                self.entered.wait();
+                self.release.wait();
+            }
+            Ok(())
+        }
+
+        fn record(
+            &self,
+            _event: PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn cas_in_flight_denies_readiness_and_flush_until_terminal_record() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-inflight"),
+            SigningKey::from_bytes(&[31; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker = owner.clone();
+        let worker_entered = entered.clone();
+        let worker_release = release.clone();
+        let task = std::thread::spawn(move || {
+            worker.timed(
+                Digest32::of_bytes(b"scope.metrics-inflight"),
+                Digest32::of_bytes(b"operation.metrics-inflight"),
+                PhaseMetricKindV1::Cas,
+                || {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    Ok::<_, ()>(17)
+                },
+            )
+        });
+        entered.wait();
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+        release.wait();
+
+        assert_eq!(task.join().expect("worker join"), Ok(17));
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 0);
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+    }
+
+    #[test]
+    fn concurrent_record_during_fsync_cannot_publish_a_stale_epoch() {
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let sink = Arc::new(BlockingOnceFlushMetrics {
+            entered: entered.clone(),
+            release: release.clone(),
+            first_flush: AtomicBool::new(true),
+        });
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-racing-fsync"),
+            SigningKey::from_bytes(&[32; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(sink);
+        assert!(!owner.production_metrics_ready());
+
+        let flushing_owner = owner.clone();
+        let flush_task = std::thread::spawn(move || flushing_owner.flush_production_metrics());
+        entered.wait();
+        let completed: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-racing-fsync"),
+            Digest32::of_bytes(b"operation.metrics-racing-fsync"),
+            PhaseMetricKindV1::Signature,
+            || Ok(23),
+        );
+        assert_eq!(completed, Ok(23));
+        release.wait();
+
+        assert!(!flush_task.join().expect("fsync join"));
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
