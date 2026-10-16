@@ -979,13 +979,8 @@ fn unresolved_prepared_verified_completion_transcript_requires_reconcile() {
         {
             let mut port = FixturePort::new(state.clone());
             port.drop_ack = true;
-            let mut writer = CellSplitExecutionOwnerV1::open(
-                root.path(),
-                plan(),
-                trust(),
-                port,
-            )
-            .expect("reopen original writer");
+            let mut writer = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("reopen original writer");
             assert!(matches!(
                 writer.advance(),
                 Err(CellSplitExecutionErrorV1::Ambiguous)
@@ -1007,10 +1002,7 @@ fn unresolved_prepared_verified_completion_transcript_requires_reconcile() {
                 observer.verified_transcript(),
                 Err(CellSplitExecutionErrorV1::Ambiguous)
             ));
-            assert_eq!(
-                state.borrow().verifications - readbacks_before,
-                committed
-            );
+            assert_eq!(state.borrow().verifications - readbacks_before, committed);
             assert_eq!(observer.completed_steps(), committed);
             assert_eq!(state.borrow().executions, committed + 1);
             assert!(
@@ -1143,13 +1135,9 @@ fn verified_completion_rejects_unreachable_owner_and_skips_pending_preflight() {
         {
             let mut port = FixturePort::new(state.clone());
             port.fail_preflight = true;
-            let mut reader = CellSplitExecutionOwnerV1::open_existing(
-                root.path(),
-                plan(),
-                trust(),
-                port,
-            )
-            .expect("read-only original owner");
+            let mut reader =
+                CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port)
+                    .expect("read-only original owner");
             assert!(matches!(
                 reader.verified_complete(),
                 Err(CellSplitExecutionErrorV1::External(_))
@@ -1178,13 +1166,9 @@ fn verified_completion_rejects_unreachable_owner_and_skips_pending_preflight() {
         }
         let mut port = FixturePort::new(state.clone());
         port.fail_preflight = true;
-        let mut reader = CellSplitExecutionOwnerV1::open_existing(
-            root.path(),
-            plan(),
-            trust(),
-            port,
-        )
-        .expect("read-only pending original owner");
+        let mut reader =
+            CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port)
+                .expect("read-only pending original owner");
         assert!(matches!(
             reader.verified_complete(),
             Err(CellSplitExecutionErrorV1::Ambiguous)
