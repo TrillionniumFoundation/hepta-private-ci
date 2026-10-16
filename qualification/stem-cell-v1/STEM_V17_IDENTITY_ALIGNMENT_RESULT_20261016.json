@@ -1,0 +1,290 @@
+{
+  "calibration_seeds": {
+    "41": {
+      "aligned_selected_calibration_only": "extra_continued",
+      "alignment_training_target_counts": {
+        "geo_aligned_oof": [
+          38,
+          26
+        ],
+        "logit_aligned_oof": [
+          40,
+          24
+        ],
+        "unaligned_oof": [
+          34,
+          30
+        ]
+      },
+      "calibration_brier": {
+        "centroid": 0.630271614,
+        "constant0": 0.665744841,
+        "constant1": 0.619813561,
+        "continued": 0.595298231,
+        "extra_continued": 0.546141744,
+        "geo_aligned_oof": 0.665744841,
+        "geo_aligned_shuffled": 0.665744841,
+        "geo_aligned_swapped": 0.619813561,
+        "logit_aligned_oof": 0.665744841,
+        "logit_aligned_swapped": 0.619813561,
+        "unaligned_oof": 0.673562765,
+        "v15_oof_gate": 0.665628552,
+        "v16_final_loss_gate": 0.577417672
+      },
+      "calibration_correct_of_32": {
+        "centroid": 18,
+        "constant0": 10,
+        "constant1": 22,
+        "continued": 18,
+        "extra_continued": 20,
+        "geo_aligned_oof": 10,
+        "geo_aligned_shuffled": 10,
+        "geo_aligned_swapped": 22,
+        "logit_aligned_oof": 10,
+        "logit_aligned_swapped": 22,
+        "unaligned_oof": 12,
+        "v15_oof_gate": 11,
+        "v16_final_loss_gate": 20
+      },
+      "calibration_head_class_disagreements_of_32": 15,
+      "calibration_postlabel_infeasible_twoexpert_oracle_brier": 0.5363947153091431,
+      "geo_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "geo_anchor_keep_counts": [
+        37,
+        12,
+        33,
+        24
+      ],
+      "logit_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "new_gate_training_cpu_ns_reported": 70367223
+    },
+    "47": {
+      "aligned_selected_calibration_only": "extra_continued",
+      "alignment_training_target_counts": {
+        "geo_aligned_oof": [
+          33,
+          31
+        ],
+        "logit_aligned_oof": [
+          35,
+          29
+        ],
+        "unaligned_oof": [
+          29,
+          35
+        ]
+      },
+      "calibration_brier": {
+        "centroid": 0.635403156,
+        "constant0": 0.661424994,
+        "constant1": 0.623929262,
+        "continued": 0.603399754,
+        "extra_continued": 0.544608831,
+        "geo_aligned_oof": 0.652299047,
+        "geo_aligned_shuffled": 0.652684212,
+        "geo_aligned_swapped": 0.63305521,
+        "logit_aligned_oof": 0.652299047,
+        "logit_aligned_swapped": 0.63305521,
+        "unaligned_oof": 0.664356589,
+        "v15_oof_gate": 0.66453135,
+        "v16_final_loss_gate": 0.56278801
+      },
+      "calibration_correct_of_32": {
+        "centroid": 18,
+        "constant0": 10,
+        "constant1": 22,
+        "continued": 17,
+        "extra_continued": 21,
+        "geo_aligned_oof": 11,
+        "geo_aligned_shuffled": 11,
+        "geo_aligned_swapped": 21,
+        "logit_aligned_oof": 11,
+        "logit_aligned_swapped": 21,
+        "unaligned_oof": 17,
+        "v15_oof_gate": 18,
+        "v16_final_loss_gate": 22
+      },
+      "calibration_head_class_disagreements_of_32": 14,
+      "calibration_postlabel_infeasible_twoexpert_oracle_brier": 0.5342653393745422,
+      "geo_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "geo_anchor_keep_counts": [
+        37,
+        12,
+        33,
+        24
+      ],
+      "logit_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "new_gate_training_cpu_ns_reported": 65228560
+    },
+    "53": {
+      "aligned_selected_calibration_only": "extra_continued",
+      "alignment_training_target_counts": {
+        "geo_aligned_oof": [
+          38,
+          26
+        ],
+        "logit_aligned_oof": [
+          40,
+          24
+        ],
+        "unaligned_oof": [
+          34,
+          30
+        ]
+      },
+      "calibration_brier": {
+        "centroid": 0.628881812,
+        "constant0": 0.665478766,
+        "constant1": 0.617670596,
+        "continued": 0.595784962,
+        "extra_continued": 0.558351576,
+        "geo_aligned_oof": 0.665478766,
+        "geo_aligned_shuffled": 0.665478766,
+        "geo_aligned_swapped": 0.617670596,
+        "logit_aligned_oof": 0.665478766,
+        "logit_aligned_swapped": 0.617670596,
+        "unaligned_oof": 0.676625073,
+        "v15_oof_gate": 0.662354648,
+        "v16_final_loss_gate": 0.591583371
+      },
+      "calibration_correct_of_32": {
+        "centroid": 17,
+        "constant0": 10,
+        "constant1": 21,
+        "continued": 17,
+        "extra_continued": 18,
+        "geo_aligned_oof": 10,
+        "geo_aligned_shuffled": 10,
+        "geo_aligned_swapped": 21,
+        "logit_aligned_oof": 10,
+        "logit_aligned_swapped": 21,
+        "unaligned_oof": 12,
+        "v15_oof_gate": 11,
+        "v16_final_loss_gate": 18
+      },
+      "calibration_head_class_disagreements_of_32": 15,
+      "calibration_postlabel_infeasible_twoexpert_oracle_brier": 0.5302172899246216,
+      "geo_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "geo_anchor_keep_counts": [
+        37,
+        12,
+        33,
+        24
+      ],
+      "logit_alignment_fold_flips": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "new_gate_training_cpu_ns_reported": 65654151
+    }
+  },
+  "cost_and_provenance": {
+    "calibration_and_unscored_probability_rows_per_campaign": 2496,
+    "exact_model_file_sha_repeat": 9,
+    "exact_profile_probability_row_repeat": 2496,
+    "linux_wait4_process_measurements": [
+      {
+        "child_exit": 0,
+        "peak_rss_kib": 324532,
+        "replica": 3,
+        "scope": "Linux wait4 whole child, includes Python/Torch imports and V17 9 gate fits; excludes prior V14/V15/V16/Encoder and separate NumPy reviewer",
+        "system_cpu_sec": 0.8427469999999999,
+        "user_cpu_sec": 3.259304,
+        "wall_ns": 4104164045
+      },
+      {
+        "child_exit": 0,
+        "peak_rss_kib": 324296,
+        "replica": 4,
+        "scope": "Linux wait4 whole child, includes Python/Torch imports and V17 9 gate fits; excludes prior V14/V15/V16/Encoder and separate NumPy reviewer",
+        "system_cpu_sec": 0.450831,
+        "user_cpu_sec": 3.179887,
+        "wall_ns": 3634522353
+      }
+    ],
+    "model_files_verified_v15": 58,
+    "model_files_verified_v16": 15,
+    "model_files_verified_v17": 9,
+    "new_router_models_trained_per_campaign": 9,
+    "numerical_deviation_independent_numpy": 9.485461993641309e-08,
+    "p99_ms": null,
+    "per_arm_peak_rss_bytes": null,
+    "prior_v15_v16_training_and_encoder_excluded": true,
+    "sgd_updates_per_campaign": 720,
+    "throughput_4096_cell": null
+  },
+  "deployed_cell_split": false,
+  "held_labels_read": false,
+  "hosted_current_sha_ci_pass": false,
+  "independent_future_utility": null,
+  "independent_negative_transfer": null,
+  "interpretation": [
+    "Observed geometry fold mapping inversions alone do not establish specialist behavior",
+    "Prediction-assisted fold alignment references final TRAIN-fitted experts; it is not an unbiased OOF estimator",
+    "All aligned gates remain weaker than the extra unsplit continuation on retrospective calibration Brier",
+    "Post-label oracle is an infeasible calibration-only ceiling and not a deployable routing policy",
+    "Further split research requires genuine separate capabilities and untouched independent task-source evaluation"
+  ],
+  "main_modified": false,
+  "original_material": {
+    "archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+    "cached_real_feature_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+    "github_run_id": 38546717991,
+    "historical_calibration_rows": 32,
+    "new_encoder_forwards": 0,
+    "publisher_model": "jhu-clsp/mmBERT-small",
+    "revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+    "source_artifact_id": 11890616195,
+    "train_rows": 64,
+    "unscored_blind_rows": 32
+  },
+  "production_authorized": false,
+  "prospective_efficacy_verified": false,
+  "schema": "hepta.stem.identity-alignment.v17.sanitized-execution.v1",
+  "scientific_verdict": "NO_POSITIVE_SPECIALIST_GAIN_KEEP_EXTRA_CONTINUED",
+  "source": {
+    "baseline_commit": "ccef3c332c234980d02806d0035a1cf866246f99",
+    "producer_and_reviewer_sha256": {
+      "stem_identity_alignment_v17.py": "7e9a415e686b14298956f8bec8f713cb4a27be0210a4ee8f919d7b358ae47e81",
+      "stem_identity_alignment_v17_review.py": "df1838f68442fc10142a51466ea533d4ba29b2a99862137427b6d728642b4fed",
+      "test_stem_identity_alignment_v17.py": "25f2f0da028fe7dc2cb68dd63b952dca5b22dea86349eef8234a36b29df88193"
+    },
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "research_pr": 2364
+  },
+  "tests": {
+    "independent_future_source_evaluation": false,
+    "independent_gradient_reexecution": false,
+    "independent_model_host_signature": false,
+    "normal_4_generation_suite": 128,
+    "optimized_4_generation_suite": 128,
+    "skipped_with_exact_material": 0
+  }
+}
