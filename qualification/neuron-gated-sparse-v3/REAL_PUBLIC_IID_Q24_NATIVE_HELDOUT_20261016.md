@@ -79,3 +79,35 @@ All quality/weight results remain `NO_MODEL_SELECTION` and `DENY_ALL`.
 Hosted exact-head real pretrained model, 32 full training files, 2,048
 Q24 subprocesses, strict unit tests, architecture and global blocking CI
 must successfully run before describing the observed accuracy as real.
+
+## Class-imbalance and genuinely independent reviewer gate
+
+A **75% ordinary accuracy** result can be obtained without a learned model:
+always predict the negative class (24 true negatives, 8 false negatives).
+Its **balanced accuracy is 50%**, exactly the non-informative binary
+reference. The experiment therefore retains delivered accuracy, delivered
+balanced accuracy, all TP/TN/FP/FN class counts, positive/negative
+abstentions, positive recall and negative specificity. Abstentions count
+as incorrect for *both* denominators. The zero-parameter negative-class
+control is never called the selected deployed V1 no-change baseline.
+
+The producer physically seals all 1,024 label-free individual heldout
+prediction records, including the original source-text digest, registered
+model SHA, signed-Q24 logit, conservative Head margin and native
+checkpoint SHA. Separately, the reviewer process reads original official
+heldout labels and independently recomputes the full 32×32 score matrix.
+It **does not import the producer's metric function or canonicalization
+code**. It also independently freezes the eight registered physical
+width/parameter/byte triples, reopens the original 32-model training
+receipt and checks training SHA, all task/budget/arm rows, 32 updates,
+512 fit-example exposures and individually metered CPU times. The training
+CPU times are descriptive, not comparable total training/Encoder/Worker
+FLOPs or true target-host memory.
+
+The source-level pure-math reviewer and producer implementations passed
+**1,000 randomized 32-case cross-checks** in both ordinary and optimized
+Python on the local analysis host. This is a standalone numeric
+cross-check, **not an exact-head GitHub Actions PASS**, not real pretrained
+model forward execution and not a signed independent evaluator. The
+physical published read-only receipt remains `DENY_ALL` and cannot
+pick a winner or grant Final-use.
