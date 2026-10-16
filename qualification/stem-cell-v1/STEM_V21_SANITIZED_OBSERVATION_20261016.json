@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.stem.v21.second-family.original-sanitized.v1",
+  "research_date": "2026-10-16",
+  "original_studies": [
+    {
+      "family": "AG News",
+      "model": "mmBERT-small",
+      "source": "V18-V20 cached real pretrained feature",
+      "same_encoder_as_second_family": false,
+      "source_family_count": 1
+    },
+    {
+      "family": "BANKING77 four-intent original",
+      "model": "ModernBERT-base",
+      "original_action": 38523539731,
+      "original_artifact_id": 11877613315,
+      "original_zip_sha256": "fd89f174057d98bd2d4f03447d5d5dd9372723e70128ccdf2dcbe73f67a0a03a",
+      "original_polyai_source_revision": "57ec275d8078af65b7731c2a98be812d844a6d6b",
+      "train_csv_sha256": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+      "test_csv_sha256": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d",
+      "original_train_cases": 64,
+      "original_test_cases": 32
+    }
+  ],
+  "reconstructed_publisher_label_ids_from_public_csv": 32,
+  "banking_original_scores": {
+    "dense16": {
+      "correct_before": 8,
+      "correct_after": 23,
+      "brier_after": 0.3820432498685225,
+      "rescues": 16,
+      "harms": 1
+    },
+    "sparse16_top2": {
+      "correct_before": 9,
+      "correct_after": 17,
+      "brier_after": 0.5770228329211649,
+      "rescues": 16,
+      "harms": 8
+    }
+  },
+  "dense_minus_sparse_paired_after": {
+    "rescues": 10,
+    "harms": 4,
+    "ties": 18
+  },
+  "source_family_count_across_two_historical_studies": 2,
+  "source_model_architecture_matched": false,
+  "source_task_definition_matched": false,
+  "head_learning_budget_matched": false,
+  "prospective_future_windows": 0,
+  "equal_lifecycle_cost_verified": false,
+  "automatic_cell_split_authorized": false,
+  "production_model_selection_authorized": false,
+  "final_use_authorized": false,
+  "scientific_disposition": "SECOND_FAMILY_DESCRIPTIVE_NOT_CROSS_MODEL_TRANSFER"
+}
