@@ -15,12 +15,48 @@ Cargo dependency, lockfile, permission, effect route or durable schema is change
 3. A separate upstream checkout is pinned to OpenAI Codex `rust-v0.162.1`, commit
    `092d3acd6bec3e3a14bdc7e7a2810ab628ab759d`. Its actual `JSONRPCMessage` and
    `WireExecParams -> ExecParams` ingress consume the identical corpus and
-   shared probe. Only three untracked test/corpus files are installed there;
-   all original tracked upstream bytes and Cargo.lock must remain unchanged.
+   shared probe. The **original tracked upstream checkout remains unmodified**.
+   A second detached worktree contains the same exact upstream code plus the
+   three untracked test files and a strictly qualified **local-workspace-version
+   normalization** of its release Cargo.lock, detailed below.
 
 The original P2c already uses `argv`, `processId`, a `file:///` cwd and `tty`.
 It is incorrect to describe that exact implementation as accepting `command`
 and a plain filesystem cwd. This suite does not claim to fix such a defect.
+
+## Reproducible upstream release lock qualification
+
+The initial native source-head/base-merge CI exposed a reproducibility issue in
+the immutable upstream tag **before upstream tests could start**. Its recorded
+Cargo.lock Git blob is `1cee1174c2e937758713df47683521233a36b4f7`.
+The original checkout reports 161 local workspace packages as `0.0.0`,
+although the pinned tag's workspace release version is `0.162.1`.
+The original hosted Cargo resolution artifact from [run 38850446447]
+(https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38850446447)
+showed **161 version-line changes only**, with zero changes to any third-party
+dependency version, source URL, checksum or Git revision.
+
+Rather than disabling `--locked`, or modifying the upstream checkout, the CI
+creates a **second detached worktree at the exact same pinned commit**. The
+independent `scripts/hepta_exec_p2e_release_lock.py` verifies both checked-out
+HEADs and original lock blobs; requires exactly 161 zero-version packages,
+each without an external `source` or `checksum`; rewrites only their local
+version values to `0.162.1`; re-parses and compares every TOML lock package,
+refusing any other difference; and verifies the sole tracked change in the
+qualified worktree is Cargo.lock. An exact SHA-256 and Git blob for the derived
+lock are emitted into retained CI evidence. Ten synthetic adversarial unit
+tests exercise refusal cases for the normalizer. The **original pinned
+upstream checkout and original Cargo.lock stay unchanged**. The actual upstream
+`WireExecParams` integration test and strict Clippy still use `--locked`,
+against the qualified lock in the separate worktree. Final audit revalidates
+the same derivation and records the qualified lock digest.
+
+This is a transparent *derived release-version lock qualification*, not a
+claim that the tag's shipped lockfile passes `--locked` unchanged. Any
+different dependency graph, source or checksum is a hard failure. No production
+Hepta dependency, executable, final-use authority or execution permission
+changes. Even a fully successful run proves only the frozen 50-case parser
+subset, not the physical Exec Server effect boundary or effective sandbox.
 
 ## Expected profile distinctions, not grants
 
@@ -54,7 +90,7 @@ commit/tree and raw log SHA-256 values. These are CI observations, not independe
 signatures or production authorization. Failure logs remain retained; there is no
 synthetic fallback and no source-head result is inherited by a prospective merge.
 
-The 10 Python unit tests use explicitly synthetic rows to attack the auditor.
+The 10 auditor Python tests use explicitly synthetic rows to attack the auditor.
 They do **not** execute Rust, validate an upstream binary, or prove conformance.
 The local `--validate-only` output explicitly says `native_tests_executed=false`.
 
