@@ -162,3 +162,53 @@ unit tests or local mock tensor tests are not substitutes for its completed
 physical model/Head/independent-review receipts. It never installs artifacts,
 performs hardware effects, activates NDU, changes production model selection or
 bypasses `blocking-ci`.
+
+
+## V4: independent retrospective public-source and original-prediction recount
+
+The old historical ZIP contains physically learned CellBank weights and all original
+prediction logits, **but not raw publisher TEST labels**. The new read-only
+\`public_source_recount.py\` requires the original pinned BANKING77 train/test CSV
+bytes, reconstructs the full 64-FIT/32-HELD case identities with the unchanged
+source selection convention, then independently scores all original *before*
+and *after* logits. It rejects ambiguous CSV, unexpected bytes, duplicate
+or changed case identity, incomplete predictions, nonfinite logits and drift
+from the archived accuracy/NLL/Brier/per-class metric census.
+
+Fixed publisher Git revision:
+\`57ec275d8078af65b7731c2a98be812d844a6d6b\`.
+Verified source SHA-256: train
+\`b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b\`;
+test \`d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d\`.
+
+The historical retained results reconstructed from the fixed original CSV,
+selected IDs and archived prediction logits are:
+- Dense16: before 8/32, after **23/32**; final mean NLL
+  0.6915541568258448; multiclass Brier 0.3820432498685225.
+- Sparse16 Top-2: before 9/32, after **17/32**; final mean NLL
+  1.0150894535640618; multiclass Brier 0.5770228329211649.
+
+Reproduce separately from any model-training job:
+
+\`\`\`sh
+python3 public_source_recount.py \
+  --train /private/pinned-source/train.csv \
+  --test /private/pinned-source/test.csv \
+  --archive /private/original-11877613315.zip \
+  --out /private/new-original-recount.json
+\`\`\`
+
+The source-only regressions use synthetic fixtures and reject unpinned originals.
+The original-byte workflow obtains both exact publisher CSVs at the immutable
+revision, verifies each SHA-256 and writes only **aggregated** historical
+scores, never raw CSVs, TEXT, or held-label mappings, to the diagnostic artifact.
+Importantly, this new historical reviewer **does consume the TRAIN CSV** to
+reconstruct source exclusions; that does not make it an appropriate model
+worker or a fresh independent future-label custodian.
+
+This is **retrospective same-dataset public model evidence**. Reconstructing the
+32 original labels now closes the old ZIP-only accuracy-recount deficiency;
+it does **not** grant original model publisher signature authenticity,
+source-family independence, prospective new task efficacy, HDCF V3 five-arm
+benefit, NDU/System2 reasoning advantage, complete service TCO, Cell Split,
+FinalUse, GPU execution or any native computer-use authority.

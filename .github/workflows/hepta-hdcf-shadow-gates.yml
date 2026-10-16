@@ -32,9 +32,9 @@ jobs:
         working-directory: qualification/hdcf-research
         run: |
           set -euo pipefail
-          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
-          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli
-          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli
+          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py public_source_recount.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount
       - name: Recount local synthetic original learning controls
         working-directory: qualification/hdcf-research
         run: |
