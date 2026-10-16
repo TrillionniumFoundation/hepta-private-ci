@@ -39,7 +39,9 @@ class GroupExperiment(unittest.TestCase):
         cls.root=Path(cls.tmp.name)
         cls.raw=cls.root/'source.json'
         cls.raw.write_text(json.dumps(fake_rows()),encoding='utf-8')
-        with patch.object(base,'N_EXPECTED',8),patch.object(base,'SOURCE_SHA256',hashlib.sha256(cls.raw.read_bytes()).hexdigest()):
+        cls.source_pin = patch.object(base,'SOURCE_SHA256',hashlib.sha256(cls.raw.read_bytes()).hexdigest())
+        cls.source_pin.start()
+        with patch.object(base,'N_EXPECTED',8):
             base.source_owner(cls.raw,cls.root/'owned')
         cls.public=cls.root/'owned'/'public.json'
         cls.owner=cls.root/'owned'/'manifest.json'
@@ -53,6 +55,7 @@ class GroupExperiment(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.tmp.cleanup()
+        cls.source_pin.stop()
 
     def _mutated_review(self, **changes):
         trial=copy.deepcopy(self.seal)
@@ -115,6 +118,11 @@ class GroupExperiment(unittest.TestCase):
             p=Path(d)/'leak.json';p.write_text(json.dumps(bad))
             with patch.object(base,'N_EXPECTED',8):
                 with self.assertRaises(ValueError):writer.make_plan(p,self.owner,Path(d)/'plan.json')
+
+    def test_official_source_sha_and_license_must_be_pinned(self):
+        for field,value in (('original_sha256','0'*64),('source_license','fake'),('dataset_split','train')):
+            corrupted=base.load(self.owner);corrupted[field]=value
+            with self.assertRaises(ValueError):writer.check_public(base.load(self.public),corrupted)
 
     def test_changed_hidden_truth_denied(self):
         with tempfile.TemporaryDirectory() as d,patch.object(base,'N_EXPECTED',8):

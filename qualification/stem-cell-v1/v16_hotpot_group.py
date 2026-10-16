@@ -36,6 +36,9 @@ def check_public(public, owner):
             or type(owner) is not dict or owner.get('schema') != SOURCE_SCHEMA
             or owner.get('original_cases') != source.N_EXPECTED
             or owner.get('public_sha256') != digest(public)
+            or owner.get('original_sha256') != source.SOURCE_SHA256
+            or owner.get('dataset_split') != 'distractor_validation'
+            or owner.get('source_license') != 'CC-BY-SA-4.0'
             or owner.get('authority') != 'DENY_ALL'
             or owner.get('production_accepted') is not False):
         raise ValueError('original complete public corpus or owner identity mismatch')

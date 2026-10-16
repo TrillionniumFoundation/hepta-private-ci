@@ -141,6 +141,9 @@ def audit(public_path, owner_path, hidden_path, plan_path, seal_path, output_pat
     if (type(public) is not list or len(public)!=source.N_EXPECTED
             or type(owner) is not dict or owner.get('schema')!=SOURCE_SCHEMA
             or owner.get('public_sha256')!=digest(public)
+            or owner.get('original_sha256')!=source.SOURCE_SHA256
+            or owner.get('dataset_split')!='distractor_validation'
+            or owner.get('source_license')!='CC-BY-SA-4.0'
             or owner.get('hidden_sha256')!=digest(hidden)
             or owner.get('original_cases')!=source.N_EXPECTED
             or owner.get('authority')!='DENY_ALL'
