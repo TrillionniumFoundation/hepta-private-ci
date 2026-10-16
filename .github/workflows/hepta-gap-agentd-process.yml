@@ -176,7 +176,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   qualification-result:
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs:
       [
         derived-projections,
