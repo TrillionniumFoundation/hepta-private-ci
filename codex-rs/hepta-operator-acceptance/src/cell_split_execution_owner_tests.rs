@@ -546,6 +546,54 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
     }
 }
 
+/// A signed Execute ACK is insufficient to declare local success without
+/// fresh original-owner readback. If that readback becomes unavailable AFTER
+/// the durable effect, preserve the prepared key and never replay Execute.
+#[test]
+fn post_effect_live_readback_failure_is_ambiguous_until_reconciled() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.reject_signature = true;
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("open original execution owner");
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(owner.completed_steps(), 0);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(root.path().join("cell-split-00-prepared.json").is_file());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+        assert!(matches!(
+            owner.verified_complete(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(state.borrow().executions, 1, "recovery is not Execute");
+    }
+    let mut recovered = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("reopen trusted original writer");
+    let receipt = recovered
+        .advance()
+        .expect("signed original owner readback")
+        .expect("committed original effect");
+    assert_eq!(receipt.intent.step.index(), 0);
+    assert_eq!(state.borrow().executions, 1, "no second Execute");
+    assert_eq!(recovered.completed_steps(), 1);
+    assert!(root.path().join("cell-split-00-committed.json").is_file());
+    assert!(!recovered.verified_complete().expect("current signed prefix"));
+}
+
 #[test]
 fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     let root = private_tempdir();
