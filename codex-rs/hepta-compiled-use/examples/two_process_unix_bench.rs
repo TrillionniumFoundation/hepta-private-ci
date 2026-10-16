@@ -70,10 +70,8 @@ mod unix {
                 .map_err(io::Error::other)?
                 .as_nanos();
             for suffix in 0..16_u64 {
-                let dir = env::temp_dir().join(format!(
-                    "hepta-duplex-{}-{ns}-{suffix}",
-                    std::process::id()
-                ));
+                let dir = env::temp_dir()
+                    .join(format!("hepta-duplex-{}-{ns}-{suffix}", std::process::id()));
                 let mut builder = DirBuilder::new();
                 builder.mode(0o700);
                 match builder.create(&dir) {
@@ -130,12 +128,15 @@ mod unix {
                 Ok((socket, _)) => {
                     socket.set_nonblocking(false)?;
                     return Ok(socket);
-                },
+                }
                 Err(e) if e.kind() == io::ErrorKind::WouldBlock && Instant::now() < deadline => {
                     thread::sleep(Duration::from_millis(1));
                 }
                 Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
-                    return Err(io::Error::new(io::ErrorKind::TimedOut, "worker did not connect"));
+                    return Err(io::Error::new(
+                        io::ErrorKind::TimedOut,
+                        "worker did not connect",
+                    ));
                 }
                 Err(e) => return Err(e),
             }
@@ -193,11 +194,7 @@ mod unix {
         let args: Vec<_> = env::args_os().collect();
         if args.len() == 4 && args[1] == "--worker" {
             let path = PathBuf::from(&args[2]);
-            let count = bounded_count(
-                args[3]
-                    .to_str()
-                    .ok_or("invalid two-process worker count")?,
-            )?;
+            let count = bounded_count(args[3].to_str().ok_or("invalid two-process worker count")?)?;
             return child(&path, count);
         }
         if args.len() != 1 && !(args.len() == 2 && args[1] == "--smoke") {
