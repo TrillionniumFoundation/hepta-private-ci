@@ -1,0 +1,37 @@
+name: Ubuntu 26 x64 native Bazel build qualification
+
+on:
+  push:
+    branches: [ci/gha-ubuntu26-x64-qualification-20261016]
+    paths: [.github/workflows/gha-ubuntu26-bazel.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  real-native-bazel:
+    name: Ubuntu 26 x64 real locked Bazel package build
+    runs-on: ubuntu-26.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare same production Bazel toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: ubuntu26-native-probe
+      - name: Enforce exact Bazel module lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/check-module-bazel-lock.sh
+      - name: Compile actual pinned Rust Bazel package
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh -- build -- //codex-rs/hepta-paths:hepta-paths
+      - name: Verify unchanged worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
