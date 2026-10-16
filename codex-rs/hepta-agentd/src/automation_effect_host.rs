@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectAdmissionV1;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectIntent;
@@ -262,10 +263,12 @@ impl AgentdAutomationEffectHost {
                 intent,
                 wire_payload,
                 &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -316,7 +319,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -346,7 +349,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
