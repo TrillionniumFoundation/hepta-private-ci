@@ -214,7 +214,7 @@ jobs:
     name: Physically execute frozen ModernBERT 96 texts and train-only 32D Q24 projection
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    timeout-minutes: 75
     env:
       OMP_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
@@ -367,6 +367,64 @@ jobs:
           assert receipt['production_qualification'] is False
           assert receipt['ndu_eligible'] is False
           PY
+      - name: Validate no-authority public heldout scoring and abstention protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_native_score.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_native_score.py' -v
+      - name: Install frozen Rust toolchain for independent true IID Q24 heldout evaluator
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+      - name: Build original exact-source bounded Q24 private Cell on real public case input
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          (
+            cd codex-rs
+            cargo fmt -p codex-hepta-neuron -- --check
+            cargo build --locked -p codex-hepta-neuron --bin neuron_near_matched_q24_shadow
+          )
+      - name: Evaluate all 32 sealed models on 32 original public heldout IDs with 2048 native processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-public-iid-q24"
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BINARY_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/real_public_iid_q24_native_score.py \
+            --models-root "$RUNNER_TEMP/hepta-public-iid-trained" \
+            --heldout "$ROOT/heldout-unlabeled-q24.json" \
+            --plan "$ROOT/predeclared-iid-plan.json" \
+            --original-source original-public-source \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --binary "$BIN" --binary-sha256 "$BINARY_SHA" \
+            --output "$RUNNER_TEMP/hepta-public-iid-heldout-score.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ["RUNNER_TEMP"])/
+              "hepta-public-iid-heldout-score.json").read_text())
+          assert report["trained_private_models"] == 32
+          assert report["fresh_rust_os_process_invocations"] == 2048
+          assert report["original_heldout_cases"] == 32
+          assert report["four_binary_tasks"] == 4
+          assert report["all_independent_q24_adapter_head_integer_checks"] is True
+          assert len(report["observations"]) == 32
+          assert all(x["original_heldout_opportunities"] == 32
+                     for x in report["observations"])
+          assert report["real_future_window_and_negative_transfer_verified"] is False
+          assert report["independent_signed_evaluator_custody"] is False
+          assert report["original_selected_deployed_v1_no_change_a0_verified"] is False
+          assert report["decision"] == "NO_MODEL_SELECTION"
+          assert report["production_qualification"] is False
+          assert report["ndu_eligible"] is False
+          PY
       - name: Keep public-only projected snapshot and work receipt, never base weights or labels
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -379,6 +437,7 @@ jobs:
             ${{ runner.temp }}/hepta-actual-public-q24/producer-receipt.json
             ${{ runner.temp }}/hepta-public-iid-q24/predeclared-iid-plan.json
             ${{ runner.temp }}/hepta-public-iid-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-public-iid-heldout-score.json
             ${{ runner.temp }}/hepta-public-iid-q24/heldout-unlabeled-q24.json
             ${{ runner.temp }}/hepta-public-encoder/source-lock.json
             ${{ runner.temp }}/hepta-public-encoder/downloaded-material.json
