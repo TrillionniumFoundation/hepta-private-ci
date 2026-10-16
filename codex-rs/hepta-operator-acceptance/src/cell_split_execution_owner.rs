@@ -971,11 +971,19 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
-            // Owner readbacks are potentially slow. Selector/NDU membership
-            // may be withdrawn while the last predecessor is being verified.
-            // Revalidate again before writing the prepared intent. This
-            // remains only a read-only guard; actual effect owners enforce
-            // independent final-use at the physical commit boundary.
+            // The first original signed negative was NOT a reservation.
+            // An external effect can appear under this same immutable
+            // idempotency key while the NDU/Selector admission callback and
+            // signed predecessor readbacks run. Refuse it before local Prepare
+            // rather than stranding an invalid out-of-ledger operation.
+            self.port
+                .preflight_uncommitted(&intent)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // The late original negative RPC can itself be slow. Revalidate
+            // the immutable local ledger and live original predecessors once
+            // more, then recheck Selector/NDU before preparing. These probes
+            // are NOT an atomic multi-owner snapshot or a Final-use grant.
+            self.verify_committed_prefix()?;
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
