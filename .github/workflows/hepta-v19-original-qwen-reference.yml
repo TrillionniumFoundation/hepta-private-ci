@@ -1,22 +1,24 @@
-name: Hepta V19 original-source 135M vs Qwen3 reference (DENY_ALL)
+name: Hepta V20 source-first Qwen admission and physical reference (DENY_ALL)
 on:
   push:
-    branches: [research/stem-v19-original-qwen-reference-20261016]
+    branches: [research/stem-v20-qwen-admission-20261016]
     paths:
+      - 'research/hepta_v20_reader/**'
       - 'research/hepta_v19_reader/**'
       - '.github/workflows/hepta-v19-original-qwen-reference.yml'
   pull_request:
     paths:
+      - 'research/hepta_v20_reader/**'
       - 'research/hepta_v19_reader/**'
       - '.github/workflows/hepta-v19-original-qwen-reference.yml'
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-v19-native-reference-${{ github.ref }}
+  group: hepta-v20-native-reference-${{ github.ref }}
   cancel-in-progress: true
 env:
-  PYTHONPATH: research/hepta_v17_reader:research/hepta_v19_reader
+  PYTHONPATH: research/hepta_v17_reader:research/hepta_v19_reader:research/hepta_v20_reader
 jobs:
   source-contract:
     runs-on: ubuntu-24.04
@@ -36,7 +38,9 @@ jobs:
           git rev-parse HEAD
           python -S -m unittest discover -s research/hepta_v19_reader -p 'test_v19_qwen_reference.py' -v
           python -O -S -m unittest discover -s research/hepta_v19_reader -p 'test_v19_qwen_reference.py' -v
-          python -m compileall -q research/hepta_v19_reader
+          python -S -m unittest discover -s research/hepta_v20_reader -p 'test_reference_preflight.py' -v
+          python -O -S -m unittest discover -s research/hepta_v20_reader -p 'test_reference_preflight.py' -v
+          python -m compileall -q research/hepta_v19_reader research/hepta_v20_reader
           git diff --exit-code
   original-135m-and-qwen3-private-physical:
     # Single research-branch push execution; no new model ability from fixture green.
@@ -85,6 +89,31 @@ jobs:
           # Remove gold and raw publisher corpus BEFORE any pretrained model process.
           rm "$S/hidden.json" "$TMP/original/locomo.json" "$TMP/original.zip"
           test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+      - name: Fail-fast pinned Qwen3 material and full source-token admission BEFORE original 135M
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          HF_HUB_DISABLE_PROGRESS_BARS: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader;V20=research/hepta_v20_reader
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+          python "$D/v19_qwen_material.py" --cache "$TMP/qwen-cache" \
+            --model-dir "$TMP/qwen" --manifest "$TMP/qwen-source.json"
+          python "$V20/reference_preflight.py" \
+            --public "$S/public.json" --owner "$S/owner.json" \
+            --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --v17-requests "$S/requests.json" --reference-plan "$S/qwen-plan.json" \
+            --model-dir "$TMP/qwen" --model-spec "$TMP/qwen-source.json" \
+            --output "$S/qwen-token-preflight.json"
+          python - "$S/qwen-token-preflight.json" <<'PYGATE'
+          import json,sys
+          p=json.load(open(sys.argv[1]))
+          assert p['logical_model_requests']==120 and p['unique_physical_input_ids']==96
+          assert p['original_qwen_forward_executed'] is False
+          assert p['production_authorized'] is False and p['decision']=='HOLD_NO_GO'
+          PYGATE
       - name: Physically rerun frozen original 135M once on all unique requests
         shell: bash
         env:
@@ -98,7 +127,7 @@ jobs:
             --plan "$S/plan.json" --annotation "$S/annotation.json" \
             --requests "$S/requests.json" --reader-dir "$TMP/original/reader" \
             --private-output "$S/reader-135m-private.json"
-      - name: Admit official Qwen3 0.6B immutable publisher bytes, then physically run reference
+      - name: Physically run admitted Qwen3 0.6B on sealed source-first original inputs
         shell: bash
         env:
           OMP_NUM_THREADS: '2'
@@ -110,13 +139,28 @@ jobs:
           umask 077
           TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader
           test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
-          python "$D/v19_qwen_material.py" --cache "$TMP/qwen-cache" \
-            --model-dir "$TMP/qwen" --manifest "$TMP/qwen-source.json"
           python "$D/v19_qwen_reference.py" run --public "$S/public.json" --owner "$S/owner.json" \
             --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
             --v17-requests "$S/requests.json" --reference-plan "$S/qwen-plan.json" \
             --model-dir "$TMP/qwen" --model-spec "$TMP/qwen-source.json" \
             --output "$S/qwen-physical-private.json"
+      - name: Independently reconcile preflight aliases and physical tokens BEFORE opening gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source"
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+          test -s "$S/qwen-token-preflight.json" && test -s "$S/qwen-physical-private.json"
+          python research/hepta_v20_reader/reference_preflight.py \
+            --preflight "$S/qwen-token-preflight.json" \
+            --physical "$S/qwen-physical-private.json" > "$TMP/v20-reference-alias-reconciliation.json"
+          python - "$TMP/v20-reference-alias-reconciliation.json" <<'PYGATE'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['unique_tokens_paid_once']>0 and r['logical_tokens_with_aliases']>=r['unique_tokens_paid_once']
+          assert r['original_Qwen_semantic_correctness_verified'] is False
+          assert r['production_authorized'] is False and r['decision']=='HOLD_NO_GO'
+          PYGATE
       - name: Fresh source re-open only AFTER BOTH original model seals; independent postseal evidence audit
         shell: bash
         env:
@@ -176,5 +220,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hepta-v19/v19-135m-sanitized.json
             ${{ runner.temp }}/hepta-v19/v19-qwen-sanitized.json
+            ${{ runner.temp }}/hepta-v19/source/qwen-token-preflight.json
+            ${{ runner.temp }}/hepta-v19/v20-reference-alias-reconciliation.json
           if-no-files-found: error
           retention-days: 5
