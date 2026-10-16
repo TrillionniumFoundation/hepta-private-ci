@@ -272,6 +272,7 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
+            let path = path.canonicalize()?;
             WorkspaceBinding::new(&path, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
