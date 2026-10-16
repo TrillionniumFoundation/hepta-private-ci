@@ -122,7 +122,7 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
             for row in fit["rows"]+held["rows"]
         ]
         encode = lambda obj: (
-            json.dumps(obj,sort_keys=True,indent=2,allow_nan=False)+"\\n"
+            json.dumps(obj,sort_keys=True,indent=2,allow_nan=False)+"\n"
         ).encode("utf-8")
         registry = {
             "fit_case_ids": [r["case_id"] for r in fit["rows"]],
