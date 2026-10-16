@@ -11,7 +11,9 @@ jobs:
   changed:
     timeout-minutes: 30
     name: Detect changed areas
-    runs-on: ubuntu-24.04
+    # Exact PR base/head history fetch and 20 selector regressions passed on
+    # ubuntu-slim (isolated run 38852455881); native Cargo/Bazel stay on VMs.
+    runs-on: ubuntu-slim
     outputs:
       argument_comment_lint_package: ${{ steps.detect.outputs.argument_comment_lint_package }}
       codex: ${{ steps.detect.outputs.codex }}
