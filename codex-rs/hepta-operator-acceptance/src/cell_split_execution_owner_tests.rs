@@ -1213,8 +1213,8 @@ fn late_original_effect_after_preflight_never_prepares_or_reexecutes() {
                 .expect("signed predecessor")
                 .receipt_digest;
         }
-        let step = super::CellSplitExecutionStepV1::at(completed)
-            .expect("four original durable owners");
+        let step =
+            super::CellSplitExecutionStepV1::at(completed).expect("four original durable owners");
         let intent = super::make_intent(&frozen, &digest, step, &predecessor);
         let external = FixturePort::receipt(&intent);
         let original_executions = state.borrow().executions;
