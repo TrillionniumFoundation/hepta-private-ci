@@ -8,6 +8,8 @@ on:
       - qualification/stem-cell-v1/v18_original_independent_review.py
       - qualification/stem-cell-v1/test_v18_original_feature_paired.py
       - qualification/stem-cell-v1/test_v18_original_independent_review.py
+      - qualification/stem-cell-v1/v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_paired_damage.py
       - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
       - .github/workflows/hepta-stem-v18-original-physical.yml
   workflow_dispatch:
@@ -36,6 +38,8 @@ jobs:
           cd qualification/stem-cell-v1
           python -m unittest -q test_v18_original_feature_paired
           python -O -m unittest -q test_v18_original_feature_paired
+          python -m unittest -q test_v18_paired_damage
+          python -O -m unittest -q test_v18_paired_damage
       - name: Acquire exact original public pretrained archive and run physical A/B
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,6 +63,9 @@ jobs:
           python v18_original_independent_review.py --archive "$work/original.zip" \
             --report "$work/physical-A.json" --private-logits "$work/private-A.json" \
             --output "$work/review-A.json"
+          python v18_paired_damage.py --archive "$work/original.zip" \
+            --physical "$work/physical-A.json" --private-logits "$work/private-A.json" \
+            --output "$work/damage-A.json"
           HEPTA_V18_ORIGINAL_ZIP="$work/original.zip" \
             HEPTA_V18_ORIGINAL_REPORT="$work/physical-A.json" \
             HEPTA_V18_ORIGINAL_PRIVATE_LOGITS="$work/private-A.json" \
@@ -68,21 +75,39 @@ jobs:
           python -O v18_original_independent_review.py --archive "$work/original.zip" \
             --report "$work/physical-B.json" --private-logits "$work/private-B.json" \
             --output "$work/review-B.json"
+          python -O v18_paired_damage.py --archive "$work/original.zip" \
+            --physical "$work/physical-B.json" --private-logits "$work/private-B.json" \
+            --output "$work/damage-B.json"
           HEPTA_V18_ORIGINAL_ZIP="$work/original.zip" \
             HEPTA_V18_ORIGINAL_REPORT="$work/physical-B.json" \
             HEPTA_V18_ORIGINAL_PRIVATE_LOGITS="$work/private-B.json" \
             python -O -m unittest -q test_v18_original_independent_review
-          python - "$work/physical-A.json" "$work/physical-B.json" <<'PY'
+          python - "$work/physical-A.json" "$work/physical-B.json" "$work/damage-A.json" "$work/damage-B.json" <<'PY'
           import json, sys
-          a, b = [json.load(open(path, encoding='utf-8')) for path in sys.argv[1:]]
-          assert len(a['seeds']) == len(b['seeds']) == 3
-          for old, new in zip(a['seeds'], b['seeds']):
-              assert old['seed'] == new['seed']
-              assert set(old['arms']) == set(new['arms'])
-              for arm in old['arms']:
-                  assert old['arms'][arm]['logit_sha256'] == new['arms'][arm]['logit_sha256']
-                  assert old['arms'][arm]['metrics'] == new['arms'][arm]['metrics']
-          assert a['decision'] == b['decision'] == 'DENY_ALL_HISTORICAL_CALIBRATION_ONLY'
-          print('15/15 original-feature raw output SHA and metric panels matched; NO MODEL PROMOTION')
+          a, b, da, db = [json.load(open(path, encoding="utf-8")) for path in sys.argv[1:]]
+          if len(a["seeds"]) != len(b["seeds"]) or len(a["seeds"]) != 3:
+              raise SystemExit("incomplete genuine original seeds")
+          for old, new in zip(a["seeds"], b["seeds"]):
+              if old["seed"] != new["seed"] or set(old["arms"]) != set(new["arms"]):
+                  raise SystemExit("seed/arm provenance drift")
+              for arm in old["arms"]:
+                  if old["arms"][arm]["logit_sha256"] != new["arms"][arm]["logit_sha256"]:
+                      raise SystemExit("pretrained-feature output digest mismatch")
+                  if old["arms"][arm]["metrics"] != new["arms"][arm]["metrics"]:
+                      raise SystemExit("scored original metric mismatch")
+          if a["decision"] != b["decision"] or a["decision"] != "DENY_ALL_HISTORICAL_CALIBRATION_ONLY":
+              raise SystemExit("false model-selection authority")
+          if da["decision"] != db["decision"] or da["decision"] != "NO_INVEST_FROM_EXPOSED_HISTORICAL_CALIBRATION":
+              raise SystemExit("false specialization authority")
+          for seed in ("41", "47", "53"):
+              for arm in ("linear", "gated_residual", "continued_single", "split_router"):
+                  one = da["per_seed_paired_damage"][seed][arm]
+                  two = db["per_seed_paired_damage"][seed][arm]
+                  fields = ("cases", "rescued_baseline_errors", "damaged_baseline_correct",
+                            "net_correct_change", "mean_brier_delta_candidate_minus_baseline",
+                            "historical_gate_would_pass")
+                  if any(one[field] != two[field] for field in fields):
+                      raise SystemExit("original paired damage is nonreproducible")
+          print("15/15 original outputs and paired damage match; research DENY_ALL")
           PY
           # Never publish private logits, original text, source labels or learned weights.
