@@ -1,0 +1,80 @@
+name: Ubuntu 26.04 x64 real CI qualification
+
+on:
+  push:
+    branches: [ci/gha-ubuntu26-x64-qualification-20261016]
+    paths: [.github/workflows/gha-ubuntu26-x64-qualification.yml]
+
+permissions:
+  contents: read
+
+# Dedicated non-PR runner-lane experiment. No release or protection changes.
+jobs:
+  source-scope:
+    name: Ubuntu 26 x64 production CI scope regressions
+    runs-on: ubuntu-26.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Run actual blocking-scope tests
+        run: |
+          set -euo pipefail
+          echo "Runner $RUNNER_NAME / $RUNNER_ARCH / $(uname -r)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
+  native-paths:
+    name: Ubuntu 26 x64 production host-native fleet roots
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Test production Bazel wrappers
+        shell: bash
+        run: python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+      - name: Test host-native state and fleet roots
+        run: just test --locked -p codex-hepta-paths
+      - name: Check clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+  python-sdk-docker:
+    name: Ubuntu 26 x64 production Python SDK Docker
+    runs-on: ubuntu-26.04
+    timeout-minutes: 22
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Reproduce production glibc Python SDK lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp/codex-python-sdk-home \
+            -e UV_LINK_MODE=copy \
+            -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
+            -w "${GITHUB_WORKSPACE}/sdk/python" \
+            python:3.12-slim \
+            sh -euxc '
+              python -m venv /tmp/uv
+              /tmp/uv/bin/python -m pip install uv==0.11.3
+              /tmp/uv/bin/uv sync --group dev --frozen
+              /tmp/uv/bin/uv run --frozen --no-sync ruff check --output-format=github .
+              /tmp/uv/bin/uv run --frozen --no-sync ruff format --check .
+              /tmp/uv/bin/uv run --frozen --no-sync pytest
+            '
+      - name: Check clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
