@@ -7,7 +7,8 @@ use crate::{
 };
 use codex_hepta_types::Digest32;
 use std::io::Write;
-use std::os::unix::net::{Shutdown, UnixStream};
+use std::net::Shutdown;
+use std::os::unix::net::UnixStream;
 use std::time::Duration;
 
 fn digest(value: &[u8]) -> Digest32 {
