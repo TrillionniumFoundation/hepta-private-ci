@@ -168,3 +168,44 @@ evidence, source mutation, prompt substitution, model identity and input
 reconstruction. CI runs both normal and optimized Python test modes on exact
 PR HEAD. **No original V14 Reader calls, prospective family-level gains,
 model promotion, FinalUse or production authorization have occurred here.**
+
+
+## V14.3 separately implemented prompt replay
+
+`v14_reader_original_request_review.py` is an isolated source-first
+prompt verifier. It intentionally does **not** import the prompt builder. It
+recomputes every question SHA, source ID and source text, exact ordered
+evidence membership, actual per-arm model prompt bytes and SHA, frozen
+Reader/model-budget identity, private packet binding and completeness.
+
+The review's source input and private prompt packet are supplied from the
+original research material held outside Git. It does not accept the producer's
+claim that material was generated correctly without checking its exact bytes.
+Its report exposes only case counts, material digests, four-arm request count
+and explicit false claims for original model execution, independent source
+owner, sufficiency, promotion and FinalUse. It NEVER emits private raw
+questions or evidence text.
+
+This independent implementation closes **a software-level cross-file
+consistency gap**, not the source-identity or scientific validity problem:
+a dishonest actor controlling original source bytes, both model outputs and
+the evaluator can still forge the entire packet. Source-owner authentication,
+actual pinned pretrained model invocation, paired answer/citation outcomes,
+future independent families, total lifecycle cost and external semantic
+review are still required. The shadow study remains `HOLD_NO_GO`.
+
+To reread a privately staged physical input packet:
+
+```sh
+python qualification/stem-cell-v1/v14_reader_original_request_review.py \
+  --source PRIVATE/source-only-cases.json \
+  --plan PRIVATE/original-four-arm-plan.json \
+  --private-requests PRIVATE/original-reader-prompts.json
+```
+
+A separate nineteen-case negative/source-only suite checks the source
+reconstruction, outsider prompts, altered model/budget/source IDs,
+faked original execution or gold exposure, reordering and missing routes.
+Both standalone suites run normal and optimized mode in the read-only
+exact-head GitHub Action. They do **not** attest any real original V14
+Reader forwards or semantic answer improvements.
