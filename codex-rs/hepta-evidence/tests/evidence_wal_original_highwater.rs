@@ -3,14 +3,20 @@
 
 #[cfg(unix)]
 mod unix {
-    use codex_hepta_evidence::metrics_group_commit::{
-        MetricPhaseV1, MetricSampleV1, MetricsGroupCommitV1, MetricsJournalErrorV1,
-    };
+    use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+    use codex_hepta_evidence::metrics_group_commit::MetricSampleV1;
+    use codex_hepta_evidence::metrics_group_commit::MetricsGroupCommitV1;
+    use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
     use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
-    use codex_hepta_types::{Digest32, PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkV1};
-    use std::fs::{self, OpenOptions};
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1;
+    use std::fs::OpenOptions;
+    use std::fs::{self};
     use std::io::Write;
-    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
 
     fn original_private_root() -> tempfile::TempDir {
         let root = tempfile::tempdir().expect("isolated Evidence owner root");
