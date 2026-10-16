@@ -246,7 +246,7 @@ fn minimum_batch_tensor_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> R
         .ok_or(Error::ArithmeticOverflow)
 }
 
-impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
+impl<D: ModelDriver> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
     ///
@@ -257,7 +257,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
         requests: Vec<SharedNeuronFeatureRequestV2>,
-    ) -> Result<Vec<SharedNeuronFeatureResultV2>, Error> {
+    ) -> Result<Vec<SharedNeuronFeatureResultV2>, Error>
+    where
+        D: NeuronSharedFeatureBatchDriverV2,
+    {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS_V2 {
