@@ -72,3 +72,20 @@ only as `external_setup` with a bounded exception *class*, never guessed as
 the next model/weight gate. No changed model revision, allowed alias, original
 weight verification, CPU forward, source or label custody or FinalUse authority.
 The run still exits nonzero on failure and always produces `DENY_ALL`.
+
+## V16.2 bounded loading-report container observation
+
+When real Transformers loading metadata is rejected at the **unchanged**
+`strict_alias_loading_report` stage, store four fixed field labels with only
+the kind (`list`, `tuple`, `set`, `frozenset`, `none`, `absent`, `unsupported`)
+and a bounded count when an allowed collection has at most 8,192 names.
+No parameter names, prompt content, logits, model files, exception text or
+arbitrary type names/reprs are serialized. No iterable from the underlying
+library is traversed, and unknown report objects cannot masquerade as empty.
+This diagnoses whether the real E1 failure `invalid unexpected collection`
+was an unrecognized metadata container without weakening strict original
+full-tensor source-byte checks, independent numerical review or `DENY_ALL`.
+
+The five additional adversarial, model-free checks bring the suite to 23/23
+normal and 23/23 `python -O`; only an exact hosted V16.2 CPU run can confirm
+which native collection the original weight loader actually produced.

@@ -25,6 +25,35 @@ STAGES = ('pinned_source_preflight', 'runtime_checkout_and_imports',
           'physical_tied_storage', 'original_tied_table_bytes',
           'all_serialized_tensor_bytes', 'original_frozen_cpu_forward')
 HEX40 = re.compile(r'[0-9a-f]{40}\Z')
+# Only these *field labels* and built-in *container kinds* may enter the
+# public names-free research diagnosis. Never emit tensor names, weights,
+# native exception messages or types' user-controlled repr strings.
+LOADING_REPORT_FIELDS = ('missing_keys', 'unexpected_keys', 'mismatched_keys', 'error_msgs')
+SAFE_BUILTIN_CONTAINERS = {list: 'list', tuple: 'tuple', set: 'set', frozenset: 'frozenset'}
+MAX_LOADING_NAME_COUNT = 8192
+
+
+def loading_report_structure(info):
+    """Record finite HF metadata container *kinds/counts*, not tensor values.
+
+    An unsupported or absent field remains explicitly unqualified. This
+    function never inspects tensor-name members and does not normalize a
+    malformed report into success: the original strict loader decides later.
+    """
+    if type(info) is not dict:
+        return {name: {'container_kind':'invalid_report', 'bounded_count':None}
+                for name in LOADING_REPORT_FIELDS}
+    summary = {}
+    for name in LOADING_REPORT_FIELDS:
+        if name not in info:
+            kind, count = 'absent', None
+        else:
+            value = info[name]
+            kind = SAFE_BUILTIN_CONTAINERS.get(type(value),
+                'none' if value is None else 'unsupported')
+            count = len(value) if kind in SAFE_BUILTIN_CONTAINERS.values() and len(value) <= MAX_LOADING_NAME_COUNT else None
+        summary[name] = {'container_kind':kind, 'bounded_count':count}
+    return summary
 
 
 class Invalid(ValueError):
@@ -84,6 +113,7 @@ class StageLedger:
         self.failed: str | None = None
         self.error_class: str | None = None
         self.preflight_sha: str | None = None
+        self.original_loading_report_shape: dict | None = None
 
     def perform(self, stage: str, callable_fn):
         if (self.failed is not None or len(self.completed) >= len(STAGES) or
@@ -107,6 +137,7 @@ class StageLedger:
                 'model_repository': REPO, 'original_immutable_revision': REVISION,
                 'exact_source_head': self.source_head, 'github_run_id': self.run_id,
                 'candidate': self.arm, 'preflight_bytes_sha256': self.preflight_sha,
+                'original_loading_report_shape': self.original_loading_report_shape,
                 'ordered_completed_stages': list(self.completed),
                 'first_failed_stage': self.failed, 'exception_class_only': self.error_class,
                 'outcome': outcome, 'source_stage_census_only': True,
@@ -173,6 +204,11 @@ def execute_real(ledger: StageLedger, preflight: Path, compact_checkout: Path) -
         return tokenizer, loaded[0], loaded[1]
 
     _, mlm, info = ledger.perform('original_mlm_load', load_original)
+    # HF 5.19 source and task lanes have shown different native containers.
+    # Capture ONLY allowlisted kind/count before the strict, unchanged gate.
+    # On rejection, the receipt identifies set vs list vs None without ever
+    # exposing parameter names or pretending to have checked weight bytes.
+    ledger.original_loading_report_shape = loading_report_structure(info)
     ledger.perform('strict_alias_loading_report', lambda: require_alias_only_loading_report(info))
 
     def architecture():

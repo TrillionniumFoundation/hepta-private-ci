@@ -9,7 +9,7 @@ import unittest
 
 from p0_mmbert_stage_census_v16 import (
     Invalid, REVISION, SCHEMA, STAGES, StageLedger, read_preflight,
-    strict_pairs, write_create_only, mark_external_failure)
+    strict_pairs, write_create_only, mark_external_failure, loading_report_structure, LOADING_REPORT_FIELDS)
 
 HEAD = 'a' * 40
 
@@ -68,6 +68,61 @@ class SourceStageDiagnostics(unittest.TestCase):
         self.assertNotIn('/private',json.dumps(led.receipt()))
         with self.assertRaises(Invalid):mark_external_failure(led,ValueError('repeat'))
         with self.assertRaises(Invalid):led.perform(STAGES[1],lambda:True)
+
+    def test_actual_hf_container_kinds_are_finite_and_label_free(self):
+        d=loading_report_structure({'missing_keys':set(['decoder.weight']),
+                                    'unexpected_keys':frozenset(),
+                                    'mismatched_keys':tuple(),
+                                    'error_msgs':list()})
+        self.assertEqual(tuple(d), LOADING_REPORT_FIELDS)
+        self.assertEqual(d['missing_keys'],{'container_kind':'set','bounded_count':1})
+        self.assertEqual(d['unexpected_keys'],{'container_kind':'frozenset','bounded_count':0})
+        self.assertEqual(d['mismatched_keys'],{'container_kind':'tuple','bounded_count':0})
+        self.assertEqual(d['error_msgs'],{'container_kind':'list','bounded_count':0})
+        self.assertNotIn('decoder.weight',json.dumps(d))
+
+    def test_null_missing_and_unknown_loading_containers_are_not_normalized(self):
+        info={'missing_keys':None,'unexpected_keys':{},'error_msgs':'',
+              'ignored_sensitive_model_tensor_name':'SECRET.MUST.NOT.LEAK'}
+        d=loading_report_structure(info)
+        self.assertEqual(d['missing_keys']['container_kind'],'none')
+        self.assertEqual(d['unexpected_keys']['container_kind'],'unsupported')
+        self.assertEqual(d['mismatched_keys']['container_kind'],'absent')
+        self.assertEqual(d['error_msgs']['container_kind'],'unsupported')
+        self.assertNotIn('SECRET',json.dumps(d))
+        self.assertEqual(loading_report_structure([])['missing_keys']['container_kind'], 'invalid_report')
+
+    def test_overlarge_loading_inventory_is_not_exposed(self):
+        d=loading_report_structure({'missing_keys':['shared.tensor']*8193})
+        self.assertEqual(d['missing_keys']['container_kind'],'list')
+        self.assertIsNone(d['missing_keys']['bounded_count'])
+        self.assertNotIn('shared.tensor',json.dumps(d))
+
+    def test_arbitrary_broken_object_never_gets_iterated_or_serialized(self):
+        class Poison:
+            def __iter__(self):raise AssertionError('must not iterate')
+            def __len__(self):raise AssertionError('must not count')
+            def __repr__(self):raise AssertionError('must not stringify')
+        d=loading_report_structure({'unexpected_keys':Poison()})
+        self.assertEqual(d['unexpected_keys']['container_kind'],'unsupported')
+        self.assertIsNone(d['unexpected_keys']['bounded_count'])
+        json.dumps(d)
+
+    def test_failed_strict_gate_preserves_type_census_without_authority(self):
+        led=StageLedger(HEAD,1234,'source')
+        for stage in STAGES[:STAGES.index('strict_alias_loading_report')]:
+            led.perform(stage,lambda:True)
+        led.original_loading_report_shape=loading_report_structure({
+            'unexpected_keys':set(['unregistered.secret.tensor'])})
+        with self.assertRaises(Invalid):
+            led.perform('strict_alias_loading_report',lambda:(_ for _ in ()).throw(Invalid('unsafe secret')))
+        receipt=led.receipt()
+        self.assertEqual(receipt['first_failed_stage'],'strict_alias_loading_report')
+        self.assertEqual(receipt['original_loading_report_shape']['unexpected_keys'],
+                         {'container_kind':'set','bounded_count':1})
+        self.assertFalse(receipt['production_promotion_permitted'])
+        self.assertNotIn('unregistered.secret',json.dumps(receipt))
+        self.assertNotIn('unsafe secret',json.dumps(receipt))
 
     def test_finished_diagnostic_still_denies_production(self):
         led = StageLedger(HEAD, 34, 'source')
