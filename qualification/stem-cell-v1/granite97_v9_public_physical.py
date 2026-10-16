@@ -26,6 +26,8 @@ PURPOSE = "research:constructed-source-only"
 GENERATION = 9
 EPOCH = 1
 Q24 = 1 << 24
+FEATURE_ADAPTER = "rational8-v1"
+ADAPTER_DIGEST = hashlib.sha256(b"hepta.granite97.rational8-adapter.v6\0").hexdigest()
 
 
 def sha(data: bytes) -> str:
@@ -106,6 +108,7 @@ def prepare(source: Path, model_root: Path, lock_output: Path, *, now_ms: int) -
         "material_sha256": digest, "source_sha256": SOURCE_SHA,
         "principal_id": PRINCIPAL, "purpose_id": PURPOSE,
         "generation": GENERATION, "authority_epoch": EPOCH,
+        "feature_adapter": FEATURE_ADAPTER, "adapter_digest": ADAPTER_DIGEST,
         "expires_at_ms": now_ms + 2 * 60 * 60 * 1000,
         "upstream_commit_pinned": True,
         "independent_model_owner_authenticated": False,
@@ -121,7 +124,8 @@ def prepare(source: Path, model_root: Path, lock_output: Path, *, now_ms: int) -
 def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
     expected = {"schema", "model_id", "revision", "material_sha256",
                 "source_sha256", "principal_id", "purpose_id", "generation",
-                "authority_epoch", "expires_at_ms", "upstream_commit_pinned",
+                "authority_epoch", "feature_adapter", "adapter_digest",
+                "expires_at_ms", "upstream_commit_pinned",
                 "independent_model_owner_authenticated", "independent_source_owner_authenticated",
                 "independent_hardware_attested", "labels_exposed", "model_selected",
                 "production_authorized", "authority"}
@@ -129,6 +133,7 @@ def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
         "schema": SCHEMA, "model_id": MODEL_ID, "revision": REVISION,
         "source_sha256": SOURCE_SHA, "principal_id": PRINCIPAL, "purpose_id": PURPOSE,
         "generation": GENERATION, "authority_epoch": EPOCH,
+        "feature_adapter": FEATURE_ADAPTER, "adapter_digest": ADAPTER_DIGEST,
         "upstream_commit_pinned": True, "independent_model_owner_authenticated": False,
         "independent_source_owner_authenticated": False,
         "independent_hardware_attested": False, "labels_exposed": False,
@@ -154,6 +159,7 @@ def _check_export_and_review(lock: dict, source: bytes, export: dict,
         raise ValueError("incomplete original feature identity")
     if (export["material_digest"] != lock["material_sha256"] or
             export["source_sha256"] != lock["source_sha256"] or
+            export["adapter_digest"] != lock["adapter_digest"] or
             export["expires_at_ms"] != lock["expires_at_ms"] or
             export.get("encoder_forwards") != 1):
         raise ValueError("original model source/work/expiry mismatch")
