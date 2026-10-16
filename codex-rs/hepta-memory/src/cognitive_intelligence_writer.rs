@@ -36,6 +36,13 @@ const MAX_TYPE_BYTES: usize = 128;
 const MAX_LABEL_BYTES: usize = 1024;
 const MAX_RELATION_BYTES: usize = 128;
 
+/// Atomic compare-and-swap identity: the stable memory ID and the exact
+/// expected revision travel together across the production SQLite transaction.
+pub(crate) struct CognitiveExpectedHeadV1<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct CanonicalEntityFact {
     pub(crate) key: String,
@@ -142,8 +149,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                CognitiveExpectedHeadV1 {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,12 +166,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        expected: CognitiveExpectedHeadV1<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let CognitiveExpectedHeadV1 {
+            memory_id,
+            expected_revision,
+        } = expected;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
