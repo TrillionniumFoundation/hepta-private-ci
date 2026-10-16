@@ -3728,6 +3728,21 @@ fn original_pending_group_real_original_evidence_fsync_before_signing_and_cold_r
         .expect("read original fsynced sample marker");
     assert_eq!(fsynced.sequence, 1);
     assert_eq!(fsynced.committed_rows, 2);
+    // A fabricated Scope identity with the same admitted request ID lacks
+    // the exact ORIGINAL Admission row even though other valid rows exist.
+    // Reject before an independently operated signer could approve it.
+    let mut foreign_scope = ordered[1].1.clone();
+    foreign_scope.scope_id = StableId::new("scope.foreign-cohort").unwrap();
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(
+            100,
+            &[(ordered[0].0.clone(), ordered[0].1.clone()),
+              (ordered[1].0.clone(), foreign_scope)],
+        ),
+        Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate)
+    );
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
     for operation_digest in operations {
         let sample = owner
             .observe_exact_committed_sample(MetricsCommittedSampleQueryV1 {
