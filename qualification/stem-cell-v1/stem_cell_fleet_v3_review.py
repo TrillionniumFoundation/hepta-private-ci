@@ -73,6 +73,28 @@ def pooled_original(feature: bytes, rows: int):
 
 def verify(document: dict, feature: bytes, rows: int, *, feature_sha256: str,
            review_sha256: str, expected_sizes=SIZES):
+    expected_document_fields = {
+        'schema', 'parameter_profile', 'feature_sha256', 'review_sha256',
+        'feature_rows', 'head_width', 'rank', 'warmups', 'repeats', 'results',
+        'physical_pretrained_encoder_forward_in_this_stage',
+        'real_task_success_measured', 'parameters_trained',
+        'independent_model_issuer_signature_verified', 'production_authorized',
+        'authority',
+    }
+    allowed_fields = expected_document_fields | {'feature_envelope_key'}
+    require(expected_document_fields <= set(document) and
+            set(document) <= allowed_fields, 'unexpected fleet receipt fields')
+    expected_result_fields = {
+        'cell_count', 'physically_allocated_head_parameters',
+        'per_cell_parameter_count', 'physically_allocated_head_bytes',
+        'original_encoder_forwards_in_this_stage',
+        'actual_complete_gate_evaluations', 'actual_active_head_evaluations',
+        'physical_head_parameter_sha256', 'rss_kib_before',
+        'rss_kib_after_allocation', 'host_process_peak_rss_kib',
+        'parameter_setup_cpu_ns', 'head_only_wall_ns_samples',
+        'head_only_p95_ns_descriptive', 'selected_cell_indices',
+        'selected_head_scores', 'complete_gate_score_sha256',
+    }
     require(document.get('schema')=='hepta.stem.cell-fleet-physical.v3','schema')
     require(document.get('parameter_profile')==PROFILE,'parameter profile')
     require(document.get('authority')=='DENY_ALL','authorization posture')
@@ -90,6 +112,7 @@ def verify(document: dict, feature: bytes, rows: int, *, feature_sha256: str,
     require(isinstance(results,list) and [r.get('cell_count') for r in results]==list(expected_sizes),'size census')
     x=pooled_original(feature,rows)
     for n,result in zip(expected_sizes,results):
+        require(isinstance(result, dict) and set(result)==expected_result_fields, 'unexpected per-Cell receipt fields')
         require(type(n) is int and n in SIZES,'unregistered size')
         weights=new_weight_bank(n)
         require(hashlib.sha256(weights.tobytes()).hexdigest()==result.get('physical_head_parameter_sha256'),'original weights differ')
