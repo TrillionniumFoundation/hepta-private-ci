@@ -1075,3 +1075,96 @@ fn invalid_bound_sample_query_never_disables_original_evidence_owner() {
             .is_some()
     );
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn bounded_committed_cohort_memberships_match_individual_wal_readbacks() {
+    let dir = tempfile::tempdir().expect("private original metrics WAL");
+    let path = dir.path().join("ordered-cohort-readback.wal");
+    let scope = Digest32::of_bytes(b"original shared Scope");
+    let member_a = Digest32::of_bytes(b"original cohort member A");
+    let member_b = Digest32::of_bytes(b"original cohort member B");
+    let a = MetricsCommittedSampleQueryV1 {
+        scope_digest: scope,
+        operation_digest: member_a,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    let b = MetricsCommittedSampleQueryV1 {
+        operation_digest: member_b,
+        ..a
+    };
+    let missing = MetricsCommittedSampleQueryV1 {
+        operation_digest: Digest32::of_bytes(b"no original Admission"),
+        ..a
+    };
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("exclusive WAL/marker");
+    for operation in [member_a, member_b] {
+        writer.stage(MetricSampleV1 {
+            scope_digest: scope,
+            operation_digest: operation,
+            phase: MetricPhaseV1::Admission,
+            latency_micros: 19,
+            succeeded: true,
+        }).expect("original Admission staging");
+    }
+
+    // The read-only Observer MUST NOT count staged but uncommitted metrics.
+    assert_eq!(
+        writer.read_committed_samples(&[a, b, missing]).unwrap(),
+        vec![None, None, None]
+    );
+    let receipt = writer.flush().unwrap().expect("fsynced original WAL");
+    assert_eq!(receipt.rows, 2);
+
+    let before = writer
+        .read_committed_samples(&[a, b, missing])
+        .expect("one complete verified WAL and high-water scan");
+    assert_eq!(before.len(), 3);
+    assert!(before[2].is_none());
+    for (query, proof) in [a, b].into_iter().zip(before.iter()) {
+        let proof = proof.expect("exact committed original Admission");
+        assert_eq!(proof.query, query);
+        assert_eq!(proof.matching_rows, 1);
+        assert_eq!(proof.first_group_sequence, 1);
+        assert_eq!(proof.last_group_sequence, 1);
+        assert_eq!(proof.frontier, writer.read_local_frontier().unwrap());
+        assert_eq!(
+            Some(proof),
+            writer.read_committed_sample(query).unwrap(),
+            "batch readback must match the historical single-item ABI"
+        );
+    }
+
+    // Invalid caller input cannot poison the original verified WAL state.
+    assert!(matches!(
+        writer.read_committed_samples(&[a, a]),
+        Err(MetricsJournalErrorV1::Capacity)
+    ));
+    assert!(writer.read_committed_samples(&[a, b]).is_ok());
+    assert!(matches!(
+        writer.read_committed_samples(&[]),
+        Err(MetricsJournalErrorV1::Capacity)
+    ));
+
+    // A duplicated SUCCESS Admission is not silently collapsed into one.
+    writer.stage(MetricSampleV1 {
+        scope_digest: scope,
+        operation_digest: member_a,
+        phase: MetricPhaseV1::Admission,
+        latency_micros: 20,
+        succeeded: true,
+    }).unwrap();
+    writer.flush().unwrap().expect("second committed original group");
+    let counted = writer.read_committed_samples(&[a, b]).unwrap();
+    assert_eq!(counted[0].unwrap().matching_rows, 2);
+    assert_eq!(counted[1].unwrap().matching_rows, 1);
+    assert_eq!(counted[0].unwrap().first_group_sequence, 1);
+    assert_eq!(counted[0].unwrap().last_group_sequence, 2);
+    let frozen = counted;
+    drop(writer);
+    let mut cold = MetricsGroupCommitV1::open(&path).expect("cold exact WAL reopen");
+    assert_eq!(cold.read_committed_samples(&[a, b]).unwrap(), frozen);
+}
