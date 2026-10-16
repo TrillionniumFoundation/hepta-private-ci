@@ -141,13 +141,19 @@ pub use prompt_pipeline::compile_exercised_prompt_context_v1;
 pub use prompt_pipeline::observe_prompt_delivery_v1;
 pub use prompt_pipeline::prepare_prompt_delivery_v1;
 
+mod ndu_snapshot;
 mod pipeline_v2;
+mod pipeline_v3;
 mod prompt_delivery;
 
+pub use ndu_snapshot::{NduSnapshotRefError, NduSnapshotRefV1};
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+pub use pipeline_v3::{
+    run_shadow_pipeline_v3, LaneFRunRequestV3, LaneFShadowPipelineReceiptV3, PipelineErrorV3,
+};
 pub use prompt_delivery::PromptRegistryCompilationErrorV2;
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
