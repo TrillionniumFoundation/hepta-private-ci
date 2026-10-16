@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import unittest
 
 from recheck_real_public_iid_native_scores import (
@@ -100,11 +101,53 @@ def fixture():
     return report,public,observer
 
 
+def frozen_training_receipt(report):
+    """Explicit synthetic complete 32-model source cost census."""
+    rows=[]
+    for model in report["unlabeled_prediction_records"]:
+        task, cap, arm = (
+            model["task_id"],model["serialized_byte_budget"],model["arm"]
+        )
+        width, parameters, file_bytes = REGISTERED_BYTE_GEOMETRY[(cap, arm)]
+        rows.append({
+            "task_id":task,"arm":arm,"physical_byte_ceiling":cap,
+            "hidden_width":width,
+            "realized_private_parameters":parameters,
+            "physical_bytes":file_bytes,
+            "rank":1 if arm=="min_gru" else None,
+            "source_weight_file":f"{task}/{cap}/{arm}.safetensors",
+            "weight_sha256":model["physical_model_sha256"],
+            "optimizer_steps":32,"examples_exposed":512,
+            "cpu_seconds_self_reported":1.25,
+        })
+    receipt={
+        "schema":"hepta.neuron.real-public-iid-q24-physical-32-arm-train.v1",
+        "authority":"DENY_ALL","decision":"NO_MODEL_PROMOTION",
+        "training_data_kind":
+            "PUBLIC_Q24_IID_FIT_INPUT_CLAIM_NO_INDEPENDENT_OWNER_SIGNATURE",
+        "physical_models_count":32,"task_count":4,
+        "epochs":8,"optimizer_steps_each":32,
+        "examples_exposed_per_model":512,"batch_size":16,
+        "same_order_batches_per_model":True,
+        "iid_state_reset_per_case":True,
+        "heldout_labels_exposed_to_trainer":False,
+        "original_selected_v1_a0_verified":False,
+        "heldout_or_future_accuracy_evaluated":False,
+        "equal_training_flops_or_memory_verified":False,
+        "ndu_eligible":False,"production_qualification":False,
+        "models":rows,
+    }
+    raw=canonical(receipt)
+    report["training_receipt_sha256"]=sha(raw)
+    return raw
+
+
 class IndependentPublicNativeAuditProtocol(unittest.TestCase):
-    def check(self, values):
+    def check(self, values, physical_training=None):
         report,original,labels=values
         return recheck_report(
-            report,original,labels,digest("mock-unlabeled-heldout-file"))
+            report,original,labels,digest("mock-unlabeled-heldout-file"),
+            training_receipt_raw=physical_training)
 
     def test_original_1024_records_recomputed_with_no_selection(self):
         result=self.check(fixture())
@@ -117,6 +160,48 @@ class IndependentPublicNativeAuditProtocol(unittest.TestCase):
         self.assertFalse(result["baseline_original_v1_verified"])
         self.assertFalse(result["ndu_eligible"])
         self.assertFalse(result["production_qualification"])
+
+    def test_separate_training_cost_and_weights_reopened_exactly(self):
+        values=fixture()
+        physical=frozen_training_receipt(values[0])
+        verdict=self.check(values,physical_training=physical)
+        self.assertTrue(verdict["physical_training_receipt_reopened_and_bound"])
+        self.assertTrue(verdict[
+            "training_cpu_seconds_are_descriptive_not_whole_system_cost"])
+        self.assertFalse(verdict["baseline_original_v1_verified"])
+
+    def test_trainer_model_sha_substitution_rejected_after_reseal(self):
+        values=fixture()
+        physical=frozen_training_receipt(values[0])
+        trained=json.loads(physical)
+        trained["models"][0]["weight_sha256"]=digest("foreign model")
+        edited=canonical(trained)
+        values[0]["training_receipt_sha256"]=sha(edited)
+        with self.assertRaisesRegex(Rejected,"digest differs"):
+            self.check(values,physical_training=edited)
+
+    def test_trainer_cpu_nan_or_step_overclaim_rejected(self):
+        for mutation in ("cpu", "steps", "sample_exposures"):
+            values=fixture()
+            trained=json.loads(frozen_training_receipt(values[0]))
+            if mutation=="cpu":
+                trained["models"][0]["cpu_seconds_self_reported"]=-1.0
+            elif mutation=="steps":
+                trained["models"][0]["optimizer_steps"]=33
+            else:
+                trained["models"][0]["examples_exposed"]=511
+            edited=canonical(trained)
+            values[0]["training_receipt_sha256"]=sha(edited)
+            with self.subTest(mutation=mutation):
+                with self.assertRaisesRegex(Rejected,"optimizer/CPU"):
+                    self.check(values,physical_training=edited)
+
+    def test_training_manifest_sha_mismatch_cannot_be_ignored(self):
+        values=fixture()
+        physical=frozen_training_receipt(values[0])
+        values[0]["training_receipt_sha256"]=digest("a different physical source")
+        with self.assertRaisesRegex(Rejected,"receipt SHA mismatch"):
+            self.check(values,physical_training=physical)
 
     def test_changed_unlabeled_output_without_new_sha_rejected(self):
         r,p,o=fixture()
