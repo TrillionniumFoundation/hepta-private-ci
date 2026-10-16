@@ -698,15 +698,20 @@ impl MetricsGroupCommitV1 {
                 .collect::<Vec<_>>();
             let mut index = BTreeMap::new();
             for (i, (scope, operation, phase, success)) in needles.iter().enumerate() {
-                index.insert(
-                    (
-                        scope.as_str(),
-                        operation.as_str(),
-                        phase.as_str(),
-                        success.as_str(),
-                    ),
-                    i,
-                );
+                if index
+                    .insert(
+                        (
+                            scope.as_str(),
+                            operation.as_str(),
+                            phase.as_str(),
+                            success.as_str(),
+                        ),
+                        i,
+                    )
+                    .is_some()
+                {
+                    return Err(MetricsJournalErrorV1::Capacity);
+                }
             }
             let mut counts = vec![0_u64; queries.len()];
             let mut first_sequences = vec![0_u64; queries.len()];
