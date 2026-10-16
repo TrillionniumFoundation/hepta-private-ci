@@ -644,23 +644,16 @@ fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash() {
     );
     assert_eq!(effect, Err(NduPublicationErrorV1::Indeterminate));
     assert!(matches!(
-        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-            &path,
-            &original,
-            Digest32::ZERO,
-        ),
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
         Err(NduPublicationErrorV1::WriterUnavailable)
     ));
     drop(owner);
     let wal_before = std::fs::read(&path).expect("immutable original WAL");
     let marker = path.with_file_name("observed-orphan.wal.owner-lock");
     let marker_before = std::fs::read(&marker).expect("original owner marker");
-    let observed = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-        &path,
-        &original,
-        Digest32::ZERO,
-    )
-    .expect("read-only recovery observation of the original pending Begin");
+    let observed =
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO)
+            .expect("read-only recovery observation of the original pending Begin");
     assert_eq!(
         observed.predecessor_semantic_digest,
         original.semantic_digest().unwrap()
@@ -676,19 +669,18 @@ fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash() {
     assert!(!observed.head.is_zero());
     assert_eq!(
         observed,
-        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-            &path,
-            &original,
-            Digest32::ZERO,
-        )
-        .expect("second read from exactly the same original history")
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,)
+            .expect("second read from exactly the same original history")
     );
     assert_eq!(std::fs::read(&path).unwrap(), wal_before);
     assert_eq!(std::fs::read(&marker).unwrap(), marker_before);
-    assert!(matches!(
-        NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
-        Err(NduPublicationErrorV1::Indeterminate)
-    ), "observation cannot resolve quarantine or mint Control Commit");
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ),
+        "observation cannot resolve quarantine or mint Control Commit"
+    );
 }
 
 #[cfg(unix)]
@@ -703,11 +695,7 @@ fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
         .expect("original Control WAL genesis");
     drop(owner);
     assert!(matches!(
-        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-            &path,
-            &original,
-            Digest32::ZERO,
-        ),
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
         Err(NduPublicationErrorV1::Stale)
     ));
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -720,14 +708,17 @@ fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
         || -> Result<((), Vec<u8>), &'static str> { Err("missing original CNS receipt") },
     );
     drop(owner);
-    assert!(matches!(
-        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-            &path,
-            &snapshot(8),
-            Digest32::ZERO,
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+                &path,
+                &snapshot(8),
+                Digest32::ZERO,
+            ),
+            Err(NduPublicationErrorV1::Indeterminate)
         ),
-        Err(NduPublicationErrorV1::Indeterminate)
-    ), "wrong frozen predecessor cannot describe a pending Begin");
+        "wrong frozen predecessor cannot describe a pending Begin"
+    );
 
     // Corrupt the first history row, leaving the actual last Begin in place.
     // A last-hash-only probe would falsely accept this tampered prefix.
@@ -738,14 +729,12 @@ fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
         .write(true)
         .open(&path)
         .expect("test-only original inode tamper");
-    original_fd.write_all(&wal).expect("overwrite original inode");
+    original_fd
+        .write_all(&wal)
+        .expect("overwrite original inode");
     original_fd.sync_all().expect("fsync original tamper");
     assert!(matches!(
-        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
-            &path,
-            &original,
-            Digest32::ZERO,
-        ),
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
         Err(NduPublicationErrorV1::Indeterminate)
     ));
 }

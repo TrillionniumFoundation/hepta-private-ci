@@ -1008,8 +1008,7 @@ impl NduPublicationOwnerV1 {
             .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
         control_parent_dir_identity(&directory, parent)?;
         let (wal_device, wal_inode) = control_owner_file_identity(&file, path)?;
-        let (marker_device, marker_inode) =
-            control_owner_file_identity(&marker, &marker_path)?;
+        let (marker_device, marker_inode) = control_owner_file_identity(&marker, &marker_path)?;
         let (expected_marker, marker_len) = encode_control_owner_marker_v1(wal_device, wal_inode)?;
         if marker
             .metadata()
@@ -1057,8 +1056,8 @@ impl NduPublicationOwnerV1 {
             if read > MAX_ROW || read_bytes > wal_bytes || row.pop() != Some(b'\n') {
                 return Err(NduPublicationErrorV1::Indeterminate);
             }
-            let encoded = std::str::from_utf8(&row)
-                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            let encoded =
+                std::str::from_utf8(&row).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
             let event = decode(encoded).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
             if event.sequence
                 != sequence
@@ -1117,8 +1116,7 @@ impl NduPublicationOwnerV1 {
             || before.ctime() != after.ctime()
             || before.ctime_nsec() != after.ctime_nsec()
             || control_owner_file_identity(&file, path)? != (wal_device, wal_inode)
-            || control_owner_file_identity(&marker, &marker_path)?
-                != (marker_device, marker_inode)
+            || control_owner_file_identity(&marker, &marker_path)? != (marker_device, marker_inode)
         {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
