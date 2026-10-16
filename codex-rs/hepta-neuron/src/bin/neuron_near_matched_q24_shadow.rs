@@ -823,13 +823,12 @@ fn execute() -> Result<serde_json::Value, String> {
     }
     let model_path = Path::new(arg(&opts, "--model")?);
     let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
-    if let Some(expected_size) = expected_file_size {
-        if bytes.len() != expected_size
+    if let Some(expected_size) = expected_file_size
+        && (bytes.len() != expected_size
             || bytes.len() > cap
-            || (cap - bytes.len()) * 1_000_000 > cap * 20_000
-        {
-            return Err(fail("original physical byte budget violated"));
-        }
+            || (cap - bytes.len()) * 1_000_000 > cap * 20_000)
+    {
+        return Err(fail("original physical byte budget violated"));
     }
     let bank = physical_weights(&bytes, arm, width, rank, cap, source_width)?;
     if source_width != 32 || bank.parameter_count != registered_count {
