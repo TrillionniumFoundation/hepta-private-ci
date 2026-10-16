@@ -127,6 +127,19 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/owner.json" --minimum-tests 4 -- just test --locked -p codex-hepta-infer-worker-host -E 'test(native_execution_port)'
 
+      - name: Build and verify exact-source Codex CLI for the physical Agentd test
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-cli --bin codex
+          cli="$(realpath target/debug/codex)"
+          test -f "$cli"
+          test -x "$cli"
+          "$cli" --version
+          sha256sum "$cli" | tee "$RUNNER_TEMP/hepta-execution-port-records/codex-cli.sha256"
+          printf 'HEPTA_COGNITIVE_TEST_CODEX_EXE=%s\n' "$cli" >> "$GITHUB_ENV"
+
       - name: Run complete owner and reverse-adapter crate suites
         shell: bash
         run: |
