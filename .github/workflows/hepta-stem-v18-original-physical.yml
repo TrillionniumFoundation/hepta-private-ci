@@ -49,7 +49,7 @@ jobs:
             --header "Authorization: Bearer $GH_TOKEN" \
             'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip' \
             --output "$work/original.zip"
-          echo '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7'"  $work/original.zip" | sha256sum -c -
+          printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' "$work/original.zip" | sha256sum -c -
           python qualification/stem-cell-v1/stem_counterfactual_split_v14.py prepare \
             --archive "$work/original.zip" --out "$work/inputs" --labels-out "$work/held-gold.json"
           rm -- "$work/held-gold.json"
