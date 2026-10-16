@@ -1,0 +1,75 @@
+name: MemoryCell immutable same-reader Hybrid null gate
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/matched_structured_rag_gate.py"
+      - "scripts/memory_cell/test_matched_structured_rag_gate.py"
+      - ".github/workflows/hepta-memory-matched-structured-rag.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-matched-null-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-bound-hybrid-null:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Download immutable completed original source-local trial
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12038816070/zip \
+            > "$RUNNER_TEMP/matched-original-ci.zip"
+          mkdir -p "$RUNNER_TEMP/paired-null-receipts"
+          git rev-parse HEAD > "$RUNNER_TEMP/paired-null-receipts/tested-head.txt"
+          sha256sum scripts/memory_cell/matched_structured_rag_gate.py \
+            scripts/memory_cell/test_matched_structured_rag_gate.py \
+            > "$RUNNER_TEMP/paired-null-receipts/source-hashes.txt"
+      - name: Verify source/answer/reader identity and tampering controls
+        env:
+          HEPTA_MATCHED_RAG_ARCHIVE: ${{ runner.temp }}/matched-original-ci.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_matched_structured_rag_gate.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/paired-null-receipts/tests.log"
+      - name: Recompute full paired original hybrid and organized contrasts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/matched_structured_rag_gate.py \
+            "$RUNNER_TEMP/matched-original-ci.zip" \
+            "$RUNNER_TEMP/paired-null-receipts/report.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          path=Path(os.environ['RUNNER_TEMP'])/'paired-null-receipts/report.json'
+          r=json.loads(path.read_text())
+          assert r['observed_tasks']==48 and r['new_model_calls']==0
+          assert all(r['contrasts'][arm]['net_task_success_delta']==0 for arm in ('organized','entity_time'))
+          assert r['production_accepted'] is False
+          assert r['task_memory_gain_qualified'] is False
+          PY
+      - name: Export sanitized independent audit only; no raw source/answers
+        if: always()
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/paired-null-receipts" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-same-reader-hybrid-null-verified
+          path: ${{ runner.temp }}/paired-null-receipts
+          if-no-files-found: error
