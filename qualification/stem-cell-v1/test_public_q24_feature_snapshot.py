@@ -163,6 +163,54 @@ class PublicQ24SnapshotTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             physical_snapshot(self.inputs, DeterministicFixture(), self.root)
 
+    def test_independent_frozen_pca32_and_q24_reopen(self):
+        from audit_public_q24_snapshot import audit
+        report = audit(self.root)
+        self.assertTrue(report["train_only_pca32_exact"])
+        self.assertEqual(report["frozen_real_q24_feature_rows"], 96)
+        self.assertTrue(report["heldout_labels_absent"])
+        self.assertFalse(report["future_window_efficacy_verified"])
+        self.assertFalse(report["production_qualification"])
+
+    def test_forged_heldout_label_is_rejected_even_with_rehashed_manifest(self):
+        import shutil
+        from audit_public_q24_snapshot import audit
+        with tempfile.TemporaryDirectory() as tmp:
+            copied = Path(tmp) / "altered"
+            shutil.copytree(self.root, copied)
+            registry_path = copied / "case-registry.json"
+            registry = json.loads(registry_path.read_text())
+            registry["heldout"][0]["label"] = 2
+            registry_path.write_text(json.dumps(registry))
+            receipt_path = copied / "SEALED.json"
+            receipt = json.loads(receipt_path.read_text())
+            changed = registry_path.read_bytes()
+            receipt["files"]["case-registry.json"]["sha256"] = hashlib.sha256(changed).hexdigest()
+            receipt["files"]["case-registry.json"]["bytes"] = len(changed)
+            receipt_path.write_text(json.dumps(receipt))
+            with self.assertRaisesRegex(ValueError, "heldout labels"):
+                audit(copied)
+
+    def test_forged_projection_values_rejected_even_with_rehashed_manifest(self):
+        import shutil
+        from safetensors.torch import save_file
+        from audit_public_q24_snapshot import audit
+        with tempfile.TemporaryDirectory() as tmp:
+            copied = Path(tmp) / "altered"
+            shutil.copytree(self.root, copied)
+            proj_path = copied / "train-only-pca32.safetensors"
+            projection = load_file(str(proj_path))
+            projection["center"][0] += 0.5
+            save_file(projection, str(proj_path))
+            receipt_path = copied / "SEALED.json"
+            receipt = json.loads(receipt_path.read_text())
+            changed = proj_path.read_bytes()
+            receipt["files"]["train-only-pca32.safetensors"]["sha256"] = hashlib.sha256(changed).hexdigest()
+            receipt["files"]["train-only-pca32.safetensors"]["bytes"] = len(changed)
+            receipt_path.write_text(json.dumps(receipt))
+            with self.assertRaisesRegex(ValueError, "PCA32 projection"):
+                audit(copied)
+
     def test_digest_and_no_authority(self):
         receipt = json.loads((self.root / "SEALED.json").read_text())
         self.assertEqual(receipt, self.receipt)
