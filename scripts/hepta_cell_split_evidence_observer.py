@@ -47,8 +47,8 @@ def _read_regular(path: Path, limit: int) -> bytes:
     try:
         with os.fdopen(os.open(path, flags), "rb") as source:
             before = os.fstat(source.fileno())
-            if not stat.S_ISREG(before.st_mode) or before.st_size > limit:
-                raise InvalidEvidence(f"{path.name}: nonregular or oversized evidence")
+            if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > limit:
+                raise InvalidEvidence(f"{path.name}: nonregular, hardlinked or oversized evidence")
             raw = source.read(limit + 1)
             after = os.fstat(source.fileno())
         named = path.lstat()
