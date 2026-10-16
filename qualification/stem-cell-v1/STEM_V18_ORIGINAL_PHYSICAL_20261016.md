@@ -55,3 +55,25 @@ The new read-only, artifact-pinned \`hepta-stem-v18-original-physical.yml\` GitH
 ## Next qualification priorities
 
 **Do not promote or auto-split.** Obtain new independent source families, an actually independent label/outcome owner, prospective future windows and matched full lifecycle costs. First test whether strong cheap no-change/linear models generalize, then allocate incremental training to a Cell only if its *net future utility* survives negative-transfer limits. Only after that run whole-stack 64/256/1024/4096-Cell target-host CPU/RSS/GPU, queue age, p95/p99, WAL/recovery and owner-specific FinalUse.
+
+
+## Follow-up: independently scored paired harms and exact-SHA qualification repair
+
+A fresh ordinary + `python -O` execution of the original five-arm physical Head producer, with the same fixed original 128x384 original mmBERT feature file, reproduced all **15/15** CAL/train/blind raw-output SHA identities and independent original NumPy scorer outcomes. These are **the same historical 32 CAL cases** across three repeated seeds; this adds no new observations, independent families or forward calls.
+
+The added `v18_paired_damage.py` runs *after* the independent original ZIP/label/logit reviewer has verified the complete material. It computes rescue/harm on the **same actual original CAL identities**, rather than comparing only aggregate accuracies:
+
+| Candidate | Seed 41 rescues / harms | Seed 47 rescues / harms | Seed 53 rescues / harms |
+| --- | --- | --- | --- |
+| continued single | 0 / 1 | 1 / 1 | 0 / 1 |
+| linear output residual | 0 / 1 | 1 / 1 | 0 / 1 |
+| gated output residual | 0 / 1 | 1 / 1 | 0 / 1 |
+| two-Head split router | **0 / 2** | **1 / 2** | **0 / 2** |
+
+Even split Seed 47's favorable **-0.006722** historical multiclass Brier difference versus no-change accompanies *net one additional incorrect case*, and is smaller than the exploratory 0.01 absolute decision threshold. Thus no split candidate passes even a weak descriptive historical quality screen. The per-arm actual short CPU Head training spans exclude Encoder/Reader/data loading/optimizer cold-start parity, evaluator service, GPU and target-host lifecycle; these figures must **not** be recast as complete TCO.
+
+The exact-original ZIP, complete 15-arm physical prediction hashes and all 12 paired harm profiles were rechecked in two separate original-weights-cached-feature CPU runs. New **10/10** pure arithmetic/malformed-input tests pass per Python mode (20 executed). Earlier **11/11** Head zero-output mechanism cases and **7/7** original archive-backed reviewer attacks pass per mode, with independent numerical scoring. This is local CPU model research, **not hosted complete CI**, hardware/operator signatures or prospective NDU utility.
+
+**Actual P0 repair:** The original read-only physical workflow's SHA check previously contained a misquoted shell filename. It now uses a real quoted `printf '%s  %s\\n' ... | sha256sum -c -` construction, preserving complete SHA verification. It now runs the paired damage auditor, validates numerical agreement between ordinary/`-O` runs, and uses a `pull_request` event so the workflow result can be evaluated on the exact PR head. The untrusted-input V18 source-only auditor now **refuses unattested `future` cohorts**, rather than allowing a synthetically labeled row to appear in a "future gain" tally. Its tests cover future-label spoofing.
+
+**Authority and uncertainty remain unchanged:** no genuinely new source families, no independent prospective observer/calendar window, no signed model/source custody, no matched full lifecycle cost or 4096-Cell target-host recovery measurements; all gates remain `DENY_ALL`. No original V14–V17 source, production model, Worker, Control/CNS, NDU, final-use or main mutation is made by these research-only files. Hosted exact-new-HEAD CI, architecture and global blocking-ci results are separately required.
