@@ -672,7 +672,7 @@ fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied() {
         .expect("real private ordinary marker");
     write!(
         marker_file,
-        "NDUW1|{}|{}\\n",
+        "NDUW1|{}|{}\n",
         fifo_metadata.dev(),
         fifo_metadata.ino()
     )
