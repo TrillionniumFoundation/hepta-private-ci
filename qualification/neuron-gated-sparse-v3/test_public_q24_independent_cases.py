@@ -111,7 +111,7 @@ class PublicQ24IndependentCaseTests(unittest.TestCase):
         self.assertFalse(cases["ndu_eligible"])
 
     def test_synthetic_fixture_cannot_be_used_as_real_pretrained_source(self):
-        with self.assertRaisesRegex(bridge.Invalid,"real"):
+        with self.assertRaisesRegex(bridge.Invalid,"pretrained Encoder source"):
             bridge.accept_public_snapshot(self.root)
 
     def altered(self, *, filename, mutator):
