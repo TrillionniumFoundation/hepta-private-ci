@@ -58,3 +58,38 @@ code, raw pointers, executable memory writer, JIT compilation, OS syscall,
 GPU device authority or grant issuer. A separately reviewed original sandbox
 and FinalUse/Control/CNS owner must provide effect authorization before any
 native Computer Use action can actually execute.
+
+## UI observation-guarded shadow plan (V2 research branch)
+
+`ui_guard.rs` extends the existing fixed-frame proposal with a bounded
+exact UI readback requirement. `UiReadbackV1` binds principal scope,
+external observer identity claim, actual tree digest claim, exact generation,
+observed-at time and a maximum age of 5000 ms. A guarded proposal is accepted
+only when the separately supplied observation matches **all** bound fields,
+has not been observed in the future, and has not expired. Every proposed
+action is checked by the existing five-opcode capability/sequence/data verifier.
+
+`UiGuardedShadowProposalV1` binds the original proposal digest and complete
+readback state under a domain-separated digest. Re-verification independently
+reconstructs action and readback digests. The seven source-fixture Rust tests
+cover cross-principal/tree observation drift, stale/future observations,
+generation/TTL limits, missing identity, bad sequence/capability, tampered
+action output and mutated guard/observer.
+
+**There is NO actual observer authenticity, model execution, JIT compiler,
+GPU program, OS UI action, authorization issuer or benchmark of real Computer
+Use latency.** Both `observed` and `now_ms` remain supplied by the
+caller, so even a perfectly valid digest can represent fabricated observations.
+Any future live adapter must authenticate the readback owner, revalidate
+current UI state and consume the existing short-lived FinalUse/effect token at
+the last irreversible boundary. The original `DenyByDefaultSandboxV1`
+still rejects execution. Research source-only tests are not production
+qualification; leave **DRAFT / SHADOW_ONLY / DENY_ALL**.
+
+Run targeted unit, lint and format on a native Rust-enabled host:
+
+`cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use`
+
+`cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings`
+
+`cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check`

@@ -93,9 +93,18 @@ pub enum ActionArgumentsV1 {
         x: i32,
         y: i32,
     },
-    TypeText { text: String },
-    Scroll { delta: i32 },
-    CaptureRegion { x: i32, y: i32, width: u32, height: u32 },
+    TypeText {
+        text: String,
+    },
+    Scroll {
+        delta: i32,
+    },
+    CaptureRegion {
+        x: i32,
+        y: i32,
+        width: u32,
+        height: u32,
+    },
 }
 
 impl ActionArgumentsV1 {
@@ -277,8 +286,7 @@ impl ActionFrameV1 {
                 bytes[4..6]
                     .try_into()
                     .map_err(|_| ActionErrorV1::AbiMismatch)?,
-            )
-                != ACTION_ABI_VERSION_V1
+            ) != ACTION_ABI_VERSION_V1
             || bytes[7] != 0
         {
             return Err(ActionErrorV1::AbiMismatch);
@@ -322,8 +330,7 @@ impl ActionFrameV1 {
             return Err(ActionErrorV1::NonCanonicalPadding);
         }
         let payload = &bytes[ACTION_PAYLOAD_OFFSET..ACTION_PAYLOAD_OFFSET + payload_len];
-        if claimed_digest
-            != action_digest(generation, sequence, capability_digest, opcode, payload)
+        if claimed_digest != action_digest(generation, sequence, capability_digest, opcode, payload)
         {
             return Err(ActionErrorV1::DigestMismatch);
         }
