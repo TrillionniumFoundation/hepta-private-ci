@@ -1096,7 +1096,7 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
     // The new schema must not revive the revoked legacy KG projection.
     assert_eq!(
         sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
+            "SELECT group_concat(version, ',') FROM (SELECT version FROM _sqlx_migrations ORDER BY version)",
         )
         .fetch_one(&migrated.pool)
         .await
