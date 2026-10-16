@@ -227,7 +227,6 @@ class IndependentByteCustodyTests(unittest.TestCase):
         self.assertFalse(json.loads(stdout.getvalue())["production_activation_authorized"])
         self.assertTrue((self.output / "COMPLETE").is_file())
 
-
     def test_mutating_earlier_raw_row_during_copy_cannot_seal_custody(self):
         original_write = _write_exclusive
         changed = False
