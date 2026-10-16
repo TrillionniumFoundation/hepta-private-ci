@@ -1,0 +1,82 @@
+name: hepta-stem-output-residual-v18
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_output_residual_v18*.py"
+      - "qualification/stem-cell-v1/test_stem_output_residual_v18.py"
+      - "qualification/stem-cell-v1/STEM_V18_ORIGINAL*"
+      - ".github/workflows/hepta-stem-output-residual-v18.yml"
+  push:
+    branches:
+      - research/stem-output-residual-v18-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event_name }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  real-original-physical-no-authority:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact SHA and locked CPU research dependencies
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==2.3.5 safetensors==0.7.0
+      - name: Pure mechanism regressions without borrowed model proof
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m py_compile stem_output_residual_v18.py stem_output_residual_v18_review.py test_stem_output_residual_v18.py
+          python -m unittest -q test_stem_output_residual_v18.Mechanism
+          python -O -m unittest -q test_stem_output_residual_v18.Mechanism
+      - name: Acquire original GitHub Actions artifact with exact byte SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11890616195/zip" > "$RUNNER_TEMP/v18-original.zip"
+          echo "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  $RUNNER_TEMP/v18-original.zip" | sha256sum --check
+      - name: Real pretrained-feature physical Head learning and independent audit
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V18_ORIGINAL_ZIP="$RUNNER_TEMP/v18-original.zip"
+          python -m unittest -q test_stem_output_residual_v18
+          python -O -m unittest -q test_stem_output_residual_v18
+          python stem_output_residual_v18.py prepare --archive "$HEPTA_V18_ORIGINAL_ZIP" --out "$RUNNER_TEMP/v18-input"
+          python stem_output_residual_v18.py run --inputs "$RUNNER_TEMP/v18-input" --out "$RUNNER_TEMP/v18-private-candidates" > "$RUNNER_TEMP/v18-aggregate-unverified.json"
+          python stem_output_residual_v18_review.py --archive "$HEPTA_V18_ORIGINAL_ZIP" --inputs "$RUNNER_TEMP/v18-input" --candidates "$RUNNER_TEMP/v18-private-candidates" --out "$RUNNER_TEMP/v18-sanitized-review.json"
+      - name: Upload only the independently reviewed aggregate (no tensors or rows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v18-sanitized-review.json
+          if-no-files-found: error
+      - name: Require immutable source checkout
+        run: git diff --exit-code && git diff --cached --exit-code
