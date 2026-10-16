@@ -15,6 +15,7 @@ import zipfile
 
 import e3_archive_byte_audit as a
 
+
 def fixture():
     rows=[];past=[]
     for i in range(64):
@@ -38,11 +39,6 @@ def fixture():
     return ocr,a.preds(past)
 
 class ArchiveContract(unittest.TestCase):
-    def test_actual_archives_not_used_as_test_labels(self):
-        self.assertFalse(hasattr(a,'HELD_LABELS'))
-        self.assertFalse(hasattr(a,'LABEL_SHA'))
-        self.assertEqual(a.ORIGINAL_SHA if hasattr(a,'ORIGINAL_SHA') else a.SOURCE,a.SOURCE)
-
     def test_actual_ocr_contract_synthetic(self):
         ocr,refs=fixture()
         data=json.dumps(ocr).encode()
@@ -131,7 +127,14 @@ class ArchiveContract(unittest.TestCase):
 
     def test_zip_rejects_non_numeric_media_extensions(self):
         path,digest=self._zip([('image.jpg',b'fake')])
+        # Source-bounded ZIP scanner permits bounded file names; downstream
+        # evidence holder must require exact allowed member inventory.
         with self.assertRaises(a.OriginalZipDenied):
             a.original_zip(path,digest,expected_members={'result.json'})
+
+    def test_actual_archives_not_used_as_test_labels(self):
+        self.assertFalse(hasattr(a,'HELD_LABELS'))
+        self.assertFalse(hasattr(a,'LABEL_SHA'))
+        self.assertEqual(a.ORIGINAL_SHA if hasattr(a,'ORIGINAL_SHA') else a.SOURCE,a.SOURCE)
 
 if __name__=='__main__':unittest.main()
