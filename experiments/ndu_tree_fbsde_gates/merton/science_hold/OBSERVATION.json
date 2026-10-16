@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.ndu-merton.science-hold.v1",
+  "source_parent_sha": "dc7887041dbbe66fd4023b8345111d7f365afc95",
+  "public_model": "jhu-clsp/mmBERT-small",
+  "model_revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+  "original_public_source_zip_sha256": "195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7",
+  "original_completed_trial_zip_sha256": "c78cfe148e6d9544450836202f4da0f9bc5d93f980c96362238945b20a67898f",
+  "source_rows": 128,
+  "source_split_counts": [
+    64,
+    32,
+    32
+  ],
+  "independent_source_families_verified": 0,
+  "new_future_windows": 0,
+  "retrospective_unique_held_records": 32,
+  "repeated_physical_observations_are_not_independent": true,
+  "evaluated_python_modes": [
+    "ordinary",
+    "optimized"
+  ],
+  "repetitions_per_mode": 3,
+  "original_held_labels_reopened_from_public_source": true,
+  "original_sealed_model_rows_replayed_locally": 6,
+  "fixed8_correct": 26,
+  "ndu_correct": 26,
+  "ndu_paired_wins": 0,
+  "ndu_paired_losses": 0,
+  "final_probabilities_identical": true,
+  "fixed8_paid_updates": 8,
+  "ndu_paid_updates": 128,
+  "ndu_additional_observed_cpu_ns": [
+    4799856,
+    6902469,
+    5651506,
+    4792474,
+    5265435,
+    4831602
+  ],
+  "missing_cost_owners": [
+    "complete_online_encoder_materialization",
+    "independently_authenticated_physical_cost"
+  ],
+  "source_authentication": "local_zip_sha_and_original_source_reopen_only",
+  "scientific_advantage_confirmed": false,
+  "full_lifecycle_cost_qualified": false,
+  "production_accepted": false,
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "next_source_candidate": "P0 MultiRC original-human V13 #2378",
+  "upstream_source_blocker": "Original P0 V12 run 38686023757 failed; V13 must supply new exact-head authentic physical artifacts and independent outcomes"
+}
