@@ -1,0 +1,216 @@
+name: Hepta E12 original pretrained Reader VOI negative gate (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e12_original_reader_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e12_original_reader_*.py'
+      - 'qualification/shared-stem-system2-architecture/E12_ORIGINAL_READER_VOI_20261016.md'
+      - '.github/workflows/hepta-e12-original-reader-voi.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  material-owner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      OUT: /tmp/hepta-voi
+      ROOT: qualification/shared-stem-system2-architecture
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - name: Freeze exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT" "$OUT/unlabeled"
+          git rev-parse HEAD | tee "$OUT/source-head.txt"
+          if [[ '${{ matrix.profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e12_original_reader_*.py "$ROOT"/test_e12_original_reader_*.py > "$OUT/new-source-sha256.txt"
+      - name: Independently acquire original pinned physical-model and MultiRC archives
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in '11908591037:physical' '11946621518:multirc'; do
+            ID="${spec%%:*}"; NAME="${spec##*:}"
+            curl --fail --location --retry 2 --max-time 240 \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$ID/zip" \
+              -o "$OUT/$NAME.zip"
+          done
+          echo "d8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa  $OUT/physical.zip" | sha256sum -c -
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $OUT/multirc.zip" | sha256sum -c -
+          unzip -p "$OUT/physical.zip" granite97.report.json > "$OUT/unlabeled/granite.json"
+          unzip -p "$OUT/physical.zip" mmbert_small.report.json > "$OUT/unlabeled/mmbert.json"
+          unzip -p "$OUT/multirc.zip" multirc-native-candidate-audit/audit.json > "$OUT/unlabeled/multirc.json"
+          (cd "$OUT/unlabeled"; sha256sum granite.json mmbert.json multirc.json) > "$OUT/unlabeled-source-sha256.txt"
+          ! grep -l '"evaluation_labels_loaded": true' "$OUT/unlabeled"/*.json
+      - name: Export ONLY source-model predictions to blind stage
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-voi-source-${{ matrix.profile }}
+          path: /tmp/hepta-voi/unlabeled/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Retain source acquisition diagnostic when a gate fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-voi-source-log-${{ matrix.profile }}
+          path: |
+            /tmp/hepta-voi/source-head.txt
+            /tmp/hepta-voi/new-source-sha256.txt
+            /tmp/hepta-voi/unlabeled-source-sha256.txt
+          retention-days: 14
+          if-no-files-found: warn
+  label-blind-archive-replay:
+    needs: material-owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      OUT: /tmp/hepta-voi
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-voi-source-${{ matrix.profile }}
+          path: /tmp/hepta-voi/unlabeled
+      - name: Execute unlabeled original model replay with no label archive in this job
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$OUT/blind-head.txt"
+          python "$ROOT/e12_original_reader_voi.py" \
+            --granite "$OUT/unlabeled/granite.json" \
+            --mmbert "$OUT/unlabeled/mmbert.json" \
+            --multirc "$OUT/unlabeled/multirc.json" \
+            --output "$OUT/create-only-prelabel.json" | tee "$OUT/blind-stdout.json"
+          sha256sum "$OUT/create-only-prelabel.json" | tee "$OUT/prelabel-sha256.txt"
+      - name: Upload immutable prelabel results without labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-voi-blind-${{ matrix.profile }}
+          path: |
+            /tmp/hepta-voi/create-only-prelabel.json
+            /tmp/hepta-voi/prelabel-sha256.txt
+            /tmp/hepta-voi/blind-head.txt
+            /tmp/hepta-voi/blind-stdout.json
+          retention-days: 14
+          if-no-files-found: error
+  independent-original-label-score:
+    needs: label-blind-archive-replay
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      OUT: /tmp/hepta-voi
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-voi-blind-${{ matrix.profile }}
+          path: /tmp/hepta-voi
+      - name: Reacquire original model/score materials ONLY after prelabel stage sealed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in '11908591037:physical' '11886761368:labels' '11946621518:multirc'; do
+            ID="${spec%%:*}"; NAME="${spec##*:}"
+            curl --fail --location --retry 2 --max-time 240 \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$ID/zip" \
+              -o "$OUT/$NAME.zip"
+          done
+          echo "d8e2af397d7ea862245fae0337588ab491dd70e8a8a9a42879e4a7f2d4be3afa  $OUT/physical.zip" | sha256sum -c -
+          echo "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d  $OUT/labels.zip" | sha256sum -c -
+          echo "1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17  $OUT/multirc.zip" | sha256sum -c -
+          mkdir -p "$OUT/unlabeled"
+          unzip -p "$OUT/physical.zip" granite97.report.json > "$OUT/unlabeled/granite.json"
+          unzip -p "$OUT/physical.zip" mmbert_small.report.json > "$OUT/unlabeled/mmbert.json"
+          unzip -p "$OUT/multirc.zip" multirc-native-candidate-audit/audit.json > "$OUT/unlabeled/multirc.json"
+      - name: Run 18 original ZIP-backed adversarial tests without skipping
+        shell: bash
+        env:
+          HEPTA_VOI_GRANITE: /tmp/hepta-voi/unlabeled/granite.json
+          HEPTA_VOI_MMBERT: /tmp/hepta-voi/unlabeled/mmbert.json
+          HEPTA_VOI_MULTIRC: /tmp/hepta-voi/unlabeled/multirc.json
+          HEPTA_VOI_PHYSICAL_ZIP: /tmp/hepta-voi/physical.zip
+          HEPTA_VOI_LABEL_ZIP: /tmp/hepta-voi/labels.zip
+          HEPTA_VOI_MULTIRC_ZIP: /tmp/hepta-voi/multirc.zip
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$ROOT"
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_original_reader_*.py' -v > "$OUT/normal.log" 2>&1 || { cat "$OUT/normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_original_reader_*.py' -v > "$OUT/optimized.log" 2>&1 || { cat "$OUT/optimized.log"; exit 1; }
+          grep -q '^Ran 18 tests' "$OUT/normal.log"
+          grep -q '^Ran 18 tests' "$OUT/optimized.log"
+          ! grep -E 'skipped=[1-9]|FAILED|ERROR' "$OUT/normal.log" "$OUT/optimized.log"
+      - name: Independently score immutable original pretrained Reader decisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN_SHA="$(cut -d ' ' -f1 "$OUT/prelabel-sha256.txt")"
+          python "$ROOT/e12_original_reader_review.py" \
+            --prelabel "$OUT/create-only-prelabel.json" --prelabel-sha256 "$PLAN_SHA" \
+            --physical "$OUT/physical.zip" --labels "$OUT/labels.zip" --multirc "$OUT/multirc.zip" \
+            --output "$OUT/original-independent-review.json" | tee "$OUT/review-stdout.json"
+          python - "$OUT/original-independent-review.json" <<'PY'
+          import json,sys
+          a=json.load(open(sys.argv[1]));s=a['policy_outcomes']
+          assert a['authority']=='DENY_ALL' and a['production_accepted'] is False
+          assert a['system2_full_fbsde_admitted'] is False
+          assert a['two_model_oracle_correct_upper_bound']==126
+          assert (s['stop']['correct'],s['stop']['switches'])==(122,0)
+          assert (s['uncertain_060']['correct'],s['uncertain_060']['switches'])==(122,6)
+          assert (s['uncertain_075']['correct'],s['uncertain_075']['switches'])==(118,16)
+          assert (s['always_mmbert']['correct'],s['always_mmbert']['switches'])==(73,128)
+          assert a['accuracy_first_additional_computation_no_go'] is True
+          print('ORIGINAL 128-case NO-GO: no accuracy lift; FBSDE NOT ADMITTED')
+          PY
+          sha256sum "$OUT/original-independent-review.json" > "$OUT/independent-review-sha256.txt"
+      - name: Keep source/outcome receipts and failed attempts, no authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e12-original-reader-voi-review-${{ matrix.profile }}
+          path: |
+            /tmp/hepta-voi/original-independent-review.json
+            /tmp/hepta-voi/independent-review-sha256.txt
+            /tmp/hepta-voi/review-stdout.json
+            /tmp/hepta-voi/normal.log
+            /tmp/hepta-voi/optimized.log
+          retention-days: 14
+          if-no-files-found: warn
