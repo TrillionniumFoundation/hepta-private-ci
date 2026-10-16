@@ -1038,7 +1038,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertRegex(
             observer,
             r"let flags\s*=\s*OFlags::RDONLY\s*\|\s*OFlags::NOFOLLOW\s*"
-            r"\|\s*OFlags::CLOEXEC",
+            r"\|\s*OFlags::CLOEXEC\s*\|\s*OFlags::NONBLOCK",
             "both Observer files must be opened read-only and no-follow",
         )
         for forbidden in (
@@ -1083,6 +1083,15 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         native = (
             ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
         ).read_text(encoding="utf-8")
+        for original_fifo_regression in (
+            "fn original_pending_begin_inspector_fifo_marker_is_nonblocking_and_denied()",
+            "fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied()",
+        ):
+            self.assertIn(
+                original_fifo_regression,
+                native,
+                "observer must reject a real injected FIFO without blocking an open",
+            )
         self.assertIn(
             "fn pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory()",
             native,
