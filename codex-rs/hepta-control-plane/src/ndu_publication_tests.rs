@@ -1732,7 +1732,9 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
                     .create_new(true)
                     .open(&effect)
                     .expect("create test-only external effect");
-                marker.write_all(EFFECT_BYTES).expect("write original effect");
+                marker
+                    .write_all(EFFECT_BYTES)
+                    .expect("write original effect");
                 marker.sync_all().expect("fsync external fixture");
                 let parent = effect.parent().expect("private effect parent");
                 std::fs::File::open(parent)
@@ -1790,7 +1792,9 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
         }
         std::thread::sleep(Duration::from_millis(10));
     }
-    child.kill().expect("deliver actual SIGKILL to original Control");
+    child
+        .kill()
+        .expect("deliver actual SIGKILL to original Control");
     let status = child.wait().expect("reap original Control process");
     assert_eq!(
         status.signal(),
@@ -1815,10 +1819,7 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
 
     for (frozen, checkpoint) in [
         (snapshot(3), Digest32::ZERO),
-        (
-            snapshot(4),
-            Digest32::of_bytes(b"migrated-sigkill-fixture"),
-        ),
+        (snapshot(4), Digest32::of_bytes(b"migrated-sigkill-fixture")),
     ] {
         assert!(matches!(
             NduPublicationOwnerV1::open_production(&wal, frozen, checkpoint),
