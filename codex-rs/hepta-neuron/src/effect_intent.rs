@@ -128,7 +128,7 @@ impl DurableNeuronEffectIntentV1 {
             let maximum = HEADER_BYTES as u64 + max_records as u64 * RECORD_BYTES as u64;
             if length < HEADER_BYTES as u64
                 || length > maximum
-                || (length - HEADER_BYTES as u64) % RECORD_BYTES as u64 != 0
+                || !(length - HEADER_BYTES as u64).is_multiple_of(RECORD_BYTES as u64)
             {
                 return Err(NeuronEffectIntentErrorV1::Corrupt);
             }
@@ -201,6 +201,24 @@ impl DurableNeuronEffectIntentV1 {
         _max_records: usize,
     ) -> Result<Self, NeuronEffectIntentErrorV1> {
         Err(NeuronEffectIntentErrorV1::UnsupportedPlatform)
+    }
+
+    /// Read-only completed effect IDs from this already locked and replayed
+    /// original WAL. This local list is not a signed Control decision or a
+    /// model-effect receipt; Agentd must verify exact original Evidence
+    /// membership and an independent authority before considering recovery.
+    pub fn completed_tick_digests_v1(&self) -> Result<Vec<Digest32>, NeuronEffectIntentErrorV1> {
+        #[cfg(unix)]
+        if self.owner_path.is_some() {
+            self.verify_bound_owner_path()?;
+        }
+        if self.poisoned {
+            return Err(NeuronEffectIntentErrorV1::Poisoned);
+        }
+        if self.pending.is_some() || self.recovered_pending {
+            return Err(NeuronEffectIntentErrorV1::PendingReconciliation);
+        }
+        Ok(self.attempted.iter().copied().collect())
     }
 
     pub fn status(&self) -> NeuronEffectIntentStatusV1 {
@@ -308,12 +326,12 @@ impl DurableNeuronEffectIntentV1 {
         previous_checkpoint: Digest32,
     ) -> Result<(), NeuronEffectIntentErrorV1> {
         #[cfg(unix)]
-        if self.owner_path.is_some() {
-            if let Err(error) = self.verify_bound_owner_path() {
-                // An altered bootstrap pathname permanently fences this owner.
-                self.poisoned = true;
-                return Err(error);
-            }
+        if self.owner_path.is_some()
+            && let Err(error) = self.verify_bound_owner_path()
+        {
+            // An altered bootstrap pathname permanently fences this owner.
+            self.poisoned = true;
+            return Err(error);
         }
         self.can_prepare(tick_digest)?;
         self.append(b'P', tick_digest, previous_checkpoint)?;

@@ -16,6 +16,7 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AuthorizedEffectAdmissionV1;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
@@ -567,10 +568,12 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
                 &effect,
                 b"different-provider-bytes",
                 &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -584,10 +587,12 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("same grant remains usable after local wire mismatch");
@@ -623,10 +628,12 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
                 &effect,
                 b"wrong-payload",
                 &owner,
-                &signed,
-                &expected,
-                "authorized-effect-async-dispatch",
-                30,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-async-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -644,10 +651,12 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
             &effect,
             b"effect-payload",
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-async-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("exact wire payload dispatch");
@@ -689,10 +698,12 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
             &effect,
             b"effect-payload",
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-async-unknown",
-            30,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-unknown",
+                now_ms: 30,
+            },
         )
         .await
         .expect("unknown provider dispatch is durable");
@@ -738,10 +749,12 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
                 &effect,
                 EFFECT_PAYLOAD,
                 &owner,
-                &signed,
-                &wrong,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &wrong,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -755,10 +768,12 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("correct binding executes");
@@ -792,10 +807,12 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("first dispatch");
@@ -809,10 +826,12 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -847,10 +866,12 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
                 &crash_effect,
                 EFFECT_PAYLOAD,
                 &crash_owner,
-                &crash_signed,
-                &crash_expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &crash_signed,
+                    expected_binding: &crash_expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await
     })
@@ -880,10 +901,12 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(matches!(
@@ -927,10 +950,12 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("ambiguous dispatch");
@@ -970,10 +995,12 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -1030,10 +1057,12 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
                 &effect,
                 EFFECT_PAYLOAD,
                 &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::Driver(
@@ -1058,10 +1087,12 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -1089,10 +1120,12 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
             &effect,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch under one final-use revocation fence");
@@ -1124,10 +1157,12 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
                 &effect,
                 EFFECT_PAYLOAD,
                 &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                31,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 31,
+                },
             )
             .await
             .is_err(),
@@ -1157,10 +1192,12 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
             &compensation,
             EFFECT_PAYLOAD,
             &owner,
-            &signed,
-            &expected,
-            "compensation-dispatch",
-            30,
+            AuthorizedEffectAdmissionV1 {
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "compensation-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("ambiguous compensation dispatch");
@@ -1216,10 +1253,12 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
                 &compensation,
                 EFFECT_PAYLOAD,
                 &owner,
-                &signed,
-                &expected,
-                "compensation-dispatch",
-                32,
+                AuthorizedEffectAdmissionV1 {
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "compensation-dispatch",
+                    now_ms: 32,
+                },
             )
             .await
             .is_err(),

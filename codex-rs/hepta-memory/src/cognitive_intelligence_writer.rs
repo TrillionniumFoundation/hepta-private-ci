@@ -63,6 +63,15 @@ pub(crate) struct CanonicalFactSet {
     pub(crate) relations: Vec<CanonicalRelationFact>,
 }
 
+/// An exact revision target bound to one correction transaction. The
+/// revision and memory identity must travel together across the production
+/// writer and its underlying SQLite mutation.
+#[derive(Clone, Copy)]
+pub(crate) struct CognitiveCorrectionTargetV1<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 impl CognitiveStore {
     /// Atomically appends the cited source, creates the first memory revision,
     /// persists its immutable structured facts, and publishes the next complete
@@ -142,8 +151,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                CognitiveCorrectionTargetV1 {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,12 +168,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: CognitiveCorrectionTargetV1<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let CognitiveCorrectionTargetV1 {
+            memory_id,
+            expected_revision,
+        } = target;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active

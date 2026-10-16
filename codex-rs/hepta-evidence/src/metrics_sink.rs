@@ -364,10 +364,10 @@ impl DurablePhaseMetricSinkV1 {
             self.health.healthy.store(false, Ordering::Release);
             return;
         }
-        if let Ok(mut handle) = self.worker.lock() {
-            if let Some(worker) = handle.take() {
-                let _ = worker.join();
-            }
+        if let Ok(mut handle) = self.worker.lock()
+            && let Some(worker) = handle.take()
+        {
+            let _ = worker.join();
         }
     }
 }

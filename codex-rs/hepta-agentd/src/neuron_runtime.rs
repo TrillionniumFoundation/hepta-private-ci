@@ -13,11 +13,13 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronEffectIntentV1;
 use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::JournalScope;
 use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
+use codex_hepta_neuron::NeuronSignedEffectAdmissionV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
@@ -26,6 +28,7 @@ use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -44,6 +47,8 @@ where
     effect_intent: Option<DurableNeuronEffectIntentV1>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
+    metrics_flushed: AtomicBool,
+    original_evidence_bound: bool,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -78,6 +83,8 @@ where
             effect_intent: None,
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
+            original_evidence_bound: false,
         }
     }
 
@@ -99,6 +106,8 @@ where
             effect_intent: None,
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
+            original_evidence_bound: false,
         }
     }
 
@@ -122,6 +131,8 @@ where
             effect_intent: Some(effect_intent),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
+            original_evidence_bound: false,
         }
     }
 
@@ -153,36 +164,66 @@ where
         ))
     }
 
-    /// Attach the non-authorizing Evidence-owned durable phase metric sink.
-    /// The existing signed Neuron entry remains the only model-effect path.
-    /// A missing or unhealthy sink never grants production readiness.
+    /// Observation-only compatibility path: a caller-provided trait object
+    /// cannot claim provenance from the original Evidence WAL owner.
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics_flushed.store(false, Ordering::Release);
+        self.original_evidence_bound = false;
+        self.metric_sink = Some(sink);
+        self
+    }
+
+    /// Existing real Evidence-owned group-commit writer, NOT a signer.
+    /// The caller must separately authenticate NDU/Control/CNS/Final-use.
+    pub(crate) fn with_original_evidence_sink(
+        mut self,
+        sink: Arc<codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1>,
+    ) -> Self {
+        self.metrics_flushed.store(false, Ordering::Release);
+        self.original_evidence_bound = true;
         self.metric_sink = Some(sink);
         self
     }
 
     pub fn production_metrics_ready(&self) -> bool {
-        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
-            && self.failed_metrics.load(Ordering::Acquire) == 0
-    }
-
-    /// Explicit qualification barrier after the effect, not another model
-    /// invocation or a way to clear the sticky telemetry failure latch.
-    pub fn flush_production_metrics(&self) -> bool {
-        let Some(sink) = &self.metric_sink else {
-            return false;
-        };
-        if sink.flush().is_err() {
-            self.failed_metrics.fetch_add(1, Ordering::Release);
+        if !effect_intent_ready_v1(self.effect_intent_status()) {
             return false;
         }
-        self.production_metrics_ready()
+        metrics_ready_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+            self.original_evidence_bound,
+        )
+    }
+
+    /// Wait for original Evidence's bounded real group-fsync ACK.
+    pub fn flush_production_metrics(&self) -> bool {
+        if !effect_intent_ready_v1(self.effect_intent_status()) {
+            self.metrics_flushed.store(false, Ordering::Release);
+            return false;
+        }
+        flush_metrics_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+            self.original_evidence_bound,
+        )
     }
 
     pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
         self.effect_intent
             .as_ref()
             .map(DurableNeuronEffectIntentV1::status)
+    }
+
+    /// Boot-only readback from the ORIGINAL locked business-effect WAL;
+    /// never a public authority or a new model invocation path.
+    pub(crate) fn recovered_completed_effect_ids_v1(&self) -> Option<Vec<Digest32>> {
+        self.effect_intent
+            .as_ref()?
+            .completed_tick_digests_v1()
+            .ok()
     }
 
     /// The old unsigned entry is not a serving path.
@@ -194,35 +235,47 @@ where
         Err(NeuronRuntimeError::InvalidInput)
     }
 
-    /// One independently issuer-signed grant permits one snapshot-bound tick.
-    /// The token is revalidated at physical effect entry; revocation during
-    /// a synchronous invocation is fenced by with_verified_effect.
+    /// A physical effect cannot begin without an original Evidence fsync
+    /// frontier, and its positive result cannot leave before terminal fsync.
+    /// An indeterminate telemetry barrier NEVER authorizes model replay.
     pub fn tick_bound(
         &mut self,
         input: NeuronTickInputV1,
         signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
-        // Avoid rematerializing the semantic digest or reading the clock when
-        // no Evidence sink is configured. This metric is the real wall-clock
-        // duration of the signed tick, never a simulated NDU/WAL phase.
-        let started = self.metric_sink.as_ref().map(|_| Instant::now());
-        let scope_digest =
-            started.map(|_| Digest32::of_bytes(input.subject_id.as_str().as_bytes()));
-        let operation_digest = started.and_then(|_| input.semantic_digest().ok());
+        // The installed non-test Agentd still lacks independent ORIGINAL
+        // Control Begin/CNS signed effect/Commit custody. Refuse before
+        // writing even a negative Evidence row: otherwise an untrusted call
+        // would persist telemetry without an Effect Intent, making the
+        // next legitimate cold restart look like torn execution history.
+        // This is a deny-only hold, NOT a route to mint Control authority.
+        if !cfg!(test) {
+            return Err(NeuronRuntimeError::OriginalEffectOwnerUnverified);
+        }
+        let operation_digest = input.semantic_digest()?;
+        begin_signed_tick_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+            self.original_evidence_bound,
+        )?;
+        // Evidence must use the independently recovered Neuron Journal's
+        // domain-separated scope, never a caller-supplied bare subject hash.
+        let journal_scope = self.runtime.journal_scope();
+        let started = Instant::now();
         let result = self.tick_bound_inner(input, signed_read, signed_grant);
-        if let (Some(started), Some(scope_digest), Some(operation_digest)) =
-            (started, scope_digest, operation_digest)
-        {
-            observe_phase_v1(
-                self.metric_sink.as_deref(),
-                &self.failed_metrics,
-                scope_digest,
-                operation_digest,
-                PhaseMetricKindV1::NeuronFeature,
-                started.elapsed(),
-                result.is_ok(),
-            );
+        if !observe_and_commit_neuron_phase_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+            self.original_evidence_bound,
+            journal_scope,
+            operation_digest,
+            started.elapsed(),
+            result.is_ok(),
+        ) {
+            return Err(NeuronRuntimeError::TelemetryIndeterminate);
         }
         result
     }
@@ -272,12 +325,14 @@ where
         self.runtime.tick_with_ndu_snapshot(
             &mut model,
             input,
-            snapshot,
-            authenticated_read_receipt_digest,
-            effect_intent,
-            owner_id,
-            authority,
-            signed_grant,
+            NeuronSignedEffectAdmissionV1 {
+                snapshot,
+                admitted_read_receipt_digest: authenticated_read_receipt_digest,
+                effect_intent,
+                neuron_owner_id: owner_id,
+                authority,
+                signed_grant,
+            },
             || {
                 read_verifier
                     .verify(signed_read)
@@ -291,6 +346,12 @@ where
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }
+}
+
+/// A durable unresolved original model effect must not be declared ready
+/// merely because the independent Evidence writer reports a healthy fsync.
+fn effect_intent_ready_v1(status: Option<NeuronEffectIntentStatusV1>) -> bool {
+    status.is_some_and(|intent| !intent.poisoned && intent.unresolved_tick.is_none())
 }
 
 /// Real elapsed-time observation only. Metrics cannot mint an authority,
@@ -318,6 +379,101 @@ fn observe_phase_v1(
             failed_metrics.fetch_add(1, Ordering::Release);
         }
     }
+}
+
+/// Queue health and an unsigned callback are not original Evidence custody.
+fn metrics_ready_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+    original_evidence_bound: bool,
+) -> bool {
+    original_evidence_bound
+        && metrics_flushed.load(Ordering::Acquire)
+        && failed_metrics.load(Ordering::Acquire) == 0
+        && sink.is_some_and(|writer| writer.healthy())
+}
+
+/// Consume the last fsync ACK before entering the next signed tick.
+fn begin_signed_tick_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+    original_evidence_bound: bool,
+) -> Result<(), NeuronRuntimeError> {
+    if !metrics_ready_v1(
+        sink,
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    ) {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
+    metrics_flushed.store(false, Ordering::Release);
+    Ok(())
+}
+
+fn flush_metrics_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+    original_evidence_bound: bool,
+) -> bool {
+    if !original_evidence_bound || failed_metrics.load(Ordering::Acquire) != 0 {
+        return false;
+    }
+    let Some(sink) = sink else {
+        return false;
+    };
+    if !sink.healthy() || sink.flush().is_err() || !sink.healthy() {
+        failed_metrics.fetch_add(1, Ordering::Release);
+        metrics_flushed.store(false, Ordering::Release);
+        return false;
+    }
+    metrics_flushed.store(true, Ordering::Release);
+    metrics_ready_v1(
+        Some(sink),
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    )
+}
+
+/// Record exactly one actual signed Neuron call and require its original
+/// Evidence FIFO fsync ACK before releasing a successful outcome.
+fn observe_and_commit_neuron_phase_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+    original_evidence_bound: bool,
+    journal_scope: JournalScope,
+    operation_digest: Digest32,
+    elapsed: Duration,
+    succeeded: bool,
+) -> bool {
+    let Some(sink) = sink else {
+        failed_metrics.fetch_add(1, Ordering::Release);
+        return false;
+    };
+    if !original_evidence_bound {
+        failed_metrics.fetch_add(1, Ordering::Release);
+        return false;
+    }
+    observe_phase_v1(
+        Some(sink),
+        failed_metrics,
+        journal_scope.scope_digest,
+        operation_digest,
+        PhaseMetricKindV1::NeuronFeature,
+        elapsed,
+        succeeded,
+    );
+    flush_metrics_v1(
+        Some(sink),
+        failed_metrics,
+        metrics_flushed,
+        original_evidence_bound,
+    )
 }
 
 #[cfg(test)]

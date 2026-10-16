@@ -23,7 +23,30 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  p0_rustfmt:
+    name: P0 exact-source Rustfmt (x86)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out immutable source HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Install pinned minimal Rustfmt toolchain
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Refuse any original Neuron, Agentd, Core or Worker Rustfmt drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-evidence -p codex-hepta-control-plane -p codex-hepta-memory -p codex-hepta-cell-roles -p codex-hepta-automation -p codex-hepta-context-compiler -- --check
+          git diff --check
+          git diff --exit-code
+
   qualification:
+    needs: p0_rustfmt
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
@@ -154,6 +177,15 @@ jobs:
             args+=(--base "$BASE_SHA")
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
+      - name: Fail-fast P0 original Neuron Agentd Worker Rust formatting
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Do not postpone a deterministic source Rustfmt failure until
+          # after V8 downloads, CellSplit canary and deep native tests.
+          # This checks the EXACT source HEAD or synthetic merge tree using
+          # the owning pinned workspace rustfmt configuration.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-evidence -p codex-hepta-control-plane -p codex-hepta-memory -p codex-hepta-cell-roles -p codex-hepta-automation -p codex-hepta-context-compiler -- --check
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
@@ -244,6 +276,22 @@ jobs:
           # before expensive later learning/Worker workflows.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-prod-feature-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features cell-split-supervisor-port --lib
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-original-one-shot-no-replay.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features cell-split-supervisor-port --lib real_journal_port_finalizes_authenticated_fourth_step_and_reopens -- --nocapture --test-threads=1
+      - name: Early signed Neuron non-test denial and original Evidence fsync acceptance
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # The new standalone workflow may not be registered on main; test
+          # real non-test linked code on the existing Architecture runner.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-public-non-test-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-public-ndu-non-test-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
+          # External integration binary links non-test Agentd and proves
+          # its signed NDU Frontier/Verifier/FinalUse port can be named by
+          # product callers without minting or performing an effect.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-external-signed-api.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test signed_neuron_public_contract -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-original-evidence-bootstrap.json" --minimum-tests 11 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_production_bootstrap::tests:: -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-evidence-fsync-gates.json" --minimum-tests 6 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib agentd_ -- --nocapture --test-threads=1
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
@@ -417,13 +465,15 @@ jobs:
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs: [p0_rustfmt, qualification]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Require both exact-candidate lanes
         env:
+          FORMAT_RESULT: ${{ needs.p0_rustfmt.result }}
           RESULT: ${{ needs.qualification.result }}
         run: |
+          test "$FORMAT_RESULT" = success
           test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          echo "Pinned x86 Rustfmt and all applicable exact-candidate lanes succeeded; identical-tree reuse requires source-head success."

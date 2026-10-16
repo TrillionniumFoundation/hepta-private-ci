@@ -813,7 +813,7 @@ fn persist_durable_control(path: &Path, bytes: &[u8]) -> Result<(), ControlOwner
         .write(true)
         .open(&temp)
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-    file.write_all(&bytes)
+    file.write_all(bytes)
         .and_then(|_| file.sync_all())
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     drop(file);
