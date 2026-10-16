@@ -31,10 +31,12 @@ or evidence of trained MemoryCells / emergent graph learning.
   `memory_graph_independent_audit.py` at
   `2455ad26d75944de8e32533c87dde5b4ee7d1717`.
   **This exact-core-source rerun reproduced all three hashes below
-  bit-for-bit.** Twelve local V2 source/auditor tests passed on the exact
-  source files, plus the V1 four-condition CLI mechanical check passed.
-  The standard hosted `blocking-ci` and canonical preparer parity remain
-  separate and are NOT presumed green.
+  bit-for-bit.** All six graph source/test files have now been verified
+  against their exact Git blob SHA-1 and the **16 exact-source unittest
+  cases passed locally** (4 synthetic structural, 7 source/label controls,
+  5 independent-original negative-contract tests). V1 mechanical CLI
+  also passed. The standard hosted `blocking-ci` and canonical preparer
+  parity remain separate and are NOT presumed green.
 - 240-row prediction journal SHA-256:
   `882abb0424d3d92d9f096d86c1a864b35a589f095733c81fc474afd0f671ba8b`.
   Seal SHA-256:
