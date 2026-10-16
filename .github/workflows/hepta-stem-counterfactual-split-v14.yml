@@ -17,6 +17,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V19_*"
       - "qualification/stem-cell-v1/*v20_*"
       - "qualification/stem-cell-v1/STEM_V20_*"
+      - "qualification/stem-cell-v1/*v21_*"
+      - "qualification/stem-cell-v1/STEM_V21_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -36,6 +38,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V19_*"
       - "qualification/stem-cell-v1/*v20_*"
       - "qualification/stem-cell-v1/STEM_V20_*"
+      - "qualification/stem-cell-v1/*v21_*"
+      - "qualification/stem-cell-v1/STEM_V21_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -66,7 +70,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 cryptography==46.0.4 cryptography==46.0.4
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 cryptography==46.0.4
       - name: Mechanism-only tests without original publisher data
         working-directory: qualification/stem-cell-v1
         env:
@@ -93,6 +97,10 @@ jobs:
           python -m unittest -v test_v20_original_material_challenge.SourceOnly
           python -O -m unittest -v test_v20_original_material_challenge.SourceOnly
           python -m py_compile v20_original_material_challenge.py test_v20_original_material_challenge.py
+          python -m unittest -v test_v21_prospective_cost_gate.SourceOnly
+          python -O -m unittest -v test_v21_prospective_cost_gate.SourceOnly
+          python -m py_compile v21_prospective_cost_gate.py test_v21_prospective_cost_gate.py
+          python v21_prospective_cost_gate.py --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --output "$RUNNER_TEMP/v21-pr-hold.json"
           python v20_original_material_challenge.py --retrospective STEM_V18_SOURCE_FIRST_20261016.json --output "$RUNNER_TEMP/v20-pr-HOLD.json"
       - name: Retrieve only the immutable original Actions archive
         if: github.event_name != 'pull_request'
@@ -246,6 +254,43 @@ jobs:
         with:
           name: v20-original-source-material-HOLD-${{ github.sha }}
           path: ${{ runner.temp }}/v20-original-HOLD.json
+          if-no-files-found: error
+      - name: V21 frozen prospective protocol, real archived Heads and independent-cost intake
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V20_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V20_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V20_V16="$RUNNER_TEMP/v16-candidates"
+          export HEPTA_V20_ARCHIVE="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_v21_prospective_cost_gate
+          python -O -m unittest -v test_v21_prospective_cost_gate
+          python v21_prospective_cost_gate.py \
+            --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json \
+            --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json \
+            --output "$RUNNER_TEMP/v21-prospective-HOLD.json"
+          python - "$RUNNER_TEMP/v21-prospective-HOLD.json" <<'PY_ENFORCE_V21'
+          import json,sys
+          with open(sys.argv[1], encoding="utf-8") as f: receipt=json.load(f)
+          if not (receipt.get("decision") == "HOLD_NO_INDEPENDENT_FUTURE_AND_HOST_EVIDENCE"
+                  and receipt.get("new_signed_source_families") == 0
+                  and receipt.get("qualified_future_windows") == 0
+                  and receipt.get("science_authorized") is False
+                  and receipt.get("production_authorized") is False
+                  and receipt.get("authority_posture") == "DENY_ALL"):
+              raise SystemExit("V21 scientific or production admission erroneously opened")
+          PY_ENFORCE_V21
+      - name: Upload only V21 frozen-protocol HOLD, no source packets or keys
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v21-prospective-source-and-host-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v21-prospective-HOLD.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
