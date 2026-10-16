@@ -743,6 +743,59 @@ fn completed_history_must_be_verified_against_current_original_owners() {
 }
 
 #[test]
+fn incomplete_verified_completion_must_read_back_live_predecessors() {
+    for committed in 1..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open original owner");
+        for _ in 0..committed {
+            owner.advance().expect("signed original effect");
+        }
+        let before = state.borrow().verifications;
+        assert!(!owner.verified_complete().expect("valid incomplete prefix"));
+        assert_eq!(state.borrow().verifications - before, committed);
+
+        state.borrow_mut().commits.clear();
+        assert!(matches!(
+            owner.verified_complete(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(owner.completed_steps(), committed);
+        assert_eq!(state.borrow().executions, committed, "no replay");
+    }
+}
+
+#[test]
+fn incomplete_verified_completion_must_reject_injected_uncommitted_frame() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open original owner");
+    assert!(!owner.verified_complete().expect("clean empty history"));
+
+    // A read-only status query must not misclassify an unrecognized intent
+    // as a safe empty/incomplete split, nor dispatch an external effect.
+    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}")
+        .expect("inject unrecognized persisted intent");
+    assert!(matches!(
+        owner.verified_complete(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
