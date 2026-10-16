@@ -48,16 +48,16 @@ jobs:
           git diff --check
           rustc --version --verbose
           cargo --version
-      - name: Run locked command frontmatter scalar contract
+      - name: Run complete locked Command Skill import and frontmatter regressions
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins yaml_description_contract_is_frozen_before_security_parser_migration --lib
-      - name: Run locked subagent frontmatter scalar contract
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins --lib
+      - name: Run complete locked Subagent metadata and import regressions
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-external-agent-migration subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-external-agent-migration --lib
       - name: Verify parser owner formatting
         if: always()
         shell: bash
