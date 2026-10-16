@@ -64,7 +64,9 @@ def read(path, *, maximum=32*1024*1024):
 def write(path, obj):
     data = canonical(obj)
     with Path(path).open("xb") as f:
-        f.write(data); f.flush(); os.fsync(f.fileno())
+        f.write(data)
+        f.flush()
+        os.fsync(f.fileno())
     return digest(data)
 
 
@@ -144,7 +146,8 @@ def make_plan(original_path, prepared_dir, source_run_dir, output_dir, per_famil
             entries.append({"request_id": f"{qid}:{arm}", "question_id": qid,
                             "family": group["family"], "question": q["text"],
                             "arm": arm, "evidence": snippets, "unavailable": unavailable})
-    dest = Path(output_dir); dest.mkdir(exist_ok=False)
+    dest = Path(output_dir)
+    dest.mkdir(exist_ok=False)
     plan = {"schema": SCHEMA, "public_sha256": meta["public_sha256"],
             "rank_journal_sha256": seal["journal_sha256"], "original_sha256": ORIGINAL_SHA,
             "planned_questions": 10*per_family, "arms": list(ARMS),
@@ -163,7 +166,8 @@ def load_plan(plan_dir):
     if folder.is_symlink() or sorted(p.name for p in folder.iterdir()) != ["plan-seal.json", "plan.json"]:
         raise ValueError("reader plan directory is not closed-world")
     raw = read(folder / "plan.json")
-    plan = strict(raw); seal = strict(read(folder / "plan-seal.json"))
+    plan = strict(raw)
+    seal = strict(read(folder / "plan-seal.json"))
     if (not isinstance(plan, dict) or set(plan) != {"schema", "public_sha256", "rank_journal_sha256",
         "original_sha256", "planned_questions", "arms", "max_input_tokens", "max_new_tokens",
         "generated_with_annotation_privileges", "answer_labels_in_model_plan", "production_accepted", "requests"}
@@ -217,7 +221,8 @@ def load_checkpoint(path, requests, ph):
 def run_reader(plan_dir, model_dir, out_dir, *, max_calls=None):
     """Standalone label-free process, restartable with prefix-validated fsynced rows."""
     plan, ph = load_plan(plan_dir)
-    out = Path(out_dir); out.mkdir(exist_ok=True)
+    out = Path(out_dir)
+    out.mkdir(exist_ok=True)
     checkpoint = out / "progress.jsonl"
     requests = plan["requests"]
     rows = load_checkpoint(checkpoint, requests, ph)
@@ -266,7 +271,9 @@ def run_reader(plan_dir, model_dir, out_dir, *, max_calls=None):
                 record["seconds"] = round(time.perf_counter() - tic, 6)
         rows.append(record)
         with checkpoint.open("ab") as f:
-            f.write(canonical(record)); f.flush(); os.fsync(f.fileno())
+            f.write(canonical(record))
+            f.flush()
+            os.fsync(f.fileno())
         new_count += 1
         print(f"{len(rows)}/{len(requests)} {record['request_id']} {record['status']}", flush=True)
     if len(rows) != len(requests):
@@ -281,11 +288,15 @@ def run_reader(plan_dir, model_dir, out_dir, *, max_calls=None):
 
 
 def token_f1(answer, reference):
-    a = re.findall(r"[a-z0-9]+", answer.lower()); b = re.findall(r"[a-z0-9]+", reference.lower())
-    if not a or not b: return 0.0
+    a = re.findall(r"[a-z0-9]+", answer.lower())
+    b = re.findall(r"[a-z0-9]+", reference.lower())
+    if not a or not b:
+        return 0.0
     common = sum((Counter(a) & Counter(b)).values())
-    if not common: return 0.0
-    p = common / len(a); r = common / len(b)
+    if not common:
+        return 0.0
+    p = common / len(a)
+    r = common / len(b)
     return 2 * p * r / (p + r)
 
 
