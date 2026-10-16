@@ -66,7 +66,6 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
     return value
 
 
-
 def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
     if (
         type(value) is not int
@@ -80,7 +79,9 @@ def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
     return value
 
 
-def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[str, Any]:
+def validate_run_numbers(
+    entry: dict[str, Any], scope: int, mode: str
+) -> dict[str, Any]:
     """Check one host measurement before executing another expensive workload."""
     key = (scope, mode)
     vals = {
@@ -133,6 +134,7 @@ def exact_per_request_count_regressed(
         candidate[field] * baseline["completed"]
         > baseline[field] * candidate["completed"]
     )
+
 
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
