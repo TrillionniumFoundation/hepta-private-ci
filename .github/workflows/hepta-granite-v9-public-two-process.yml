@@ -327,3 +327,176 @@ jobs:
           retention-days: 1
           if-no-files-found: warn
           path: ${{ runner.temp }}/granite-v9/weight-residency.json
+  # Prevent queue-induced expiration across different Actions jobs.
+  # Historical lock is ONLY a content reference, never renewed authority.
+  bounded-single-runner-replay:
+    needs: [material-source-freeze, source-negative-tests]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          path: ${{ runner.temp }}/granite-v9-original
+      - name: Rehash authentic material and stage a NEW data-only session
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import shutil
+          import sys
+          import time
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          sys.path.insert(0,"qualification/stem-cell-v1")
+          import granite97_v9_public_physical as v9
+          previous=root/"granite-v9-original"
+          fresh=root/"granite-v9-fresh"
+          new_model=fresh/"model"
+          new_model.mkdir(parents=True,exist_ok=False)
+          former,_=v9._json(previous/"lock.json",8192)
+
+          # Former lease might have expired in the queue. Do NOT treat it
+          # as a current owner approval. Re-hash original files/source and
+          # establish a separate, create-only research DATA session instead.
+          _,original_digest=v9.calculate_material(previous/"model")
+          if (former.get("model_id")!=v9.MODEL_ID
+              or former.get("revision")!=v9.REVISION
+              or former.get("source_sha256")!=v9.SOURCE_SHA
+              or former.get("material_sha256")!=original_digest
+              or former.get("authority")!="DENY_ALL"
+              or former.get("production_authorized") is not False
+              or former.get("model_selected") is not False
+              or former.get("upstream_commit_pinned") is not True
+              or former.get("independent_model_owner_authenticated") is not False
+              or former.get("independent_source_owner_authenticated") is not False):
+              raise SystemExit("original model/source cannot be independently re-staged")
+          source=v9.source_bytes(previous/"source.txt")
+          for name in v9.FILES:
+              old=previous/"model"/name
+              if old.is_symlink() or not old.is_file():
+                  raise SystemExit("original source model is not a regular file")
+              with old.open("rb") as src, (new_model/name).open("xb") as dst:
+                  shutil.copyfileobj(src,dst,1024*1024)
+          with (fresh/"source.txt").open("xb") as dst:
+              dst.write(source)
+          if v9.calculate_material(new_model)[1]!=original_digest:
+              raise SystemExit("fresh model bytes differ from frozen source")
+          new_lock=v9.prepare(fresh/"source.txt",new_model,
+                              fresh/"lock.json",now_ms=time.time_ns()//1_000_000)
+          if (new_lock["material_sha256"]!=original_digest
+              or new_lock["source_sha256"]!=v9.SOURCE_SHA
+              or new_lock["feature_adapter"]!="rational8-v1"
+              or new_lock["authority"]!="DENY_ALL"
+              or new_lock["production_authorized"] is not False):
+              raise SystemExit("unapproved data-only session")
+          print(json.dumps({
+              "schema":"hepta.stem.granite97-fresh-session-metadata.v1",
+              "fresh_material_rehash":True,
+              "expired_lock_reused_or_extended":False,
+              "material_sha256":original_digest,
+              "source_sha256":v9.SOURCE_SHA,
+              "adapter":new_lock["feature_adapter"],
+              "model_or_source_signer_authenticated":False,
+              "production_authorized":False,
+              "authority":"DENY_ALL"},sort_keys=True))
+          PY
+      - name: Install original pretrained CPU and frozen Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Run genuine pinned pretrained source encoder in first process
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"granite-v9-fresh/lock.json"
+          lock=json.loads(p.read_text())
+          print(lock["material_sha256"],lock["source_sha256"],lock["expires_at_ms"])
+          PY
+          )
+          python qualification/stem-cell-v1/granite97_v3_export.py \
+            --model-root "$RUNNER_TEMP/granite-v9-fresh/model" \
+            --source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --source-sha256 "$SHA" --expected-material-sha256 "$MAT" \
+            --expires-at-ms "$EXP" --max-tokens 192 \
+            --feature-adapter rational8-v1 \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 \
+            --output "$RUNNER_TEMP/granite-v9-fresh/export.json"
+      - name: Independent original model replay in second Python process
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"granite-v9-fresh/lock.json"
+          lock=json.loads(p.read_text())
+          print(lock["material_sha256"],lock["source_sha256"],lock["expires_at_ms"])
+          PY
+          )
+          python qualification/stem-cell-v1/granite97_v3_independent_review.py \
+            --model-root "$RUNNER_TEMP/granite-v9-fresh/model" \
+            --source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --source-sha256 "$SHA" \
+            --export "$RUNNER_TEMP/granite-v9-fresh/export.json" \
+            --expected-material-sha256 "$MAT" \
+            --now-ms "$(date +%s%3N)" --maximum-expiry-ms "$EXP" \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 \
+            --max-tokens 192 --feature-adapter rational8-v1 \
+            --output "$RUNNER_TEMP/granite-v9-fresh/review.json"
+      - name: Native V3 two Cell Reader and DENY_ALL original-result audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py admit \
+            --lock "$RUNNER_TEMP/granite-v9-fresh/lock.json" \
+            --source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --export "$RUNNER_TEMP/granite-v9-fresh/export.json" \
+            --review "$RUNNER_TEMP/granite-v9-fresh/review.json" \
+            --output "$RUNNER_TEMP/granite-v9-fresh/unsigned-admission.json"
+          cargo +1.95.0 run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --bin hepta-granite-v3-shadow -- \
+            --admission "$RUNNER_TEMP/granite-v9-fresh/unsigned-admission.json" \
+            --original-source "$RUNNER_TEMP/granite-v9-fresh/source.txt" \
+            --export "$RUNNER_TEMP/granite-v9-fresh/export.json" \
+            --review "$RUNNER_TEMP/granite-v9-fresh/review.json" \
+            > "$RUNNER_TEMP/granite-v9-fresh/native-shadow.json"
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py audit \
+            --lock "$RUNNER_TEMP/granite-v9-fresh/lock.json" \
+            --admission "$RUNNER_TEMP/granite-v9-fresh/unsigned-admission.json" \
+            --native "$RUNNER_TEMP/granite-v9-fresh/native-shadow.json" \
+            --output "$RUNNER_TEMP/granite-v9-fresh/public-nogo-audit.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: granite-v9-fresh-two-process-one-runner-denyall
+          retention-days: 1
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/granite-v9-fresh/lock.json
+            ${{ runner.temp }}/granite-v9-fresh/export.json
+            ${{ runner.temp }}/granite-v9-fresh/review.json
+            ${{ runner.temp }}/granite-v9-fresh/unsigned-admission.json
+            ${{ runner.temp }}/granite-v9-fresh/native-shadow.json
+            ${{ runner.temp }}/granite-v9-fresh/public-nogo-audit.json
