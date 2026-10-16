@@ -119,6 +119,11 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
            for k in ('weights_sha256','tokenizer_sha256')):
         raise Invalid('unbound original model file bytes')
     assert_original_checkpoint_hashes(identity['weights_sha256'], identity['tokenizer_sha256'])
+    for metric_name in ('model_load_cpu_seconds','model_load_wall_seconds',
+                        'execution_cpu_seconds','execution_wall_seconds'):
+        metric = completed[metric_name]
+        if type(metric) not in (float,int) or not math.isfinite(metric) or not 0 <= metric < 86400:
+            raise Invalid('invalid original full-lifecycle CPU/wall meter: '+metric_name)
     train_log=completed['original_train_trace']; served=completed['actual_policy_trace']
     if type(train_log) is not list or type(served) is not list or (
         len(train_log) != len(train['rows'])*len(acts) or len(served) != len(held_public['rows'])*len(POLICIES) or
@@ -222,7 +227,10 @@ def check_output(r: Any) -> None:
     if (type(r['input_tokens']) is not int or not 1 <= r['input_tokens'] <= 768 or
         type(r['output_tokens']) is not int or not 1 <= r['output_tokens'] <= ACTION_MAX[r['action']]):
         raise Invalid('source token counts invalid')
-    if type(r['answer']) is not str or r['predicted_class'] != parse_answer(r['answer']) or r['answer_sha256'] != sha(r['answer'].encode()):
+    if (type(r['answer']) is not str or
+        (r['predicted_class'] is not None and (type(r['predicted_class']) is not int or r['predicted_class'] not in range(4))) or
+        r['predicted_class'] != parse_answer(r['answer']) or
+        r['answer_sha256'] != sha(r['answer'].encode())):
         raise Invalid('tampered physical model answer')
     for k in ('prompt_sha256','input_token_ids_sha256','output_token_ids_sha256'):
         if type(r[k]) is not str or len(r[k]) != 64 or any(ch not in '0123456789abcdef' for ch in r[k]):
