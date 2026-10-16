@@ -1693,6 +1693,149 @@ fn abrupt_process_exit_after_control_begin_fences_recovery() {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
+    use std::io::Write as _;
+    use std::os::unix::process::ExitStatusExt as _;
+    use std::path::PathBuf;
+    use std::process::Command;
+    use std::process::Stdio;
+    use std::time::Duration;
+    use std::time::Instant;
+
+    const CHILD_WAL: &str = "HEPTA_ORIGINAL_CONTROL_SIGKILL_CHILD_WAL";
+    const CHILD_EFFECT: &str = "HEPTA_ORIGINAL_CONTROL_SIGKILL_CHILD_EFFECT";
+    const CHILD_READY: &str = "HEPTA_ORIGINAL_CONTROL_SIGKILL_CHILD_READY";
+    const EFFECT_BYTES: &[u8] = b"test-only-fsynced-external-effect-sigkill";
+    const READY_BYTES: &[u8] = b"ready-after-original-effect-fsync";
+
+    if let Some(original_wal) = std::env::var_os(CHILD_WAL) {
+        let wal = PathBuf::from(original_wal);
+        let effect_source = std::env::var_os(CHILD_EFFECT).expect("private child effect path");
+        let ready_source = std::env::var_os(CHILD_READY).expect("private child ready path");
+        let effect = PathBuf::from(effect_source);
+        let ready = PathBuf::from(ready_source);
+        let old = snapshot(3);
+        let owner = NduPublicationOwnerV1::open_production(&wal, old.clone(), Digest32::ZERO)
+            .expect("independent original Control child owner");
+        let _ = owner.publish_cutover_with_external_effect(
+            &old,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-sigkill-fixture"),
+            || -> Result<((), Vec<u8>), &'static str> {
+                // Runs only after the original B is fsynced by Control.
+                // The external marker is NOT a real CNS runtime receipt.
+                let mut marker = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&effect)
+                    .expect("create test-only external effect");
+                marker.write_all(EFFECT_BYTES).expect("write original effect");
+                marker.sync_all().expect("fsync external fixture");
+                let parent = effect.parent().expect("private effect parent");
+                std::fs::File::open(parent)
+                    .expect("reopen private parent directory")
+                    .sync_all()
+                    .expect("fsync private parent entry");
+                // Readiness is created after the durable test-only effect.
+                let mut signal = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&ready)
+                    .expect("ready after original effect");
+                signal.write_all(READY_BYTES).expect("write readiness");
+                signal.sync_all().expect("fsync readiness");
+                loop {
+                    std::thread::park();
+                }
+            },
+        );
+        panic!("SIGKILL must prevent a post-effect Control C");
+    }
+
+    let dir = private_control_dir();
+    let wal = dir.path().join("sigkill-original-control.wal");
+    let effect = dir.path().join("sigkill-fixture-effect");
+    let ready = dir.path().join("sigkill-ready-after-effect");
+    let executable = std::env::current_exe().expect("exact native test executable");
+    let mut child = Command::new(executable)
+        .arg("--exact")
+        .arg(concat!(
+            "ndu_publication::tests::",
+            "sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined",
+        ))
+        .arg("--nocapture")
+        .env(CHILD_WAL, &wal)
+        .env(CHILD_EFFECT, &effect)
+        .env(CHILD_READY, &ready)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("spawn real independent Control actor");
+
+    let started = Instant::now();
+    loop {
+        if std::fs::read(&ready).ok().as_deref() == Some(READY_BYTES) {
+            break;
+        }
+        if let Some(status) = child.try_wait().expect("poll child status") {
+            panic!("Control actor exited before SIGKILL: {status}");
+        }
+        if started.elapsed() >= Duration::from_secs(20) {
+            let _ = child.kill();
+            let _ = child.wait();
+            panic!("no fsynced external readiness before bounded deadline");
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    child.kill().expect("deliver actual SIGKILL to original Control");
+    let status = child.wait().expect("reap original Control process");
+    assert_eq!(
+        status.signal(),
+        Some(9),
+        "child must be terminated by SIGKILL, not a clean process exit"
+    );
+    assert_eq!(
+        std::fs::read(&effect).expect("original external fixture bytes"),
+        EFFECT_BYTES
+    );
+    let original_bytes = std::fs::read(&wal).expect("original fsynced WAL");
+    let original = std::str::from_utf8(&original_bytes).expect("ASCII WAL");
+    let rows = original.lines().collect::<Vec<_>>();
+    let event_count = |kind: &str| {
+        rows.iter()
+            .filter(|row| row.split('|').nth(4) == Some(kind))
+            .count()
+    };
+    assert_eq!(event_count("G"), 1, "one original Genesis");
+    assert_eq!(event_count("B"), 1, "one durable pre-effect Begin");
+    assert_eq!(event_count("C"), 0, "no post-SIGKILL Commit");
+
+    for (frozen, checkpoint) in [
+        (snapshot(3), Digest32::ZERO),
+        (
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-sigkill-fixture"),
+        ),
+    ] {
+        assert!(matches!(
+            NduPublicationOwnerV1::open_production(&wal, frozen, checkpoint),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ));
+        assert_eq!(
+            std::fs::read(&wal).expect("original WAL after denied reopen"),
+            original_bytes,
+            "neither generation may append, retry or reset an orphan Begin"
+        );
+        assert_eq!(
+            std::fs::read(&effect).expect("effect never replayed"),
+            EFFECT_BYTES
+        );
+    }
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
