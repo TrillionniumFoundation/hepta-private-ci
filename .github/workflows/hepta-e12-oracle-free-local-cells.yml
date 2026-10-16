@@ -1,0 +1,88 @@
+name: Hepta E12 oracle-free local Cell FBSDE research (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e12_local_cell_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e12_local_cell_*.py'
+      - 'qualification/shared-stem-system2-architecture/E12_ORACLE_FREE_LOCAL_CELLS_20261016.md'
+      - '.github/workflows/hepta-e12-oracle-free-local-cells.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  oracle-free-source-and-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ROOT: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e12-oracle-free
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Bind exact tested code, original E12 and staged predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/tested-head.txt"
+          if [[ "${{ matrix.source_profile }}" == "source_head" && "${{ github.event_name }}" == "pull_request" ]]; then
+            test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          fi
+          test -s "$ROOT/e12_nonlinear_cert.py"
+          test -s "$ROOT/e12_independent_audit.py"
+          test -s "$ROOT/e12_local_cell_solver.py"
+          test -s "$ROOT/test_e12_local_cell_solver.py"
+          test -s "$ROOT/e12_local_cell_study.py"
+          test -s "$ROOT/test_e12_local_cell_study.py"
+          python --version | tee "$OUTPUT/python-version.txt"
+          sha256sum "$ROOT"/e12_*.py "$ROOT"/test_e12_*.py | tee "$OUTPUT/source-hashes.txt"
+      - name: Original E12, inherited Cell interface and new local-source tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/normal.log" 2>&1 || { cat "$OUTPUT/normal.log"; exit 1; }
+          tail -12 "$OUTPUT/normal.log"
+          grep -Eq '^Ran ([6-9][0-9]|[1-9][0-9][0-9]) tests' "$OUTPUT/normal.log"
+      - name: Full original and new tests with optimized assertions disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/optimized.log" 2>&1 || { cat "$OUTPUT/optimized.log"; exit 1; }
+          tail -12 "$OUTPUT/optimized.log"
+          grep -Eq '^Ran ([6-9][0-9]|[1-9][0-9][0-9]) tests' "$OUTPUT/optimized.log"
+      - name: Produce six original-law Cell solutions without any global-solution input
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e12_local_cell_study.py" produce \
+            --output "$OUTPUT/local-create-only.json" | tee "$OUTPUT/local-producer.log"
+          sha256sum "$OUTPUT/local-create-only.json" | tee "$OUTPUT/local.sha256"
+      - name: Independent new process validates all mathematical Cell messages
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOCAL_SHA="$(cut -d ' ' -f1 "$OUTPUT/local.sha256")"
+          python "$ROOT/e12_local_cell_study.py" review \
+            --candidate "$OUTPUT/local-create-only.json" --sha256 "$LOCAL_SHA" \
+            --output "$OUTPUT/independent-review-create-only.json" | tee "$OUTPUT/reviewer.log"
+          sha256sum "$OUTPUT/independent-review-create-only.json" | tee "$OUTPUT/review.sha256"
+      - name: Preserve immutable local/negative original traces without authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e12-oracle-free-local-${{ matrix.source_profile }}
+          path: /tmp/hepta-e12-oracle-free/
+          retention-days: 14
+          if-no-files-found: warn
