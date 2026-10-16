@@ -242,6 +242,5 @@ def main():
     print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False,
                      allow_nan=False))
 
-
 if __name__ == '__main__':
     main()
