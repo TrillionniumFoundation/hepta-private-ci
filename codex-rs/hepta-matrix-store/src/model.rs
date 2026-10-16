@@ -486,6 +486,7 @@ pub enum ChangeKind {
     OutboxCoalesced,
     OutboxClaimed,
     OutboxRetryScheduled,
+    OutboxNeedsReconciliation,
     OutboxSent,
     OutboxFailed,
 }
@@ -507,6 +508,7 @@ impl ChangeKind {
             Self::OutboxCoalesced => "outbox_coalesced",
             Self::OutboxClaimed => "outbox_claimed",
             Self::OutboxRetryScheduled => "outbox_retry_scheduled",
+            Self::OutboxNeedsReconciliation => "outbox_needs_reconciliation",
             Self::OutboxSent => "outbox_sent",
             Self::OutboxFailed => "outbox_failed",
         }
@@ -528,6 +530,7 @@ impl ChangeKind {
             "outbox_coalesced" => Some(Self::OutboxCoalesced),
             "outbox_claimed" => Some(Self::OutboxClaimed),
             "outbox_retry_scheduled" => Some(Self::OutboxRetryScheduled),
+            "outbox_needs_reconciliation" => Some(Self::OutboxNeedsReconciliation),
             "outbox_sent" => Some(Self::OutboxSent),
             "outbox_failed" => Some(Self::OutboxFailed),
             _ => None,

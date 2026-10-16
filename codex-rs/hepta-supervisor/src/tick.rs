@@ -54,6 +54,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_none()
             && slot.release_change.is_none()
             && slot.restart_pending
+            && !slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
             && slot
                 .restart_not_before
                 .is_none_or(|eligible| now >= eligible)
@@ -109,11 +113,26 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                // The durable claim validates the count against this limit.
+                // A recovered live child need not have a pending claim in the slot.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: slot.restart_attempt,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {
@@ -171,6 +190,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
+            if matches!(runtime.phase, RuntimePhase::Stopping { deadline } if now >= deadline) {
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))?;
+                runtime.phase = RuntimePhase::Killing;
+                slot.event(runtime.generation, SupervisorEventKind::KillRequested);
+            }
             return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {
