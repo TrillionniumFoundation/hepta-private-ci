@@ -314,9 +314,20 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_object()?;
-    mapping.get("description").and_then(yaml_scalar)
+    // The secure serde-saphyr adapter can deserialize YAML tags into a plain
+    // serde_json::Value and discard their tag identity. Preserve the existing
+    // fail-closed command contract: tagged roots and descriptions are NOT
+    // allowed, including built-in (!!str) and application-specific (!foo) tags.
+    let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
+        serde_yaml::from_str(raw_frontmatter).ok()?;
+    if parsed.1.is_some() {
+        return None;
+    }
+    let description = parsed.0.get("description")?;
+    if description.1.is_some() {
+        return None;
+    }
+    yaml_scalar(&description.0)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {

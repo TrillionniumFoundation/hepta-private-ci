@@ -26,8 +26,13 @@ fn yaml_description_contract_is_frozen_before_security_parser_migration() {
         ("description:\n  nested: text", None),
         ("description: !secret text", None),
         ("description: !!str Review changes", None),
+        ("description: !!int 42", None),
+        ("description: !<tag:yaml.org,2002:str> Review changes", None),
+        ("description: !secret [read, write]", None),
         ("!secret {description: Review changes}", None),
+        ("!<tag:yaml.org,2002:map> {description: Review changes}", None),
         ("description: '!secret text'", Some("!secret text")),
+        ("description: \"!secret text\"", Some("!secret text")),
     ] {
         assert_eq!(parse_command_description(raw).as_deref(), expected, "{raw}");
     }
