@@ -9,8 +9,8 @@
 #![forbid(unsafe_code)]
 
 mod action;
-mod ui_guard;
 mod native_duplex;
+mod ui_guard;
 
 pub use native_duplex::{FrameDuplexV1, FrameWireErrorV1};
 

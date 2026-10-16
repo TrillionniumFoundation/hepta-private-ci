@@ -29,17 +29,19 @@ mod unix {
             io.set_read_timeout(Some(Duration::from_secs(5)))?;
             io.set_write_timeout(Some(Duration::from_secs(5)))?;
         }
-        let worker = std::thread::spawn(move || -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-            let mut stream = FrameDuplexV1::new(second, verifier, count)?;
-            for _ in 0..count {
-                let verified = stream.receive()?;
-                stream.send(verified.frame())?;
-            }
-            if stream.is_poisoned() {
-                return Err("data-only frame stream unexpectedly poisoned".into());
-            }
-            Ok(())
-        });
+        let worker = std::thread::spawn(
+            move || -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+                let mut stream = FrameDuplexV1::new(second, verifier, count)?;
+                for _ in 0..count {
+                    let verified = stream.receive()?;
+                    stream.send(verified.frame())?;
+                }
+                if stream.is_poisoned() {
+                    return Err("data-only frame stream unexpectedly poisoned".into());
+                }
+                Ok(())
+            },
+        );
         let mut client = FrameDuplexV1::new(first, verifier, count)?;
         let mut samples = Vec::with_capacity(count as usize);
         for sequence in 1..=count {

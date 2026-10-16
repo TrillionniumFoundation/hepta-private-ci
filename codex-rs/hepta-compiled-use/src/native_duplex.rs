@@ -2,7 +2,7 @@
 //! Real kernel transport is possible; grants and OS effects remain external.
 
 use crate::{
-    ActionErrorV1, ActionFrameV1, ActionVerifierV1, VerifiedActionV1, ACTION_FRAME_BYTES_V1,
+    ACTION_FRAME_BYTES_V1, ActionErrorV1, ActionFrameV1, ActionVerifierV1, VerifiedActionV1,
 };
 use std::error::Error as StdError;
 use std::fmt;
