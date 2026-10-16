@@ -154,6 +154,46 @@ jobs:
           assert r['production_qualification'] is False
           assert r['ndu_eligible'] is False
           PY
+      - name: Independently cross-bind six physical research receipts before archival
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import pathlib
+          import zipfile
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          sources = {
+              'hepta-near-matched-fixture.json': root / 'hepta-near-matched-fixture.json',
+              'hepta-physical-byte-plan.json': root / 'hepta-physical-byte-plan.json',
+              'hepta-near-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY']) / 'training-receipt.json',
+              'hepta-near-matched-audit.json': pathlib.Path(os.environ['NM_RECEIPT']),
+              'hepta-byte-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY_BYTES']) / 'training-receipt.json',
+              'hepta-byte-matched-native-audit.json':
+                  pathlib.Path(os.environ['NM_BYTES_RECEIPT']),
+          }
+          dst = root / 'hepta-cross-bound-sanitized-source.zip'
+          with zipfile.ZipFile(dst, 'x', zipfile.ZIP_DEFLATED) as archive:
+              for name, source in sorted(sources.items()):
+                  archive.write(source, arcname=name)
+          PY
+          python qualification/neuron-gated-sparse-v3/audit_archived_byte_parity.py \
+            --zip "$RUNNER_TEMP/hepta-cross-bound-sanitized-source.zip" \
+            --output "$RUNNER_TEMP/hepta-cross-bound-evidence-verdict.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          verdict = json.loads((Path(os.environ['RUNNER_TEMP']) /
+              'hepta-cross-bound-evidence-verdict.json').read_text())
+          assert verdict['total_native_process_count'] == 32
+          assert verdict['independent_weight_sha_count'] == 16
+          assert verdict['production_qualification'] is False
+          assert verdict['ndu_eligible'] is False
+          assert verdict['raw_weight_bytes_reopened'] is False
+          PY
       - name: Archive sanitized research receipts only, never raw weights/features
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -166,5 +206,6 @@ jobs:
             ${{ runner.temp }}/hepta-physical-byte-plan.json
             ${{ runner.temp }}/hepta-byte-matched-native-audit.json
             ${{ runner.temp }}/hepta-byte-matched-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-cross-bound-evidence-verdict.json
           if-no-files-found: warn
           retention-days: 14
