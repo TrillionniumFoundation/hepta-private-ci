@@ -166,6 +166,71 @@ blocks the extra independent result rather than creating a false advantage.
 - GH Actions steps must be reviewed at their exact source SHA. Queued,
   skipped, missing, incomplete or failed model jobs are NOT a five-arm PASS.
 
+## 2026-10-16 original real OCR evidence and native runtime failure
+
+**Original immutable Actions receipt:**
+[run 38825811927](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38825811927)
+at source HEAD `bc3280d56fb7dfddf473bb0f0e104c4e0e0d7c80`.
+Source-contract job **SUCCESS**; real OCR+Granite job **SUCCESS**; original
+Gemma2 native model job **FAILURE** after complete exact-publisher source
+and safetensors verification, but **before any scored original native
+embedding**; original five-arm independent review **SKIPPED**.
+
+The original OCR physical artifact:
+- Artifact ID: 12027769435 (Actions ZIP SHA-256
+  `c80d5b9cda23a8a6ee144aeba459dc516b6b67c854c2c5fe86d3b2ba94884964`).
+- Original `e3-ocr-observed/sealed-ocr-predictions.json` SHA-256
+  `96ba4117a37689eeafe2415661e028a9170b7ccdd8c345b6b8d6241b7a928885`.
+- Source SHA `a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202`;
+  original Granite97 revision `835ad14087e140460703cf0fae09f97d469d65c2`,
+  model pipeline digest
+  `76c18899adf8587cce3449802e1ac8c0c0760941bffe3518c1ec8df27608c8b0`.
+- Original Tesseract over **192 physical natural image records**; **110**
+  yielded nonempty OCR text; **60 original frozen Granite97 forward
+  batches**, source-bound **64 unique original TEST predictions**.
+- Source-self-reported full model acquisition plus OCR wall **57.051462221
+  seconds**, summed OCR subprocess wall **22.894919887 seconds**,
+  GitHub-runner peak process RSS **1,335,164 KiB** (~1,303.87 MiB).
+  These are a single-host descriptive physical pilot, not isolated
+  model-only RAM or production-target reproducible latency/energy p99.
+- The OCR ZIP does **NOT** carry original held TEST answer labels; these
+  numbers are physical execution evidence, **NOT OCR accuracy or a
+  statistically selected Stem**.
+
+The native Gemma2 failure was the fail-closed source Token preflight
+`NativeBudgetError: native SentenceTransformer context ceiling absent or
+unreviewed`. The pinned original model's public text Config contains a
+very large positional bound while the **loaded SentenceTransformer
+runtime's `max_seq_length` was None**; neither is independently proven
+to be the model's 8,192-token multimodal serving contract. The repaired
+`bind_verified_native_context` must run only **after** verifying the
+exact original model snapshot, owner profile and tokenization components,
+and must explicitly set the supported SentenceTransformer runtime setter
+to 8,192, then re-read both its public property and first Transformer
+module's property. It never modifies weights, grants authority, permits
+truncation or attests actual internal image token counts. Missing/short/
+unsupported runtime context remains **blocked**.
+
+**New independent OCR readout**:
+`e3_ocr_original_audit.py` and its adversarial tests consume only
+immutable original Granite/DINO source (SHA256
+`e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7`)
+and already completed real OCR predictions (SHA256
+`96ba4117a37689eeafe2415661e028a9170b7ccdd8c345b6b8d6241b7a928885`).
+A **separate Actions job** must seal/reopen both original predictions,
+only then re-stage the original historical 64 TEST labels in a separate
+reviewer, and compute original text vs OCR Accuracy/Brier, paired rescued/
+harmed counts and exact McNemar. It is independent of the native model
+job, publishes only numeric nonauthorizing evidence, does not
+independently adjudicate visual necessity, and is never promoted to a
+five-arm or prospective-NDU result before that actual review job succeeds.
+
+**Updated result rule:** original real OCR **PASS**, original native
+Gemma2 physical forward **NOT YET PASS**, five-arm independent TEST
+**NOT YET PASS**, newest context fixes and 17 extra OCR-readout negative
+unit methods **await their exact-SHA CI results**. No source-only or
+CPU-standalone test may substitute for missing original model outcome.
+
 ## Next gates
 
 After the original five-arm same-source held score and independent
