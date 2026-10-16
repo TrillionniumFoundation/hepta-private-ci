@@ -40,9 +40,9 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD > "$RUNNER_TEMP/head.txt"
-          python -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
+          python -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit test_v10_reviewer_independence \
             2>&1 | tee "$RUNNER_TEMP/normal.log"
-          python -O -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit \
+          python -O -m unittest -v test_v9_graph test_v9_frozen test_v10_global_proof test_v10_granite_contract test_v10_training_audit test_v10_reviewer_independence \
             2>&1 | tee "$RUNNER_TEMP/optimized.log"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -257,9 +257,6 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13'
-      - run: |
-          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0
-          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: v10-public-${{ github.run_id }}
@@ -281,7 +278,7 @@ jobs:
         run: |
           set -euo pipefail
           test -s "$RUNNER_TEMP/postseal/reader/blind-predictions.json"
-          python qualification/stem-cell-v1/v10_granite_score.py \
+          python -S qualification/stem-cell-v1/v10_granite_score.py \
             --public "$RUNNER_TEMP/postseal/public/public.json" \
             --source-seal "$RUNNER_TEMP/postseal/public/source-seal.json" \
             --held-labels "$RUNNER_TEMP/postseal/held/held-labels-restricted.json" \
