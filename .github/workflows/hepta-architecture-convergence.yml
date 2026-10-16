@@ -312,6 +312,9 @@ jobs:
           # compiled Neuron library and a real private-Journal denial fixture.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-original-effect-product-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib
+          # Mirror strict Bazel Clippy in a native early owner gate: fixture
+          # helpers must propagate typed I/O errors, never waive expect-used.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-strict-test-fixtures-clippy.json" --minimum-tests 0 -- cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --all-targets -- -D clippy::expect-used
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/neuron-original-effect-non-test-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --test public_ndu_tick_non_test_denial -- --nocapture --test-threads=1
       - name: Early Supervisor original-Control non-test retirement denial
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.learning == 'true')
