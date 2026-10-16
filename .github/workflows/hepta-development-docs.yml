@@ -28,7 +28,7 @@ concurrency:
 jobs:
   source-head:
     name: Verify exact source head
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     steps:
       - name: Check out exact source
