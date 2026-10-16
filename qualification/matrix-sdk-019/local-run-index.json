@@ -1,0 +1,76 @@
+{
+  "format": "hepta.matrix-sdk-019.local-evidence.v1",
+  "tests": {
+    "command": "just test --locked -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol -p codex-execpolicy -p codex-state",
+    "passed": 344,
+    "failed": 0,
+    "skipped": 0
+  },
+  "security": "cargo-deny advisories, bans, licenses and sources passed",
+  "synapse_sdk": "compiled only; execution pending hosted Linux fixture",
+  "paired_host": "preflight exit69: fixed Homebrew bootstrap unavailable on Linux",
+  "preserved_logs": {
+    "cargo-update.log": {
+      "sha256": "7ffaaa542b2d8e0655c365a8c6740e455230266fd21916fc425fb82c26752c94",
+      "bytes": 1554
+    },
+    "cargo-update-aligned.log": {
+      "sha256": "1771c47ae91db00f565b6307cc741e5f70a34b26724d0c8fd4179f7218b1d275",
+      "bytes": 1510
+    },
+    "initial-matrix-tests.log": {
+      "sha256": "b9881893d1db4bd21e0bc69ca54c282fa96a87e209519e0ce57deaabad7d7cae",
+      "bytes": 70627
+    },
+    "matrix-tests-round2.log": {
+      "sha256": "7425cc8c8e78e93c5c539c5698053a922a42c0c4597ea1178a0b551873d8f364",
+      "bytes": 41592
+    },
+    "focused-final-tests-round3.log": {
+      "sha256": "f51d23a488ab7b48d835a63b0f645503b39dfa276d4ef420d0b47e8d73c87529",
+      "bytes": 64278
+    },
+    "focused-final-tests-round4.log": {
+      "sha256": "ffaf4ce1383312b11e3059fb9e38fcab3c80eda1d71ab83444ba67dfc825a1b1",
+      "bytes": 58913
+    },
+    "cargo-deny-qualified.log": {
+      "sha256": "abb6382f15d829db5d28b265fa7e5c0b4e7663f5f4a188d511ab29b0c5cbf9c8",
+      "bytes": 14737307
+    },
+    "synapse-preflight.log": {
+      "sha256": "a5a7e9806a00bf490628234a7c94cb3fa6d78a4817bd0f4606b3ef76321d3c2a",
+      "bytes": 85
+    },
+    "synapse-compile-filtered.log": {
+      "sha256": "8a949c8160bc04f9d3c42f5afe789c560450b11a52903434f25d03b5015f6d46",
+      "bytes": 17481
+    },
+    "post-lint-changed-tests-final.log": {
+      "sha256": "39896fc9942c667a13984095762a42cd748fef8544f968d75e4e9d97c466814a",
+      "bytes": 14698
+    },
+    "scoped-clippy-delivery.log": {
+      "sha256": "65f66260fd35e063b1173d41289cadf6dfd4e03cc9ad95398e8cf060a842ae3f",
+      "bytes": 12531
+    },
+    "crypto-kat-qualified.log": {
+      "sha256": "697b829714efc7073b46bc4783b70faab58a55b1e2a1408f5315d29ccc7a2d78",
+      "bytes": 12962
+    },
+    "hosted-fixtures-check-final.log": {
+      "sha256": "d392fc2587ac9444e924009106dbb0105bd96f00f001ddcf82b1bb2ed2beff78",
+      "bytes": 12371
+    }
+  },
+  "post_lint_changed_tests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "crypto_and_blake3_known_answer": {
+    "passed": 2,
+    "failed": 0
+  },
+  "strict_clippy": "passed with both hosted qualification features compiled; -D warnings on selected packages",
+  "legacy_migration": "required hosted gate: pinned real0.18 generator, not executed locally"
+}
