@@ -1,0 +1,78 @@
+{
+  "archive": {
+    "binding_train_ids_sha256": "dbd7ce1b379564b341d2e03e7ac57065731a0d7da0d66f79752d06d7127f2c0f",
+    "natural_train_ids_sha256": "6d6ee4c1f770bfcabf6fe78f442ed94dd31ed3297fa58079611a58294bd28982",
+    "v4": {
+      "fully_byte_verified": true,
+      "member_count": 313,
+      "sha256": "4fcfaa5a266fa3779b4c8af361570d959ea9f5880efb99fe99787bff81b6922c",
+      "uncompressed_bytes": 470318700,
+      "v6_manifest_entries_verified": null
+    },
+    "v4_design_sha256": "cdefd9c8576af2fd45dcbfb61bb6f3041a7dbe1a6e87433a705817476ae10d21",
+    "v5": {
+      "fully_byte_verified": true,
+      "member_count": 61,
+      "sha256": "0f3ef2cd1f80d4c8bf65b6da70c56ea8513d5a933db8c02e7db21a91ff168191",
+      "uncompressed_bytes": 70218718,
+      "v6_manifest_entries_verified": null
+    },
+    "v5_design_sha256": "f443f6b2c211c248254945ea99fe24ffb8baf4b0709a92f5f2d998f723fec8df",
+    "v6": {
+      "fully_byte_verified": true,
+      "member_count": 212,
+      "sha256": "197a5c68eb892970e6a7c7da4030fd2f468a3bf78a5cedfaf4c2667d3e54c58a",
+      "uncompressed_bytes": 173299551,
+      "v6_manifest_entries_verified": 211
+    },
+    "v6_design_sha256": "5880398dd5cc15c59cf592477ef93968c16f513fdde9a98ef6d11af64dcc63e5"
+  },
+  "cache": null,
+  "cell_split_authorized": false,
+  "experiment_identity": "new_source_locked_reencoding",
+  "input_case_counts": {
+    "binding_train": 128,
+    "natural_train": 3909,
+    "natural_tune": 827
+  },
+  "legacy_absolute_paths_rewritten": false,
+  "material": {
+    "checked": {},
+    "issuer_signature_verified": false,
+    "missing": [
+      "config.json",
+      "model.safetensors",
+      "special_tokens_map.json",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "material.json"
+    ],
+    "production_authorized": false,
+    "ready": false,
+    "registered_model_revision": "835ad14087e140460703cf0fae09f97d469d65c2"
+  },
+  "new_v74_training_performed": false,
+  "old_pretrained_encoder_present": false,
+  "original_seed_warmup_models": {
+    "41": {
+      "execution_parameter_sha256": "4ef33abbb47e21e01415d46fcefb311c34267711b67e5255ce2377167be6cced",
+      "model_file_sha256": "15e47d24b3b08f37137e9222fc569001cc2112243b27439fc7b690d13bda62e0",
+      "training_parameter_sha256": "950ee85ce7e4e3845a89e7bdee614d81a7a48130633621f1f208a227f31f4aa2"
+    },
+    "47": {
+      "execution_parameter_sha256": "7cd36d842cea8aeaf64ff103edeb14ce8ba4a99891a4e176f75a3ed86865601c",
+      "model_file_sha256": "8c4b31ac0d632e7a2527cfe053975f18a91ab01fc7aa3e81ea0bb78604cb8602",
+      "training_parameter_sha256": "14b102c5115a800fb280a2a06f003c1fdc11d74a772bf597b85c6ebdbc241776"
+    },
+    "53": {
+      "execution_parameter_sha256": "8eab621a4cba992a312525bda624eabedcf9af5c61bc236f16402fe9d734861f",
+      "model_file_sha256": "d5e059e57552e70225fe7727f713b61ee58193fd4d71995226a4f7ae07dbca04",
+      "training_parameter_sha256": "ff9b1d82eb316011a90aebf12da7d659d68793debbc531dfd36676050f9fa7b8"
+    }
+  },
+  "original_trained_weights_modified": false,
+  "production_authorized": false,
+  "retained_original_v6_design": false,
+  "schema": "hepta.bridge.portable-v74.original-source-new-run.shadow.v1",
+  "status": "BLOCKED_MODEL_MATERIAL"
+}
