@@ -1,5 +1,4 @@
 """Independent original-source reviewer negative contracts; no model inference."""
-import json
 import os
 import tempfile
 import unittest
