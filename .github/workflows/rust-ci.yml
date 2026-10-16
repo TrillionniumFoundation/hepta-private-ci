@@ -184,7 +184,9 @@ jobs:
   argument_comment_lint_package:
     timeout-minutes: 30
     name: Argument comment lint package
-    runs-on: ubuntu-24.04
+    # Exact pinned nightly Dylint/cargo-test gate passed on Ubuntu 26 x64
+    # in isolated run 38899825980 (job 116969020536).
+    runs-on: ubuntu-26.04
     needs: changed
     if: ${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}
     env:
