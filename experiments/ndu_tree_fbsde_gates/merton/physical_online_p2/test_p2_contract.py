@@ -1,5 +1,6 @@
 """Source-only mechanics tests using a fake Reader. NEVER physical model evidence."""
 import copy
+from fractions import Fraction
 import json
 import tempfile
 import unittest
@@ -82,6 +83,11 @@ class PhysicalContractTests(unittest.TestCase):
         self.assertEqual(len(summary['seven_policy_results']),7)
         self.assertEqual([r['policy'] for r in summary['seven_policy_results']],list(POLICIES))
         self.assertFalse(summary['actual_model_savings_proven'])
+        self.assertGreater(summary['actual_training_input_output_tokens'],0)
+        for row in summary['seven_policy_results']:
+            self.assertTrue(row['cold_start_calibration_fee_shared_not_summable'])
+            self.assertLessEqual(Fraction(row['illustrative_single_arm_cold_start_net_tokens_only']),
+                                 Fraction(row['external_correct_minus_FULL_serving_token_tariff']))
         self.assertIn('FAKE CONTRACT',str(summary['model_identity']))
         self.assertTrue(out.joinpath('frozen-plan.json').exists())
 
