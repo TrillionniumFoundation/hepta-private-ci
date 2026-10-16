@@ -512,7 +512,9 @@ jobs:
         tests_windows_arm64,
       ]
     if: always()
-    runs-on: ubuntu-24.04
+    # Bash-only fan-in: retain every native matrix dependency while avoiding
+    # the constrained Ubuntu 24 VM pool (Slim bash qualified in 38901488180).
+    runs-on: ubuntu-slim
     steps:
       - name: Summarize
         shell: bash

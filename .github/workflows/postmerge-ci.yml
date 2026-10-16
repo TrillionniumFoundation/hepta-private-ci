@@ -37,7 +37,9 @@ jobs:
       - rust-ci-full
       - v8-canary
     if: ${{ always() }}
-    runs-on: ubuntu-24.04
+    # Pinned checkout plus the fail-closed Python verdict passed on Slim.
+    # Isolated positive/negative checks: run 38901488180.
+    runs-on: ubuntu-slim
     steps:
       # Postmerge runs use the pushed main commit, so this helper always comes
       # from the same revision that defined the parent workflow.
