@@ -23,11 +23,18 @@ or evidence of trained MemoryCells / emergent graph learning.
   private derived annotation SHA-256
   `dfdf05dda8d552f2fe49f5aa09661ef5a81d7ed83d4ec876e84ada6138b77b87`.
   Private annotations were not present in the ranking input directory.
-- Actual five-arm `memory_graph_source_trial.py` source byte-equivalent to
-  Git blob `3661417b72f806b4a6f953cf8d19ed6a9147de55`.
-  The local compatible V1 graph implementation was not byte-identical to the
-  remote V1 graph blob; its traversal protocol was equivalent for this dataset.
-  **Hosted exact-tree CI is still required.**
+- Subsequent exact-source local replay used Git-blob-identical source
+  bytes for `memory_graph_lesion.py` at
+  `f291be727fa342a11635a18db7ea56b972da95a0`,
+  `memory_graph_source_trial.py` at
+  `3661417b72f806b4a6f953cf8d19ed6a9147de55`, and the independent
+  `memory_graph_independent_audit.py` at
+  `2455ad26d75944de8e32533c87dde5b4ee7d1717`.
+  **This exact-core-source rerun reproduced all three hashes below
+  bit-for-bit.** Twelve local V2 source/auditor tests passed on the exact
+  source files, plus the V1 four-condition CLI mechanical check passed.
+  The standard hosted `blocking-ci` and canonical preparer parity remain
+  separate and are NOT presumed green.
 - 240-row prediction journal SHA-256:
   `882abb0424d3d92d9f096d86c1a864b35a589f095733c81fc474afd0f671ba8b`.
   Seal SHA-256:
