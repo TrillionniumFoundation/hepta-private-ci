@@ -1,0 +1,17 @@
+name: Ubuntu 26 exact SDK Bazel qualification (isolated)
+on:
+  push:
+    branches: [ci/gha-sdks-ubuntu26-qualification-20261016]
+    paths:
+      - .github/workflows/gha-qualify-sdk-ubuntu26.yml
+
+permissions:
+  contents: read
+
+# The tested reusable sdk.yml is from this exact commit. All original
+# native Bazel, Python/Docker, and SDK tests remain intact. No job is skipped.
+jobs:
+  exact-production-sdk-checks:
+    name: Run unchanged SDK qualification on hosted Ubuntu 26 x64
+    uses: ./.github/workflows/sdk.yml
+    secrets: inherit
