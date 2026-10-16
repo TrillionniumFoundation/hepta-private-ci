@@ -12,7 +12,9 @@ permissions:
 jobs:
   shard-plan:
     name: Select 48 distinct production Python test modules
-    runs-on: ubuntu-24.04-arm
+    # Pure Python selection: place orchestration on the already-proven x64 pool
+    # rather than blocking ARM capacity before the actual ARM test matrix exists.
+    runs-on: ubuntu-26.04
     timeout-minutes: 8
     outputs:
       modules: ${{ steps.select.outputs.modules }}
