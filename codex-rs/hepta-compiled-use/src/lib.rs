@@ -199,12 +199,46 @@ impl SharedMemoryQueueV1 {
         Ok(())
     }
 
-    /// Pop a frame only after rechecking its ABI, digest, capability and
-    /// generation against this queue's verifier.
+    /// Revalidate the front frame before consuming it. A malformed or stale
+    /// frame must not silently advance the queue: retaining the head lets the
+    /// separate owner quarantine or reconcile the exact offending bytes.
+    ///
+    /// This check is not a substitute for a fresh authority/revocation check
+    /// at the independent sandbox immediately before each external effect.
     pub fn pop(&mut self) -> Result<VerifiedActionV1, ActionErrorV1> {
-        let frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
-        let action = ActionFrameV1::decode(&frame)?;
-        self.verifier.verify_and_bind(&action)
+        let frame = self.frames.front().ok_or(ActionErrorV1::QueueEmpty)?;
+        let action = ActionFrameV1::decode(frame)?;
+        let verified = self.verifier.verify_and_bind(&action)?;
+        let _consumed_frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
+        Ok(verified)
+    }
+
+    /// Pop for a separately authorized owner only after its latest verified
+    /// generation, grant digest and capability mask are supplied. This avoids
+    /// treating the verifier captured at queue construction as current.
+    ///
+    /// This method still does not grant OS effects: a sandbox must fetch and
+    /// independently check fresh revocation/final-use state at effect time.
+    /// Any mismatch retains the entire original queue for owner reconciliation.
+    pub fn pop_with_current_verifier(
+        &mut self,
+        current: ActionVerifierV1,
+    ) -> Result<VerifiedActionV1, ActionErrorV1> {
+        if current.generation == 0 || !current.grant.is_well_formed() {
+            return Err(ActionErrorV1::InvalidCapabilityGrant);
+        }
+        if current.generation != self.verifier.generation {
+            return Err(ActionErrorV1::GenerationMismatch);
+        }
+        if current.grant.digest != self.verifier.grant.digest {
+            return Err(ActionErrorV1::CapabilityDenied);
+        }
+        let frame = self.frames.front().ok_or(ActionErrorV1::QueueEmpty)?;
+        let action = ActionFrameV1::decode(frame)?;
+        self.verifier.verify(&action)?;
+        let verified = current.verify_and_bind(&action)?;
+        let _consumed_frame = self.frames.pop_front().ok_or(ActionErrorV1::QueueEmpty)?;
+        Ok(verified)
     }
 
     pub fn len(&self) -> usize {

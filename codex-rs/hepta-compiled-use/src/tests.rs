@@ -169,3 +169,91 @@
         );
         assert!(queue.is_empty());
     }
+
+    #[test]
+    fn malformed_front_frame_does_not_disappear_on_failed_pop() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("batch");
+        let intact_second = *queue.frames.get(1).expect("second");
+        queue.frames.front_mut().expect("head")[ACTION_PAYLOAD_OFFSET + 40] ^= 1;
+        let corrupt_first = *queue.frames.front().expect("head");
+        assert_eq!(
+            queue.pop(),
+            Err(ActionErrorV1::NonCanonicalPadding)
+        );
+        assert_eq!(queue.len(), 2);
+        assert_eq!(*queue.frames.front().expect("retained corrupt head"), corrupt_first);
+        assert_eq!(*queue.frames.get(1).expect("retained second"), intact_second);
+        // Only an independent owner may choose the quarantine/recovery action.
+        // A rejected frame must never skip ahead and execute the second action.
+    }
+
+    #[test]
+    fn stale_grant_binding_does_not_consume_queue_head() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        queue.push(click(1)).expect("push");
+        let original = *queue.frames.front().expect("head");
+        queue.verifier.grant.digest = digest(b"revoked-or-rotated-grant");
+        assert!(matches!(queue.pop(), Err(ActionErrorV1::CapabilityDenied)));
+        assert_eq!(queue.len(), 1);
+        assert_eq!(*queue.frames.front().expect("retained head"), original);
+        // The production sandbox must separately recheck current revocation.
+    }
+
+    #[test]
+    fn valid_pop_consumes_exactly_one_frame() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("batch");
+        assert_eq!(queue.pop().expect("first").frame(), &click(1));
+        assert_eq!(queue.len(), 1);
+        assert_eq!(queue.pop().expect("second").frame(), &click(2));
+        assert_eq!(queue.len(), 0);
+        assert!(matches!(queue.pop(), Err(ActionErrorV1::QueueEmpty)));
+    }
+
+    #[test]
+    fn current_grant_rotation_or_narrowing_blocks_pop_without_consumption() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("enqueue");
+        let original: Vec<_> = queue.frames.iter().copied().collect();
+
+        let mut rotated = verifier();
+        rotated.grant.digest = digest(b"new-current-grant");
+        assert!(matches!(
+            queue.pop_with_current_verifier(rotated),
+            Err(ActionErrorV1::CapabilityDenied)
+        ));
+
+        let mut narrowed = verifier();
+        narrowed.grant.allowed = CapabilityV1::ReadAccessibilityTree as u16;
+        assert!(matches!(
+            queue.pop_with_current_verifier(narrowed),
+            Err(ActionErrorV1::CapabilityDenied)
+        ));
+
+        let mut new_generation = verifier();
+        new_generation.generation += 1;
+        assert!(matches!(
+            queue.pop_with_current_verifier(new_generation),
+            Err(ActionErrorV1::GenerationMismatch)
+        ));
+        assert_eq!(queue.frames.iter().copied().collect::<Vec<_>>(), original);
+        assert_eq!(queue.len(), 2);
+        assert_eq!(queue.pop_with_current_verifier(verifier()).expect("current").frame(), &click(1));
+        assert_eq!(queue.pop_with_current_verifier(verifier()).expect("current").frame(), &click(2));
+    }
+
+    #[test]
+    fn malformed_latest_grant_is_rejected_without_skipping_queue_head() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        queue.push(click(1)).expect("push");
+        let original = *queue.frames.front().expect("front");
+        let mut invalid = verifier();
+        invalid.grant.allowed = u16::MAX;
+        assert!(matches!(
+            queue.pop_with_current_verifier(invalid),
+            Err(ActionErrorV1::InvalidCapabilityGrant)
+        ));
+        assert_eq!(*queue.frames.front().expect("front"), original);
+        assert_eq!(queue.len(), 1);
+    }
