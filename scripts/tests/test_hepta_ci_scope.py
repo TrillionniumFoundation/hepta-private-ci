@@ -101,6 +101,29 @@ class ScopeTests(unittest.TestCase):
             "product library EUID compile must precede native fault tests",
         )
 
+    def test_operator_original_euid_bazel_dependency_matches_unix_cargo(self):
+        # Cargo-only addition passed source-head native tests but the actual
+        # macOS Bazel release/clippy/test owner failed E0433 without rustix.
+        bazel = (
+            Path(__file__).resolve().parents[2]
+            / "codex-rs/hepta-operator-acceptance/BUILD.bazel"
+        ).read_text(encoding="utf-8")
+        manifest = (
+            Path(__file__).resolve().parents[2]
+            / "codex-rs/hepta-operator-acceptance/Cargo.toml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('[target.\'cfg(unix)\'.dependencies]', manifest)
+        self.assertIn('rustix = { workspace = true, features = ["process"] }', manifest)
+        self.assertEqual(bazel.count('_UNIX_RUSTIX_DEPS = select({'), 1)
+        self.assertIn('"@platforms//os:windows": []', bazel)
+        self.assertIn('"//conditions:default": ["@crates//:rustix"]', bazel)
+        self.assertEqual(
+            bazel.count("] + _UNIX_RUSTIX_DEPS"),
+            2,
+            "Bazel ordinary product lib and compiled unit test require real Unix rustix",
+        )
+        self.assertTrue(select(["codex-rs/hepta-operator-acceptance/BUILD.bazel"])["native"])
+
     def test_original_control_pending_begin_observer_is_native_and_read_only(self):
         scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
         self.assertTrue(scope["native"])
