@@ -8,9 +8,8 @@ permissions:
 
 jobs:
   python-sdk:
-    # Real Docker-based production tests passed on the supported Ubuntu 22 x64
-    # hosted VM (isolated run 38865189563); retain all pinned Python/uv checks.
-    runs-on: ubuntu-22.04
+    # Pinned glibc/Docker Python SDK steps validated on Ubuntu 26 x64.
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - name: Checkout repository
@@ -46,7 +45,8 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   sdks:
-    runs-on: ubuntu-24.04
+    # Native Bazel/TypeScript full SDK candidate on generally available Ubuntu 26.
+    runs-on: ubuntu-26.04
     timeout-minutes: 60
     environment:
       name: bazel
