@@ -121,6 +121,10 @@ class RestMetadataScope(unittest.TestCase):
         with self.assertRaises(m.MissingPhysicalReceipt):
             m.parse(b'{"invalid":NaN}')
 
+    def test_unbounded_json_exponent_denied(self):
+        with self.assertRaises(m.MissingPhysicalReceipt):
+            m.parse(b'{"unknown":1e999}')
+
     def test_wrong_local_rest_source_symlink_denied(self):
         with tempfile.TemporaryDirectory() as path:
             root=Path(path)
