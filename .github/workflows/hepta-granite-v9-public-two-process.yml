@@ -1,0 +1,253 @@
+name: hepta-granite-v9-real-public-two-process (SHADOW DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/granite97_v9_public_physical.py'
+      - 'qualification/stem-cell-v1/test_granite97_v9_public_physical.py'
+      - 'qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt'
+      - 'qualification/stem-cell-v1/GRANITE97_V9_PHYSICAL_RUNBOOK.md'
+      - '.github/workflows/hepta-granite-v9-public-two-process.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HF_HUB_DISABLE_TELEMETRY: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  source-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact HEAD and offline original-source denial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git hash-object qualification/stem-cell-v1/granite97_v9_public_physical.py \
+            qualification/stem-cell-v1/test_granite97_v9_public_physical.py \
+            qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt
+          cd qualification/stem-cell-v1
+          python -m unittest -v test_granite97_v9_public_physical.py
+          python -O -m unittest -v test_granite97_v9_public_physical.py
+          python -m py_compile granite97_v9_public_physical.py test_granite97_v9_public_physical.py
+
+  material-source-freeze:
+    needs: source-negative-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin public upstream material by immutable HF revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'huggingface_hub==0.36.0'
+          mkdir -p "$RUNNER_TEMP/granite-v9/model"
+          python - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          root=os.environ['RUNNER_TEMP']+'/granite-v9/model'
+          path=snapshot_download(
+              repo_id='ibm-granite/granite-embedding-97m-multilingual-r2',
+              revision='835ad14087e140460703cf0fae09f97d469d65c2',
+              allow_patterns=['config.json','model.safetensors','tokenizer.json',
+                              'tokenizer_config.json','special_tokens_map.json'],
+              local_dir=root)
+          if path!=root:
+              raise SystemExit('unexpected local material directory')
+          PY
+          cp qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt \
+            "$RUNNER_TEMP/granite-v9/source.txt"
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py prepare \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --lock-output "$RUNNER_TEMP/granite-v9/lock.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/granite-v9/model/config.json
+            ${{ runner.temp }}/granite-v9/model/model.safetensors
+            ${{ runner.temp }}/granite-v9/model/tokenizer.json
+            ${{ runner.temp }}/granite-v9/model/tokenizer_config.json
+            ${{ runner.temp }}/granite-v9/model/special_tokens_map.json
+            ${{ runner.temp }}/granite-v9/model/material.json
+            ${{ runner.temp }}/granite-v9/source.txt
+            ${{ runner.temp }}/granite-v9/lock.json
+
+  actual-pretrained-producer:
+    needs: material-source-freeze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          path: ${{ runner.temp }}/granite-v9
+      - name: Physically execute one pinned frozen Granite97 encoder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'granite-v9/lock.json'
+          d=json.loads(p.read_text())
+          print(d['material_sha256'],d['source_sha256'],d['expires_at_ms'])
+          PY
+          )
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          python qualification/stem-cell-v1/granite97_v3_export.py \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --source-sha256 "$SHA" --expected-material-sha256 "$MAT" \
+            --expires-at-ms "$EXP" --max-tokens 192 \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 \
+            --output "$RUNNER_TEMP/granite-v9/export.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: granite-v9-real-encoder-export
+          retention-days: 1
+          if-no-files-found: error
+          path: ${{ runner.temp }}/granite-v9/export.json
+
+  independent-physical-review:
+    needs: actual-pretrained-producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          path: ${{ runner.temp }}/granite-v9
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-real-encoder-export
+          path: ${{ runner.temp }}/granite-v9
+      - name: Separate process rehashes every original tensor and reruns real frozen forward
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'granite-v9/lock.json').read_text())
+          print(d['material_sha256'],d['source_sha256'],d['expires_at_ms'])
+          PY
+          )
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          python qualification/stem-cell-v1/granite97_v3_independent_review.py \
+            --model-root "$RUNNER_TEMP/granite-v9/model" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --source-sha256 "$SHA" --export "$RUNNER_TEMP/granite-v9/export.json" \
+            --expected-material-sha256 "$MAT" \
+            --now-ms "$(date +%s%3N)" --maximum-expiry-ms "$EXP" \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 --max-tokens 192 \
+            --output "$RUNNER_TEMP/granite-v9/review.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: granite-v9-second-real-forward-review
+          retention-days: 1
+          if-no-files-found: error
+          path: ${{ runner.temp }}/granite-v9/review.json
+
+  native-two-cell-numerical-read:
+    needs: independent-physical-review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-exact-material-and-constructed-source
+          path: ${{ runner.temp }}/granite-v9
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-real-encoder-export
+          path: ${{ runner.temp }}/granite-v9
+      - uses: actions/download-artifact@v4
+        with:
+          name: granite-v9-second-real-forward-review
+          path: ${{ runner.temp }}/granite-v9
+      - name: Recheck exact source/model/review and issue an UNSIGNED data-only manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py admit \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json" \
+            --source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --export "$RUNNER_TEMP/granite-v9/export.json" \
+            --review "$RUNNER_TEMP/granite-v9/review.json" \
+            --output "$RUNNER_TEMP/granite-v9/unsigned-admission.json"
+      - name: Execute native V3 two-Cell Q24 CPU Reader behind DENY_ALL
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          cargo +1.95.0 run --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --bin hepta-granite-v3-shadow -- \
+            --admission "$RUNNER_TEMP/granite-v9/unsigned-admission.json" \
+            --original-source "$RUNNER_TEMP/granite-v9/source.txt" \
+            --export "$RUNNER_TEMP/granite-v9/export.json" \
+            --review "$RUNNER_TEMP/granite-v9/review.json" \
+            > "$RUNNER_TEMP/granite-v9/native-shadow.json"
+          python qualification/stem-cell-v1/granite97_v9_public_physical.py audit \
+            --lock "$RUNNER_TEMP/granite-v9/lock.json" \
+            --admission "$RUNNER_TEMP/granite-v9/unsigned-admission.json" \
+            --native "$RUNNER_TEMP/granite-v9/native-shadow.json" \
+            --output "$RUNNER_TEMP/granite-v9/public-nogo-audit.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: granite-v9-public-two-process-denyall-candidate
+          retention-days: 1
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/granite-v9/public-nogo-audit.json
+            ${{ runner.temp }}/granite-v9/native-shadow.json
+            ${{ runner.temp }}/granite-v9/unsigned-admission.json
