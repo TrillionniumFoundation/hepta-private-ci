@@ -198,6 +198,11 @@ one private 0700 Unix Socket directory and the same kernel process boundary**:
   capability, generation and contiguous sequence. No general JSON parser
   or external tool-call system is exercised.
 
+The JSON control performs one OS write per request/response, like the
+binary arm, but still uses a separate bounded length-prefix read and a
+larger text payload. This is a transport/framing/codec comparison, not an
+isolated serialization-only measurement or a normalized equal-byte trial.
+
 Each arm warms up 16 real request/response pairs before 64 or 1,024
 measured pairs, with two repetitions and reversed execution order
 (binary, JSON, JSON, binary). Each repetition separately records process
