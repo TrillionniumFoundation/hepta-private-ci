@@ -1,0 +1,60 @@
+name: ARM64 pinned Rust dependency qualification
+
+on:
+  push:
+    branches: [ci/gha-runner-isolation-20261016]
+    paths:
+      - .github/workflows/gha-arm-dependency-qualification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-deny-arm:
+    name: Cargo deny 0.19.0 full dependency policy on ARM64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 5daf238ad00b3abc88b4f46f56aec88d17c0cdff
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci-build
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-deny@0.19.0
+      - name: Enforce original full Cargo dependency policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "5daf238ad00b3abc88b4f46f56aec88d17c0cdff"
+          cargo deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check
+      - uses: ./.github/actions/check-clean-worktree
+
+  cargo-shear-arm:
+    name: Cargo shear 1.11.2 locked dependency analysis on ARM64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact PR source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 5daf238ad00b3abc88b4f46f56aec88d17c0cdff
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-shear@1.11.2
+      - name: Enforce original locked Cargo shear policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "5daf238ad00b3abc88b4f46f56aec88d17c0cdff"
+          cargo shear --locked
+      - uses: ./.github/actions/check-clean-worktree
