@@ -205,6 +205,8 @@ class StrongReferenceTests(TestCase):
     def test_before_effect_durable_start(self):
         path=self.root/'starts.jsonl'
         r=s.make_record(self.plan['requests'][0],self.ph,self.seal['model_spec_digest'])
+        r['input_tokens']=3
+        r['input_ids_digest']=b.digest(b.canonical([101,202,303]))
         s.write_start(path,r)
         event=b.strict(path.read_bytes())
         self.assertEqual(event['request_id'],r['request_id'])
