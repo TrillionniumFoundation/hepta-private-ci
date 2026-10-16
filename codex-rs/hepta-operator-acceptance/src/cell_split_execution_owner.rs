@@ -954,11 +954,21 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
-            // Owner readbacks are potentially slow. Selector/NDU membership
-            // may be withdrawn while the last predecessor is being verified.
-            // Revalidate again before writing the prepared intent. This
-            // remains only a read-only guard; actual effect owners enforce
-            // independent final-use at the physical commit boundary.
+            // The first negative owner readback is NOT a reservation: the
+            // original effect may appear while Selector/NDU admission and
+            // predecessor RPCs are in flight. Recheck the exact next original
+            // owner before writing the irreversible prepared intent. Never
+            // adopt an external effect absent from this local ledger.
+            self.port
+                .preflight_uncommitted(&intent)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // The second signed negative RPC may itself be slow or adversarial.
+            // Reverify frozen local frames and each committed original owner
+            // before writing. This is bounded lifecycle work, not a neuron tick.
+            self.verify_committed_prefix()?;
+            // Revalidate Selector/NDU after both potentially slow original
+            // checks. Final-use remains an independent physical-owner gate;
+            // these negative observations do NOT create an atomic commit.
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),

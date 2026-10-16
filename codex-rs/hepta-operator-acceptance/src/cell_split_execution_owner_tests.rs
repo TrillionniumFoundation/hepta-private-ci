@@ -1187,6 +1187,78 @@ fn verified_completion_rejects_unreachable_owner_and_skips_pending_preflight() {
     }
 }
 
+/// The original next-step effect may appear AFTER the first signed negative
+/// preflight, while an independent Selector callback or predecessor verification
+/// is running. A locally absent prepared frame is never permission to dispatch
+/// an effect already committed under the same original owner idempotency key.
+#[test]
+fn late_original_effect_after_preflight_never_prepares_or_reexecutes() {
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open original owner");
+        let frozen = plan();
+        let digest = frozen.digest().expect("frozen plan digest");
+        let mut predecessor = digest.clone();
+        for _ in 0..completed {
+            predecessor = owner
+                .advance()
+                .expect("real predecessor fixture execution")
+                .expect("signed predecessor")
+                .receipt_digest;
+        }
+        let step = super::CellSplitExecutionStepV1::at(completed)
+            .expect("four original durable owners");
+        let intent = super::make_intent(&frozen, &digest, step, &predecessor);
+        let external = FixturePort::receipt(&intent);
+        let original_executions = state.borrow().executions;
+        let mut admission_checks = 0;
+        let outcome = owner.advance_with_admission(|| {
+            admission_checks += 1;
+            if admission_checks == 1 {
+                // Independent original-owner effect racing after the FIRST
+                // negative preflight; it has no matching local prepared frame.
+                state
+                    .borrow_mut()
+                    .commits
+                    .insert(intent.idempotency_key.clone(), external.clone());
+            }
+            Ok(())
+        });
+        assert!(matches!(
+            outcome,
+            Err(CellSplitExecutionErrorV1::External(message))
+                if message.contains("effect already exists")
+        ));
+        assert_eq!(admission_checks, 1, "late original check must deny");
+        assert_eq!(state.borrow().executions, original_executions);
+        assert_eq!(
+            state.borrow().commits.get(&intent.idempotency_key),
+            Some(&external),
+            "original effect is not replayed or overwritten"
+        );
+        assert_eq!(owner.completed_steps(), completed);
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed:02}-prepared.json"))
+                .exists()
+        );
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed:02}-committed.json"))
+                .exists()
+        );
+    }
+}
+
 #[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     let root = private_tempdir();
