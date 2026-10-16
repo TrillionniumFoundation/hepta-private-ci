@@ -111,7 +111,7 @@ def execute(manifest_doc: Any, train_doc: Any, public_doc: Any, prompts_doc: Any
             "task_id": case.task_id, "selected_action": action, "answer": out.answer,
             "meter": vars(out.meter), "reader_receipt_sha256": out.receipt_digest,
         })
-    return {
+    payload = {
         "schema": "hepta.p2.onpolicy-attempt.v1", "qualifier": "RESEARCH_ONLY_DENY_ALL",
         "model_sha256": model_digest, "adapter_sha256": adapter_digest,
         "policy": policy, "manifest_sha256": digest(manifest_doc),
@@ -126,11 +126,15 @@ def execute(manifest_doc: Any, train_doc: Any, public_doc: Any, prompts_doc: Any
         "records": results,
         "limitations": "MODEL_AND_METER_RECEIPTS_FROM_CALLER_NOT_INDEPENDENTLY_ATTESTED",
     }
+    return {"attempt": payload, "seal_sha256": digest(payload)}
 
 
 def score_postseal(attempt: Any, gold: Any) -> dict[str, Any]:
-    if type(attempt) is not dict or attempt.get("schema") != "hepta.p2.onpolicy-attempt.v1":
-        raise Invalid("unknown attempt")
+    if type(attempt) is not dict or set(attempt) != {"attempt", "seal_sha256"} or type(attempt["attempt"]) is not dict or digest(attempt["attempt"]) != attempt["seal_sha256"]:
+        raise Invalid("unknown or altered on-policy attempt")
+    attempt = attempt["attempt"]
+    if attempt.get("schema") != "hepta.p2.onpolicy-attempt.v1" or attempt.get("qualifier") != "RESEARCH_ONLY_DENY_ALL":
+        raise Invalid("unknown attempt format")
     if type(gold) is not dict or set(gold) != {"schema", "answers"} or gold["schema"] != "hepta.p2.gold.v1":
         raise Invalid("gold owner schema")
     if type(gold["answers"]) is not list or len(gold["answers"]) != len(attempt["records"]):
