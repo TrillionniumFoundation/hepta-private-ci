@@ -53,3 +53,22 @@ jobs:
           set -euo pipefail
           command -v dotslash
           dotslash --version
+
+  windows-setup-ci:
+    name: Exercise the actual production setup-ci composite on Windows
+    runs-on: windows-2025
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Execute production setup-ci with pinned Windows DotSlash
+        uses: ./.github/actions/setup-ci
+      - name: Require Windows DotSlash and just in subsequent steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v dotslash
+          dotslash --version
+          command -v just
+          just --version
