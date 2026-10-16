@@ -1,0 +1,144 @@
+name: Hepta V17 original 135M source-first Reader (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-v17-original-reader-sourcefirst-20261016]
+    paths:
+      - 'research/hepta_v17_reader/**'
+      - '.github/workflows/hepta-v17-original-reader-sourcefirst.yml'
+  pull_request:
+    paths:
+      - 'research/hepta_v17_reader/**'
+      - '.github/workflows/hepta-v17-original-reader-sourcefirst.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-v17-reader-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Exact source / no-network / assertion-independent negatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          D=research/hepta_v17_reader
+          python -S -m unittest discover -s "$D" -p 'test_v17_original_reader.py' -v
+          python -O -S -m unittest discover -s "$D" -p 'test_v17_original_reader.py' -v
+          python -m compileall -q "$D"
+          python -S - <<'PY'
+          import json
+          p='research/hepta_v17_reader/V17_ORIGINAL_READER_PHYSICAL_OBSERVATION_20261016.json'
+          x=json.load(open(p))
+          assert x['decision']=='HOLD_NO_GO' and x['authority']=='DENY_ALL'
+          assert x['source_first_cases']==30 and x['physical_unique_model_requests']==96
+          assert x['logical_arm_requests']==120 and x['original_model_forward_calls']==1777
+          assert all(row['strict_full_answer_equality']==0 for row in x['summary'])
+          assert x['no_production_effects'] is True and x['original_raw_prompts_answers_and_labels_are_not_in_git'] is True
+          PY
+  original-physical-with-independent-process-review:
+    # Execute the actual SHA-pinned public original tensors on a separate runner
+    # once per research push. Never upload raw dialogues, model, held labels,
+    # prompts, generated tokens or model-answer text.
+    if: github.event_name == 'push'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install exact research CPU operator dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu'
+          python -m pip install --no-cache-dir 'safetensors==0.7.0' 'regex==2026.5.9'
+      - name: Recover only approved original GitHub artifact members
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 25 --max-time 1200 \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip' \
+            -o "$RUNNER_TEMP/archived-original.zip"
+          echo '07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af  '"$RUNNER_TEMP/archived-original.zip" | sha256sum -c -
+          python - <<'PY'
+          import os, zipfile, tarfile, pathlib, shutil
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'private-original'
+          target.mkdir()
+          requested={
+            'memory-inputs/reader/model.safetensors': ('reader/model.safetensors',269060552),
+            'memory-inputs/reader/tokenizer.json': ('reader/tokenizer.json',2104556),
+            'memory-inputs/reader/config.json': ('reader/config.json',861),
+            'memory-inputs/locomo.json': ('locomo.json',2805274),
+          }
+          archive=pathlib.Path(os.environ['RUNNER_TEMP'])/'archived-original.zip'
+          seen=set()
+          with zipfile.ZipFile(archive) as z:
+            if z.namelist()!=['memory-inputs.tar.gz']:
+              raise ValueError('unexpected archived Github artifact layout')
+            with z.open('memory-inputs.tar.gz') as raw:
+              with tarfile.open(fileobj=raw,mode='r|gz') as tar:
+                for member in tar:
+                  if member.name not in requested:continue
+                  dest,size=requested[member.name]
+                  if not member.isfile() or member.size!=size or member.name in seen:
+                    raise ValueError('altered or duplicated original artifact member')
+                  seen.add(member.name)
+                  path=target/dest
+                  path.parent.mkdir(exist_ok=True)
+                  with tar.extractfile(member) as input, path.open('xb') as output:
+                    shutil.copyfileobj(input,output,1024*1024)
+          if seen!=set(requested):raise ValueError('original Reader source/model material missing')
+          PY
+      - name: Run original source-first 30 x 4 real model requests and postseal review
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=research/hepta_v17_reader
+          INPUT="$RUNNER_TEMP/private-original"
+          mkdir "$RUNNER_TEMP/owned-v17"
+          # prepare creates a fresh directory rather than overwriting source.
+          rmdir "$RUNNER_TEMP/owned-v17"
+          python "$D/source_first.py" prepare --source "$INPUT/locomo.json" --out "$RUNNER_TEMP/owned-v17"
+          O="$RUNNER_TEMP/owned-v17"
+          python "$D/source_first.py" plan --public "$O/public.json" --owner "$O/owner.json" --out "$O/plan.json"
+          python "$D/source_first.py" annotate --public "$O/public.json" --owner "$O/owner.json" --hidden "$O/hidden.json" --plan "$O/plan.json" --out "$O/annotation.json"
+          python "$D/source_first.py" requests --public "$O/public.json" --owner "$O/owner.json" --plan "$O/plan.json" --annotation "$O/annotation.json" --out "$O/requests.json"
+          python "$D/physical.py" --public "$O/public.json" --owner "$O/owner.json" --plan "$O/plan.json" --annotation "$O/annotation.json" --requests "$O/requests.json" --reader-dir "$INPUT/reader" --private-output "$O/physical.json"
+          python "$D/independent_review.py" --original "$INPUT/locomo.json" --public "$O/public.json" --owner "$O/owner.json" --hidden "$O/hidden.json" --plan "$O/plan.json" --annotation "$O/annotation.json" --requests "$O/requests.json" --physical "$O/physical.json" --starts "$O/physical.json.starts.jsonl" --reader-dir "$INPUT/reader" --output "$RUNNER_TEMP/v17-sanitary-report.json"
+          python "$D/repeat.py" --requests "$O/requests.json" --physical "$O/physical.json" --reader-dir "$INPUT/reader" --output "$RUNNER_TEMP/v17-repeated.json" --n 12
+          python - "$RUNNER_TEMP/v17-sanitary-report.json" "$RUNNER_TEMP/v17-repeated.json" <<'PY'
+          import json,sys
+          a,b=(json.load(open(p)) for p in sys.argv[1:])
+          assert a['decision']=='HOLD_NO_GO' and a['physical_unique_model_requests']==96
+          assert a['source_first_cases']==30 and a['original_model_forward_calls']==1777
+          assert b['matching_original_requests']==12 and b['all_original_token_bytes_matched'] is True
+          assert a['production_authorized'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v17-sanitized-real-original-reader-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v17-sanitary-report.json
+            ${{ runner.temp }}/v17-repeated.json
+          retention-days: 5
+          if-no-files-found: error
