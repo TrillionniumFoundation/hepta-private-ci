@@ -8,6 +8,10 @@ on:
       - "**full-ci**"
   workflow_dispatch:
 
+concurrency:
+  group: rust-ci-full-${{ github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
