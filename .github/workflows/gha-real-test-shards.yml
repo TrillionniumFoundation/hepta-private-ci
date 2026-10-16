@@ -1,0 +1,102 @@
+name: Real Python CI suite runner capacity qualification
+on:
+  push:
+    branches: [ci/gha-real-test-shards-20261016]
+    paths: [.github/workflows/gha-real-test-shards.yml]
+
+permissions:
+  contents: read
+
+# This branch-only test does not change product required checks. Every shard
+# must contain a unique real unittest file and must execute >0 test cases.
+jobs:
+  shard-plan:
+    name: Select 48 distinct production Python test modules
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 8
+    outputs:
+      modules: ${{ steps.select.outputs.modules }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Produce deterministic nonempty production test shards
+        id: select
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          matches = sorted(str(path) for path in Path("scripts").glob("test_hepta_*.py"))
+          if len(matches) < 48:
+              raise SystemExit(f"not enough distinct tests: {len(matches)}")
+          chosen = matches[:48]
+          if len(chosen) != len(set(chosen)):
+              raise SystemExit("duplicate test modules")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("modules=" + json.dumps(chosen, separators=(",", ":")) + "\n")
+          print(f"Selected {len(chosen)} distinct real source test modules")
+          print("\n".join(chosen))
+          PY
+
+  python-suite:
+    name: Real module ${{ matrix.test_module }}
+    needs: shard-plan
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 48
+      matrix:
+        test_module: ${{ fromJSON(needs.shard-plan.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Execute actual unittest suite; prohibit empty shards
+        shell: bash
+        env:
+          TEST_MODULE: ${{ matrix.test_module }}
+        run: |
+          set -euo pipefail
+          python3 - "$TEST_MODULE" <<'PY'
+          from pathlib import Path
+          import sys
+          import unittest
+
+          path = Path(sys.argv[1])
+          if path.parent != Path("scripts") or not path.name.startswith("test_hepta_"):
+              raise SystemExit("unexpected test module path")
+          if not path.is_file():
+              raise SystemExit("missing checked-out test module")
+          suite = unittest.defaultTestLoader.discover(start_dir="scripts", pattern=path.name)
+          count = suite.countTestCases()
+          print(f"Real test file: {path}; cases: {count}", flush=True)
+          if count < 1:
+              raise SystemExit("empty shard is forbidden")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
+
+  x64-ubuntu26-control:
+    name: Linux x64 Ubuntu 26 identical real suite control
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -v -s scripts -p test_hepta_ci_scope_roots.py
+
+  x64-ubuntu24-control:
+    name: Linux x64 Ubuntu 24 identical real suite control
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -v -s scripts -p test_hepta_ci_scope_roots.py
