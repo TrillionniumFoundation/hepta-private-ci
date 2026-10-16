@@ -9,7 +9,7 @@ import unittest
 
 from p0_mmbert_stage_census_v16 import (
     Invalid, REVISION, SCHEMA, STAGES, StageLedger, read_preflight,
-    strict_pairs, write_create_only)
+    strict_pairs, write_create_only, mark_external_failure)
 
 HEAD = 'a' * 40
 
@@ -27,6 +27,48 @@ def valid_preflight():
 
 
 class SourceStageDiagnostics(unittest.TestCase):
+    def test_native_setup_is_separate_from_model_loading(self):
+        self.assertEqual(STAGES[0], 'pinned_source_preflight')
+        self.assertEqual(STAGES[1], 'runtime_checkout_and_imports')
+        self.assertEqual(STAGES[2], 'original_mlm_load')
+        self.assertEqual(STAGES[-1], 'original_frozen_cpu_forward')
+        self.assertEqual(len(STAGES), 9)
+
+    def test_native_import_failure_is_not_claimed_model_weight_failure(self):
+        led=StageLedger(HEAD, 34, 'source')
+        led.perform(STAGES[0],lambda: True)
+        with self.assertRaises(ModuleNotFoundError):
+            def missing():raise ModuleNotFoundError('private package/source location')
+            led.perform('runtime_checkout_and_imports', missing)
+        out=led.receipt()
+        self.assertEqual(out['first_failed_stage'], 'runtime_checkout_and_imports')
+        self.assertEqual(out['exception_class_only'], 'ModuleNotFoundError')
+        self.assertNotIn('private',json.dumps(out))
+        self.assertFalse(out['production_promotion_permitted'])
+
+    def test_safetensors_failure_is_not_misattributed_to_full_state(self):
+        led=StageLedger(HEAD, 34, 'merge')
+        for stage in STAGES[:STAGES.index('original_tied_table_bytes')]:
+            led.perform(stage,lambda:True)
+        with self.assertRaises(FileNotFoundError):
+            def missing():raise FileNotFoundError('never publish private weights path')
+            led.perform('original_tied_table_bytes',missing)
+        out=led.receipt()
+        self.assertEqual(out['first_failed_stage'], 'original_tied_table_bytes')
+        self.assertNotIn('never publish',json.dumps(out))
+        self.assertFalse(out['full_four_stem_original_human_efficacy_verified'])
+
+    def test_outside_model_stage_is_explicit_external_setup_only(self):
+        led=StageLedger(HEAD,34,'source')
+        led.perform(STAGES[0],lambda:True)
+        mark_external_failure(led,FileNotFoundError('/private/native/runtime'))
+        self.assertEqual(led.receipt()['first_failed_stage'],'external_setup')
+        self.assertEqual(led.receipt()['exception_class_only'],'FileNotFoundError')
+        self.assertEqual(led.receipt()['ordered_completed_stages'],[STAGES[0]])
+        self.assertNotIn('/private',json.dumps(led.receipt()))
+        with self.assertRaises(Invalid):mark_external_failure(led,ValueError('repeat'))
+        with self.assertRaises(Invalid):led.perform(STAGES[1],lambda:True)
+
     def test_finished_diagnostic_still_denies_production(self):
         led = StageLedger(HEAD, 34, 'source')
         for stage in STAGES:

@@ -21,7 +21,8 @@ integrity or valid model inference and must not be treated as acceptance.
 
 `p0_mmbert_stage_census_v16.py` performs exactly these ordered stages on the
 original immutable mmBERT-small `0eb3d056...` checkpoint and original pinned
-runtime: source SHA/LFS preflight, AutoModelForMaskedLM loading, strict V15
+runtime: source SHA/LFS preflight, pinned source checkout and native runtime imports,
+AutoModelForMaskedLM loading, strict V15
 alias report, 384D tied ModernBERT architecture, actual physical embedding /
 decoder storage alias, **entire original tied-table bytes**, **all serialized
 pretrained tensor bytes**, and finally a new frozen inference through the
@@ -52,3 +53,22 @@ future utility, 4096-Cell TCO, NDU decisions, production FinalUse or physical
 Cell Split. If any stage fails, it is a hard scientific acceptance blocker.
 
 **DRAFT / RESEARCH ONLY / DENY_ALL. Do not merge main or select a model.**
+
+## V16.1 stage-attribution correction
+
+The original eight-stage stage census had two untracked boundaries: the
+pinned source checkout/native Python imports between source preflight and
+`original_mlm_load`, and the original safetensors local acquisition before
+`original_tied_table_bytes`. A failed import could be falsely labeled as an
+MLM load failure, and a missing source file could be labeled as a later gate.
+
+V16.1 adds `runtime_checkout_and_imports` as a separate **ninth** recorded
+physical boundary and moves the source-file access into the actual tied-table
+validation stage. Cold loader cleanup is recorded with the forward stage, while **releasing**
+the first full MLM model before the second cold load to preserve peak-RSS
+semantics.
+Any exceptional failure outside these explicitly wrapped steps is reported
+only as `external_setup` with a bounded exception *class*, never guessed as
+the next model/weight gate. No changed model revision, allowed alias, original
+weight verification, CPU forward, source or label custody or FinalUse authority.
+The run still exits nonzero on failure and always produces `DENY_ALL`.

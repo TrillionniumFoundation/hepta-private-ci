@@ -19,7 +19,8 @@ import stat
 SCHEMA = 'hepta.p0.mmbert-original-stage-census.v16'
 REPO = 'jhu-clsp/mmBERT-small'
 REVISION = '0eb3d056ec1d6333cf4e19b0966dfde342a41a3a'
-STAGES = ('pinned_source_preflight', 'original_mlm_load',
+STAGES = ('pinned_source_preflight', 'runtime_checkout_and_imports',
+          'original_mlm_load',
           'strict_alias_loading_report', 'stock_architecture',
           'physical_tied_storage', 'original_tied_table_bytes',
           'all_serialized_tensor_bytes', 'original_frozen_cpu_forward')
@@ -133,20 +134,33 @@ def execute_real(ledger: StageLedger, preflight: Path, compact_checkout: Path) -
     # Verify original SHA/LFS source BEFORE costly native model imports.
     _, proof_digest = ledger.perform('pinned_source_preflight', lambda: read_preflight(preflight))
     ledger.preflight_sha = proof_digest
-    import sys
-    checkout = Path(compact_checkout)
-    root = checkout / 'qualification/neuron-stem'
-    if checkout.is_symlink() or root.is_symlink() or not root.is_dir():
-        raise Invalid('original pinned compact source checkout absent')
-    sys.path.insert(0, str(root))
-    # Import costly native toolchain ONLY for the hosted opt-in physical run.
-    import torch
-    from huggingface_hub import hf_hub_download
-    from transformers import AutoModelForMaskedLM, AutoTokenizer
-    from e1_mmbert_tied_loader import (FrozenMMBert, verify_tied_pretrained_table,
-                                      verify_complete_pretrained_state)
-    from multimodal_exact_tied_alias_v11 import same_physical_view
-    from p0_mmbert_tied_load_contract_v15 import require_alias_only_loading_report
+    # Stage external/native checkout and runtime imports explicitly.  The
+    # original code imported these BETWEEN ledger.perform calls, so missing
+    # packages/source appeared as an original_mlm_load failure even though
+    # from_pretrained had never been attempted.
+    def load_runtime():
+        import sys
+        checkout = Path(compact_checkout)
+        root = checkout / 'qualification/neuron-stem'
+        if checkout.is_symlink() or root.is_symlink() or not root.is_dir():
+            raise Invalid('original pinned compact source checkout absent')
+        sys.path.insert(0, str(root))
+        import torch
+        from huggingface_hub import hf_hub_download
+        from transformers import AutoModelForMaskedLM, AutoTokenizer
+        from e1_mmbert_tied_loader import (FrozenMMBert, verify_tied_pretrained_table,
+                                          verify_complete_pretrained_state)
+        from multimodal_exact_tied_alias_v11 import same_physical_view
+        from p0_mmbert_tied_load_contract_v15 import require_alias_only_loading_report
+        return (torch, hf_hub_download, AutoModelForMaskedLM, AutoTokenizer,
+                FrozenMMBert, verify_tied_pretrained_table,
+                verify_complete_pretrained_state, same_physical_view,
+                require_alias_only_loading_report)
+
+    (torch, hf_hub_download, AutoModelForMaskedLM, AutoTokenizer,
+     FrozenMMBert, verify_tied_pretrained_table, verify_complete_pretrained_state,
+     same_physical_view, require_alias_only_loading_report) = ledger.perform(
+        'runtime_checkout_and_imports', load_runtime)
 
     def load_original():
         opts = dict(revision=REVISION, local_files_only=True, trust_remote_code=False)
@@ -182,17 +196,26 @@ def execute_real(ledger: StageLedger, preflight: Path, compact_checkout: Path) -
         return True
 
     ledger.perform('physical_tied_storage', check_physical_alias)
-    weights = hf_hub_download(repo_id=REPO, filename='model.safetensors',
-                              revision=REVISION, local_files_only=True)
-    ledger.perform('original_tied_table_bytes', lambda: verify_tied_pretrained_table(torch, mlm, weights))
-    ledger.perform('all_serialized_tensor_bytes', lambda: verify_complete_pretrained_state(torch, mlm, weights))
-    # Re-enter the EXACT original production-independent research loader and
-    # encode path, not a substitute model or a hand-built synthetic vector.
-    del mlm
-    import gc
-    gc.collect()
+    # A missing pinned safetensors file belongs to the original tied-table
+    # stage, NOT the following all-serialized tensor-verification stage.
+    def original_tied_table():
+        weights = hf_hub_download(repo_id=REPO, filename='model.safetensors',
+                                  revision=REVISION, local_files_only=True)
+        verify_tied_pretrained_table(torch, mlm, weights)
+        return weights
 
+    weights = ledger.perform('original_tied_table_bytes', original_tied_table)
+    ledger.perform('all_serialized_tensor_bytes', lambda: verify_complete_pretrained_state(torch, mlm, weights))
+    # Re-enter the EXACT original research loader. Any cleanup/import problem
+    # is part of the cold re-entry/forward stage, never an untracked gap.
     def original_forward():
+        # Release the first fully-verified original MLM before the second
+        # cold loader call: stage attribution must NOT duplicate resident
+        # foundation model weights or change the original peak-RSS behavior.
+        nonlocal mlm
+        mlm = None
+        import gc
+        gc.collect()
         f = FrozenMMBert(REVISION, device='cpu', max_tokens=512)
         row = {'state':'Fixed public pretrained-source probe, no task label.',
                'question':'Does the strict frozen Encoder execute one physical CPU forward?',
@@ -210,6 +233,15 @@ def execute_real(ledger: StageLedger, preflight: Path, compact_checkout: Path) -
     return ledger.receipt()
 
 
+def mark_external_failure(ledger: StageLedger, error: Exception) -> None:
+    """Preserve untracked failure without falsely blaming a model verifier."""
+    if ledger.failed is not None:
+        raise Invalid('cannot overwrite a stage failure')
+    ledger.failed = 'external_setup'
+    cls = type(error).__name__
+    ledger.error_class = cls if re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,79}', cls) else 'Exception'
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--preflight', type=Path, required=True)
@@ -224,12 +256,12 @@ def main():
     try:
         execute_real(ledger, a.preflight, a.compact_checkout)
     except Exception as err:
-        # A preflight/import failure might occur outside the recorded stages;
-        # preserve that fact as an explicit failed nonqualifying source gate.
+        # A failure OUTSIDE a tracked perform call must not be fabricated
+        # as failure of the next model gate. Record a separate non-authorizing
+        # external_setup stage and bounded exception *class* only.
         failed = True
         if ledger.failed is None:
-            ledger.failed = STAGES[len(ledger.completed)] if len(ledger.completed) < len(STAGES) else 'external_setup'
-            ledger.error_class = type(err).__name__
+            mark_external_failure(ledger, err)
     write_create_only(a.output, ledger.receipt())
     print(json.dumps({'schema': SCHEMA, 'outcome': ledger.receipt()['outcome'],
                       'last_completed_stage': ledger.completed[-1] if ledger.completed else None,
