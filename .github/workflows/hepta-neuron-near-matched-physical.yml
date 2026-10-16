@@ -331,6 +331,42 @@ jobs:
           assert plan["training_execution_performed"] is False
           assert plan["decision"] == "NO_MODEL_PROMOTION"
           PY
+      - name: Prove IID one-tick Torch public Q24 training mechanism on synthetic security fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_physical_train.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_public_iid_q24_physical_train.py' -v
+      - name: Physically train 32 real BANKING77 Q24 private Cells, IID one-tick only
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/hepta-public-iid-q24"
+          TRAIN_SHA="$(sha256sum "$ROOT/fit-only-q24.json" | awk '{print $1}')"
+          PLAN_SHA="$(sha256sum "$ROOT/predeclared-iid-plan.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/real_public_iid_q24_physical_train.py \
+            --fit "$ROOT/fit-only-q24.json" --fit-sha256 "$TRAIN_SHA" \
+            --plan "$ROOT/predeclared-iid-plan.json" --plan-sha256 "$PLAN_SHA" \
+            --output "$RUNNER_TEMP/hepta-public-iid-trained" \
+            --epochs 8 --seed 20261016 --research-only
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          receipt=json.loads((Path(os.environ['RUNNER_TEMP'])/
+              'hepta-public-iid-trained/training-receipt.json').read_text())
+          assert receipt['physical_models_count'] == 32
+          assert receipt['task_count'] == 4
+          assert receipt['examples_exposed_per_model'] == 64*8
+          assert receipt['optimizer_steps_each'] == 32
+          assert receipt['iid_state_reset_per_case'] is True
+          assert receipt['heldout_labels_exposed_to_trainer'] is False
+          assert receipt['original_selected_v1_a0_verified'] is False
+          assert receipt['heldout_or_future_accuracy_evaluated'] is False
+          assert receipt['production_qualification'] is False
+          assert receipt['ndu_eligible'] is False
+          PY
       - name: Keep public-only projected snapshot and work receipt, never base weights or labels
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -342,6 +378,7 @@ jobs:
             ${{ runner.temp }}/hepta-actual-public-q24/snapshot.json
             ${{ runner.temp }}/hepta-actual-public-q24/producer-receipt.json
             ${{ runner.temp }}/hepta-public-iid-q24/predeclared-iid-plan.json
+            ${{ runner.temp }}/hepta-public-iid-trained/training-receipt.json
             ${{ runner.temp }}/hepta-public-iid-q24/heldout-unlabeled-q24.json
             ${{ runner.temp }}/hepta-public-encoder/source-lock.json
             ${{ runner.temp }}/hepta-public-encoder/downloaded-material.json
