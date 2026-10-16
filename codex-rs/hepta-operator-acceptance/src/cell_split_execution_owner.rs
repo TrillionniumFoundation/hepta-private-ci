@@ -676,6 +676,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if self.pending {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
+        // A slow predecessor's signed live readback may overlap a new
+        // unledgered original successor effect. Collect its negative
+        // observation again after the predecessor RPCs, rather than
+        // trusting only the earlier absence. This remains diagnostic,
+        // NOT an atomic multi-owner snapshot or a Final-use grant.
+        self.probe_next_unprepared_original()?;
         Ok(self.is_complete())
     }
 
@@ -699,6 +705,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
         if !self.is_complete() {
+            // Refuse a "no transcript" observation if the next original
+            // effect appeared during the potentially slow prefix readbacks.
+            // Do not reconcile or dispatch a missing operation here.
+            self.probe_next_unprepared_original()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
