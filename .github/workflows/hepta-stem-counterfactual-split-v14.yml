@@ -19,6 +19,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V20_*"
       - "qualification/stem-cell-v1/*v21_*"
       - "qualification/stem-cell-v1/STEM_V21_*"
+      - "qualification/stem-cell-v1/*v22_*"
+      - "qualification/stem-cell-v1/STEM_V22_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -40,6 +42,8 @@ on:
       - "qualification/stem-cell-v1/STEM_V20_*"
       - "qualification/stem-cell-v1/*v21_*"
       - "qualification/stem-cell-v1/STEM_V21_*"
+      - "qualification/stem-cell-v1/*v22_*"
+      - "qualification/stem-cell-v1/STEM_V22_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -100,6 +104,10 @@ jobs:
           python -m unittest -v test_v21_prospective_cost_gate.SourceOnly
           python -O -m unittest -v test_v21_prospective_cost_gate.SourceOnly
           python -m py_compile v21_prospective_cost_gate.py test_v21_prospective_cost_gate.py
+          python -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -O -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -m py_compile v22_case_bound_cost_witness.py test_v22_case_bound_cost_witness.py
+          python v22_case_bound_cost_witness.py --protocol STEM_V22_FROZEN_CASE_COST_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --out "$RUNNER_TEMP/v22-pr-hold.json"
           python v21_prospective_cost_gate.py --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --output "$RUNNER_TEMP/v21-pr-hold.json"
           python v20_original_material_challenge.py --retrospective STEM_V18_SOURCE_FIRST_20261016.json --output "$RUNNER_TEMP/v20-pr-HOLD.json"
       - name: Retrieve only the immutable original Actions archive
@@ -291,6 +299,39 @@ jobs:
         with:
           name: v21-prospective-source-and-host-HOLD-${{ github.sha }}
           path: ${{ runner.temp }}/v21-prospective-HOLD.json
+          if-no-files-found: error
+      - name: V22 source-first per-request signed cost and no-future intake
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -O -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python v22_case_bound_cost_witness.py \
+            --protocol STEM_V22_FROZEN_CASE_COST_PROTOCOL_20261016.json \
+            --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json \
+            --out "$RUNNER_TEMP/v22-case-cost-HOLD.json"
+          python - "$RUNNER_TEMP/v22-case-cost-HOLD.json" <<'PY_V22_HOLD'
+          import json,sys
+          receipt=json.load(open(sys.argv[1],encoding="utf-8"))
+          if not (receipt.get("decision") == "HOLD_MISSING_ORIGINAL_CASE_BOUND_HOST_EVIDENCE"
+                  and receipt.get("new_signed_source_families") == 0
+                  and receipt.get("qualified_future_windows") == 0
+                  and receipt.get("production_authorized") is False
+                  and receipt.get("scientific_promotion_authorized") is False
+                  and receipt.get("authority_posture") == "DENY_ALL"):
+              raise SystemExit("V22 must fail closed with no real future source")
+          PY_V22_HOLD
+      - name: Upload only V22 descriptive HOLD, never source/cost packets or keys
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-case-bound-host-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v22-case-cost-HOLD.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
