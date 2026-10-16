@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.memory-graph-original-locomo-observation.v1",
+  "source": {
+    "run_id": 37862780268,
+    "artifact_id": 11586991191,
+    "artifact_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+    "locomo_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "preregistered_original_algorithm_commit": "561201c815c57a25004b7e524a3353327a455449",
+    "algorithm_git_blob": "816125f3df579753843be82128a1b7b1205d9d81",
+    "public_sha256": "c0b3f17d5ee6c2e10db894e5ce112e814fdb9d65e64c34981d5e1ba9587284ba",
+    "manifest_sha256": "a05fae1d95ee950ee9b770db2bee8f3f902253af6c43d9a5d3bf8b495fc767f3",
+    "original_prediction_sha256": "736ec6c4b2106c6ed47fb27dade87357194269dc7be2c7538bf15f77aa9f363f",
+    "original_seal_sha256": "7922d13e5d37396d38bf5f81ae5c70745a7fc5bd31f4795094ad94722037a89a",
+    "postseal_review_sha256": "521766ff0fe04a4cd0dbe160f8b154948c1a1466ad746c4c1667a8d1b5ba21b3"
+  },
+  "execution": {
+    "execution_location": "isolated model analysis container, not user's dot host, not GitHub hosted CI",
+    "python": "3.13.5",
+    "source_documents": 5804,
+    "question_count": 240,
+    "annotated_valid_questions": 238,
+    "unresolved_reference_questions": 2,
+    "questions_with_all_gold_in_source_pool": 224,
+    "correlated_original_conversation_families": 10,
+    "original_reader_generations": 0,
+    "learned_graph_parameters": 0,
+    "run_internal_elapsed_seconds": 2.667839560999937,
+    "run_wall_seconds_approx": 3.52,
+    "run_peak_rss_kib": 108916,
+    "review_wall_seconds_approx": 3.6,
+    "review_peak_rss_kib": 109928,
+    "full_lifecycle_TCO": null
+  },
+  "arm_order": [
+    "bm25",
+    "temporal",
+    "lexical",
+    "fixed_graph",
+    "rewired_graph"
+  ],
+  "complete_gold_top8": {
+    "bm25": 107,
+    "temporal": 136,
+    "lexical": 109,
+    "fixed_graph": 134,
+    "rewired_graph": 99
+  },
+  "any_gold_top8": {
+    "bm25": 125,
+    "temporal": 146,
+    "lexical": 127,
+    "fixed_graph": 144,
+    "rewired_graph": 115
+  },
+  "complete_gold_top8_by_family": {
+    "conv-26": [
+      9,
+      12,
+      9,
+      13,
+      6
+    ],
+    "conv-30": [
+      12,
+      16,
+      13,
+      16,
+      12
+    ],
+    "conv-41": [
+      10,
+      11,
+      9,
+      11,
+      9
+    ],
+    "conv-42": [
+      8,
+      12,
+      9,
+      11,
+      7
+    ],
+    "conv-43": [
+      13,
+      16,
+      14,
+      15,
+      13
+    ],
+    "conv-44": [
+      13,
+      16,
+      13,
+      16,
+      13
+    ],
+    "conv-47": [
+      10,
+      12,
+      10,
+      12,
+      10
+    ],
+    "conv-48": [
+      14,
+      17,
+      14,
+      17,
+      13
+    ],
+    "conv-49": [
+      11,
+      13,
+      11,
+      12,
+      10
+    ],
+    "conv-50": [
+      7,
+      11,
+      7,
+      11,
+      6
+    ]
+  },
+  "paired_question_delta_vs_bm25": {
+    "temporal": {
+      "win": 33,
+      "loss": 4,
+      "tie": 201
+    },
+    "lexical": {
+      "win": 3,
+      "loss": 1,
+      "tie": 234
+    },
+    "fixed_graph": {
+      "win": 31,
+      "loss": 4,
+      "tie": 203
+    },
+    "rewired_graph": {
+      "win": 0,
+      "loss": 8,
+      "tie": 230
+    }
+  },
+  "interpretation": {
+    "temporal_gain_vs_bm25_count": 29,
+    "fixed_graph_gain_vs_bm25_count": 27,
+    "rewired_vs_bm25_count": -8,
+    "all_ten_retrospective_families_temporal_above_bm25": true,
+    "population": "historical same-corpus source-ID retrieval only",
+    "independent_semantic_adjudication": false,
+    "reader_sufficiency_proven": false,
+    "causal_graph_learned": false,
+    "prospective_family_generalization_proven": false,
+    "production_accepted": false,
+    "statistical_superiority": false,
+    "model_promotion_allowed": false
+  },
+  "note": "No model read these hidden annotations before graph ranking. SHA pins source identity, not a signature or independent evaluation. Do not promote a Cell or graph based on this descriptive result."
+}
