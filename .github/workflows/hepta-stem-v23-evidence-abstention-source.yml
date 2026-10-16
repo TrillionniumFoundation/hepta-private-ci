@@ -1,0 +1,57 @@
+name: hepta-stem-v23-physical-evidence-absence-source-audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v23_evidence_absence_*.py'
+      - 'qualification/stem-cell-v1/test_v23_evidence_absence.py'
+      - 'qualification/stem-cell-v1/V23_*.json'
+      - 'qualification/stem-cell-v1/STEM_V23_*.md'
+      - '.github/workflows/hepta-stem-v23-evidence-abstention-source.yml'
+  push:
+    branches:
+      - research/stem-v23-evidence-absence-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-sanitized-report-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and test evidence guard in standard and optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q \
+            qualification/stem-cell-v1/v23_evidence_absence_shadow.py \
+            qualification/stem-cell-v1/v23_evidence_absence_review.py \
+            qualification/stem-cell-v1/test_v23_evidence_absence.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v23_evidence_absence.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v23_evidence_absence.py' -v
+      - name: Re-evaluate negative sanitized physical receipt (no model execution)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python qualification/stem-cell-v1/v23_evidence_absence_review.py \
+            --public-receipt qualification/stem-cell-v1/V23_ORIGINAL_GUARDED_PHYSICAL_20261016.json
+      - name: Verify no model download, unpublished data or effect authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          f=Path('.github/workflows/hepta-stem-v23-evidence-abstention-source.yml').read_text()
+          audited=f.split('      - name: Verify no model download')[0]
+          assert 'contents: read' in f
+          for prohibited in ('upload-artifact@','huggingface_hub','model.generate(','HF_TOKEN','trust_remote_code=True'):
+              if prohibited in audited:
+                  raise SystemExit('source-only workflow changed to physical/trusted execution')
+          PY
