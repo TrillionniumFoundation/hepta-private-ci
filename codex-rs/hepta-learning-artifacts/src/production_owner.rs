@@ -1182,6 +1182,65 @@ mod tests {
         }
     }
 
+    // Deliberately healthy after refusing a record: a sink-provided healthy()
+    // value must never clear the original CAS owner's sticky telemetry poison.
+    #[derive(Debug, Default)]
+    struct RefusingOwnerMetrics {
+        record_attempts: AtomicU64,
+    }
+
+    impl PhaseMetricSinkV1 for RefusingOwnerMetrics {
+        fn healthy(&self) -> bool {
+            true
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+
+        fn record(
+            &self,
+            _event: PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            self.record_attempts.fetch_add(1, Ordering::Release);
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        }
+    }
+
+    #[test]
+    fn rejected_cas_metric_is_latched_exactly_once_and_healthy_flush_cannot_rearm() {
+        let sink = Arc::new(RefusingOwnerMetrics::default());
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-poison"),
+            SigningKey::from_bytes(&[27; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(sink.clone());
+        assert!(owner.production_metrics_ready());
+
+        let invocation_count = AtomicU64::new(0);
+        let result: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-poison"),
+            Digest32::of_bytes(b"operation.metrics-poison"),
+            PhaseMetricKindV1::Cas,
+            || {
+                invocation_count.fetch_add(1, Ordering::Release);
+                Ok(7)
+            },
+        );
+        assert_eq!(result, Ok(7));
+        assert_eq!(invocation_count.load(Ordering::Acquire), 1);
+        assert_eq!(sink.record_attempts.load(Ordering::Acquire), 1);
+        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
+        assert_eq!(owner.latency_observations().cas.observations, 1);
+
+        // The original effect result may be true, but successful model/Cell
+        // acceptance must not be inferred from a lost metric record.
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
