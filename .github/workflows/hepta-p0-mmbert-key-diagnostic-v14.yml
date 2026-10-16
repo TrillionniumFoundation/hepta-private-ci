@@ -5,6 +5,9 @@ on:
       - 'experiments/shared_stem_cell/p0_mmbert_mapping_diagnostic_v14.py'
       - 'experiments/shared_stem_cell/test_p0_mmbert_mapping_diagnostic_v14.py'
       - '.github/workflows/hepta-p0-mmbert-key-diagnostic-v14.yml'
+      - 'experiments/shared_stem_cell/e1_mmbert_tied_loader.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_tied_alias_v15.py'
+      - 'experiments/shared_stem_cell/P0_MMBERT_TIED_ALIAS_POLICY_V15.md'
   workflow_dispatch:
 permissions:
   contents: read
@@ -35,6 +38,9 @@ jobs:
           python -m py_compile "$D/p0_mmbert_mapping_diagnostic_v14.py" "$D/test_p0_mmbert_mapping_diagnostic_v14.py"
           PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_mapping_diagnostic_v14.py -v
           PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_mapping_diagnostic_v14.py -v
+          python -m py_compile "$D/e1_mmbert_tied_loader.py" "$D/test_p0_mmbert_tied_alias_v15.py"
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_tied_alias_v15.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_tied_alias_v15.py -v
       - name: Obtain original pinned source through existing strict LFS preflight
         run: |
           set -euo pipefail
@@ -61,6 +67,11 @@ jobs:
           python -m pip install --disable-pip-version-check --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip check
+          D=experiments/shared_stem_cell
+          # Physical source-tensor checks on synthetic Torch safetensors,
+          # separate from real-model source/label/FinalUse admission.
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
           python experiments/shared_stem_cell/p0_mmbert_mapping_diagnostic_v14.py \
             --output "$RUNNER_TEMP/mmbert-diagnostic/mmbert-key-report.json"
           python - <<'PY'

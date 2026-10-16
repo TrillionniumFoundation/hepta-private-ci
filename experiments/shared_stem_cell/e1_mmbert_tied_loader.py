@@ -15,6 +15,29 @@ class Invalid(ValueError):
     pass
 
 
+def require_verified_alias_only_loading_info(info):
+    """Parse exact pinned MLM loading keys; no claim of physical weight validity.
+
+    Both tied alias names may occur in a Transformers loading report, even
+    though only one physical table is saved. This returns a PROVISIONAL allow
+    list. Full physically tied source-table and all serialized weight byte
+    comparisons below remain mandatory before exposing any Encoder outputs.
+    """
+    if type(info) is not dict:
+        raise Invalid("full original pretrained MLM loading report required")
+    missing = info.get("missing_keys")
+    if (type(missing) not in (tuple, list) or len(missing) > 2 or
+            any(type(name) is not str for name in missing) or
+            len(set(missing)) != len(missing) or
+            set(missing) - {"decoder.weight", "model.embeddings.tok_embeddings.weight"}):
+        raise Invalid("unrecognized missing pretrained MLM tensor (not an allowed tied alias)")
+    for field in ("unexpected_keys", "mismatched_keys", "error_msgs"):
+        values = info.get(field, ())
+        if type(values) not in (list, tuple) or values:
+            raise Invalid("original pretrained MLM loading report contains unverified tensors")
+    return tuple(sorted(missing))
+
+
 def verify_tied_pretrained_table(torch, mlm, safetensors_path):
     """Checks a sample of actual checkpoint bytes, not merely two tied random tensors."""
     from safetensors import safe_open
@@ -129,13 +152,10 @@ class FrozenMMBert:
         if type(loaded) is not tuple or len(loaded) != 2 or type(loaded[1]) is not dict:
             raise Invalid("full pretrained MLM parameter load report required")
         mlm, info = loaded
-        if any(info.get(key) for key in ("unexpected_keys", "mismatched_keys", "error_msgs")):
-            raise Invalid("unexpected or mismatched pretrained MLM checkpoint tensor")
-        missing = info.get("missing_keys", [])
-        if type(missing) not in (list, tuple) or len(missing) > 1 or any(
-                key not in ("decoder.weight", "model.embeddings.tok_embeddings.weight")
-                for key in missing):
-            raise Invalid("non-tied pretrained MLM parameter initialized randomly")
+        # The key report is not sufficient evidence that a tie was loaded.
+        # Do not accept any inferred alias until BOTH original source-byte
+        # verifiers below have completed without one unverified tensor.
+        require_verified_alias_only_loading_info(info)
         mlm = mlm.to(device).eval()
         if (getattr(mlm.config, "hidden_size", None) != 384 or
                 getattr(mlm.config, "tie_word_embeddings", None) is not True):
