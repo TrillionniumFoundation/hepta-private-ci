@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 
@@ -86,8 +87,75 @@ def check_outcome_row(event: dict, *, source: dict, width: int) -> dict:
     return {"logit_q24": logit, "status": status}
 
 
+def physical_training_receipt_index(
+    source_bytes: bytes, report: dict,
+) -> dict[tuple[int, int, str], dict]:
+    """Independent 32-model training inventory; CPU time remains descriptive."""
+    need(type(source_bytes) is bytes and
+         sha(source_bytes) == report.get("training_receipt_sha256"),
+         "original physical training receipt SHA mismatch")
+    source = unique_json(source_bytes)
+    need(type(source) is dict and
+         source.get("schema") ==
+             "hepta.neuron.real-public-iid-q24-physical-32-arm-train.v1"
+         and source.get("authority") == "DENY_ALL"
+         and source.get("decision") == "NO_MODEL_PROMOTION"
+         and source.get("training_data_kind") ==
+             "PUBLIC_Q24_IID_FIT_INPUT_CLAIM_NO_INDEPENDENT_OWNER_SIGNATURE"
+         and source.get("physical_models_count") == 32
+         and source.get("task_count") == 4
+         and source.get("epochs") == 8
+         and source.get("optimizer_steps_each") == 32
+         and source.get("examples_exposed_per_model") == 512
+         and source.get("batch_size") == 16
+         and source.get("same_order_batches_per_model") is True
+         and source.get("iid_state_reset_per_case") is True
+         and source.get("heldout_labels_exposed_to_trainer") is False
+         and source.get("original_selected_v1_a0_verified") is False
+         and source.get("heldout_or_future_accuracy_evaluated") is False
+         and source.get("equal_training_flops_or_memory_verified") is False
+         and source.get("ndu_eligible") is False
+         and source.get("production_qualification") is False,
+         "physical training metadata drift or false production authority")
+    records = source.get("models")
+    need(type(records) is list and len(records) == 32,
+         "incomplete physical training budget/task/arm records")
+    seen = {}
+    expected = {(task, cap, arm) for task in range(4)
+                for cap in BUDGETS for arm in ARMS}
+    for row in records:
+        need(type(row) is dict, "invalid original physical training model")
+        task, cap, arm = (
+            row.get("task_id"), row.get("physical_byte_ceiling"), row.get("arm")
+        )
+        key = (task, cap, arm)
+        need(type(task) is int and type(cap) is int and
+             key in expected and key not in seen,
+             "duplicate/foreign original trained Cell")
+        width, params, file_bytes = REGISTERED_BYTE_GEOMETRY[(cap, arm)]
+        seconds = row.get("cpu_seconds_self_reported")
+        need(type(row.get("hidden_width")) is int and
+             row["hidden_width"] == width and
+             type(row.get("realized_private_parameters")) is int and
+             row["realized_private_parameters"] == params and
+             type(row.get("physical_bytes")) is int and
+             row["physical_bytes"] == file_bytes and
+             row.get("source_weight_file") ==
+                 f"{task}/{cap}/{arm}.safetensors" and
+             hex_digest(row.get("weight_sha256")) and
+             row.get("optimizer_steps") == 32 and
+             row.get("examples_exposed") == 512 and
+             type(seconds) in (int, float) and
+             math.isfinite(seconds) and seconds >= 0.0,
+             "trained private Q24 physical shape/optimizer/CPU record changed")
+        seen[key] = row
+    need(set(seen) == expected, "missing physically trained task/cap/arm slot")
+    return seen
+
+
 def recheck_report(report: dict, original_inputs: dict,
-                   observer: dict, heldout_sha256: str) -> dict:
+                   observer: dict, heldout_sha256: str,
+                   training_receipt_raw: bytes | None = None) -> dict:
     need(type(report) is dict and
          report.get("schema") == "hepta.neuron.real-public-iid-native-q24-heldout.v1"
          and report.get("decision") == "NO_MODEL_SELECTION"
@@ -129,6 +197,10 @@ def recheck_report(report: dict, original_inputs: dict,
         truth.append(observed["label"])
     need([truth.count(i) for i in range(4)] == [8, 8, 8, 8],
          "original selected public task denominators changed")
+    physical_index = (
+        physical_training_receipt_index(training_receipt_raw, report)
+        if training_receipt_raw is not None else None
+    )
     records, aggregates = report.get("unlabeled_prediction_records"), report.get("observations")
     need(type(records) is list and type(aggregates) is list and
          len(records) == len(aggregates) == 32,
@@ -162,6 +234,10 @@ def recheck_report(report: dict, original_inputs: dict,
              and type(summary.get("physical_safetensors_file_bytes")) is int
              and summary["physical_safetensors_file_bytes"] == required_bytes,
              "registered physical native Q24 Cell shape/parameters/file bytes drift")
+        if physical_index is not None:
+            trained = physical_index[key]
+            need(record["physical_model_sha256"] == trained["weight_sha256"],
+                 "native model digest differs from independently reopened physical trainer")
         need(summary.get("task_id") == task
              and summary.get("serialized_byte_budget") == budget
              and summary.get("arm") == arm
@@ -230,6 +306,9 @@ def recheck_report(report: dict, original_inputs: dict,
         "distinct_physical_model_count": 32,
         "independently_recomputed_label_free_native_records": 1024,
         "reported_native_processes": 2048,
+        "physical_training_receipt_reopened_and_bound":
+            physical_index is not None,
+        "training_cpu_seconds_are_descriptive_not_whole_system_cost": True,
         "original_public_source_id": original_inputs["input_id"],
         "native_binary_sha256": report["native_rust_binary_sha256"],
         "baseline_original_v1_verified": False,
@@ -245,6 +324,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--score", type=Path, required=True)
     parser.add_argument("--heldout", type=Path, required=True)
+    parser.add_argument("--training-receipt", type=Path, required=True)
     parser.add_argument("--original-source", type=Path, required=True)
     parser.add_argument("--public-data", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -265,6 +345,7 @@ def main() -> int:
             original_inputs,
             labels,
             sha(heldout_raw),
+            training_receipt_raw=read(args.training_receipt),
         )
         with args.output.open("x", encoding="utf-8") as w:
             json.dump(result, w, sort_keys=True, indent=2, allow_nan=False)
