@@ -6,7 +6,7 @@ D = "0" * 64
 
 def packet():
     observations = []
-    for case, cohort, old in (("c1", "future", False), ("c2", "future", False), ("c3", "train", True)):
+    for case, cohort, old in (("c1", "calibration", False), ("c2", "calibration", False), ("c3", "train", True)):
         for arm in ARMS:
             observations.append({"arm": arm, "case_id": case, "root_id": "root-" + case, "cohort": cohort, "old_task": old, "correct": (case == "c1" and arm != "no_change") or (case == "c3" and arm != "split_router")})
     return {"schema": SCHEMA, "source_sha256": D, "model_sha256": D, "registration_sha256": D, "observations": observations, "costs": {a: {p: 0.0 for p in PHASES} for a in ARMS}, "authority": {"production_authorized": False, "source_attested": False, "final_use_authorized": False}}
@@ -16,7 +16,7 @@ class Tests(unittest.TestCase):
         result = audit(packet())
         self.assertEqual(result["decision"], "DENY_ALL_UNATTESTED_RESEARCH")
         self.assertFalse(result["cell_split_authorized"])
-        self.assertEqual(result["root_counts"]["future"], 2)
+        self.assertEqual(result["root_counts"]["future"], 0)
         self.assertEqual(result["comparisons"]["split_router"]["old_task_lost_correct"], 1)
     def test_missing_arm(self):
         p = packet(); p["observations"].pop(); self.assertRaises(Invalid, audit, p)
@@ -35,7 +35,13 @@ class Tests(unittest.TestCase):
     def test_boolean_cost(self):
         p = packet(); p["costs"]["linear"]["encoder"] = True; self.assertRaises(Invalid, audit, p)
     def test_drift(self):
-        p = packet(); p["observations"][1]["cohort"] = "calibration"; self.assertRaises(Invalid, audit, p)
+        p = packet(); p["observations"][1]["cohort"] = "train"; self.assertRaises(Invalid, audit, p)
+    def test_unverified_future_rejected(self):
+        p = packet()
+        for row in p["observations"]:
+            if row["case_id"] == "c1":
+                row["cohort"] = "future"
+        self.assertRaises(Invalid, audit, p)
     def test_no_future(self):
         p = packet()
         for r in p["observations"]:
