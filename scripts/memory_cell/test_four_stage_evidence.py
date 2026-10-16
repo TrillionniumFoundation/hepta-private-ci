@@ -1,7 +1,6 @@
 """Negative-control regressions and original pinned four-stage evidence audit."""
 
 import copy
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -24,6 +23,8 @@ def future_fixture():
             "snapshot_frozen_at": "2026-10-13T00:00:00Z",
             "revealed_at": "2026-10-14T00:00:00Z",
             "candidate_pool_sha256": "e" * 64,
+            "policy_snapshot_sha256": "6" * 64,
+            "knowledge_snapshot_sha256": "7" * 64,
         }
         for i, kind in enumerate(kinds)
     ]
@@ -39,9 +40,14 @@ def future_fixture():
                 "task_id": case["id"], "arm": arm,
                 "status": "succeeded",
                 "reader_sha256": "f" * 64 if arm.startswith("reference:") else "b" * 64,
-                "prompt_sha256": "d" * 64,
+                "prompt_template_sha256": "d" * 64,
                 "tools_sha256": SHA,
                 "candidate_pool_sha256": "e" * 64,
+                "specialization_sha256": (
+                    "6" * 64 if arm == "base:learned_policy"
+                    else "7" * 64 if arm in ("base:knowledge", "base:knowledge_only")
+                    else EMPTY_SHA
+                ),
                 "evidence_sha256": EMPTY_SHA if arm in (
                     "base:none", "base:knowledge_only", "reference:none"
                 ) else "c" * 64,
@@ -146,7 +152,7 @@ class ProspectiveControlsTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
 
     def test_changed_prompt_or_tool_permission_denied(self):
-        for field in ("prompt_sha256", "tools_sha256", "input_budget"):
+        for field in ("prompt_template_sha256", "tools_sha256", "input_budget"):
             plan, rows = future_fixture()
             row = next(x for x in rows if x["arm"] == "base:learned_policy")
             row[field] = 512 if field == "input_budget" else "9" * 64
@@ -224,6 +230,39 @@ class ProspectiveControlsTests(unittest.TestCase):
         result = prospective_guard(plan, rows)
         self.assertEqual(result["by_arm"][row["arm"]]["correct"], 1)
         self.assertFalse(result["strict_execution_success_independently_certified"])
+
+    def test_reference_has_identical_evidence_for_every_regime(self):
+        plan, rows = future_fixture()
+        row = next(x for x in rows if x["arm"] == "reference:sufficient")
+        row["evidence_sha256"] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "reference evidence parity"):
+            prospective_guard(plan, rows)
+
+    def test_reference_no_evidence_cannot_get_hidden_document(self):
+        plan, rows = future_fixture()
+        row = next(x for x in rows if x["arm"] == "reference:none")
+        row["evidence_sha256"] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "no-evidence or module-only"):
+            prospective_guard(plan, rows)
+
+    def test_frozen_parameter_bytes_same_before_task_exposure(self):
+        for arm in ("base:learned_policy", "base:knowledge", "base:knowledge_only"):
+            plan, rows = future_fixture()
+            row = next(x for x in rows if x["arm"] == arm)
+            row["specialization_sha256"] = "9" * 64
+            with self.subTest(arm=arm):
+                with self.assertRaisesRegex(ValueError, "snapshot mismatch"):
+                    prospective_guard(plan, rows)
+        plan, rows = future_fixture()
+        plan["cases"][0]["knowledge_snapshot_sha256"] = "not-a-digest"
+        with self.assertRaisesRegex(ValueError, "snapshot identity required"):
+            prospective_guard(plan, rows)
+
+    def test_organized_always_measured_against_strong_hybrid(self):
+        plan, rows = future_fixture()
+        report = prospective_guard(plan, rows)
+        self.assertIn("base:organized__vs__base:retrieved",
+                      report["paired_descriptive"])
 
 
 if __name__ == "__main__":

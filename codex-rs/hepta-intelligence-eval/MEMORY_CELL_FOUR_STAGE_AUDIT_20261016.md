@@ -54,6 +54,10 @@ task/candidate population, model token ceilings and tool authorization;
 only the reference Reader may have different base weights. Organized and
 knowledge-module conditions must receive identical evidence digests.
 Predeclared source/snapshot freeze must occur BEFORE unseen task revelation.
+Policy and knowledge model digests are separately bound for every task;
+knowledge-only and knowledge-plus-evidence must use the identical frozen model.
+Base and reference Readers must receive byte-identical evidence per regime.
+The prompt digest binds the template, NOT the evidence-varying rendered prompt.
 Every failed call remains in the planned denominator. Real categories include
 new facts, corrected facts, cross-experience composition and executable
 program tasks. Independent source-family, label-blinding and near-duplicate

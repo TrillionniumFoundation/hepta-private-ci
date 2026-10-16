@@ -6,7 +6,7 @@ read-only consistency audit of published receipts, NOT a replay of raw tensors.
 """
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime
 import hashlib
 import json
 import math
@@ -234,7 +234,8 @@ def total_cost(components, queries):
     require(type(queries) is int and 1 <= queries <= 1_000_000, "invalid query horizon")
     require(isinstance(components, dict) and set(components) == set(COST_FIELDS),
             "full cost component schema required")
-    require(all(_cost(v) is None or True for v in components.values()), "invalid cost")
+    for value in components.values():
+        _cost(value)
     missing = [key for key in COST_FIELDS if components[key] is None]
     fixed = sum(components[k] or 0 for k in COST_FIELDS
                 if k not in ("query_per_use", "maintenance_per_use"))
@@ -297,7 +298,8 @@ def prospective_guard(plan, rows):
     for c in cases:
         require(isinstance(c, dict), "case structure required")
         require(set(("id", "family", "kind", "snapshot_frozen_at", "revealed_at",
-                     "candidate_pool_sha256")).issubset(c), "case identity missing")
+                     "candidate_pool_sha256", "policy_snapshot_sha256",
+                     "knowledge_snapshot_sha256")).issubset(c), "case identity missing")
         require(c["id"] not in task_map and isinstance(c["family"], str)
                 and c["family"] and c["kind"] in TASK_KINDS,
                 "duplicate case or invalid task family/kind")
@@ -305,6 +307,9 @@ def prospective_guard(plan, rows):
                 "learning snapshot must freeze before unseen task")
         require(isinstance(c["candidate_pool_sha256"], str) and
                 SHA.fullmatch(c["candidate_pool_sha256"]), "candidate source pin required")
+        for field in ("policy_snapshot_sha256", "knowledge_snapshot_sha256"):
+            require(isinstance(c[field], str) and SHA.fullmatch(c[field]),
+                    "frozen parameter snapshot identity required")
         task_map[c["id"]] = c
     require({c["kind"] for c in cases} == TASK_KINDS,
             "all four new/update/composition/program strata required")
@@ -315,8 +320,9 @@ def prospective_guard(plan, rows):
         require(key not in row_map and key[0] in task_map and key[1] in ARMS,
                 "duplicate/unplanned attempt")
         require(row.get("status") in ("succeeded", "failed"), "known attempt status")
-        for field in ("reader_sha256", "prompt_sha256", "tools_sha256",
-                      "candidate_pool_sha256", "evidence_sha256"):
+        for field in ("reader_sha256", "prompt_template_sha256", "tools_sha256",
+                      "candidate_pool_sha256", "evidence_sha256",
+                      "specialization_sha256"):
             require(isinstance(row.get(field), str) and SHA.fullmatch(row[field]),
                     "unbound inference identity: " + field)
         require(row["candidate_pool_sha256"] == task_map[key[0]]["candidate_pool_sha256"],
@@ -350,7 +356,7 @@ def prospective_guard(plan, rows):
         group = {a: row_map[(cid, a)] for a in ARMS}
         original = group["base:retrieved"]
         for arm, row in group.items():
-            require(row["prompt_sha256"] == original["prompt_sha256"]
+            require(row["prompt_template_sha256"] == original["prompt_template_sha256"]
                     and row["tools_sha256"] == original["tools_sha256"]
                     and (row["input_budget"], row["output_budget"]) ==
                     (original["input_budget"], original["output_budget"]),
@@ -363,6 +369,7 @@ def prospective_guard(plan, rows):
             b["cited"] += row["complete_citation_chain"]
             b["failed"] += row["status"] == "failed"
         require(group["base:none"]["evidence_sha256"] == EMPTY_SHA
+                and group["reference:none"]["evidence_sha256"] == EMPTY_SHA
                 and group["base:knowledge_only"]["evidence_sha256"] == EMPTY_SHA,
                 "no-evidence or module-only access to raw context")
         require(group["base:organized"]["evidence_sha256"] ==
@@ -370,16 +377,30 @@ def prospective_guard(plan, rows):
                 "knowledge gain must hold organized evidence constant")
         require(group["reference:none"]["reader_sha256"] != original["reader_sha256"],
                 "reference reader must be independently identified")
-    for arm in ("base:organized", "base:learned_policy", "base:knowledge",
-                "base:knowledge_only"):
-        baseline = "base:organized"
-        if arm == baseline:
-            continue
+        for regime in ("none", "retrieved", "sufficient", "lesion"):
+            require(group["base:" + regime]["evidence_sha256"] ==
+                    group["reference:" + regime]["evidence_sha256"],
+                    "reference evidence parity required")
+        for arm, row in group.items():
+            specialization = (
+                c["policy_snapshot_sha256"] if arm == "base:learned_policy"
+                else c["knowledge_snapshot_sha256"] if arm in
+                ("base:knowledge", "base:knowledge_only")
+                else EMPTY_SHA
+            )
+            require(row["specialization_sha256"] == specialization,
+                    "frozen pre-reveal policy/knowledge snapshot mismatch")
+    for arm, baseline in (
+        ("base:organized", "base:retrieved"),
+        ("base:learned_policy", "base:organized"),
+        ("base:knowledge", "base:organized"),
+        ("base:knowledge_only", "base:organized"),
+    ):
         wins = sum(row_map[(c["id"], arm)]["strict_task_success"] and
                    not row_map[(c["id"], baseline)]["strict_task_success"] for c in cases)
         losses = sum(row_map[(c["id"], baseline)]["strict_task_success"] and
                      not row_map[(c["id"], arm)]["strict_task_success"] for c in cases)
-        paired[arm] = {"wins": wins, "losses": losses,
+        paired[arm + "__vs__" + baseline] = {"wins": wins, "losses": losses,
                        "net_on_planned": (wins - losses) / len(cases)}
     return {
         "schema": "hepta.memory.four-stage-prospective-audit.v1",
