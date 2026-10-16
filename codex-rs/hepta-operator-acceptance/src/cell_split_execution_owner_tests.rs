@@ -486,9 +486,8 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
         {
             let mut port = FixturePort::new(state.clone());
             port.drop_ack = true;
-            let mut owner =
-                CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
-                    .expect("open original writer");
+            let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("open original writer");
             assert!(matches!(
                 owner.advance(),
                 Err(CellSplitExecutionErrorV1::Ambiguous)
@@ -506,9 +505,8 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
         {
             let mut port = FixturePort::new(state.clone());
             port.fail_reconcile = true;
-            let mut owner =
-                CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
-                    .expect("reopen original pending writer");
+            let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("reopen original pending writer");
             assert!(matches!(
                 owner.advance(),
                 Err(CellSplitExecutionErrorV1::Ambiguous)
@@ -534,7 +532,11 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
             .expect("read-only reconciliation")
             .expect("signed original owner effect");
         assert_eq!(receipt.intent.step.index(), completed);
-        assert_eq!(state.borrow().executions, completed + 1, "never replay Execute");
+        assert_eq!(
+            state.borrow().executions,
+            completed + 1,
+            "never replay Execute"
+        );
         assert!(committed.is_file(), "only live readback can close intent");
     }
 }
@@ -867,8 +869,11 @@ fn incomplete_verified_completion_must_reject_injected_uncommitted_frame() {
 
     // A read-only status query must not misclassify an unrecognized intent
     // as a safe empty/incomplete split, nor dispatch an external effect.
-    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}")
-        .expect("inject unrecognized persisted intent");
+    // A validly private, fsynced frame reaches the intended non-prefix
+    // semantic check; ordinary fs::write may create 0644 and fail earlier
+    // at the stricter original secure_read permission gate.
+    crate::durable::write_private_new(&root.path().join("cell-split-00-prepared.json"), b"{}")
+        .expect("inject private unrecognized persisted intent");
     assert!(matches!(
         owner.verified_complete(),
         Err(CellSplitExecutionErrorV1::Invalid(_))
