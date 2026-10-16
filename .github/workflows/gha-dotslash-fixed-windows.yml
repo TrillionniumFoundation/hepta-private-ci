@@ -33,7 +33,10 @@ jobs:
           echo "Downloaded release asset:"
           ls -la "$binary_dir"
           sha256sum "$binary_dir/$asset"
-          actual_sha256="$(sha256sum "$binary_dir/$asset" | awk '{print $1}')"
+          # Git Bash sha256sum escapes backslashes in Windows pathnames by
+          # prepending '\\' to its usual text output. NUL output disables
+          # pathname escaping; capture just the invariant 64 hex digest bytes.
+          actual_sha256="$(sha256sum --zero "$binary_dir/$asset" | head -c 64)"
           printf 'expected_sha256=%s observed_sha256=%s\n' "$expected_sha256" "$actual_sha256"
           if [[ "$actual_sha256" != "$expected_sha256" ]]; then
             echo "::error::DotSlash pinned release digest mismatch; refusing to execute."
