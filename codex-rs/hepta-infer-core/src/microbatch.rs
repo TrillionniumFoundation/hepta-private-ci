@@ -452,10 +452,10 @@ impl BoundedMicrobatchSchedulerV1 {
                 break;
             }
         }
-        if let Some(key) = last_scanned {
-            if self.physical_lanes.contains_key(&group_key) {
-                self.physical_cursor.insert(group_key, key);
-            }
+        if let Some(key) = last_scanned
+            && self.physical_lanes.contains_key(&group_key)
+        {
+            self.physical_cursor.insert(group_key, key);
         }
         observed.pending = self.pending();
         Ok(observed)
