@@ -33,25 +33,25 @@ class ProspectiveTests(unittest.TestCase):
     def test_real_selected_only_and_no_gold_argument(self):
         out=self.run()
         self.assertEqual(len(self.seen), len(self.p["cases"]))
-        self.assertEqual(len(out["records"]),len(self.p["cases"]))
-        self.assertEqual({a for _,a in self.seen}, set(r["selected_action"] for r in out["records"]))
-        self.assertEqual(out["observed_full_input_tokens"],40)
-        self.assertEqual(out["observed_full_output_tokens"],12)
-        self.assertGreater(out["observed_full_model_latency_ms"], 0)
+        self.assertEqual(len(out["attempt"]["records"]),len(self.p["cases"]))
+        self.assertEqual({a for _,a in self.seen}, set(r["selected_action"] for r in out["attempt"]["records"]))
+        self.assertEqual(out["attempt"]["observed_full_input_tokens"],40)
+        self.assertEqual(out["attempt"]["observed_full_output_tokens"],12)
+        self.assertGreater(out["attempt"]["observed_full_model_latency_ms"], 0)
         self.assertNotIn("gold", str(out))
-        self.assertLessEqual(out["observed_additional_reasoning_tokens"], self.m["token_budget"])
+        self.assertLessEqual(out["attempt"]["observed_additional_reasoning_tokens"], self.m["token_budget"])
 
     def test_all_seven_policies_are_callable(self):
         for policy in ("direct","fixed_reason","greedy","neutral","fixed_risk","ndu_discrete","ordinary_same_profile"):
             self.seen.clear()
             out=self.run(policy)
             self.assertEqual(len(self.seen),4)
-            self.assertEqual(out["policy"],policy)
+            self.assertEqual(out["attempt"]["policy"],policy)
 
     def test_direct_still_charges_baseline_latency(self):
         out=self.run("direct")
-        self.assertEqual(out["observed_additional_latency_ms"],0)
-        self.assertEqual(out["observed_full_model_latency_ms"],28)
+        self.assertEqual(out["attempt"]["observed_additional_latency_ms"],0)
+        self.assertEqual(out["attempt"]["observed_full_model_latency_ms"],28)
 
     def test_no_future_answers_in_prompt_packet(self):
         self.prompts["prompts"][0]["answer"]="gold"
@@ -105,25 +105,25 @@ class ProspectiveTests(unittest.TestCase):
 
     def test_review_exact_match(self):
         out=self.run("direct")
-        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":r["answer"]} for r in out["records"]]}
+        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":r["answer"]} for r in out["attempt"]["records"]]}
         scored=score_postseal(out,gold)
         self.assertEqual(scored["correct"],4)
         self.assertEqual(scored["total"],4)
 
     def test_review_mixed_answers(self):
         out=self.run("direct")
-        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":"direct" if i%2 else "wrong"} for i,r in enumerate(out["records"])]}
+        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":"direct" if i%2 else "wrong"} for i,r in enumerate(out["attempt"]["records"])]}
         self.assertEqual(score_postseal(out,gold)["correct"],2)
 
     def test_review_missing_truth_denied(self):
         out=self.run("direct")
-        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":out["records"][0]["task_id"],"answer":"direct"}]}
+        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":out["attempt"]["records"][0]["task_id"],"answer":"direct"}]}
         with self.assertRaises(Invalid):
             score_postseal(out,gold)
 
     def test_review_tampered_truth_keys_denied(self):
         out=self.run("direct")
-        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":"direct"} for r in out["records"]]}
+        gold={"schema":"hepta.p2.gold.v1","answers":[{"task_id":r["task_id"],"answer":"direct"} for r in out["attempt"]["records"]]}
         gold["answers"][0]["leaked"]=1
         with self.assertRaises(Invalid):
             score_postseal(out,gold)
