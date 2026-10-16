@@ -15,8 +15,7 @@ import subprocess
 import sys
 
 from offline_event_reader_trial import inputs
-from offline_smol_reader import ByteLevel, PINS, digest, verify_files
-from prompt_representation_probe import ARMS, STYLES, build_messages, strict_answer
+from historical_reader_format_source import locked_reader_format
 
 
 def replay(archive, reader_dir, execution_dir, output):
@@ -31,13 +30,10 @@ def replay(archive, reader_dir, execution_dir, output):
     ):
         raise ValueError("original journal digest changed")
     plan, sources, worker_bytes = inputs(archive)
-    frozen_sources = {
-        p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in (
-            Path(__file__).with_name("prompt_representation_probe.py"),
-            Path(__file__).with_name("offline_smol_reader.py"),
-        )
-    }
+    prompt, reader, frozen_sources = locked_reader_format()
+    STYLES, ARMS = prompt.STYLES, prompt.ARMS
+    build_messages, strict_answer = prompt.build_messages, prompt.strict_answer
+    PINS, digest = reader.PINS, reader.digest
     if (
         prereg["source_files"] != frozen_sources
         or prereg["pinned_model_files"] != PINS
@@ -47,8 +43,8 @@ def replay(archive, reader_dir, execution_dir, output):
         or prereg["prior_task_exposure"] is not True
     ):
         raise ValueError("generating source/plan/controls changed")
-    verify_files(reader_dir)
-    tokenizer = ByteLevel(reader_dir)
+    reader.verify_files(reader_dir)
+    tokenizer = reader.ByteLevel(reader_dir)
     original = [json.loads(line) for line in journal_bytes.decode().splitlines()]
     evaluated = json.loads((result / "scored-answers.json").read_text())
     wanted = [

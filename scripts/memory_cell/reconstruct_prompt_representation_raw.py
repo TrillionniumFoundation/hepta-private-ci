@@ -15,8 +15,7 @@ import os
 from pathlib import Path
 
 from offline_event_reader_trial import inputs
-from offline_smol_reader import ByteLevel, PINS, PROFILE, digest, verify_files
-from prompt_representation_probe import ARMS, STYLES, build_messages
+from historical_reader_format_source import locked_reader_format
 
 EXPECTED_SHA256 = "a26133473451003c8708f1fa3e3ea40e975b7febcd45039870e19d1d067a461c"
 EXPECTED_CODE_SHA256 = (
@@ -32,11 +31,11 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
         raise ValueError("unregistered delta identity")
     if destination.exists():
         raise ValueError("never overwrite an archived research observation")
-    source = Path(__file__).with_name("prompt_representation_probe.py")
-    if hashlib.sha256(source.read_bytes()).hexdigest() != EXPECTED_CODE_SHA256:
+    prompt, reader, source_digests = locked_reader_format()
+    if source_digests["prompt_representation_probe.py"] != EXPECTED_CODE_SHA256:
         raise ValueError("historical generating source changed")
-    verify_files(reader_dir)
-    tokenizer = ByteLevel(reader_dir)
+    reader.verify_files(reader_dir)
+    tokenizer = reader.ByteLevel(reader_dir)
     plan, sources, _ = inputs(archive)
     encoded = Path(delta_file).read_bytes().strip()
     data = base64.b64decode(encoded, validate=True)
@@ -48,8 +47,8 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
     serialized = []
     index = 0
     for case in plan["cases"]:
-        for style in STYLES:
-            for arm in ARMS:
+        for style in prompt.STYLES:
+            for arm in prompt.ARMS:
                 value = rows[index]
                 index += 1
                 if (
@@ -68,10 +67,12 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
                     representation=style,
                     arm=arm,
                     candidate_digest=case["candidate_digest"],
-                    reader_identity=digest(PINS),
-                    reader_profile=PROFILE,
+                    reader_identity=reader.digest(reader.PINS),
+                    reader_profile=reader.PROFILE,
                 )
-                messages, selected = build_messages(case, arm, style, sources)
+                messages, selected = prompt.build_messages(
+                    case, arm, style, sources
+                )
                 prompt = tokenizer.render(messages)
                 ids = tokenizer.encode(prompt)
                 if len(ids) > 2048:
@@ -82,7 +83,7 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
                     messages=messages,
                     prompt=prompt,
                     input_ids=ids,
-                    input_digest=digest(ids),
+                    input_digest=reader.digest(ids),
                     selected=selected,
                     generated_ids=generated,
                     generated_tokens=len(generated),
