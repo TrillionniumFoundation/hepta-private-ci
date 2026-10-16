@@ -164,7 +164,11 @@ impl CellSplitExecutionPortV1 for FixturePort {
         // Test-only: the original *next* effect appears while a signed
         // predecessor RPC is being verified, after status's first negative
         // observation. There is no local coordinator Prepare for this effect.
-        if let Some(next) = self.inject_unledgered_during_live_readback.borrow_mut().take() {
+        if let Some(next) = self
+            .inject_unledgered_during_live_readback
+            .borrow_mut()
+            .take()
+        {
             let committed = Self::receipt(&next);
             self.observed
                 .borrow_mut()
@@ -1093,7 +1097,11 @@ fn verified_incomplete_status_double_checks_original_after_live_prefix_readback(
             Err(CellSplitExecutionErrorV1::External(_))
         ));
         assert!(state.borrow().commits.contains_key(&next.idempotency_key));
-        assert_eq!(state.borrow().executions, 1, "status cannot execute a second effect");
+        assert_eq!(
+            state.borrow().executions,
+            1,
+            "status cannot execute a second effect"
+        );
         assert_eq!(owner.completed_steps(), 1, "no new local commit is adopted");
         assert!(!root.path().join("cell-split-01-prepared.json").exists());
         assert!(!root.path().join("cell-split-01-committed.json").exists());
