@@ -37,6 +37,8 @@ fn product_library_rejects_cross_clone_evidence_writer_replacement() {
     .expect("owner");
     let before_binding = owner.clone();
     let bound = owner.with_metrics_sink(Arc::new(HealthySink));
+    assert!(!bound.production_metrics_ready());
+    assert!(bound.flush_production_metrics());
     assert!(bound.production_metrics_ready());
 
     let incompatible = before_binding.with_metrics_sink(Arc::new(HealthySink));
@@ -55,6 +57,8 @@ fn product_library_rejects_rebinding_an_active_evidence_writer() {
     )
     .expect("owner")
     .with_metrics_sink(Arc::new(HealthySink));
+    assert!(!owner.production_metrics_ready());
+    assert!(owner.flush_production_metrics());
     assert!(owner.production_metrics_ready());
 
     let attempted_rebind = owner.with_metrics_sink(Arc::new(HealthySink));

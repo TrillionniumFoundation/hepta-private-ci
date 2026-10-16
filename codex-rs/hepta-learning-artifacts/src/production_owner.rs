@@ -370,6 +370,11 @@ pub struct ArtifactCasOwnerV1 {
     // One original Evidence binding for all clones of the same owner. A
     // replacement cannot erase previously observed CAS/signature history.
     metrics_binding_claimed: Arc<AtomicBool>,
+    // Shared across clones: an in-flight CAS/signature cannot be certified by
+    // an Evidence flush that did not include its terminal metric record.
+    metrics_epoch: Arc<AtomicU64>,
+    metrics_flushed_epoch: Arc<AtomicU64>,
+    metrics_in_flight: Arc<AtomicU64>,
     failed_metric_records: Arc<AtomicU64>,
 }
 
@@ -391,6 +396,11 @@ impl ArtifactCasOwnerV1 {
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             metrics: None,
             metrics_binding_claimed: Arc::new(AtomicBool::new(false)),
+            // Source epoch starts at one; the zero durable epoch cannot
+            // accidentally equal an unflushed epoch even near u64::MAX.
+            metrics_epoch: Arc::new(AtomicU64::new(1)),
+            metrics_flushed_epoch: Arc::new(AtomicU64::new(0)),
+            metrics_in_flight: Arc::new(AtomicU64::new(0)),
             failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
     }
@@ -410,6 +420,8 @@ impl ArtifactCasOwnerV1 {
     pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         if self.metrics.is_some()
             || self.failed_metric_records.load(Ordering::Acquire) != 0
+            || self.metrics_epoch.load(Ordering::Acquire) != 1
+            || self.metrics_in_flight.load(Ordering::Acquire) != 0
             || self.cas_latency.snapshot().observations != 0
             || self.signature_latency.snapshot().observations != 0
             || self
@@ -425,8 +437,15 @@ impl ArtifactCasOwnerV1 {
     }
 
     pub fn production_metrics_ready(&self) -> bool {
+        // Merely binding a healthy sink, or accepting an async record, is not
+        // proof of a durable Evidence fsync. A clone's new operation invalidates
+        // the shared committed epoch before its CAS/signature closure starts.
+        let observed = self.metrics_epoch.load(Ordering::Acquire);
         self.metrics.as_ref().is_some_and(|sink| sink.healthy())
             && self.failed_metric_records.load(Ordering::Acquire) == 0
+            && self.metrics_in_flight.load(Ordering::Acquire) == 0
+            && self.metrics_flushed_epoch.load(Ordering::Acquire) == observed
+            && self.metrics_epoch.load(Ordering::Acquire) == observed
     }
 
     /// External qualification must cross the Evidence fsync barrier.
@@ -434,10 +453,26 @@ impl ArtifactCasOwnerV1 {
         let Some(sink) = &self.metrics else {
             return false;
         };
+        // Snapshot the epoch BEFORE checking in-flight, so a new operation
+        // cannot begin between those reads and escape both race fences.
+        let observed = self.metrics_epoch.load(Ordering::Acquire);
+        if self.metrics_in_flight.load(Ordering::Acquire) != 0
+            || self.failed_metric_records.load(Ordering::Acquire) != 0
+        {
+            return false;
+        }
         if sink.flush().is_err() {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
             return false;
         }
+        if self.metrics_in_flight.load(Ordering::Acquire) != 0
+            || self.metrics_epoch.load(Ordering::Acquire) != observed
+        {
+            // An operation raced the fsync. It may not have been persisted;
+            // leave readiness denied until a later, quiescent flush succeeds.
+            return false;
+        }
+        self.metrics_flushed_epoch.store(observed, Ordering::Release);
         self.production_metrics_ready()
     }
 
@@ -448,10 +483,18 @@ impl ArtifactCasOwnerV1 {
         phase: PhaseMetricKindV1,
         invoke: impl FnOnce() -> Result<T, E>,
     ) -> Result<T, E> {
-        // A clone without the original sink may still perform a research
-        // operation, but it must permanently revoke production telemetry
-        // readiness BEFORE the CAS/signature closure can have an effect.
-        if self.metrics.is_none() {
+        // Latch the work BEFORE the CAS/signature closure. A concurrent fsync
+        // must see either an in-flight operation or a changed epoch. A panic
+        // leaves in-flight nonzero and readiness fail-closed, never certified.
+        self.metrics_in_flight.fetch_add(1, Ordering::AcqRel);
+        if self
+            .metrics_epoch
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |epoch| {
+                epoch.checked_add(1)
+            })
+            .is_err()
+            || self.metrics.is_none()
+        {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
         let started = Instant::now();
@@ -476,6 +519,7 @@ impl ArtifactCasOwnerV1 {
         {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
+        self.metrics_in_flight.fetch_sub(1, Ordering::AcqRel);
         result
     }
 
@@ -1242,6 +1286,8 @@ mod tests {
         )
         .expect("owner")
         .with_metrics_sink(sink.clone());
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
         assert!(owner.production_metrics_ready());
 
         let invocation_count = AtomicU64::new(0);
@@ -1299,6 +1345,8 @@ mod tests {
         .expect("owner");
         let sibling = owner.clone();
         let first = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!first.production_metrics_ready());
+        assert!(first.flush_production_metrics());
         assert!(first.production_metrics_ready());
 
         let conflicting = sibling.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
@@ -1317,6 +1365,8 @@ mod tests {
         .expect("owner");
         let unmetered_clone = owner.clone();
         let active = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!active.production_metrics_ready());
+        assert!(active.flush_production_metrics());
         assert!(active.production_metrics_ready());
 
         let result: Result<(), ()> = unmetered_clone.timed(
@@ -1329,6 +1379,141 @@ mod tests {
         assert!(!active.production_metrics_ready());
         assert!(!active.flush_production_metrics());
         assert_eq!(active.latency_observations().signature.observations, 1);
+    }
+
+    #[derive(Debug)]
+    struct BlockingOnceFlushMetrics {
+        entered: Arc<std::sync::Barrier>,
+        release: Arc<std::sync::Barrier>,
+        first_flush: AtomicBool,
+    }
+
+    impl PhaseMetricSinkV1 for BlockingOnceFlushMetrics {
+        fn healthy(&self) -> bool {
+            true
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            if self.first_flush.swap(false, Ordering::AcqRel) {
+                self.entered.wait();
+                self.release.wait();
+            }
+            Ok(())
+        }
+
+        fn record(
+            &self,
+            _event: PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn cas_in_flight_denies_readiness_and_flush_until_terminal_record() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-inflight"),
+            SigningKey::from_bytes(&[31; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker = owner.clone();
+        let worker_entered = entered.clone();
+        let worker_release = release.clone();
+        let task = std::thread::spawn(move || {
+            worker.timed(
+                Digest32::of_bytes(b"scope.metrics-inflight"),
+                Digest32::of_bytes(b"operation.metrics-inflight"),
+                PhaseMetricKindV1::Cas,
+                || {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    Ok::<_, ()>(17)
+                },
+            )
+        });
+        entered.wait();
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+        release.wait();
+
+        assert_eq!(task.join().expect("worker join"), Ok(17));
+        assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), 0);
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+    }
+
+    #[test]
+    fn concurrent_record_during_fsync_cannot_publish_a_stale_epoch() {
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let sink = Arc::new(BlockingOnceFlushMetrics {
+            entered: entered.clone(),
+            release: release.clone(),
+            first_flush: AtomicBool::new(true),
+        });
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-racing-fsync"),
+            SigningKey::from_bytes(&[32; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(sink);
+        assert!(!owner.production_metrics_ready());
+
+        let flushing_owner = owner.clone();
+        let flush_task = std::thread::spawn(move || flushing_owner.flush_production_metrics());
+        entered.wait();
+        let completed: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-racing-fsync"),
+            Digest32::of_bytes(b"operation.metrics-racing-fsync"),
+            PhaseMetricKindV1::Signature,
+            || Ok(23),
+        );
+        assert_eq!(completed, Ok(23));
+        release.wait();
+
+        assert!(!flush_task.join().expect("fsync join"));
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+    }
+
+    #[test]
+    fn metric_epoch_overflow_cannot_reuse_an_old_flush_receipt() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-epoch-limit"),
+            SigningKey::from_bytes(&[33; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!owner.production_metrics_ready());
+
+        // Inject the actual maximum into the owner-private counter. Unlike an
+        // arbitrary external Evidence assertion, this must not wrap to a
+        // previously flushed epoch or rearm production after one more effect.
+        owner.metrics_epoch.store(u64::MAX, Ordering::Release);
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+
+        let result: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-epoch-limit"),
+            Digest32::of_bytes(b"operation.metrics-epoch-limit"),
+            PhaseMetricKindV1::Cas,
+            || Ok(41),
+        );
+        assert_eq!(result, Ok(41));
+        assert_eq!(owner.metrics_epoch.load(Ordering::Acquire), u64::MAX);
+        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
     }
 
     fn id(value: &str) -> StableId {
@@ -1399,6 +1584,8 @@ mod tests {
         let owner = ArtifactCasOwnerV1::new(id("artifact.owner"), key.clone())
             .expect("owner")
             .with_metrics_sink(metric_sink.clone());
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
         assert!(owner.production_metrics_ready());
         let manifest = crate::ArtifactManifest {
             artifact_id: id("artifact.payload"),
