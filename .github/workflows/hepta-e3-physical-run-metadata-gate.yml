@@ -1,0 +1,167 @@
+name: Hepta E3 original physical job metadata admission (DENY_ALL)
+on:
+  push:
+    branches: ["research/e3-physical-run-metadata-gate-20261016"]
+    paths:
+      - "experiments/shared_stem_cell/e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/e3_archive_byte_audit.py"
+      - "experiments/shared_stem_cell/test_e3_archive_byte_audit.py"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_METADATA_ADMISSION_20261016.md"
+      - ".github/workflows/hepta-e3-physical-run-metadata-gate.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py"
+      - "experiments/shared_stem_cell/e3_archive_byte_audit.py"
+      - "experiments/shared_stem_cell/test_e3_archive_byte_audit.py"
+      - "experiments/shared_stem_cell/E3_PHYSICAL_METADATA_ADMISSION_20261016.md"
+      - ".github/workflows/hepta-e3-physical-run-metadata-gate.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: e3-physical-metadata-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  pure-stdlib-physical-receipt-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact source without write token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify exact checkout and no dirty Git source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Compile the independent GH API metadata admission and tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            experiments/shared_stem_cell/e3_physical_run_metadata_admission.py \
+            experiments/shared_stem_cell/test_e3_physical_run_metadata_admission.py \
+            experiments/shared_stem_cell/e3_archive_byte_audit.py \
+            experiments/shared_stem_cell/test_e3_archive_byte_audit.py
+      - name: Reject source fixtures with skipped/queued OCR, native or original reviewer jobs
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_physical_run_metadata_admission.py -v
+      - name: Reject the same metadata misrepresentation with Python assertions disabled
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_physical_run_metadata_admission.py -v
+      - name: Reject symlink/traversal/hash drift in original real numeric ZIPs
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_archive_byte_audit.py -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_archive_byte_audit.py -v
+      - name: Metadata PASS never implies model scientific selection
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import e3_physical_run_metadata_admission as a
+          assert a.SCHEMA.endswith('gh-job-metadata-audit.v1')
+          assert len(a.REQUIRED) == 5 and len(a.ARTIFACTS) == 4
+          assert 'physical-ocr-granite' in a.REQUIRED
+          assert 'physical-native-gemma2' in a.REQUIRED
+          print('GH_API_METADATA_CONTRACT_ONLY / ACTUAL_MODEL_FORWARD_NOT_TESTED / DENY_ALL')
+          PY
+
+  audit-completed-historical-granite-ocr-zip-bytes:
+    needs: pure-stdlib-physical-receipt-contract
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Obtain two pinned historical original Actions ZIPs without leaking GH token
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e3-zips"
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, os, urllib.error, urllib.parse, urllib.request
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, url):
+                  return None
+          pairs={
+              11947722496:('original.zip','f421f20cdb5d35becf5e93ed63e58996d48701c2b27b979d608e2b05b6b61f30'),
+              12027769435:('ocr.zip','c80d5b9cda23a8a6ee144aeba459dc516b6b67c854c2c5fe86d3b2ba94884964'),
+          }
+          for aid,(name,expected) in pairs.items():
+              api=f'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/{aid}/zip'
+              req=urllib.request.Request(api,headers={
+                  'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                  'Accept':'application/vnd.github+json',
+                  'X-GitHub-Api-Version':'2022-11-28',
+              })
+              try:
+                  urllib.request.build_opener(NoRedirect()).open(req,timeout=40)
+                  raise RuntimeError('expected authenticated Actions redirect')
+              except urllib.error.HTTPError as e:
+                  if e.code not in (302,307): raise
+                  location=e.headers.get('Location','')
+              url=urllib.parse.urlsplit(location)
+              host=url.hostname or ''
+              trusted=('blob.core.windows.net','actions.githubusercontent.com','s3.amazonaws.com')
+              if url.scheme!='https' or url.username or url.password or not any(host.endswith('.'+suffix) for suffix in trusted):
+                  raise RuntimeError('untrusted Actions artifact redirect host')
+              # The pre-signed storage request has NO bearer/GITHUB token.
+              out=Path(os.environ['RUNNER_TEMP'])/'e3-zips'/name
+              hasher=hashlib.sha256();size=0
+              with urllib.request.urlopen(urllib.request.Request(location),timeout=50) as stream, out.open('xb') as dest:
+                  while chunk:=stream.read(65536):
+                      size+=len(chunk)
+                      if size>1024*1024: raise RuntimeError('numerical ZIP over 1MiB')
+                      dest.write(chunk);hasher.update(chunk)
+              if hasher.hexdigest()!=expected:
+                  raise RuntimeError('actual historical immutable ZIP drift')
+              print('VERIFIED_ORIGINAL_NUMERIC_ZIP',aid,name,size)
+          PY
+      - name: Independently audit original physical model sources, member hashes and 64-case parity
+        run: |
+          set -euo pipefail
+          python3 experiments/shared_stem_cell/e3_archive_byte_audit.py \
+            --baseline-zip "$RUNNER_TEMP/e3-zips/original.zip" \
+            --ocr-zip "$RUNNER_TEMP/e3-zips/ocr.zip" \
+            --out "$RUNNER_TEMP/e3-zips/ocr-byte-audit-nonauthorizing.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          a=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-zips/ocr-byte-audit-nonauthorizing.json').read_text())
+          assert a['original_test_cases']==64 and a['original_source_group_parity_cases']==64
+          assert a['original_source_input_digest_parity_cases']==64
+          assert a['ocr_vs_text_changed_argmax_cases']==21
+          assert a['original_ocr_image_calls']==192
+          assert a['masked_control_equal_text_cases']==64
+          assert a['authority']=='DENY_ALL' and a['stem_winner'] is None
+          assert a['historical_original_job_was_test_target_redacted'] is False
+          assert a['accuracy_observed'] is False and a['test_labels_read'] is False
+          print('ACTUAL_HISTORICAL_ORIGINAL_AND_OCR_ZIP_BYTES_AUDITED / NO LABELS / DENY_ALL')
+          PY
+      - name: Upload ONLY numerical original-archive audit, no media/labels/weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-historical-original-ocr-zip-byte-audit-deny-all
+          path: ${{ runner.temp }}/e3-zips/ocr-byte-audit-nonauthorizing.json
+          if-no-files-found: warn
