@@ -73,7 +73,7 @@ jobs:
           python3 scripts/memory_cell/locomo_blind_sufficiency.py audit-public --receipt scripts/memory_cell/data/locomo-blind-source-first-20261016.json > /tmp/locomo-blind-source-only.json
           python3 -m compileall -q scripts/memory_cell/locomo_blind_sufficiency.py
           git diff --exit-code
-                - name: Retain research-only NO-GO summary
+      - name: Retain research-only NO-GO summary
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
