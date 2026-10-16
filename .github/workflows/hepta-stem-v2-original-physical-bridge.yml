@@ -6,6 +6,8 @@ on:
     paths:
       - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
       - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py'
+      - 'qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py'
       - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
       - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
       - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
@@ -13,6 +15,8 @@ on:
     paths:
       - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
       - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py'
+      - 'qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py'
       - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
       - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
       - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
@@ -40,10 +44,11 @@ jobs:
         run: |
           set -euo pipefail
           git rev-parse HEAD
-          python -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2
-          python -O -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2
+          python -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2 test_granite97_two_cell_shadow_v2
+          python -O -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2 test_granite97_two_cell_shadow_v2
           python -m py_compile multimodal_stem_v1.py granite97_feature_bridge_v2.py \
-            test_multimodal_stem_v1.py test_granite97_feature_bridge_v2.py
+            granite97_two_cell_shadow_v2.py test_multimodal_stem_v1.py \
+            test_granite97_feature_bridge_v2.py test_granite97_two_cell_shadow_v2.py
 
   original-physical-producer-review-bridge:
     needs: offline-adversarial
@@ -164,6 +169,11 @@ jobs:
             --export "$RUNNER_TEMP/granite-v2/export.json" \
             --review "$RUNNER_TEMP/granite-v2/review.json" \
             --output "$RUNNER_TEMP/granite-v2/bridge.json"
+          python qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py \
+            --source "$RUNNER_TEMP/granite-v2/source/original.txt" \
+            --export "$RUNNER_TEMP/granite-v2/export.json" \
+            --review "$RUNNER_TEMP/granite-v2/review.json" \
+            --output "$RUNNER_TEMP/granite-v2/two-cells.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
@@ -176,7 +186,12 @@ jobs:
           assert d['bridge_observed_forward_count']==0
           assert d['producer_reported_forward_count']==1
           assert d['reviewer_reported_forward_count']==1
-          print(json.dumps(d,sort_keys=True))
+          c=json.loads((Path(os.environ['RUNNER_TEMP'])/'granite-v2/two-cells.json').read_text())
+          assert c['authority']=='DENY_ALL' and c['production_authorized'] is False
+          assert c['cell_head_forward_count']==2 and c['bridge_encoder_forward_count']==0
+          assert c['independent_review_sha256']==d['review_sha256']
+          assert c['q24_feature_sha256']==d['q24_blob_sha256']
+          print(json.dumps({'bridge':d,'two_cells':c},sort_keys=True))
           PY
       - uses: actions/upload-artifact@v4
         if: always()
@@ -184,4 +199,6 @@ jobs:
           name: granite97-v2-physical-bridge-sanitized-nogo
           retention-days: 1
           if-no-files-found: warn
-          path: ${{ runner.temp }}/granite-v2/bridge.json
+          path: |
+            ${{ runner.temp }}/granite-v2/bridge.json
+            ${{ runner.temp }}/granite-v2/two-cells.json
