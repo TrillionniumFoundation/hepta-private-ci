@@ -110,7 +110,7 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         completed['authority'] != 'RESEARCH_ONLY_DENY_ALL' or
         completed['physical_model_identity'] != plan['reader']):
         raise Invalid('false physics, immutable identity or authority claim')
-    from physical_online import MODEL_REPO, MODEL_REV
+    from physical_online import MODEL_REPO, MODEL_REV, assert_original_checkpoint_hashes
     identity=completed['physical_model_identity']
     if type(identity) is not dict or identity.get('repo') != MODEL_REPO or identity.get('revision') != MODEL_REV or identity.get('actual_pretrained_model_loaded') is not True:
         raise Invalid('unregistered pretrained Reader identity')
@@ -118,6 +118,7 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
            any(ch not in '0123456789abcdef' for ch in identity[k])
            for k in ('weights_sha256','tokenizer_sha256')):
         raise Invalid('unbound original model file bytes')
+    assert_original_checkpoint_hashes(identity['weights_sha256'], identity['tokenizer_sha256'])
     train_log=completed['original_train_trace']; served=completed['actual_policy_trace']
     if type(train_log) is not list or type(served) is not list or (
         len(train_log) != len(train['rows'])*len(acts) or len(served) != len(held_public['rows'])*len(POLICIES) or
