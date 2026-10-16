@@ -4,7 +4,6 @@ use anyhow::Context;
 use anyhow::Result;
 use std::io;
 use std::os::windows::ffi::OsStrExt;
-use std::path::PathBuf;
 use windows_sys::Win32::Foundation::FreeLibrary;
 use windows_sys::Win32::System::LibraryLoader::FindResourceW;
 use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
@@ -19,11 +18,12 @@ use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
 /// The setup executable must expose an asInvoker manifest through the Windows resource API.
 #[test]
 fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
-    let setup_executable = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
-        .or_else(|| std::env::var_os("CARGO_BIN_EXE_codex_windows_sandbox_setup"))
-        .map(PathBuf::from)
-        .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
-        .context("locate the Windows sandbox setup executable")?;
+    // Cargo exports an absolute path, whereas Bazel exports a runfiles
+    // rlocation key. Windows Bazel tests use manifest-only runfiles, so treat
+    // CARGO_BIN_EXE as a runfile rather than a process working-directory path.
+    // This must still resolve the exact built setup helper, not a host PATH exe.
+    let setup_executable = codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")
+        .context("resolve the Windows sandbox setup executable from Cargo/Bazel runfiles")?;
     std::fs::metadata(&setup_executable)
         .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
     let setup_path = setup_executable

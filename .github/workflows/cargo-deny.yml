@@ -9,7 +9,8 @@ permissions:
 jobs:
   cargo-deny:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    # Native cargo-deny 0.19.0 ran on ARM64; real RustSec findings remain errors.
+    runs-on: ubuntu-24.04-arm
     defaults:
       run:
         working-directory: ./codex-rs
@@ -24,11 +25,23 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
-      - name: Run cargo-deny
-        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
+      # The upstream Docker Action bundles only an x86_64 cargo-deny binary.
+      # Install exactly the same 0.19.0 release's ARM64 binary. The original
+      # full-feature advisories/licenses/bans/sources policy remains fail-closed.
+      - name: Install pinned native cargo-deny
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          rust-version: 1.95.0
-          manifest-path: ./codex-rs/Cargo.toml
+          tool: cargo-deny@0.19.0
+
+      - name: Run full Cargo dependency policy (advisories remain blocking)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # defaults.run.working-directory is ./codex-rs for shell steps.
+          # Resolve exactly the same workspace manifest that the original
+          # Docker Action targeted from the GitHub workspace root.
+          test -f Cargo.toml
+          cargo deny --log-level warn --manifest-path Cargo.toml --all-features check
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

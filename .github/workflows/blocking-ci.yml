@@ -5,8 +5,12 @@ on:
   push:
     branches: [main]
 
+# Keep main pushes single-flight. A poisoned old PR head must not hold the
+# concurrency group for every later commit on that PR; allow exact-head
+# qualifications to dispatch independently. Duplicate runs for the *same*
+# immutable head still share a concurrency group and cancel each other.
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: blocking-ci-${{ github.event.pull_request.number || github.ref_name }}-${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: true
 
 permissions:
@@ -15,8 +19,12 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    # Stdlib Python/Git selection is portable; use the separate ARM runner pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
       effects: ${{ steps.scope.outputs.effects }}
@@ -27,6 +35,25 @@ jobs:
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
     steps:
+      - name: Refuse superseded PR revisions before heavyweight fan-out
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Compare the event snapshot with GitHub's live authoritative head.
+          # API, token or identity errors fail closed. No native job may start
+          # from a stale PR commit through this scope.
+          current="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          [[ "$current" =~ ^[a-f0-9]{40}$ ]]
+          if [[ "$EVENT_HEAD_SHA" != "$current" ]]; then
+            echo "::error::Superseded PR source $EVENT_HEAD_SHA; latest $current"
+            exit 1
+          fi
+
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -84,6 +111,10 @@ jobs:
 
   blob-size-policy:
     name: Blob size policy
+    # Queue the x64-only Fence job only after the portable source scope has
+    # completed. The required gate still rejects any failed/skipped scope or
+    # Fence result; the pinned Fence action and its audit policy are unchanged.
+    needs: scope
     uses: ./.github/workflows/blob-size-policy.yml
     secrets: inherit
 
@@ -183,7 +214,8 @@ jobs:
     name: Lightweight prose and derived checks
     needs: scope
     if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
-    runs-on: ubuntu-24.04
+    # Prose/metadata checks are architecture-neutral; avoid saturated x64 pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Checkout exact candidate
@@ -220,7 +252,8 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
-    runs-on: ubuntu-24.04
+    # Needs/result fan-in uses Python only; leave native work on its target architecture.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:

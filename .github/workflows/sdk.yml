@@ -8,7 +8,10 @@ permissions:
 
 jobs:
   python-sdk:
-    runs-on: ubuntu-24.04
+    # The identical locked Docker/uv/Ruff/pytest production lane passed on
+    # supported Ubuntu 26 x64 (isolated run 38867041490, job 116862148218).
+    # Avoid Ubuntu 22 retirement in April 2027.
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - name: Checkout repository
