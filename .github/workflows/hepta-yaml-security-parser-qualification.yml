@@ -1,0 +1,72 @@
+name: Hepta YAML security parser compatibility (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/core-plugins/src/command_migration.rs"
+      - "codex-rs/core-plugins/src/command_migration_tests.rs"
+      - "codex-rs/external-agent-migration/src/subagents.rs"
+      - "codex-rs/external-agent-migration/src/lib_tests.rs"
+      - "codex-rs/skills/src/parser.rs"
+      - "codex-rs/skills/src/parser_tests.rs"
+      - "codex-rs/ext/skills/src/loader/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-yaml-security-parser-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yaml-security-parser-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  frontmatter-contract:
+    name: Locked real YAML frontmatter compatibility (non-promoting)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact PR head without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify exact tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          rustc --version --verbose
+          cargo --version
+      - name: Run locked command frontmatter scalar contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins yaml_description_contract_is_frozen_before_security_parser_migration --lib
+      - name: Run locked subagent frontmatter scalar contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-external-agent-migration subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration --lib
+      - name: Verify parser owner formatting
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-core-plugins --package codex-external-agent-migration -- --check
+      - name: Verify clean checkout
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
