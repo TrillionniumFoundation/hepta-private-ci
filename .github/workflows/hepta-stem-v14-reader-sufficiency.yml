@@ -1,0 +1,36 @@
+name: hepta-stem-v14-reader-sufficiency-source-only
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v14_reader_sufficiency_gate.py"
+      - "qualification/stem-cell-v1/test_v14_reader_sufficiency_gate.py"
+      - "qualification/stem-cell-v1/STEM_V14_READER_SUFFICIENCY_GATE.md"
+      - ".github/workflows/hepta-stem-v14-reader-sufficiency.yml"
+  push:
+    branches:
+      - "research/stem-v14-reader-sufficiency-20261015"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v14-adversarial-source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify candidate bytes and syntax
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/v14_reader_sufficiency_gate.py qualification/stem-cell-v1/test_v14_reader_sufficiency_gate.py
+      - name: Reject forged Reader/Stem success, ordinary and optimized
+        run: |
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v14_reader_sufficiency_gate.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v14_reader_sufficiency_gate.py' -v
+          git diff --exit-code
