@@ -57,6 +57,29 @@ class InvalidEvidence(ValueError):
     """Input does not supply an exact, comparable measurement matrix."""
 
 
+def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Reject contradictory keys before any independent evidence parsing."""
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise InvalidEvidence(f"duplicate JSON field: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_json(value: str) -> None:
+    raise InvalidEvidence(f"non-finite JSON literal: {value}")
+
+
+def strict_json_loads(raw: bytes | str) -> Any:
+    """Shared strict decoder for capture, offline review and CLI inputs."""
+    return json.loads(
+        raw,
+        object_pairs_hook=_unique_json_fields,
+        parse_constant=_reject_nonfinite_json,
+    )
+
+
 def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise InvalidEvidence(f"{field}: expected numeric measurement")
@@ -301,7 +324,7 @@ def main() -> int:
     parser.add_argument("--max-p99-regression", type=float, default=0.0)
     args = parser.parse_args()
     try:
-        packet = json.loads(args.input.read_text(encoding="utf-8"))
+        packet = strict_json_loads(args.input.read_text(encoding="utf-8"))
         result = analyze(packet, args.max_p99_regression)
     except (InvalidEvidence, ValueError, OSError, TypeError) as exc:
         parser.error(str(exc))

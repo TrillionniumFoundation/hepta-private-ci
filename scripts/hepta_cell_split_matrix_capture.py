@@ -25,26 +25,13 @@ from hepta_cell_split_perf_gate import (
     InvalidEvidence,
     analyze,
     validate_run_numbers,
+    strict_json_loads,
 )
 
 SCHEMA = "hepta.cell-split.execution-matrix.v1"
 MEASUREMENT_SCHEMA = "hepta.cell-split.host-measurement.v1"
 MAX_MANIFEST_BYTES = 128 * 1024
 MAX_HOST_RESULT_BYTES = 256 * 1024
-
-
-def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    """Refuse ambiguous JSON; independently re-parsed evidence must agree."""
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise InvalidEvidence(f"duplicate JSON field: {key}")
-        result[key] = value
-    return result
-
-
-def _reject_nonfinite_json(value: str) -> None:
-    raise InvalidEvidence(f"non-finite JSON literal: {value}")
 
 
 def read_bounded_json(path: Path, limit: int, label: str) -> Any:
@@ -68,11 +55,7 @@ def read_bounded_json(path: Path, limit: int, label: str) -> Any:
     if len(raw) > limit:
         raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
     try:
-        return json.loads(
-            raw,
-            object_pairs_hook=_unique_json_fields,
-            parse_constant=_reject_nonfinite_json,
-        )
+        return strict_json_loads(raw)
     except (UnicodeDecodeError, ValueError) as error:
         raise InvalidEvidence(f"{label}: invalid JSON: {error}") from error
 

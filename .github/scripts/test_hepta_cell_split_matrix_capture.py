@@ -177,7 +177,10 @@ next_case.write_text(json.dumps(row), encoding="utf-8")
             "64-logical_split.stdout.log",
             "64-logical_split.stderr.log",
         ):
-            with self.subTest(planted=planted), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(planted=planted),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 output = Path(directory) / "matrix"
                 with (
                     patch("hepta_cell_split_matrix_capture.verify_exact_source"),
