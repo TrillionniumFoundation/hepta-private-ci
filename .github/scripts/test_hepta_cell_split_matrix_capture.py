@@ -195,7 +195,6 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             ):
                 execute_matrix(packet, ROOT, output, 30)
             self.assertTrue((output / "64-no_split.stdout.log").exists())
-++ scripts/hepta_cell_split_perf_gate.py
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
 
