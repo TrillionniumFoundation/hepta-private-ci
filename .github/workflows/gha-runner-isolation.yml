@@ -233,3 +233,46 @@ jobs:
           test "$workflows" = true
       - name: Check production scope checkout is clean
         uses: ./.github/actions/check-clean-worktree
+
+  arm-cargo-manifest:
+    name: ARM64 native Cargo manifest-only preflight
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 318c11c3b5049ebfb0e880cb97aba7adc6ca8029
+          persist-credentials: false
+      - name: Check native Cargo manifest graph
+        run: python3 scripts/hepta_workspace.py
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Validate Cargo metadata for actual source HEAD
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "318c11c3b5049ebfb0e880cb97aba7adc6ca8029"
+          git diff --quiet
+          git diff --cached --quiet
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/cargo-workspace-metadata.json"
+      - uses: ./.github/actions/check-clean-worktree
+
+  arm-rust-fmt:
+    name: ARM64 exact production Rust formatter
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 318c11c3b5049ebfb0e880cb97aba7adc6ca8029
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+      - name: Real cargo fmt check
+        run: cargo fmt -- --config imports_granularity=Item --check
+      - uses: ./.github/actions/check-clean-worktree
