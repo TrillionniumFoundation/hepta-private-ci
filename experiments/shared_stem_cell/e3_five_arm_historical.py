@@ -143,6 +143,16 @@ def compose(original, ocr, native, *, original_sha, ocr_sha, native_sha):
            type(ocr.get("physical_ocr_calls")) is int and
            ocr["physical_ocr_calls"] == 192,
            "no real OCR of complete shared source")
+    context=native.get("context_binding")
+    demand(type(context) is dict and
+           context.get("schema") == "hepta.e3.gemma2-pinned-runtime-context.v1" and
+           context.get("effective_sentence_transformer_max_seq_length") == 8192 and
+           context.get("underlying_transformer_max_seq_length") == 8192 and
+           context.get("actual_context_bound_from_exact_reviewed_model") is True and
+           context.get("image_token_count_physically_verified") is False and
+           context.get("model_origin_independently_signed") is False and
+           context.get("production_accepted") is False,
+           "original Gemma2 runtime 8192 context not actually bound")
     demand(native.get("native_joint_text_image") is True and
            native.get("audio_tower_loaded") is False and
            native.get("train_only_private_head_parameters") == 769 and
