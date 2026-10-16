@@ -51,6 +51,7 @@ jobs:
         run: |
           python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -c "import packaging.version; import safetensors.torch"
       - name: Record actual source and environment
         run: |
           git rev-parse HEAD > "$RUNNER_TEMP/stem-source.txt"
