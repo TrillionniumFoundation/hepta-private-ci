@@ -1572,6 +1572,127 @@ fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen() {
     assert_eq!(reopened.current().unwrap(), (frozen, checkpoint));
 }
 
+#[cfg(unix)]
+#[test]
+fn abrupt_process_exit_after_control_begin_fences_recovery() {
+    use std::io::Write as _;
+    use std::path::PathBuf;
+    use std::process::Command;
+
+    // Run the genuine fsync-backed original Control owner in a separate
+    // process. No simulated in-memory panic or manually fabricated B row can
+    // substitute for a process exit after Begin but before the Control C.
+    // The external "effect" here is only a durable test-owned marker file:
+    // it is NOT a serving CNS operation or independent runtime signature.
+    const CHILD_WAL: &str = "HEPTA_PRIVATE_CONTROL_BEGIN_EXIT_TEST_WAL";
+    const CHILD_EFFECT: &str = "HEPTA_PRIVATE_CONTROL_BEGIN_EXIT_TEST_EFFECT";
+    const EFFECT_BYTES: &[u8] = b"test-only-external-effect-after-control-begin";
+
+    if let Some(child_wal) = std::env::var_os(CHILD_WAL) {
+        let wal = PathBuf::from(child_wal);
+        let effect =
+            PathBuf::from(std::env::var_os(CHILD_EFFECT).expect("private child effect path"));
+        let frozen = snapshot(3);
+        let owner = NduPublicationOwnerV1::open_production(&wal, frozen.clone(), Digest32::ZERO)
+            .expect("real original Control writer and fsynced G");
+        // The callback runs only AFTER the authentic B has been synced by
+        // the same Control owner. Terminate the process without unwinding or
+        // executing a post-effect Control Commit.
+        let _ = owner.publish_cutover_with_external_effect(
+            &frozen,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-external-effect-fixture"),
+            || -> Result<((), Vec<u8>), &'static str> {
+                let mut marker = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&effect)
+                    .expect("original external fixture marker");
+                marker
+                    .write_all(EFFECT_BYTES)
+                    .expect("write external effect fixture");
+                marker.sync_all().expect("fsync external effect fixture");
+                // Deliberately do not return a fabricated signed CNS receipt.
+                // Process exit skips owner Drop and demonstrates cold replay.
+                std::process::exit(77);
+            },
+        );
+        panic!("the child must terminate before Control Commit");
+    }
+
+    let dir = private_control_dir();
+    let wal = dir.path().join("actual-begin-without-commit.wal");
+    let effect = dir.path().join("external-effect-fixture");
+    let output = Command::new(std::env::current_exe().expect("current native test executable"))
+        .arg("--exact")
+        .arg("ndu_publication::tests::abrupt_process_exit_after_control_begin_fences_recovery")
+        .arg("--nocapture")
+        .env(CHILD_WAL, &wal)
+        .env(CHILD_EFFECT, &effect)
+        .output()
+        .expect("execute separate original Control process");
+    assert_eq!(
+        output.status.code(),
+        Some(77),
+        "child must exit only after fsynced Begin and external fixture: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        std::fs::read(&effect).expect("fsynced external test effect"),
+        EFFECT_BYTES
+    );
+    let original_bytes = std::fs::read(&wal).expect("real fsynced original Control WAL");
+    let original = std::str::from_utf8(&original_bytes).expect("original ASCII WAL");
+    assert_eq!(
+        original
+            .lines()
+            .filter(|row| row.split('|').nth(4) == Some("G"))
+            .count(),
+        1,
+        "one original canonical Genesis must survive process death"
+    );
+    assert_eq!(
+        original
+            .lines()
+            .filter(|row| row.split('|').nth(4) == Some("B"))
+            .count(),
+        1,
+        "exactly one original durable Control Begin is retained"
+    );
+    assert!(
+        original
+            .lines()
+            .all(|row| row.split('|').nth(4) != Some("C")),
+        "no Control C may be forged after a terminated runtime"
+    );
+
+    // Do not auto-reconcile an ambiguous external effect by looking at the
+    // fixture marker. Neither the old nor the new generation can be promoted
+    // and cold re-open must never rewrite or append an original WAL record.
+    for (snapshot, checkpoint) in [
+        (snapshot(3), Digest32::ZERO),
+        (
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-external-effect-fixture"),
+        ),
+    ] {
+        assert!(matches!(
+            NduPublicationOwnerV1::open_production(&wal, snapshot, checkpoint),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ));
+        assert_eq!(
+            std::fs::read(&wal).expect("original quarantined WAL after failed reopen"),
+            original_bytes,
+            "a cold start must never erase an orphan original Begin"
+        );
+        assert_eq!(
+            std::fs::read(&effect).expect("external effect is never reissued"),
+            EFFECT_BYTES
+        );
+    }
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {
