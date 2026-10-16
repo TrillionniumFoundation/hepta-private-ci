@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.shared-stem-head-matrix-config.v1",
+  "version": 1,
+  "experiment_id": "EXPERIMENT-HEAD-MATRIX-1",
+  "kind": "shared_stem_head_matrix",
+  "description": "Four Cell Head candidates on one frozen shared Stem and paired task workload.",
+  "heads": [
+    {"id": "linear", "family": "linear"},
+    {"id": "gated", "family": "gated"},
+    {"id": "lora", "family": "lora"},
+    {"id": "sparse_expert", "family": "sparse_expert"}
+  ],
+  "required_metrics": [
+    "task_utility",
+    "active_flops_g",
+    "latency_us",
+    "resident_memory_bytes",
+    "incremental_memory_bytes"
+  ],
+  "optional_metrics": [
+    "negative_transfer",
+    "old_task_retention",
+    "calibration_ece",
+    "calibration_brier",
+    "ood_false_acceptance"
+  ],
+  "evaluation": {
+    "split": "holdout",
+    "paired_by": "task_id",
+    "context_fields": [
+      "objective_digest",
+      "stem_digest",
+      "dataset_digest",
+      "host_profile_digest",
+      "measurement_interval_digest",
+      "seed",
+      "cell_count",
+      "active_cells",
+      "training_budget"
+    ],
+    "same_stem_required": true,
+    "same_cells_required": true,
+    "same_seed_required": true,
+    "same_budget_required": true
+  },
+  "budgets": {
+    "max_active_flops_g": 1000000,
+    "max_latency_us": 60000,
+    "max_resident_memory_bytes": 1099511627776
+  },
+  "authority": {
+    "production_accepted": false,
+    "selection_authority": false,
+    "training_authority": false
+  }
+}
