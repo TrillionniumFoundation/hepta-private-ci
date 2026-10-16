@@ -223,13 +223,22 @@ pub fn adapt_request(
     now_ms: u64,
     intent: CodexOperationIntent,
 ) -> Result<CodexAdapterReceipt, Error> {
-    validate_intent_static(&intent)?;
+    adapt_request_borrowed(now_ms, &intent)
+}
+
+/// Shared read-only implementation; new execution-port callers avoid cloning
+/// the full Codex intent or allocating a second transport envelope.
+pub(crate) fn adapt_request_borrowed(
+    now_ms: u64,
+    intent: &CodexOperationIntent,
+) -> Result<CodexAdapterReceipt, Error> {
+    validate_intent_static(intent)?;
     if now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
-    let request_digest = request_digest(&intent);
+    let request_digest = request_digest(intent);
     Ok(receipt(
-        &intent,
+        intent,
         request_digest,
         None,
         None,

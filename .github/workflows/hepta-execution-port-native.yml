@@ -1,0 +1,150 @@
+name: Hepta execution port native owner qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - ".github/workflows/hepta-execution-port-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-execution-port-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  native-owner:
+    name: Execution port ( ${{ matrix.lane }} )
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct original-tree prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Source CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+
+      - name: Bind exact source and tested tree
+        env:
+          TESTED: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED"
+          test -n "$SOURCE_SHA"
+          test -n "$TESTED"
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+          printf 'TESTED_SHA=%s\n' "$TESTED" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-execution-port-records"
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install pinned Rust with rustfmt and Clippy
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt, clippy
+
+      - name: Install pinned just and nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install DotSlash for owner integration tests
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Publish DotSlash executable
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve pinned V8 input artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Check Rust format without rewriting source
+        working-directory: codex-rs
+        shell: bash
+        run: cargo fmt --all -- --check
+
+      - name: Count backend-neutral intent contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/types.json" --minimum-tests 2 -- just test --locked -p codex-hepta-types -E 'test(execution_port)'
+
+      - name: Count exact Codex adapter identity and parity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/adapter.json" --minimum-tests 4 -- just test --locked -p codex-hepta-codex-adapter -E 'test(execution_port_tests)'
+
+      - name: Count original owner binding refusal tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/owner.json" --minimum-tests 4 -- just test --locked -p codex-hepta-infer-worker-host -E 'test(native_execution_port)'
+
+      - name: Run complete owner and reverse-adapter crate suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/full.json" --minimum-tests 10 -- just test --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host
+
+      - name: Strict original owner and adapter Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+
+      - name: Retain exact-head native test receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-execution-port-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-execution-port-records/
+          if-no-files-found: warn
+          retention-days: 30

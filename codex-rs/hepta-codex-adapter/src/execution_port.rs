@@ -15,7 +15,7 @@ use crate::CodexAdapterReceipt;
 use crate::CodexOperationIntent;
 use crate::Error;
 use crate::TURN_START_METHOD_ID;
-use crate::adapt_request;
+use crate::adapt_request_borrowed;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ExecutionPortAdapterErrorV1 {
@@ -42,7 +42,7 @@ impl StdError for ExecutionPortAdapterErrorV1 {}
 pub fn adapt_execution_port_request_v1(
     now_ms: u64,
     port: &ExecutionPortIntentV1<'_>,
-    codex: CodexOperationIntent,
+    codex: &CodexOperationIntent,
 ) -> Result<CodexAdapterReceipt, ExecutionPortAdapterErrorV1> {
     port.validate(now_ms)
         .map_err(ExecutionPortAdapterErrorV1::InvalidIntent)?;
@@ -78,5 +78,5 @@ pub fn adapt_execution_port_request_v1(
         return Err(ExecutionPortAdapterErrorV1::BindingMismatch("deadline"));
     }
 
-    adapt_request(now_ms, codex).map_err(ExecutionPortAdapterErrorV1::Codex)
+    adapt_request_borrowed(now_ms, codex).map_err(ExecutionPortAdapterErrorV1::Codex)
 }

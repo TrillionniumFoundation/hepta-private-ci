@@ -74,6 +74,8 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_execution_port.rs"]
+mod native_execution_port;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
@@ -566,17 +568,20 @@ impl AppServerModelDriver {
         let adapted_at_ms = unix_time_ms()?;
         let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
-        let source_admission_digest: Digest32 = control
-            .native_record(request_id)
-            .ok_or("missing durable native admission")?
-            .request
-            .payload_digest
-            .parse()?;
+        // Read the original Control journal, not the Codex envelope, to
+        // establish source, operation and generation before final-use.
+        let original_port = native_execution_port::bind_reserved_native_port_v1(
+            control
+                .native_record(request_id)
+                .ok_or("missing durable native admission")?,
+            request_id,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+        )?;
+        let source_admission_digest = original_port.source_admission_digest;
         let adapter_intent = CodexOperationIntent {
-            operation_id: StableId::new(format!(
-                "native:{}",
-                Digest32::of_bytes(request_id.as_bytes())
-            ))?,
+            operation_id: original_port.operation_id.clone(),
             thread_id: StableId::new(started.thread.id.clone())?,
             method_id: StableId::new(TURN_START_METHOD_ID)?,
             payload_digest,
@@ -586,7 +591,7 @@ impl AppServerModelDriver {
                 .ok_or("native execution deadline overflow")?,
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
-                agent_generation: Generation::new(self.config.generation)?,
+                agent_generation: original_port.generation,
                 session_id: StableId::new(started.thread.session_id.clone())?,
                 client_user_message_id: StableId::new(request_id.to_string())?,
                 user_input_digest,
@@ -600,15 +605,15 @@ impl AppServerModelDriver {
         // App Server turn/start intent before the original Final-use claim.
         // This adds no executor, process hop, durable writer or capability.
         let port_intent = ExecutionPortIntentV1 {
-            operation_id: &adapter_intent.operation_id,
-            source_admission_digest,
-            generation: Generation::new(self.config.generation)?,
+            operation_id: &original_port.operation_id,
+            source_admission_digest: original_port.source_admission_digest,
+            generation: original_port.generation,
             payload_digest,
             lease_payload_digest: payload_digest,
             deadline_ms: adapter_intent.deadline_ms,
         };
         let request_receipt =
-            adapt_execution_port_request_v1(adapted_at_ms, &port_intent, adapter_intent.clone())?;
+            adapt_execution_port_request_v1(adapted_at_ms, &port_intent, &adapter_intent)?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,
