@@ -18,6 +18,8 @@ use codex_hepta_agentd::DurablePhaseMetricSinkV1;
 use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
 use codex_hepta_agentd::MetricsCommittedSampleReadbackV1;
 use codex_hepta_agentd::MetricsLocalFrontierV1;
+use codex_hepta_agentd::MetricPhaseV1;
+use codex_hepta_types::Digest32;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
@@ -248,6 +250,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         }
         if !self.original_evidence.healthy() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        // This is a signer-proposal slow path, NEVER the per-inference tick.
+        // A flush ACK alone is insufficient: require exactly ONE committed
+        // original Admission row for EVERY proposed Scope/request pair.
+        // No row, repeated row, or unhealthy/corrupt readback is fail closed.
+        // These unsigned rows are a necessary evidence prerequisite only;
+        // they never create or validate a cryptographic grant.
+        for (request_id, key) in ordered {
+            let sample = self
+                .original_evidence
+                .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                    scope_digest: Digest32::of_bytes(key.scope_id.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(request_id.as_str().as_bytes()),
+                    phase: MetricPhaseV1::Admission,
+                    succeeded: true,
+                })
+                .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
+            if !sample.is_some_and(|row| row.matching_rows == 1) {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            }
         }
         self.owner
             .prepare_pending_native_group_signature_v1(now_ms, ordered)
