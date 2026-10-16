@@ -38,6 +38,7 @@ on:
       - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview.rs"
       - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/lib.rs"
+      - "codex-rs/hepta-infer-worker-host/tests/original_control_non_test_gate.rs"
       - ".github/workflows/hepta-stem-original-owner-qualification.yml"
 
 permissions:
@@ -81,6 +82,14 @@ jobs:
     name: Actual immutable Arc reuse, digest separation, Rust fmt/test/Clippy
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    # The shared execution-evidence wrapper rejects empty source/test SHA and
+    # missing source-head lane even after a successful cargo test. The exact
+    # checkout below is the same PR head, NEVER GitHub's synthetic PR merge.
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: source-head
     defaults:
       run:
         working-directory: codex-rs
@@ -108,19 +117,40 @@ jobs:
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
       - name: Execute original Context Delivery provider-evidence regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
+        # YAML plain scalars cannot contain `:: `; a quoted block is required.
+        # The prior bare command caused zero-job workflow-parse failures.
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
       - name: Strict Context Delivery provider-verifier Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
-      - name: Run typed Stem to original signed Batch ABI parity tests
-        run: "cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::"
-      - name: Verify signed shared Arc queue keeps one immutable allocation
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
-      - name: Verify two typed Stem Cells invoke exactly one native Worker batch
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts
+      # cargo test exits 0 for a filter that matches ZERO tests. Count actual
+      # executed tests; fixture-only source matches are not qualification.
+      - name: Require eight executed Stem / original signed Batch ABI tests
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-stem-preview.json" --minimum-tests 8 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests:: -- --test-threads=1
+      - name: Require 50 executed original Worker signed/native Batch regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-worker-batch.json" --minimum-tests 50 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib batched_neuron::tests:: -- --test-threads=1
+      - name: Require executed shared Arc mutation/nonce denial
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-shared-arc.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_ -- --test-threads=1
+      - name: Require executed two-Cell one-physical-batch signed receipts
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-native-batch.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --test-threads=1
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
+      - name: Require actual non-test product library to DENY unverified original Control/CNS
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-worker-product-denial.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --test original_control_non_test_gate -- --test-threads=1
+      - name: Verify original Evidence writer Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-evidence -- --check
+      - name: Require 34 executed original Evidence WAL/group-commit regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-journal.json" --minimum-tests 34 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_group_commit::tests:: -- --test-threads=1
+      - name: Require 20 executed durable Metrics sink and restart regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-sink.json" --minimum-tests 20 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_sink::tests:: -- --test-threads=1
+      - name: Strict original Evidence writer all-target Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
       - name: Verify Neuron external signed-NDU gate Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-neuron -- --check
       - name: Compile original non-test Neuron runtime
