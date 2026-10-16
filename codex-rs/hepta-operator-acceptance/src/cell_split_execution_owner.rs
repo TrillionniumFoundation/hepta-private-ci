@@ -938,15 +938,21 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             )?;
             self.pending = true;
         }
+        // The prepared intent is already fsynced. From this point forward,
+        // an RPC failure cannot establish that the original effect did NOT
+        // commit: a backend may have committed and lost its acknowledgement.
+        // A failed read-only reconciliation is equally unknown. Preserve
+        // this single pending key for another original-owner readback; never
+        // advertise a definite external no-effect failure or retry Execute.
         let receipt = if pending {
             self.port
                 .reconcile(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
                 .ok_or(CellSplitExecutionErrorV1::Ambiguous)?
         } else {
             self.port
                 .execute(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
         };
         validate_receipt(&intent, &receipt)?;
         self.trust.verify(&intent, &receipt)?;
