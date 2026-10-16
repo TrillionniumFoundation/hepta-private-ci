@@ -29,12 +29,31 @@ jobs:
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      pull-requests: read
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     steps:
+      - name: Reject obsolete PR revision before native qualification
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          [[ "$current" =~ ^[a-f0-9]{40}$ ]]
+          if [[ "$EVENT_HEAD_SHA" != "$current" ]]; then
+            echo "::error::Obsolete PR head $EVENT_HEAD_SHA; latest is $current"
+            exit 1
+          fi
+
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
