@@ -49,3 +49,32 @@ PYTHONPATH="$ROOT" python -O -W error::ResourceWarning -m unittest discover -s "
 ## Test evidence and strict nonclaims
 
 Authoring host ran 24 Python Torch/stdlib **synthetic-input mechanism tests** normally and 24 with `python -O`, both with zero skips/failures, plus source compilation and CI YAML/static shell checks. These are genuine small tensor-gradient executions, NOT actual 149M checkpoint loading nor original human-label result. The real pinned pretrained Encoder and original publisher source are required, without fallback, on exact GitHub Actions jobs. Fresh source/merge architecture and blocking CI also remain mandatory. `model_selected=false`, `production_accepted=false`, `independent_publisher_signature_verified=false`, `natural_task_generalization_established=false`, `full_fbsde_neural_reasoning_gain=false`, `automatic_cell_split=false`, `FinalUse=false`, **`authority=DENY_ALL`**.
+
+## P3: exact source closure and Torch-free material owner repair (2026-10-16)
+
+The research stack inherited #2531 and contains **only E27** source files beneath
+`qualification/stem-cell-v1`. Its original hosted workflow erroneously tried to
+import `multirc_materials` and invoke `public_encoder_probe.py` as though that
+module tree existed in the checked-out branch. The original material-owner job
+also imported Torch implicitly via the E27 Head, despite not installing Torch.
+Both are runnable-source blockers, NOT observed neural/task-quality failures.
+
+The repaired workflow checks out a **separate read-only original Reader donor**
+`TrillionniumFoundation/hepta-private-ci@50f9a77cecb1ddc18b4d674db15a22a873726663`
+into `e27-donor/` in each source/merge matrix job, checks its exact Git HEAD,
+then admits original pinned `multirc_materials.py` and
+`public_encoder_probe.py` from that immutable checkout only. It never replaces
+E27 code, rewrites prior PRs, merges main or treats a donor as production.
+
+`e27_material_contract.py` now owns the unchanged versioned E27 data schema,
+SHA function and source restrictions as pure standard-library operations.
+Importing `e27_reader_owner` no longer imports Torch; only the blind training
+function loads `e27_token_interaction` and its optimizer. A dedicated no-site-
+packages subprocess test proves that 48 TRAIN and 8 HELD fixture paragraphs can
+be admitted without Torch or Transformers. All prior neural tensor tests remain.
+
+The source closure is a **necessary engineering repair, not new original-model
+success**. Source/synthetic-merge CI must actually execute the exact source;
+individual admitted original weights, publisher labels, whole-question results,
+performance, independent physical attestation and production remain unqualified.
+`DRAFT / SHADOW_ONLY / DENY_ALL / NO_MAIN_MERGE / NO_FINALUSE` is unchanged.
