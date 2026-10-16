@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import pathlib
+import shutil
 import tempfile
 import time
 import unittest
@@ -109,6 +110,69 @@ class StudyTest(unittest.TestCase):
         self.write(self.reviewfile, self.review)
         with self.assertRaisesRegex(ValueError, 'source/work/expiry'):
             self.admit()
+
+    def archived_material(self, *, expired=False):
+        archive=self.root/'archive'
+        archive.mkdir()
+        shutil.copytree(self.model,archive/'model')
+        (archive/'source.txt').write_bytes(PUBLIC_SOURCE)
+        former=dict(self.lock)
+        if expired:
+            former['expires_at_ms']=1
+        self.write(archive/'lock.json',former)
+        return archive,former
+
+    def test_expired_archived_record_is_not_reused_when_fresh_bytes_restaged(self):
+        archive,former=self.archived_material(expired=True)
+        now=time.time_ns()//1_000_000
+        with self.assertRaisesRegex(ValueError,'expired'):
+            v9.check_lock(former,now_ms=now)
+        receipt=v9.restage_fresh_physical_session(
+            archive,self.root/'fresh',now_ms=now)
+        new=json.loads((self.root/'fresh/lock.json').read_text())
+        self.assertEqual(former['expires_at_ms'],1)
+        self.assertEqual(new['expires_at_ms'],now+2*60*60*1000)
+        self.assertNotEqual(new['expires_at_ms'],former['expires_at_ms'])
+        self.assertEqual(new['material_sha256'],self.lock['material_sha256'])
+        self.assertEqual(new['source_sha256'],v9.SOURCE_SHA)
+        self.assertEqual(receipt['source_sha256'],v9.SOURCE_SHA)
+        self.assertFalse(receipt['expired_lock_reused_or_extended'])
+        self.assertFalse(receipt['production_authorized'])
+        self.assertFalse(receipt['independent_model_or_source_signer_verified'])
+        self.assertEqual(receipt['authority'],'DENY_ALL')
+        self.assertEqual(receipt,json.loads((self.root/'fresh/session.json').read_text()))
+        self.assertEqual(json.loads((archive/'lock.json').read_text()),former)
+        with self.assertRaises(ValueError):
+            v9.restage_fresh_physical_session(
+                archive,self.root/'fresh',now_ms=now+100)
+
+    def test_restage_fails_closed_on_forged_archive_and_changed_model(self):
+        archive,_=self.archived_material(expired=True)
+        now=time.time_ns()//1_000_000
+        with self.assertRaises(ValueError):
+            v9.restage_fresh_physical_session(
+                archive,archive/'nested',now_ms=now)
+        with self.assertRaises(ValueError):
+            v9.restage_fresh_physical_session(
+                archive,self.root/'fresh',now_ms=True)
+        old=json.loads((archive/'lock.json').read_text())
+        for k,v in (('feature_adapter','identity'),
+                    ('adapter_digest','0'*64),
+                    ('production_authorized',True),
+                    ('independent_model_owner_authenticated',True)):
+            altered=dict(old)
+            altered[k]=v
+            self.write(archive/'lock.json',altered)
+            with self.subTest(k=k),self.assertRaises(ValueError):
+                v9.restage_fresh_physical_session(
+                    archive,self.root/'fresh',now_ms=now)
+            self.assertFalse((self.root/'fresh').exists())
+        self.write(archive/'lock.json',old)
+        (archive/'model/config.json').write_bytes(b'forged original config')
+        with self.assertRaises(ValueError):
+            v9.restage_fresh_physical_session(
+                archive,self.root/'fresh',now_ms=now)
+        self.assertFalse((self.root/'fresh').exists())
 
     def test_missing_review_fails(self):
         self.reviewfile.unlink()
