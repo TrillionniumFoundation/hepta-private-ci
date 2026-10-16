@@ -79,6 +79,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Require exact source SHA and pristine original source checkout
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
       - name: Compile all original research-only producers and independent scorer
         run: |
           set -euo pipefail
