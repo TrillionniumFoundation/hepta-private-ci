@@ -302,6 +302,11 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
     {
         return true;
     }
+    // GetAclInformation authenticates the number of in-use ACL bytes. Use
+    // that returned span to validate every GetAce pointer before dereferencing
+    // the ACE header, SID count or allow-mask. Never trust AceSize alone.
+    let acl_start = dacl as usize;
+    let acl_bytes_in_use = information.AclBytesInUse as usize;
     let mapping = GENERIC_MAPPING {
         GenericRead: FILE_GENERIC_READ,
         GenericWrite: FILE_GENERIC_WRITE,
@@ -325,8 +330,19 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
             // A failed lookup or null ACE must never reach a raw dereference.
             return true;
         }
-        let header = unsafe { &*(ace as *const ACE_HEADER) };
-        if usize::from(header.AceSize) < std::mem::size_of::<ACCESS_ALLOWED_ACE>() {
+        if !ace_span_fits_acl(
+            acl_start,
+            acl_bytes_in_use,
+            ace as usize,
+            std::mem::size_of::<ACE_HEADER>(),
+        ) {
+            return true;
+        }
+        let header = unsafe { ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };
+        let ace_size = usize::from(header.AceSize);
+        if ace_size < std::mem::size_of::<ACCESS_ALLOWED_ACE>()
+            || !ace_span_fits_acl(acl_start, acl_bytes_in_use, ace as usize, ace_size)
+        {
             return true;
         }
         if header.AceType == ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERIT_ONLY_ACE != 0 {
@@ -347,7 +363,9 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
         {
             return true;
         }
-        let allowed = unsafe { &*(ace as *const ACCESS_ALLOWED_ACE) };
+        // The fixed-size ACE fields are now within the validated allocation.
+        // Avoid producing a reference to a possibly unaligned Win32 buffer.
+        let allowed = unsafe { ptr::read_unaligned(ace.cast::<ACCESS_ALLOWED_ACE>()) };
         let mut mask = allowed.Mask;
         unsafe { MapGenericMask(&mut mask, &mapping) };
         if mask & access_mask != 0 && !unsafe { trusted_access_sid(sid, current_user) } {
@@ -355,6 +373,33 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
         }
     }
     false
+}
+
+/// Validate an ACE pointer and its requested span using the ACL byte count
+/// returned by Win32, without dereferencing any untrusted ACE pointer first.
+///
+/// The caller owns a live ACL from GetSecurityInfo (or a test fixture),
+/// validated by IsValidAcl and GetAclInformation. Integer overflow and ACE
+/// pointers before the first ACE or into unused ACL capacity fail closed.
+fn ace_span_fits_acl(
+    acl_start: usize,
+    acl_bytes_in_use: usize,
+    ace_start: usize,
+    span: usize,
+) -> bool {
+    if span < std::mem::size_of::<ACE_HEADER>() {
+        return false;
+    }
+    let Some(first_ace) = acl_start.checked_add(std::mem::size_of::<ACL>()) else {
+        return false;
+    };
+    let Some(acl_end) = acl_start.checked_add(acl_bytes_in_use) else {
+        return false;
+    };
+    let Some(ace_end) = ace_start.checked_add(span) else {
+        return false;
+    };
+    ace_start >= first_ace && ace_end <= acl_end
 }
 
 /// Check that a SID header and all sub-authorities fit inside the ACE.
@@ -534,6 +579,24 @@ mod tests {
         assert!(!sid_length_fits_ace(offset + 8, 1));
         assert!(sid_length_fits_ace(offset + 12, 1));
         assert!(!sid_length_fits_ace(offset + 12, u8::MAX));
+    }
+
+    #[test]
+    fn malformed_getace_spans_fail_closed() {
+        let acl_start = 0x1000_usize;
+        let acl_header = std::mem::size_of::<ACL>();
+        let ace_header = std::mem::size_of::<ACE_HEADER>();
+        let first_ace = acl_start + acl_header;
+        let allocated = acl_header + 32;
+        assert!(ace_span_fits_acl(acl_start, allocated, first_ace, ace_header));
+        assert!(ace_span_fits_acl(acl_start, allocated, first_ace, 32));
+        assert!(!ace_span_fits_acl(acl_start, allocated, acl_start, ace_header));
+        assert!(!ace_span_fits_acl(acl_start, allocated, first_ace - 1, ace_header));
+        assert!(!ace_span_fits_acl(acl_start, allocated, first_ace, ace_header - 1));
+        assert!(!ace_span_fits_acl(acl_start, allocated, first_ace + 1, 32));
+        assert!(!ace_span_fits_acl(acl_start, acl_header - 1, first_ace, ace_header));
+        assert!(!ace_span_fits_acl(usize::MAX - 1, 32, usize::MAX - 1, ace_header));
+        assert!(!ace_span_fits_acl(acl_start, allocated, usize::MAX - 1, 32));
     }
 
     #[test]
