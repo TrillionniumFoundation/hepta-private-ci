@@ -93,6 +93,27 @@ class PhysicalContractTests(unittest.TestCase):
             review(self.manifest,self.train,self.held,self.gold,plan,completed,
                    out/'original-starts-and-dones.jsonl')
 
+    def test_boolean_prediction_is_not_original_class(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['actual_policy_trace'][0]['predicted_class']=True
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_total_model_latency_must_be_finite(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['execution_wall_seconds']=float('nan')
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_total_model_cpu_cannot_be_boolean(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['model_load_cpu_seconds']=False
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
     def test_original_source_partition(self):
         self.assertEqual(len(self.train['rows']),16)
         self.assertEqual(len(self.held['rows']),8)
