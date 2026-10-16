@@ -14,7 +14,7 @@
 
 ## Explicit scientific and operational nonclaims
 
-This is **NOT** a pretrained Encoder forward, authentic issuer attestation, multimodal learning, multimodal generation, Q24 Rust feature admission, production inference, independent source validation, trained Head evaluation, real observed CPU/RSS/energy, safe cross-owner caching, NDU efficacy or Cell Split execution. The ledger's “physical_forward_claims” field is a *logical number of distinct admitted feature envelopes* only, never an actual forward count. No `main`, model selectors, CNS/Control/FinalUse, WAL, authority or external effects are modified.
+This is **NOT** a pretrained Encoder forward, authentic issuer attestation, multimodal learning, multimodal generation, Q24 Rust feature admission, production inference, independent source validation, trained Head evaluation, real observed CPU/RSS/energy, safe cross-owner caching, NDU efficacy or Cell Split execution. The ledger now calls this counter `unique_feature_admissions`: a *logical count of distinct admitted envelopes*, never actual Encoder forward executions or proven saved compute. The misleading `physical_forward_claims` field has been removed. No `main`, model selectors, CNS/Control/FinalUse, WAL, authority or external effects are modified.
 
 ## Next physical experiment
 
