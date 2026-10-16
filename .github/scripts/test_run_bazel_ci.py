@@ -874,6 +874,56 @@ fi
         )
         self.assertFalse(Path(pattern_file).exists())
 
+    def test_macos_ci_serializes_bazel_9_cache_uploads_without_waivers(self) -> None:
+        # Bazel 9.0.0 can race a late-discovered C++ input with background
+        # upload of an action's stdout/stderr (bazelbuild/bazel#30693).
+        # Keep the actual target matrix, remote cache/RBE and all safety gates.
+        bazelrc = (SCRIPTS.parent.parent / ".bazelrc").read_text(encoding="utf-8")
+        configs = [
+            line
+            for line in bazelrc.splitlines()
+            if line and not line.lstrip().startswith("#")
+        ]
+        self.assertIn("common:ci-macos --noremote_cache_async", configs)
+        self.assertEqual(
+            sum(line.endswith("--noremote_cache_async") for line in configs), 1
+        )
+        for global_prefix in (
+            "common ",
+            "common:ci ",
+            "common:ci-linux ",
+            "common:ci-windows ",
+            "common:ci-windows-cross ",
+        ):
+            self.assertNotIn(global_prefix + "--noremote_cache_async", configs)
+        self.assertIn(
+            "common:ci-macos --strategy=TestRunner=darwin-sandbox,local", configs
+        )
+        self.assertIn("common:ci-macos --config=ci-bazel", configs)
+
+    def test_v8_canary_retries_bazel_37_once_for_both_macos_abis(self) -> None:
+        # The source-head V8 canary must not silently treat the first Bazel
+        # JVM crash as a passing build or exclude the Intel macOS variant.
+        workflow = (SCRIPTS.parent / "workflows" / "v8-canary.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            'if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" ]]; then',
+            workflow,
+        )
+        self.assertIn(
+            'aarch64-apple-darwin|x86_64-apple-darwin) ;;',
+            workflow,
+        )
+        self.assertIn('*) exit "${bazel_status}" ;;', workflow)
+        self.assertIn(
+            'echo "Bazel exited 37 on macOS ${TARGET}; '
+            'shutting down and retrying the identical V8 build once."',
+            workflow,
+        )
+        self.assertEqual(workflow.count("\n          run_v8_bazel\n"), 2)
+        self.assertIn("            shutdown || true", workflow)
+
     def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
         self,
     ) -> None:

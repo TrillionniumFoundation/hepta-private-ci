@@ -624,6 +624,9 @@ ignored = [
     "icu_provider",
     "openssl-sys",
     "codex-v8-poc",
+    # cargo-shear 1.11.2 cannot see Windows-only usage in these owner crates.
+    # Retain the source-linked pre-shear guard; no advisory waiver is added.
+    "winapi-util",
 ]
 
 [profile.dev]
