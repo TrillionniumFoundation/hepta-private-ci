@@ -10,6 +10,7 @@ on:
       - qualification/stem-cell-v1/test_v18_original_independent_review.py
       - qualification/stem-cell-v1/v18_paired_damage.py
       - qualification/stem-cell-v1/test_v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_workflow_security.py
       - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
       - .github/workflows/hepta-stem-v18-original-physical.yml
   pull_request:
@@ -20,6 +21,7 @@ on:
       - qualification/stem-cell-v1/test_v18_original_feature_paired.py
       - qualification/stem-cell-v1/test_v18_original_independent_review.py
       - qualification/stem-cell-v1/test_v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_workflow_security.py
       - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
       - .github/workflows/hepta-stem-v18-original-physical.yml
   workflow_dispatch:
@@ -50,6 +52,8 @@ jobs:
           python -O -m unittest -q test_v18_original_feature_paired
           python -m unittest -q test_v18_paired_damage
           python -O -m unittest -q test_v18_paired_damage
+          python -m unittest -q test_v18_workflow_security
+          python -O -m unittest -q test_v18_workflow_security
       - name: Acquire exact original public pretrained archive and run physical A/B
         env:
           GH_TOKEN: ${{ github.token }}
