@@ -677,7 +677,9 @@ fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied() {
         fifo_metadata.ino()
     )
     .expect("original marker bound to FIFO inode");
-    marker_file.sync_all().expect("durable original marker bytes");
+    marker_file
+        .sync_all()
+        .expect("durable original marker bytes");
     let denied = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
         &path,
         &snapshot(3),

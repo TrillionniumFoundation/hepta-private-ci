@@ -81,7 +81,9 @@ class ScopeTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
-        title = "      - name: Early original Control WAL non-test effective UID compile\n"
+        title = (
+            "      - name: Early original Control WAL non-test effective UID compile\n"
+        )
         next_title = "      - name: Early original Control WAL canonical path native regression\n"
         self.assertEqual(workflow.count(title), 1)
         self.assertEqual(workflow.count(next_title), 1)
@@ -112,9 +114,9 @@ class ScopeTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / "codex-rs/hepta-operator-acceptance/Cargo.toml"
         ).read_text(encoding="utf-8")
-        self.assertIn('[target.\'cfg(unix)\'.dependencies]', manifest)
+        self.assertIn("[target.'cfg(unix)'.dependencies]", manifest)
         self.assertIn('rustix = { workspace = true, features = ["process"] }', manifest)
-        self.assertEqual(bazel.count('_UNIX_RUSTIX_DEPS = select({'), 1)
+        self.assertEqual(bazel.count("_UNIX_RUSTIX_DEPS = select({"), 1)
         self.assertIn('"@platforms//os:windows": []', bazel)
         self.assertIn('"//conditions:default": ["@crates//:rustix"]', bazel)
         self.assertEqual(
@@ -122,7 +124,9 @@ class ScopeTests(unittest.TestCase):
             2,
             "Bazel ordinary product lib and compiled unit test require real Unix rustix",
         )
-        self.assertTrue(select(["codex-rs/hepta-operator-acceptance/BUILD.bazel"])["native"])
+        self.assertTrue(
+            select(["codex-rs/hepta-operator-acceptance/BUILD.bazel"])["native"]
+        )
 
     def test_original_control_pending_begin_observer_is_native_and_read_only(self):
         scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
@@ -134,13 +138,15 @@ class ScopeTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
-        self.assertEqual(workflow.count("control-original-pending-begin-readonly.json"), 1)
+        self.assertEqual(
+            workflow.count("control-original-pending-begin-readonly.json"), 1
+        )
         self.assertIn(
             "-p codex-hepta-control-plane --lib original_pending_begin_inspector_",
             workflow,
         )
         self.assertIn(
-            "control-original-pending-begin-readonly.json\" --minimum-tests 4",
+            'control-original-pending-begin-readonly.json" --minimum-tests 4',
             workflow,
         )
         self.assertLess(
@@ -149,8 +155,12 @@ class ScopeTests(unittest.TestCase):
             "read-only ambiguous-recovery gate precedes subsequent native owner effects",
         )
 
-    def test_original_operator_config_uid_gate_has_real_product_and_native_receipts(self):
-        scope = select(["codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"])
+    def test_original_operator_config_uid_gate_has_real_product_and_native_receipts(
+        self,
+    ):
+        scope = select(
+            ["codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"]
+        )
         self.assertTrue(scope["native"])
         self.assertTrue(scope["effects"])
 
@@ -257,7 +267,9 @@ class ScopeTests(unittest.TestCase):
         self.assertEqual(workflow.count(end), 1)
         gate = workflow.split(begin, 1)[1].split(end, 1)[0]
         self.assertIn("cns-original-control-non-test-deny.json", gate)
-        self.assertIn("--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate)
+        self.assertIn(
+            "--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate
+        )
         self.assertIn("--minimum-tests 1", gate)
         self.assertLess(
             gate.index("cns-prod-feature-compile.json"),
@@ -306,7 +318,9 @@ class ScopeTests(unittest.TestCase):
         self.assertIn("--minimum-tests 1", gate)
         self.assertIn("supervisor-original-control-non-test-deny.json", gate)
         self.assertIn("supervisor-original-journal-replay.json", gate)
-        self.assertIn("--features cell-split-supervisor-port --lib real_journal_port", gate)
+        self.assertIn(
+            "--features cell-split-supervisor-port --lib real_journal_port", gate
+        )
         self.assertIn("--minimum-tests 5", gate)
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
