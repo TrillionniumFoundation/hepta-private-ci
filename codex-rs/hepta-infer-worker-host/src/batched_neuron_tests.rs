@@ -3260,8 +3260,6 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
 
-
-
 #[test]
 fn original_pending_group_signature_uses_live_queue_bindings_and_never_claims_nonce() {
     let directory = tempfile::tempdir().expect("private original nonce owner");
@@ -3280,13 +3278,7 @@ fn original_pending_group_signature_uses_live_queue_bindings_and_never_claims_no
         .expect("exact independently signed first member");
     let second_signed = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
         .expect("exact independently signed second member");
-    let mut worker = runner_with_driver(
-        &signer,
-        directory.path(),
-        manifest,
-        backend,
-        2,
-    );
+    let mut worker = runner_with_driver(&signer, directory.path(), manifest, backend, 2);
     worker
         .enqueue(
             100,
@@ -3329,7 +3321,10 @@ fn original_pending_group_signature_uses_live_queue_bindings_and_never_claims_no
     let reordered = worker
         .prepare_pending_native_group_signature_v1(
             100,
-            &[(second_id.clone(), key.clone()), (first_id.clone(), key.clone())],
+            &[
+                (second_id.clone(), key.clone()),
+                (first_id.clone(), key.clone()),
+            ],
         )
         .expect("same pending originals require different ordered signature");
     assert_ne!(
@@ -3373,10 +3368,15 @@ fn original_pending_group_signature_rejects_unadmitted_rebound_and_expired_cohor
     let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
     let signed_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
     let signed_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
-    worker.enqueue(
-        100, "model".into(), first, key.clone(),
-        signed_member(&signer, signed_one, "owner-scope-1", 87),
-    ).expect("one original signed request");
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, signed_one, "owner-scope-1", 87),
+        )
+        .expect("one original signed request");
     let selected = [
         (first_id.clone(), key.clone()),
         (second_id.clone(), key.clone()),
@@ -3386,25 +3386,37 @@ fn original_pending_group_signature_rejects_unadmitted_rebound_and_expired_cohor
         Err(BatchWorkerErrorV1::NoAdmission),
         "caller-supplied other valid request is not an original queued member"
     );
-    worker.enqueue(
-        100, "model".into(), second, key.clone(),
-        signed_member(&signer, signed_two, "owner-scope-2", 88),
-    ).expect("second original signed request");
-    assert!(worker
-        .prepare_pending_native_group_signature_v1(100, &selected)
-        .is_ok());
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            key.clone(),
+            signed_member(&signer, signed_two, "owner-scope-2", 88),
+        )
+        .expect("second original signed request");
+    assert!(
+        worker
+            .prepare_pending_native_group_signature_v1(100, &selected)
+            .is_ok()
+    );
 
     let mut stale = key.clone();
     stale.route_fence += 1;
     assert_eq!(
         worker.prepare_pending_native_group_signature_v1(
-            100, &[(first_id.clone(), stale), (second_id.clone(), key.clone())],
+            100,
+            &[(first_id.clone(), stale), (second_id.clone(), key.clone())],
         ),
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
     assert_eq!(
         worker.prepare_pending_native_group_signature_v1(
-            100, &[(first_id.clone(), key.clone()), (first_id.clone(), key.clone())],
+            100,
+            &[
+                (first_id.clone(), key.clone()),
+                (first_id.clone(), key.clone())
+            ],
         ),
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
@@ -3425,8 +3437,6 @@ fn original_pending_group_signature_rejects_unadmitted_rebound_and_expired_cohor
     assert_eq!(worker.pending(), 2);
 }
 
-
-
 #[test]
 fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests_remain_live() {
     let root = tempfile::tempdir().expect("original signed nonce owner");
@@ -3437,29 +3447,37 @@ fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests
     // grant rather than their individual deadlines.
     first.authorization.deadline_ms = 11_000;
     let second = second_request(&first);
-    let first_binding =
-        neuron_batch_final_use_binding_v1("worker-one", &key, &first)
-            .expect("first exact original requested use");
-    let second_binding =
-        neuron_batch_final_use_binding_v1("worker-one", &key, &second)
-            .expect("second original requested use");
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("first exact original requested use");
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("second original requested use");
     let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
     let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
-    let mut original = runner_with_driver(
-        &signer, root.path(), manifest, Driver, 2,
-    );
-    original.enqueue(
-        100, "model".into(), first, key.clone(),
-        signed_member(&signer, first_binding, "grant-expired-1", 91),
-    ).expect("first admitted before original Worker grant expiry");
-    original.enqueue(
-        100, "model".into(), second, key.clone(),
-        signed_member(&signer, second_binding, "grant-expired-2", 92),
-    ).expect("second admitted before original Worker grant expiry");
+    let mut original = runner_with_driver(&signer, root.path(), manifest, Driver, 2);
+    original
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_binding, "grant-expired-1", 91),
+        )
+        .expect("first admitted before original Worker grant expiry");
+    original
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            key.clone(),
+            signed_member(&signer, second_binding, "grant-expired-2", 92),
+        )
+        .expect("second admitted before original Worker grant expiry");
     let ordered = [(first_id, key.clone()), (second_id, key)];
-    assert!(original
-        .prepare_pending_native_group_signature_v1(100, &ordered)
-        .is_ok());
+    assert!(
+        original
+            .prepare_pending_native_group_signature_v1(100, &ordered)
+            .is_ok()
+    );
 
     assert_eq!(
         original.prepare_pending_native_group_signature_v1(10_000, &ordered),
@@ -3467,4 +3485,292 @@ fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests
         "an unexpired request or signed Head grant never extends the original physical Worker resource grant"
     );
     assert_eq!(original.pending(), 2);
+}
+
+#[test]
+fn original_pending_group_admission_requires_metric_flush_ack_before_signing() {
+    let root = tempfile::tempdir().expect("original signed owner");
+    let signer = SigningKey::from_bytes(&[96; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let id_one = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let id_two = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let signed_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("first exact signed FinalUse Binding");
+    let signed_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("second exact signed FinalUse Binding");
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let sink = Arc::new(CapturedMetrics::default());
+    let mut owner = runner_with_driver(&signer, root.path(), manifest, driver, 2)
+        .with_metric_sink(sink.clone());
+    owner
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, signed_one, "admission-one", 96),
+        )
+        .expect("first original signed queue entry");
+    owner
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            key.clone(),
+            signed_member(&signer, signed_two, "admission-two", 97),
+        )
+        .expect("second original signed queue entry");
+
+    let selected = [(id_one, key.clone()), (id_two, key)];
+    assert!(!owner.production_metrics_ready());
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable),
+        "asynchronous Admission record acceptance is NOT durable original WAL confirmation"
+    );
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    assert!(
+        owner.flush_production_metrics(),
+        "fixture acknowledged barrier"
+    );
+    let group = owner
+        .prepare_pending_native_group_signature_v1(100, &selected)
+        .expect("only a committed Admission may become a signable cohort proposal");
+    assert_eq!(group.member_bindings.len(), 2);
+    assert!(!group.authority.grants_any());
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        sink.0
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|metric| metric.phase == PhaseMetricKindV1::Admission)
+            .count(),
+        2
+    );
+
+    // A pure non-authorizing group proposal must NOT claim any nonce. The
+    // original test-only physical backend is still invoked just once when
+    // the existing independently signed member grants are consumed later.
+    let observed = owner
+        .poll_and_execute(101)
+        .expect("signed native test batch");
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| item.result.is_ok()));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(owner.pending(), 0);
+}
+
+#[derive(Debug)]
+struct RejectAllAdmissionFsyncV1;
+
+impl PhaseMetricSinkV1 for RejectAllAdmissionFsyncV1 {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn original_pending_group_rejects_failed_fsync_without_claiming_or_dispatching() {
+    let root = tempfile::tempdir().expect("protected original FinalUse owner");
+    let signer = SigningKey::from_bytes(&[97; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let id_one = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let id_two = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let binding_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("first durable identity");
+    let binding_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("second durable identity");
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut owner = runner_with_driver(&signer, root.path(), manifest, driver, 2)
+        .with_metric_sink(Arc::new(RejectAllAdmissionFsyncV1));
+    owner
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, binding_one, "no-ack-one", 98),
+        )
+        .expect("asynchronously accepted first Admission");
+    owner
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            key.clone(),
+            signed_member(&signer, binding_two, "no-ack-two", 99),
+        )
+        .expect("asynchronously accepted second Admission");
+    let selected = [(id_one, key.clone()), (id_two, key)];
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!owner.flush_production_metrics(), "fsync ACK failed");
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(101, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable),
+        "poisoned original admission writer can never be rehabilitated"
+    );
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert!(matches!(
+        owner.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_pending_group_real_original_evidence_fsync_before_signing_and_cold_readback() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
+
+    let dir = tempfile::tempdir().expect("private original WAL source");
+    let wal = dir.path().join("original-cohort-presign-admission.wal");
+    let signer = SigningKey::from_bytes(&[111; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let first_id = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let second_id = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let operations = [
+        Digest32::of_bytes(first.authorization.request_id.as_bytes()),
+        Digest32::of_bytes(second.authorization.request_id.as_bytes()),
+    ];
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut owner =
+        original_evidence_bound_fixture(&signer, dir.path(), manifest, backend, 2, wal.clone());
+    for (i, request) in [first, second].into_iter().enumerate() {
+        let exact = neuron_batch_final_use_binding_v1("worker-one", &key, &request)
+            .expect("independently signed original member");
+        owner
+            .enqueue(
+                100,
+                "model".to_string(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    exact,
+                    &format!("cohort-presign-member-{i}"),
+                    u8::try_from(i).expect("2 bounded members") + 111,
+                ),
+            )
+            .expect("original Evidence accepted an unsynced Admission");
+    }
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let before = owner
+        .observe_original_frontier()
+        .expect("read-only original WAL");
+    assert_eq!(before.committed_rows, 0);
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest: operations[0],
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    assert_eq!(
+        owner
+            .observe_exact_committed_sample(query)
+            .expect("exact pre-fsync read"),
+        None,
+        "successful async Admission is NOT a durable original Evidence row"
+    );
+
+    // Only the original Evidence-bound wrapper may flush that original WAL
+    // before forwarding a signable (still DENY_ALL) cohort snapshot.
+    let ordered = [(first_id, key.clone()), (second_id, key)];
+    let candidate = owner
+        .prepare_pending_native_group_signature_v1(100, &ordered)
+        .expect("the original WAL fsync precedes exposure of cohort signature bytes");
+    assert_eq!(candidate.member_bindings.len(), 2);
+    assert!(!candidate.authority.grants_any());
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let fsynced = owner
+        .observe_original_frontier()
+        .expect("read original fsynced sample marker");
+    assert_eq!(fsynced.sequence, 1);
+    assert_eq!(fsynced.committed_rows, 2);
+    for operation_digest in operations {
+        let sample = owner
+            .observe_exact_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                ..query
+            })
+            .expect("original Evidence committed membership")
+            .expect("exact committed Admission row exists");
+        assert_eq!(sample.matching_rows, 1);
+        assert_eq!(sample.frontier, fsynced);
+    }
+
+    // Reopen the ACTUAL previous WAL/marker, not an in-memory fixture.
+    // A proposal alone neither consumed original nonces nor performed a
+    // model effect; thus zero terminal model records may be fabricated.
+    drop(owner);
+    let cold = DurablePhaseMetricSinkV1::open(&wal, 128, 64, 60_000)
+        .expect("reopen original protected WAL and fsynced marker");
+    assert_eq!(
+        cold.read_local_frontier().expect("cold WAL replay"),
+        fsynced
+    );
+    for operation_digest in operations {
+        assert_eq!(
+            cold.read_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                ..query
+            })
+            .expect("cold exact operation membership")
+            .expect("durable pre-sign original Admission")
+            .matching_rows,
+            1
+        );
+        assert_eq!(
+            cold.read_committed_sample(MetricsCommittedSampleQueryV1 {
+                operation_digest,
+                phase: MetricPhaseV1::NeuronFeature,
+                ..query
+            })
+            .expect("cold exact terminal lookup"),
+            None,
+            "a non-authorizing signature proposal is not a model effect receipt"
+        );
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
 }

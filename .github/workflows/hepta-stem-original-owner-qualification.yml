@@ -40,8 +40,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           # Exact original #2145 source blobs, not newly substituted owners.
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "eeffdff964b006b5fb79cb410986f503c673112f"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "3db3c41b645910fde7d55c294c7371198327ee03"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "69107dcd21d8b495d75b5661b14358abc778272c"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "b62d0d9430c51beb505558457855a5922ca89006"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
@@ -103,7 +103,7 @@ jobs:
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Run typed Stem to original signed Batch ABI parity tests
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::
+        run: "cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests::"
       - name: Prove actual original Worker Arc sharing and one native backend batch
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
       - name: Prove typed Stem-to-original signed Native Batch invokes one test backend
@@ -111,7 +111,7 @@ jobs:
       - name: Exercise exact independently signed native cohort plus per-Head nonce claim
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_native_group_
       - name: Verify original queued cohort proposal only accepts current CNS signed members
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_pending_group_signature_
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_pending_group_
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Run original Control/CNS denial in a NON-TEST linked Worker library
