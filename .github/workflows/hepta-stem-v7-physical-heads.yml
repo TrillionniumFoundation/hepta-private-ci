@@ -42,6 +42,7 @@ jobs:
       - name: Install exact CPU PyTorch
         run: |
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -m pip install numpy==2.3.5
       - name: Physical 64-Head mechanism and negative tests
         run: |
           git rev-parse HEAD > "$RUNNER_TEMP/source-head.txt"
