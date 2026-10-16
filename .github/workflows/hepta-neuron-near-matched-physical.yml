@@ -404,6 +404,7 @@ jobs:
             --plan "$ROOT/predeclared-iid-plan.json" \
             --original-source original-public-source \
             --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --public-q24-dir "$RUNNER_TEMP/hepta-actual-public-q24" \
             --binary "$BIN" --binary-sha256 "$BINARY_SHA" \
             --output "$RUNNER_TEMP/hepta-public-iid-heldout-score.json"
           python - <<'PY'
@@ -416,6 +417,8 @@ jobs:
           assert report["original_public_fit_label_source_census"]["real_public_train_sample_count"] == 64
           assert report["original_public_fit_label_source_census"]["actual_fit_label_identities_bound_to_original_dataset"] is True
           assert report["original_public_fit_label_source_census"]["signed_independent_source_owner_verified"] is False
+          assert report["physical_public_feature_source_census"]["all_96_fit_and_heldout_vectors_reopened_and_equal"] is True
+          assert report["physical_public_feature_source_census"]["independently_signed_encoder_or_projection_verified"] is False
           assert report["original_heldout_cases"] == 32
           assert report["four_binary_tasks"] == 4
           assert report["all_independent_q24_adapter_head_integer_checks"] is True
