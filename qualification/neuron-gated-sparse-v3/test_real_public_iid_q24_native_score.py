@@ -9,6 +9,7 @@ import unittest
 
 from real_public_iid_q24_native_score import (
     Refused, bin_metrics, frozen_single_case_trace, independent_head_margin,
+    nearest_rank_us,
 )
 
 
@@ -155,6 +156,22 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         record["feature_q24"].pop()
         with self.assertRaises(Refused):
             frozen_single_case_trace(record)
+
+    def test_real_cold_process_wall_percentiles_use_nearest_rank(self):
+        values=[i*1000 for i in range(1,65)]
+        self.assertEqual(nearest_rank_us(values,50),32)
+        self.assertEqual(nearest_rank_us(values,95),61)
+        self.assertEqual(nearest_rank_us(values,99),64)
+
+    def test_cannot_claim_missing_or_forged_wall_census(self):
+        original=[i*1000 for i in range(1,65)]
+        for broken in (original[:63], original+[65000],
+                       [True]+original[1:], [0]+original[1:],
+                       [1.0]+original[1:]):
+            with self.assertRaises(Refused):
+                nearest_rank_us(broken,99)
+        with self.assertRaises(Refused):
+            nearest_rank_us(original,100)
 
     def test_not_a_fake_temporal_sequence(self):
         original=row()
