@@ -107,7 +107,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests::
+          # The source file is included as cognitive_store::schema_tests, NOT
+          # cognitive_schema_tests. A stale Cargo substring selects zero tests
+          # and incorrectly exits 0; discovery is therefore mandatory.
+          schema_test="cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected"
+          schema_list="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib -- --list)"
+          grep -Fx "${schema_test}: test" <<< "$schema_list"
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib "$schema_test" -- --exact
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests::
       - name: Prove canonical SQLite method restrictions
         shell: bash
@@ -211,7 +217,14 @@ jobs:
         run: |
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests:: -- --test-threads=1
+          # Refuse Cargo's success-on-zero-matching-tests behavior.
+          $schemaTest = "cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected"
+          $schemaList = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($schemaList -contains "$($schemaTest): test")) {
+            throw "Required Windows Cognitive Schema Rust test is not discoverable"
+          }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib $schemaTest -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Enforce canonical SQLite owner API on Windows tests
         shell: pwsh
