@@ -148,6 +148,14 @@ class IndependentByteCustodyTests(unittest.TestCase):
         with self.assertRaisesRegex(InvalidEvidence, "duplicate JSON field schema"):
             self.inspect()
 
+    @unittest.skipUnless(hasattr(os, "link"), "hardlink required")
+    def test_rejects_hardlinked_raw_host_row_without_creating_custody(self):
+        original = self.capture / "64-no_split.json"
+        os.link(original, self.root / "external-write-alias.json")
+        with self.assertRaisesRegex(InvalidEvidence, "hardlinked"):
+            self.inspect()
+        self.assertFalse(self.output.exists())
+
     @unittest.skipUnless(hasattr(os, "symlink"), "symlink required")
     def test_rejects_symlinked_host_row(self):
         path = self.capture / "64-no_split.json"
