@@ -197,8 +197,12 @@ mod unix {
             return Err("wrong canonical JSON-control byte length".into());
         }
         let length = u32::try_from(body.len())?;
-        io.write_all(&length.to_be_bytes())?;
-        io.write_all(&body)?;
+        let mut wire = Vec::with_capacity(4 + body.len());
+        wire.extend_from_slice(&length.to_be_bytes());
+        wire.extend_from_slice(&body);
+        // One OS write like binary; the variable-length JSON decoder still
+        // performs a separate bounded length-prefix read.
+        io.write_all(&wire)?;
         io.flush()?;
         Ok(())
     }
