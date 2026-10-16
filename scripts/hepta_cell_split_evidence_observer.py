@@ -202,8 +202,11 @@ def observe(
         output, "COMPLETE", (hashlib.sha256(ledger_bytes).hexdigest() + "\n").encode()
     )
     flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
-    with os.fdopen(os.open(output, flags), "rb") as directory:
-        os.fsync(directory.fileno())
+    directory_fd = os.open(output, flags)
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
     return ledger
 
 
