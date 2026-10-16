@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import time
 
 MODEL_ID = "ibm-granite/granite-embedding-97m-multilingual-r2"
@@ -121,7 +122,11 @@ def prepare(source: Path, model_root: Path, lock_output: Path, *, now_ms: int) -
     return lock
 
 
-def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
+def check_lock_static(lock: dict) -> None:
+    """Validate old model/source record as content metadata, never a live lease.
+
+    This cannot authenticate a source signer or renew an existing authority.
+    """
     expected = {"schema", "model_id", "revision", "material_sha256",
                 "source_sha256", "principal_id", "purpose_id", "generation",
                 "authority_epoch", "feature_adapter", "adapter_digest",
@@ -144,8 +149,76 @@ def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
     if not isinstance(material, str) or len(material) != 64 or any(c not in "0123456789abcdef" for c in material):
         raise ValueError("invalid original material lock")
     expires = lock["expires_at_ms"]
-    if type(expires) is not int or expires <= (now_ms if now_ms is not None else time.time_ns() // 1_000_000):
+    if type(expires) is not int or expires <= 0:
+        raise ValueError("invalid historical research TTL")
+
+
+def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
+    check_lock_static(lock)
+    if lock["expires_at_ms"] <= (
+            now_ms if now_ms is not None else time.time_ns() // 1_000_000):
         raise ValueError("expired research material lock")
+
+
+def restage_fresh_physical_session(previous: Path, fresh: Path, *,
+                                   now_ms: int) -> dict:
+    """Create NEW research-only data from rehashed originals, not old authority.
+
+    The previous TTL may be expired in the Actions queue. It is never
+    extended: all original source/model bytes are copied, rehashed, and a
+    separate create-only short-lived data record is generated instead.
+    """
+    if type(now_ms) is not int or now_ms <= 0:
+        raise ValueError("fresh positive wall-clock integer required")
+    if previous.is_symlink() or not previous.is_dir():
+        raise ValueError("archived material directory required")
+    former, _ = _json(previous / "lock.json", 8192)
+    check_lock_static(former)
+    _, digest = calculate_material(previous / "model")
+    if digest != former["material_sha256"]:
+        raise ValueError("original material changed relative to prior data receipt")
+    source_bytes_original = source_bytes(previous / "source.txt")
+    if (former["feature_adapter"] != FEATURE_ADAPTER or
+            former["adapter_digest"] != ADAPTER_DIGEST):
+        raise ValueError("registered adapter differs from previous material census")
+    if (fresh.exists() or fresh.is_symlink() or fresh.parent.is_symlink()
+            or fresh.resolve().is_relative_to(previous.resolve())):
+        raise ValueError("fresh session must be a distinct unlinked directory")
+    fresh.mkdir(parents=False, exist_ok=False)
+    model = fresh / "model"
+    model.mkdir()
+    for name in FILES:
+        original = previous / "model" / name
+        if original.is_symlink() or not original.is_file():
+            raise ValueError("archived original model is not a regular file")
+        with original.open("rb") as src, (model / name).open("xb") as dst:
+            shutil.copyfileobj(src, dst, 1024 * 1024)
+    if calculate_material(model)[1] != digest:
+        raise ValueError("fresh model differs from independently rehashed original")
+    new_source = fresh / "source.txt"
+    with new_source.open("xb") as dst:
+        dst.write(source_bytes_original)
+    lock = prepare(new_source, model, fresh / "lock.json", now_ms=now_ms)
+    if (lock["material_sha256"] != digest
+            or lock["source_sha256"] != SOURCE_SHA
+            or lock["feature_adapter"] != FEATURE_ADAPTER
+            or lock["adapter_digest"] != ADAPTER_DIGEST
+            or lock["authority"] != "DENY_ALL"
+            or lock["production_authorized"] is not False):
+        raise ValueError("new data session mismatch")
+    summary = {
+        "schema": "hepta.stem.granite97-fresh-session-metadata.v1",
+        "new_research_data_session": True,
+        "expired_lock_reused_or_extended": False,
+        "source_sha256": SOURCE_SHA,
+        "material_sha256": digest,
+        "feature_adapter": FEATURE_ADAPTER,
+        "independent_model_or_source_signer_verified": False,
+        "production_authorized": False,
+        "authority": "DENY_ALL",
+    }
+    _write_exclusive(fresh / "session.json", summary)
+    return summary
 
 
 def _check_export_and_review(lock: dict, source: bytes, export: dict,
@@ -276,6 +349,9 @@ def main() -> None:
     stage = commands.add_parser("prepare")
     for key in ("model-root", "source", "lock-output"):
         stage.add_argument("--" + key, required=True)
+    renewed = commands.add_parser("restage")
+    renewed.add_argument("--original-root", required=True)
+    renewed.add_argument("--fresh-root", required=True)
     adm = commands.add_parser("admit")
     for key in ("lock", "source", "export", "review", "output"):
         adm.add_argument("--" + key, required=True)
@@ -286,6 +362,10 @@ def main() -> None:
     if args.cmd == "prepare":
         prepare(Path(args.source), Path(args.model_root), Path(args.lock_output),
                 now_ms=time.time_ns() // 1_000_000)
+    elif args.cmd == "restage":
+        restage_fresh_physical_session(
+            Path(args.original_root), Path(args.fresh_root),
+            now_ms=time.time_ns() // 1_000_000)
     elif args.cmd == "admit":
         admit(Path(args.lock), Path(args.source), Path(args.export),
               Path(args.review), Path(args.output))
