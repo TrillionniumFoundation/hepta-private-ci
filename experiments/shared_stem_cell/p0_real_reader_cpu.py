@@ -258,12 +258,17 @@ def do_compact(model_name, fit, blind, args):
 
 def do_laya(blind):
     # A different, checkpoint-native decision policy: not a trained 2K Head arm.
-    import laya
+    # Laya 0.3.20 native load() does NOT expose revision or compile
+    # keywords. Fetch and SHA-verify the exact original snapshot first,
+    # then require its native loader to consume that local checkpoint only.
+    from p0_laya_snapshot_v14 import load_pinned_laya
     start = time.perf_counter_ns()
-    agent = laya.load(LAYA_ID, revision=LAYA_SHA, device='cpu', fast=False, compile=False)
+    agent, original_snapshot = load_pinned_laya()
     load_ms = (time.perf_counter_ns()-start)/1e6
-    if getattr(agent,'revision',None) != LAYA_SHA:
-        raise Invalid('Laya checkpoint not loaded at the exact pinned revision')
+    if (original_snapshot['model_revision'] != LAYA_SHA or
+            original_snapshot['model'] != LAYA_ID or
+            original_snapshot['authority'] != 'DENY_ALL'):
+        raise Invalid('Laya original pinned snapshot lineage mismatch')
     results=[]
     for row in blind:
         start = time.perf_counter_ns()
@@ -279,6 +284,7 @@ def do_laya(blind):
     return {'model':'laya421_nochange','model_revision':LAYA_SHA,
             'feature_width':None,'head_mode':'pretrained_checkpoint_native_noul_nochange_not_equal_head',
             'model_load_ms':load_ms,'physical_encoder_api_requests':len(blind),
+            'original_laya_snapshot_observation':original_snapshot,
             'training':None,'control':{'laya_native_nochange':{'predictions':results}}}
 
 
