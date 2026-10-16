@@ -70,9 +70,12 @@ impl CommandMigrationProfile {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct InvalidCommandFrontmatter;
+
 #[derive(Debug)]
 struct ParsedCommand {
-    description: Option<String>,
+    description: Result<Option<String>, InvalidCommandFrontmatter>,
     body: String,
 }
 
@@ -282,13 +285,13 @@ fn parse_command_content(content: &str) -> ParsedCommand {
         .or_else(|| content.strip_prefix("---\r\n"))
     else {
         return ParsedCommand {
-            description: None,
+            description: Ok(None),
             body: content.to_string(),
         };
     };
     let Some((end, body_start)) = frontmatter_end(rest) else {
         return ParsedCommand {
-            description: None,
+            description: Err(InvalidCommandFrontmatter),
             body: content.to_string(),
         };
     };
@@ -313,21 +316,36 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
     .min_by_key(|(end, _body_start)| *end)
 }
 
-fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    // The secure serde-saphyr adapter can deserialize YAML tags into a plain
-    // serde_json::Value and discard their tag identity. Preserve the existing
-    // fail-closed command contract: tagged roots and descriptions are NOT
-    // allowed, including built-in (!!str) and application-specific (!foo) tags.
+fn parse_command_description(
+    raw_frontmatter: &str,
+) -> Result<Option<String>, InvalidCommandFrontmatter> {
+    // Retain tag identity before conversion to serde_json::Value. A rejected
+    // header is NOT a missing description eligible for source-name fallback.
     let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
-        serde_yaml::from_str(raw_frontmatter).ok()?;
-    if parsed.1.is_some() {
-        return None;
+        serde_yaml::from_str_with_options(
+            raw_frontmatter,
+            serde_yaml::options! { reject_unsupported_tags: true },
+        )
+        .map_err(|_| InvalidCommandFrontmatter)?;
+    if parsed.1.is_some() || parsed.0.values().any(|value| value.1.is_some()) {
+        return Err(InvalidCommandFrontmatter);
     }
-    let description = parsed.0.get("description")?;
-    if description.1.is_some() {
-        return None;
+
+    let mut descriptions = parsed
+        .0
+        .iter()
+        .filter(|(key, _)| key.trim() == "description");
+    let Some((_, description)) = descriptions.next() else {
+        return Ok(None);
+    };
+    // Reject two distinct YAML keys that normalize to the same field,
+    // irrespective of their value, order or Unicode whitespace.
+    if descriptions.next().is_some() {
+        return Err(InvalidCommandFrontmatter);
     }
     yaml_scalar(&description.0)
+        .map(Some)
+        .ok_or(InvalidCommandFrontmatter)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {
@@ -367,8 +385,12 @@ fn command_skill_description(
     source_name: &str,
     description_mode: CommandDescriptionMode,
 ) -> Option<String> {
+    // Fallback is permitted only for genuinely absent metadata. A rejected
+    // parse must stay rejected during both discovery and the final source read.
     document
         .description
+        .as_ref()
+        .ok()?
         .as_deref()
         .filter(|value| !value.trim().is_empty())
         .map(ToOwned::to_owned)
