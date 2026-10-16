@@ -13,6 +13,8 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
       - "experiments/shared_stem_cell/e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
   pull_request:
@@ -27,6 +29,8 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
       - "experiments/shared_stem_cell/e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 permissions:
@@ -62,7 +66,8 @@ jobs:
             experiments/shared_stem_cell/e3_gemma2_native_physical.py \
             experiments/shared_stem_cell/e3_gemma2_budget.py \
             experiments/shared_stem_cell/e3_native_capacity_match.py \
-            experiments/shared_stem_cell/e3_native_capacity_review.py
+            experiments/shared_stem_cell/e3_native_capacity_review.py \
+            experiments/shared_stem_cell/e3_ocr_original_audit.py
       - name: Separate independent two-Head readout tests before model work
         run: |
           set -euo pipefail
@@ -85,6 +90,91 @@ jobs:
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
+  independent-original-ocr-heldout:
+    needs: schema-and-security-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: experiments/shared_stem_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test independent original OCR scoring and negative controls
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_ocr_original_audit.py
+          python3 -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_ocr_original_audit.py -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell \
+            -p test_e3_ocr_original_audit.py -v
+      - name: Fetch original completed byte-pinned source predictions before targets
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e3-ocr-baseline" "$RUNNER_TEMP/e3-ocr-original"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12027769435 \
+            --jq '.digest' | grep -Fx 'sha256:c80d5b9cda23a8a6ee144aeba459dc516b6b67c854c2c5fe86d3b2ba94884964'
+          gh run download 38678847948 --repo TrillionniumFoundation/hepta-private-ci \
+            --name hepta-e3-granite-dino-actual-or-failure-no-weights-no-media \
+            --dir "$RUNNER_TEMP/e3-ocr-baseline"
+          gh run download 38825811927 --repo TrillionniumFoundation/hepta-private-ci \
+            --name hepta-e3-same-original-ocr --dir "$RUNNER_TEMP/e3-ocr-original"
+          test "$(sha256sum "$RUNNER_TEMP/e3-ocr-baseline/sealed-source-bound-predictions.json" | cut -d' ' -f1)" \
+            = e6354f38de4292dda60ebab380cb13d488853b9c08371e54f8f1762827febaf7
+          test "$(sha256sum "$RUNNER_TEMP/e3-ocr-original/e3-ocr-observed/sealed-ocr-predictions.json" | cut -d' ' -f1)" \
+            = 96ba4117a37689eeafe2415661e028a9170b7ccdd8c345b6b8d6241b7a928885
+          sha256sum "$RUNNER_TEMP/e3-ocr-baseline/sealed-source-bound-predictions.json" \
+            "$RUNNER_TEMP/e3-ocr-original/e3-ocr-observed/sealed-ocr-predictions.json" \
+            > "$RUNNER_TEMP/e3-ocr-source-sealed-before-labels.sha256"
+      - name: Only now re-stage original heldout labels in separate reviewer
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/e3-ocr-label-env"
+          P="$RUNNER_TEMP/e3-ocr-label-env/bin/python"
+          "$P" -m pip install --only-binary=:all: 'datasets==3.6.0' \
+            'huggingface-hub==0.35.3' 'pyarrow==19.0.1' 'Pillow==11.3.0'
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py \
+            --output "$RUNNER_TEMP/e3-ocr-independent-cohort"
+          "$P" - <<'PY'
+          import json,os
+          from pathlib import Path
+          manifest=json.loads((Path(os.environ["RUNNER_TEMP"])/"e3-ocr-independent-cohort/source-seals.json").read_text())
+          assert manifest["source_sha256"]==os.environ["SOURCE_SHA"]
+          assert manifest["fit_labels_sha256"]==os.environ["FIT_SHA"]
+          assert manifest["private_test_labels_sha256"]==os.environ["HELD_SHA"]
+          assert manifest["raw_image_count"]==192
+          assert manifest["externally_independent_labels"] is False
+          print("Original TEST labels verified after prediction seal; not a future-window")
+          PY
+      - name: Independently score genuine frozen Granite text against OCR
+        run: |
+          set -euo pipefail
+          python3 experiments/shared_stem_cell/e3_ocr_original_audit.py \
+            --original "$RUNNER_TEMP/e3-ocr-baseline/sealed-source-bound-predictions.json" \
+            --ocr "$RUNNER_TEMP/e3-ocr-original/e3-ocr-observed/sealed-ocr-predictions.json" \
+            --held "$RUNNER_TEMP/e3-ocr-independent-cohort/private_labels/test_labels.jsonl" \
+            --output "$RUNNER_TEMP/e3-real-ocr-vs-text-original-independent-score.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"e3-real-ocr-vs-text-original-independent-score.json"
+          x=json.loads(p.read_text())
+          assert x["cases"]==64 and x["ocr_calls"]==192
+          assert x["stem_winner"] is None and x["authority"]=="DENY_ALL"
+          assert x["visual_necessity_adjudicated"] is False
+          print("Original source-bound OCR-vs-text descriptive accuracy ONLY")
+          PY
+      - name: Retain only descriptive OCR numerical result without media or labels
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e3-original-ocr-independent-outcome
+          path: |
+            ${{ runner.temp }}/e3-real-ocr-vs-text-original-independent-score.json
+            ${{ runner.temp }}/e3-ocr-source-sealed-before-labels.sha256
+          if-no-files-found: warn
   physical-ocr-granite:
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
