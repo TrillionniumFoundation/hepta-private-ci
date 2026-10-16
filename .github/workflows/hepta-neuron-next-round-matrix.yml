@@ -156,6 +156,41 @@ jobs:
           python qualification/stem-cell-v1/public_cell_learning.py \
             --public-probe "$RUNNER_TEMP/public-encoder" --acquire-banking77 \
             --output "$RUNNER_TEMP/public-cell-learning" 2>&1 | tee "$RUNNER_TEMP/public-cell-learning.log"
+      - name: Freeze original public case IDs without exposing official test labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_q24_feature_snapshot.py prepare \
+            --data-root "$RUNNER_TEMP/public-cell-learning/data" \
+            --selection "$RUNNER_TEMP/public-cell-learning/selection.json" \
+            --output "$RUNNER_TEMP/public-q24-encoder-only-inputs.json"
+      - name: Physically encode same selected public cases and freeze train-only PCA32 Q24 features
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_q24_feature_snapshot.py encode \
+            --inputs "$RUNNER_TEMP/public-q24-encoder-only-inputs.json" \
+            --public-probe "$RUNNER_TEMP/public-encoder" \
+            --output "$RUNNER_TEMP/public-q24-feature-snapshot"
+          python qualification/stem-cell-v1/audit_public_q24_snapshot.py \
+            --snapshot "$RUNNER_TEMP/public-q24-feature-snapshot" \
+            --input-id-file "$RUNNER_TEMP/public-q24-encoder-only-inputs.json" \
+            --output "$RUNNER_TEMP/public-q24-independent-verdict.json"
+      - name: Retain real Q24 feature/projection tensors and safe case IDs, not raw public text or base weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-real-public-q24-feature-snapshot
+          path: |
+            ${{ runner.temp }}/public-q24-feature-snapshot/SEALED.json
+            ${{ runner.temp }}/public-q24-feature-snapshot/FAILED.json
+            ${{ runner.temp }}/public-q24-feature-snapshot/case-registry.json
+            ${{ runner.temp }}/public-q24-feature-snapshot/pooled-f32.safetensors
+            ${{ runner.temp }}/public-q24-feature-snapshot/train-only-pca32.safetensors
+            ${{ runner.temp }}/public-q24-feature-snapshot/feature-q24.safetensors
+            ${{ runner.temp }}/public-q24-independent-verdict.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Retain public learning terminals and small Head weights, not base weights
         if: always()
         uses: actions/upload-artifact@v4
