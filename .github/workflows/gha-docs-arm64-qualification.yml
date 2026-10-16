@@ -1,0 +1,14 @@
+name: Exact docs qualification on ARM64
+on:
+  push:
+    branches: [ci/gha-docs-arm64-qualification-20261016]
+    paths: [.github/workflows/gha-docs-arm64-qualification.yml]
+permissions:
+  contents: read
+jobs:
+  development-document-source:
+    uses: ./.github/workflows/hepta-development-docs.yml
+    with:
+      profile: development
+  adaptive-algorithm-source:
+    uses: ./.github/workflows/hepta-algorithm-docs.yml
