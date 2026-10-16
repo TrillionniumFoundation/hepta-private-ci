@@ -12,6 +12,16 @@ on:
       - qualification/stem-cell-v1/test_v18_paired_damage.py
       - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
       - .github/workflows/hepta-stem-v18-original-physical.yml
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/v18_original_feature_paired.py
+      - qualification/stem-cell-v1/v18_original_independent_review.py
+      - qualification/stem-cell-v1/v18_paired_damage.py
+      - qualification/stem-cell-v1/test_v18_original_feature_paired.py
+      - qualification/stem-cell-v1/test_v18_original_independent_review.py
+      - qualification/stem-cell-v1/test_v18_paired_damage.py
+      - qualification/stem-cell-v1/STEM_V18_ORIGINAL_PHYSICAL_20261016.md
+      - .github/workflows/hepta-stem-v18-original-physical.yml
   workflow_dispatch:
 permissions:
   contents: read
