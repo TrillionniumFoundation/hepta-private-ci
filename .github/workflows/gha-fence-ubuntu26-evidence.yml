@@ -1,0 +1,66 @@
+name: Fence and blob-policy x64 Ubuntu 26 qualification
+on:
+  push:
+    branches: [ci/gha-fence-ubuntu26-evidence-20261016]
+    paths:
+      - .github/workflows/gha-fence-ubuntu26-evidence.yml
+
+permissions:
+  contents: read
+
+# Isolated same-organization experiment; this workflow does not alter the
+# production required blob-size policy, its Fence pin, or protected branches.
+jobs:
+  fence-audit-and-blob-policy:
+    name: Pinned Fence audit and exact blob policy on Ubuntu 26 x64
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - name: Run pinned production Fence in audit mode
+        uses: openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63 # pin@v0.10.0
+        with:
+          mode: audit
+      - name: Check out exact PR HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 5c0321278c41ff38d2fb4448f6502d0e79518e09
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run production blob size predicate unmodified
+        env:
+          BASE_SHA: f8c9419df6ddeb36ff8b522a50219981fb8d9345
+          HEAD_SHA: 5c0321278c41ff38d2fb4448f6502d0e79518e09
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          echo "runner=$RUNNER_NAME arch=$RUNNER_ARCH"
+          python3 scripts/check_blob_size.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --max-bytes 512000 \
+            --allowlist .github/blob-size-allowlist.txt
+
+  blob-policy-control:
+    name: Unmodified blob size policy without Fence on Ubuntu 26 x64
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 5c0321278c41ff38d2fb4448f6502d0e79518e09
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run production blob size predicate unmodified
+        env:
+          BASE_SHA: f8c9419df6ddeb36ff8b522a50219981fb8d9345
+          HEAD_SHA: 5c0321278c41ff38d2fb4448f6502d0e79518e09
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          python3 scripts/check_blob_size.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --max-bytes 512000 \
+            --allowlist .github/blob-size-allowlist.txt
