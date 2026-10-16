@@ -208,6 +208,10 @@ def execute_from_frozen_source(args):
     source=Path(args.original_source).resolve()
     git_sha=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
     require(git_sha==SOURCE_COMMIT,'untrusted original pretrained-model source commit')
+    dirty=subprocess.check_output(
+        ['git','-C',str(source),'status','--porcelain','--untracked-files=no'],
+        text=True).strip()
+    require(not dirty, 'original verified public source has modified tracked files')
     original=source/'qualification'/'stem-cell-v1'
     require(original.is_dir(),'missing original official study code')
     sys.path.insert(0,str(original))
@@ -238,6 +242,14 @@ def execute_from_frozen_source(args):
     cfg=dict(snapshot_sha256=model_sha,context_tokens=256,encoder_profile=ENCODER_PROFILE,
              upstream_revision=SOURCE_MODEL_REV,material_approval_sha256=None)
     backend=LocalHFEncoder(model_dir,cfg,{'stem':'smaller_control'})
+    receipt=backend.receipt
+    complete=receipt.get('complete_checkpoint',{})
+    require(receipt.get('snapshot_sha256') == model_sha
+            and complete.get('loading',{}).get('complete') is True
+            and complete.get('materialization',{}).get('complete') is True
+            and complete.get('materialization',{}).get(
+                'all_state_dict_tensors_accounted') is True,
+            'original pretrained full weight load/materialization not independently checked')
     __import__('torch').set_num_threads(1)
     result=produce(inputs,backend,model_sha,Path(args.output_dir),
                    public_inputs_id=inputs['input_id'])
