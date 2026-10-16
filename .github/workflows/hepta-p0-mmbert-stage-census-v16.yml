@@ -7,6 +7,8 @@ name: Hepta P0 mmBERT strict-stage source diagnosis v16 (DENY_ALL)
       - 'experiments/shared_stem_cell/P0_MMBERT_STAGE_CENSUS_V16.md'
       - 'experiments/shared_stem_cell/p0_hf519_loading_report_abi_v17.py'
       - 'experiments/shared_stem_cell/test_p0_hf519_loading_report_abi_v17.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_hf_cache_blob_v18.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_hf_cache_blob_v18.py'
       - 'experiments/shared_stem_cell/P0_HF519_LOADING_REPORT_ABI_V17.md'
       - '.github/workflows/hepta-p0-mmbert-stage-census-v16.yml'
   workflow_dispatch:
@@ -73,6 +75,8 @@ jobs:
           PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_tied_load_contract_v15.py -v
           PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
           PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_mmbert_tied_loader.py -v
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
           python -m pip freeze > "$RUNNER_TEMP/mmbert-stage-v16/pinned-runtime.txt"
       - name: Verify actual pinned Transformers 5.19 loader-report ABI (no weights)
         shell: bash

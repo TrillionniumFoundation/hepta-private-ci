@@ -237,6 +237,10 @@ def execute_real(ledger: StageLedger, preflight: Path, compact_checkout: Path) -
     def original_tied_table():
         weights = hf_hub_download(repo_id=REPO, filename='model.safetensors',
                                   revision=REVISION, local_files_only=True)
+        # The independent stage ledger must use the SAME original, validated
+        # content-addressed HF blob as the real strict FrozenMMBert loader.
+        from p0_mmbert_hf_cache_blob_v18 import resolve_pinned_hf_cache_blob
+        weights = resolve_pinned_hf_cache_blob(weights, REVISION)
         verify_tied_pretrained_table(torch, mlm, weights)
         return weights
 

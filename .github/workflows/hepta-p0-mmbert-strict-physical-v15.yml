@@ -5,6 +5,8 @@ on:
       - 'experiments/shared_stem_cell/e1_mmbert_tied_loader.py'
       - 'experiments/shared_stem_cell/p0_mmbert_tied_load_contract_v15.py'
       - 'experiments/shared_stem_cell/test_p0_mmbert_tied_load_contract_v15.py'
+      - 'experiments/shared_stem_cell/p0_mmbert_hf_cache_blob_v18.py'
+      - 'experiments/shared_stem_cell/test_p0_mmbert_hf_cache_blob_v18.py'
       - 'experiments/shared_stem_cell/p0_mmbert_original_physical_probe_v15.py'
       - 'experiments/shared_stem_cell/test_p0_mmbert_original_physical_probe_v15.py'
       - '.github/workflows/hepta-p0-mmbert-strict-physical-v15.yml'
@@ -48,6 +50,8 @@ jobs:
           python -m py_compile "$D/p0_mmbert_tied_load_contract_v15.py" \
             "$D/p0_mmbert_original_physical_probe_v15.py" \
             "$D/test_p0_mmbert_tied_load_contract_v15.py" \
+            "$D/p0_mmbert_hf_cache_blob_v18.py" \
+            "$D/test_p0_mmbert_hf_cache_blob_v18.py" \
             "$D/test_p0_mmbert_original_physical_probe_v15.py"
           for mode in normal optimized; do
             flags=(); if test "$mode" = optimized; then flags=(-O); fi
@@ -69,6 +73,9 @@ jobs:
             'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
             'pyarrow==21.0.0' 'pillow==11.3.0'
           python -m pip check
+          D=experiments/shared_stem_cell
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_p0_mmbert_hf_cache_blob_v18.py -v
           python -m pip freeze > "$RUNNER_TEMP/p0-mmbert-v15-evidence/pinned-runtime.txt"
       - name: Original SHA/LFS snapshot gate (no synthetic fallback)
         shell: bash
