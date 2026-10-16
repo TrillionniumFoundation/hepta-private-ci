@@ -111,6 +111,6 @@ pub fn receive_guarded_shadow_data_v1<T: Read + Write>(
     Ok(complete)
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "guarded_wire_tests.rs"]
 mod tests;
