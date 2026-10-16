@@ -662,11 +662,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// Demand a fresh readback of all four original durable owners before
     /// reporting a complete current lifecycle. No activation authority.
     pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
-        if !self.is_complete() {
-            return Ok(false);
-        }
+        // A negative completion result must not mask a revoked original owner
+        // or a tampered *partial* durable history. Always authenticate the
+        // committed prefix, even if the fourth effect has not happened yet.
+        // This is read-only; it never dispatches a missing effect.
         self.verify_committed_prefix()?;
-        Ok(true)
+        Ok(self.is_complete())
     }
 
     /// Export a four-effect proof only while every original commit is still
