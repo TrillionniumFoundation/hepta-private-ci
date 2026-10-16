@@ -1,0 +1,57 @@
+# V18: original mmBERT feature-backed Head investment — negative research
+
+**2026-10-16 · DRAFT / RESEARCH_ONLY / SHADOW_ONLY / DENY_ALL.** No main merge, model selection, CellSplit, NDU, Worker effect, FinalUse or CAS/CNS change. This is an additive continuation of PR #2481, itself stacked on #2364.
+
+## Source identity and actual physical execution
+
+- Original GitHub Actions run: [38546717991](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38546717991), artifact **11890616195** (original ZIP SHA256 \`0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7\`).
+- Original real \`jhu-clsp/mmBERT-small\` (source revision \`abc32620dd4f6ab06f5fbe905dc25f310618e09f\`) **cached pretrained FP32** 128×384 features; exact original safetensors \`e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490\`; original dataset \`50335a2214756c7a9e09fee9ac9ed27ab855ea98635bb0fab0998144165ffb2c\`.
+- Existing V14 source preparer creates a byte-exact TRAIN/CAL-only input (canonical SHA \`d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a\`); **64 TRAIN**, **32 previously exposed CALIBRATION**, **32 unscored BLIND**, from the same AG News dataset family. Holdout labels are contained in the original public ZIP but **removed from the prepared training packet**. This is logical separation; it is **not independent source/label custody**.
+- Actual local CPU/torch physical training: a common 80-step 1,540-parameter linear no-change reference, then each of four candidates receives **80 further actual SGD/Adam steps** with the same 16-row training schedule. Linear additive readout 1,540 extra scalars; gated output residual 1,925; continued single 1,540; two-expert unsupervised TRAIN-only centroid route 3,080. All candidates **exactly equal no-change outputs before continuation**. No pretrained encoder forward in this continuation.
+- Two independent local process invocations (regular and \`python -O\`) physically reproduced **all 15/15 raw per-arm inference SHA across 3 seeds**, including original 32 unscored blind predictions. Separate NumPy reviewer (does not import the producer/Torch) reopened original publisher labels for TRAIN/CAL only, checked source SHA, re-scored **15/15** raw logits, Brier and accuracy; **7/7 original-backed mutation tests** passed per mode. Physical gradient independent rederivation, model issuer signatures and future utility remain unverified.
+- 11/11 source-only zero-delta and fail-closed tests pass in each of regular and \`-O\`. Exact new HEAD hosted CI has to finish; a locally executed source test does not qualify all CI.
+
+## Actual historical 32-case CAL results (multiclass Brier, lower is better)
+
+| Arm | Seed 41 | Seed 47 | Seed 53 |
+| --- | ---: | ---: | ---: |
+| **no_change** | **0.437980** | 0.434068 | **0.437576** |
+| linear additive residual | 0.498554 | 0.442697 | 0.478153 |
+| gated output residual | 0.492714 | 0.468585 | 0.484659 |
+| continued single | 0.554359 | 0.437740 | 0.544364 |
+| split router | 0.465996 | **0.427346** | 0.476711 |
+
+No-change gets **24/32 classification accuracy in all three seeds**. None of the learned arms improves that accuracy; split-router in seed47 has a lower Brier but accuracy **23/32** and worse outcomes in the other seeds. All 64 TRAIN examples are essentially perfectly fitted, so adding more local learning from the same source is not a demonstrated generalization remedy. One historical seed/metric contrast does not establish significance, independent task improvement, or net specialization benefit.
+
+## Resource and security boundaries
+
+These CPU measurements cover only local Head training/inference, not original pretrained model acquisition, encoder pretraining, original encoding, Reader, audit, signatures, GPU energy, a deployed service, 4,096 concurrent Cells or recoverable WAL. The first Torch/optimizer warmup is included in its run and makes short elapsed-time comparisons noisy. The study does not measure future utility, production RSS, target-host p99 or NDU uplift. Historic CAL cases have been viewed repeatedly; they can never be relabelled as prospective heldout. Private per-case logits, source text, publisher labels, TRAIN/CAL features and generated model weights **are not committed**.
+
+No change to production owners or authorization semantics. Both the model runner and independent numerical reviewer **always produce non-authorizing outcomes**; they do not issue cryptographic signatures, permissions or CellSplit approval.
+
+## Reproduce using the SHA-fixed original artifact
+
+With \`original.zip\` downloaded directly from GitHub Actions artifact 11890616195 and hash-verified:
+
+\`\`\`bash
+cd qualification/stem-cell-v1
+python stem_counterfactual_split_v14.py prepare \
+  --archive /private/original.zip --out /private/v18-inputs --labels-out /private/held-gold.json
+rm /private/held-gold.json
+python v18_original_feature_paired.py --inputs /private/v18-inputs \
+  --output /private/v18-scores.json --private-logits /private/v18-logits.json
+python v18_original_independent_review.py --archive /private/original.zip \
+  --report /private/v18-scores.json --private-logits /private/v18-logits.json \
+  --output /private/v18-independent.json
+HEPTA_V18_ORIGINAL_ZIP=/private/original.zip \
+HEPTA_V18_ORIGINAL_REPORT=/private/v18-scores.json \
+HEPTA_V18_ORIGINAL_PRIVATE_LOGITS=/private/v18-logits.json \
+python -m unittest -q test_v18_original_independent_review
+python -m unittest -q test_v18_original_feature_paired
+\`\`\`
+
+The new read-only, artifact-pinned \`hepta-stem-v18-original-physical.yml\` GitHub workflow also performs separate regular and optimized processes, rejects mismatched output identity and **never uploads raw/private original data**.
+
+## Next qualification priorities
+
+**Do not promote or auto-split.** Obtain new independent source families, an actually independent label/outcome owner, prospective future windows and matched full lifecycle costs. First test whether strong cheap no-change/linear models generalize, then allocate incremental training to a Cell only if its *net future utility* survives negative-transfer limits. Only after that run whole-stack 64/256/1024/4096-Cell target-host CPU/RSS/GPU, queue age, p95/p99, WAL/recovery and owner-specific FinalUse.
