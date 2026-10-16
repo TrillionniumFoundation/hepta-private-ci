@@ -135,5 +135,99 @@ class NativeBudgetContract(unittest.TestCase):
         self.assertEqual(result["max_conservative_context_tokens"], 1132)
 
 
+
+class SourceBoundRuntimeContext(unittest.TestCase):
+    """Offline exact-source runtime bindings, never a pretrained model claim."""
+
+    def make_owner(self, first_limit=None):
+        class Model:
+            def __init__(self, initial):
+                self.first = SimpleNamespace(max_seq_length=initial)
+                self.tokenizer = FakeTokenizer()
+                self.prompts = {"Classification": "task: classification | query: "}
+            def __getitem__(self, idx):
+                if idx != 0:
+                    raise IndexError(idx)
+                return self.first
+            @property
+            def max_seq_length(self):
+                return self.first.max_seq_length
+            @max_seq_length.setter
+            def max_seq_length(self, value):
+                self.first.max_seq_length = value
+        return SimpleNamespace(
+            _verified_local_weights=True,
+            model=Model(first_limit),
+            profile_digest="a"*64,
+            manifest={
+                "model_id": "google/embeddinggemma-2",
+                "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+                "profile": "vision", "dimension": 256,
+                "precision": "float32",
+            },
+        )
+
+    def test_pinned_real_runtime_binds_previous_none(self):
+        owner = self.make_owner()
+        receipt = b.bind_verified_native_context(owner)
+        self.assertIsNone(receipt["original_sentence_transformer_max_seq_length"])
+        self.assertEqual(owner.model.max_seq_length, b.CONTEXT)
+        self.assertEqual(owner.model[0].max_seq_length, b.CONTEXT)
+        self.assertFalse(receipt["production_accepted"])
+
+    def test_pinned_8192_runtime_is_idempotent(self):
+        owner = self.make_owner(first_limit=8192)
+        first = b.bind_verified_native_context(owner)
+        second = b.bind_verified_native_context(owner)
+        self.assertEqual(first["effective_sentence_transformer_max_seq_length"],8192)
+        self.assertEqual(second["original_sentence_transformer_max_seq_length"],8192)
+
+    def test_original_262144_is_bound_to_documented_8192(self):
+        owner = self.make_owner(first_limit=262144)
+        b.bind_verified_native_context(owner)
+        self.assertEqual(owner.model.max_seq_length,8192)
+
+    def test_reject_smaller_existing_runtime_context(self):
+        owner = self.make_owner(first_limit=1024)
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_unverified_weight_owner_denied(self):
+        owner = self.make_owner()
+        owner._verified_local_weights = False
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_wrong_publisher_revision_denied(self):
+        owner = self.make_owner()
+        owner.manifest["revision"] = "b"*40
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_wrong_model_modality_profile_denied(self):
+        owner = self.make_owner()
+        owner.manifest["profile"] = "text"
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_invalid_origin_manifest_digest_denied(self):
+        owner = self.make_owner()
+        owner.profile_digest = None
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_source_model_without_first_module_denied(self):
+        owner = self.make_owner()
+        owner.model.__class__.__getitem__ = lambda self, idx: (_ for _ in ()).throw(IndexError(idx))
+        with self.assertRaises(b.NativeBudgetError):
+            b.bind_verified_native_context(owner)
+
+    def test_bound_does_not_prove_media_count(self):
+        owner = self.make_owner()
+        result=b.bind_verified_native_context(owner)
+        self.assertIs(result["image_token_count_physically_verified"],False)
+        self.assertIs(result["model_origin_independently_signed"],False)
+
+
 if __name__ == "__main__":
     unittest.main()
