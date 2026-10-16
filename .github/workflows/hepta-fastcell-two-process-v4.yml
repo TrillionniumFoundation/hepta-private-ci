@@ -1,0 +1,64 @@
+name: Hepta FastCell genuine two-process Unix RTT (research only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-compiled-use/**"
+      - ".github/workflows/hepta-fastcell-two-process-v4.yml"
+  push:
+    branches:
+      - "research/fastcell-two-process-v4-20261016"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fastcell-two-process-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  two-process-native-data:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove exact source and native toolchain
+        run: |
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+      - name: Run complete typed data-plane native tests
+        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use
+      - name: Strict native lint and formatting on exact HEAD
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/hepta-compiled-use/Cargo.toml -- --check
+      - name: Physical separate-process original-frame RTT (no UI effects)
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 20s cargo run --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-compiled-use --example two_process_unix_bench -- --smoke | tee "$RUNNER_TEMP/fastcell-two-process.json"
+          python3 - "$RUNNER_TEMP/fastcell-two-process.json" <<'PY'
+          import json,sys
+          with open(sys.argv[1],encoding="utf-8") as f:
+              x=json.load(f)
+          assert x["schema"]=="hepta.fastcell.two-process-unix-rtt.v1"
+          assert x["roundtrips"]==64 and x["payload_bytes_per_direction"]==256
+          assert x["separate_processes"] is True
+          assert x["same_process_two_threads"] is False
+          assert x["peer_authentication_verified"] is False
+          assert x["mcp_comparison"] is False
+          assert x["external_effects"] is False and x["production_authorized"] is False
+          assert 0 < x["p50_ns"] <= x["p95_ns"] <= x["p99_ns"]
+          assert x["process_setup_ns"] > 0
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fastcell-two-process-${{ github.run_id }}
+          path: ${{ runner.temp }}/fastcell-two-process.json
+          if-no-files-found: warn
