@@ -208,6 +208,59 @@ class GraniteIndependentReviewSourceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 review.inspect_original_material(root, external)
 
+    def test_rational8_independent_numeric_and_profile_requires_opt_in(self):
+        # Independently implemented bounded transform, not proof of real
+        # model execution or exact invertibility after Q24 quantization.
+        for original in (-64.0, -16.0, -8.0, 0.0, 8.0, 16.0, 64.0):
+            expected = round((8.0 * original) / (8.0 + abs(original)) * review.Q24)
+            self.assertEqual(
+                review.independently_project_feature(original, "rational8-v1"), expected)
+        with self.assertRaises(ValueError):
+            review.independently_project_feature(16.0, "identity")
+        with self.assertRaises(ValueError):
+            review.independently_project_feature(float("nan"), "rational8-v1")
+        with self.assertRaises(ValueError):
+            review.independently_project_feature(1.0, "unrecognized")
+
+        _, record, _ = fixture()
+        material = {"sha256": {n: review.sha(n.encode()) for n in review.FILES}}
+        tokenizer = {n: material["sha256"][n] for n in review.FILES
+                     if "token" in n or n == "special_tokens_map.json"}
+        profile = dict(max_tokens=192, truncation=False, add_special_tokens=True,
+                       padding=False, precision="fp32", attention="eager",
+                       output="last_hidden_state", tokenizer=tokenizer,
+                       torch_version="2.10.0+cpu", transformers_version="4.57.1",
+                       model_config_sha256=material["sha256"]["config.json"],
+                       feature_adapter="rational8-v1")
+        canonical = lambda x: json.dumps(x, sort_keys=True,
+                                         separators=(",", ":"), ensure_ascii=False,
+                                         allow_nan=False).encode()
+        # Recompute profile independently from the producer implementation.
+        bounded = dict(record)
+        bounded.update(
+            tokenizer_digest=review.sha(
+                b"hepta.granite97.tokenizer.v5\0" + canonical(tokenizer)),
+            normalizer_digest=review.sha(b"hepta.granite97.identity-normalizer.v5"),
+            quantization_digest=review.sha(b"hepta.granite97.fp32-q24-ties-even.v5"),
+            preprocessing_digest=review.sha(
+                b"hepta.granite97.preprocessing.v5\0" + canonical(profile)),
+            adapter_digest=review.sha(review.RATIONAL8_DOMAIN))
+        self.assertEqual(
+            review.verify_preprocessing_profile(
+                bounded, material, maximum_tokens=192,
+                torch_version="2.10.0+cpu", transformers_version="4.57.1",
+                feature_adapter="rational8-v1")["adapter_digest"],
+            bounded["adapter_digest"])
+        with self.assertRaises(ValueError):
+            review.verify_preprocessing_profile(
+                bounded, material, maximum_tokens=192,
+                torch_version="2.10.0+cpu", transformers_version="4.57.1")
+        with self.assertRaises(ValueError):
+            review.verify_preprocessing_profile(
+                bounded, material, maximum_tokens=192,
+                torch_version="2.10.0+cpu", transformers_version="4.57.1",
+                feature_adapter="unknown")
+
     def test_expiry_scope_and_material_precede_any_tensor_import(self):
         original, record, params = fixture()
         with self.assertRaises(ValueError):
