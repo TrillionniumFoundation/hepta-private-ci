@@ -26,11 +26,12 @@ class Meter:
     cached_input_tokens: int
     reasoning_tokens: int
     output_tokens: int
-    latency_ms: int
+    incremental_latency_ms: int
+    full_latency_ms: int
 
     def validate(self, token_ceiling: int, latency_ceiling: int) -> None:
         values = (self.input_tokens, self.cached_input_tokens, self.reasoning_tokens,
-                  self.output_tokens, self.latency_ms)
+                  self.output_tokens, self.incremental_latency_ms, self.full_latency_ms)
         if any(type(x) is not int or x < 0 or x > 1_000_000 for x in values):
             raise Invalid("nonnegative integer physical meter fields required")
         if self.cached_input_tokens > self.input_tokens:
@@ -38,7 +39,7 @@ class Meter:
         # Baseline input/output is charged in the independently reported full
         # lifecycle. Additional action ceilings apply ONLY to incremental
         # reasoning tokens. No real cost is estimated or fabricated here.
-        if self.reasoning_tokens > token_ceiling or self.latency_ms > latency_ceiling:
+        if self.incremental_latency_ms > latency_ceiling or self.reasoning_tokens > token_ceiling or self.incremental_latency_ms > self.full_latency_ms:
             raise Invalid("original Reader exceeded admitted action ceiling")
 
 
@@ -103,7 +104,7 @@ def execute(manifest_doc: Any, train_doc: Any, public_doc: Any, prompts_doc: Any
             raise Invalid("typed Reader Response required")
         out.validate(profile.token_ceiling, profile.latency_ceiling_ms)
         token_total += out.meter.reasoning_tokens
-        latency_total += out.meter.latency_ms
+        latency_total += out.meter.incremental_latency_ms
         if token_total > token_budget or latency_total > latency_budget:
             raise Invalid("physical action budget exceeded")
         results.append({
@@ -118,7 +119,10 @@ def execute(manifest_doc: Any, train_doc: Any, public_doc: Any, prompts_doc: Any
         "prompts_sha256": digest(prompts_doc), "decision_sha256": sealed_decision["seal_sha256"],
         "registered_token_budget": token_budget, "registered_latency_budget_ms": latency_budget,
         "observed_additional_reasoning_tokens": token_total,
-        "observed_total_latency_ms": latency_total,
+        "observed_additional_latency_ms": latency_total,
+        "observed_full_model_latency_ms": sum(x["meter"]["full_latency_ms"] for x in results),
+        "observed_full_input_tokens": sum(x["meter"]["input_tokens"] for x in results),
+        "observed_full_output_tokens": sum(x["meter"]["output_tokens"] for x in results),
         "records": results,
         "limitations": "MODEL_AND_METER_RECEIPTS_FROM_CALLER_NOT_INDEPENDENTLY_ATTESTED",
     }
@@ -149,7 +153,8 @@ def score_postseal(attempt: Any, gold: Any) -> dict[str, Any]:
         "attempt_sha256": digest(attempt), "gold_sha256": digest(gold),
         "correct": correct, "total": len(labels),
         "additional_reasoning_tokens": attempt["observed_additional_reasoning_tokens"],
-        "total_reported_latency_ms": attempt["observed_total_latency_ms"],
+        "additional_latency_ms": attempt["observed_additional_latency_ms"],
+        "full_model_latency_ms": attempt["observed_full_model_latency_ms"],
         "interpretation": "ON_POLICY_CALLER_METERED_NOT_INDEPENDENT_MODEL_ATTESTATION",
         "qualifier": "RESEARCH_ONLY_DENY_ALL",
     }
