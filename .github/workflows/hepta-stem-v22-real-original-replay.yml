@@ -1,0 +1,58 @@
+name: hepta-stem-v22-original-135m-physical-replay-source-audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v22_original_*.py'
+      - 'qualification/stem-cell-v1/test_v22_original_crosshost_replay.py'
+      - 'qualification/stem-cell-v1/V22_*.json'
+      - 'qualification/stem-cell-v1/STEM_V22_*.md'
+      - '.github/workflows/hepta-stem-v22-real-original-replay.yml'
+  push:
+    branches:
+      - research/stem-v22-original-physical-replay-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-redacted-receipt-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact source/negative contracts, normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q \
+            qualification/stem-cell-v1/v22_original_crosshost_execute.py \
+            qualification/stem-cell-v1/v22_original_crosshost_review.py \
+            qualification/stem-cell-v1/v22_original_repeat_compare.py \
+            qualification/stem-cell-v1/test_v22_original_crosshost_replay.py
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v22_original_crosshost_replay.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v22_original_crosshost_replay.py' -v
+      - name: Validate digest-only previously observed original physical results
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python qualification/stem-cell-v1/v22_original_crosshost_review.py \
+            --public-receipt qualification/stem-cell-v1/V22_CROSSHOST_ORIGINAL_135M_RECEIPT_20261016.json
+          python qualification/stem-cell-v1/v22_original_repeat_compare.py \
+            --public-receipt qualification/stem-cell-v1/V22_ORIGINAL_DOUBLE_REPLAY_20261016.json
+      - name: Refuse secret material or false hosted physical-work attribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('.github/workflows/hepta-stem-v22-real-original-replay.yml').read_text()
+          for bad in ('upload-artifact@','download-artifact@','pip install torch','HF_TOKEN','huggingface_hub','model.generate('):
+              assert bad not in source, 'research workflow must be source-only'
+          assert 'contents: read' in source
+          PY
