@@ -1,0 +1,287 @@
+name: Hepta E27 physical answer-aware Cell Reader (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/e27_*.py'
+      - 'qualification/stem-cell-v1/test_e27_*.py'
+      - 'qualification/stem-cell-v1/E27_ANSWER_TOKEN_CELL_20261016.md'
+      - '.github/workflows/hepta-e27-original-answer-token-cell.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1
+      PYTHONDONTWRITEBYTECODE: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin exactly which source was tested
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e27-source"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/e27-source/commit.txt"
+          if [[ '${{ matrix.profile }}' == source_head && '${{ github.event_name }}' == pull_request ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          sha256sum "$ROOT"/e27_*.py "$ROOT"/test_e27_*.py "$ROOT"/E27_ANSWER_TOKEN_CELL_20261016.md > "$RUNNER_TEMP/e27-source/source-sha256.txt"
+      - name: Install genuine CPU Torch for real tensor backprop tests
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Execute ALL new source tests normally and with assertions optimized out
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e27_*.py' -v > "$RUNNER_TEMP/e27-source/normal.log" 2>&1 || { cat "$RUNNER_TEMP/e27-source/normal.log"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e27_*.py' -v > "$RUNNER_TEMP/e27-source/optimized.log" 2>&1 || { cat "$RUNNER_TEMP/e27-source/optimized.log"; exit 1; }
+          for mode in normal optimized; do
+            grep -Eq '^Ran ([2-9][0-9]|[1-9][0-9][0-9]) tests' "$RUNNER_TEMP/e27-source/$mode.log"
+            if grep -Eq 'skipped=[1-9]|FAILED|ERROR' "$RUNNER_TEMP/e27-source/$mode.log"; then exit 1; fi
+            tail -7 "$RUNNER_TEMP/e27-source/$mode.log"
+          done
+          python -m compileall -q "$ROOT"/e27_*.py "$ROOT"/test_e27_*.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e27-source-contracts-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-source/
+          retention-days: 7
+          if-no-files-found: warn
+
+  original-material-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned original publisher parquet reader only
+        run: python -m pip install pyarrow==20.0.0 huggingface-hub==0.36.0
+      - name: Fetch exact publisher train/validation parquet and freeze raw SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e27-parquet" "$RUNNER_TEMP/e27-public" "$RUNNER_TEMP/e27-gold"
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          revision='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          sources={'train':('multirc/train-00000-of-00001.parquet','ced6d731a335a0e4fbd29f6f382f291518952c0f449448361d294000c39e6728'),
+                   'validation':('multirc/validation-00000-of-00001.parquet','5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada')}
+          root=Path(os.environ['RUNNER_TEMP'])/'e27-parquet'
+          for role,(filename,expected) in sources.items():
+              origin=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',revision=revision,filename=filename))
+              blob=origin.read_bytes()
+              if hashlib.sha256(blob).hexdigest()!=expected:raise SystemExit(f'original {role} publisher SHA mismatch')
+              (root/(role+'.parquet')).write_bytes(blob)
+          PY
+      - name: Isolate actual TRAIN labels from HELD source before future training
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e27_reader_owner.py" material \
+            --train-parquet "$RUNNER_TEMP/e27-parquet/train.parquet" \
+            --val-parquet "$RUNNER_TEMP/e27-parquet/validation.parquet" \
+            --train-out "$RUNNER_TEMP/e27-public/train-only.json" \
+            --held-out "$RUNNER_TEMP/e27-public/held-BLIND.json" \
+            --gold-out "$RUNNER_TEMP/e27-gold/held-ORIGINAL-LABELS.json" \
+            --selection-out "$RUNNER_TEMP/e27-public/source-selection.json"
+          test -s "$RUNNER_TEMP/e27-public/held-BLIND.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'e27-public/held-BLIND.json'
+          o=json.loads(p.read_bytes())
+          if o['role']!='held' or any('label' in c for g in o['groups'] for q in g['questions'] for c in q['candidates']):
+              raise SystemExit('held human labels leaked to trainer material')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e27-public-train-blind-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-public/
+          retention-days: 2
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e27-original-gold-review-only-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-gold/
+          retention-days: 2
+          if-no-files-found: error
+
+  pretrained-train-and-blind:
+    needs: [source-contracts, original-material-owner]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1
+      PYTHONDONTWRITEBYTECODE: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e27-public-train-blind-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-public/
+      - name: Install pinned REAL pretrained inference/training dependencies
+        run: |
+          python -m pip install numpy==2.3.5 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1 safetensors==0.7.0 packaging==25.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Acquire exact original pretrained ModernBERT weights, no tag fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e27-blind"
+          python "$ROOT/public_encoder_probe.py" --acquire-public \
+            --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/e27-pretrained" \
+            > "$RUNNER_TEMP/e27-blind/model-acquisition.log" 2>&1 || { tail -35 "$RUNNER_TEMP/e27-blind/model-acquisition.log"; exit 1; }
+      - name: Genuine frozen Encoder forward and 64-step matched Cell training
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e27_reader_owner.py" blind \
+            --train "$RUNNER_TEMP/e27-public/train-only.json" \
+            --held "$RUNNER_TEMP/e27-public/held-BLIND.json" \
+            --snapshot "$RUNNER_TEMP/e27-pretrained/snapshot" \
+            --output "$RUNNER_TEMP/e27-blind/create-only-prelabel.json" \
+            > "$RUNNER_TEMP/e27-blind/physical.stdout" 2>&1 || { tail -45 "$RUNNER_TEMP/e27-blind/physical.stdout"; exit 1; }
+          sha256sum "$RUNNER_TEMP/e27-blind/create-only-prelabel.json" > "$RUNNER_TEMP/e27-blind/sha256.txt"
+          python - <<'PY'
+          import json,os,pathlib
+          r=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'e27-blind/create-only-prelabel.json').read_bytes())
+          if r['authority']!='DENY_ALL' or r['real_pretrained_encoder'] is not True or r['held_labels_loaded_during_fit_or_blind'] is not False or r['shared_encoder_calls']<100 or not all(r['head_budgets'][x]['optimizer_steps']==64 for x in ['aware','answer_muted']):
+              raise SystemExit('incomplete original model/learning execution')
+          print({'actual_pretrained_forwards':r['shared_encoder_calls'],
+                 'model_truncation_count':r['physical_meter']['truncated_sequences'],
+                 'selected_model':False})
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e27-original-prelabel-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-blind/
+          retention-days: 7
+          if-no-files-found: warn
+
+  postseal-original-human-review:
+    needs: [pretrained-train-and-blind]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/stem-cell-v1
+      PYTHONPATH: qualification/stem-cell-v1
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e27-public-train-blind-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-public/
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e27-original-gold-review-only-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-gold/
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-e27-original-prelabel-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-blind/
+      - name: Independently reload exact ORIGINAL human validation publisher source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install huggingface-hub==0.36.0 pyarrow==20.0.0
+          mkdir -p "$RUNNER_TEMP/e27-independent"
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          from hashlib import sha256
+          import os
+          p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',revision='4e14482c58d790d467ecfb29b6790e1917bf8756',filename='multirc/validation-00000-of-00001.parquet'))
+          b=p.read_bytes()
+          if sha256(b).hexdigest()!='5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada':
+              raise SystemExit('independently reacquired original human source differs')
+          (Path(os.environ['RUNNER_TEMP'])/'e27-independent/validation.parquet').write_bytes(b)
+          PY
+      - name: Review original complete questions, never reuse a producer scorer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e27_reader_review.py" \
+            --blind "$RUNNER_TEMP/e27-blind/create-only-prelabel.json" \
+            --validation-parquet "$RUNNER_TEMP/e27-independent/validation.parquet" \
+            --train-material "$RUNNER_TEMP/e27-public/train-only.json" \
+            --held-material "$RUNNER_TEMP/e27-public/held-BLIND.json" \
+            --original-gold "$RUNNER_TEMP/e27-gold/held-ORIGINAL-LABELS.json" \
+            --output "$RUNNER_TEMP/e27-independent/independent-scores.json" \
+            | tee "$RUNNER_TEMP/e27-independent/reviewer.log"
+          sha256sum "$RUNNER_TEMP/e27-independent/independent-scores.json" > "$RUNNER_TEMP/e27-independent/reviewer.sha256"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'e27-independent/independent-scores.json'
+          r=json.loads(p.read_bytes());o=r['results']
+          if (r['authority']!='DENY_ALL' or r['model_selected'] or r['production_accepted'] or
+              r['ndu_full_fbsde_gain_established'] or
+              r['future_time_or_independent_data_family_verified'] or
+              o['aware']['candidate_total']!=o['answer_muted']['candidate_total'] or
+              o['aware']['whole_question_total']!=o['answer_muted']['whole_question_total']):
+              raise SystemExit('incomplete original score or invented NDU capability')
+          print({'whole_question_aware':o['aware']['whole_question_correct'],
+                 'whole_question_muted':o['answer_muted']['whole_question_correct'],
+                 'group_signflip_p':r['source_level_exact_signflip_p_two_sided'],
+                 'authority':'DENY_ALL'})
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e27-independent-true-human-review-${{ matrix.profile }}
+          path: ${{ runner.temp }}/e27-independent/
+          retention-days: 7
+          if-no-files-found: warn
