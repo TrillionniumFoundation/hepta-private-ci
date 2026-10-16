@@ -285,7 +285,7 @@ jobs:
     name: Architecture required
     if: ${{ always() }}
     needs: qualification
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     steps:
       - name: Require both exact-candidate lanes
