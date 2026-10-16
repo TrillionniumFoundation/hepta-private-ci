@@ -33,8 +33,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile *.py
-          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay
-          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay test_paired_utility_gate
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge test_public_source_recount test_independent_head_replay test_paired_utility_gate
       - name: Fetch only original artifact 11877613315 and independently byte-recount it
         env:
           GH_TOKEN: ${{ github.token }}
@@ -254,6 +254,17 @@ jobs:
           assert replay['independent_model_source_authenticated'] is False
           assert replay['actual_cpu_time_independently_verified'] is False
           assert replay['production_authorized'] is False
+          science=record['paired_science_gate']
+          assert science['disposition']=='HOLD_NO_GO'
+          assert science['matched_case_census']==32
+          assert science['independent_publisher_source_families_verified']==0
+          assert science['observed_prospective_future_windows']==0
+          assert science['charged_known_work']['physical_head_train_sgd_updates']==3*256
+          assert science['observed_full_encoder_plus_reader_training_tco'] is None
+          assert science['ndu_incremental_net_utility_verified'] is False
+          assert science['physical_cell_split_authorized'] is False
+          assert science['native_execution_authorized'] is False
+          assert science['production_authorized'] is False
           assert record['production_authorized'] is False
           print({'replayed':replay['original_prediction_rows_replayed'],
                  'trial':replay['trial_identity'],'production_authorized':False})

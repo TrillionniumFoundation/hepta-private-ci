@@ -240,3 +240,35 @@ supplied. The first V1 `test_hdcf_gates.py` suite is a separate retained CI
 source test and was not mounted in this isolated local checkout. Hosted
 exact-head HDCF, source-plus-merge architecture, and blocking CI must all
 complete before scoped source qualification. Production stays **DENY_ALL**.
+
+
+## V6: independent paired-science and paid-work HOLD_NO_GO gate
+
+`paired_utility_gate.py` is now on the authentic retrospective-Encoder
+`review_original` path after exact feature/input and blind target admission. It
+independently replays all three actually *trained* strategies (256 scalar SGD
+updates each, or 768 total); Frozen and swapped-route are 0-update
+comparators. It checks source IDs, the original 32 paired test opportunities,
+all 160 terminal predictions, every Head-state digest, exact normalized unit
+probabilities, original target identities, and reported head cost inventories.
+It computes descriptive paired wins/losses/ties and exact McNemar conditional
+case-level probabilities against Frozen. Even a small p-value on 32 correlated
+items from one dataset family does not qualify as an independently sourced
+longitudinal improvement.
+
+The explicit disposition is `HOLD_NO_GO`: independent external publisher
+sources = 0, independently observed prospective future windows = 0, verified
+full Encoder+Head+Reader+evaluation lifecycle TCO = `null`, self-reported
+CPU duration is unattested, and **NDU System 2 improvement is unverified**.
+A numerical score cannot change `production_authorized=false`, cannot
+self-authorize model promotion, cannot emit executable machine code, and
+cannot activate physical Cell Split. Real future sources plus independent
+task/effect reviews and full measured cost are needed before any stronger
+assertion. This is a *science gate*, not a new permanent data owner.
+
+Run the added test in standard and Python optimized mode:
+
+```sh
+python3 -m unittest -v test_paired_utility_gate
+python3 -O -m unittest -v test_paired_utility_gate
+```

@@ -22,6 +22,7 @@ from typing import Any
 from physical_bank import SCHEMA, Denied, digest, train, score, validate_bundle
 from physical_cli import read_document, write_once
 from independent_head_replay import audit_head_replay
+from paired_utility_gate import audit_paired_utility
 
 ORIGINAL_CODE_SHA = '758205d3de23ccbf76649b1446c271101dc917b0'
 ORIGINAL_SOURCE = '57ec275d8078af65b7731c2a98be812d844a6d6b'
@@ -318,8 +319,9 @@ def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, ex
              'blind label target/type/identity mismatch')
     targets={'schema':'hepta.hdcf.blind-targets.v1','bundle_digest':digest(bundle),
              'targets':priv['targets']}
-    replay=audit_head_replay(bundle,trial,steps=expected_steps,seed=expected_seed,lr=expected_lr)
-    verified=score(trial,targets)
+    paired=audit_paired_utility(bundle,trial,targets,steps=expected_steps,seed=expected_seed,lr=expected_lr)
+    replay=paired['independent_replay']
+    verified=paired['score']
     return {'schema':'hepta.hdcf.original-pretrained-head-review.v1',
             'source_stage_digest':pub['stage_digest'], 'real_feature_receipt_digest':digest(receipt),
             'model_snapshot_sha256':ORIGINAL_MODEL_SNAPSHOT,
@@ -328,6 +330,7 @@ def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, ex
             'head_training_measured_separately':True,
             'score':verified,
             'independent_head_sgd_replay':replay,
+            'paired_science_gate':{k:v for k,v in paired.items() if k not in ('independent_replay','score')},
             'pretrained_publisher_signature_independently_verified':False,
             'original_labels_independent_of_public_source':False,
             'out_of_publisher_future_window_verified':False,
