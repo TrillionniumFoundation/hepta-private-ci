@@ -229,3 +229,21 @@ MCP-comparison indicators.
 
 No production compiler, effect port or capability owner is altered.
 **DRAFT / SHADOW_ONLY / DENY_ALL / NO MAIN MERGE / NO FINALUSE.**
+
+## Research-only guarded IPC
+
+The new HGP1 data-only path binds one bounded sequence of 256-byte action
+frames to the same prevalidated UI readback and proposal digest on both sides
+of a Unix stream. The receiver returns a batch only when the entire proposal
+matches. Eight negative and source-consistency tests include an actual Unix
+socket pair, stale observation and truncated-frame cases.
+
+The queue's independently reviewed #2353 correctness change is also
+incorporated: failed validation retains the original queued head, and a
+separately supplied current verifier is checked before consumption.
+
+These are software consistency checks only. The protocol does not establish
+peer identity, trusted observation provenance, current external permissions
+or completed OS actions. It has no model, JIT, GPU or external effect port.
+The guarded mode has its own preamble and is not covered by the existing
+V3/V4/V5 latency measurements. Keep DRAFT / DENY_ALL / NO FINALUSE.
