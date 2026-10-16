@@ -11,7 +11,8 @@ import json
 import unittest
 
 from recheck_real_public_iid_native_scores import (
-    Rejected, recheck_report, sha, REGISTERED_BYTE_GEOMETRY
+    Rejected, recheck_report, sha, REGISTERED_BYTE_GEOMETRY,
+    independent_record_bytes, independent_binary_metrics,
 )
 from real_public_iid_q24_native_score import bin_metrics, canonical
 
@@ -148,6 +149,39 @@ class IndependentPublicNativeAuditProtocol(unittest.TestCase):
         return recheck_report(
             report,original,labels,digest("mock-unlabeled-heldout-file"),
             training_receipt_raw=physical_training)
+
+    def test_reviewer_math_is_separate_and_exposes_majority_class_trap(self):
+        targets = [1] * 8 + [0] * 24
+        negative = {"logit_q24": -1 << 24,
+                    "status": "ACCEPT_NEGATIVE_RESEARCH_ONLY"}
+        positive = {"logit_q24": 1 << 24,
+                    "status": "ACCEPT_POSITIVE_RESEARCH_ONLY"}
+        ambiguous = {"logit_q24": 0,
+                     "status": "QUANTIZATION_AMBIGUOUS_ABSTAIN"}
+        scenarios = [
+            [negative] * 32,
+            [positive] * 32,
+            [positive] * 8 + [negative] * 24,
+            [ambiguous] * 32,
+            [positive] * 6 + [ambiguous] * 2
+                + [negative] * 22 + [ambiguous] * 2,
+        ]
+        expected_balanced = (0.5, 0.5, 1.0, 0.0, (6 / 8 + 22 / 24) / 2)
+        for inputs, expected in zip(scenarios, expected_balanced, strict=True):
+            with self.subTest(expected=expected):
+                independent = independent_binary_metrics(targets, inputs)
+                original = bin_metrics(targets, inputs)
+                self.assertEqual(independent, original)
+                self.assertEqual(
+                    independent["balanced_accuracy_with_abstain_counted_wrong"],
+                    expected,
+                )
+
+    def test_reviewer_canonical_bytes_independently_match_score_receipt(self):
+        payload = fixture()[0]["unlabeled_prediction_records"][0]
+        self.assertEqual(independent_record_bytes(payload), canonical(payload))
+        with self.assertRaises(Rejected):
+            independent_record_bytes(["not an object"])
 
     def test_original_1024_records_recomputed_with_no_selection(self):
         result=self.check(fixture())
