@@ -171,6 +171,7 @@ jobs:
             --original "$RUNNER_TEMP/e3-ocr-baseline/sealed-source-bound-predictions.json" \
             --ocr "$RUNNER_TEMP/e3-ocr-original/e3-ocr-observed/sealed-ocr-predictions.json" \
             --held "$RUNNER_TEMP/e3-ocr-independent-cohort/private_labels/test_labels.jsonl" \
+            --held-sha256 "$HELD_SHA" \
             --output "$RUNNER_TEMP/e3-real-ocr-vs-text-original-independent-score.json"
           python3 - <<'PY'
           import json,os
