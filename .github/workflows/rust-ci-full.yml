@@ -20,7 +20,9 @@ jobs:
   general:
     timeout-minutes: 30
     name: Format / etc
-    runs-on: ubuntu-24.04
+    # Exact format + just bench-smoke succeeded on Ubuntu 26 x64
+    # after the source rustfmt fix (run 38904803630).
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: codex-rs
@@ -40,7 +42,9 @@ jobs:
   cargo_shear:
     timeout-minutes: 30
     name: cargo shear
-    runs-on: ubuntu-24.04
+    # Exact Full CI pinned cargo-shear --locked passed on ARM64
+    # in isolated run 38905396152.
+    runs-on: ubuntu-24.04-arm
     defaults:
       run:
         working-directory: codex-rs
