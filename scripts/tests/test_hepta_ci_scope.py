@@ -165,7 +165,9 @@ class ScopeTests(unittest.TestCase):
         self.assertIn("--minimum-tests 1", gate)
         self.assertIn("supervisor-original-control-non-test-deny.json", gate)
         self.assertIn("supervisor-original-journal-replay.json", gate)
-        self.assertIn("--features cell-split-supervisor-port --lib real_journal_port", gate)
+        self.assertIn(
+            "--features cell-split-supervisor-port --lib real_journal_port", gate
+        )
         self.assertIn("--minimum-tests 5", gate)
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
