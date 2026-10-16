@@ -64,3 +64,39 @@ jobs:
             --head "$HEAD_SHA" \
             --max-bytes 512000 \
             --allowlist .github/blob-size-allowlist.txt
+
+  trusted-executable-inventory:
+    name: Read-only Fence trusted executable fingerprint on Ubuntu 26
+    runs-on: ubuntu-26.04
+    timeout-minutes: 8
+    steps:
+      - name: Check exact upstream Fence 0.10 fixed paths and permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Runner OS: $(uname -s) architecture: $(uname -m)"
+          for p in \
+            /usr/bin/docker /usr/bin/id /usr/bin/mount /usr/bin/stat \
+            /usr/bin/sudo /usr/bin/systemctl /usr/bin/systemd-run \
+            /usr/bin/test /usr/bin/true /usr/bin/umount \
+            /usr/sbin/visudo /usr/sbin/nft; do
+            if test -e "$p"; then
+              stat --format='%n owner=%U:%G mode=%a type=%F' "$p"
+              printf 'canonical=%s\n' "$(readlink -f "$p")"
+            else
+              printf 'MISSING: %s\n' "$p"
+            fi
+          done
+          for p in / /etc /etc/sudoers.d /usr /usr/bin /usr/sbin /usr/lib; do
+            if test -e "$p"; then
+              stat --format='%n owner=%U:%G mode=%a type=%F' "$p"
+              printf 'canonical=%s\n' "$(readlink -f "$p")"
+            else
+              printf 'MISSING_DIRECTORY: %s\n' "$p"
+            fi
+          done
+          cat /usr/lib/os-release
+          id -Gn runner
+          for package in nftables sudo util-linux docker.io; do
+            dpkg-query -W -f='${Package} ${Status} ${Version}\n' "$package" || true
+          done
