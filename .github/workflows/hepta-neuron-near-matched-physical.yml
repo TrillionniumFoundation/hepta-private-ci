@@ -32,6 +32,8 @@ jobs:
           echo "NM_INPUT=$RUNNER_TEMP/hepta-near-matched-input" >> "$GITHUB_ENV"
           echo "NM_STUDY=$RUNNER_TEMP/hepta-near-matched-trained" >> "$GITHUB_ENV"
           echo "NM_RECEIPT=$RUNNER_TEMP/hepta-near-matched-audit.json" >> "$GITHUB_ENV"
+          echo "NM_STUDY_BYTES=$RUNNER_TEMP/hepta-byte-matched-trained" >> "$GITHUB_ENV"
+          echo "NM_BYTES_RECEIPT=$RUNNER_TEMP/hepta-byte-matched-native-audit.json" >> "$GITHUB_ENV"
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -74,6 +76,19 @@ jobs:
             -p 'test_near_matched_physical_train.py' -v
           python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
             -p 'test_near_matched_physical_train.py' -v
+      - name: Verify physical safetensors byte budget geometry and negative controls
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_budget.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_budget.py' -v
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_byte_physical.py' -v
+          python qualification/neuron-gated-sparse-v3/near_matched_byte_budget.py \
+            --output "$RUNNER_TEMP/hepta-physical-byte-plan.json"
       - name: Freeze create-only distinct synthetic training and native trace
         run: |
           set -euo pipefail
@@ -107,6 +122,78 @@ jobs:
           assert r['ndu_eligible'] is False
           assert r['independent_temporal_model_parity'] is False
           PY
+      - name: Train eight near-identical serialized-byte-size models on same synthetic input
+        run: |
+          set -euo pipefail
+          TRAIN_SHA="$(sha256sum "$NM_INPUT/train.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_train.py \
+            --train-data "$NM_INPUT/train.json" --train-sha256 "$TRAIN_SHA" \
+            --output "$NM_STUDY_BYTES" --synthetic-canary \
+            --physical-byte-budget --steps 8
+      - name: Verify sixteen independent Rust processes for the byte-budgeted models
+        run: |
+          set -euo pipefail
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BIN_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          TRACE_SHA="$(sha256sum "$NM_INPUT/trace.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_native_oracle.py \
+            --binary "$BIN" --binary-sha256 "$BIN_SHA" \
+            --trained-root "$NM_STUDY_BYTES" \
+            --trace "$NM_INPUT/trace.json" --trace-sha256 "$TRACE_SHA" \
+            --output "$NM_BYTES_RECEIPT"
+          python - "$NM_BYTES_RECEIPT" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['schema']=='hepta.neuron.physical-byte-native-oracle.v1'
+          assert r['study_kind']=='SERIALIZED_SAFETENSORS_BYTES'
+          assert r['actual_native_os_processes']==16
+          assert r['physically_loaded_models']==8
+          assert r['independent_integer_adapter_head_parity'] is True
+          assert r['independent_temporal_model_parity'] is False
+          assert r['equal_runtime_residency_or_compute_verified'] is False
+          assert r['production_qualification'] is False
+          assert r['ndu_eligible'] is False
+          PY
+      - name: Independently cross-bind six physical research receipts before archival
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import pathlib
+          import zipfile
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          sources = {
+              'hepta-near-matched-fixture.json': root / 'hepta-near-matched-fixture.json',
+              'hepta-physical-byte-plan.json': root / 'hepta-physical-byte-plan.json',
+              'hepta-near-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY']) / 'training-receipt.json',
+              'hepta-near-matched-audit.json': pathlib.Path(os.environ['NM_RECEIPT']),
+              'hepta-byte-matched-trained/training-receipt.json':
+                  pathlib.Path(os.environ['NM_STUDY_BYTES']) / 'training-receipt.json',
+              'hepta-byte-matched-native-audit.json':
+                  pathlib.Path(os.environ['NM_BYTES_RECEIPT']),
+          }
+          dst = root / 'hepta-cross-bound-sanitized-source.zip'
+          with zipfile.ZipFile(dst, 'x', zipfile.ZIP_DEFLATED) as archive:
+              for name, source in sorted(sources.items()):
+                  archive.write(source, arcname=name)
+          PY
+          python qualification/neuron-gated-sparse-v3/audit_archived_byte_parity.py \
+            --zip "$RUNNER_TEMP/hepta-cross-bound-sanitized-source.zip" \
+            --output "$RUNNER_TEMP/hepta-cross-bound-evidence-verdict.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          verdict = json.loads((Path(os.environ['RUNNER_TEMP']) /
+              'hepta-cross-bound-evidence-verdict.json').read_text())
+          assert verdict['total_native_process_count'] == 32
+          assert verdict['independent_weight_sha_count'] == 16
+          assert verdict['production_qualification'] is False
+          assert verdict['ndu_eligible'] is False
+          assert verdict['raw_weight_bytes_reopened'] is False
+          PY
       - name: Archive sanitized research receipts only, never raw weights/features
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -116,5 +203,9 @@ jobs:
             ${{ runner.temp }}/hepta-near-matched-audit.json
             ${{ runner.temp }}/hepta-near-matched-fixture.json
             ${{ runner.temp }}/hepta-near-matched-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-physical-byte-plan.json
+            ${{ runner.temp }}/hepta-byte-matched-native-audit.json
+            ${{ runner.temp }}/hepta-byte-matched-trained/training-receipt.json
+            ${{ runner.temp }}/hepta-cross-bound-evidence-verdict.json
           if-no-files-found: warn
           retention-days: 14

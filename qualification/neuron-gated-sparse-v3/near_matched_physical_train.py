@@ -19,6 +19,7 @@ from matched_train import (
     ARMS, make_model, sha_file, training_input, unique_json, require, utc,
 )
 from near_matched_capacity_design import choose
+from near_matched_byte_budget import BYTE_CAPS, choose as choose_serialized_bytes
 
 Q = 1 << 24
 CAPS = (2_048, 8_192)
@@ -41,15 +42,22 @@ def train(args: argparse.Namespace) -> dict:
     schedule = [random.Random(args.seed + i).randrange(len(groups)) for i in range(args.steps)]
     destination = Path(args.output)
     destination.mkdir(parents=True, exist_ok=False)
+    byte_profile = getattr(args, 'physical_byte_budget', False) is True
+    caps = BYTE_CAPS if byte_profile else CAPS
     records = []
-    for ceiling in CAPS:
+    for ceiling in caps:
         for arm in ARMS:
-            design = choose(32, arm, ceiling, max_rank=4)
-            require(design is not None, 'unfillable new private capacity profile')
-            h, rank = design['private_temporal_width'], design['min_gru_rank']
-            count = design['complete_proposed_private_parameters']
-            require((ceiling-count)*1_000_000 <= 20_000*ceiling,
-                    'not a 2-percent physical capacity-matched candidate')
+            if byte_profile:
+                design = choose_serialized_bytes(arm, ceiling)
+                h, rank = design['hidden_width'], design['rank']
+                count = design['private_parameter_count']
+            else:
+                design = choose(32, arm, ceiling, max_rank=4)
+                require(design is not None, 'unfillable new private capacity profile')
+                h, rank = design['private_temporal_width'], design['min_gru_rank']
+                count = design['complete_proposed_private_parameters']
+                require((ceiling-count)*1_000_000 <= 20_000*ceiling,
+                        'not a 2-percent physical capacity-matched candidate')
             torch.manual_seed(args.seed)
             adapter = torch.nn.Linear(32, h)
             temporal = make_model(arm, h, rank or 0, torch)
@@ -100,7 +108,8 @@ def train(args: argparse.Namespace) -> dict:
             require(all(bool(torch.isfinite(v.float()).all()) for v in saved.values()),
                     'nonfinite physically stored model tensor')
             actual = sum(v.numel() for v in saved.values())
-            require(actual == count and actual <= ceiling, 'loaded real tensor count != plan')
+            require(actual == count and (byte_profile or actual <= ceiling),
+                    'loaded real tensor count != plan or private cap')
             target = destination / str(ceiling) / (arm + '.safetensors')
             target.parent.mkdir(parents=True, exist_ok=True)
             save_file(saved, str(target))
@@ -109,6 +118,11 @@ def train(args: argparse.Namespace) -> dict:
                     and all(torch.equal(reopened[k], v) for k, v in saved.items()),
                     'physical safetensors reload mismatch')
             raw = target.read_bytes()
+            if byte_profile:
+                require(len(raw) == design['physical_safetensors_bytes']
+                        and len(raw) <= ceiling
+                        and (ceiling - len(raw))*1_000_000 <= 20_000*ceiling,
+                        'physically serialized trained weights do not match byte budget')
             records.append({
                 'arm': arm, 'cap': ceiling, 'hidden_width': h, 'rank': rank,
                 'weight_file': f'{ceiling}/{arm}.safetensors',
@@ -117,15 +131,24 @@ def train(args: argparse.Namespace) -> dict:
                 'tensor_count': len(reopened), 'optimizer_steps': args.steps,
                 'train_last_loss': last_loss,
                 'cpu_training_seconds': round(time.process_time()-cpu_start, 6),
+                **({'budget_kind': 'SERIALIZED_SAFETENSORS_BYTES',
+                    'physical_byte_ceiling': ceiling}
+                   if byte_profile else {}),
             })
     require(len(records) == 8, 'missing physically trained Cell arms')
     report = {
-        'schema': SCHEMA, 'authority': 'DENY_ALL', 'decision': 'NO_MODEL_PROMOTION',
+        'schema': ('hepta.neuron.byte-matched-physical-train.v1'
+                   if byte_profile else SCHEMA),
+        'authority': 'DENY_ALL', 'decision': 'NO_MODEL_PROMOTION',
         'source_class': MODEL_KIND, 'actual_train_input_sha256': frozen_sha,
         'encoder_digest_claim_only': frozen['encoder_digest'],
         'original_selected_v1_a0_verified': False,
         'real_shared_encoder_forward_invoked': False,
         'candidate_training_step_count': args.steps, 'seed': args.seed,
+        **({'physical_byte_budget_profile': True,
+            'predeclared_serialized_byte_caps': list(BYTE_CAPS),
+            'same_resident_memory_or_training_flops_verified': False}
+           if byte_profile else {}),
         'identical_synthetic_training_schedule': schedule,
         'physical_model_file_count': len(records), 'cells': records,
         'native_Q24_adapter_head_executed': False,
@@ -145,6 +168,8 @@ def main() -> int:
     parser.add_argument('--steps', default=8, type=int)
     parser.add_argument('--seed', default=20261015, type=int)
     parser.add_argument('--synthetic-canary', action='store_true')
+    parser.add_argument('--physical-byte-budget', action='store_true',
+                        help='train actual file-byte-matched candidates, never rename parameter caps')
     args = parser.parse_args()
     try:
         train(args)
