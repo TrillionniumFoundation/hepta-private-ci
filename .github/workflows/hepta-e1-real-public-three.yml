@@ -23,6 +23,8 @@ on:
       - "experiments/shared_stem_cell/e1_source_archive_lock.py"
       - "experiments/shared_stem_cell/test_e1_source_archive_lock.py"
       - "experiments/shared_stem_cell/E1_REAL_PUBLIC_PILOT.md"
+      - "experiments/shared_stem_cell/test_e1_text_only_runtime_contract_v1.py"
+      - "experiments/shared_stem_cell/E1_TEXT_ONLY_RUNTIME_FIX_V1.md"
       - ".github/workflows/hepta-e1-real-public-three.yml"
   workflow_dispatch:
 
@@ -75,12 +77,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Enforce text-only runtime contract before model installation
+        run: |
+          set -euo pipefail
+          D=experiments/shared_stem_cell
+          PYTHONPATH="$D" python -m unittest discover -s "$D" -p test_e1_text_only_runtime_contract_v1.py -v
+          PYTHONPATH="$D" python -O -m unittest discover -s "$D" -p test_e1_text_only_runtime_contract_v1.py -v
       - name: Install pinned CPU-only research runtime
         run: |
           set -euo pipefail
           python -m venv "$RUNNER_TEMP/e1-real-venv"
           PY="$RUNNER_TEMP/e1-real-venv/bin/python"
-          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 'torchvision==0.25.0'
           "$PY" -m pip install --only-binary=:all: \
             'transformers==5.19.0' 'sentence-transformers==6.1.0' \
             'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
@@ -88,7 +96,7 @@ jobs:
             'pyarrow==21.0.0' 'pillow==11.3.0' 'soundfile==0.13.1'
           "$PY" -m pip check
           "$PY" - <<'PY'
-          import numpy,torch,torchvision,torchcodec
+          import numpy,torch,torchvision
           assert torch.__version__.startswith('2.10.0')
           assert torchvision.__version__.startswith('0.25.0')
           PY
