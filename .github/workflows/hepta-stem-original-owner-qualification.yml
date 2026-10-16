@@ -128,9 +128,9 @@ jobs:
       # not permit a passing Core check to hide its strict-Clippy failures.
       - name: Require original Learning Artifacts owner Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-learning-artifacts -- --check
-      - name: Require thirteen executed CAS/State and Evidence rebind regressions
+      - name: Require fifteen executed CAS/State, rebind, and fsync-epoch regressions
         run: |
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-learning-owner.json" --minimum-tests 13 -- cargo +1.95.0 test --locked -p codex-hepta-learning-artifacts --lib production_owner::tests:: -- --test-threads=1
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-learning-owner.json" --minimum-tests 15 -- cargo +1.95.0 test --locked -p codex-hepta-learning-artifacts --lib production_owner::tests:: -- --test-threads=1
       - name: Require two executed non-test CAS Evidence-binding denials
         run: |
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-learning-public-metrics.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-learning-artifacts --test metrics_binding_non_test -- --test-threads=1
