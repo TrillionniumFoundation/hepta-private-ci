@@ -416,7 +416,7 @@ mod unix {
 
             let (mut writer, mut reader) = UnixStream::pair()?;
             writer.write_all(&u32::try_from(JSON_BODY_BYTES)?.to_be_bytes())?;
-            writer.write_all(&vec![b'x'; JSON_BODY_BYTES])?;
+            writer.write_all(&[b'x'; JSON_BODY_BYTES])?;
             assert!(receive_json(&mut reader, 1).is_err());
             Ok(())
         }
