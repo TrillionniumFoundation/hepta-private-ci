@@ -2,9 +2,8 @@
 import tempfile
 import unittest
 from pathlib import Path
-import json
 from memory_graph_source_trial import (
-    PUBLIC_SCHEMA, DATASET_SHA, SCHEMA, ARMS, canonical, sha,
+    PUBLIC_SCHEMA, DATASET_SHA, ARMS, canonical, sha,
     save_new, strict_json, read_public, source_graph, ranked_ids, bm25_table,
     run, review, sealed_run
 )
