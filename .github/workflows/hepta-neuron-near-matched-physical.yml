@@ -432,6 +432,37 @@ jobs:
           assert report["production_qualification"] is False
           assert report["ndu_eligible"] is False
           PY
+      - name: Independent post-seal 1024 unlabeled Q24 prediction and label-replay audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_recheck_real_public_iid_native_scores.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_recheck_real_public_iid_native_scores.py' -v
+          python qualification/neuron-gated-sparse-v3/recheck_real_public_iid_native_scores.py \
+            --score "$RUNNER_TEMP/hepta-public-iid-heldout-score.json" \
+            --heldout "$RUNNER_TEMP/hepta-public-iid-q24/heldout-unlabeled-q24.json" \
+            --original-source original-public-source \
+            --public-data "$RUNNER_TEMP/hepta-public-data" \
+            --output "$RUNNER_TEMP/hepta-public-iid-independent-score-audit.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'hepta-public-iid-independent-score-audit.json'
+          report=json.loads(p.read_text())
+          assert report['distinct_physical_model_count']==32
+          assert report['independently_recomputed_label_free_native_records']==1024
+          assert report['reported_native_processes']==2048
+          assert len(report['descriptive_recomputed_scores'])==32
+          assert report['zero_parameter_75pct_control_not_a_v1_model'] is True
+          assert report['baseline_original_v1_verified'] is False
+          assert report['real_future_window_or_negative_transfer_verified'] is False
+          assert report['independent_evaluator_signature_verified'] is False
+          assert report['decision']=='NO_MODEL_SELECTION'
+          assert report['production_qualification'] is False
+          assert report['ndu_eligible'] is False
+          PY
       - name: Keep public-only projected snapshot and work receipt, never base weights or labels
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -445,6 +476,7 @@ jobs:
             ${{ runner.temp }}/hepta-public-iid-q24/predeclared-iid-plan.json
             ${{ runner.temp }}/hepta-public-iid-trained/training-receipt.json
             ${{ runner.temp }}/hepta-public-iid-heldout-score.json
+            ${{ runner.temp }}/hepta-public-iid-independent-score-audit.json
             ${{ runner.temp }}/hepta-public-iid-q24/heldout-unlabeled-q24.json
             ${{ runner.temp }}/hepta-public-encoder/source-lock.json
             ${{ runner.temp }}/hepta-public-encoder/downloaded-material.json
