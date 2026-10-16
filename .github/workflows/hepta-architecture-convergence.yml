@@ -9,8 +9,11 @@ on:
 permissions:
   contents: read
 
+# Scope PR admission by exact source revision so an orphaned predecessor
+# cannot indefinitely hold the required architecture check for newer heads.
+# Repeat dispatches of the same head still share a group; manual ref runs do too.
 concurrency:
-  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: hepta-architecture-convergence-${{ github.event.pull_request.number || github.ref_name }}-${{ github.event.pull_request.head.sha || 'manual' }}
   cancel-in-progress: true
 
 env:
@@ -285,7 +288,8 @@ jobs:
     name: Architecture required
     if: ${{ always() }}
     needs: qualification
-    runs-on: ubuntu-24.04
+    # needs-result fan-in has no architecture-specific dependencies.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     steps:
       - name: Require both exact-candidate lanes
