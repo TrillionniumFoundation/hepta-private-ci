@@ -15,6 +15,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+use codex_hepta_agentd::MetricPhaseV1;
 use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
 use codex_hepta_agentd::MetricsCommittedSampleReadbackV1;
 use codex_hepta_agentd::MetricsLocalFrontierV1;
@@ -249,8 +250,54 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         if !self.original_evidence.healthy() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
-        self.owner
-            .prepare_pending_native_group_signature_v1(now_ms, ordered)
+        let candidate = self
+            .owner
+            .prepare_pending_native_group_signature_v1(now_ms, ordered)?;
+
+        // A healthy fsync ACK is necessary but does not prove that EVERY
+        // selected original request has the expected Scope/Operation/phase
+        // record in the committed WAL. Verify all members with ONE bounded
+        // original actor readback and ONE complete WAL/marker traversal.
+        // Missing or duplicated successful Admission entries deny the
+        // entire signable group without consuming any FinalUse nonce.
+        let queries = ordered
+            .iter()
+            .map(|(id, key)| MetricsCommittedSampleQueryV1 {
+                scope_digest: codex_hepta_types::Digest32::of_bytes(
+                    key.scope_id.as_str().as_bytes(),
+                ),
+                operation_digest: codex_hepta_types::Digest32::of_bytes(id.as_str().as_bytes()),
+                phase: MetricPhaseV1::Admission,
+                succeeded: true,
+            })
+            .collect::<Vec<_>>();
+        let readbacks = self
+            .original_evidence
+            .read_committed_samples(&queries)
+            .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
+        if readbacks.len() != queries.len() {
+            return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+        }
+        let mut original_frontier = None;
+        for (query, proof) in queries.iter().zip(readbacks) {
+            let Some(proof) = proof else {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            };
+            if proof.query != *query
+                || proof.matching_rows != 1
+                || proof.first_group_sequence == 0
+                || proof.last_group_sequence < proof.first_group_sequence
+                || proof.last_group_head.is_zero()
+                || original_frontier.is_some_and(|frontier| frontier != proof.frontier)
+            {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            }
+            original_frontier = Some(proof.frontier);
+        }
+        if !self.original_evidence.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        Ok(candidate)
     }
 
     /// First commit ALL preceding Admission Evidence, only then dequeue and
