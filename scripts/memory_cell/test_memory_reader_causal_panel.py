@@ -1,6 +1,4 @@
 """Protocol-only tests; no synthetic result can qualify language memory."""
-import hashlib
-import json
 import os
 from pathlib import Path
 import tempfile
