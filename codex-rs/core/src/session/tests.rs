@@ -9184,6 +9184,34 @@ pub(crate) async fn make_session_and_context_with_rx() -> (
     make_session_and_context_with_dynamic_tools_and_rx(Vec::new()).await
 }
 
+// Reuse the standard isolated fixture while excluding subprocess Git enrichment
+// when a regression creates another turn through the normal construction path.
+pub(crate) async fn make_session_and_context_without_git_enrichment_for_test(
+    features: &[Feature],
+) -> (
+    Arc<Session>,
+    Arc<TurnContext>,
+    async_channel::Receiver<Event>,
+) {
+    let (mut session, turn, events) = make_session_and_context_with_auth_and_config_and_rx(
+        CodexAuth::from_api_key("Test API Key"),
+        Vec::new(),
+        |config| {
+            for feature in features {
+                config
+                    .features
+                    .enable(*feature)
+                    .unwrap_or_else(|error| panic!("test feature is permitted: {error}"));
+            }
+        },
+    )
+    .await;
+    Arc::get_mut(&mut session)
+        .unwrap_or_else(|| panic!("new test session is uniquely owned"))
+        .git_enrichment_policy = GitEnrichmentPolicy::Skip;
+    (session, turn, events)
+}
+
 #[tokio::test]
 async fn refresh_mcp_servers_uses_latest_state_for_existing_turns() {
     let (session, turn_context) = make_session_and_context().await;
@@ -13688,3 +13716,6 @@ async fn session_start_hooks_require_project_trust_without_config_toml() -> std:
 
     Ok(())
 }
+
+#[path = "finish_admission_tests.rs"]
+mod finish_admission;

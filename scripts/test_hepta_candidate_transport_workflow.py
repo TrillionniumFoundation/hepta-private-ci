@@ -54,6 +54,30 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         ):
             self.assertLess(workflow.index("      - name: " + name), first_native)
 
+    def test_live_base_binding_is_checked_before_source_history_and_merge(self):
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        start = workflow.index("      - name: Bind live PR base")
+        history = workflow.index("      - name: Fetch exact qualification history")
+        verify = workflow.index("      - name: Verify GitHub prospective merge ref")
+        synthetic = workflow.index("      - name: Construct the canonical prospective merge")
+        final = workflow.index("      - name: Revalidate current GitHub merge identity")
+        self.assertLess(start, history)
+        self.assertLess(history, verify)
+        self.assertLess(verify, synthetic)
+        self.assertLess(synthetic, final)
+        bound = workflow[start:history]
+        self.assertIn('test "${parents[0]}" = "$live_base"', bound)
+        self.assertIn('test "${parents[1]}" = "$SOURCE_SHA"', bound)
+        self.assertIn('printf \'BASE_SHA=%s', bound)
+        self.assertIn("live-base-binding.json", bound)
+        self.assertIn("github.event.pull_request.base.ref", bound)
+        final_guard = workflow[final:].split("      - name:", 2)[1]
+        self.assertIn("GITHUB_PROSPECTIVE_MERGE_SHA", final_guard)
+        self.assertIn("GITHUB_PROSPECTIVE_MERGE_TREE", final_guard)
+        self.assertNotIn("continue-on-error", workflow)
+
     def run_step(self, status: int, body: str, *, timeout: bool = False):
         workflow = (
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"

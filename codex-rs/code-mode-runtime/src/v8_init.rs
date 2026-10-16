@@ -49,6 +49,12 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // The sandbox's process-owned ArrayBuffer backend is initialized lazily by
+    // the first default allocator. Initialize it before this OnceLock publishes
+    // success so concurrent runtime threads cannot race its configurable pool.
+    // Dropping this wrapper leaves the backend owned by the default isolate
+    // group until V8 teardown.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

@@ -236,9 +236,17 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        // Grants bind the canonical registered workspace. PathUri can render a
+        // Windows verbatim path without its prefix, so resolve the same identity
+        // again for every physical attempt and fail closed if it disappeared.
+        let workspace = input.cwd.canonicalize().ok()?;
+        if !workspace.is_dir() {
+            return None;
+        }
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -252,8 +260,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let access = FederationConsumerAccess::new(
+            self.consumer_agent_id()?,
+            workspace_digest(workspace.as_path()),
+        );
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +293,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -392,6 +402,14 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             }
             let workspace = primary.cwd.to_path_buf();
             if !workspace.is_absolute() {
+                return Vec::new();
+            }
+            // Fleet registration and federation grants use the canonical path,
+            // including the Windows verbatim prefix lost in a file URI.
+            let Ok(workspace) = workspace.canonicalize() else {
+                return Vec::new();
+            };
+            if !workspace.is_dir() {
                 return Vec::new();
             }
             let capture = capture_directive(&input.user_input);
@@ -1214,7 +1232,12 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
+        // Store admission requires the same canonical control root used by a
+        // real Owner, including the Windows verbatim namespace spelling.
+        let canonical_fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
+        let fleet = HeptaFleetRoot::parse(canonical_fleet_root)
+            .expect("fleet")
+            .layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
@@ -1261,6 +1284,12 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        let request_workspace = workspace_uri.to_path_buf();
+        assert_eq!(
+            request_workspace.canonicalize().expect("request workspace"),
+            workspace
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1323,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },
@@ -1321,7 +1350,7 @@ mod tests {
             base_logical_request_sha256: &base,
             thread_id: THREAD_ID,
             turn_id: turn_store.level_id(),
-            cwd: &workspace,
+            cwd: &request_workspace,
             request_kind: ModelProviderRequestKind::Turn,
             provider_id: "provider-federation",
             model: "model-federation",
@@ -1361,6 +1390,60 @@ mod tests {
         assert!(first_content.contains("\"completed_peers\":1"));
         assert!(first_content.contains("\"failed_peers\":0"));
         let final_use_guard = final_use_guard.expect("federated proposal final-use guard");
+
+        std::fs::remove_dir(&workspace).expect("remove workspace directory");
+        let missing_input = input("model-provider-attempt:v1:missing-workspace");
+        assert!(
+            EphemeralModelInputContributor::contribute(&extension, missing_input)
+                .await
+                .expect("fail-open missing workspace")
+                .is_none()
+        );
+        std::fs::write(&workspace, b"not a workspace directory").expect("replace workspace");
+        assert!(
+            EphemeralModelInputContributor::contribute(
+                &extension,
+                input("model-provider-attempt:v1:replaced-workspace"),
+            )
+            .await
+            .expect("fail-open replaced workspace")
+            .is_none()
+        );
+        std::fs::remove_file(&workspace).expect("remove replacement file");
+        std::fs::create_dir(&workspace).expect("restore workspace directory");
+        let other_workspace = temp.path().join("other-workspace");
+        std::fs::create_dir(&other_workspace).expect("other workspace");
+        let mut other_input = input("model-provider-attempt:v1:other-workspace");
+        other_input.cwd = &other_workspace;
+        assert!(
+            EphemeralModelInputContributor::contribute(&extension, other_input)
+                .await
+                .expect("fail-open different workspace")
+                .is_none()
+        );
+        #[cfg(unix)]
+        {
+            let alias = temp.path().join("workspace-alias");
+            std::os::unix::fs::symlink(&workspace, &alias).expect("workspace alias");
+            let mut alias_input = input("model-provider-attempt:v1:workspace-alias");
+            alias_input.cwd = &alias;
+            assert!(
+                EphemeralModelInputContributor::contribute(&extension, alias_input)
+                    .await
+                    .expect("canonical workspace alias")
+                    .is_some()
+            );
+            std::fs::remove_file(&alias).expect("remove workspace alias");
+            std::os::unix::fs::symlink(&other_workspace, &alias).expect("retarget workspace alias");
+            let mut retargeted_input = input("model-provider-attempt:v1:retargeted-workspace");
+            retargeted_input.cwd = &alias;
+            assert!(
+                EphemeralModelInputContributor::contribute(&extension, retargeted_input)
+                    .await
+                    .expect("fail-open retargeted workspace")
+                    .is_none()
+            );
+        }
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
