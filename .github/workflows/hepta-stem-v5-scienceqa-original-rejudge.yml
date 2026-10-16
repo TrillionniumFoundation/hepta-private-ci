@@ -5,6 +5,9 @@ on:
     paths:
       - 'qualification/stem-cell-v1/scienceqa_independent_rejudge_v5.py'
       - 'qualification/stem-cell-v1/test_scienceqa_independent_rejudge_v5.py'
+      - 'qualification/stem-cell-v1/scienceqa_image_sensitivity_v5.py'
+      - 'qualification/stem-cell-v1/test_scienceqa_image_sensitivity_v5.py'
+      - 'qualification/stem-cell-v1/V5_REAL_LABELBLIND_ORIGINAL_20261016.json'
       - 'qualification/stem-cell-v1/STEM_V5_SCIENCEQA_ORIGINAL_REJUDGMENT.md'
       - '.github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml'
 
@@ -30,9 +33,59 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
           python -m pip install --disable-pip-version-check 'Pillow==11.3.0'
-          python -m unittest -v test_scienceqa_independent_rejudge_v5
-          python -O -m unittest -v test_scienceqa_independent_rejudge_v5
-          python -m py_compile scienceqa_independent_rejudge_v5.py test_scienceqa_independent_rejudge_v5.py
+          python -m unittest -v test_scienceqa_independent_rejudge_v5 test_scienceqa_image_sensitivity_v5
+          python -O -m unittest -v test_scienceqa_independent_rejudge_v5 test_scienceqa_image_sensitivity_v5
+          python -m py_compile scienceqa_independent_rejudge_v5.py test_scienceqa_independent_rejudge_v5.py scienceqa_image_sensitivity_v5.py test_scienceqa_image_sensitivity_v5.py
+
+  archived-original-labelblind-vision:
+    needs: source-only
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Independent real physical archived prediction shift, NO labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          mkdir -p "$RUNNER_TEMP/stem-v5-labelblind"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip \
+            > "$RUNNER_TEMP/stem-v5-labelblind/original-e3.zip"
+          python qualification/stem-cell-v1/scienceqa_image_sensitivity_v5.py \
+            --archive "$RUNNER_TEMP/stem-v5-labelblind/original-e3.zip" \
+            --output "$RUNNER_TEMP/stem-v5-labelblind/independent-labelblind.json"
+          cmp qualification/stem-cell-v1/V5_REAL_LABELBLIND_ORIGINAL_20261016.json \
+            "$RUNNER_TEMP/stem-v5-labelblind/independent-labelblind.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"stem-v5-labelblind/independent-labelblind.json").read_bytes())
+          assert r['authority']=='DENY_ALL'
+          assert r['heldout_labels_accessed'] is False
+          assert r['visual_necessity_or_correctness_proven'] is False
+          assert r['model_prediction_arms']['train_gate']['argmax_flips_vs_text']==38
+          assert r['model_prediction_arms']['image_masked']['argmax_flips_vs_text']==0
+          print('64 ORIGINAL REAL MODEL PREDICTIONS INDEPENDENTLY CHECKED: LABELBLIND ONLY')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-stem-v5-original-labelblind-sensitivity-denyall
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/stem-v5-labelblind/independent-labelblind.json
 
   real-original-publisher-rejudgment:
     needs: source-only
