@@ -261,6 +261,8 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
       - name: Frozen-source CellSplit measurement matrix capture regressions
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_matrix_capture.py' -v
+      - name: Independent-process CellSplit raw-evidence custody adversarial tests
+        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_evidence_observer.py' -v
       - name: Same-owner CNS and signed Neuron checkpoint linearization
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
