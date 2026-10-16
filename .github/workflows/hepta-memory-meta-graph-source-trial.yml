@@ -1,0 +1,178 @@
+name: Hepta MemoryCell Meta-Graph source-only five-arm research
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008, codex/associative-cell-type-split-20261015]
+    paths:
+      - 'scripts/memory_cell/memory_graph_lesion.py'
+      - 'scripts/memory_cell/memory_graph_source_trial.py'
+      - 'scripts/memory_cell/test_memory_graph_source_trial.py'
+      - 'scripts/memory_cell/memory_graph_independent_audit.py'
+      - 'scripts/memory_cell/test_memory_graph_independent_audit.py'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_META_GRAPH_ORIGINAL_LOCAL_AUDIT_20261016.md'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_META_GRAPH_SOURCE_TRIAL_20261016.md'
+      - '.github/workflows/hepta-memory-meta-graph-source-trial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-meta-graph-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  prepare-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install frozen source preparation dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mg-prepare-env
+          /tmp/mg-prepare-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mg-prepare-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/mg-raw-artifact
+      - name: Independently verify original LoCoMo bytes and prepare isolated public
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mg-source
+          tar -C /tmp/mg-source -xzf /tmp/mg-raw-artifact/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/mg-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          /tmp/mg-prepare-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/mg-source/memory-inputs/locomo.json /tmp/mg-prepared \
+            > /tmp/mg-source-prep.json
+          mkdir -p /tmp/mg-public
+          cp /tmp/mg-prepared/public.json /tmp/mg-prepared/manifest.json /tmp/mg-public/
+          test ! -e /tmp/mg-public/private.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from memory_graph_source_trial import read_public
+          data, manifest = read_public('/tmp/mg-public')
+          assert manifest['question_count'] == 240
+          assert len(data['families']) == 10
+          print(json.dumps({'question_count': 240, 'source_count': manifest['source_count']}))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-meta-graph-public-only
+          path: /tmp/mg-public
+          if-no-files-found: error
+  run-blind-graph:
+    needs: prepare-source-only
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-meta-graph-public-only
+          path: /tmp/mg-public
+      - name: Source-only negative-contract regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mg-graph-receipts
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_graph_lesion.py' -v 2>&1 | tee /tmp/mg-graph-receipts/core-tests.log
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_graph_source_trial.py' -v 2>&1 | tee /tmp/mg-graph-receipts/source-tests.log
+      - name: Run all 240 ORIGINAL held-out questions without their answers
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/mg-public/private.json
+          /usr/bin/time -v -o /tmp/mg-graph-receipts/resources.txt \
+            python3 scripts/memory_cell/memory_graph_source_trial.py \
+            run /tmp/mg-public /tmp/mg-graph-run \
+            > /tmp/mg-graph-receipts/run-summary.json
+          cp /tmp/mg-graph-run/{journal,seal}.json /tmp/mg-graph-receipts/
+          git rev-parse HEAD > /tmp/mg-graph-receipts/exact-head.txt
+          (cd /tmp/mg-graph-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-meta-graph-sealed-five-arm-unscored
+          path: /tmp/mg-graph-receipts
+          if-no-files-found: error
+  review-original-source:
+    needs: run-blind-graph
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-meta-graph-public-only
+          path: /tmp/mg-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-meta-graph-sealed-five-arm-unscored
+          path: /tmp/mg-unscored
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/mg-original
+      - name: Rebuild exact public and private from pinned original, only after seal
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mg-review-env
+          /tmp/mg-review-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mg-review-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/mg-review-source /tmp/mg-review-receipts /tmp/mg-run
+          tar -C /tmp/mg-review-source -xzf /tmp/mg-original/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/mg-review-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          cp /tmp/mg-unscored/{journal,seal}.json /tmp/mg-run/
+          /tmp/mg-review-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/mg-review-source/memory-inputs/locomo.json /tmp/mg-rebuilt \
+            > /tmp/mg-review-receipts/preparation.json
+          cmp /tmp/mg-rebuilt/public.json /tmp/mg-public/public.json
+          cmp /tmp/mg-rebuilt/manifest.json /tmp/mg-public/manifest.json
+          python3 scripts/memory_cell/memory_graph_source_trial.py review \
+            /tmp/mg-rebuilt /tmp/mg-run /tmp/mg-review-receipts/review.json \
+            > /tmp/mg-review-receipts/summary.json
+          HEPTA_MEMORY_ORIGINAL=/tmp/mg-review-source/memory-inputs/locomo.json \
+            python3 -m unittest discover -s scripts/memory_cell \
+              -p 'test_memory_graph_independent_audit.py' -v \
+              > /tmp/mg-review-receipts/independent-contract-tests.log 2>&1
+          python3 scripts/memory_cell/memory_graph_independent_audit.py \
+            /tmp/mg-review-source/memory-inputs/locomo.json /tmp/mg-public \
+            /tmp/mg-run /tmp/mg-review-receipts/review.json \
+            > /tmp/mg-review-receipts/independent-audit.json
+          git rev-parse HEAD > /tmp/mg-review-receipts/exact-head.txt
+          (cd /tmp/mg-review-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-meta-graph-source-only-review-not-acceptance
+          path: /tmp/mg-review-receipts
+          if-no-files-found: error
