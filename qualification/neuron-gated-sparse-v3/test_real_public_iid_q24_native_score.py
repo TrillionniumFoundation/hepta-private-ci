@@ -35,8 +35,8 @@ def row():
 
 
 class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
-    def test_public_train_bytes_match_original_registered_fit_labels(self):
-        # Real source/score identity checks, with explicitly synthetic fixture.
+    def _public_fit_fixture(self):
+        # Shared test fixture only, no independent public Encoder claim.
         from test_real_public_iid_q24_physical_train import stub_inputs
         from real_public_iid_q24_native_score import digest
         fit, plan = stub_inputs()
@@ -75,9 +75,14 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         self.assertFalse(result["signed_independent_source_owner_verified"])
         return original, fit, held, plan
 
+    def test_public_train_bytes_match_original_registered_fit_labels(self):
+        original, fit, held, plan = self._public_fit_fixture()
+        self.assertEqual(len(original["fit"]),64)
+        self.assertEqual(len(held["rows"]),32)
+
     def test_reject_modified_original_fit_label_after_physical_training(self):
         original, fit, held, plan = (
-            self.test_public_train_bytes_match_original_registered_fit_labels()
+            self._public_fit_fixture()
         )
         original["fit"][2]["label"] = (original["fit"][2]["label"]+1)%4
         with self.assertRaisesRegex(Refused,"training weights not bound"):
@@ -85,7 +90,7 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
 
     def test_reject_swapped_training_source_text_sha_after_training(self):
         original, fit, held, plan = (
-            self.test_public_train_bytes_match_original_registered_fit_labels()
+            self._public_fit_fixture()
         )
         fit["rows"][0]["source_text_sha256"] = "0"*64
         with self.assertRaisesRegex(Refused,"training weights not bound"):
@@ -93,7 +98,7 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
 
     def test_reject_heldout_original_registry_substitution(self):
         original, fit, held, plan = (
-            self.test_public_train_bytes_match_original_registered_fit_labels()
+            self._public_fit_fixture()
         )
         held["rows"][0]["case_id"] = "foreign-heldout-case"
         with self.assertRaisesRegex(Refused,"heldout source"):
