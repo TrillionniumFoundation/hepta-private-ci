@@ -67,8 +67,23 @@ jobs:
           python qualification/stem-cell-v1/scienceqa_image_sensitivity_v5.py \
             --archive "$RUNNER_TEMP/stem-v5-labelblind/original-e3.zip" \
             --output "$RUNNER_TEMP/stem-v5-labelblind/independent-labelblind.json"
-          cmp qualification/stem-cell-v1/V5_REAL_LABELBLIND_ORIGINAL_20261016.json \
-            "$RUNNER_TEMP/stem-v5-labelblind/independent-labelblind.json"
+          python - <<'PY'
+          import json,math,os
+          from pathlib import Path
+          original=json.loads(Path('qualification/stem-cell-v1/V5_REAL_LABELBLIND_ORIGINAL_20261016.json').read_bytes())
+          recomputed=json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-v5-labelblind/independent-labelblind.json').read_bytes())
+          def check(a,b,path):
+              if type(a) is dict:
+                  assert type(b) is dict and set(a)==set(b), path
+                  for k in a:check(a[k],b[k],path+'.'+k)
+              elif type(a) is float:
+                  assert type(b) in (float,int) and math.isfinite(b)
+                  assert math.isclose(a,b,rel_tol=1e-12,abs_tol=1e-12),path
+              else:
+                  assert type(a) is type(b) and a==b,path
+          check(original,recomputed,'original label-blind receipt')
+          print('All original discrete receipts exact; float math independently reproduced within 1e-12')
+          PY
           python - <<'PY'
           import json,os
           from pathlib import Path
