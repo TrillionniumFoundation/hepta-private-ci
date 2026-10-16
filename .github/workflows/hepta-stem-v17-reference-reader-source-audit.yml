@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - "qualification/stem-cell-v1/v17_reference_*.py"
+      - "qualification/stem-cell-v1/v18_reference_material_stage.py"
+      - "qualification/stem-cell-v1/test_v18_reference_material_stage.py"
+      - "qualification/stem-cell-v1/STEM_V18_REFERENCE_MATERIAL_AND_CENSORING.md"
       - "qualification/stem-cell-v1/test_v17_reference_reader.py"
       - "qualification/stem-cell-v1/STEM_V17_REFERENCE_READER_PHYSICAL.md"
       - ".github/workflows/hepta-stem-v17-reference-reader-source-audit.yml"
@@ -29,11 +32,17 @@ jobs:
           python -m compileall -q \
             qualification/stem-cell-v1/v17_reference_reader_physical.py \
             qualification/stem-cell-v1/v17_reference_independent_review.py \
-            qualification/stem-cell-v1/test_v17_reference_reader.py
+            qualification/stem-cell-v1/test_v17_reference_reader.py \
+            qualification/stem-cell-v1/v18_reference_material_stage.py \
+            qualification/stem-cell-v1/test_v18_reference_material_stage.py
           python -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v17_reference_reader.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v17_reference_reader.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v18_reference_material_stage.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v18_reference_material_stage.py' -v
       - name: Retain source-only privacy/no-physical-claim profile
         shell: bash
         run: |

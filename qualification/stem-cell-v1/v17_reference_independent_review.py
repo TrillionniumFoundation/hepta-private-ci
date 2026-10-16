@@ -119,7 +119,9 @@ def weak_gold_compare(plan, original_answers, reference_answers, original_source
         raise ValueError('duplicated publisher source root')
     if set(original_answers) != set(rows) or set(reference_answers) != set(rows):
         raise ValueError('incomplete Reader pair before unsealing gold')
-    tallies = {group: {arm: {'cases': 0, 'candidate_substring': 0,
+    tallies = {group: {arm: {'cases': 0, 'publisher_answer_known': 0,
+                             'publisher_answer_unknown': 0,
+                             'candidate_substring': 0,
                              'reference_substring': 0, 'candidate_exact': 0,
                              'reference_exact': 0} for arm in ARMS} for group in GROUPS}
     for case in plan['cases']:
@@ -128,22 +130,34 @@ def weak_gold_compare(plan, original_answers, reference_answers, original_source
         qa = source_by[fam]['qa']
         if not 0 <= index < len(qa):
             raise ValueError('publisher question index changed')
-        target = qa[index].get('answer')
-        if type(target) is not str or not target.strip():
-            raise ValueError('missing original publisher answer')
-        needle = target.strip().casefold()
+        item = qa[index]
+        if type(item) is not dict:
+            raise ValueError('malformed publisher QA record')
+        target = item.get('answer')
+        if target is not None and type(target) is not str:
+            raise ValueError('malformed publisher answer type')
+        known = type(target) is str and bool(target.strip())
+        needle = target.strip().casefold() if known else None
         for arm in ARMS:
             rid = case['arms'][arm]['request_id']
             c = original_answers[rid]['answer_text'].strip().casefold()
             r = reference_answers[rid]['answer_text'].strip().casefold()
             t = tallies[group][arm]
             t['cases'] += 1
+            if not known:
+                # An absent publisher label is not evidence that either model
+                # answered incorrectly. It is censored for both matched arms.
+                t['publisher_answer_unknown'] += 1
+                continue
+            t['publisher_answer_known'] += 1
             t['candidate_substring'] += int(needle in c)
             t['reference_substring'] += int(needle in r)
             t['candidate_exact'] += int(c == needle)
             t['reference_exact'] += int(r == needle)
-    if any(t['cases'] != 16 for group in GROUPS for t in tallies[group].values()):
-        raise ValueError('incomplete historical question cohort')
+    if any((t['cases'] != 16 or
+            t['publisher_answer_known'] + t['publisher_answer_unknown'] != 16)
+           for group in GROUPS for t in tallies[group].values()):
+        raise ValueError('incomplete or incorrectly censored historical cohort')
     return {'schema': SCHEMA + '.postseal-weak-literal-comparison',
             'plan_sha256': digest(plan), 'original_historical_roots': 4,
             'per_cohort_arm': tallies,
