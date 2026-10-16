@@ -227,6 +227,27 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertIn("--test public_ndu_tick_non_test_denial", gate)
         self.assertIn("neuron-original-effect-product-build.json", gate)
+        self.assertIn("neuron-strict-test-fixtures-clippy.json", gate)
+        self.assertIn(
+            "--all-targets -- -D clippy::expect-used", gate,
+            "native source-head must run the Bazel-rejected strict lint",
+        )
+        fixtures = (
+            Path(__file__).resolve().parents[2]
+            / "codex-rs/hepta-neuron/src/effect_intent_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn fixture_file() -> std::io::Result<(", fixtures,
+            "original Neuron helpers must propagate fixture failures",
+        )
+        self.assertIn(
+            "fn reopen(path: &std::path::Path) -> std::io::Result<File>",
+            fixtures,
+        )
+        self.assertNotIn(
+            ".expect(", fixtures.split("#[test]", 1)[0],
+            "helper-level expect-used must be removed, not waived",
+        )
         self.assertIn("neuron-original-effect-non-test-deny.json", gate)
         self.assertIn("--minimum-tests 1", gate)
 
