@@ -227,6 +227,7 @@ jobs:
           export HF_HOME HF_DATASETS_CACHE
           "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
           rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
           unset HF_HOME HF_DATASETS_CACHE
           "$P" - <<'PY'
           import json, os
@@ -313,6 +314,7 @@ jobs:
           export HF_HOME HF_DATASETS_CACHE
           "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
           rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          test ! -e "$RUNNER_TEMP/e3-source-cache"
           unset HF_HOME HF_DATASETS_CACHE
           "$P" - <<'PY'
           import json, os
