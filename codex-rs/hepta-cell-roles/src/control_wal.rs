@@ -24,7 +24,7 @@ const FRAME_FIXED_BYTES: usize = 8 + 32 + 32 + 32;
 
 #[derive(Clone, Debug)]
 enum ControlWalEventV1 {
-    Prepare(ControlDispatchIntentV1),
+    Prepare(Box<ControlDispatchIntentV1>),
     Forward(StableId),
     Terminal(StableId, Digest32),
     Reconcile(StableId),
@@ -178,7 +178,7 @@ impl ControlWalEventV1 {
                 if &intent.cell_id != expected_cell || intent.scope_digest != expected_scope {
                     return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
                 }
-                Ok(ControlWalOutputV1::Receipt(owner.prepare(intent.clone())?))
+                Ok(ControlWalOutputV1::Receipt(owner.prepare(intent.as_ref().clone())?))
             }
             Self::Forward(id) => Ok(ControlWalOutputV1::Receipt(owner.forward(id)?)),
             Self::Terminal(id, digest) => Ok(ControlWalOutputV1::Receipt(
@@ -245,7 +245,7 @@ impl ControlWalEventV1 {
     fn decode(bytes: &[u8]) -> Result<Self, ControlOwnerErrorV1> {
         let mut cursor = ControlCursor::new(bytes);
         let event = match cursor.byte()? {
-            0 => Self::Prepare(decode_intent(&mut cursor)?),
+            0 => Self::Prepare(Box::new(decode_intent(&mut cursor)?)),
             1 => Self::Forward(cursor.id()?),
             2 => Self::Terminal(cursor.id()?, cursor.digest()?),
             3 => Self::Reconcile(cursor.id()?),
@@ -627,7 +627,7 @@ impl ControlRoleOwnerV1 for ScopedControlWalOwnerV1 {
         &mut self,
         intent: ControlDispatchIntentV1,
     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
-        match self.apply_event(ControlWalEventV1::Prepare(intent))? {
+        match self.apply_event(ControlWalEventV1::Prepare(Box::new(intent)))? {
             ControlWalOutputV1::Receipt(receipt) => Ok(receipt),
             _ => Err(ControlOwnerErrorV1::InvalidDurableSnapshot),
         }
