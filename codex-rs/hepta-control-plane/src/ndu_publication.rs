@@ -168,7 +168,8 @@ fn control_parent_dir_identity(
     directory: &File,
     parent: &Path,
 ) -> Result<(), NduPublicationErrorV1> {
-    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
 
     if parent
         .canonicalize()
@@ -653,7 +654,9 @@ impl NduPublicationOwnerV1 {
         canonical_checkpoint: Digest32,
         after_directory_pinned: impl FnOnce(),
     ) -> Result<Self, NduPublicationErrorV1> {
-        use rustix::fs::{self as unixfs, Mode, OFlags};
+        use rustix::fs::Mode;
+        use rustix::fs::OFlags;
+        use rustix::fs::{self as unixfs};
         use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::PermissionsExt;
         snapshot

@@ -143,7 +143,9 @@ class ScopeTests(unittest.TestCase):
         self.assertEqual(workflow.count(end), 1)
         gate = workflow.split(begin, 1)[1].split(end, 1)[0]
         self.assertIn("cns-original-control-non-test-deny.json", gate)
-        self.assertIn("--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate)
+        self.assertIn(
+            "--features cell-split-cns-port --test cell_split_cns_non_test_denial", gate
+        )
         self.assertIn("--minimum-tests 1", gate)
         self.assertLess(
             gate.index("cns-prod-feature-compile.json"),
@@ -173,14 +175,14 @@ class ScopeTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
-        start = "      - name: Same-owner CNS and signed Neuron checkpoint linearization\n"
+        start = (
+            "      - name: Same-owner CNS and signed Neuron checkpoint linearization\n"
+        )
         end = "      - name: CellSplit native CNS route shared-Control admission regression\n"
         self.assertEqual(workflow.count(start), 1)
         self.assertEqual(workflow.count(end), 1)
         gate = workflow.split(start, 1)[1].split(end, 1)[0]
-        self.assertIn(
-            "control-ndu-process-exit-between-b-c.json", gate
-        )
+        self.assertIn("control-ndu-process-exit-between-b-c.json", gate)
         self.assertIn(
             "--lib abrupt_process_exit_after_control_begin_fences_recovery",
             gate,
@@ -241,6 +243,30 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertIn("--test public_ndu_tick_non_test_denial", gate)
         self.assertIn("neuron-original-effect-product-build.json", gate)
+        self.assertIn("neuron-strict-test-fixtures-clippy.json", gate)
+        self.assertIn(
+            "--all-targets -- -D clippy::expect-used",
+            gate,
+            "source-head must run the strict Bazel-equivalent Clippy check",
+        )
+        fixtures = (
+            Path(__file__).resolve().parents[2]
+            / "codex-rs/hepta-neuron/src/effect_intent_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn fixture_file() -> std::io::Result<(",
+            fixtures,
+            "original Neuron test helpers must propagate typed errors",
+        )
+        self.assertIn(
+            "fn reopen(path: &std::path::Path) -> std::io::Result<File>",
+            fixtures,
+        )
+        self.assertNotIn(
+            ".expect(",
+            fixtures.split("#[test]", 1)[0],
+            "no helper-level expect_used bypass or unchecked recovery",
+        )
         self.assertIn("neuron-original-effect-non-test-deny.json", gate)
         self.assertIn("--minimum-tests 1", gate)
 
@@ -286,7 +312,9 @@ class ScopeTests(unittest.TestCase):
         self.assertIn("--minimum-tests 1", gate)
         self.assertIn("supervisor-original-control-non-test-deny.json", gate)
         self.assertIn("supervisor-original-retirement-no-reexecute.json", gate)
-        self.assertIn("--features cell-split-supervisor-port --lib real_journal_port", gate)
+        self.assertIn(
+            "--features cell-split-supervisor-port --lib real_journal_port", gate
+        )
         self.assertIn("--minimum-tests 5", gate)
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
