@@ -178,7 +178,9 @@ symbol = "FinalUseAuthority::claim_batch"
 receiver_type = "FinalUseAuthority"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_batch(", "append_claims", "distinct_nonces"]
-product_callers = ["codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"]
+# No non-test physical Native Batch consumer until independently signed
+# ordered cohort and original WAL recovery are production qualified.
+product_callers = []
 caller_markers = ["claim_batch"]
 
 [[boundary]]
@@ -538,5 +540,7 @@ symbol = "FinalUseAuthority::with_verified_effect_batch"
 call_pattern = '(?:\bauthority\s*\.\s*|\bFinalUseAuthority\s*::\s*)with_verified_effect_batch\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect_batch<T>(", "self.enter_verified_effect(", "fences"]
-product_callers = ["codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"]
+# No non-test physical Native Batch consumer until independently signed
+# ordered cohort and original WAL recovery are production qualified.
+product_callers = []
 caller_markers = ["with_verified_effect_batch"]
