@@ -129,13 +129,15 @@ class FrozenMMBert:
         if type(loaded) is not tuple or len(loaded) != 2 or type(loaded[1]) is not dict:
             raise Invalid("full pretrained MLM parameter load report required")
         mlm, info = loaded
-        if any(info.get(key) for key in ("unexpected_keys", "mismatched_keys", "error_msgs")):
-            raise Invalid("unexpected or mismatched pretrained MLM checkpoint tensor")
-        missing = info.get("missing_keys", [])
-        if type(missing) not in (list, tuple) or len(missing) > 1 or any(
-                key not in ("decoder.weight", "model.embeddings.tok_embeddings.weight")
-                for key in missing):
-            raise Invalid("non-tied pretrained MLM parameter initialized randomly")
+        # Real P0 V13 mmBERT failed this exact gate before inference.
+        # Emit a bounded static-key inventory to diagnose the pinned
+        # Transformers/checkpoint mapping; do NOT waive any missing weight.
+        from p0_mmbert_missing_keys_v14 import (
+            Invalid as MissingKeyInvalid, fail_unverified_pretrained_missing_keys)
+        try:
+            self.loading_key_receipt = fail_unverified_pretrained_missing_keys(info)
+        except MissingKeyInvalid as error:
+            raise Invalid(str(error)) from error
         mlm = mlm.to(device).eval()
         if (getattr(mlm.config, "hidden_size", None) != 384 or
                 getattr(mlm.config, "tie_word_embeddings", None) is not True):
