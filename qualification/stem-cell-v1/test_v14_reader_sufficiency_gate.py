@@ -79,6 +79,43 @@ class V14Contracts(unittest.TestCase):
         self.assertEqual(report['diagnostics']['reader_capacity_candidate'],1)
         self.assertEqual(report['diagnostics']['retrieval_or_evidence_selection'],1)
         self.assertEqual(report['diagnostics']['lesion_sensitive'],1)
+    def test_grounded_correct_is_not_only_raw_correct(self):
+        r=self.review()
+        self.assertEqual(r['per_reader_arm']['candidate']['sufficient']['grounded_correct'],1)
+        self.assertEqual(r['per_reader_arm']['candidate']['sufficient']['correct'],1)
+        self.assertEqual(r['per_reader_arm']['reference']['sufficient']['grounded_correct'],2)
+        self.assertFalse(r['source_family_independence_verified'])
+    def test_entailment_without_delivered_citation_is_rejected(self):
+        self.pred['records'][2]['cited_evidence_ids']=[]
+        self.labels['predictions_sha256']=v.sha_obj(self.pred)
+        self.reject_review(lambda labels: None)
+    def test_no_evidence_cannot_claim_citation_entailment(self):
+        self.reject_review(lambda labels:labels['results'][0].update(citations_entailed=True))
+    def test_abstention_cannot_claim_citation_entailment(self):
+        self.pred['records'][2]['abstained']=True
+        self.labels['predictions_sha256']=v.sha_obj(self.pred)
+        self.reject_review(lambda labels: None)
+    def test_raw_reference_accuracy_is_not_grounded_capacity(self):
+        for row in self.labels['results']:
+            if row['case_id']=='question-2' and row['reader']=='reference' and row['arm']=='sufficient':
+                row['citations_entailed']=False
+        r=self.review()
+        self.assertEqual(r['diagnostics']['reader_capacity_candidate'],0)
+        self.assertEqual(r['diagnostics']['even_reference_fails_sufficient'],1)
+    def test_ungrounded_candidate_cannot_establish_retrieval_or_lesion_gain(self):
+        for row in self.labels['results']:
+            if row['case_id']=='question-1' and row['reader']=='candidate' and row['arm']=='sufficient':
+                row['citations_entailed']=False
+        r=self.review()
+        self.assertEqual(r['diagnostics']['retrieval_or_evidence_selection'],0)
+        self.assertEqual(r['diagnostics']['lesion_sensitive'],0)
+        self.assertEqual(r['diagnostics']['candidate_correct_sufficient_without_entailment'],1)
+    def test_paired_family_differences_preserve_root_denominators(self):
+        r=self.review()
+        families=r['per_claimed_family_paired_not_authenticated']
+        self.assertEqual(sum(x['cases'] for x in families.values()),2)
+        self.assertEqual(sum(x['sufficient_minus_retrieved'] for x in families.values()),1)
+        self.assertEqual(sum(x['sufficient_minus_lesion'] for x in families.values()),1)
     def test_schema_rejects_gold_leak(self):
         self.reject_plan(lambda p:p['cases'][0].update(answer='gold'))
     def test_not_frozen_before_pred(self):

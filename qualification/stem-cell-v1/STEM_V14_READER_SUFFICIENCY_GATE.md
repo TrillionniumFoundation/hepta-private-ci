@@ -89,3 +89,30 @@ production_authorized=false, and independent_human_attestation_verified=false.
 
 Do not infer production selection, new model quality, multimodal competence,
 Cell split permission, NDU/SYSTEM2 efficacy, or main merge from the tests.
+
+
+## V14.1 grounded-capacity and family-paired correction
+
+An externally asserted \`correct=true\` is **not** evidence that a Reader
+used the delivered source. The scorer now computes \`grounded_correct\`
+only when correctness and semantic citation entailment are both asserted,
+a cited source actually appeared in the corresponding delivered evidence,
+and the Reader did not abstain. An adjudicator cannot mark
+\`citations_entailed=true\` for a source-free, citation-free, or abstaining answer.
+
+The three proposed bottleneck diagnoses (candidate Reader vs reference,
+retrieval vs sufficient evidence, and sufficient vs source-lesioned evidence)
+now operate on **grounded** rather than raw correctness. They remain
+*unverified diagnostics*: the static scorer cannot prove the reviewer has
+independently seen original source bytes or that any original pretrained
+inference actually ran. It cannot distinguish model memorization from
+source-supported inference without real task interventions and source-level
+review.
+
+The report preserves original per-answer correctness and separately adds
+per-claimed-family paired sufficient-minus-retrieved and
+sufficient-minus-lesion grounded contrasts. The family identifiers and
+their independence are **not authenticated**, and no bogus case-wise
+confidence interval or causal Cell benefit is calculated. The study
+still unconditionally returns \`HOLD_NO_GO\` and leaves production,
+Stem selection, Cell split, SYSTEM2, and FinalUse forbidden.
