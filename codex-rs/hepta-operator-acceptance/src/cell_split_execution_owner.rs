@@ -682,6 +682,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if self.pending {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
+        // A next-owner effect may appear while the original predecessor's
+        // signed readback is in flight. Recheck that exact original owner
+        // after verifying the durable prefix. This is a bounded diagnostic
+        // observation, not an atomic multi-owner snapshot or Final-use grant.
+        self.probe_next_unprepared_original()?;
         Ok(self.is_complete())
     }
 
@@ -706,6 +711,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
         if !self.is_complete() {
+            // Original next-owner effects can commit while slower signed
+            // predecessors are being read. Do not export benign None based
+            // solely on a stale pre-prefix negative observation.
+            self.probe_next_unprepared_original()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
