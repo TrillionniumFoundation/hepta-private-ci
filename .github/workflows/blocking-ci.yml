@@ -15,7 +15,8 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    # Stdlib Python/Git selection is portable; use the separate ARM runner pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
@@ -183,7 +184,8 @@ jobs:
     name: Lightweight prose and derived checks
     needs: scope
     if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
-    runs-on: ubuntu-24.04
+    # Prose/metadata checks are architecture-neutral; avoid saturated x64 pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Checkout exact candidate
@@ -220,7 +222,8 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
-    runs-on: ubuntu-24.04
+    # Needs/result fan-in uses Python only; leave native work on its target architecture.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
