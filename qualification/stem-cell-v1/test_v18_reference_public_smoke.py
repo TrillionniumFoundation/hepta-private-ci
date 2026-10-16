@@ -39,6 +39,10 @@ class Smoke(unittest.TestCase):
         with self.assertRaises(ValueError):self.call([1,2,5,4])
     def test_over_budget(self):
         with self.assertRaises(ValueError):self.call([1,2,3]+[4]*25)
+    def test_reject_negative_or_noninteger_tokens(self):
+        for bad in ([1,2,3,-4], [1,2,3,4.0], [1,2,3,True]):
+            with self.subTest(tokens=bad), self.assertRaises(ValueError):
+                self.call(bad)
     def test_no_private_inputs_in_static_messages(self):
         self.assertEqual(len(p.PUBLIC_MESSAGES),2)
         self.assertEqual(p.PUBLIC_MESSAGES[1]['content'],
