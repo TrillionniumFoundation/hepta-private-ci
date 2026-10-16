@@ -225,8 +225,8 @@ impl CellSplitRouteControllerV1 {
     }
 
     fn report_cutover(&self, started: Instant, operation: Digest32, succeeded: bool) {
-        if let Some(sink) = &self.metrics {
-            if sink
+        if let Some(sink) = &self.metrics
+            && sink
                 .record(PhaseMetricEventV1 {
                     scope_digest: Digest32::of_bytes(self.split.split_id.as_str().as_bytes()),
                     operation_digest: operation,
@@ -236,9 +236,8 @@ impl CellSplitRouteControllerV1 {
                     succeeded,
                 })
                 .is_err()
-            {
-                self.failed_metrics.fetch_add(1, Ordering::Release);
-            }
+        {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
         }
     }
 
