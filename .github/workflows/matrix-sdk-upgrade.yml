@@ -5,6 +5,13 @@ on:
       - "codex-rs/hepta-matrix*/**"
       - "codex-rs/third_party/**"
       - "codex-rs/hepta-fleet/src/**"
+      # These components participate in the joined Neuron/Matrix/YAML security
+      # build. Their source changes must never reuse predecessor cargo-deny and
+      # current-main merge receipts from a different integrated SHA.
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/core-plugins/**"
+      - "codex-rs/external-agent-migration/**"
+      - ".github/workflows/hepta-yaml-security-parser-qualification.yml"
       - "codex-rs/skills/**"
       - "defs.bzl"
       - "MODULE.bazel.lock"
