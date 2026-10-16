@@ -13,7 +13,7 @@ from pathlib import Path
 import resource
 import time
 
-from e3_gemma2_budget import check_batch
+from e3_gemma2_budget import check_batch, bind_verified_native_context
 from e3_native_capacity_match import train_pair
 from e3_scienceqa_contract import (E3Error, canonical, read_jsonl, read_pinned,
                                    sha, unit_probabilities, validate_probabilities, validate_labels,
@@ -202,6 +202,7 @@ def main():
     demand(model.profile_digest==pipeline_digest and
            getattr(model,"_verified_local_weights",False) is True,
            "original publisher model was not loaded")
+    context_binding=bind_verified_native_context(model)
     results, stats, paired=compute(source,label,args.images,model)
     # Check the original safetensors inventory again after all model calls.
     load_manifest(args.snapshot_manifest)
@@ -219,6 +220,7 @@ def main():
         "image_encode_api_calls":stats["image_encode_api_calls"],
         "choice_encode_api_calls":stats["choice_encode_api_calls"],
         "encoder_api_calls_are_not_transformer_forward_counts":True,
+        "context_binding":context_binding,
         "source_token_preflight_rows":stats["source_token_preflight_rows"],
         "max_conservative_context_tokens":stats["max_conservative_context_tokens"],
         "native_context_limit":stats["native_context_limit"],
