@@ -874,8 +874,10 @@ fn incomplete_verified_completion_must_reject_injected_uncommitted_frame() {
 
     // A read-only status query must not misclassify an unrecognized intent
     // as a safe empty/incomplete split, nor dispatch an external effect.
-    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}")
-        .expect("inject unrecognized persisted intent");
+    // A private, fsynced but semantically invalid original frame reaches
+    // the intended namespace check instead of failing early on 0644 mode.
+    crate::durable::write_private_new(&root.path().join("cell-split-00-prepared.json"), b"{}")
+        .expect("inject private unrecognized persisted intent");
     assert!(matches!(
         owner.verified_complete(),
         Err(CellSplitExecutionErrorV1::Invalid(_))
@@ -1074,10 +1076,15 @@ fn verified_completion_rejects_unprepared_original_effect_at_every_step() {
             previous = receipt.receipt_digest;
         }
         assert!(!owner.verified_complete().expect("no external drift"));
-        assert!(owner.verified_transcript().expect("local incomplete prefix").is_none());
+        assert!(
+            owner
+                .verified_transcript()
+                .expect("local incomplete prefix")
+                .is_none()
+        );
 
-        let step = super::CellSplitExecutionStepV1::at(completed)
-            .expect("only four original steps");
+        let step =
+            super::CellSplitExecutionStepV1::at(completed).expect("only four original steps");
         let intent = super::make_intent(&plan, &digest, step, &previous);
         let unledgered = FixturePort::receipt(&intent);
         state
