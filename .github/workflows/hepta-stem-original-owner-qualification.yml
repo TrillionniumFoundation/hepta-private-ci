@@ -12,6 +12,16 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-neuron/**"
+      # These are real transitive owners of the original signed Worker.
+      # A standalone Context, Control or provider-boundary change cannot
+      # silently skip its affected native/Cargo/Clippy evidence.
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-cell-roles/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-evidence/**"
+      - ".github/workflows/hepta-architecture-convergence.yml"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/neuron_ndu_read.rs"
@@ -96,7 +106,7 @@ jobs:
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
       - name: Execute original Context Delivery provider-evidence regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
       - name: Strict Context Delivery provider-verifier Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
       - name: Strict original Worker Clippy including bridge tests
