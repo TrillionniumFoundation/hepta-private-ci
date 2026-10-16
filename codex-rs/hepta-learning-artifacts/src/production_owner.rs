@@ -386,6 +386,15 @@ pub struct ArtifactCasLatencySnapshotV1 {
 
 /// Keeps the complete owner operation or timed subphase open until terminal
 /// state is recorded. Panic or capacity exhaustion cannot produce readiness.
+// The failure count doubles as a sticky readiness poison: unchecked wrap to
+// zero after u64::MAX would silently rearm a previously rejected Evidence
+// owner. Keep the full diagnostic count up to saturation, never modulo u64.
+fn latch_cas_metric_failure(counter: &AtomicU64) {
+    let _ = counter.fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
+        count.checked_add(1)
+    });
+}
+
 struct CasMetricsActivityV1<'a> {
     in_flight: &'a AtomicU64,
     failed_records: &'a AtomicU64,
@@ -395,7 +404,7 @@ struct CasMetricsActivityV1<'a> {
 impl Drop for CasMetricsActivityV1<'_> {
     fn drop(&mut self) {
         if std::thread::panicking() {
-            self.failed_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(self.failed_records);
         }
         if self.registered {
             self.in_flight.fetch_sub(1, Ordering::AcqRel);
@@ -448,7 +457,7 @@ impl ArtifactCasOwnerV1 {
                 .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
                 .is_err()
         {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
             return self;
         }
         self.metrics = Some(sink);
@@ -481,7 +490,7 @@ impl ArtifactCasOwnerV1 {
             return false;
         }
         if sink.flush().is_err() {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
             return false;
         }
         if self.metrics_in_flight.load(Ordering::Acquire) != 0
@@ -513,7 +522,7 @@ impl ArtifactCasOwnerV1 {
             })
             .is_ok();
         if !registered || !advanced || self.metrics.is_none() {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
         }
         CasMetricsActivityV1 {
             in_flight: &self.metrics_in_flight,
@@ -552,7 +561,7 @@ impl ArtifactCasOwnerV1 {
                 })
                 .is_err()
         {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
         }
         result
     }
@@ -1638,6 +1647,51 @@ mod tests {
         drop(saturated);
         assert_eq!(owner.metrics_in_flight.load(Ordering::Acquire), u64::MAX);
         assert!(owner.failed_metric_records.load(Ordering::Acquire) >= 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+    }
+
+    #[test]
+    fn saturated_failure_counter_cannot_rearm_after_rejected_sink_rebind() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metric-failure-overflow-binding"),
+            SigningKey::from_bytes(&[37; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+
+        // Inject the exact exhaustion boundary rather than looping 2^64 times.
+        owner.failed_metric_records.store(u64::MAX, Ordering::Release);
+        let rejected = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert_eq!(rejected.failed_metric_records.load(Ordering::Acquire), u64::MAX);
+        assert!(!rejected.production_metrics_ready());
+        assert!(!rejected.flush_production_metrics());
+    }
+
+    #[test]
+    fn failed_record_at_saturated_counter_stays_poisoned_after_successful_flush() {
+        let sink = Arc::new(RefusingOwnerMetrics::default());
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metric-failure-overflow-record"),
+            SigningKey::from_bytes(&[38; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(sink.clone());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+
+        owner.failed_metric_records.store(u64::MAX, Ordering::Release);
+        let result: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metric-failure-overflow"),
+            Digest32::of_bytes(b"operation.metric-failure-overflow"),
+            PhaseMetricKindV1::Signature,
+            || Ok(43),
+        );
+        assert_eq!(result, Ok(43));
+        assert_eq!(sink.record_attempts.load(Ordering::Acquire), 1);
+        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), u64::MAX);
         assert!(!owner.production_metrics_ready());
         assert!(!owner.flush_production_metrics());
     }
