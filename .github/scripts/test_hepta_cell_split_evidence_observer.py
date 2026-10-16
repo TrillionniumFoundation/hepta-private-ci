@@ -6,7 +6,10 @@ import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -182,6 +185,39 @@ class IndependentByteCustodyTests(unittest.TestCase):
         ledger = self.inspect()
         self.assertFalse(ledger["comparative_gate_passed"])
         self.assertFalse(ledger["production_activation_authorized"])
+
+
+    def test_cli_negative_comparison_exits_nonzero_without_erasing_custody(self):
+        from hepta_cell_split_evidence_observer import main
+
+        physical = next(
+            row
+            for row in self.packet["runs"]
+            if row["scopes"] == 4096 and row["mode"] == "physical_split"
+        )
+        physical["elapsed_seconds"] = 12
+        self.publish()
+        argv = [
+            "hepta_cell_split_evidence_observer.py",
+            "--capture",
+            str(self.capture),
+            "--output",
+            str(self.output),
+            "--source-sha",
+            self.manifest["source_sha"],
+            "--hardware-id",
+            self.manifest["hardware_id"],
+            "--model-digest",
+            self.manifest["model_digest"],
+            "--workload-digest",
+            self.manifest["workload_digest"],
+            "--trace-sha256",
+            "b" * 64,
+        ]
+        with patch.object(sys, "argv", argv), redirect_stdout(StringIO()) as stdout:
+            self.assertEqual(main(), 1)
+        self.assertFalse(json.loads(stdout.getvalue())["production_activation_authorized"])
+        self.assertTrue((self.output / "COMPLETE").is_file())
 
 
 if __name__ == "__main__":
