@@ -285,6 +285,13 @@ jobs:
             echo "::notice::PR event base SHA is stale; require a newly verified current-main merge"
           fi
           BASE_SHA="$current_main"
+          # The webhook's checkout snapshot can predate the GitHub API's
+          # current main tip. Fetch the exact verified commit only when it is
+          # absent, without accepting a historical event-base substitute.
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo "::notice::Verified current-main SHA is absent from checkout; fetching its exact commit"
+            git fetch --no-tags origin "$BASE_SHA"
+          fi
           git cat-file -e "$BASE_SHA^{commit}"
           gh_ref="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           merge_sha="$(jq -er '.object.sha' <<<"$gh_ref")"
