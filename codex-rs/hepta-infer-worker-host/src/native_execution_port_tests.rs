@@ -25,13 +25,7 @@ fn reserved() -> NativeRunRecord {
 }
 
 fn bind(record: &NativeRunRecord) -> Result<ReservedNativePortBindingV1, NativePortBindingErrorV1> {
-    bind_reserved_native_port_v1(
-        record,
-        "native-request-one",
-        "owner-one",
-        7,
-        "model-one",
-    )
+    bind_reserved_native_port_v1(record, "native-request-one", "owner-one", 7, "model-one")
 }
 
 #[test]
@@ -87,13 +81,7 @@ fn original_request_principal_generation_and_model_must_match() {
         ),
     ] {
         assert_eq!(
-            bind_reserved_native_port_v1(
-                &record,
-                request_id,
-                principal_id,
-                generation,
-                model
-            ),
+            bind_reserved_native_port_v1(&record, request_id, principal_id, generation, model),
             Err(expected)
         );
     }
@@ -165,13 +153,7 @@ fn malformed_or_zero_owner_digest_and_zero_generation_fail_closed() {
     let mut changed = reserved();
     changed.request.worker_generation = 0;
     assert_eq!(
-        bind_reserved_native_port_v1(
-            &changed,
-            "native-request-one",
-            "owner-one",
-            0,
-            "model-one"
-        ),
+        bind_reserved_native_port_v1(&changed, "native-request-one", "owner-one", 0, "model-one"),
         Err(NativePortBindingErrorV1::InvalidGeneration)
     );
 }

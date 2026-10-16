@@ -55,8 +55,7 @@ fn all_execution_port_identity_drift_is_rejected() {
     );
 
     let mut drift = codex.clone();
-    drift.app_server_binding.as_mut().unwrap().agent_generation =
-        Generation::new(8).unwrap();
+    drift.app_server_binding.as_mut().unwrap().agent_generation = Generation::new(8).unwrap();
     assert_eq!(
         adapt_execution_port_request_v1(1, &port, &drift),
         Err(ExecutionPortAdapterErrorV1::BindingMismatch("generation"))
@@ -73,7 +72,9 @@ fn all_execution_port_identity_drift_is_rejected() {
     drift.lease_payload_digest = Digest32::of_bytes(b"other-lease-payload");
     assert_eq!(
         adapt_execution_port_request_v1(1, &port, &drift),
-        Err(ExecutionPortAdapterErrorV1::BindingMismatch("lease payload"))
+        Err(ExecutionPortAdapterErrorV1::BindingMismatch(
+            "lease payload"
+        ))
     );
 
     let mut drift = codex.clone();
