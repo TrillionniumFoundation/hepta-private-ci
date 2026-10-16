@@ -1,0 +1,74 @@
+name: Windows setup-manifest and Bazel lock parity qualification
+
+on:
+  push:
+    branches: [ci/gha-win-manifest-lock-20261016]
+    paths: [.github/workflows/gha-win-manifest-lock.yml]
+
+permissions:
+  contents: read
+
+# Isolated validation of the exact PR source. No production check is removed
+# or bypassed; the lock candidate is preserved as an artifact, not auto-pushed.
+jobs:
+  bazel-lock:
+    name: Regenerate exact Bazel lock against Cargo dependency graph
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up pinned Bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: windows-helper-lock
+      - name: Verify Cargo lock and refresh Bzlmod lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > "${RUNNER_TEMP}/cargo-metadata.json"
+          bazel mod deps --lockfile_mode=update
+          test -s MODULE.bazel.lock
+          git diff --check
+          if git diff --quiet -- MODULE.bazel.lock; then
+            echo "MODULE.bazel.lock unchanged after Cargo dependency addition"
+          else
+            echo "MODULE.bazel.lock refreshed; artifact contains generated candidate"
+            git diff --stat -- MODULE.bazel.lock
+          fi
+      - name: Preserve exact generated Bazel lock
+        if: success()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-lock-candidate-${{ github.sha }}
+          path: MODULE.bazel.lock
+          if-no-files-found: error
+          retention-days: 3
+
+  windows-helper-manifest:
+    name: Native Windows setup helper manifest and runfiles
+    runs-on: windows-2025
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare native Windows Bazel toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: windows-helper-manifest
+      - name: Execute actual asInvoker RT_MANIFEST test
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test --test_output=errors -- \
+            //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test
