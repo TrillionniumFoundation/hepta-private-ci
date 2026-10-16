@@ -377,6 +377,66 @@ mod unix {
         );
         Ok(())
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn paired_json_frame_roundtrips_exact_original_action() -> Result<(), Box<dyn Error>> {
+            let (mut writer, mut reader) = UnixStream::pair()?;
+            bounded_deadlines(&writer)?;
+            bounded_deadlines(&reader)?;
+            let original = action(1);
+            send_json(&mut writer, &original, 1)?;
+            let received = receive_json(&mut reader, 1)?;
+            assert_eq!(received, original);
+            assert_eq!(original.encode()?.len(), 256);
+            assert!(JSON_BODY_BYTES + 4 > 256);
+            Ok(())
+        }
+
+        #[test]
+        fn source_identity_and_sequence_are_required() -> Result<(), Box<dyn Error>> {
+            let (mut writer, mut reader) = UnixStream::pair()?;
+            let mut changed = action(1);
+            changed.capability_digest = Digest32::of_bytes(b"not-a-valid-grant");
+            assert!(send_json(&mut writer, &changed, 1).is_err());
+            assert!(send_json(&mut writer, &action(2), 1).is_err());
+            send_json(&mut writer, &action(1), 1)?;
+            assert!(receive_json(&mut reader, 2).is_err());
+            Ok(())
+        }
+
+        #[test]
+        fn oversized_or_noncanonical_json_frame_is_rejected() -> Result<(), Box<dyn Error>> {
+            let (mut writer, mut reader) = UnixStream::pair()?;
+            writer.write_all(&1025_u32.to_be_bytes())?;
+            assert!(receive_json(&mut reader, 1).is_err());
+
+            let (mut writer, mut reader) = UnixStream::pair()?;
+            writer.write_all(&u32::try_from(JSON_BODY_BYTES)?.to_be_bytes())?;
+            writer.write_all(&vec![b'x'; JSON_BODY_BYTES])?;
+            assert!(receive_json(&mut reader, 1).is_err());
+            Ok(())
+        }
+
+        #[test]
+        fn only_registered_source_wire_modes() {
+            assert_eq!(Mode::parse("binary").ok(), Some(Mode::Binary));
+            assert_eq!(Mode::parse("json-hex").ok(), Some(Mode::JsonHex));
+            assert!(Mode::parse("mcp").is_err());
+            assert!(Mode::parse("auto-authorize").is_err());
+        }
+
+        #[test]
+        fn malformed_lowercase_hex_is_rejected() {
+            assert!(nibble(b'g').is_err());
+            assert!(nibble(b'A').is_err());
+            assert_eq!(nibble(b'f').ok(), Some(15));
+            assert_eq!(nibble(b'0').ok(), Some(0));
+        }
+    }
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
