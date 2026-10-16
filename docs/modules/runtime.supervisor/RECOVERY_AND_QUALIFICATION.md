@@ -50,7 +50,7 @@ The signed path runs inside `with_slot()`, which temporarily removes the agent s
 
 The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+The local recovery CLI supports **abandoning an ambiguous grant after fencing its effects**. This digest-bound local directive is not an independently signed release-outcome decision. The existing production recovery owner separately verifies a `ProductionRecoveryDecision` against the current intent, release transaction, installed release binding, lifecycle generation, authority epoch, signer and validity window. Neither path can move the durable release state merely by declaring success.
 
 ### 3.1 Inspect
 
@@ -87,15 +87,31 @@ The tool publishes `supervisor-signed-intent-recovery.json`. The directive is di
 
 On recovery, supervisord:
 
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
+- first reconciles an exact durable terminal release transaction, so a late local abort cannot overwrite a proven outcome;
+- retains `RecoveryRequired` if process adoption failed: a missing in-memory handle does not prove process absence;
+- fences and requests termination of the adopted Matrix companion and main child before consuming an exact abort directive;
+- persists `Aborted` only after those requests succeed; publication failure returns an error and never acknowledges completion;
+- keeps the process-start and readiness fences for `Aborted`, and leaves the durable pending restart claim and attempt count intact.
 
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
+`Aborted` abandons the grant. It is not an exit receipt, a successful release outcome or permission to resume the process. On restart it remains quarantined rather than being rewritten or retried. The directive remains retained and cannot apply to a different intent. A crash after rewriting `Prepared`/`Queued` to `RecoveryRequired` changes the intent digest, so an old abort directive requires a fresh inspection.
 
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+The existing v1 signed production recovery ceremony may resolve either `RecoveryRequired` or `Aborted`, using its **current** intent digest and an existing matching durable release transaction. It verifies the observed installed release and cannot change release state. If the signed terminal transaction was persisted before a crash but the intent was not, recovery closes that cut. For a locally `Aborted` intent, an ordinary terminal transaction without the signed recovery-decision witness cannot do so. Replaying the signed decision after resolution is rejected. Existing v1 JSON, digest and signature domains are preserved.
+
+### 3.4 Prepared intent without a release transaction
+
+A crash after `Prepared` but before any release transaction is published has no v1 outcome proof. The existing offline `hepta-authority-signer` accepts an explicit `abandon_unknown` request, using the externally supplied key and mandatory `--sign`. It emits a v2 `ProductionRecoveryDecision` for the existing production recovery entrypoint. Its namespace is `hepta:production:recovery:abandon-unknown:v2`; the absence digest describes an observation, not a fabricated transaction or proof that external effects never happened.
+
+The independent signer binds the current intent and grant, agent, installed **source** release and complete material digests, catalog admission frontier, release-state generation, lifecycle generation, authority epoch, signer epoch and validity window. The existing supervisor owner requires both child handles and both process leases to be absent, a `Failed` or `Stopped` lifecycle, no release transaction, the same admitted and non-revoked current source, and an exact valid signature. It rereads those durable fences before publication. A late lease, changed lifecycle/material/frontier, revoked source, stale authority, expired decision or concurrent replay is rejected. This authorization does not choose a different release or start a child.
+
+The owner publishes one v2 intent containing both `Aborted` and an append-only `unknown_effects` disposition. Only a successful durable publication lifts the recovery fence. Its receipt has `promotion=false`; existing authority flags describe authorization scope and do **not** certify a successful effect or rollback. The original effect remains Unknown in public mutation state and survives restart, subsequent grants and release changes. The current installed source is reauthorized for normal lifecycle admission, whose own revocation and process checks still run. A late worker at or below any disposed lifecycle generation is fenced and killed on recovery; a newly admitted later generation can start normally. Restart claims and attempt counts are retained.
+
+Primary and Matrix recovery are attempted independently in the same owner. A primary cleanup failure does not skip discovery of the companion. Adopted children remain owned and fenced through failed kill requests and are retried until exit is observed; a kill request alone does not remove their leases. Rejected identities retain their leases and block replacement or Unknown disposal, without killing an unverified process.
+
+The single intent journal retains at most 32 Unknown dispositions and accepts at most 256 KiB for reading and publication. History cannot be dropped or rewritten by a later grant. Capacity exhaustion fails closed and requires a separately designed archival migration; deleting history is not a supported recovery procedure. An unrelated existing release transaction also prevents this absence-specific operation; use a transaction-bound recovery decision where the transaction actually proves the outcome.
+
+A crash before publication leaves the original recovery fence. A crash after publication but before the in-memory update recovers the retained disposition from the same file. An I/O or fsync error is returned as recovery-required, never acknowledged as success: the file may already be replaced. Before adopting any child, restart republishes each retained Unknown journal through the original atomic writer and requires its durability barrier to succeed. Readable renamed bytes alone cannot lift the fence; a repeated sync failure stops startup before any process adoption. Registry and process owners are revalidated, but this operation does not claim a cross-owner filesystem transaction or proof of absent remote effects.
+
+A daemon can remain reachable for inspection while reporting `signed_intent_recovery_required`. Do not delete an intent, lease or restart claim to make readiness pass. Native tests cover digest tampering, stale and late directives, retained replay, process-adoption ambiguity, paired-child fencing, restart-budget preservation, wrong-key/expired signed decisions, signed resolution and its transaction-to-intent crash cut. Target-host fsync-failure, real process-exit and power-loss receipts remain required by the matrix below.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -104,6 +120,7 @@ The following are required target-host tests. Source/unit tests are not substitu
 | Fault point | Required invariant after restart/recovery |
 | --- | --- |
 | after `Prepared` intent publication | daemon fails closed; request outcome is not reported as a safe rejection |
+| before/after v2 Unknown disposition publication | old intent remains fenced or complete signed disposition and its history survive together; prior effects stay Unknown |
 | after control revision advance | unresolved intent fences replay; revision/state digest cannot imply a clean rejection |
 | before child spawn | lifecycle/release state is reconcilable and no stale live lease is accepted |
 | after spawn, before process-lease publication | orphan cannot be silently treated as the authorized current child |
@@ -158,6 +175,8 @@ Repository-controlled verification for this change includes at least:
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
 - `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `unknown_recovery_owner_tests` for the no-transaction Prepared cut, concurrent/replayed/stale/revoked decisions, durable history bounds, disposition publication cut and late-generation fencing;
+- `unknown_recovery_compat_tests` for frozen v1 digest/signature compatibility and bounded journal I/O, and `tests/unknown_recovery_signer.rs` for the actual external signer process;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.

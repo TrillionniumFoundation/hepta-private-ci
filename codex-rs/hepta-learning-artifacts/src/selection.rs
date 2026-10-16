@@ -263,6 +263,10 @@ impl ArtifactSelectionVerifierV1 {
         current: &VerifiedCurrentRegistryViewV1,
         now: u64,
     ) -> Result<VerifiedArtifactSelectionV1, ArtifactSelectionError> {
+        current
+            .validity()
+            .validate_at(now)
+            .map_err(ArtifactSelectionError::Load)?;
         if current.trust_digest() != self.artifact_owner_trust_digest
             || signed.current_trust_digest != self.artifact_owner_trust_digest
         {
@@ -556,6 +560,9 @@ mod tests {
             registry,
             digest("witness"),
             owner_verifier.trust_digest(),
+            crate::CurrentRegistryValidityV1::new(
+                /*verified_at*/ 20, /*expires_at*/ 1_000, /*signer_revoked_at*/ None,
+            ),
         )
     }
 
