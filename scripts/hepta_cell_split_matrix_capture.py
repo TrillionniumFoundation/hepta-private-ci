@@ -33,6 +33,20 @@ MAX_MANIFEST_BYTES = 128 * 1024
 MAX_HOST_RESULT_BYTES = 256 * 1024
 
 
+def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Refuse ambiguous JSON; independently re-parsed evidence must agree."""
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise InvalidEvidence(f"duplicate JSON field: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_json(value: str) -> None:
+    raise InvalidEvidence(f"non-finite JSON literal: {value}")
+
+
 def read_bounded_json(path: Path, limit: int, label: str) -> Any:
     """Read an external JSON packet without unbounded memory or FIFO waits."""
     flags = (
@@ -54,7 +68,11 @@ def read_bounded_json(path: Path, limit: int, label: str) -> Any:
     if len(raw) > limit:
         raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
     try:
-        return json.loads(raw)
+        return json.loads(
+            raw,
+            object_pairs_hook=_unique_json_fields,
+            parse_constant=_reject_nonfinite_json,
+        )
     except (UnicodeDecodeError, ValueError) as error:
         raise InvalidEvidence(f"{label}: invalid JSON: {error}") from error
 
@@ -164,10 +182,11 @@ def execute_matrix(
         raise InvalidEvidence("timeout must be 1..86400 seconds")
     verify_exact_source(repository, manifest["source_sha"])
     # Exclusive new directory: never mistake stale evidence for a new run.
-    output.mkdir(parents=True, exist_ok=False)
-    (output / "manifest.json").write_text(
-        json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    # An external model command runs inside this directory. Keep raw diagnostic
+    # measurements and logs private even with a permissive process umask.
+    output.mkdir(mode=0o700, parents=True, exist_ok=False)
+    with (output / "manifest.json").open("x", encoding="utf-8") as record:
+        record.write(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
     measurements = []
     for scope in SCOPES:
         for mode in MODES:
@@ -178,11 +197,24 @@ def execute_matrix(
             env["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"] = str(scope)
             env["HEPTA_CELL_SPLIT_EXPECTED_MODE"] = mode
             argv = commands[(scope, mode)]
+            stdout_path = prefix.with_suffix(".stdout.log")
+            stderr_path = prefix.with_suffix(".stderr.log")
+            # A previous workload is untrusted. Never accept a file it planted
+            # for a later case, even if its schema, SHA and counters look valid.
+            # lexists also catches dangling links. Exclusive log opens protect
+            # against a new race between this check and subprocess dispatch.
+            if any(
+                os.path.lexists(path)
+                for path in (result_path, stdout_path, stderr_path)
+            ):
+                raise InvalidEvidence(
+                    f"{scope}/{mode}: pre-existing result or log before workload"
+                )
             # Freeze source identity for *each* workload: a command may modify
             # tracked source after the initial matrix-level preflight.
             verify_exact_source(repository, manifest["source_sha"])
-            with prefix.with_suffix(".stdout.log").open("wb") as stdout:
-                with prefix.with_suffix(".stderr.log").open("wb") as stderr:
+            with stdout_path.open("xb") as stdout:
+                with stderr_path.open("xb") as stderr:
                     try:
                         result = subprocess.run(
                             argv,
@@ -221,12 +253,14 @@ def execute_matrix(
     # Last check before publishing a complete diagnostic packet, including
     # concurrent tracked-file edits made during comparison/serialization.
     verify_exact_source(repository, manifest["source_sha"])
-    (output / "measured-matrix.json").write_text(
-        json.dumps(packet, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
-    (output / "diagnostic-comparison.json").write_text(
-        json.dumps(comparison, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    # Never follow a result symlink planted by one of the 16 workloads.
+    # Complete packets remain diagnostic, not signed activation evidence.
+    with (output / "measured-matrix.json").open("x", encoding="utf-8") as record:
+        record.write(json.dumps(packet, sort_keys=True, indent=2) + "\n")
+    with (output / "diagnostic-comparison.json").open(
+        "x", encoding="utf-8"
+    ) as record:
+        record.write(json.dumps(comparison, sort_keys=True, indent=2) + "\n")
     return comparison
 
 

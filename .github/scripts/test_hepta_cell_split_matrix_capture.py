@@ -141,6 +141,62 @@ class CellSplitMatrixCaptureTests(unittest.TestCase):
             with self.assertRaises(InvalidEvidence):
                 read_bounded_json(root, MAX_HOST_RESULT_BYTES, "host result")
 
+    def test_rejects_ambiguous_json_and_nonfinite_literals(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "measurement.json"
+            for raw, message in (
+                ('{"source_sha":"a","source_sha":"b"}', "duplicate JSON field"),
+                ('{"nested":{"attempted":1,"attempted":2}}', "duplicate JSON field"),
+                ('{"attempted":NaN}', "non-finite JSON literal"),
+                ('{"attempted":Infinity}', "non-finite JSON literal"),
+            ):
+                with self.subTest(raw=raw):
+                    path.write_text(raw, encoding="utf-8")
+                    with self.assertRaisesRegex(InvalidEvidence, message):
+                        read_bounded_json(path, MAX_HOST_RESULT_BYTES, "host result")
+
+    def test_prior_case_cannot_preplant_later_result_or_logs(self):
+        packet = manifest()
+        script = """
+import json
+import os
+from pathlib import Path
+
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+current = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+current.write_text(json.dumps(row), encoding="utf-8")
+next_case = current.parent / os.environ["HEPTA_TEST_PLANTED_FILE"]
+next_case.write_text(json.dumps(row), encoding="utf-8")
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", script]
+        for planted in (
+            "64-logical_split.json",
+            "64-logical_split.stdout.log",
+            "64-logical_split.stderr.log",
+        ):
+            with self.subTest(planted=planted), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "matrix"
+                with (
+                    patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                    patch.dict(
+                        os.environ,
+                        {
+                            "HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet)),
+                            "HEPTA_TEST_PLANTED_FILE": planted,
+                        },
+                    ),
+                    self.assertRaisesRegex(InvalidEvidence, "pre-existing"),
+                ):
+                    execute_matrix(packet, ROOT, output, 30)
+                self.assertTrue((output / "64-no_split.stdout.log").exists())
+                self.assertFalse((output / "measured-matrix.json").exists())
+                self.assertFalse((output / "diagnostic-comparison.json").exists())
+                if planted != "64-logical_split.stdout.log":
+                    self.assertFalse((output / "64-logical_split.stdout.log").exists())
+
     def test_oversized_first_result_aborts_before_other_fifteen_runs(self):
         packet = manifest()
         fixture_script = """
