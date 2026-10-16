@@ -13,13 +13,17 @@ TIED_ALIASES = frozenset({
     'model.embeddings.tok_embeddings.weight',
 })
 SAFE_NAME = re.compile(r'[A-Za-z_][A-Za-z0-9_.]*\Z')
+# Transformers loading metadata can expose ordinary sequences or native set
+# collections. These four exact built-ins are finite, bounded, and iterable;
+# accepting one as an input is NOT evidence that a pretrained weight loaded.
+NAME_COLLECTIONS = (list, tuple, set, frozenset)
 
 class Invalid(ValueError):
     pass
 
 
 def _names(value, label):
-    if type(value) not in (list, tuple) or len(value) > 8192:
+    if type(value) not in NAME_COLLECTIONS or len(value) > 8192:
         raise Invalid(f'invalid {label} collection')
     names = []
     for item in value:
@@ -50,7 +54,11 @@ def require_alias_only_loading_report(info):
     missing = _names(info.get('missing_keys', []), 'missing')
     mismatched = info.get('mismatched_keys', [])
     errors = info.get('error_msgs', [])
-    if (type(mismatched) not in (list, tuple) or type(errors) not in (list, tuple) or
+    # Unexpected/mismatched/error entries are ALWAYS DENIED regardless of
+    # which supported collection holds them. Do not silently coerce None,
+    # strings or dictionaries into an empty successful report.
+    if (type(mismatched) not in NAME_COLLECTIONS or len(mismatched) > 8192 or
+        type(errors) not in NAME_COLLECTIONS or len(errors) > 8192 or
         mismatched or errors or unexpected):
         raise Invalid('unverified or mismatched pretrained parameter')
     if not missing.issubset(TIED_ALIASES):

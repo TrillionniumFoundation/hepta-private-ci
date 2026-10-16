@@ -53,7 +53,8 @@ jobs:
             flags=(); if test "$mode" = optimized; then flags=(-O); fi
             PYTHONPATH="$D" python "${flags[@]}" -m unittest discover -s "$D" \
               -p 'test_p0_mmbert*_v15.py' -v 2>&1 | tee "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
-            grep -F 'Ran 23 tests' "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
+            # Exact current original V15 physical + alias-contract census: 16 + 17 tests.
+            grep -F 'Ran 33 tests' "$RUNNER_TEMP/p0-mmbert-v15-evidence/tests-$mode.log"
           done
       - name: Pin original exact P0 physical runtime
         shell: bash

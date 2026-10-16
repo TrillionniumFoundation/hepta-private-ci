@@ -1,8 +1,11 @@
 """Model-free contract checks; actual pretrained forward is hosted-only."""
 from __future__ import annotations
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
+from unittest.mock import patch
 from types import SimpleNamespace
-from p0_mmbert_original_physical_probe_v15 import Invalid, checked_observation, SCHEMA
+from p0_mmbert_original_physical_probe_v15 import Invalid, checked_observation, SCHEMA, safe_failure_code, main
 
 
 def fake():
@@ -49,6 +52,47 @@ class PhysicalProofContractTests(unittest.TestCase):
     def test_lifted_production_authority_denied(self):
         x=fake();x.complete_weight_receipt['authority']='PRODUCTION'
         with self.assertRaises(Invalid):checked_observation(x)
+
+    def test_known_tied_storage_failure_is_classified(self):
+        self.assertEqual(safe_failure_code(ValueError(
+            'token embedding and pretrained MLM decoder are not tied at 384D')),
+            'tied_table_storage_not_shared')
+
+    def test_loaded_extra_state_names_are_classified(self):
+        self.assertEqual(safe_failure_code(Invalid(
+            'model contains unverified or newly initialized saved weights')),
+            'runtime_state_contains_extra_tensor')
+
+    def test_loaded_tensor_byte_failure_omits_key_name(self):
+        self.assertEqual(safe_failure_code(Invalid(
+            'loaded model parameter is not the pretrained source: model.block.secret')),
+            'serialized_tensor_bytes_mismatch')
+
+    def test_unknown_exception_never_surfaces_secret_path(self):
+        secret='secret/token/permission?x=xyz'
+        out=safe_failure_code(ValueError(secret))
+        self.assertEqual(out,'unclassified_strict_failure')
+        self.assertNotIn(secret,out)
+
+    def test_error_on_non_exception_stays_bounded(self):
+        self.assertEqual(safe_failure_code('arbitrary message'),
+                         'unclassified_strict_failure')
+
+    def test_failure_entrypoint_prints_only_sanitized_code(self):
+        import json
+        stream=StringIO()
+        with patch('sys.argv',['probe','--compact-checkout','/unavailable',
+                               '--output','/no/output.json']), \
+             patch('p0_mmbert_original_physical_probe_v15.run_original',
+                   side_effect=Invalid('model contains unverified or newly initialized saved weights')):
+            with redirect_stdout(stream),self.assertRaises(SystemExit) as ctx:
+                main()
+        self.assertEqual(ctx.exception.code,1)
+        report=json.loads(stream.getvalue())
+        self.assertEqual(report['failure_code'],'runtime_state_contains_extra_tensor')
+        self.assertFalse(report['original_checkpoint_qualified'])
+        self.assertFalse(report['production_accepted'])
+        self.assertNotIn('initialized randomly',stream.getvalue())
 
     def test_no_task_data_or_label_owner_access_in_source(self):
         from pathlib import Path
