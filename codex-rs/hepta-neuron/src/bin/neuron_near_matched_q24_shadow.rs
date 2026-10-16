@@ -809,14 +809,13 @@ fn execute() -> Result<serde_json::Value, String> {
     let width: usize = arg(&opts, "--hidden-width")?
         .parse()
         .map_err(|_| fail("invalid hidden width"))?;
-    let (registered_width, registered_rank, registered_count, expected_file_size) =
-        if byte_kind {
-            let (w, r, n, bytes) = registered_serialized_bytes(arm, cap)?;
-            (w, r, n, Some(bytes))
-        } else {
-            let (w, r, n) = registered_near_match(arm, cap)?;
-            (w, r, n, None)
-        };
+    let (registered_width, registered_rank, registered_count, expected_file_size) = if byte_kind {
+        let (w, r, n, bytes) = registered_serialized_bytes(arm, cap)?;
+        (w, r, n, Some(bytes))
+    } else {
+        let (w, r, n) = registered_near_match(arm, cap)?;
+        (w, r, n, None)
+    };
     if width != registered_width || rank != registered_rank {
         return Err(fail(
             "candidate width/rank differs from registered realized geometry",
