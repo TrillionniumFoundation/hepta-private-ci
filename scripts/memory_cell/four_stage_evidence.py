@@ -45,7 +45,8 @@ ARMS = (
 TASK_KINDS = frozenset({"new_fact", "updated_fact", "composition", "program"})
 COST_FIELDS = (
     "extraction", "index", "train", "source_storage", "artifact_storage",
-    "query_per_use", "maintenance_per_use", "revocation", "recovery",
+    "query_per_use", "maintenance_fixed", "maintenance_per_use",
+    "revocation", "recovery",
 )
 
 
@@ -292,6 +293,23 @@ def prospective_guard(plan, rows):
     require(plan.get("arms") == list(ARMS), "exact paired arm roster required")
     require(plan.get("contains_gold_answers") is False, "gold not allowed in plan")
     require(plan.get("answer_space_oracle") is False, "candidate oracle forbidden")
+    profile = plan.get("frozen_execution")
+    required = {
+        "base_reader_sha256", "reference_reader_sha256",
+        "prompt_template_sha256", "tools_sha256",
+        "input_budget", "output_budget",
+    }
+    require(isinstance(profile, dict) and set(profile) == required,
+            "frozen execution manifest required")
+    for field in ("base_reader_sha256", "reference_reader_sha256",
+                  "prompt_template_sha256", "tools_sha256"):
+        require(isinstance(profile[field], str) and SHA.fullmatch(profile[field]),
+                "frozen execution identity missing")
+    require(profile["base_reader_sha256"] != profile["reference_reader_sha256"],
+            "distinct reference reader required")
+    for field in ("input_budget", "output_budget"):
+        require(type(profile[field]) is int and 0 < profile[field] <= 100_000,
+                "frozen bounded token ceilings required")
     require(isinstance(rows, list) and len(rows) == len(cases) * len(ARMS),
             "all planned real answers retained, including failures")
     task_map = {}
@@ -325,6 +343,11 @@ def prospective_guard(plan, rows):
                       "specialization_sha256"):
             require(isinstance(row.get(field), str) and SHA.fullmatch(row[field]),
                     "unbound inference identity: " + field)
+        for field in ("prompt_template_sha256", "tools_sha256",
+                      "input_budget", "output_budget"):
+            require(row[field] == profile[field], "frozen execution config drift")
+        tier = "reference_reader_sha256" if key[1].startswith("reference:") else "base_reader_sha256"
+        require(row["reader_sha256"] == profile[tier], "frozen reader identity drift")
         require(row["candidate_pool_sha256"] == task_map[key[0]]["candidate_pool_sha256"],
                 "candidate pool changed after freeze")
         for field in ("input_budget", "output_budget", "input_tokens", "output_tokens"):
@@ -375,6 +398,9 @@ def prospective_guard(plan, rows):
         require(group["base:organized"]["evidence_sha256"] ==
                 group["base:knowledge"]["evidence_sha256"],
                 "knowledge gain must hold organized evidence constant")
+        require(group["base:organized"]["evidence_sha256"] ==
+                group["base:learned_policy"]["evidence_sha256"],
+                "read-policy gain must hold organized evidence constant")
         require(group["reference:none"]["reader_sha256"] != original["reader_sha256"],
                 "reference reader must be independently identified")
         for regime in ("none", "retrieved", "sufficient", "lesion"):
@@ -395,6 +421,7 @@ def prospective_guard(plan, rows):
         ("base:learned_policy", "base:organized"),
         ("base:knowledge", "base:organized"),
         ("base:knowledge_only", "base:organized"),
+        ("base:knowledge_only", "base:none"),
     ):
         wins = sum(row_map[(c["id"], arm)]["strict_task_success"] and
                    not row_map[(c["id"], baseline)]["strict_task_success"] for c in cases)

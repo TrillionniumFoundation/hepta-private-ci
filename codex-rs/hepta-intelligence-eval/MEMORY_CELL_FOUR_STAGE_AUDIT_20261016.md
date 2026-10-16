@@ -54,6 +54,9 @@ task/candidate population, model token ceilings and tool authorization;
 only the reference Reader may have different base weights. Organized and
 knowledge-module conditions must receive identical evidence digests.
 Predeclared source/snapshot freeze must occur BEFORE unseen task revelation.
+One frozen execution manifest pins both Readers, prompt template, tools and
+budgets for the ENTIRE source-family cohort. Learned read strategy compares
+against exactly the same organized evidence, not a secretly altered retrieval.
 Policy and knowledge model digests are separately bound for every task;
 knowledge-only and knowledge-plus-evidence must use the identical frozen model.
 Base and reference Readers must receive byte-identical evidence per regime.
@@ -76,10 +79,11 @@ For common currency, equipment, retention horizon and workload, account for:
 
     C_total(N) = C_extraction + C_index + C_train
                + C_source_storage + C_artifact_storage
+               + C_maintenance_fixed
                + N * (C_query + C_maintenance_per_query)
                + C_revocation + C_recovery.
 
-The executable total_cost includes all nine components, and reports a
+The executable total_cost includes all ten components, and reports a
 complete cost only when none are missing. The optional break_even calculation
 is conditional on equal quality/hardware/tools and fully measured costs;
 it does not establish observed monetary, time or energy savings.

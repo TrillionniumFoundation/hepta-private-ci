@@ -32,6 +32,13 @@ def future_fixture():
         "schema": "hepta.memory.four-stage-prospective-plan.v1",
         "arms": list(ARMS), "cases": cases,
         "contains_gold_answers": False, "answer_space_oracle": False,
+        "frozen_execution": {
+            "base_reader_sha256": "b" * 64,
+            "reference_reader_sha256": "f" * 64,
+            "prompt_template_sha256": "d" * 64,
+            "tools_sha256": SHA,
+            "input_budget": 2048, "output_budget": 64,
+        },
     }
     rows = []
     for case in cases:
@@ -108,7 +115,7 @@ class LifetimeCostTests(unittest.TestCase):
     def test_all_components_and_storage_included(self):
         obj = self.full()
         cost = total_cost(obj, 10)
-        self.assertEqual(cost["complete_total"], 27.0)
+        self.assertEqual(cost["complete_total"], 28.0)
         self.assertEqual(cost["unit"], "USD at one fixed retention horizon")
         self.assertFalse(cost["production_cost_qualified"])
 
@@ -157,7 +164,7 @@ class ProspectiveControlsTests(unittest.TestCase):
             row = next(x for x in rows if x["arm"] == "base:learned_policy")
             row[field] = 512 if field == "input_budget" else "9" * 64
             with self.subTest(field=field):
-                with self.assertRaisesRegex(ValueError, "prompt, tools or budget"):
+                with self.assertRaisesRegex(ValueError, "frozen execution config drift"):
                     prospective_guard(plan, rows)
 
     def test_same_evidence_required_for_knowledge_gain(self):
@@ -199,7 +206,7 @@ class ProspectiveControlsTests(unittest.TestCase):
         plan, rows = future_fixture()
         for key, new_value, message in (
             ("candidate_pool_sha256", "9" * 64, "candidate pool changed"),
-            ("reader_sha256", "9" * 64, "reader identity drift"),
+            ("reader_sha256", "9" * 64, "frozen reader identity drift"),
         ):
             broken = copy.deepcopy(rows)
             row = next(x for x in broken if x["arm"] == "base:organized")
@@ -262,6 +269,29 @@ class ProspectiveControlsTests(unittest.TestCase):
         plan, rows = future_fixture()
         report = prospective_guard(plan, rows)
         self.assertIn("base:organized__vs__base:retrieved",
+                      report["paired_descriptive"])
+
+    def test_reader_weights_and_token_limits_frozen_for_entire_cohort(self):
+        plan, rows = future_fixture()
+        plan["frozen_execution"]["base_reader_sha256"] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "frozen reader identity drift"):
+            prospective_guard(plan, rows)
+        plan, rows = future_fixture()
+        plan["frozen_execution"]["output_budget"] = 16
+        with self.assertRaisesRegex(ValueError, "frozen execution config drift"):
+            prospective_guard(plan, rows)
+
+    def test_policy_only_gain_requires_same_organized_evidence(self):
+        plan, rows = future_fixture()
+        row = next(x for x in rows if x["arm"] == "base:learned_policy")
+        row["evidence_sha256"] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "read-policy gain"):
+            prospective_guard(plan, rows)
+
+    def test_knowledge_only_also_compared_with_no_memory(self):
+        plan, rows = future_fixture()
+        report = prospective_guard(plan, rows)
+        self.assertIn("base:knowledge_only__vs__base:none",
                       report["paired_descriptive"])
 
 
