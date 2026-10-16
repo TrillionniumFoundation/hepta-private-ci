@@ -18,6 +18,42 @@ REVISION = '0eb3d056ec1d6333cf4e19b0966dfde342a41a3a'
 SCHEMA = 'hepta.p0.mmbert-strict-physical-forward.v15'
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 
+# Public failure output is deliberately a small allowlisted enum. The original
+# exception string can include model paths, source identifiers or runtime data.
+# Never forward it to logs, JSON, or GitHub annotations.
+_STRICT_ERROR_CODES = {
+    'unknown pretrained model loading-report fields': 'loading_report_schema_changed',
+    'unverified or mismatched pretrained parameter': 'loading_report_unexpected_or_mismatch',
+    'non-tied pretrained MLM parameter initialized randomly': 'non_tied_missing_parameter',
+    'unexpected mmBERT architecture or absent tying policy': 'model_config_mismatch',
+    'checkpoint was not loaded as ModernBertForMaskedLM': 'unsupported_mlm_structure',
+    'token embedding and pretrained MLM decoder are not tied at 384D': 'tied_table_storage_not_shared',
+    'pretrained token embedding bytes differ from pinned checkpoint': 'tied_table_bytes_mismatch',
+    'no pretrained tied-table tensor in source safetensors': 'missing_original_tied_table',
+    'pretrained vocabulary size/width mismatch': 'tied_table_shape_mismatch',
+    'model contains unverified or newly initialized saved weights': 'runtime_state_contains_extra_tensor',
+    'checkpoint contains unmapped original weight tensors': 'source_tensor_unmapped',
+    'non-complete original pretrained tensor proof': 'physical_proof_incomplete',
+    'missing or symlinked pinned checkpoint': 'original_checkpoint_missing',
+    'no pinned safe checkpoint for complete parameter verification': 'original_checkpoint_missing',
+}
+
+
+def safe_failure_code(exc):
+    """Return a code from a fixed public vocabulary; never echo exception text."""
+    if not isinstance(exc, Exception):
+        return 'unclassified_strict_failure'
+    raw = str(exc)
+    if raw in _STRICT_ERROR_CODES:
+        return _STRICT_ERROR_CODES[raw]
+    if raw.startswith('loaded model parameter is not the pretrained source: '):
+        return 'serialized_tensor_bytes_mismatch'
+    if raw.startswith('parameter shape differs from original tensor: '):
+        return 'serialized_tensor_shape_mismatch'
+    if raw.startswith('parameter value differs from original scalar: '):
+        return 'serialized_scalar_mismatch'
+    return 'unclassified_strict_failure'
+
 class Invalid(ValueError):
     pass
 
@@ -103,6 +139,7 @@ def main():
         # No source paths, failed checks, model or token values in public logs.
         print(json.dumps({'schema':SCHEMA,'original_checkpoint_qualified':False,
                           'exception_class':type(exc).__name__,
+                          'failure_code':safe_failure_code(exc),
                           'production_accepted':False,'authority':'DENY_ALL'},sort_keys=True))
         raise SystemExit(1) from None
     print(json.dumps({'schema':SCHEMA,'original_checkpoint_qualified':True,
