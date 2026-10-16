@@ -9,7 +9,7 @@ import unittest
 
 from real_public_iid_q24_native_score import (
     Refused, bin_metrics, frozen_single_case_trace, independent_head_margin,
-    nearest_rank_us,
+    nearest_rank_us, run,
 )
 
 
@@ -35,6 +35,13 @@ def row():
 
 
 class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
+    def test_expensive_scorer_cannot_shadow_module_path_constructor(self):
+        # This catches the actual source bug where run() referenced Path
+        # before a function-local "from pathlib import Path" statement.
+        # Source-only gate runs without Rust, pretrained weights, or labels.
+        self.assertNotIn("Path", run.__code__.co_varnames)
+        self.assertIn("models_root", run.__code__.co_names)
+
     def test_full_heldout_census_exact_delivery(self):
         labels,outputs=good()
         result=bin_metrics(labels,outputs)
