@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 from near_matched_capacity_design import choose
+from near_matched_byte_budget import BYTE_CAPS, choose as choose_serialized_bytes
 from matched_train import sha_file, unique_json, require
 
 Q = 1 << 24
@@ -38,11 +39,26 @@ def physically_load(root: Path, row: dict) -> dict:
     from safetensors.torch import load
     import torch
     cap, arm, h, rank = (row['cap'], row['arm'], row['hidden_width'], row['rank'])
-    require(type(cap) is int and cap in CAPS and arm in ARMS, 'invalid physical candidate')
-    wanted = choose(32, arm, cap, max_rank=4)
-    require(wanted is not None and h == wanted['private_temporal_width']
-            and rank == wanted['min_gru_rank']
-            and row['complete_realized_parameters'] == wanted['complete_proposed_private_parameters'],
+    budget_kind = row.get('budget_kind', 'PRIVATE_PARAMETER_COUNT')
+    require(type(cap) is int and arm in ARMS, 'invalid physical candidate')
+    if budget_kind == 'SERIALIZED_SAFETENSORS_BYTES':
+        require(cap in BYTE_CAPS and row.get('physical_byte_ceiling') == cap,
+                'invalid physically serialized size tier')
+        wanted = choose_serialized_bytes(arm, cap)
+        required_width, required_rank = wanted['hidden_width'], wanted['rank']
+        expected_count = wanted['private_parameter_count']
+        shapes = {name: item['shape']
+                  for name, item in wanted['tensor_shapes_and_dtypes'].items()}
+    else:
+        require(budget_kind == 'PRIVATE_PARAMETER_COUNT' and cap in CAPS,
+                'unknown private-capacity study kind')
+        wanted = choose(32, arm, cap, max_rank=4)
+        require(wanted is not None, 'missing originally registered tensor design')
+        required_width, required_rank = wanted['private_temporal_width'], wanted['min_gru_rank']
+        expected_count = wanted['complete_proposed_private_parameters']
+        shapes = wanted['unmaterialized_tensor_shapes']
+    require(h == required_width and rank == required_rank
+            and row['complete_realized_parameters'] == expected_count,
             'physical tensor plan mismatch')
     require(row['weight_file'] == f'{cap}/{arm}.safetensors', 'foreign physical model path')
     path = root / row['weight_file']
@@ -51,8 +67,15 @@ def physically_load(root: Path, row: dict) -> dict:
     data = path.read_bytes()
     require(hashlib.sha256(data).hexdigest() == row['weight_sha256'],
             'physical bytes changed between read and hash')
+    require(type(row.get('physical_bytes')) is int
+            and len(data) == row['physical_bytes'],
+            'physical byte count differs from physical training receipt')
+    if budget_kind == 'SERIALIZED_SAFETENSORS_BYTES':
+        require(len(data) == wanted['physical_safetensors_bytes']
+                and len(data) <= cap
+                and (cap - len(data))*1_000_000 <= 20_000*cap,
+                'serialized native model did not fit preregistered byte cap')
     loaded = load(data)
-    shapes = wanted['unmaterialized_tensor_shapes']
     names = {
         'private_input_adapter.weight': 'adapter.weight',
         'private_input_adapter.bias': 'adapter.bias',
@@ -114,9 +137,20 @@ def head_logit(bank: dict, activation: list[int]) -> int:
     return bias[0] + sum(product(w, x) for w, x in zip(weights, activation))
 
 def verify(receipt: dict, trace: dict, row: dict, bank: dict, trace_sha: str) -> dict:
+    budget_kind = row.get('budget_kind', 'PRIVATE_PARAMETER_COUNT')
+    correct_cap_binding = (
+        receipt.get('budget_kind') == 'SERIALIZED_SAFETENSORS_BYTES'
+        and receipt.get('private_parameter_cap') is None
+        and receipt.get('physical_safetensors_byte_ceiling') == row['cap']
+    ) if budget_kind == 'SERIALIZED_SAFETENSORS_BYTES' else (
+        receipt.get('budget_kind') == 'PRIVATE_PARAMETER_COUNT'
+        and receipt.get('private_parameter_cap') == row['cap']
+        and receipt.get('physical_safetensors_byte_ceiling') is None
+    )
     require(type(receipt) is dict and receipt.get('schema') == SCHEMA
             and receipt.get('arm') == row['arm']
-            and receipt.get('private_parameter_cap') == row['cap']
+            and correct_cap_binding
+            and receipt.get('physical_model_file_bytes') == row['physical_bytes']
             and receipt.get('private_parameter_count') == row['complete_realized_parameters']
             and receipt.get('selected_private_weight_sha256') == row['weight_sha256']
             and receipt.get('trace_sha256') == trace_sha
@@ -168,12 +202,24 @@ def run(binary: Path, binary_sha: str, root: Path, trace_path: Path, trace_sha: 
     manifest_bytes = (root / 'training-receipt.json').read_bytes()
     require(0 < len(manifest_bytes) <= 1_000_000, 'invalid training producer report')
     trained = unique_json(manifest_bytes)
-    require(trained.get('schema') == 'hepta.neuron.near-matched-physical-train.v1'
+    byte_profile = trained.get('schema') == 'hepta.neuron.byte-matched-physical-train.v1'
+    require(trained.get('schema') in (
+                'hepta.neuron.byte-matched-physical-train.v1',
+                'hepta.neuron.near-matched-physical-train.v1')
             and trained.get('source_class') == 'SYNTHETIC_FIXTURE_ONLY'
             and trained.get('production_qualification') is False
             and trained.get('ndu_eligible') is False
             and trained.get('native_Q24_adapter_head_executed') is False,
             'trained-source identity/authority drift')
+    if byte_profile:
+        require(trained.get('physical_byte_budget_profile') is True
+                and trained.get('predeclared_serialized_byte_caps') == list(BYTE_CAPS)
+                and trained.get('same_resident_memory_or_training_flops_verified') is False,
+                'unbound or overclaimed byte-matched producer profile')
+    else:
+        require(trained.get('physical_byte_budget_profile') is None,
+                'physical byte profile cannot masquerade as old parameter experiment')
+    caps = BYTE_CAPS if byte_profile else CAPS
     records = trained.get('cells')
     require(type(records) is list and len(records) == 8,
             'all eight real trained physical weights required')
@@ -190,6 +236,8 @@ def run(binary: Path, binary_sha: str, root: Path, trace_path: Path, trace_sha: 
             '--trace-sha256', trace_sha, '--cap', str(cap),
             '--hidden-width', str(row['hidden_width']),
         ]
+        if byte_profile:
+            command += ['--budget-kind', 'SERIALIZED_SAFETENSORS_BYTES']
         if row['rank'] is not None:
             command += ['--rank', str(row['rank'])]
         results = []
@@ -202,10 +250,14 @@ def run(binary: Path, binary_sha: str, root: Path, trace_path: Path, trace_sha: 
         require(results[0] == results[1], 'independent Rust native OS processes diverged')
         sha_file(root / row['weight_file'], row['weight_sha256'])
         reports.append(verify(results[0], trace, row, weights, trace_sha))
-    require(done == {(cap, arm) for cap in CAPS for arm in ARMS},
+    require(done == {(cap, arm) for cap in caps for arm in ARMS},
             'incomplete near-matched true physical training grid')
-    return {'schema': 'hepta.neuron.near-matched-physical-native-oracle.v1',
+    return {'schema': ('hepta.neuron.physical-byte-native-oracle.v1' if byte_profile
+                       else 'hepta.neuron.near-matched-physical-native-oracle.v1'),
             'authority': 'DENY_ALL', 'decision': 'NO_MODEL_PROMOTION',
+            'study_kind': ('SERIALIZED_SAFETENSORS_BYTES' if byte_profile
+                           else 'PRIVATE_PARAMETER_COUNT'),
+            'equal_runtime_residency_or_compute_verified': False,
             'actual_native_os_processes': 16, 'physically_loaded_models': 8,
             'independent_integer_adapter_head_parity': True,
             'independent_temporal_model_parity': False,
