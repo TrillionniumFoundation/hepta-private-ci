@@ -14,6 +14,7 @@ use std::fmt;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -366,6 +367,9 @@ pub struct ArtifactCasOwnerV1 {
     cas_latency: Arc<PhaseLatencyHistogramV1>,
     signature_latency: Arc<PhaseLatencyHistogramV1>,
     metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    // One original Evidence binding for all clones of the same owner. A
+    // replacement cannot erase previously observed CAS/signature history.
+    metrics_binding_claimed: Arc<AtomicBool>,
     failed_metric_records: Arc<AtomicU64>,
 }
 
@@ -386,6 +390,7 @@ impl ArtifactCasOwnerV1 {
             cas_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             metrics: None,
+            metrics_binding_claimed: Arc::new(AtomicBool::new(false)),
             failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
     }
@@ -399,7 +404,22 @@ impl ArtifactCasOwnerV1 {
     }
 
     /// Production callers install the Evidence-owned sink before CAS use.
+    /// Never back-certify an unmetered CAS/signature or replace an existing
+    /// journal with another sink. Clones share this one-time binding claim
+    /// and the sticky failure latch, but never gain execution authority.
     pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        if self.metrics.is_some()
+            || self.failed_metric_records.load(Ordering::Acquire) != 0
+            || self.cas_latency.snapshot().observations != 0
+            || self.signature_latency.snapshot().observations != 0
+            || self
+                .metrics_binding_claimed
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+        {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            return self;
+        }
         self.metrics = Some(sink);
         self
     }
@@ -428,6 +448,12 @@ impl ArtifactCasOwnerV1 {
         phase: PhaseMetricKindV1,
         invoke: impl FnOnce() -> Result<T, E>,
     ) -> Result<T, E> {
+        // A clone without the original sink may still perform a research
+        // operation, but it must permanently revoke production telemetry
+        // readiness BEFORE the CAS/signature closure can have an effect.
+        if self.metrics.is_none() {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+        }
         let started = Instant::now();
         let result = invoke();
         let latency = started.elapsed();
