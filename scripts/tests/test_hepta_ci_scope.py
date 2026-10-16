@@ -155,6 +155,41 @@ class ScopeTests(unittest.TestCase):
             "read-only ambiguous-recovery gate precedes subsequent native owner effects",
         )
 
+    def test_original_neuron_strict_effect_intent_clippy_is_early_native(self):
+        changed = "codex-rs/hepta-neuron/src/effect_intent_tests.rs"
+        selected = select([changed])
+        self.assertTrue(selected["native"])
+        self.assertTrue(selected["learning"])
+
+        root = Path(__file__).resolve().parents[2]
+        workflow = (
+            root / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        begin = "      - name: Early Neuron effect-intent strict Clippy\n"
+        end = "      - name: Inference owner regressions and streaming digest\n"
+        self.assertEqual(workflow.count(begin), 1)
+        self.assertEqual(workflow.count(end), 1)
+        gate = workflow.split(begin, 1)[1].split(end, 1)[0]
+        for required in (
+            "steps.scope.outputs.learning == 'true'",
+            "neuron-strict-test-fixtures-clippy.json",
+            "--minimum-tests 0",
+            "cargo clippy --locked",
+            "-p codex-hepta-neuron --all-targets -- -D clippy::expect-used",
+        ):
+            self.assertIn(required, gate)
+
+        fixtures = (root / changed).read_text(encoding="utf-8")
+        self.assertIn(
+            "type TestResult = Result<(), Box<dyn std::error::Error>>;",
+            fixtures,
+        )
+        self.assertIn(
+            "fn reopen(path: &std::path::Path) -> std::io::Result<File>",
+            fixtures,
+        )
+        self.assertNotIn(".expect(", fixtures)
+
     def test_original_operator_config_uid_gate_has_real_product_and_native_receipts(
         self,
     ):
