@@ -22,6 +22,12 @@ Local original-source code is exercised by \`test_granite97_feature_bridge_v2.py
 
 A new read-only GitHub Actions workflow executes the same original, SHA-checked V9 producer and independently implemented reviewer in **separate Python processes**, using the exact immutable public checkpoint. Only after a matching second actual numerical replay does it invoke the new bridge CLI, emitting a sanitized JSON with source/model/input/feature/review digests and observed source-side costs. The workflow is **not complete until the original physical steps actually succeed on its exact new SHA**. A queued, cancelled, skipped or failing job never constitutes physical evidence.
 
+### Actual dual-Cell numeric consumer
+
+`granite97_two_cell_shadow_v2.py` is the next consumer and runs **two distinct original V1 CellHead numeric evaluations** on the complete source-bound Q24 tensor only after the V2 export/reviewer reconciliation succeeds. Each uses a different fixed 384D weight tensor (axis 0 versus axis 1). A separate, exact rational Q24 mean recomputation confirms the scores. The consumer reports observed local Head CPU ns and exactly two Cell Head forwards, while declaring zero additional Encoder forwards. This is a fixed **untrained** Head numerical smoke, not a learned semantic task, low-rank Adapter trained outcome, real 421M cost contrast or verified capability.
+
+The source-only test suite contains three more methods for this consumer (passing fixed score, missing independent reviewer and changed numeric feature refusal). Under the two standalone V2 suites, the local result is **10/10 tests** under ordinary Python and **10/10 under `python -O`**, with synthetic export/review fixtures. The full hosted real-pretrained pipeline's result must be checked separately.
+
 The physical Job's separate producer and reviewer processes run on the same hosted runner; they are independent software processes, *not* physically isolated owners or hardware attestations. The model is loaded by those original processes, **not** by the new bridge; the bridge truthfully declares \`bridge_observed_forward_count=0\`. Individual costs are self-reported from the actual producer/reviewer programs and not a full lifecycle, GPU/energy or target-host benchmark. The constructed input is not new semantic efficacy evidence.
 
 ## Open qualification blockers
