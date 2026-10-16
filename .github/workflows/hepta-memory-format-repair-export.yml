@@ -1,0 +1,61 @@
+name: MemoryCell format repair export
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-format-repair-export.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-format-export-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+jobs:
+  immutable-format-diagnostic:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Run repository's own locked formatter and export exact source
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.11.3
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          git diff --check
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+          changed=subprocess.check_output(
+              ['git','diff','--name-only','--','scripts/memory_cell'],
+              text=True,
+          ).splitlines()
+          for path in changed:
+              if not path.endswith('.py'):
+                  continue
+              source=Path(path)
+              if not source.is_file() or source.is_symlink():
+                  raise ValueError('unsafe formatted path')
+              print('MEMORY_FORMAT_FILE_JSON='+
+                    json.dumps({'path':path,'content':source.read_text(encoding='utf-8')},
+                               ensure_ascii=True, separators=(',',':')),flush=True)
+          print(f'MEMORY_FORMAT_COUNT={len(changed)}',flush=True)
+          PY
+      - name: Retain only patch, never push from a pull-request job
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/memory-format-export"
+          git diff -- scripts/memory_cell > "$RUNNER_TEMP/memory-format-export/format.patch" || true
+          git rev-parse HEAD > "$RUNNER_TEMP/memory-format-export/exact-head.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-formatter-exact-source
+          path: ${{ runner.temp }}/memory-format-export
+          if-no-files-found: error
