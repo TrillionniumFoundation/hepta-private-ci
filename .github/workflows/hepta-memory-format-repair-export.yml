@@ -5,6 +5,8 @@ on:
       - ".github/workflows/hepta-memory-format-repair-export.yml"
       - "scripts/memory_cell/reconstruct_prompt_representation_raw.py"
       - "scripts/memory_cell/test_historical_reader_format_source.py"
+      - "scripts/memory_cell/ten_project_source_closure.py"
+      - "scripts/memory_cell/test_ten_project_source_closure.py"
 permissions:
   contents: read
 concurrency:
