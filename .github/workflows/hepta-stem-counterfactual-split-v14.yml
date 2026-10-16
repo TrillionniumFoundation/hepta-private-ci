@@ -1,0 +1,86 @@
+name: hepta-stem-counterfactual-split-v14
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
+      - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
+      - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event_name }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-and-original-archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Verify exact checkout and install CPU numerical runtime
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==2.3.5 safetensors==0.7.0
+      - name: Mechanism-only tests without original publisher data
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest -v test_stem_counterfactual_split_v14.Mechanism
+          python -O -m unittest -v test_stem_counterfactual_split_v14.Mechanism
+          python -m py_compile stem_counterfactual_split_v14.py stem_counterfactual_split_v14_review.py test_stem_counterfactual_split_v14.py
+      - name: Retrieve only the immutable original Actions archive
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11890616195/zip" > "$RUNNER_TEMP/v14-original.zip"
+          echo "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  $RUNNER_TEMP/v14-original.zip" | sha256sum --check
+      - name: Original-feature training and separate NumPy original-label replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V14_ORIGINAL_ZIP="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_stem_counterfactual_split_v14
+          python -O -m unittest -v test_stem_counterfactual_split_v14
+          python stem_counterfactual_split_v14.py prepare --archive "$HEPTA_V14_ORIGINAL_ZIP" --out "$RUNNER_TEMP/v14-input" --labels-out "$RUNNER_TEMP/v14-labels.json"
+          python stem_counterfactual_split_v14.py train --inputs "$RUNNER_TEMP/v14-input" --out "$RUNNER_TEMP/v14-candidates"
+          python stem_counterfactual_split_v14_review.py --archive "$HEPTA_V14_ORIGINAL_ZIP" --inputs "$RUNNER_TEMP/v14-input" --candidates "$RUNNER_TEMP/v14-candidates" --output "$RUNNER_TEMP/v14-sanitized-review.json"
+      - name: Upload only aggregate numeric review, never source rows or tensors
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v14-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v14-sanitized-review.json
+          if-no-files-found: error
+      - name: Require clean tracked source
+        run: git diff --exit-code && git diff --cached --exit-code
