@@ -16,6 +16,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: hdcf-shadow-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   source-head:
     runs-on: ubuntu-latest
@@ -24,14 +28,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Source-bound Python standard-library gates
+      - name: Source-bound Python research audit
         working-directory: qualification/hdcf-research
         run: |
           set -euo pipefail
-          python3 -m py_compile hdcf_gates.py test_hdcf_gates.py
-          python3 -m unittest -v test_hdcf_gates
-          python3 -O -m unittest -v test_hdcf_gates
-      - name: No live authorization claim
+          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli
+      - name: Recount local synthetic original learning controls
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from test_physical_bank import original
+          from physical_bank import train, score
+          b, held = original()
+          trial = train(b)
+          blind = score(trial, held)
+          assert trial['production_authorized'] is False
+          assert trial['encoder_forward_count'] == 0
+          assert trial['pretrained_model_provenance_verified'] is False
+          assert blind['future_window_claim'] is False
+          print({'source': 'synthetic_fixture', 'trial': trial['trial_identity'],
+                 'correct_n': {k: (v['correct'], v['n']) for k, v in blind['results'].items()},
+                 'production_authorized': False})
+          PY
+      - name: Negative-authorization documentation check
         run: |
           grep -q 'NO CODE EXECUTION' qualification/hdcf-research/README.md
-          grep -q 'production_authorized.*False' qualification/hdcf-research/hdcf_gates.py
+          grep -q 'production_authorized.*False' qualification/hdcf-research/physical_bank.py

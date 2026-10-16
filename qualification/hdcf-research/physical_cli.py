@@ -9,7 +9,6 @@ import argparse
 import json
 import os
 import stat
-from pathlib import Path
 from physical_bank import MAX_INPUT_BYTES, Denied, _dump, score, train
 
 

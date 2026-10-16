@@ -1,13 +1,11 @@
 """Original disk-byte CLI tests: no TEST target access in training process."""
-import json
-import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
 
-from physical_bank import Denied, score
+from physical_bank import Denied
 from physical_cli import read_document, write_once
 from test_physical_bank import original
 
