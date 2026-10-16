@@ -20,7 +20,6 @@ from real_encoder_q24_snapshot_gate import read, unique_json
 from real_public_iid_q24_inputs import (
     read_original_public_inputs, verify_local_original_source,
 )
-from real_public_iid_q24_native_score import bin_metrics, canonical
 
 SCHEMA = "hepta.neuron.independent-public-iid-q24-heldout-recheck.v1"
 ARMS = ("v2", "v3", "ssm", "min_gru")
@@ -58,6 +57,78 @@ def sha(raw: bytes) -> str:
 
 def hex_digest(value: object) -> bool:
     return type(value) is str and len(value) == 64 and all(c in SHA_HEX for c in value)
+
+
+def independent_record_bytes(value: dict) -> bytes:
+    """Versioned canonical JSON defined by the reviewer, not the scorer."""
+    need(type(value) is dict, "independent public record must be an object")
+    return (json.dumps(value, sort_keys=True, separators=(",", ":"),
+                       allow_nan=False) + "\n").encode("utf-8")
+
+
+def independent_binary_metrics(truth: list[int], outputs: list[dict]) -> dict:
+    """Independent 8-positive/24-negative delivered confusion evaluation.
+
+    Deliberately does not import the trainer/scorer's bin_metrics. An error
+    in the original score calculation must be detectable here.
+    """
+    need(type(truth) is list and type(outputs) is list
+         and len(truth) == len(outputs) == 32
+         and all(type(y) is int and y in (0, 1) for y in truth)
+         and sum(truth) == 8, "independent original heldout denominator is invalid")
+    tp = tn = fp = fn = pos_abstain = neg_abstain = 0
+    for gold, prediction in zip(truth, outputs, strict=True):
+        need(type(prediction) is dict
+             and type(prediction.get("logit_q24")) is int
+             and type(prediction.get("status")) is str,
+             "independent public Q24 prediction is invalid")
+        sign = prediction["logit_q24"]
+        decision = prediction["status"]
+        if decision == "QUANTIZATION_AMBIGUOUS_ABSTAIN":
+            if gold:
+                pos_abstain += 1
+            else:
+                neg_abstain += 1
+        elif decision == "ACCEPT_POSITIVE_RESEARCH_ONLY":
+            need(sign > 0, "accepted positive native Head has invalid sign")
+            if gold:
+                tp += 1
+            else:
+                fp += 1
+        elif decision == "ACCEPT_NEGATIVE_RESEARCH_ONLY":
+            need(sign < 0, "accepted negative native Head has invalid sign")
+            if gold:
+                fn += 1
+            else:
+                tn += 1
+        else:
+            raise Rejected("unregistered native public Q24 Head decision")
+    need(tp + fn + pos_abstain == 8
+         and tn + fp + neg_abstain == 24,
+         "independent original public class totals were not conserved")
+    correct = tp + tn
+    delivered = tp + tn + fp + fn
+    abstentions = pos_abstain + neg_abstain
+    need(delivered + abstentions == 32,
+         "independent public Q24 heldout task opportunities dropped")
+    return {
+        "original_heldout_opportunities": 32,
+        "actual_accepted_decisions": delivered,
+        "abstentions": abstentions,
+        "correct_nonabstained": correct,
+        "delivered_accuracy_with_abstain_counted_wrong": correct / 32,
+        "coverage": delivered / 32,
+        "positive_recall_8": tp / 8,
+        "negative_specificity_24": tn / 24,
+        "balanced_accuracy_with_abstain_counted_wrong":
+            (tp / 8 + tn / 24) / 2,
+        "true_positives": tp,
+        "true_negatives": tn,
+        "false_positives": fp,
+        "false_negatives": fn,
+        "positive_abstentions": pos_abstain,
+        "negative_abstentions": neg_abstain,
+    }
 
 
 def check_outcome_row(event: dict, *, source: dict, width: int) -> dict:
@@ -244,7 +315,7 @@ def recheck_report(report: dict, original_inputs: dict,
              and summary.get("physical_model_sha256") ==
                  record["physical_model_sha256"]
              and summary.get("heldout_unlabeled_prediction_sha256") ==
-                 sha(canonical(record))
+                 sha(independent_record_bytes(record))
              and summary.get("independent_native_os_processes") == 64
              and summary.get("independently_checked_original_q24_input_events") == 32,
              "native summary is not bound to original sealed prediction cases")
@@ -255,7 +326,7 @@ def recheck_report(report: dict, original_inputs: dict,
             check_outcome_row(e, source=p, width=width)
             for p, e in zip(original_inputs["heldout"], cases, strict=True)
         ]
-        recomputed_binary = bin_metrics(
+        recomputed_binary = independent_binary_metrics(
             [int(y == task) for y in truth], predicted
         )
         for name, value in recomputed_binary.items():
