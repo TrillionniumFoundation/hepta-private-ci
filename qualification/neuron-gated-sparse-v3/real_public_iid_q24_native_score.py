@@ -71,6 +71,10 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
     abstain = 0
     positive_hit = 0
     negative_hit = 0
+    false_positive = 0
+    false_negative = 0
+    positive_abstentions = 0
+    negative_abstentions = 0
     for label, row in zip(truth, raw_outputs):
         need(type(row) is dict and type(row.get("logit_q24")) is int and
              type(row.get("status")) is str,
@@ -79,6 +83,10 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
         status = row["status"]
         if status == "QUANTIZATION_AMBIGUOUS_ABSTAIN":
             abstain += 1
+            if label:
+                positive_abstentions += 1
+            else:
+                negative_abstentions += 1
             continue
         need((result > 0 and status == "ACCEPT_POSITIVE_RESEARCH_ONLY")
              or (result < 0 and status == "ACCEPT_NEGATIVE_RESEARCH_ONLY"),
@@ -91,7 +99,14 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
                 positive_hit += 1
             else:
                 negative_hit += 1
-    need(answers + abstain == 32, "dropped real heldout task opportunities")
+        elif predicted:
+            false_positive += 1
+        else:
+            false_negative += 1
+    need(answers + abstain == 32
+         and positive_hit + false_negative + positive_abstentions == 8
+         and negative_hit + false_positive + negative_abstentions == 24,
+         "dropped or miscounted public heldout class opportunities")
     return {
         "original_heldout_opportunities": 32,
         "actual_accepted_decisions": answers,
@@ -101,6 +116,14 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
         "coverage": answers / 32,
         "positive_recall_8": positive_hit / 8,
         "negative_specificity_24": negative_hit / 24,
+        "balanced_accuracy_with_abstain_counted_wrong":
+            (positive_hit / 8 + negative_hit / 24) / 2,
+        "true_positives": positive_hit,
+        "true_negatives": negative_hit,
+        "false_positives": false_positive,
+        "false_negatives": false_negative,
+        "positive_abstentions": positive_abstentions,
+        "negative_abstentions": negative_abstentions,
     }
 
 
@@ -531,6 +554,7 @@ def run(args) -> dict:
             "true_positive_cases": 8,
             "correct_cases": 24,
             "delivered_accuracy": 0.75,
+            "balanced_accuracy": 0.5,
             "positive_recall": 0.0,
             "not_original_deployed_v1_no_change": True,
             "not_a_temporal_learning_or_ndu_baseline": True,
