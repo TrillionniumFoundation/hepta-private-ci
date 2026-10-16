@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
-from typing import Callable, Sequence
+from typing import Sequence
 
 MODALITIES = frozenset({"text", "image", "audio", "video"})
 MAX_SLOTS = 256
@@ -23,7 +23,7 @@ def _digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 def _require_sha(s: str) -> None:
-    if len(s) != 64 or any(c not in "0123456789abcdef" for c in s):
+    if not isinstance(s, str) or len(s) != 64 or any(c not in "0123456789abcdef" for c in s):
         raise AdmissionError("noncanonical sha256")
 
 @dataclass(frozen=True)
@@ -54,17 +54,21 @@ class FeatureEnvelope:
                     "tokenizer_sha256", "preprocessor_sha256", "quantization_sha256",
                     "projection_sha256"):
             _require_sha(getattr(self, key))
-        if (not self.principal.strip() or not self.purpose.strip()
-                or self.generation < 1 or self.epoch < 0):
+        if (not isinstance(self.principal, str) or not self.principal.strip()
+                or not isinstance(self.purpose, str) or not self.purpose.strip()
+                or type(self.generation) is not int or self.generation < 1
+                or type(self.epoch) is not int or self.epoch < 0):
             raise AdmissionError("invalid identity or lifecycle")
         if self.width != WIDTH or not 1 <= self.slot_count <= MAX_SLOTS:
             raise AdmissionError("shape budget")
         if self.timestamps and (len(self.timestamps) != self.slot_count
-                or any(t < 0 for t in self.timestamps)
+                or any(type(t) is not int or t < 0 for t in self.timestamps)
                 or tuple(sorted(self.timestamps)) != self.timestamps):
             raise AdmissionError("invalid timestamps")
         if self.regions and (len(self.regions) != self.slot_count or
-                any(x < 0 or y < 0 or w <= 0 or h <= 0 for x,y,w,h in self.regions)):
+                any(len(box) != 4 or any(type(v) is not int for v in box)
+                    or box[0] < 0 or box[1] < 0 or box[2] <= 0 or box[3] <= 0
+                    for box in self.regions)):
             raise AdmissionError("invalid regions")
         if self.modality in {"audio", "video"} and not self.timestamps:
             raise AdmissionError("temporal source requires timestamps")
@@ -90,7 +94,7 @@ def admit_features(env: FeatureEnvelope, raw_feature_bytes: bytes) -> str:
 class ReuseLedger:
     def __init__(self):
         self._seen: set[str] = set()
-        self.physical_forward_claims = 0
+        self.unique_feature_admissions = 0
         self.reused_requests = 0
 
     def access(self, env: FeatureEnvelope, raw_feature_bytes: bytes) -> bool:
@@ -100,7 +104,7 @@ class ReuseLedger:
             return True
         self._seen.add(key)
         # Logical unique-feature count only; never call this a physical forward.
-        self.physical_forward_claims += 1
+        self.unique_feature_admissions += 1
         return False
 
 @dataclass(frozen=True)
@@ -125,11 +129,14 @@ class CellHead:
                 if not math.isfinite(val) or abs(val) > 8:
                     raise AdmissionError("invalid feature")
                 pooled[i] += val / len(slots)
-        return sum(a*b for a,b in zip(pooled, self.weights)) + self.bias
+        value = sum(a*b for a,b in zip(pooled, self.weights)) + self.bias
+        if not math.isfinite(value):
+            raise AdmissionError("nonfinite Cell score")
+        return value
 
 def select_cells(cells: Sequence[CellHead], slots: Sequence[Sequence[float]],
                  top_k: int = 8) -> tuple[tuple[str, float], ...]:
-    if not 1 <= top_k <= MAX_ACTIVE or len(cells) > 4096:
+    if not cells or not 1 <= top_k <= MAX_ACTIVE or len(cells) > 4096:
         raise AdmissionError("selection budget")
     if len({cell.identity for cell in cells}) != len(cells):
         raise AdmissionError("duplicate Cell")
