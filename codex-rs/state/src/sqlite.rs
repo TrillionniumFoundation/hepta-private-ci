@@ -127,6 +127,17 @@ impl SqliteConfig {
         Self::from_sqlite_home(sqlite_home)
     }
 
+    /// Create one ephemeral SQLite connection for isolated migration fixtures.
+    /// Historical schema tests require the same in-memory database across
+    /// statements. Never use this pool for authoritative durable owner state.
+    #[doc(hidden)]
+    pub async fn open_in_memory_pool_for_testing() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+    }
+
     pub fn home(&self) -> &Path {
         self.sqlite_home.as_path()
     }
