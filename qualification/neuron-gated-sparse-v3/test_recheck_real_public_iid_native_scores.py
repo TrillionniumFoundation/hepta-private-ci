@@ -10,7 +10,7 @@ import hashlib
 import unittest
 
 from recheck_real_public_iid_native_scores import (
-    Rejected, recheck_report, sha
+    Rejected, recheck_report, sha, REGISTERED_BYTE_GEOMETRY
 )
 from real_public_iid_q24_native_score import bin_metrics, canonical
 
@@ -39,7 +39,7 @@ def fixture():
         for cap in BUDGETS:
             for arm in ARMS:
                 model_sha=digest(f"mock never-trained {task}/{cap}/{arm}")
-                width=54
+                width, parameters, file_bytes = REGISTERED_BYTE_GEOMETRY[(cap, arm)]
                 bound=9*width+1
                 cases=[{
                     "case_id":case["id"],
@@ -58,6 +58,8 @@ def fixture():
                 metrics.update({
                     "task_id":task,"arm":arm,"serialized_byte_budget":cap,
                     "physical_model_sha256":model_sha,
+                    "realized_private_parameters":parameters,
+                    "physical_safetensors_file_bytes":file_bytes,
                     "heldout_unlabeled_prediction_sha256":sha(canonical(rec)),
                     "independent_native_os_processes":64,
                     "independently_checked_original_q24_input_events":32,
@@ -179,6 +181,26 @@ class IndependentPublicNativeAuditProtocol(unittest.TestCase):
         r["observations"][0]["full_encoder_worker_runtime_or_target_host_slo_verified"]=True
         with self.assertRaisesRegex(Rejected,"production host"):
             self.check((r,p,o))
+
+    def test_independent_native_physical_geometry_cannot_be_relabelled(self):
+        # Even a recomputed prediction digest does not authorize a new
+        # width, parameter count or file byte total for an existing arm.
+        for mutation in ("width", "parameters", "bytes"):
+            r,p,o=fixture()
+            rec=r["unlabeled_prediction_records"][0]
+            summary=r["observations"][0]
+            if mutation == "width":
+                rec["hidden_width"]+=1
+                for event in rec["cases"]:
+                    event["head_sign_margin_twice_q24_lsb"]+=9
+                summary["heldout_unlabeled_prediction_sha256"]=sha(canonical(rec))
+            elif mutation == "parameters":
+                summary["realized_private_parameters"]+=1
+            else:
+                summary["physical_safetensors_file_bytes"]+=1
+            with self.subTest(mutation=mutation):
+                with self.assertRaisesRegex(Rejected, "physical native Q24 Cell"):
+                    self.check((r,p,o))
 
     def test_corrupted_checkpoint_identity_rejected(self):
         r,p,o=fixture()
