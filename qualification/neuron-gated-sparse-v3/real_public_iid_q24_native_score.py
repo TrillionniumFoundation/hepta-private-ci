@@ -371,6 +371,7 @@ def run(args) -> dict:
     # Do not upload raw heldout feature vectors or original labels. Trace JSON
     # is a short-lived read-only original single-case Q24 artifact per input.
     metrics = []
+    prediction_rows = []
     receipts = 0
     with tempfile.TemporaryDirectory() as temp:
         trace_dir = Path(temp)
@@ -420,6 +421,7 @@ def run(args) -> dict:
             }
             weights = physically_load(root / str(task), check_row)
             found = []
+            unlabeled_prediction_cases = []
             subprocess_wall_nanos = []
             for trace_file, trace_sha, trace in traces_by_task[task]:
                 argv = [
@@ -459,11 +461,35 @@ def run(args) -> dict:
                      and check["verified_native_adapter_head_event_count"] == 1,
                      "independent real-public Q24 numeric parity failed")
                 front = native_runs[0]["frontier"][0]
-                found.append(independent_head_margin(front, m["hidden_width"]))
+                signed_output = independent_head_margin(front, m["hidden_width"])
+                found.append(signed_output)
+                case_index = len(unlabeled_prediction_cases)
+                source_case = rows[case_index]
+                checkpoint = front.get("checkpoint_sha256")
+                need(type(checkpoint) is str and len(checkpoint) == 64 and
+                     all(c in "0123456789abcdef" for c in checkpoint),
+                     "physical native Q24 checkpoint digest is not bound")
+                unlabeled_prediction_cases.append({
+                    "case_id": source_case["case_id"],
+                    "source_text_sha256": source_case["source_text_sha256"],
+                    "logit_q24": signed_output["logit_q24"],
+                    "head_sign_margin_status": signed_output["status"],
+                    "native_cold_checkpoint_sha256": checkpoint,
+                })
                 receipts += 2
+            need(len(unlabeled_prediction_cases) == 32,
+                 "missing original heldout prediction case")
+            prediction_record = {
+                "task_id": task, "arm": arm, "serialized_byte_budget": cap,
+                "physical_model_sha256": m["weight_sha256"],
+                "cases": unlabeled_prediction_cases,
+            }
+            prediction_record_sha = digest(canonical(prediction_record))
+            prediction_rows.append(prediction_record)
             truth = [int(y == task) for y in label_values]
             summary = bin_metrics(truth, found)
             summary.update({
+                "heldout_unlabeled_prediction_sha256": prediction_record_sha,
                 "isolated_cold_process_wall_p50_micros":
                     nearest_rank_us(subprocess_wall_nanos, 50),
                 "isolated_cold_process_wall_p95_micros":
@@ -482,7 +508,7 @@ def run(args) -> dict:
             })
             metrics.append(summary)
             sha_file(path, m["weight_sha256"])
-    need(receipts == 2048 and len(metrics) == 32,
+    need(receipts == 2048 and len(metrics) == len(prediction_rows) == 32,
          "incomplete physical 32-model/32-heldout two-process evaluation")
     return {
         "schema": REPORT_SCHEMA,
@@ -508,7 +534,10 @@ def run(args) -> dict:
         },
         "four_binary_tasks": 4, "trained_private_models": 32,
         "fresh_rust_os_process_invocations": receipts,
+        "native_rust_binary_sha256": args.binary_sha256,
         "all_independent_q24_adapter_head_integer_checks": True,
+        "unlabeled_prediction_census": 1024,
+        "unlabeled_prediction_records": prediction_rows,
         "iid_one_tick_independent_per_case": True,
         "heldout_labels_joined_only_after_training": True,
         "independent_signed_evaluator_custody": False,
