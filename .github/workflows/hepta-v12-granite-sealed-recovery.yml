@@ -1,0 +1,214 @@
+name: V12 recovered original Granite97 nine-arm (research DENY_ALL)
+
+on:
+  push:
+    branches: [research/v12-granite-sealed-recovery-20261016]
+    paths: ['.github/workflows/hepta-v12-granite-sealed-recovery.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v12-granite-sealed-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  recovered-nine-fits:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONHASHSEED: '7347'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      # ZIP from run 38820394598 ALREADY embeds real-features/, so download
+      # to its parent, never to a second real-features/ directory.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-public-38820394598
+          path: ${{ runner.temp }}/public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-train-labels-38820394598
+          path: ${{ runner.temp }}/train
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-real-features-38820394598
+          path: ${{ runner.temp }}/original
+
+      - name: Pin and independently verify original source, train-only labels and real token material
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/train/held-labels-restricted.json"
+          test ! -e "$RUNNER_TEMP/public/held-labels-restricted.json"
+          test ! -e "$RUNNER_TEMP/original/held-labels-restricted.json"
+          test "$(cat "$RUNNER_TEMP/original/encoder-head.txt")" = "0d09048cc3180a502dec6808297937aa78e22853"
+          test "$(git hash-object qualification/stem-cell-v1/v10_granite_reader.py)" = "6dfa476caed9f10ea77cbbe97d96c2f9358e98fc"
+          printf '%s  %s\n' \
+            1b027fd2708068da25674415789906a575a00383abe5712255a432e8679e913c "$RUNNER_TEMP/public/public.json" \
+            4de11a06a4d481696fe6efc3a6a1f8085806aeffc7f20a3d14fb07d4dc30d608 "$RUNNER_TEMP/public/source-seal.json" \
+            018469a56a358e78706e8a86c919a1b0dd7c26da8a9589289836ac88cd25eabf "$RUNNER_TEMP/train/train-labels.json" \
+            51e970699370d83e204061afcf86903cb515efb6f47a14b0249392a3c20f7334 "$RUNNER_TEMP/original/real-features/tokens.pt" \
+            dda5a2c21d81679b66d6465be9238919cce5a7ece47bd35474272223eddcaef0 "$RUNNER_TEMP/original/real-features/metadata.json" \
+            59e6f1cd5e5eddf3d758240183f6c400c9683b22758953ced7afaf7ecdea9756 "$RUNNER_TEMP/original/real-features/real-encoder-receipt.json" | sha256sum -c -
+          python -S - "$RUNNER_TEMP/public" "$RUNNER_TEMP/train" "$RUNNER_TEMP/original/real-features" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          pub,tr,feat=[Path(x) for x in sys.argv[1:]]
+          read=lambda p:json.loads(p.read_text())
+          digest=lambda x:hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+          p,s,l,e=read(pub/'public.json'),read(pub/'source-seal.json'),read(tr/'train-labels.json'),read(feat/'real-encoder-receipt.json')
+          assert len(p)==1248 and len(l)==288 and s['source_groups']==312
+          assert s['public_sha256']==digest(p)==e['public_sha256']
+          assert s['train_label_sha256']==digest(l)
+          assert e['model_revision']=='835ad14087e140460703cf0fae09f97d469d65c2'
+          assert (e['actually_executed_encoder_batches'],e['actually_executed_encoded_sequences'],e['token_count'])==(104,827,7161)
+          assert e['real_pretrained_forward_executed'] is True and e['frozen_weight_verified'] is True
+          assert e['held_labels_accessed'] is False and e['authority']=='DENY_ALL'
+          assert e['production_accepted'] is False
+          assert all(set(x)=={'case_id','source_group','facts','question','candidate'} for x in p)
+          print('ORIGINAL_SOURCE_AND_GRANITE_TOKEN_BYTES_VERIFIED')
+          PY
+          git rev-parse HEAD > "$RUNNER_TEMP/recovery-head.txt"
+
+      - name: Nine matched Reader fits and 11,232 unscored frozen predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/v10_granite_reader.py fit \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --features "$RUNNER_TEMP/original/real-features" \
+            --train-labels "$RUNNER_TEMP/train/train-labels.json" \
+            --models "$RUNNER_TEMP/models" \
+            --output "$RUNNER_TEMP/not-used-fit-output.json" 2>&1 | tee "$RUNNER_TEMP/train.log"
+          python qualification/stem-cell-v1/v10_granite_reader.py predict \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --features "$RUNNER_TEMP/original/real-features" \
+            --models "$RUNNER_TEMP/models" \
+            --output "$RUNNER_TEMP/blind-predictions.json" 2>&1 | tee "$RUNNER_TEMP/predict.log"
+          python - "$RUNNER_TEMP/models" "$RUNNER_TEMP/blind-predictions.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          m=list(Path(sys.argv[1]).glob('*/training.json'))
+          assert len(m)==9 and all(json.loads(p.read_text())['actual_updates']==256 for p in m)
+          s=json.load(open(sys.argv[2]))
+          assert s['result_records']==11232 and len(s['training_commitments'])==9
+          assert s['held_labels_used'] is False and s['model_selected'] is False
+          assert s['authority']=='DENY_ALL' and s['production_accepted'] is False
+          print('NINE_ACTUAL_MODEL_WEIGHTS_AND_BLIND_PREDICTIONS_SEALED',s['probabilities_sha256'])
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v12-granite-nine-sealed-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/models/
+            ${{ runner.temp }}/blind-predictions.json
+            ${{ runner.temp }}/recovery-head.txt
+            ${{ runner.temp }}/train.log
+            ${{ runner.temp }}/predict.log
+          if-no-files-found: warn
+          retention-days: 5
+
+  independent-held-review:
+    needs: recovered-nine-fits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-public-38820394598
+          path: ${{ runner.temp }}/public
+      # Withheld labels are NEVER available to the preceding fit/predict job.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-held-truth-38820394598
+          path: ${{ runner.temp }}/held
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-real-features-38820394598
+          path: ${{ runner.temp }}/original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v12-granite-nine-sealed-${{ github.run_id }}
+          path: ${{ runner.temp }}/sealed
+      - name: Independently score ONLY after all nine sealed models and predictions exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object qualification/stem-cell-v1/v10_granite_score.py)" = "b69a6c70487bb3e37a587097dea7b16dfcef504c"
+          test "$(git hash-object qualification/stem-cell-v1/v10_training_audit.py)" = "10cf1d6df8ddf88c8260597c8e109276589e05a6"
+          printf '%s  %s\n' \
+            31fc4230ce888e325c8b956af0f6bab5b17d8825d3a5e9b9f26a46e65974ea73 "$RUNNER_TEMP/held/held-labels-restricted.json" \
+            4de11a06a4d481696fe6efc3a6a1f8085806aeffc7f20a3d14fb07d4dc30d608 "$RUNNER_TEMP/public/source-seal.json" | sha256sum -c -
+          test -s "$RUNNER_TEMP/sealed/blind-predictions.json"
+          test -d "$RUNNER_TEMP/sealed/models"
+          python -S qualification/stem-cell-v1/v10_granite_score.py \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --source-seal "$RUNNER_TEMP/public/source-seal.json" \
+            --held-labels "$RUNNER_TEMP/held/held-labels-restricted.json" \
+            --predictions "$RUNNER_TEMP/sealed/blind-predictions.json" \
+            --models "$RUNNER_TEMP/sealed/models" \
+            --feature-receipt "$RUNNER_TEMP/original/real-features/real-encoder-receipt.json" \
+            --output "$RUNNER_TEMP/independent-postseal.json" | tee "$RUNNER_TEMP/review.log"
+          python -S - "$RUNNER_TEMP/independent-postseal.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['held_independent_groups']==240 and x['held_distinct_candidates']==960
+          assert len(x['neural_observations'])==90 and len(x['independent_training_trace_audits'])==9
+          assert all(v['real_recorded_optimizer_exposures']==4096 for v in x['independent_training_trace_audits'].values())
+          assert x['V7_joint_admission_passed'] is False and x['model_selected'] is False
+          assert x['production_accepted'] is False and x['authority']=='DENY_ALL'
+          print('FULL_ORIGINAL_SOURCE_NINE_WEIGHT_TRACE_AND_HELD_SCORE_PASS')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v12-independent-real-held-review-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/independent-postseal.json
+            ${{ runner.temp }}/review.log
+          if-no-files-found: warn
+          retention-days: 5
