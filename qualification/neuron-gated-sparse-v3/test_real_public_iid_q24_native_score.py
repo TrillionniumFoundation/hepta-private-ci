@@ -90,7 +90,7 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
 
     def test_single_case_native_trace_keeps_independent_reset(self):
         original=row()
-        trace=frozen_single_case_trace(original)
+        trace=frozen_single_case_trace(original, task_id=0)
         self.assertEqual(trace["schema"],"hepta.neuron.physical-q24-shadow-trace.v1")
         self.assertEqual(len(trace["events"]),1)
         self.assertEqual(trace["events"][0]["temporal_drive_q24"],original["feature_q24"])
@@ -140,11 +140,21 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
             with self.assertRaises(Refused):
                 independent_head_margin(corrupted,16)
 
+    def test_task_binding_changes_native_q24_objective(self):
+        original=row()
+        a=frozen_single_case_trace(original,task_id=0)
+        b=frozen_single_case_trace(original,task_id=1)
+        self.assertNotEqual(a["objective_digest"], b["objective_digest"])
+        self.assertEqual(a["events"], b["events"])
+        for forged in (True,-1,4,0.0,"0"):
+            with self.assertRaises(Refused):
+                frozen_single_case_trace(original,task_id=forged)
+
     def test_true_public_heldout_label_field_is_forbidden(self):
         original=row()
         original["label"]=0
         with self.assertRaises(Refused):
-            frozen_single_case_trace(original)
+            frozen_single_case_trace(original, task_id=0)
 
     def test_wrong_q24_shape_or_type_refused(self):
         for variant in (True,1.0,"1",8*(1<<24)+1):
@@ -177,7 +187,7 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         original=row()
         original["sequence"]=2
         with self.assertRaises(Refused):
-            frozen_single_case_trace(original)
+            frozen_single_case_trace(original, task_id=0)
 
 
 if __name__=="__main__":
