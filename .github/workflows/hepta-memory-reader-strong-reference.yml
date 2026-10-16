@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/memory_cell/memory_reader_strong_reference.py'
       - 'scripts/memory_cell/test_memory_reader_strong_reference.py'
+      - 'scripts/memory_cell/memory_reader_strong_custody.py'
+      - 'scripts/memory_cell/test_memory_reader_strong_custody.py'
       - 'codex-rs/hepta-intelligence-eval/MEMORY_READER_STRONG_REFERENCE_20261016.md'
       - '.github/workflows/hepta-memory-reader-strong-reference.yml'
   # Physical attempt is conditionally armed by one short-lived PR title marker.
@@ -35,9 +37,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile scripts/memory_cell/memory_reader_strong_reference.py \
-            scripts/memory_cell/test_memory_reader_strong_reference.py
+            scripts/memory_cell/test_memory_reader_strong_reference.py \
+            scripts/memory_cell/memory_reader_strong_custody.py \
+            scripts/memory_cell/test_memory_reader_strong_custody.py
+          # Source-only CI cannot claim the optional original-plan/journal tests ran.
           python3 -m unittest discover -s scripts/memory_cell \
             -p 'test_memory_reader_strong_reference.py' -v
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_reader_strong_custody.py' -v
           git diff --exit-code
   original-plan:
     if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[RUN-QWEN-ONCE]')) }}
@@ -52,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Pin original source preparation dependencies
         run: |
@@ -82,6 +89,10 @@ jobs:
             /tmp/strong-original/memory-inputs/locomo.json /tmp/strong-prepared \
             /tmp/strong-graph /tmp/strong-answer-free-plan 2
           python3 scripts/memory_cell/memory_reader_strong_reference.py preflight /tmp/strong-answer-free-plan
+          # Mandatory historical original-byte plan check; source-contract cannot do this.
+          HEPTA_STRONG_ACTUAL_PLAN=/tmp/strong-answer-free-plan \
+            python3 -m unittest discover -s scripts/memory_cell \
+              -p 'test_memory_reader_strong_custody.py' -k test_actual_prior_plan_when_provided -v
           test "$(find /tmp/strong-answer-free-plan -maxdepth 1 -type f | wc -l)" -eq 2
           test ! -e /tmp/strong-answer-free-plan/private.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -157,6 +168,10 @@ jobs:
             > /tmp/strong-sanitized-receipts/worker-summary.json
           test -s /tmp/strong-qwen-private/unscored/journal.json
           test -s /tmp/strong-qwen-private/unscored/seal.json
+          # Verify physical before-effect starts *before* original publisher gold is staged.
+          /tmp/strong-reader-env/bin/python scripts/memory_cell/memory_reader_strong_custody.py \
+            /tmp/strong-answer-free-plan /tmp/strong-qwen-private/unscored \
+            > /tmp/strong-sanitized-receipts/custody-pre-gold.json
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-native-staged-inputs
@@ -191,6 +206,9 @@ jobs:
           assert r['citation_entailment_verified'] is False
           assert r['native_tokenization_and_generation_budget_matched_to_135m'] is False
           assert r['questions'] == 20 and len(r['per_arm']) == 6
+          c = json.loads(Path('/tmp/strong-sanitized-receipts/custody-pre-gold.json').read_text())
+          assert r['before_effect_custody'] == c
+          assert 1 <= c['started_calls'] <= 120 and c['production_accepted'] is False
           PY
           git rev-parse HEAD > /tmp/strong-sanitized-receipts/exact-head.txt
           (cd /tmp/strong-sanitized-receipts && find . -type f ! -name SHA256SUMS -print0 \
