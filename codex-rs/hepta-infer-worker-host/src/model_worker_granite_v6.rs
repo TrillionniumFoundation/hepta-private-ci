@@ -11,7 +11,6 @@ use std::fmt;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use codex_hepta_infer_core::sequence_feature_v3::ImmutableFeatureSequenceV3;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
