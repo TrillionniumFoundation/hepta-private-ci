@@ -41,7 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-evidence -p codex-hepta-control-plane -p codex-hepta-memory -- --check
           git diff --check
           git diff --exit-code
 
@@ -185,7 +185,7 @@ jobs:
           # after V8 downloads, CellSplit canary and deep native tests.
           # This checks the EXACT source HEAD or synthetic merge tree using
           # the owning pinned workspace rustfmt configuration.
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-evidence -p codex-hepta-control-plane -p codex-hepta-memory -- --check
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
