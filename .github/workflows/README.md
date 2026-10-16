@@ -1,3 +1,4 @@
+<!-- Source-branch concurrency is intentionally shared by push and pull-request runs. -->
 # Workflow Strategy
 
 The workflows in this directory are split so that pull requests get fast, review-friendly signal while `main` still gets the full cross-platform verification pass.
