@@ -209,3 +209,45 @@ faked original execution or gold exposure, reordering and missing routes.
 Both standalone suites run normal and optimized mode in the read-only
 exact-head GitHub Action. They do **not** attest any real original V14
 Reader forwards or semantic answer improvements.
+
+
+## V14.4 joined source-to-outcome read-only contract
+
+A separate `v14_original_reader_reconcile.py` now joins all five original
+material records *in one exact software-level consistency evaluation*:
+
+1. Original source-only question/evidence material.
+2. Frozen four-arm / two-Reader request plan.
+3. Private original model prompt bytes from source-first builder.
+4. Complete original-model-output-shaped candidate/reference answer
+   inventory with actual prompt/model/answer digests and recorded costs.
+5. Post-seal independent-evaluator-shaped judgments tied to answer SHA.
+
+The reconciler requires the independent actual-prompt reviewer and the
+Reader's source-bound, per-family grounded outcome/citation diagnostic to
+agree on the exact plan SHA, complete per-arm case census and original
+prompt identities. The output contains source/plan/prompt/model-output/
+adjudication SHA references and per-reader bounded token/CPU/wall
+**reported** counters. It never copies original private text into the
+public aggregate.
+
+To run with separately pinned *real* externally generated materials:
+
+```sh
+python qualification/stem-cell-v1/v14_original_reader_reconcile.py \
+  --source PRIVATE/source-only-cases.json \
+  --plan PRIVATE/original-four-arm-plan.json \
+  --private-requests PRIVATE/original-reader-prompts.json \
+  --predictions PRIVATE/original-reader-predictions.json \
+  --adjudication PRIVATE/external-semantic-judgment.json
+```
+
+A twelve-case adversarial synthetic test suite checks cross-file mutation,
+foreign model weights, missing physical attempts, review forgery, citation
+membership, paired resource conservation and no leakage of source text.
+This is an **auditable executable input/output protocol**, not an
+observed original model experiment. Original model host attestation, an
+external trusted source owner, actual post-seal human evaluation, future
+source families and full cost comparisons remain missing. The reconciler
+always returns `HOLD_NO_GO` and false flags for model promotion,
+SYSTEM2 and production authorization.
