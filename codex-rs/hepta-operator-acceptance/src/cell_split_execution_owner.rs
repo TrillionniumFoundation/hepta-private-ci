@@ -676,6 +676,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if self.pending {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
+        // A signed negative readback taken before slow predecessor RPCs can
+        // become stale. Recheck original next-owner absence before reporting
+        // a harmless incomplete state. This is diagnostic only, not an
+        // atomic multi-owner snapshot or a Final-use grant.
+        self.probe_next_unprepared_original()?;
         Ok(self.is_complete())
     }
 
@@ -699,6 +704,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
         if !self.is_complete() {
+            // Re-probe the exact original next owner after current signed
+            // predecessor verification. Never report an empty transcript
+            // if a next effect appeared during the preceding readbacks.
+            self.probe_next_unprepared_original()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
