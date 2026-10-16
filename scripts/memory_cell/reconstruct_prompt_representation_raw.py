@@ -19,8 +19,12 @@ from offline_smol_reader import ByteLevel, PINS, PROFILE, digest, verify_files
 from prompt_representation_probe import ARMS, STYLES, build_messages
 
 EXPECTED_SHA256 = "a26133473451003c8708f1fa3e3ea40e975b7febcd45039870e19d1d067a461c"
-EXPECTED_CODE_SHA256 = "84952869d55069d0830add604883750929efd22e1f93bcf34dbc01b40890bcd5"
-EXPECTED_DELTA_SHA256 = "1408dab69c30d583f1fbfe46cd6533e9a5e92abeacafffab478bd209eff33a8d"
+EXPECTED_CODE_SHA256 = (
+    "84952869d55069d0830add604883750929efd22e1f93bcf34dbc01b40890bcd5"
+)
+EXPECTED_DELTA_SHA256 = (
+    "1408dab69c30d583f1fbfe46cd6533e9a5e92abeacafffab478bd209eff33a8d"
+)
 
 
 def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_sha):
@@ -85,7 +89,9 @@ def reconstruct(archive, reader_dir, delta_file, destination, *, expected_delta_
                     answer=tokenizer.decode(generated),
                 )
                 row["elapsed_seconds"] = value[1]
-                serialized.append(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                serialized.append(
+                    json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                )
     raw = "".join(serialized).encode()
     if hashlib.sha256(raw).hexdigest() != EXPECTED_SHA256:
         raise ValueError("lossless round-trip of ORIGINAL journal failed")
@@ -111,7 +117,14 @@ if __name__ == "__main__":
     p.add_argument("output", type=Path)
     p.add_argument("--delta-sha", required=True)
     opts = p.parse_args()
-    print(json.dumps(reconstruct(
-        opts.archive, opts.reader, opts.delta, opts.output,
-        expected_delta_sha=opts.delta_sha,
-    )))
+    print(
+        json.dumps(
+            reconstruct(
+                opts.archive,
+                opts.reader,
+                opts.delta,
+                opts.output,
+                expected_delta_sha=opts.delta_sha,
+            )
+        )
+    )

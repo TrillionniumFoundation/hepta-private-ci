@@ -43,7 +43,9 @@ def independent_reference_logits(weights, ids):
         return torch.cat([-right, left], dim=-1)
 
     def norm(x, label):
-        return (x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + 1e-5)) * weights[label]
+        return (x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + 1e-5)) * weights[
+            label
+        ]
 
     tokens = torch.tensor(ids, dtype=torch.long, device=device)[None, :]
     hidden = F.embedding(tokens, weights["model.embed_tokens.weight"])
@@ -52,16 +54,22 @@ def independent_reference_logits(weights, ids):
         normalized = norm(hidden, prefix + "input_layernorm.weight")
         vectors = []
         for projection, count in (("q", 9), ("k", 3), ("v", 3)):
-            x = F.linear(normalized, weights[prefix + f"self_attn.{projection}_proj.weight"])
+            x = F.linear(
+                normalized, weights[prefix + f"self_attn.{projection}_proj.weight"]
+            )
             x = x.view(1, seq, count, 64).transpose(1, 2)
             vectors.append(x)
         q, k, v = vectors
         q, k = q * cos + rotate(q) * sin, k * cos + rotate(k) * sin
         k = k.repeat_interleave(3, dim=1)
         v = v.repeat_interleave(3, dim=1)
-        attention = F.scaled_dot_product_attention(q, k, v, is_causal=True, dropout_p=0.0)
+        attention = F.scaled_dot_product_attention(
+            q, k, v, is_causal=True, dropout_p=0.0
+        )
         combined = attention.transpose(1, 2).contiguous().reshape(1, seq, 576)
-        hidden = hidden + F.linear(combined, weights[prefix + "self_attn.o_proj.weight"])
+        hidden = hidden + F.linear(
+            combined, weights[prefix + "self_attn.o_proj.weight"]
+        )
         residual = norm(hidden, prefix + "post_attention_layernorm.weight")
         gate = F.silu(F.linear(residual, weights[prefix + "mlp.gate_proj.weight"]))
         value = F.linear(residual, weights[prefix + "mlp.up_proj.weight"])
@@ -85,7 +93,11 @@ def run(root, raw_journal, output, source_commit):
     for row in rows:
         by_arm.setdefault(row["arm"], []).append(row)
     if set(by_arm) != {
-        "empty", "hybrid", "entity_time", "organized", "program_support",
+        "empty",
+        "hybrid",
+        "entity_time",
+        "organized",
+        "program_support",
         "without_prerequisite",
     } or any(len(v) != 8 for v in by_arm.values()):
         raise ValueError("original arm census drift")
@@ -117,7 +129,9 @@ def run(root, raw_journal, output, source_commit):
                 top1_tokens=top,
                 top1_match=top[0] == top[1],
                 # Tolerance is declared before any comparisons are examined.
-                within_predeclared_tolerance=bool(delta.max() <= 2e-3 and top[0] == top[1]),
+                within_predeclared_tolerance=bool(
+                    delta.max() <= 2e-3 and top[0] == top[1]
+                ),
             )
             checks.append(record)
             print(json.dumps(record), flush=True)
@@ -148,7 +162,9 @@ def run(root, raw_journal, output, source_commit):
         schema="hepta.memory-smol-reference-operator-check.v1",
         tested_source=source_commit,
         original_weights_sha256=PINS["model.safetensors"],
-        original_journal_sha256=hashlib.sha256(Path(raw_journal).read_bytes()).hexdigest(),
+        original_journal_sha256=hashlib.sha256(
+            Path(raw_journal).read_bytes()
+        ).hexdigest(),
         reference_equations=SOURCE,
         actual_huggingface_transformers_library_executed=False,
         actual_hf_tokenizers_library_executed=False,

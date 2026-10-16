@@ -229,7 +229,9 @@ def unpack(pins, zip_directory, root):
             if name == SPECIAL[1]
             else root / "evaluation" / name
         )
-        result[name] = extract_one(pins, name, zip_directory / (name + ".zip"), destination)
+        result[name] = extract_one(
+            pins, name, zip_directory / (name + ".zip"), destination
+        )
     return result
 
 

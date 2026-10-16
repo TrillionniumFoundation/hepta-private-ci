@@ -76,7 +76,10 @@ def build_messages(case, arm, style, sources):
         raise ValueError("unregistered evidence or representation arm")
     query = case["query"]
     ids = case["controls"][arm]["selected"]
-    if len(set(ids)) != len(ids) or digest(case["candidate_ids"]) != case["candidate_digest"]:
+    if (
+        len(set(ids)) != len(ids)
+        or digest(case["candidate_ids"]) != case["candidate_digest"]
+    ):
         raise ValueError("original candidate or selected evidence drift")
     delivered = []
     for index, key in enumerate(ids, start=1):
@@ -120,8 +123,12 @@ def run(archive, reader_root, output, commit):
     started = time.perf_counter()
     plan, originals, worker_bytes = inputs(archive)
     cases = plan["cases"]
-    expected = [(case["query"]["identity"], style, arm)
-                for case in cases for style in STYLES for arm in ARMS]
+    expected = [
+        (case["query"]["identity"], style, arm)
+        for case in cases
+        for style in STYLES
+        for arm in ARMS
+    ]
     if len(expected) != 64 or len(set(expected)) != 64:
         raise ValueError("non-unique exposure-controlled matrix")
     # These identities and exact source bytes are fixed before ANY generation.
@@ -132,7 +139,10 @@ def run(archive, reader_root, output, commit):
             generating_commit=commit,
             source_files={
                 p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                for p in (Path(__file__), Path(__file__).with_name("offline_smol_reader.py"))
+                for p in (
+                    Path(__file__),
+                    Path(__file__).with_name("offline_smol_reader.py"),
+                )
             },
             pinned_original_archive_sha256=ARCHIVE_SHA,
             pinned_original_source_manifest=plan["source_view_sha"],
@@ -193,12 +203,15 @@ def run(archive, reader_root, output, commit):
                         )
                     except Exception as error:
                         row.update(
-                            status="failed", error_type=type(error).__name__,
+                            status="failed",
+                            error_type=type(error).__name__,
                             error=str(error)[:1024],
                         )
                     row["elapsed_seconds"] = time.perf_counter() - start
                     rows.append(row)
-                    stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                    stream.write(
+                        json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                    )
                     stream.flush()
                     os.fsync(stream.fileno())
                     print(f"{len(rows)}/64 {style} {arm} {row['status']}", flush=True)
@@ -224,22 +237,29 @@ def run(archive, reader_root, output, commit):
         row.update(
             parsed_identifier=candidate,
             strict_task_success=candidate == truth["expected"],
-            expected_identifier_mentioned=truth["expected"] in re.findall(
-                r"(?:site|mode)_[0-9a-f]{8}", row["answer"]
-            ),
+            expected_identifier_mentioned=truth["expected"]
+            in re.findall(r"(?:site|mode)_[0-9a-f]{8}", row["answer"]),
             required_sources_covered=set(truth["support"]).issubset(row["selected"]),
             declared_support_chain_cited=set(truth["support"]).issubset(cited),
             semantic_citation_precision=None,
         )
         if truth["kind"] == "procedure":
-            request = dict(operation="execute", recipe=truth["procedure"], supplied=candidate or "invalid_response")
+            request = dict(
+                operation="execute",
+                recipe=truth["procedure"],
+                supplied=candidate or "invalid_response",
+            )
             tested = subprocess.run(
                 [sys.executable, "-I", "-S", str(worker)],
-                input=json.dumps(request), text=True, capture_output=True,
-                timeout=10, check=False,
+                input=json.dumps(request),
+                text=True,
+                capture_output=True,
+                timeout=10,
+                check=False,
             )
             row["program_verification"] = dict(
-                exit_code=tested.returncode, stdout=tested.stdout,
+                exit_code=tested.returncode,
+                stdout=tested.stdout,
                 stderr=tested.stderr,
                 request=request,
             )
@@ -256,13 +276,38 @@ def run(archive, reader_root, output, commit):
         results={
             f"{s}/{a}": dict(
                 attempts=sum(r["representation"] == s and r["arm"] == a for r in rows),
-                successful_generations=sum(r["representation"] == s and r["arm"] == a and r["status"] == "succeeded" for r in rows),
-                task_successes=sum(r["representation"] == s and r["arm"] == a and r.get("strict_task_success") is True for r in rows),
-                value_mentions=sum(r["representation"] == s and r["arm"] == a and r.get("expected_identifier_mentioned") is True for r in rows),
-                complete_declared_support_citations=sum(r["representation"] == s and r["arm"] == a and r.get("declared_support_chain_cited") is True for r in rows),
-                wall_seconds=sum(r["elapsed_seconds"] for r in rows if r["representation"] == s and r["arm"] == a),
+                successful_generations=sum(
+                    r["representation"] == s
+                    and r["arm"] == a
+                    and r["status"] == "succeeded"
+                    for r in rows
+                ),
+                task_successes=sum(
+                    r["representation"] == s
+                    and r["arm"] == a
+                    and r.get("strict_task_success") is True
+                    for r in rows
+                ),
+                value_mentions=sum(
+                    r["representation"] == s
+                    and r["arm"] == a
+                    and r.get("expected_identifier_mentioned") is True
+                    for r in rows
+                ),
+                complete_declared_support_citations=sum(
+                    r["representation"] == s
+                    and r["arm"] == a
+                    and r.get("declared_support_chain_cited") is True
+                    for r in rows
+                ),
+                wall_seconds=sum(
+                    r["elapsed_seconds"]
+                    for r in rows
+                    if r["representation"] == s and r["arm"] == a
+                ),
             )
-            for s in STYLES for a in ARMS
+            for s in STYLES
+            for a in ARMS
         },
         all_attempts=len(rows),
         reader_frozen=True,

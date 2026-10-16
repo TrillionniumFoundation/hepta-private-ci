@@ -67,9 +67,7 @@ class FrozenReaderRepresentationTests(unittest.TestCase):
         for arm in ARMS:
             original = self.case["controls"][arm]["selected"]
             for style in STYLES:
-                messages, selected = build_messages(
-                    self.case, arm, style, self.sources
-                )
+                messages, selected = build_messages(self.case, arm, style, self.sources)
                 self.assertEqual(selected, list(original))
                 self.assertEqual(messages[0]["role"], "system")
                 evidence = json.loads(messages[1]["content"])["evidence"]
@@ -125,7 +123,9 @@ class FrozenReaderRepresentationTests(unittest.TestCase):
         self.assertIsNone(strict_answer("site_abcd1234 [E0]"))
 
 
-@unittest.skipUnless(os.environ.get("HEPTA_FROZEN_EVENT_ARCHIVE"), "archive unavailable")
+@unittest.skipUnless(
+    os.environ.get("HEPTA_FROZEN_EVENT_ARCHIVE"), "archive unavailable"
+)
 class ArchivedInputIntegrityTests(unittest.TestCase):
     def test_actual_8_by_4_by_2_unmodified_selection_census(self):
         plan, sources, _ = inputs(Path(os.environ["HEPTA_FROZEN_EVENT_ARCHIVE"]))

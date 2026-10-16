@@ -175,7 +175,9 @@ class OriginalSmol:
 
     def norm(self, x, name):
         return (
-            x * torch.rsqrt(x.square().mean(-1, keepdim=True) + 1e-5) * self.weights[name]
+            x
+            * torch.rsqrt(x.square().mean(-1, keepdim=True) + 1e-5)
+            * self.weights[name]
         )
 
     @torch.inference_mode()

@@ -5,7 +5,15 @@ import hashlib
 import json
 import unittest
 
-from factorial_evidence_gate import ARMS, CONDITIONS, READERS, TASKS, COST_KEYS, analyze, sha
+from factorial_evidence_gate import (
+    ARMS,
+    CONDITIONS,
+    READERS,
+    TASKS,
+    COST_KEYS,
+    analyze,
+    sha,
+)
 
 
 def digest(s):
@@ -74,7 +82,10 @@ class FactorialAuditTest(unittest.TestCase):
             report["arms"]["hybrid_rag"]["frozen"]["oracle"]["success_rate"], 1
         )
         self.assertEqual(
-            report["arms"]["hybrid_rag"]["frozen"]["hybrid"]["total_cost"]["raw_storage"], 4
+            report["arms"]["hybrid_rag"]["frozen"]["hybrid"]["total_cost"][
+                "raw_storage"
+            ],
+            4,
         )
         self.assertFalse(report["production_qualified"])
         self.assertTrue(report["diagnosis"]["learning_candidate_rejected"])

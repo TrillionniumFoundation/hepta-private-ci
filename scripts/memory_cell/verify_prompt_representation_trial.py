@@ -25,9 +25,10 @@ def replay(archive, reader_dir, execution_dir, output):
     result = Path(execution_dir)
     prereg = json.loads((result / "preregistered.json").read_text())
     journal_bytes = (result / "raw-answers.jsonl").read_bytes()
-    if hashlib.sha256(journal_bytes).hexdigest() != json.loads(
-        (result / "report.json").read_text()
-    )["raw_journal_sha256"]:
+    if (
+        hashlib.sha256(journal_bytes).hexdigest()
+        != json.loads((result / "report.json").read_text())["raw_journal_sha256"]
+    ):
         raise ValueError("original journal digest changed")
     plan, sources, worker_bytes = inputs(archive)
     frozen_sources = {
@@ -50,11 +51,17 @@ def replay(archive, reader_dir, execution_dir, output):
     tokenizer = ByteLevel(reader_dir)
     original = [json.loads(line) for line in journal_bytes.decode().splitlines()]
     evaluated = json.loads((result / "scored-answers.json").read_text())
-    wanted = [(c["query"]["identity"], s, a)
-              for c in plan["cases"] for s in STYLES for a in ARMS]
-    if len(original) != 64 or len(evaluated) != 64 or prereg["census"] != [
-        list(row) for row in wanted
-    ]:
+    wanted = [
+        (c["query"]["identity"], s, a)
+        for c in plan["cases"]
+        for s in STYLES
+        for a in ARMS
+    ]
+    if (
+        len(original) != 64
+        or len(evaluated) != 64
+        or prereg["census"] != [list(row) for row in wanted]
+    ):
         raise ValueError("incomplete original request census")
     with __import__("zipfile").ZipFile(archive) as z:
         labels_raw = z.read("observations/labels.json")
@@ -69,10 +76,15 @@ def replay(archive, reader_dir, execution_dir, output):
     replayed_program_checks = 0
     for raw, scored, key in zip(original, evaluated, wanted, strict=True):
         qid, style, arm = key
-        if any(
-            r["question_id"] != qid or r["representation"] != style or r["arm"] != arm
-            for r in (raw, scored)
-        ) or raw["status"] != "succeeded":
+        if (
+            any(
+                r["question_id"] != qid
+                or r["representation"] != style
+                or r["arm"] != arm
+                for r in (raw, scored)
+            )
+            or raw["status"] != "succeeded"
+        ):
             raise ValueError("original answer or arm missing, moved or failed")
         c = cases[qid]
         msgs, selected = build_messages(c, arm, style, sources)
@@ -112,11 +124,16 @@ def replay(archive, reader_dir, execution_dir, output):
         }
         if truth["kind"] == "procedure":
             supplied = expected or "invalid_response"
-            request = dict(operation="execute", recipe=truth["procedure"], supplied=supplied)
+            request = dict(
+                operation="execute", recipe=truth["procedure"], supplied=supplied
+            )
             checked = subprocess.run(
                 [sys.executable, "-I", "-S", str(worker)],
-                input=json.dumps(request), text=True, capture_output=True,
-                timeout=10, check=False,
+                input=json.dumps(request),
+                text=True,
+                capture_output=True,
+                timeout=10,
+                check=False,
             )
             checks["strict_task_success"] = checked.returncode == 0
             if (
@@ -144,7 +161,9 @@ def replay(archive, reader_dir, execution_dir, output):
                 n=len(v),
                 strict_success=sum(r["strict_task_success"] for r in v),
                 value_mentions=sum(r["expected_identifier_mentioned"] for r in v),
-                declared_support_citation=sum(r["declared_support_chain_cited"] for r in v),
+                declared_support_citation=sum(
+                    r["declared_support_chain_cited"] for r in v
+                ),
             )
             for k, v in sorted(result_by.items())
         },

@@ -68,10 +68,7 @@ def analyze(archive, raw_scores, result, output):
         for arm in ARMS:
             row = rows[index]
             index += 1
-            if (
-                row["arm"] != arm
-                or row["question_id"] != case["query"]["identity"]
-            ):
+            if row["arm"] != arm or row["question_id"] != case["query"]["identity"]:
                 raise ValueError("original paired score order changed")
             view = restrict_scored(row, case["controls"][arm]["selected"], originals)
             restricted.append(dict(question_id=row["question_id"], arm=arm, **view))
@@ -125,4 +122,8 @@ if __name__ == "__main__":
     for argument in ("archive", "raw", "result", "output"):
         parser.add_argument(argument, type=Path)
     args = parser.parse_args()
-    print(json.dumps(analyze(args.archive, args.raw, args.result, args.output)["conditions"]))
+    print(
+        json.dumps(
+            analyze(args.archive, args.raw, args.result, args.output)["conditions"]
+        )
+    )

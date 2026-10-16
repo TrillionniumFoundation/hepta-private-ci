@@ -160,7 +160,9 @@ def run(archive, reader_root, output, source_commit):
                     prompt = model.tokenizer.render(request)
                     ids = model.tokenizer.encode(prompt)
                     if len(ids) > 2048:
-                        raise ValueError("original evidence exceeds budget; no truncation")
+                        raise ValueError(
+                            "original evidence exceeds budget; no truncation"
+                        )
                     row.update(
                         request=request,
                         rendered_prompt=prompt,
@@ -270,7 +272,9 @@ def run(archive, reader_root, output, source_commit):
             succeeded=len(good),
             failed=len(selected) - len(good),
             strict_task_successes=sum(r["strict_task_success"] for r in good),
-            target_identifier_mentioned=sum(r["target_identifier_mentioned"] for r in good),
+            target_identifier_mentioned=sum(
+                r["target_identifier_mentioned"] for r in good
+            ),
             complete_declared_support_cited=sum(
                 r["complete_declared_support_cited"] for r in good
             ),

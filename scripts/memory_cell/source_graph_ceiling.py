@@ -2,13 +2,21 @@
 
 No model inference, human sufficiency certificate, parameter learning, or production authorization.
 """
+
 import hashlib
 import json
 import zipfile
 from pathlib import Path
 
 ARCHIVE_SHA = "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a"
-ARMS = ("empty", "hybrid", "entity_time", "organized", "program_support", "without_prerequisite")
+ARMS = (
+    "empty",
+    "hybrid",
+    "entity_time",
+    "organized",
+    "program_support",
+    "without_prerequisite",
+)
 
 
 def resolve(spec, selection, originals):
@@ -31,7 +39,8 @@ def resolve(spec, selection, originals):
             if prior in visible:
                 old = visible[prior]
                 if (old["entity"], old["attribute"]) != (
-                    row["entity"], row["attribute"]
+                    row["entity"],
+                    row["attribute"],
                 ) or old["revision"] >= row["revision"]:
                     raise ValueError("invalid correction edge")
                 heads.discard(prior)
@@ -40,8 +49,10 @@ def resolve(spec, selection, originals):
         next_entities = set()
         for entity in entities:
             values = {
-                visible[k]["value"] for k in heads
-                if (visible[k]["entity"], visible[k]["attribute"]) == (entity, attribute)
+                visible[k]["value"]
+                for k in heads
+                if (visible[k]["entity"], visible[k]["attribute"])
+                == (entity, attribute)
             }
             if len(values) != 1:
                 return None
@@ -54,7 +65,10 @@ def resolve(spec, selection, originals):
 
 def diagnose(archive):
     archive = Path(archive)
-    if archive.is_symlink() or hashlib.sha256(archive.read_bytes()).hexdigest() != ARCHIVE_SHA:
+    if (
+        archive.is_symlink()
+        or hashlib.sha256(archive.read_bytes()).hexdigest() != ARCHIVE_SHA
+    ):
         raise ValueError("original archive pin mismatch")
     with zipfile.ZipFile(archive) as z:
         plan = json.loads(z.read("plan/plan.json"))
@@ -63,7 +77,10 @@ def diagnose(archive):
             raise ValueError("frozen source view changed")
         originals = {d["identity"]: d for d in json.loads(source_bytes)}
         question_bytes = z.read("observations/questions.json")
-        if hashlib.sha256(question_bytes).hexdigest() != plan["extraction"]["files"]["questions.json"]:
+        if (
+            hashlib.sha256(question_bytes).hexdigest()
+            != plan["extraction"]["files"]["questions.json"]
+        ):
             raise ValueError("public question source changed")
         questions = {r["id"]: r for r in json.loads(question_bytes)}
         labels_bytes = z.read("observations/labels.json")
@@ -78,11 +95,15 @@ def diagnose(archive):
             qid = case["query"]["identity"]
             for arm in ARMS:
                 selection = case["controls"][arm]["selected"]
-                rows.append(dict(
-                    question_id=qid, task=case["kind"], arm=arm,
-                    predicted=resolve(questions[qid], selection, originals),
-                    selected=list(selection),
-                ))
+                rows.append(
+                    dict(
+                        question_id=qid,
+                        task=case["kind"],
+                        arm=arm,
+                        predicted=resolve(questions[qid], selection, originals),
+                        selected=list(selection),
+                    )
+                )
         labels = {r["id"]: r for r in json.loads(labels_bytes)}
         for row in rows:
             label = labels[row["question_id"]]
@@ -95,17 +116,25 @@ def diagnose(archive):
         return dict(
             schema="hepta.memory.typed-source-ceiling.v1",
             source_archive_sha256=ARCHIVE_SHA,
-            model_calls=0, new_retrieval_calls=0, training_calls=0,
-            controlled_schema_only=True, previously_exposed_development_set=True,
+            model_calls=0,
+            new_retrieval_calls=0,
+            training_calls=0,
+            controlled_schema_only=True,
+            previously_exposed_development_set=True,
             human_semantic_sufficiency_certified=False,
             general_reader_ability_established=False,
-            memory_gain_established=False, production_accepted=False,
+            memory_gain_established=False,
+            production_accepted=False,
             arms={
                 arm: dict(
                     planned=8,
-                    strict_success=sum(r["strict_success"] for r in rows if r["arm"] == arm),
+                    strict_success=sum(
+                        r["strict_success"] for r in rows if r["arm"] == arm
+                    ),
                     support_covered=sum(
-                        r["program_declared_support_covered"] for r in rows if r["arm"] == arm
+                        r["program_declared_support_covered"]
+                        for r in rows
+                        if r["arm"] == arm
                     ),
                 )
                 for arm in ARMS
@@ -116,6 +145,7 @@ def diagnose(archive):
 
 if __name__ == "__main__":
     import argparse
+
     p = argparse.ArgumentParser()
     p.add_argument("archive", type=Path)
     p.add_argument("report", type=Path)

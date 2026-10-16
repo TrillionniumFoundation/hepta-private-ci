@@ -1,4 +1,5 @@
 """Reader scoring and answer-space/original-source failure regressions."""
+
 import json
 import unittest
 
@@ -12,18 +13,25 @@ def source(identity, value, *, scope="scope_a", observed_at="2026-10-01T00:00:00
         identity=identity,
         scope=scope,
         observed_at=observed_at,
-        content=json.dumps(dict(
-            schema="hepta.controlled-event.v1", id=identity, value=value,
-        )),
+        content=json.dumps(
+            dict(
+                schema="hepta.controlled-event.v1",
+                id=identity,
+                value=value,
+            )
+        ),
     )
 
 
 class ReaderCandidateCapacityTests(unittest.TestCase):
     def setUp(self):
-        self.case = dict(query=dict(
-            identity="question_a", scope="scope_a",
-            observed_at="2026-10-15T00:00:00Z",
-        ))
+        self.case = dict(
+            query=dict(
+                identity="question_a",
+                scope="scope_a",
+                observed_at="2026-10-15T00:00:00Z",
+            )
+        )
         self.sources = {
             "one": source("one", "site_11111111"),
             "two": source("two", "site_22222222"),
@@ -32,9 +40,14 @@ class ReaderCandidateCapacityTests(unittest.TestCase):
 
     def test_answer_space_has_multiple_label_free_distractors(self):
         values = candidates(self.case, self.sources)
-        self.assertEqual(set(values), {
-            "site_11111111", "site_22222222", "site_33333333",
-        })
+        self.assertEqual(
+            set(values),
+            {
+                "site_11111111",
+                "site_22222222",
+                "site_33333333",
+            },
+        )
         self.assertTrue(all(CHOICE.fullmatch(value) for value in values))
         self.assertEqual(candidates(self.case, self.sources), values)
 

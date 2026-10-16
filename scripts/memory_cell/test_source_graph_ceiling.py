@@ -1,20 +1,32 @@
 """Source-bound, executable ceiling regression tests."""
+
 import json
 import unittest
 from source_graph_ceiling import resolve
 
 
 def event(ident, entity, attribute, value, revision, supersedes=(), scope="s"):
-    return dict(scope=scope, content=json.dumps(dict(
-        schema="hepta.controlled-event.v1", id=ident, entity=entity,
-        attribute=attribute, value=value, revision=revision,
-        supersedes=list(supersedes),
-    )))
+    return dict(
+        scope=scope,
+        content=json.dumps(
+            dict(
+                schema="hepta.controlled-event.v1",
+                id=ident,
+                entity=entity,
+                attribute=attribute,
+                value=value,
+                revision=revision,
+                supersedes=list(supersedes),
+            )
+        ),
+    )
 
 
 class SourceGraphCeilingTests(unittest.TestCase):
     def test_multi_hop_requires_both_original_sources(self):
-        question = dict(id="s", entity="api", path=["component", "location"], revision=2)
+        question = dict(
+            id="s", entity="api", path=["component", "location"], revision=2
+        )
         docs = dict(
             a=event("a", "api", "component", "worker", 1),
             b=event("b", "worker", "location", "site", 1),

@@ -1,4 +1,5 @@
 """Negative checks for original-score reader verification."""
+
 import unittest
 
 from offline_smol_reader import digest
@@ -12,11 +13,16 @@ class DummyTokenizer:
 
 def evidence():
     names = ("site_11111111", "site_22222222")
-    rows = [dict(
-        value=name, token_count=2, token_digest=digest([1, 2]),
-        log_likelihood=-float(n + 1),
-        mean_log_likelihood=-float(n + 1) / 2,
-    ) for n, name in enumerate(names)]
+    rows = [
+        dict(
+            value=name,
+            token_count=2,
+            token_digest=digest([1, 2]),
+            log_likelihood=-float(n + 1),
+            mean_log_likelihood=-float(n + 1) / 2,
+        )
+        for n, name in enumerate(names)
+    ]
     return names, dict(candidates=rows, ranking=list(names), chosen=names[0])
 
 

@@ -28,7 +28,11 @@ COST_KEYS = (
 
 def canonical(value):
     return json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
     ).encode()
 
 
@@ -53,7 +57,8 @@ def load(path):
 def validate_plan(plan):
     require(plan.get("schema") == "hepta.memory-factorial.plan.v1", "plan schema")
     require(
-        plan.get("conditions") == list(CONDITIONS), "four reader controls must be frozen"
+        plan.get("conditions") == list(CONDITIONS),
+        "four reader controls must be frozen",
     )
     require(plan.get("readers") == list(READERS), "reference reader required")
     require(plan.get("arms") == list(ARMS), "five memory arms required")
@@ -90,7 +95,8 @@ def validate_plan(plan):
         seen.add(case["id"])
         for key in ("answer_sha256", "oracle_source_sha256", "premise_sha256"):
             require(
-                len(case[key]) == 64 and all(c in "0123456789abcdef" for c in case[key]),
+                len(case[key]) == 64
+                and all(c in "0123456789abcdef" for c in case[key]),
                 "invalid SHA-256",
             )
     require(
@@ -102,7 +108,8 @@ def validate_plan(plan):
         "must preregister before task exposure",
     )
     require(
-        plan.get("tool_permissions_equal") is True, "baseline tool permissions must match"
+        plan.get("tool_permissions_equal") is True,
+        "baseline tool permissions must match",
     )
     return {c["id"]: c for c in cases}
 
@@ -140,11 +147,13 @@ def analyze(plan, rows):
             "unverified adjudication",
         )
         require(
-            isinstance(row.get("answer_digest"), str) and len(row["answer_digest"]) == 64,
+            isinstance(row.get("answer_digest"), str)
+            and len(row["answer_digest"]) == 64,
             "original answer hash missing",
         )
         require(
-            isinstance(row.get("source_digest"), str) and len(row["source_digest"]) == 64,
+            isinstance(row.get("source_digest"), str)
+            and len(row["source_digest"]) == 64,
             "delivered evidence hash missing",
         )
         require(
@@ -152,7 +161,8 @@ def analyze(plan, rows):
             "reader revision not recorded",
         )
         require(
-            isinstance(row.get("prompt_digest"), str) and len(row["prompt_digest"]) == 64,
+            isinstance(row.get("prompt_digest"), str)
+            and len(row["prompt_digest"]) == 64,
             "prompt hash missing",
         )
         require(
