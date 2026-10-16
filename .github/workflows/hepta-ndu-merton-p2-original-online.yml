@@ -1,4 +1,4 @@
-name: Hepta NDU Merton P2 original online Reader (DENY_ALL)
+name: Hepta NDU Merton P3 true thinking Reader (DENY_ALL)
 on:
   pull_request:
     paths:
@@ -46,25 +46,25 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==22.0.0
-          python experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/public_source.py --out /tmp/hepta-p2-source
+          python experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/public_source.py --out /tmp/hepta-p3-source
       - uses: actions/upload-artifact@v4
         with:
-          name: hepta-p2-train-and-label-blind-held-public
+          name: hepta-p3-train-and-label-blind-held-public
           path: |
-            /tmp/hepta-p2-source/train-public.json
-            /tmp/hepta-p2-source/held-public.json
+            /tmp/hepta-p3-source/train-public.json
+            /tmp/hepta-p3-source/held-public.json
           if-no-files-found: error
           retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
-          name: hepta-p2-held-publisher-truth-review-only
-          path: /tmp/hepta-p2-source/held-private-labels.json
+          name: hepta-p3-held-publisher-truth-review-only
+          path: /tmp/hepta-p3-source/held-private-labels.json
           if-no-files-found: error
           retention-days: 7
   real-pretrained-reader:
     needs: original-source-stage
     runs-on: ubuntu-24.04
-    timeout-minutes: 55
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,9 +74,9 @@ jobs:
           python-version: '3.13'
       - uses: actions/download-artifact@v4
         with:
-          name: hepta-p2-train-and-label-blind-held-public
-          path: /tmp/hepta-p2-public-input
-      - name: Load real fixed Qwen3 0.6B and execute all seven policies physically, no held publisher labels
+          name: hepta-p3-train-and-label-blind-held-public
+          path: /tmp/hepta-p3-public-input
+      - name: Execute actual pinned Qwen3 thinking and non-thinking on-policy controls (no held labels)
         env:
           HF_HUB_DISABLE_TELEMETRY: '1'
           TOKENIZERS_PARALLELISM: 'false'
@@ -84,20 +84,20 @@ jobs:
           MKL_NUM_THREADS: '2'
         run: |
           set -euo pipefail
-          test ! -e /tmp/hepta-p2-public-input/held-private-labels.json
+          test ! -e /tmp/hepta-p3-public-input/held-private-labels.json
           python -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0 huggingface-hub==0.36.0 transformers==4.57.1 tokenizers==0.22.1
           python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
           export PYTHONPATH="experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1:experiments/ndu_tree_fbsde_gates/merton/physical_online_p2"
           python experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/physical_online.py \
             --manifest experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/p2_manifest.json \
-            --train-public /tmp/hepta-p2-public-input/train-public.json \
-            --held-public /tmp/hepta-p2-public-input/held-public.json \
-            --output /tmp/hepta-p2-original
+            --train-public /tmp/hepta-p3-public-input/train-public.json \
+            --held-public /tmp/hepta-p3-public-input/held-public.json \
+            --output /tmp/hepta-p3-original
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hepta-p2-original-reader-starts-and-seal
-          path: /tmp/hepta-p2-original
+          name: hepta-p3-original-reader-starts-and-seal
+          path: /tmp/hepta-p3-original
           if-no-files-found: warn
           retention-days: 7
   postseal-publisher-review:
@@ -113,32 +113,32 @@ jobs:
           python-version: '3.13'
       - uses: actions/download-artifact@v4
         with:
-          name: hepta-p2-train-and-label-blind-held-public
-          path: /tmp/hepta-p2-public-input
+          name: hepta-p3-train-and-label-blind-held-public
+          path: /tmp/hepta-p3-public-input
       - uses: actions/download-artifact@v4
         with:
-          name: hepta-p2-held-publisher-truth-review-only
-          path: /tmp/hepta-p2-review-gold
+          name: hepta-p3-held-publisher-truth-review-only
+          path: /tmp/hepta-p3-review-gold
       - uses: actions/download-artifact@v4
         with:
-          name: hepta-p2-original-reader-starts-and-seal
-          path: /tmp/hepta-p2-original
+          name: hepta-p3-original-reader-starts-and-seal
+          path: /tmp/hepta-p3-original
       - name: Postseal original publisher truth, actual per-arm tokens, CPU/wall and p95/p99
         run: |
           set -euo pipefail
           export PYTHONPATH="experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1:experiments/ndu_tree_fbsde_gates/merton/physical_online_p2"
           python experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/physical_review.py \
             --manifest experiments/ndu_tree_fbsde_gates/merton/physical_online_p2/p2_manifest.json \
-            --train-public /tmp/hepta-p2-public-input/train-public.json \
-            --held-public /tmp/hepta-p2-public-input/held-public.json \
-            --held-private-labels /tmp/hepta-p2-review-gold/held-private-labels.json \
-            --frozen-plan /tmp/hepta-p2-original/frozen-plan.json \
-            --original /tmp/hepta-p2-original/completed-original.json \
-            --journal /tmp/hepta-p2-original/original-starts-and-dones.jsonl \
-            --output /tmp/hepta-p2-sanitized-review.json
+            --train-public /tmp/hepta-p3-public-input/train-public.json \
+            --held-public /tmp/hepta-p3-public-input/held-public.json \
+            --held-private-labels /tmp/hepta-p3-review-gold/held-private-labels.json \
+            --frozen-plan /tmp/hepta-p3-original/frozen-plan.json \
+            --original /tmp/hepta-p3-original/completed-original.json \
+            --journal /tmp/hepta-p3-original/original-starts-and-dones.jsonl \
+            --output /tmp/hepta-p3-sanitized-review.json
       - uses: actions/upload-artifact@v4
         with:
-          name: hepta-p2-sanitized-postseal-review
-          path: /tmp/hepta-p2-sanitized-review.json
+          name: hepta-p3-sanitized-postseal-review
+          path: /tmp/hepta-p3-sanitized-review.json
           if-no-files-found: error
           retention-days: 7
