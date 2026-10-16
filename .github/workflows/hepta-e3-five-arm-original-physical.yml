@@ -1,7 +1,7 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015"]
+    branches: ["research/e3-five-arm-predictor-target-isolation-20261016"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
@@ -15,6 +15,9 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
+      - "experiments/shared_stem_cell/e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
   pull_request:
@@ -31,18 +34,20 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
+      - "experiments/shared_stem_cell/e3_source_target_partition.py"
+      - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-e3-five-real-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: hepta-e3-five-real-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 env:
   SOURCE_SHA: a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202
   FIT_SHA: e8506bc65f96501b6b2fa4e4ae04c094c2b6b17b353de528a051136569e2849e
-  HELD_SHA: b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3
   TOKENIZERS_PARALLELISM: "false"
   OMP_NUM_THREADS: "2"
   MKL_NUM_THREADS: "2"
@@ -67,7 +72,9 @@ jobs:
             experiments/shared_stem_cell/e3_gemma2_budget.py \
             experiments/shared_stem_cell/e3_native_capacity_match.py \
             experiments/shared_stem_cell/e3_native_capacity_review.py \
-            experiments/shared_stem_cell/e3_ocr_original_audit.py
+            experiments/shared_stem_cell/e3_ocr_original_audit.py \
+            experiments/shared_stem_cell/e3_source_target_partition.py \
+            experiments/shared_stem_cell/e3_scienceqa_stage.py
       - name: Separate independent two-Head readout tests before model work
         run: |
           set -euo pipefail
@@ -75,6 +82,13 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
+      - name: Verify original TEST callback never reached predictor stage
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
       - name: Normal original-style 28 fault controls
         run: |
           PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
@@ -91,12 +105,14 @@ jobs:
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_five_arm_historical.py -v
   independent-original-ocr-heldout:
+    if: github.event_name == 'push'
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       PYTHONPATH: experiments/shared_stem_cell
       GH_TOKEN: ${{ github.token }}
+      HELD_SHA: b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -176,6 +192,7 @@ jobs:
             ${{ runner.temp }}/e3-ocr-source-sealed-before-labels.sha256
           if-no-files-found: warn
   physical-ocr-granite:
+    if: github.event_name == 'push'
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -204,14 +221,20 @@ jobs:
         run: |
           set -euo pipefail
           P="$RUNNER_TEMP/e3-ocr-env/bin/python"
-          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources"
+          HF_HOME="$RUNNER_TEMP/e3-source-cache"
+          HF_DATASETS_CACHE="$RUNNER_TEMP/e3-source-cache/datasets"
+          export HF_HOME HF_DATASETS_CACHE
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
+          rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          unset HF_HOME HF_DATASETS_CACHE
           "$P" - <<'PY'
           import json, os
           from pathlib import Path
           q=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/source-seals.json').read_text())
           assert q['source_sha256']==os.environ['SOURCE_SHA']
           assert q['fit_labels_sha256']==os.environ['FIT_SHA']
-          assert q['private_test_labels_sha256']==os.environ['HELD_SHA']
+          assert q['private_test_labels_sha256'] is None
+          assert not (Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/private_labels/test_labels.jsonl').exists()
           assert q['raw_image_count']==192 and q['production_accepted'] is False
           print('SAME ORIGINAL SCIENCEQA SOURCE IDENTITY — NOT A FUTURE WINDOW')
           PY
@@ -235,6 +258,7 @@ jobs:
             ${{ runner.temp }}/e3-ocr-packages.txt
           if-no-files-found: warn
   physical-native-gemma2:
+    if: github.event_name == 'push'
     needs: schema-and-security-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -283,14 +307,20 @@ jobs:
         run: |
           set -euo pipefail
           P="$RUNNER_TEMP/e3-gemma-env/bin/python"
-          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources"
+          HF_HOME="$RUNNER_TEMP/e3-source-cache"
+          HF_DATASETS_CACHE="$RUNNER_TEMP/e3-source-cache/datasets"
+          export HF_HOME HF_DATASETS_CACHE
+          "$P" experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-original-sources" --predictor-source-only
+          rm -rf -- "$RUNNER_TEMP/e3-source-cache"
+          unset HF_HOME HF_DATASETS_CACHE
           "$P" - <<'PY'
           import json, os
           from pathlib import Path
           q=json.loads((Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/source-seals.json').read_text())
           assert q['source_sha256']==os.environ['SOURCE_SHA']
           assert q['fit_labels_sha256']==os.environ['FIT_SHA']
-          assert q['private_test_labels_sha256']==os.environ['HELD_SHA']
+          assert q['private_test_labels_sha256'] is None
+          assert not (Path(os.environ['RUNNER_TEMP'])/'e3-original-sources/private_labels/test_labels.jsonl').exists()
           print('NATIVE MODEL COHORT MATCHES ORIGINAL GRANITE/DINO')
           PY
       - name: Download and verify reviewed native Google model snapshot
@@ -329,12 +359,14 @@ jobs:
             ${{ runner.temp }}/e3-native-snapshot-receipt.json
           if-no-files-found: warn
   independent-five-arm-review:
+    if: github.event_name == 'push'
     needs: [physical-ocr-granite, physical-native-gemma2]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       PYTHONPATH: experiments/shared_stem_cell
       GH_TOKEN: ${{ github.token }}
+      HELD_SHA: b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
