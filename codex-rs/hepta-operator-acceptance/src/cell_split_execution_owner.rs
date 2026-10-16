@@ -667,6 +667,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // committed prefix, even if the fourth effect has not happened yet.
         // This is read-only; it never dispatches a missing effect.
         self.verify_committed_prefix()?;
+        // A durable prepared intent without its coordinator Commit may
+        // already have reached the original effect owner. Returning false
+        // would collapse "possibly committed" into "not completed" and let
+        // downstream diagnostics mistake an uncertain effect for no effect.
+        // Only the existing reconcile-only entry may resolve this state.
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         Ok(self.is_complete())
     }
 
@@ -680,6 +688,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
         let receipts = self.read_verified_prefix(true)?;
+        // Never export an innocuous empty transcript while an original
+        // effect may have happened after its fsynced Prepare. A read-only
+        // inspector must not reconcile or retry such a pending effect.
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         if !self.is_complete() {
             return Ok(None);
         }
