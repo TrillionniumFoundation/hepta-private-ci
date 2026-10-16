@@ -1,0 +1,36 @@
+name: hepta-stem-v15-source-only-system2-split
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v15_system2_split_shadow.py"
+      - "qualification/stem-cell-v1/test_v15_system2_split_shadow.py"
+      - "qualification/stem-cell-v1/STEM_V15_COST_BOUND_SYSTEM2_SPLIT.md"
+      - ".github/workflows/hepta-stem-v15-system2-split.yml"
+  push:
+    branches:
+      - "research/stem-v15-ndu-split-shadow-20261015"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v15-source-only-negative-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bind exact source HEAD and compile V15
+        run: |
+          git rev-parse HEAD
+          python -m py_compile qualification/stem-cell-v1/v15_system2_split_shadow.py qualification/stem-cell-v1/test_v15_system2_split_shadow.py
+      - name: Execute standalone original-source negative contract (normal and optimized)
+        run: |
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v15_system2_split_shadow.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v15_system2_split_shadow.py' -v
+          git diff --exit-code
