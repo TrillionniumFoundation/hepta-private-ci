@@ -431,12 +431,11 @@ mod tests {
         assert!(!pending.exists());
         assert!(!committed.exists());
 
-        let read_only = run_pinned_cell_split_execution_v1("transcript", &config_path, &pin)
-            .expect("read-only reopen of frozen plan without effects");
-        assert_eq!(read_only.completed_steps, 0);
-        assert!(!read_only.complete);
-        assert!(read_only.transcript.is_none());
-        assert!(!read_only.production_activation_authorized);
+        // No original socket means no independently signed negative effect
+        // readback, even when the local frozen plan has no prepared step.
+        assert!(run_pinned_cell_split_execution_v1("transcript", &config_path, &pin).is_err());
+        assert!(!pending.exists());
+        assert!(!committed.exists());
 
         // A retry also performs only the signed readiness preflight. It may
         // later execute once a real service is deployed, without an orphaned
