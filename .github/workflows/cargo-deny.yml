@@ -37,7 +37,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check
+          # defaults.run.working-directory is ./codex-rs for shell steps.
+          # Resolve exactly the same workspace manifest that the original
+          # Docker Action targeted from the GitHub workspace root.
+          test -f Cargo.toml
+          cargo deny --log-level warn --manifest-path Cargo.toml --all-features check
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
