@@ -251,3 +251,54 @@ external trusted source owner, actual post-seal human evaluation, future
 source families and full cost comparisons remain missing. The reconciler
 always returns `HOLD_NO_GO` and false flags for model promotion,
 SYSTEM2 and production authorization.
+
+
+## V14.5 original pinned candidate Reader physical CPU execution
+
+`v14_original_reader_candidate_cpu.py` is now a callable *physical* research
+candidate-model executor, not a model mock or an asserted model output. It
+reuses the existing frozen V12 135M BF16 archive and **actual manual FP32 CPU
+PyTorch** Reader implementation, with original checkpoint hashes:
+
+- Model `5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c`.
+- Tokenizer `9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c`.
+- Config `8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a`.
+- Runtime is the SHA256 of the exact source bytes in `v12_reader_runtime.py`.
+
+It uses strict independent original question/evidence prompt replay **before**
+loading model weights, hashes the entire local checkpoint **before and after**
+inference, validates actual input BPE length without clipping, and executes
+each candidate model request (at most 64 cases × four arms) using the original
+greedy model runtime. The two-stage private journal uses exclusive file
+creation (0600), records the exact input-token SHA and fsyncs the attempt
+identity before each physical call. The create-only output retains actual
+generated token IDs, raw answer bytes, answer SHA256, physical CPU/wall and
+forward counts, source/model/runtime identities and unregistered citations.
+No model responses, original input text or checkpoint weights enter the
+public repository artifacts.
+
+To run **only on a host with the genuine pinned V12 archive**:
+
+```sh
+python qualification/stem-cell-v1/v14_original_reader_candidate_cpu.py \
+  --source PRIVATE/source-only-cases.json \
+  --plan PRIVATE/original-four-arm-plan.json \
+  --private-requests PRIVATE/original-reader-prompts.json \
+  --original-reader-root PRIVATE/original-135m-reader/ \
+  --private-output PRIVATE/v14-candidate-original-answers.json
+```
+
+This runtime is neither an official Hugging Face parity implementation nor an
+independently authenticated model-host run; only the candidate Reader is
+implemented, and the stronger reference Reader remains a separate external
+source. It cannot produce complete eight-arm V14 task results by itself.
+The complete source→prompt→dual Reader→post-seal review reconciler still
+requires both exact model identities, independent review and real outcomes.
+The runner never issues FinalUse or production authority.
+
+**Honesty gate:** Source-only CI tests 14 failure and preflight contracts,
+including missing authentic weights and wrong model/runtime/source material.
+Those tests NEVER execute the real pretrained model. **No V14 physical model
+run has been executed or attested by the current exact-head CI** merely because
+this code is present. V14 remains `HOLD_NO_GO`, `SHADOW_ONLY`,
+`DENY_ALL`, and `production_authorized=false`.
