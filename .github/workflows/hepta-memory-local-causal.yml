@@ -1,0 +1,87 @@
+name: MemoryCell source-local causal control
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/local_causal_reader.py"
+      - "scripts/memory_cell/run_local_causal_trial.py"
+      - "scripts/memory_cell/audit_local_causal_trial.py"
+      - "scripts/memory_cell/test_local_causal_reader.py"
+      - ".github/workflows/hepta-memory-local-causal.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-local-causal-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+jobs:
+  audited-controlled-source-read:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      TESTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Confirm exact tested source and regression coverage
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/local-causal-result"
+          test "$(git rev-parse HEAD)" = "$TESTED_HEAD"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_local_causal_reader.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/local-causal-result/tests.log"
+          git rev-parse HEAD > "$RUNNER_TEMP/local-causal-result/tested-head.txt"
+          sha256sum scripts/memory_cell/local_causal_reader.py \
+            scripts/memory_cell/run_local_causal_trial.py \
+            scripts/memory_cell/audit_local_causal_trial.py \
+            scripts/memory_cell/test_local_causal_reader.py \
+            > "$RUNNER_TEMP/local-causal-result/source-SHA256SUMS"
+      - name: Download original historical input, never model weights
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip \
+            > "$RUNNER_TEMP/local-causal-source.zip"
+          echo "SHA256: $(sha256sum "$RUNNER_TEMP/local-causal-source.zip")"
+      - name: Execute 48 frozen symbolic reads before opening labels
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/run_local_causal_trial.py \
+            "$RUNNER_TEMP/local-causal-source.zip" \
+            "$RUNNER_TEMP/local-causal-result/execution" \
+            --source-commit "$TESTED_HEAD"
+      - name: Separate-process original-answer and program replay
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/audit_local_causal_trial.py \
+            "$RUNNER_TEMP/local-causal-source.zip" \
+            "$RUNNER_TEMP/local-causal-result/execution" \
+            "$RUNNER_TEMP/local-causal-result/execution/replay.json" \
+            --source-commit "$TESTED_HEAD"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'local-causal-result/execution'
+          report=json.loads((root/'report.json').read_text())
+          replay=json.loads((root/'replay.json').read_text())
+          assert report['all_planned']==replay['independently_recomputed_original_answers']==48
+          assert replay['independently_reexecuted_authored_program_cases']==12
+          assert not report['production_accepted'] and not replay['production_accepted']
+          assert report['model_calls']==0 and replay['new_model_calls']==0
+          PY
+      - name: Retain complete tested receipts, including negative failures
+        if: always()
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/local-causal-result" && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-local-causal-complete
+          path: ${{ runner.temp }}/local-causal-result
+          if-no-files-found: error
