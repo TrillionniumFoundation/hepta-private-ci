@@ -1,0 +1,45 @@
+name: Windows pinned DotSlash bootstrap qualification
+
+on:
+  push:
+    branches: [ci/gha-dotslash-fixed-windows-20261016]
+    paths:
+      - .github/workflows/gha-dotslash-fixed-windows.yml
+
+permissions:
+  contents: read
+
+# Isolated Windows bootstrap test. Keep the official release identity and
+# sha256: do not disable TLS certificate validation or revocation verification.
+jobs:
+  windows-bootstrap:
+    name: Verify pinned DotSlash binary on Windows runner
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - name: Download and verify the published v0.5.9 Windows release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="v0.5.9"
+          asset="dotslash-windows.${version}.tar.gz"
+          expected_sha256="c925840a9bf9105a187cd120278cb023c51dac0cecb3234855152422751b7b41"
+          binary_dir="${RUNNER_TEMP}/verified-dotslash/bin"
+          mkdir -p "$binary_dir"
+          gh release download "$version" --repo facebook/dotslash \
+            --pattern "$asset" --dir "$binary_dir"
+          actual_sha256="$(sha256sum "$binary_dir/$asset" | cut -d' ' -f1)"
+          test "$actual_sha256" = "$expected_sha256"
+          tar -tzf "$binary_dir/$asset"
+          tar -xOzf "$binary_dir/$asset" > "$binary_dir/dotslash.exe"
+          chmod +x "$binary_dir/dotslash.exe"
+          "$binary_dir/dotslash.exe" --version
+          echo "$binary_dir" >> "$GITHUB_PATH"
+      - name: Exercise installed DotSlash on Windows PATH
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v dotslash
+          dotslash --version
