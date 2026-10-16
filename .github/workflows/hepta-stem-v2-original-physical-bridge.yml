@@ -1,0 +1,187 @@
+name: Hepta Stem V2 original physical Granite97 bridge (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/stem-multimodal-source-bound-v1-20261016
+    paths:
+      - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
+      - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
+      - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
+      - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
+      - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
+      - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
+permissions:
+  contents: read
+env:
+  HF_HUB_DISABLE_TELEMETRY: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  offline-adversarial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact-source byte-bound V1 and V2 tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2
+          python -O -m unittest -v test_multimodal_stem_v1 test_granite97_feature_bridge_v2
+          python -m py_compile multimodal_stem_v1.py granite97_feature_bridge_v2.py \
+            test_multimodal_stem_v1.py test_granite97_feature_bridge_v2.py
+
+  original-physical-producer-review-bridge:
+    needs: offline-adversarial
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Fetch exact existing V9 producer, independent reviewer and public constructed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin \
+            refs/heads/research/granite97-public-two-process-v9-20261016
+          test "$(git rev-parse FETCH_HEAD)" = \
+            'd2cb3e66172157172a78a2aa35dadfc6508497b9'
+          mkdir -p "$RUNNER_TEMP/granite-v2/model" "$RUNNER_TEMP/granite-v2/source"
+          for file in granite97_v3_export.py granite97_v3_independent_review.py granite97_v9_public_physical.py; do
+            git show "FETCH_HEAD:qualification/stem-cell-v1/$file" \
+              > "$RUNNER_TEMP/granite-v2/source/$file"
+          done
+          git show FETCH_HEAD:qualification/stem-cell-v1/GRANITE97_V9_PUBLIC_SOURCE.txt \
+            > "$RUNNER_TEMP/granite-v2/source/original.txt"
+          test "$(git hash-object "$RUNNER_TEMP/granite-v2/source/granite97_v3_export.py")" = \
+            '1ba81ff30ce375a6a59c860d538413fb1573892a'
+          test "$(git hash-object "$RUNNER_TEMP/granite-v2/source/granite97_v3_independent_review.py")" = \
+            '8a760b53afcc1a3a1b30e45417e958117a19c3df'
+          test "$(git hash-object "$RUNNER_TEMP/granite-v2/source/granite97_v9_public_physical.py")" = \
+            'cdf0c2840ee650e915ef3012387ff1ee503f18d1'
+          test "$(git hash-object "$RUNNER_TEMP/granite-v2/source/original.txt")" = \
+            '8ed7aae8e82c89649dec7b83d028917fd3b11f0f'
+          echo 'Exact V9 frozen source blobs verified; source-only, not model execution'
+      - name: Install pinned physical CPU research runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'transformers==4.57.1' 'safetensors==0.6.2' 'huggingface_hub==0.36.0'
+      - name: Acquire immutable model source and check independently pre-reviewed material
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from huggingface_hub import snapshot_download
+          root=os.environ['RUNNER_TEMP']+'/granite-v2/model'
+          got=snapshot_download(
+            repo_id='ibm-granite/granite-embedding-97m-multilingual-r2',
+            revision='835ad14087e140460703cf0fae09f97d469d65c2',
+            allow_patterns=['config.json','model.safetensors','tokenizer.json',
+              'tokenizer_config.json','special_tokens_map.json'],local_dir=root)
+          if got != root: raise RuntimeError('unregistered model directory')
+          PY
+          python "$RUNNER_TEMP/granite-v2/source/granite97_v9_public_physical.py" prepare \
+            --model-root "$RUNNER_TEMP/granite-v2/model" \
+            --source "$RUNNER_TEMP/granite-v2/source/original.txt" \
+            --lock-output "$RUNNER_TEMP/granite-v2/lock.json" \
+            --material-baseline-sha256 9d39552804582ee18cd61992e012510feae4cddb492b3b74808f6f46f494b0d8
+      - name: First physical pretrained Encoder forward
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'granite-v2/lock.json'
+          d=json.loads(p.read_text())
+          print(d['material_sha256'],d['source_sha256'],d['expires_at_ms'])
+          PY
+          )
+          python "$RUNNER_TEMP/granite-v2/source/granite97_v3_export.py" \
+            --model-root "$RUNNER_TEMP/granite-v2/model" \
+            --source "$RUNNER_TEMP/granite-v2/source/original.txt" \
+            --source-sha256 "$SHA" --expected-material-sha256 "$MAT" \
+            --expires-at-ms "$EXP" --max-tokens 192 \
+            --feature-adapter rational8-v1 \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 \
+            --output "$RUNNER_TEMP/granite-v2/export.json"
+      - name: Second independent process recomputes ALL physical Q24 tokens
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          read -r MAT SHA EXP < <(python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'granite-v2/lock.json'
+          d=json.loads(p.read_text())
+          print(d['material_sha256'],d['source_sha256'],d['expires_at_ms'])
+          PY
+          )
+          python "$RUNNER_TEMP/granite-v2/source/granite97_v3_independent_review.py" \
+            --model-root "$RUNNER_TEMP/granite-v2/model" \
+            --source "$RUNNER_TEMP/granite-v2/source/original.txt" \
+            --source-sha256 "$SHA" \
+            --export "$RUNNER_TEMP/granite-v2/export.json" \
+            --expected-material-sha256 "$MAT" \
+            --now-ms "$(date +%s%3N)" --maximum-expiry-ms "$EXP" \
+            --principal-id research:granite97-public-v9 \
+            --purpose-id research:constructed-source-only \
+            --generation 9 --authority-epoch 1 \
+            --max-tokens 192 --feature-adapter rational8-v1 \
+            --output "$RUNNER_TEMP/granite-v2/review.json"
+      - name: Independent V2 Bridge recomputes original/text/token/Q24/identity/cost bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/granite97_feature_bridge_v2.py \
+            --source "$RUNNER_TEMP/granite-v2/source/original.txt" \
+            --export "$RUNNER_TEMP/granite-v2/export.json" \
+            --review "$RUNNER_TEMP/granite-v2/review.json" \
+            --output "$RUNNER_TEMP/granite-v2/bridge.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'granite-v2/bridge.json'
+          d=json.loads(p.read_text())
+          assert d['schema']=='hepta.stem.granite97-feature-bridge.v2'
+          assert d['authority']=='DENY_ALL' and d['production_authorized'] is False
+          assert d['model_executed_in_this_bridge'] is False
+          assert d['independent_model_issuer_signature_verified'] is False
+          assert d['bridge_observed_forward_count']==0
+          assert d['producer_reported_forward_count']==1
+          assert d['reviewer_reported_forward_count']==1
+          print(json.dumps(d,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: granite97-v2-physical-bridge-sanitized-nogo
+          retention-days: 1
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/granite-v2/bridge.json
