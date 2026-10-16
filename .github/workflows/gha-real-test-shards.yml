@@ -10,50 +10,64 @@ permissions:
 # This branch-only test does not change product required checks. Every shard
 # must contain a unique real unittest file and must execute >0 test cases.
 jobs:
-  shard-plan:
-    name: Select 48 distinct production Python test modules
-    # Pure Python selection: place orchestration on the already-proven x64 pool
-    # rather than blocking ARM capacity before the actual ARM test matrix exists.
-    runs-on: ubuntu-26.04
-    timeout-minutes: 8
-    outputs:
-      modules: ${{ steps.select.outputs.modules }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-      - name: Produce deterministic nonempty production test shards
-        id: select
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          matches = sorted(str(path) for path in Path("scripts").glob("test_hepta_*.py"))
-          if len(matches) < 48:
-              raise SystemExit(f"not enough distinct tests: {len(matches)}")
-          chosen = matches[:48]
-          if len(chosen) != len(set(chosen)):
-              raise SystemExit("duplicate test modules")
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              output.write("modules=" + json.dumps(chosen, separators=(",", ":")) + "\n")
-          print(f"Selected {len(chosen)} distinct real source test modules")
-          print("\n".join(chosen))
-          PY
-
   python-suite:
     name: Real module ${{ matrix.test_module }}
-    needs: shard-plan
+    # Static 48-way test file matrix: no planner runner is required.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     strategy:
       fail-fast: false
       max-parallel: 48
       matrix:
-        test_module: ${{ fromJSON(needs.shard-plan.outputs.modules) }}
+        test_module:
+          - scripts/test_hepta_agentd_ci.py
+          - scripts/test_hepta_algorithm_semantics.py
+          - scripts/test_hepta_algorithm_workflow.py
+          - scripts/test_hepta_candidate_transport_workflow.py
+          - scripts/test_hepta_ci_cargo_entrypoints.py
+          - scripts/test_hepta_ci_dependency_scaling.py
+          - scripts/test_hepta_ci_exec.py
+          - scripts/test_hepta_ci_exec_deadline.py
+          - scripts/test_hepta_ci_exec_output.py
+          - scripts/test_hepta_ci_history.py
+          - scripts/test_hepta_ci_module_inputs.py
+          - scripts/test_hepta_ci_nested_inputs.py
+          - scripts/test_hepta_ci_opaque_inputs.py
+          - scripts/test_hepta_ci_owner_transitions.py
+          - scripts/test_hepta_ci_scope_roots.py
+          - scripts/test_hepta_ci_source_identity.py
+          - scripts/test_hepta_ci_v8.py
+          - scripts/test_hepta_cleanup_consumers.py
+          - scripts/test_hepta_cleanup_history.py
+          - scripts/test_hepta_cognitive_migration_checkout.py
+          - scripts/test_hepta_consolidated_scope.py
+          - scripts/test_hepta_control_hardening.py
+          - scripts/test_hepta_document_inventory.py
+          - scripts/test_hepta_format_scope.py
+          - scripts/test_hepta_gap_closure.py
+          - scripts/test_hepta_implementation_git_environment.py
+          - scripts/test_hepta_implementation_identity.py
+          - scripts/test_hepta_implementation_maps.py
+          - scripts/test_hepta_implementation_source_identity.py
+          - scripts/test_hepta_integration_feedback.py
+          - scripts/test_hepta_lane_b_owner_registry.py
+          - scripts/test_hepta_lane_b_truth.py
+          - scripts/test_hepta_lane_d_scope.py
+          - scripts/test_hepta_lane_e_registry.py
+          - scripts/test_hepta_ledger_scale.py
+          - scripts/test_hepta_main_protection.py
+          - scripts/test_hepta_main_protection_freshness.py
+          - scripts/test_hepta_metadata.py
+          - scripts/test_hepta_module_catalog.py
+          - scripts/test_hepta_module_doc_metadata.py
+          - scripts/test_hepta_module_navigation.py
+          - scripts/test_hepta_module_projection_membership.py
+          - scripts/test_hepta_module_registry.py
+          - scripts/test_hepta_module_source_roots.py
+          - scripts/test_hepta_module_status_facts.py
+          - scripts/test_hepta_native_feedback.py
+          - scripts/test_hepta_objective_contracts.py
+          - scripts/test_hepta_paper_evidence.py
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
