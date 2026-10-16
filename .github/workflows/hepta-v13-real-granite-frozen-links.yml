@@ -58,7 +58,7 @@ jobs:
             efee1e07fdb26cb9f3222a86244ad8a41062b0c647a3be762d76c688826995af "$RUNNER_TEMP/original-public-source.zip" \
             | sha256sum -c -
           git rev-parse HEAD > "$RUNNER_TEMP/v13-source-head.txt"
-      - name: Original frozen token-link recount: 240 true source groups, 0 new model forwards
+      - name: Original frozen token-link recount of 240 source groups (zero new model forwards)
         shell: bash
         run: |
           set -euo pipefail
