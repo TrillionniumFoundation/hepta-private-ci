@@ -1590,9 +1590,8 @@ fn abrupt_process_exit_after_control_begin_fences_recovery() {
 
     if let Some(child_wal) = std::env::var_os(CHILD_WAL) {
         let wal = PathBuf::from(child_wal);
-        let effect = PathBuf::from(
-            std::env::var_os(CHILD_EFFECT).expect("private child effect path"),
-        );
+        let effect =
+            PathBuf::from(std::env::var_os(CHILD_EFFECT).expect("private child effect path"));
         let frozen = snapshot(3);
         let owner = NduPublicationOwnerV1::open_production(&wal, frozen.clone(), Digest32::ZERO)
             .expect("real original Control writer and fsynced G");
@@ -1662,7 +1661,9 @@ fn abrupt_process_exit_after_control_begin_fences_recovery() {
         "exactly one original durable Control Begin is retained"
     );
     assert!(
-        original.lines().all(|row| row.split('|').nth(4) != Some("C")),
+        original
+            .lines()
+            .all(|row| row.split('|').nth(4) != Some("C")),
         "no Control C may be forged after a terminated runtime"
     );
 
