@@ -1,6 +1,6 @@
 # V19 — Real mmBERT frozen-feature TRAIN-only budget selection (negative / exploratory)
 
-**2026-10-16 · Research-only · DRAFT · SHADOW_ONLY · DENY_ALL.** This additive branch starts at the exact #2481 research HEAD \`cbf76715db6e3c31ad7e3edab138d1b2fcd36859\`; it does NOT update the original V18 branch, main, an Encoder/Reader model, Worker, NDU, CellSplit, CNS, CAS, signer, FinalUse or a deployed user host.
+**2026-10-16 · Research-only · DRAFT · SHADOW_ONLY · DENY_ALL.** This additive branch starts at the exact #2481 research HEAD `cbf76715db6e3c31ad7e3edab138d1b2fcd36859`; it does NOT update the original V18 branch, main, an Encoder/Reader model, Worker, NDU, CellSplit, CNS, CAS, signer, FinalUse or a deployed user host.
 
 ## Why this investment test
 
@@ -8,9 +8,9 @@ On the previously examined original 32-case AG News historical CAL panel, cold-s
 
 ## Immutable source identity
 
-- Original GitHub Actions run [38546717991](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38546717991), artifact **11890616195**, exact original ZIP SHA256 \`0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7\`.
-- Frozen original \`jhu-clsp/mmBERT-small\` pretrained **cached** 128x384 FP32 Feature material, exact original safetensors \`e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490\`.
-- Original V14 source-only prepared \`input.json\` exact SHA256 \`d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a\`; **64 original TRAIN rows, 32 previously exposed CAL, 32 unscored BLIND**.
+- Original GitHub Actions run [38546717991](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38546717991), artifact **11890616195**, exact original ZIP SHA256 `0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7`.
+- Frozen original `jhu-clsp/mmBERT-small` pretrained **cached** 128x384 FP32 Feature material, exact original safetensors `e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490`.
+- Original V14 source-only prepared `input.json` exact SHA256 `d029f906565946216126db39e4ca3f4f14d7ab5a3c297ec2a62639ccdfbf604a`; **64 original TRAIN rows, 32 previously exposed CAL, 32 unscored BLIND**.
 - Original source only; there are **not** four independent task families. The four held-TRAIN folds all come from **one AG News dataset family**; row-ID SHA-based fold construction is label-agnostic but global TRAIN feature normalization observes all TRAIN feature values. No new original Encoder calls or a newly authenticated publisher signature are created here.
 
 ## Physically executed learning design
@@ -35,25 +35,25 @@ The OOF selector **harms** Seed 41 CAL correctness, and Seed 47's 4-step OOF cou
 
 ## Original physical verification and independent review
 
-Original source files were available in an isolated CPU analysis environment, using PyTorch CPU 2.10.0, NumPy 2.3.5 and safetensors 0.7.0. The actual, byte-pinned code physically retrained two separate processes: normal Python and \`python -O\`. Both reproduced **105/105 source-case-bound physical model/forward SHA identities** (4-fold × 7 checkpoints × 3 seeds + one final model × 7 checkpoints × 3 seeds), all three TRAIN-only choices and all historical CAL scores. The separate independent NumPy reviewer imports **neither Torch nor producer**, independently reopens the immutable feature file/roster, recalculates FP32 normalization and every Head's source-specific linear output from **its original checkpoint parameters**, recomputes OOF/CAL metrics, and validates all 105 state/output hash pairs. It does **not** independently rederive optimizer gradients, cryptographically authenticate publisher/host, or score the original BLIND labels.
+Original source files were available in an isolated CPU analysis environment, using PyTorch CPU 2.10.0, NumPy 2.3.5 and safetensors 0.7.0. The actual, byte-pinned code physically retrained two separate processes: normal Python and `python -O`. Both reproduced **105/105 source-case-bound physical model/forward SHA identities** (4-fold × 7 checkpoints × 3 seeds + one final model × 7 checkpoints × 3 seeds), all three TRAIN-only choices and all historical CAL scores. The separate independent NumPy reviewer imports **neither Torch nor producer**, independently reopens the immutable feature file/roster, recalculates FP32 normalization and every Head's source-specific linear output from **its original checkpoint parameters**, recomputes OOF/CAL metrics, and validates all 105 state/output hash pairs. It does **not** independently rederive optimizer gradients, cryptographically authenticate publisher/host, or score the original BLIND labels.
 
 - 11/11 source-only mechanism/negative tests in normal and optimized Python; 11/11 authentic original-material tamper/forward tests in normal and optimized Python. **44 test executions total** with real original material staged for the latter 22.
 - Source/weight/output identity tampering, even with rehashed one-sided payloads, incorrect case order, fake new windows, missing checkpoints, altered scores, fake authority, and zero/nonmonotonic physical CPU receipts fail closed.
-- Local complete public aggregate SHA256 \`6b82582a62d8884ccab0474e4a92dd19b754518690a03963b0ad600748a1cbeb\`. The independently rederived review JSON SHA256 \`a22dab7be3af4a5791798a81d4ed3225c2bb7a35d421eb247d59dd97398b82bb\` is identical between ordinary and optimized runs (physical CPU counters in producer aggregate necessarily differ).
+- Local complete public aggregate SHA256 `6b82582a62d8884ccab0474e4a92dd19b754518690a03963b0ad600748a1cbeb`. The independently rederived review JSON SHA256 `a22dab7be3af4a5791798a81d4ed3225c2bb7a35d421eb247d59dd97398b82bb` is identical between ordinary and optimized runs (physical CPU counters in producer aggregate necessarily differ).
 - Public repo includes only source/test/CI/sanitized observations. No source text, labels, raw features, private per-case IDs, logits, checkpoint weights or private predictor traces are uploaded.
 
 ## Reproduction and strict hosted gates
 
-Retrieve only the exact SHA-pinned original GitHub artifact 11890616195 and verify ZIP SHA, then create a private, create-only prepared directory with the inherited original \`stem_counterfactual_split_v14.py prepare\`. Delete the separately created BLIND label file without passing it to model training or reviewer. From \`qualification/stem-cell-v1\`:
+Retrieve only the exact SHA-pinned original GitHub artifact 11890616195 and verify ZIP SHA, then create a private, create-only prepared directory with the inherited original `stem_counterfactual_split_v14.py prepare`. Delete the separately created BLIND label file without passing it to model training or reviewer. From `qualification/stem-cell-v1`:
 
-\`\`\`sh
+```sh
 python -m unittest -q test_v19_budget
 python -O -m unittest -q test_v19_budget
 python v19_train_only_budget.py --inputs /private/inputs --output /private/v19-result.json --private /private/v19-checkpoints.json
 python v19_independent_numpy_review.py --inputs /private/inputs --report /private/v19-result.json --private /private/v19-checkpoints.json --output /private/v19-independent.json
 HEPTA_V19_INPUTS=/private/inputs HEPTA_V19_REPORT=/private/v19-result.json HEPTA_V19_PRIVATE=/private/v19-checkpoints.json python -m unittest -q test_v19_original_replay
-\`\`\`
+```
 
-The exact-head GitHub workflow \`hepta-stem-v19-trainonly-original.yml\` independently acquires the original artifact with an authenticated GitHub API request, downloads the HTTPS redirected ZIP without forwarding GH_TOKEN, checks its full SHA256, and executes two physical processes plus independent review/tests. No private artifacts are published to Git. A queued workflow is not a passed workflow. Full architecture, blocking-ci, source/current-base merge and independent operator review continue to gate any engineering integration.
+The exact-head GitHub workflow `hepta-stem-v19-trainonly-original.yml` independently acquires the original artifact with an authenticated GitHub API request, downloads the HTTPS redirected ZIP without forwarding GH_TOKEN, checks its full SHA256, and executes two physical processes plus independent review/tests. No private artifacts are published to Git. A queued workflow is not a passed workflow. Full architecture, blocking-ci, source/current-base merge and independent operator review continue to gate any engineering integration.
 
 **Disposition: RESEARCH_HISTORICAL_ONLY_DENY_ALL.** Next actual science requires new independent source families, external label custody, two genuine prospective windows, strong unchanged baseline, loss/negative-transfer accounting, and full lifecycle cost; production 64–4096 Cell physical target-host performance/recovery remains unmeasured here.
