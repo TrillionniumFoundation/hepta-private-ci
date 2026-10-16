@@ -195,19 +195,20 @@ mod tests {
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
         assert!(
-            ledger.admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
-            })
-            .is_ok(),
+            ledger
+                .admit_host(HostObservation {
+                    host_id: "host-one".into(),
+                    failure_domain_id: "rack-one".into(),
+                    generation: 1,
+                    observed_at_ms: 1_000,
+                    valid_until_ms: 10_000,
+                    capacity: Resources {
+                        cpu_millis: 1_000,
+                        memory_bytes: 1 << 20,
+                        accelerator_millis: 1_000,
+                    },
+                })
+                .is_ok(),
             "fixture host observation must be admitted"
         );
         ledger

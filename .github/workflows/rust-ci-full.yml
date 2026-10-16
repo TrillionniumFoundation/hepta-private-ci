@@ -59,7 +59,9 @@ jobs:
   argument_comment_lint_package:
     timeout-minutes: 30
     name: Argument comment lint package
-    runs-on: ubuntu-24.04
+    # Exact full-suite pinned Dylint/Cargo job passed independently on the
+    # Ubuntu 26 x64 pool: run 38902708713, job 116978600664.
+    runs-on: ubuntu-26.04
     env:
       CARGO_DYLINT_VERSION: 5.0.0
       DYLINT_LINK_VERSION: 5.0.0
