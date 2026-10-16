@@ -352,16 +352,23 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
         "{nested: text}",
         "!secret value",
         "!!str value",
+        "!!int 42",
+        "!<tag:yaml.org,2002:str> value",
     ] {
         let source = format!("---\nname: reviewer\ndescription: {value}\n---\nReview carefully.\n");
         let document = parse_document_content(&source);
         assert!(agent_metadata(&document).is_none(), "{value}");
     }
 
-    let tagged_mapping = parse_document_content(
+    for source in [
         "---\n!secret {name: reviewer, description: Review}\n---\nReview carefully.\n",
-    );
-    assert!(agent_metadata(&tagged_mapping).is_none());
+        "---\n!<tag:yaml.org,2002:map> {name: reviewer, description: Review}\n---\nReview carefully.\n",
+        "---\nname: !secret reviewer\ndescription: Review\n---\nReview carefully.\n",
+        "---\nname: reviewer\ndescription: Review\nskills: !secret ignored\n---\nReview carefully.\n",
+    ] {
+        let tagged_mapping = parse_document_content(source);
+        assert!(agent_metadata(&tagged_mapping).is_none(), "{source}");
+    }
 
     let quoted_literal = parse_document_content(
         "---\nname: reviewer\ndescription: '!secret literal'\n---\nReview carefully.\n",
