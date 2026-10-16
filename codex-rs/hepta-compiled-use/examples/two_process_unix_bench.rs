@@ -16,7 +16,7 @@ mod unix {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::net::{UnixListener, UnixStream};
     use std::path::{Path, PathBuf};
-    use std::process::{Command, Stdio};
+    use std::process::{Child, Command, Stdio};
     use std::thread;
     use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -100,6 +100,14 @@ mod unix {
         }
     }
 
+    struct WorkerChild(Child);
+    impl Drop for WorkerChild {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+
     fn child(path: &Path, count: u64) -> Result<(), Box<dyn Error>> {
         let socket = UnixStream::connect(path)?;
         set_deadlines(&socket)?;
@@ -119,7 +127,10 @@ mod unix {
         let deadline = Instant::now() + IO_TIMEOUT;
         loop {
             match listener.accept() {
-                Ok((socket, _)) => return Ok(socket),
+                Ok((socket, _)) => {
+                    socket.set_nonblocking(false)?;
+                    return Ok(socket);
+                },
                 Err(e) if e.kind() == io::ErrorKind::WouldBlock && Instant::now() < deadline => {
                     thread::sleep(Duration::from_millis(1));
                 }
@@ -139,21 +150,16 @@ mod unix {
         let private = PrivateSocket::new()?;
         let listener = UnixListener::bind(&private.path)?;
         let setup_start = Instant::now();
-        let mut worker = Command::new(env::current_exe()?)
-            .arg("--worker")
-            .arg(&private.path)
-            .arg(count.to_string())
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .spawn()?;
-        let socket = match accept_bounded(&listener) {
-            Ok(value) => value,
-            Err(e) => {
-                let _ = worker.kill();
-                let _ = worker.wait();
-                return Err(e.into());
-            }
-        };
+        let mut worker = WorkerChild(
+            Command::new(env::current_exe()?)
+                .arg("--worker")
+                .arg(&private.path)
+                .arg(count.to_string())
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .spawn()?,
+        );
+        let socket = accept_bounded(&listener)?;
         let process_setup_ns = setup_start.elapsed().as_nanos();
         set_deadlines(&socket)?;
         let mut wire = FrameDuplexV1::new(socket, verifier(), count)?;
@@ -169,7 +175,7 @@ mod unix {
             black_box(echoed.frame().sequence);
             samples.push(begin.elapsed().as_nanos());
         }
-        let status = worker.wait()?;
+        let status = worker.0.wait()?;
         if !status.success() || wire.is_poisoned() {
             return Err("two-process worker failed or transport was poisoned".into());
         }
