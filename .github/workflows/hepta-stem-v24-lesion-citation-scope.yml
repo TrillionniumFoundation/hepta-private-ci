@@ -1,0 +1,55 @@
+name: hepta-stem-v24-lesion-source-scoped-citations-source-audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v24_*.py'
+      - 'qualification/stem-cell-v1/test_v24_*.py'
+      - 'qualification/stem-cell-v1/V24_*.json'
+      - 'qualification/stem-cell-v1/STEM_V24_*.md'
+      - '.github/workflows/hepta-stem-v24-lesion-citation-scope.yml'
+  push:
+    branches:
+      - research/stem-v24-lesion-citation-scope-20261016
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contract-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile scope and run source-only adversarial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q \
+            qualification/stem-cell-v1/v24_lesion_source_scoped_citations.py \
+            qualification/stem-cell-v1/v24_lesion_citation_independent_review.py \
+            qualification/stem-cell-v1/v24_lesion_repeat_compare.py \
+            qualification/stem-cell-v1/test_v24_lesion_citation.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v24_*.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v24_*.py' -v
+      - name: Source-only negative outcome; no model or raw source material
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python qualification/stem-cell-v1/v24_lesion_citation_independent_review.py \
+            --public-receipt qualification/stem-cell-v1/V24_ORIGINAL_LESION_CITATION_RESULT_20261016.json
+          python qualification/stem-cell-v1/v24_lesion_repeat_compare.py \
+            --public-receipt qualification/stem-cell-v1/V24_ORIGINAL_LESION_REPEAT_20261016.json
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/hepta-stem-v24-lesion-citation-scope.yml').read_text()
+          checked=p.split('      - name: Source-only negative outcome; no model or raw source material')[0]
+          for bad in ('upload-artifact@','hf_hub_download','model.generate(', 'HF_TOKEN'):
+              if bad in checked:
+                  raise SystemExit('source-only workflow gained a model or upload permission')
+          if 'contents: read' not in p:
+              raise SystemExit('source-only workflow lost its read-only permission')
+          PY
