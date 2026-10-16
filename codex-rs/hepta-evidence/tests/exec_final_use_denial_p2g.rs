@@ -153,7 +153,9 @@ async fn prepare_original(
 ) -> (SqliteConfig, codex_hepta_contracts::ProviderEffectKey) {
     inspect_codex_exec_server_start_v1(intent, raw).expect("actual P2c inspector");
     let cfg = original_config(original);
-    let writer = HeptaEvidenceStore::open(&cfg).await.expect("original Evidence owner");
+    let writer = HeptaEvidenceStore::open(&cfg)
+        .await
+        .expect("original Evidence owner");
     let prepared = writer
         .prepare_execution_intent_v1(intent, raw)
         .await
@@ -292,7 +294,9 @@ async fn wrong_binding_and_forged_signature_fail_before_any_owner_effect() {
         ..intent
     };
     assert!(matches!(
-        reader.audit_execution_effect_entry_denied_v1(&stale, raw).await,
+        reader
+            .audit_execution_effect_entry_denied_v1(&stale, raw)
+            .await,
         Err(EvidenceError::IdempotencyConflict { .. })
     ));
     let refused = reader
@@ -360,7 +364,9 @@ async fn even_signed_final_use_cannot_clear_original_indeterminate_quarantine() 
         .proposed_final_use_binding;
     let evidence_home = TempDir::new().expect("Evidence home");
     let cfg = original_config(&evidence_home);
-    let writer = HeptaEvidenceStore::open(&cfg).await.expect("original owner");
+    let writer = HeptaEvidenceStore::open(&cfg)
+        .await
+        .expect("original owner");
     inspect_codex_exec_server_start_v1(&intent, raw).expect("P2c preflight");
     let original = writer
         .prepare_execution_intent_v1(&intent, raw)
