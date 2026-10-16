@@ -370,6 +370,11 @@ pub struct ArtifactCasOwnerV1 {
     // One original Evidence binding for all clones of the same owner. A
     // replacement cannot erase previously observed CAS/signature history.
     metrics_binding_claimed: Arc<AtomicBool>,
+    // Shared across clones: an in-flight CAS/signature cannot be certified by
+    // an Evidence flush that did not include its terminal metric record.
+    metrics_epoch: Arc<AtomicU64>,
+    metrics_flushed_epoch: Arc<AtomicU64>,
+    metrics_in_flight: Arc<AtomicU64>,
     failed_metric_records: Arc<AtomicU64>,
 }
 
@@ -391,6 +396,9 @@ impl ArtifactCasOwnerV1 {
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             metrics: None,
             metrics_binding_claimed: Arc::new(AtomicBool::new(false)),
+            metrics_epoch: Arc::new(AtomicU64::new(0)),
+            metrics_flushed_epoch: Arc::new(AtomicU64::new(u64::MAX)),
+            metrics_in_flight: Arc::new(AtomicU64::new(0)),
             failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
     }
@@ -410,6 +418,8 @@ impl ArtifactCasOwnerV1 {
     pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         if self.metrics.is_some()
             || self.failed_metric_records.load(Ordering::Acquire) != 0
+            || self.metrics_epoch.load(Ordering::Acquire) != 0
+            || self.metrics_in_flight.load(Ordering::Acquire) != 0
             || self.cas_latency.snapshot().observations != 0
             || self.signature_latency.snapshot().observations != 0
             || self
@@ -425,8 +435,15 @@ impl ArtifactCasOwnerV1 {
     }
 
     pub fn production_metrics_ready(&self) -> bool {
+        // Merely binding a healthy sink, or accepting an async record, is not
+        // proof of a durable Evidence fsync. A clone's new operation invalidates
+        // the shared committed epoch before its CAS/signature closure starts.
+        let observed = self.metrics_epoch.load(Ordering::Acquire);
         self.metrics.as_ref().is_some_and(|sink| sink.healthy())
             && self.failed_metric_records.load(Ordering::Acquire) == 0
+            && self.metrics_in_flight.load(Ordering::Acquire) == 0
+            && self.metrics_flushed_epoch.load(Ordering::Acquire) == observed
+            && self.metrics_epoch.load(Ordering::Acquire) == observed
     }
 
     /// External qualification must cross the Evidence fsync barrier.
@@ -434,10 +451,26 @@ impl ArtifactCasOwnerV1 {
         let Some(sink) = &self.metrics else {
             return false;
         };
+        // Snapshot the epoch BEFORE checking in-flight, so a new operation
+        // cannot begin between those reads and escape both race fences.
+        let observed = self.metrics_epoch.load(Ordering::Acquire);
+        if self.metrics_in_flight.load(Ordering::Acquire) != 0
+            || self.failed_metric_records.load(Ordering::Acquire) != 0
+        {
+            return false;
+        }
         if sink.flush().is_err() {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
             return false;
         }
+        if self.metrics_in_flight.load(Ordering::Acquire) != 0
+            || self.metrics_epoch.load(Ordering::Acquire) != observed
+        {
+            // An operation raced the fsync. It may not have been persisted;
+            // leave readiness denied until a later, quiescent flush succeeds.
+            return false;
+        }
+        self.metrics_flushed_epoch.store(observed, Ordering::Release);
         self.production_metrics_ready()
     }
 
@@ -448,10 +481,18 @@ impl ArtifactCasOwnerV1 {
         phase: PhaseMetricKindV1,
         invoke: impl FnOnce() -> Result<T, E>,
     ) -> Result<T, E> {
-        // A clone without the original sink may still perform a research
-        // operation, but it must permanently revoke production telemetry
-        // readiness BEFORE the CAS/signature closure can have an effect.
-        if self.metrics.is_none() {
+        // Latch the work BEFORE the CAS/signature closure. A concurrent fsync
+        // must see either an in-flight operation or a changed epoch. A panic
+        // leaves in-flight nonzero and readiness fail-closed, never certified.
+        self.metrics_in_flight.fetch_add(1, Ordering::AcqRel);
+        if self
+            .metrics_epoch
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |epoch| {
+                epoch.checked_add(1)
+            })
+            .is_err()
+            || self.metrics.is_none()
+        {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
         let started = Instant::now();
@@ -476,6 +517,7 @@ impl ArtifactCasOwnerV1 {
         {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
+        self.metrics_in_flight.fetch_sub(1, Ordering::AcqRel);
         result
     }
 
