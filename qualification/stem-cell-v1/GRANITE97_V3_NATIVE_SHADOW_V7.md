@@ -118,3 +118,42 @@ matched shared/independent-421M and cheap model controls,
 actual process/cold-load/memory/latency/energy accounting, retention,
 and marginal NDU-System2 utility. This CLI never constructs a signed owner
 token, production grant, external tool executor or native executable memory.
+
+
+## V8 read-only file-descriptor intake hardening (research-only child)
+
+The V7 CLI used `symlink_metadata(path)` and then `File::open(path)`.
+An attacker able to replace a pathname between those calls could change
+which filesystem object was opened; swapping a regular file for a FIFO
+could also stall at open. V8 corrects this admission gap, but does **not**
+claim the local input is signed by an independent owner.
+
+The Unix native CLI now validates absolute normalized paths, disallows
+symlinked ancestors/direct-file symlinks and multi-link regular files,
+and opens the final entry with `O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC`.
+It checks the actual opened file descriptor's device, inode, file type,
+link count, length and modification timestamp against the path preflight,
+then checks the same descriptor after a bounded read. Unsupported
+non-Unix hosts reject with no weaker open fallback. Three unit tests
+cover bounded exact files, symlink/parent/hardlink denial and normalized
+path admission. This hardening remains **no stronger** than its
+immutable-source and trust boundary: independently staged input
+directories, ownership, precommitted digests and actual reviewer
+authentication are still required, and no general multi-component
+directory rename or adversarial host filesystem race proof is claimed.
+
+Run locked native qualification on the **exact child SHA**:
+
+```bash
+cd codex-rs
+cargo test --locked -p codex-hepta-infer-worker-host \
+  --bin hepta-granite-v3-shadow -- --nocapture
+cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+```
+
+No native target host, original pinned weights, independent signatures,
+live Granite97 forward, 64–4096 Cell scaling or task-quality gain was
+measured by the source patch. Existing V7 semantics and
+`DENY_ALL / model_selected=false / production_authorized=false`
+remain unchanged.
