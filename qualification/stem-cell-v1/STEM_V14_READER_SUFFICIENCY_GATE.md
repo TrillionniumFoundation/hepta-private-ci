@@ -302,3 +302,45 @@ Those tests NEVER execute the real pretrained model. **No V14 physical model
 run has been executed or attested by the current exact-head CI** merely because
 this code is present. V14 remains `HOLD_NO_GO`, `SHADOW_ONLY`,
 `DENY_ALL`, and `production_authorized=false`.
+
+
+## V14.6 independent candidate journal/citation consistency review
+
+The additional read-only `v14_original_reader_candidate_review.py` is
+separate from the physical generator. It reconstructs the original source
+and private four-arm prompts, verifies the original V12 weight/tokenizer/config
+identities and model-runtime/source-plan digests, exact per-attempt private
+precommit journal and result census, actual Answer-SHA-to-raw-answer equality,
+generated token range, EOS/forward-call counting and real recorded
+CPU/wall budget conservation. Original citations are parsed a second time;
+unregistered model citations must not be silently treated as grounded
+evidence. The original model output and pre-attempt journal remain **private
+0600 files**, and the verifier rejects world-readable journal bytes.
+
+The output is a SANITIZED structural receipt containing source/model/output
+digests, total attempts, forward-count reconciliation and binding status.
+It never contains raw original model answers. The independent code verifies
+*internal consistency*, not authenticity of an actual model call: an
+adversary controlling both the source and result could fabricate a matching
+record. It **does not retokenize using genuine pinned weights, replay
+the actual model in a second process, certify official Hugging Face parity,
+verify independent model-host attestation, or judge natural-language
+answer/citation entailment**.
+
+A separate 21-case adversarial suite attempts forged model/config/runtime,
+journal, token/EOS, answer, citation, cost, source, reference and FinalUse
+claims. Both normal Python and `python -O` are required for the
+read-only CI. No physical model success can be claimed merely from fixture
+tests. Production, automatic Cell split and NDU/SYSTEM2 remain
+`DENY_ALL` and V14 scientific decision remains `HOLD_NO_GO`.
+
+To review a previously created *PRIVATE original model* candidate packet:
+
+```sh
+python qualification/stem-cell-v1/v14_original_reader_candidate_review.py \
+  --source PRIVATE/source-only-cases.json \
+  --plan PRIVATE/original-four-arm-plan.json \
+  --private-requests PRIVATE/original-reader-prompts.json \
+  --candidate-output PRIVATE/v14-candidate-original-answers.json \
+  --journal PRIVATE/v14-candidate-original-answers.json.starts.jsonl
+```
