@@ -273,6 +273,10 @@ jobs:
           # durable test-only external marker, before C. Cold replay must
           # quarantine both generations with byte-identical original WAL.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-ndu-process-exit-between-b-c.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib abrupt_process_exit_after_control_begin_fences_recovery -- --nocapture --test-threads=1
+          # True OS SIGKILL after the original B and a fsynced test-only
+          # external marker. No Control C, no old/new generation promotion,
+          # no duplicate model/effect on cold start. Not a real CNS cutover.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-ndu-sigkill-between-b-c.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined -- --nocapture --test-threads=1
           # The positive CnsOrganHost reference is permitted only in crate
           # unit tests; the B4 production audit independently requires that
           # the public activation entrypoints deny in non-test builds.

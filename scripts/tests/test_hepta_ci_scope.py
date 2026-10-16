@@ -162,6 +162,10 @@ class ScopeTests(unittest.TestCase):
             "fn abrupt_process_exit_after_control_begin_fences_recovery()",
             source,
         )
+        self.assertIn(
+            "fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined()",
+            source,
+        )
         path = "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
         self.assertTrue(select([path])["native"])
 
@@ -180,6 +184,16 @@ class ScopeTests(unittest.TestCase):
         self.assertIn(
             "--lib abrupt_process_exit_after_control_begin_fences_recovery",
             gate,
+        )
+        self.assertIn(
+            "--lib sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined",
+            gate,
+        )
+        self.assertIn("control-ndu-sigkill-between-b-c.json", gate)
+        self.assertLess(
+            gate.index("control-ndu-process-exit-between-b-c.json"),
+            gate.index("control-ndu-sigkill-between-b-c.json"),
+            "the clean process-exit regression must run before true SIGKILL",
         )
         self.assertIn("--minimum-tests 1", gate)
         self.assertIn("--test-threads=1", gate)
