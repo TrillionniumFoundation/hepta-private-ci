@@ -255,7 +255,11 @@ class BridgeFeedbackAuditTests(unittest.TestCase):
                     audit_freeze(root, dict(reader_train=rows))
 
     def test_import_and_checkpoint_decoder_are_pure_stdlib_and_distinguish_digests(self):
-        subprocess.run([sys.executable, "-c", "import sys; import bridge_feedback_review; assert 'torch' not in sys.modules"], check=True)
+        subprocess.run(
+            [sys.executable, "-c", "import sys; import bridge_feedback_review; assert 'torch' not in sys.modules"],
+            check=True,
+            cwd=Path(__file__).resolve().parent,
+        )
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "reader.pt"
             result = checkpoint(path, {"weight": [2, 3], "bias": [2]})
