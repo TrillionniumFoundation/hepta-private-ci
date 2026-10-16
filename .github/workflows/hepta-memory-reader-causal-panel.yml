@@ -1,0 +1,237 @@
+name: Hepta MemoryCell six-arm frozen Reader causal panel (research only)
+on:
+  pull_request:
+    branches: [research/memory-meta-graph-lesion-20261016]
+    paths:
+      - 'scripts/memory_cell/memory_reader_causal_panel.py'
+      - 'scripts/memory_cell/test_memory_reader_causal_panel.py'
+      - 'scripts/memory_cell/memory_reader_paired_review.py'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_READER_CAUSAL_PANEL_20261016.md'
+      - '.github/workflows/hepta-memory-reader-causal-panel.yml'
+  workflow_dispatch:
+    inputs:
+      full_original_reader:
+        description: 'Execute expensive 120-call original frozen CPU Reader (research only)'
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: mcell-reader-panel-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Test only source/lineage boundaries, no fabricated model runs
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_reader_causal_panel.py \
+            scripts/memory_cell/test_memory_reader_causal_panel.py \
+            scripts/memory_cell/memory_reader_paired_review.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_reader_causal_panel.py' -v
+  original-plan:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_original_reader }}
+    needs: [source-contract]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Original source-only preparation dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mrp-prepare-env
+          /tmp/mrp-prepare-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mrp-prepare-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/mrp-inputs
+      - name: Admit SHA-pinned original source, seal 240 graph rankings and answer-free Reader plan
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mrp-source /tmp/mrp-public
+          tar -C /tmp/mrp-source -xzf /tmp/mrp-inputs/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/mrp-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          /tmp/mrp-prepare-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/mrp-source/memory-inputs/locomo.json /tmp/mrp-prepared
+          cp /tmp/mrp-prepared/{public,manifest}.json /tmp/mrp-public/
+          test ! -e /tmp/mrp-public/private.json
+          python3 scripts/memory_cell/memory_graph_source_trial.py run /tmp/mrp-public /tmp/mrp-graph
+          python3 scripts/memory_cell/memory_reader_causal_panel.py prepare \
+            /tmp/mrp-source/memory-inputs/locomo.json /tmp/mrp-prepared \
+            /tmp/mrp-graph /tmp/mrp-plan 2
+          test "$(find /tmp/mrp-plan -maxdepth 1 -type f | wc -l)" -eq 2
+          test ! -e /tmp/mrp-plan/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mcell-reader-120-public-plan-only
+          path: /tmp/mrp-plan
+          if-no-files-found: error
+  pinned-weights-only:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_original_reader }}
+    needs: [source-contract]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/mrp-inputs
+      - name: Physically extract only the four SHA-pinned Reader files, no LoCoMo source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mrp-reader-weights
+          tar -C /tmp/mrp-reader-weights --strip-components=2 -xzf /tmp/mrp-inputs/memory-inputs.tar.gz \
+            memory-inputs/reader/model.safetensors \
+            memory-inputs/reader/config.json \
+            memory-inputs/reader/tokenizer.json \
+            memory-inputs/reader/tokenizer_config.json
+          test "$(find /tmp/mrp-reader-weights -maxdepth 1 -type f | wc -l)" -eq 4
+          test "$(sha256sum /tmp/mrp-reader-weights/model.safetensors | cut -d ' ' -f1)" = \
+            '5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c'
+          test "$(sha256sum /tmp/mrp-reader-weights/tokenizer.json | cut -d ' ' -f1)" = \
+            '9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mcell-reader-original-weights-only
+          path: /tmp/mrp-reader-weights
+          if-no-files-found: error
+  frozen-reader:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_original_reader }}
+    needs: [original-plan, pinned-weights-only]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned original CPU Reader runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mrp-reader-env
+          /tmp/mrp-reader-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mrp-reader-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: mcell-reader-120-public-plan-only
+          path: /tmp/mrp-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: mcell-reader-original-weights-only
+          path: /tmp/mrp-reader-weights
+      - name: Make 120 genuine original generations without private annotations or original dataset
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/mrp-plan/private.json
+          test ! -e /tmp/mrp-reader-weights/locomo.json
+          mkdir -p /tmp/mrp-model-receipts
+          /usr/bin/time -v -o /tmp/mrp-model-receipts/resources.txt \
+            /tmp/mrp-reader-env/bin/python scripts/memory_cell/memory_reader_causal_panel.py \
+            worker /tmp/mrp-plan /tmp/mrp-reader-weights /tmp/mrp-model-run \
+            > /tmp/mrp-model-receipts/worker.log
+          test -f /tmp/mrp-model-run/seal.json
+          cp /tmp/mrp-model-run/{journal,seal}.json /tmp/mrp-model-receipts/
+          git rev-parse HEAD > /tmp/mrp-model-receipts/exact-head.txt
+          (cd /tmp/mrp-model-receipts && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mcell-reader-120-original-unscored-generations
+          path: /tmp/mrp-model-receipts
+          if-no-files-found: error
+  postseal-review:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_original_reader }}
+    needs: [frozen-reader]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install source reconstruction environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mrp-review-env
+          /tmp/mrp-review-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mrp-review-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/mrp-inputs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: mcell-reader-120-public-plan-only
+          path: /tmp/mrp-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: mcell-reader-120-original-unscored-generations
+          path: /tmp/mrp-unscored
+      - name: Independently rebuild original source and sealed plan before scoring
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mrp-source /tmp/mrp-public /tmp/mrp-scored /tmp/mrp-model-run
+          tar -C /tmp/mrp-source -xzf /tmp/mrp-inputs/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/mrp-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          /tmp/mrp-review-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/mrp-source/memory-inputs/locomo.json /tmp/mrp-trusted-rebuild
+          cp /tmp/mrp-trusted-rebuild/{public,manifest}.json /tmp/mrp-public/
+          python3 scripts/memory_cell/memory_graph_source_trial.py run /tmp/mrp-public /tmp/mrp-source-ranked
+          cp /tmp/mrp-unscored/{journal,seal}.json /tmp/mrp-model-run/
+          python3 scripts/memory_cell/memory_reader_causal_panel.py review \
+            /tmp/mrp-source/memory-inputs/locomo.json /tmp/mrp-trusted-rebuild \
+            /tmp/mrp-source-ranked /tmp/mrp-plan /tmp/mrp-model-run \
+            /tmp/mrp-scored/reader-conditions.json
+          python3 scripts/memory_cell/memory_reader_paired_review.py \
+            /tmp/mrp-source/memory-inputs/locomo.json /tmp/mrp-plan /tmp/mrp-model-run \
+            /tmp/mrp-scored/matched-questions.json
+          git rev-parse HEAD > /tmp/mrp-scored/exact-head.txt
+          (cd /tmp/mrp-scored && find . -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mcell-reader-six-arm-independent-review-not-acceptance
+          path: /tmp/mrp-scored
+          if-no-files-found: error
