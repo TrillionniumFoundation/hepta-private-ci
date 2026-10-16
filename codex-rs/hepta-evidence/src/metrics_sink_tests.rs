@@ -523,3 +523,56 @@ fn bounded_exact_sample_observer_timeout_poisoned_without_successful_ack() {
     drop(rx);
     drop(sink);
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn original_actor_bounded_cohort_readback_never_flushes_uncommitted_rows() {
+    let dir = tempfile::tempdir().expect("private original Evidence owner");
+    let path = dir.path().join("cohort-actor-bound.wal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 32, 32, 60_000)
+        .expect("one exclusive original writer");
+    let scope = Digest32::of_bytes(b"cohort-actor-scope");
+    let operations = [
+        Digest32::of_bytes(b"cohort-actor-cell-a"),
+        Digest32::of_bytes(b"cohort-actor-cell-b"),
+    ];
+    let queries = operations.map(|operation_digest| MetricsCommittedSampleQueryV1 {
+        scope_digest: scope,
+        operation_digest,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    });
+    for operation_digest in operations {
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: scope,
+            operation_digest,
+            phase: PhaseMetricKindV1::Admission,
+            latency_micros: 12,
+            succeeded: true,
+        }).expect("accepted but not yet fsynced Admission");
+    }
+    assert_eq!(
+        sink.read_committed_samples(&queries).unwrap(),
+        vec![None, None],
+        "Observer cannot convert async acceptance into durable history"
+    );
+    sink.flush().expect("real original WAL and marker fsync");
+    let observed = sink.read_committed_samples(&queries)
+        .expect("one bounded actor readback for both requests");
+    assert_eq!(observed.len(), 2);
+    assert!(observed.iter().all(|proof| proof.is_some_and(|p| p.matching_rows == 1)));
+    assert_eq!(observed[0].unwrap().frontier, observed[1].unwrap().frontier);
+    for (query, proof) in queries.into_iter().zip(observed.iter()) {
+        assert_eq!(
+            Some(proof.unwrap()),
+            sink.read_committed_sample(query).unwrap()
+        );
+    }
+
+    drop(sink);
+    let reopened = DurablePhaseMetricSinkV1::open(&path, 32, 32, 60_000)
+        .expect("cold original writer lock and marker reopen");
+    assert_eq!(reopened.read_committed_samples(&queries).unwrap(), observed);
+}

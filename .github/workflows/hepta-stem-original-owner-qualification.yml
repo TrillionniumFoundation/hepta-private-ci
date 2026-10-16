@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-evidence/**"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron_group.rs"
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron_group_tests.rs"
@@ -41,7 +42,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           # Exact original #2145 source blobs, not newly substituted owners.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "3db3c41b645910fde7d55c294c7371198327ee03"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "69107dcd21d8b495d75b5661b14358abc778272c"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "5c473b4714056bb0a3911be7b82853d71b07aac3"
+          test "$(git rev-parse HEAD:codex-rs/hepta-evidence/src/metrics_group_commit.rs)" = "e7b42c6d5e4084243da55858576e830ac604a626"
+          test "$(git rev-parse HEAD:codex-rs/hepta-evidence/src/metrics_sink.rs)" = "2b1091fe45b05a66bdce89a6a5fe1df41a4ea537"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "b62d0d9430c51beb505558457855a5922ca89006"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
@@ -96,10 +99,18 @@ jobs:
         run: cargo +1.95.0 fmt --package codex-hepta-infer-core -- --check
       - name: Require exact original Worker Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-infer-worker-host -- --check
+      - name: Require exact original Evidence actor and WAL Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-evidence -- --check
       - name: Test genuine original/new source digests and borrowed Arc contracts
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+      - name: Strict original Evidence actor Clippy without waivers
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
+      - name: Single verified WAL traversal joins entire committed cohort
+        run: cargo +1.95.0 test --locked -p codex-hepta-evidence --lib bounded_committed_cohort_memberships_match_individual_wal_readbacks
+      - name: Original actor read-only cohort observation excludes unflushed staging
+        run: cargo +1.95.0 test --locked -p codex-hepta-evidence --lib original_actor_bounded_cohort_readback_never_flushes_uncommitted_rows
       - name: Strict original Worker Clippy including bridge tests
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Run typed Stem to original signed Batch ABI parity tests
