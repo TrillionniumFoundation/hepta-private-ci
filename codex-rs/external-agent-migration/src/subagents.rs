@@ -192,7 +192,17 @@ fn parse_frontmatter(
                 Some(format!("frontmatter field {key:?} has an explicit YAML tag")),
             );
         }
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(&value.0));
+        // Fail closed if two YAML-distinct keys normalize to the same
+        // identity, permission, or other metadata key after trimming.
+        if frontmatter
+            .insert(key.to_string(), frontmatter_value_from_yaml(&value.0))
+            .is_some()
+        {
+            return (
+                BTreeMap::new(),
+                Some(format!("duplicate normalized frontmatter key: {key}")),
+            );
+        }
     }
 
     (frontmatter, None)
