@@ -24,6 +24,62 @@ def check(condition, message):
         raise NativeBudgetError(message)
 
 
+
+def bind_verified_native_context(owner):
+    """Bind the *actual* frozen, source-checked Gemma2 runtime to 8192.
+
+    The original model's text_config.max_position_embeddings can be much
+    larger (262144), and its SentenceTransformer .max_seq_length may be None.
+    Neither is evidence of a reviewed joint text+image 8192 context.
+    SentenceTransformer exposes a writable max_seq_length property backed by
+    its first Transformer module. This explicitly configures the *runtime*
+    inference limit, never changes original checkpoint tensors or tokenizer.
+    """
+    manifest = getattr(owner, "manifest", None)
+    digest = getattr(owner, "profile_digest", None)
+    check(getattr(owner, "_verified_local_weights", None) is True and
+          type(manifest) is dict and
+          manifest.get("model_id") == "google/embeddinggemma-2" and
+          manifest.get("revision") == "914f7f89142e33e77833254d9c9b90c3cef7303b" and
+          manifest.get("profile") == "vision" and
+          manifest.get("dimension") == 256 and
+          manifest.get("precision") == "float32" and
+          type(digest) is str and len(digest) == 64 and
+          all(c in "0123456789abcdef" for c in digest),
+          "reviewed exact Gemma2 runtime and SHA-bound context required")
+    model = getattr(owner, "model", None)
+    check(model is not None and
+          callable(getattr(model, "tokenizer", None)) and
+          type(getattr(model, "prompts", None)) is dict,
+          "real sentence transformer processor/tokenizer absent")
+    try:
+        first = model[0]
+        old = model.max_seq_length
+    except (KeyError, IndexError, TypeError, AttributeError) as error:
+        raise NativeBudgetError("source model has no inspectable sequence setter") from error
+    check(old is None or
+          (type(old) is int and CONTEXT <= old <= 262144),
+          "unexpected pre-existing native context would silently truncate")
+    try:
+        model.max_seq_length = CONTEXT
+        actual = model.max_seq_length
+        module_limit = getattr(first, "max_seq_length", None)
+    except (TypeError, AttributeError, ValueError) as error:
+        raise NativeBudgetError("native context setter unavailable") from error
+    check(type(actual) is int and actual == CONTEXT and
+          type(module_limit) is int and module_limit == CONTEXT,
+          "native model did not accept bounded 8192 token context")
+    return {
+        "schema": "hepta.e3.gemma2-pinned-runtime-context.v1",
+        "original_sentence_transformer_max_seq_length": old,
+        "effective_sentence_transformer_max_seq_length": actual,
+        "underlying_transformer_max_seq_length": module_limit,
+        "actual_context_bound_from_exact_reviewed_model": True,
+        "image_token_count_physically_verified": False,
+        "model_origin_independently_signed": False,
+        "production_accepted": False,
+    }
+
 def validate_text(text, *, tokenizer, prefix, ceiling):
     check(type(text) is str and bool(text), "empty or invalid text")
     check(not any(marker in text for marker in FORBIDDEN_MARKERS),
