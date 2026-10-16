@@ -384,6 +384,25 @@ pub struct ArtifactCasLatencySnapshotV1 {
     pub signature: PhaseLatencySnapshotV1,
 }
 
+/// Keeps the complete owner operation or timed subphase open until terminal
+/// state is recorded. Panic or capacity exhaustion cannot produce readiness.
+struct CasMetricsActivityV1<'a> {
+    in_flight: &'a AtomicU64,
+    failed_records: &'a AtomicU64,
+    registered: bool,
+}
+
+impl Drop for CasMetricsActivityV1<'_> {
+    fn drop(&mut self) {
+        if std::thread::panicking() {
+            self.failed_records.fetch_add(1, Ordering::Release);
+        }
+        if self.registered {
+            self.in_flight.fetch_sub(1, Ordering::AcqRel);
+        }
+    }
+}
+
 impl ArtifactCasOwnerV1 {
     pub fn new(owner_id: StableId, signing_key: SigningKey) -> Result<Self, ProductionOwnerError> {
         if owner_id.as_str().is_empty() {
@@ -476,6 +495,33 @@ impl ArtifactCasOwnerV1 {
         self.production_metrics_ready()
     }
 
+    // One shared epoch/in-flight lane covers the entire owner operation and
+    // each nested CAS/signature subphase, including early-return branches.
+    fn begin_metrics_activity(&self) -> CasMetricsActivityV1<'_> {
+        // Never wrap the outstanding-operation counter to zero. If exhausted,
+        // leave its maximum value in place and poison production readiness.
+        let registered = self
+            .metrics_in_flight
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |active| {
+                active.checked_add(1)
+            })
+            .is_ok();
+        let advanced = self
+            .metrics_epoch
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |epoch| {
+                epoch.checked_add(1)
+            })
+            .is_ok();
+        if !registered || !advanced || self.metrics.is_none() {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+        }
+        CasMetricsActivityV1 {
+            in_flight: &self.metrics_in_flight,
+            failed_records: &self.failed_metric_records,
+            registered,
+        }
+    }
+
     fn timed<T, E>(
         &self,
         scope: Digest32,
@@ -483,20 +529,9 @@ impl ArtifactCasOwnerV1 {
         phase: PhaseMetricKindV1,
         invoke: impl FnOnce() -> Result<T, E>,
     ) -> Result<T, E> {
-        // Latch the work BEFORE the CAS/signature closure. A concurrent fsync
-        // must see either an in-flight operation or a changed epoch. A panic
-        // leaves in-flight nonzero and readiness fail-closed, never certified.
-        self.metrics_in_flight.fetch_add(1, Ordering::AcqRel);
-        if self
-            .metrics_epoch
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |epoch| {
-                epoch.checked_add(1)
-            })
-            .is_err()
-            || self.metrics.is_none()
-        {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
-        }
+        // The scope guard closes even on unwind; panic permanently poisons
+        // readiness rather than relying on an unmatched in-flight count.
+        let _subphase = self.begin_metrics_activity();
         let started = Instant::now();
         let result = invoke();
         let latency = started.elapsed();
@@ -519,7 +554,6 @@ impl ArtifactCasOwnerV1 {
         {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
-        self.metrics_in_flight.fetch_sub(1, Ordering::AcqRel);
         result
     }
 
@@ -535,6 +569,9 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<ArtifactWriteReceiptV1, ProductionOwnerError> {
+        // A successful CAS record alone is not a completed signed write:
+        // keep the owner unavailable across manifest lookup and signing.
+        let _operation = self.begin_metrics_activity();
         let scope = Digest32::of_bytes(artifact_id.as_str().as_bytes());
         let operation = Digest32::of_bytes(operation_id.as_str().as_bytes());
         let digest = self.timed(scope, operation, PhaseMetricKindV1::Cas, || {
@@ -578,6 +615,10 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<(Vec<u8>, ArtifactLoadReceiptV1), ProductionOwnerError> {
+        // Likewise, a verified input receipt is not a finished load; every
+        // early error, payload read, digest check and signature shares this
+        // outer activity guard until the final result is known.
+        let _operation = self.begin_metrics_activity();
         let scope = Digest32::of_bytes(artifact_id.as_str().as_bytes());
         let operation = Digest32::of_bytes(operation_id.as_str().as_bytes());
         self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
