@@ -7,8 +7,9 @@ on:
       - 'scripts/memory_cell/test_memory_reader_strong_reference.py'
       - 'codex-rs/hepta-intelligence-eval/MEMORY_READER_STRONG_REFERENCE_20261016.md'
       - '.github/workflows/hepta-memory-reader-strong-reference.yml'
-  # One physical trial on initial workflow addition only; later source fixes run
-  # inexpensive pull_request tests, not another 120-model-call experiment.
+  # Physical attempt is conditionally armed by one short-lived PR title marker.
+  # The marker is removed after that exact PR event is queued; later source
+  # changes run only inexpensive pull_request checks.
   push:
     branches: [research/memory-strong-reader-v2-20261016]
     paths:
@@ -39,7 +40,7 @@ jobs:
             -p 'test_memory_reader_strong_reference.py' -v
           git diff --exit-code
   original-plan:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[RUN-QWEN-ONCE]')) }}
     needs: source-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -90,7 +91,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
   pinned-strong-physical-and-postseal:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[RUN-QWEN-ONCE]')) }}
     needs: original-plan
     runs-on: ubuntu-24.04
     timeout-minutes: 240
