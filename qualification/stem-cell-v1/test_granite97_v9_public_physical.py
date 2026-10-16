@@ -174,6 +174,24 @@ class StudyTest(unittest.TestCase):
                 archive,self.root/'fresh',now_ms=now)
         self.assertFalse((self.root/'fresh').exists())
 
+    def test_reviewed_real_material_baseline_rejects_fake_even_with_self_consistent_lock(self):
+        # No synthetic source/test model is promoted into the authentic
+        # 97M original just by a correct self-produced material.json.
+        self.assertEqual(
+            v9.REVIEWED_MATERIAL_SHA256,
+            "9d39552804582ee18cd61992e012510feae4cddb492b3b74808f6f46f494b0d8")
+        archive,_=self.archived_material(expired=True)
+        now=time.time_ns()//1_000_000
+        for expected in (v9.REVIEWED_MATERIAL_SHA256,"0"*64):
+            with self.subTest(expected=expected),self.assertRaisesRegex(
+                    ValueError,"reviewed real-material baseline"):
+                v9.restage_fresh_physical_session(
+                    archive,self.root/'fresh',now_ms=now,
+                    expected_reviewed_material_sha256=expected)
+            self.assertFalse((self.root/'fresh').exists())
+        # Existing synthetic negative controls remain allowed to use a
+        # self-consistent fake material fixture only as SOURCE-ONLY tests.
+
     def test_missing_review_fails(self):
         self.reviewfile.unlink()
         with self.assertRaises(ValueError):self.admit()

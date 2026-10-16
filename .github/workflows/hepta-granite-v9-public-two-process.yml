@@ -90,7 +90,8 @@ jobs:
           python qualification/stem-cell-v1/granite97_v9_public_physical.py prepare \
             --model-root "$RUNNER_TEMP/granite-v9/model" \
             --source "$RUNNER_TEMP/granite-v9/source.txt" \
-            --lock-output "$RUNNER_TEMP/granite-v9/lock.json"
+            --lock-output "$RUNNER_TEMP/granite-v9/lock.json" \
+            --material-baseline-sha256 "9d39552804582ee18cd61992e012510feae4cddb492b3b74808f6f46f494b0d8"
       - uses: actions/upload-artifact@v4
         with:
           name: granite-v9-exact-material-and-constructed-source

@@ -21,6 +21,9 @@ FILES = (
     "tokenizer_config.json", "special_tokens_map.json",
 )
 SOURCE_SHA = "8d6dd20b7f64904c33b81a90a204d6f123e87b45b40cf7ac519862ef96812610"
+# Recorded from an earlier independently rehashed 5-file REAL model artifact,
+# not an upstream publisher's signature or an authenticated owner grant.
+REVIEWED_MATERIAL_SHA256 = "9d39552804582ee18cd61992e012510feae4cddb492b3b74808f6f46f494b0d8"
 SCHEMA = "hepta.stem.granite97-public-physical-lock.v9"
 PRINCIPAL = "research:granite97-public-v9"
 PURPOSE = "research:constructed-source-only"
@@ -161,7 +164,8 @@ def check_lock(lock: dict, *, now_ms: int | None = None) -> None:
 
 
 def restage_fresh_physical_session(previous: Path, fresh: Path, *,
-                                   now_ms: int) -> dict:
+                                   now_ms: int,
+                                   expected_reviewed_material_sha256: str | None = None) -> dict:
     """Create NEW research-only data from rehashed originals, not old authority.
 
     The previous TTL may be expired in the Actions queue. It is never
@@ -175,6 +179,10 @@ def restage_fresh_physical_session(previous: Path, fresh: Path, *,
     former, _ = _json(previous / "lock.json", 8192)
     check_lock_static(former)
     _, digest = calculate_material(previous / "model")
+    if expected_reviewed_material_sha256 is not None and (
+            expected_reviewed_material_sha256 != REVIEWED_MATERIAL_SHA256
+            or digest != REVIEWED_MATERIAL_SHA256):
+        raise ValueError("archived original bytes differ from reviewed real-material baseline")
     if digest != former["material_sha256"]:
         raise ValueError("original material changed relative to prior data receipt")
     source_bytes_original = source_bytes(previous / "source.txt")
@@ -349,6 +357,7 @@ def main() -> None:
     stage = commands.add_parser("prepare")
     for key in ("model-root", "source", "lock-output"):
         stage.add_argument("--" + key, required=True)
+    stage.add_argument("--material-baseline-sha256", required=True)
     renewed = commands.add_parser("restage")
     renewed.add_argument("--original-root", required=True)
     renewed.add_argument("--fresh-root", required=True)
@@ -360,12 +369,19 @@ def main() -> None:
         audit.add_argument("--" + key, required=True)
     args = parser.parse_args()
     if args.cmd == "prepare":
+        # Source-only synthetic fixture tests invoke prepare() directly. Actual
+        # physical CLI must admit ONLY the previously reviewed original bytes.
+        if args.material_baseline_sha256 != REVIEWED_MATERIAL_SHA256:
+            raise ValueError("wrong independently reviewed model-material baseline")
+        if calculate_material(Path(args.model_root))[1] != REVIEWED_MATERIAL_SHA256:
+            raise ValueError("physical model differs from prior real-material audit")
         prepare(Path(args.source), Path(args.model_root), Path(args.lock_output),
                 now_ms=time.time_ns() // 1_000_000)
     elif args.cmd == "restage":
         restage_fresh_physical_session(
             Path(args.original_root), Path(args.fresh_root),
-            now_ms=time.time_ns() // 1_000_000)
+            now_ms=time.time_ns() // 1_000_000,
+            expected_reviewed_material_sha256=REVIEWED_MATERIAL_SHA256)
     elif args.cmd == "admit":
         admit(Path(args.lock), Path(args.source), Path(args.export),
               Path(args.review), Path(args.output))

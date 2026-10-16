@@ -20,6 +20,33 @@ The new adapter has a separate domain-separated SHA and an independent preproces
 
 The reviewer does not import the producer's projection function; it reloads all real original model weights, runs a second FP32 forward, reconstructs its chosen adapter/profile from the explicit CLI policy and compares the complete ordered Q24 tensor. Original material/source signatures remain **unverified**, even if both software executions agree. A successful run proves physical data-path compatibility for a **transformed** frozen representation only—not original untransformed embedding parity, retrieval quality, multi-hop reasoning or NDU gain.
 
+## Reviewed real-material byte baseline (not a publisher signature)
+
+The first physical model-material artifact was independently downloaded from
+GitHub Actions and rehashed by a separate analysis process. Its five exact
+file names, lengths and per-file SHA256 values yielded the previously frozen
+V5 domain-separated **aggregate** material digest:
+
+`9d39552804582ee18cd61992e012510feae4cddb492b3b74808f6f46f494b0d8`
+
+This historical material digest is authored as `REVIEWED_MATERIAL_SHA256`
+separately from the new run's downloaded `material.json`. **Real-model
+CLI** `prepare` now requires `--material-baseline-sha256` equal to that
+digest and recomputes original model bytes before accepting a lock. The
+queue-safe `restage` command separately rehashes original bytes and
+requires that exact baseline *before any fresh data session is created*.
+This prevents a malicious/inconsistent Hub cache or a self-consistent forged
+`material.json` from substituting a different 97M model without detection.
+The direct Python `prepare()` helper continues to support small synthetic
+SOURCE-ONLY test fixtures; those cannot enter the physical CLI.
+A source-only adversarial regression proves that even an internally
+consistent fake model/lock is refused by the prior physical baseline.
+
+This is a **local historical audit pin, not an IBM/Hugging Face digital
+signature**, authenticated model custody, hardware execution proof,
+natural-task correctness or permission to activate a model. It is an
+additional necessary integrity fence, not a sufficient production gate.
+
 ## Execution sequence and distinct measurements
 
 The read-only workflow `.github/workflows/hepta-granite-v9-public-two-process.yml` performs these stages in different GitHub Actions jobs, each against its exact candidate HEAD:
