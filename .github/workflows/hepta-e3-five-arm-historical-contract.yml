@@ -11,6 +11,8 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
       - "experiments/shared_stem_cell/e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
   pull_request:
@@ -23,6 +25,8 @@ on:
       - "experiments/shared_stem_cell/test_e3_native_capacity_match.py"
       - "experiments/shared_stem_cell/e3_native_capacity_review.py"
       - "experiments/shared_stem_cell/test_e3_native_capacity_review.py"
+      - "experiments/shared_stem_cell/e3_ocr_original_audit.py"
+      - "experiments/shared_stem_cell/test_e3_ocr_original_audit.py"
       - "experiments/shared_stem_cell/E3_FIVE_ARM_PHYSICAL_DEPENDENCIES_20261015.md"
       - ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
 permissions:
@@ -67,6 +71,14 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_native_capacity_review.py -v
+      - name: Verify original real OCR/source independent-score rejection contracts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/shared_stem_cell/e3_ocr_original_audit.py
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_ocr_original_audit.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_ocr_original_audit.py -v
       - name: No real-model or five-arm benefit claims from fixtures
         run: |
           set -euo pipefail
