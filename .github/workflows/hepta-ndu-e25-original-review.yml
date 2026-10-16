@@ -1,0 +1,106 @@
+name: Hepta NDU E25 original-source human review (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-e25-real/**'
+      - '.github/workflows/hepta-ndu-e25-original-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-original-review:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify original source-head workflow actually succeeded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,urllib.request
+          repo=os.environ['GITHUB_REPOSITORY']
+          url=f'https://api.github.com/repos/{repo}/actions/runs/38727583089'
+          request=urllib.request.Request(url,headers={
+              'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+              'Accept':'application/vnd.github+json',
+              'X-GitHub-Api-Version':'2022-11-28'})
+          with urllib.request.urlopen(request,timeout=30) as r:
+              if r.geturl()!=url:raise ValueError('unexpected original run API redirect')
+              record=json.load(r)
+          if (record.get('head_sha')!='1ab2615004fc524ca18d47aaa97f6dc59356d533'
+              or record.get('status')!='completed' or record.get('conclusion')!='success'
+              or record.get('id')!=38727583089):
+              raise ValueError('original E25 complete source model and human scoring not qualified')
+          PY
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e25-original-public-source_head
+          path: ${{ runner.temp }}/e25-original/public
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: '38727583089'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e25-original-owner-only-source_head
+          path: ${{ runner.temp }}/e25-original/owner
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: '38727583089'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e25-original-pretrained-blind-source_head
+          path: ${{ runner.temp }}/e25-original/model
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: '38727583089'
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-e25-independent-original-human-source_head
+          path: ${{ runner.temp }}/e25-original/score
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: '38727583089'
+          github-token: ${{ github.token }}
+      - name: Verify member-byte locks, original answers and research-only interpretation
+        env:
+          E25_EXTRACTED_INPUTS: ${{ runner.temp }}/e25-original
+        run: |
+          set -euo pipefail
+          D=qualification/ndu-e25-real
+          mkdir -p "$RUNNER_TEMP/e25-public-result"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/e25-public-result/source.txt"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_audit.py -v 2>&1 | tee "$RUNNER_TEMP/e25-public-result/tests-$mode.log"
+            grep -F 'Ran 39 tests' "$RUNNER_TEMP/e25-public-result/tests-$mode.log"
+            python "${FLAGS[@]}" "$D/audit.py" --inputs "$E25_EXTRACTED_INPUTS" --extracted --output "$RUNNER_TEMP/e25-public-result/audit-$mode.json"
+          done
+          cmp "$RUNNER_TEMP/e25-public-result/audit-normal.json" "$RUNNER_TEMP/e25-public-result/audit-optimized.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'e25-public-result/audit-normal.json').read_text())
+          if (r['unique_new_passage_groups'],r['unique_new_questions'],r['original_human_candidate_alternatives'])!=(6,12,51):raise ValueError('wrong original full task census')
+          if r['methods']['question_softworst_tau_001']['complete_questions']!=2 or r['methods']['e16_scaled_brier_5']['complete_questions']!=1:raise ValueError('original E25 result differs')
+          if r['production_accepted'] or r['NDU_executed_on_new_six'] or r['new_independent_dataset_family'] or r['NDUspecific_task_improvement_verified']:raise ValueError('false promotion')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ndu-e25-original-review-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/e25-public-result/
+          retention-days: 14
+          if-no-files-found: warn
