@@ -1,0 +1,128 @@
+name: Hepta Stem V5 ScienceQA independently rejudge original physical labels (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/scienceqa_independent_rejudge_v5.py'
+      - 'qualification/stem-cell-v1/test_scienceqa_independent_rejudge_v5.py'
+      - 'qualification/stem-cell-v1/STEM_V5_SCIENCEQA_ORIGINAL_REJUDGMENT.md'
+      - '.github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-only untrusted-input and rejudgment tests
+        shell: bash
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          python -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+          python -m unittest -v test_scienceqa_independent_rejudge_v5
+          python -O -m unittest -v test_scienceqa_independent_rejudge_v5
+          python -m py_compile scienceqa_independent_rejudge_v5.py test_scienceqa_independent_rejudge_v5.py
+
+  real-original-publisher-rejudgment:
+    needs: source-only
+    # Only the named same-repo research PR may reacquire the original publisher
+    # material and consume an existing Actions artifact. Forks fail closed.
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    permissions:
+      contents: read
+      actions: read
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source-only pinned public-data reader (NO models)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          python -m pip install --disable-pip-version-check \
+            'datasets==3.6.0' 'pyarrow==19.0.1' 'Pillow==11.3.0' \
+            'huggingface-hub==0.35.3' 'packaging==25.0'
+          python -m pip check
+          python - <<'PY'
+          from huggingface_hub import HfApi
+          from datasets import Image,load_dataset
+          from PIL import Image as PILImage
+          print('SOURCE_REJUDGMENT_DEPENDENCIES_OK')
+          PY
+      - name: Read original immutable physically executed E3 prediction artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-v5"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip \
+            > "$RUNNER_TEMP/stem-v5/original-e3.zip"
+          python - <<'PY'
+          import hashlib,os,sys
+          from pathlib import Path
+          sys.path.insert(0,'qualification/stem-cell-v1')
+          from scienceqa_independent_rejudge_v5 import read_archive
+          raw=read_archive(Path(os.environ['RUNNER_TEMP'])/'stem-v5/original-e3.zip')
+          if len(raw)!=14:
+              raise SystemExit('unexpected original E3 physical artifact')
+          print('ORIGINAL_E3_SHA256_MEMBER_SEALS_VERIFIED')
+          PY
+      - name: Independently reacquire publisher Parquet and rejudge every heldout prediction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/scienceqa_independent_rejudge_v5.py \
+            --archive "$RUNNER_TEMP/stem-v5/original-e3.zip" \
+            --output "$RUNNER_TEMP/stem-v5/sanitized-source-rejudgment.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-v5/sanitized-source-rejudgment.json').read_bytes())
+          assert r['schema']=='hepta.stem.scienceqa-independent-publisher-rejudgment.v5'
+          assert r['authority']=='DENY_ALL' and r['production_authorized'] is False
+          assert r['publisher_source_reacquired_and_rehashed'] is True
+          assert r['heldout_labels_independently_reconstructed'] is True
+          assert r['independent_human_visual_necessity_adjudication'] is False
+          assert r['old_future_window_test_established'] is False
+          assert r['arms']['text_only']['correct']==17
+          assert r['arms']['train_gate']['correct']==24
+          assert r['paired']['train_gate']['rescued_errors']==14
+          assert r['paired']['train_gate']['new_errors']==7
+          print(json.dumps({'true_original_publisher_rejudged':True,
+                            'text_correct':17,'trained_gate_correct':24,
+                            'exact_mcnemar_p':r['paired']['train_gate']['exact_p'],
+                            'human_visual_necessity_adjudicated':False,
+                            'production_authorized':False,'authority':'DENY_ALL'},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-stem-v5-fully-independent-original-source-rejudgment-nogo
+          retention-days: 7
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/stem-v5/sanitized-source-rejudgment.json
