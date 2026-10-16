@@ -1,0 +1,37 @@
+name: hepta-hdcf-shadow-gates
+
+on:
+  push:
+    branches:
+      - research/hdcf-stem-graph-gates-20261016
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Source-bound Python standard-library gates
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile hdcf_gates.py test_hdcf_gates.py
+          python3 -m unittest -v test_hdcf_gates
+          python3 -O -m unittest -v test_hdcf_gates
+      - name: No live authorization claim
+        run: |
+          grep -q 'NO CODE EXECUTION' qualification/hdcf-research/README.md
+          grep -q 'production_authorized.*False' qualification/hdcf-research/hdcf_gates.py
