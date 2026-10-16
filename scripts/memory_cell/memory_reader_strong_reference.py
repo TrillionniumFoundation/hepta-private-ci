@@ -174,9 +174,12 @@ def record_validate(plan, ph, entries, seal, tokenizer=None):
 
 def write_start(path, row):
     """Durable before-effect intent. Aborted runs remain incomplete, not replayed."""
-    with path.open("ab") as f:
-        f.write(base.canonical({k: row[k] for k in (
-            "request_id", "plan_sha256", "model_spec_digest", "prompt_digest")}))
+    from memory_reader_strong_custody import event
+    flags = os.O_CREAT | os.O_WRONLY | os.O_APPEND
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    with os.fdopen(os.open(path, flags, 0o600), "ab") as f:
+        f.write(base.canonical(event(row)))
         f.flush()
         os.fsync(f.fileno())
 
@@ -243,6 +246,8 @@ def worker(plan_dir, model_dir, model_spec_path, output_dir):
         "decoding": "greedy-24-no-thinking", "reader_frozen_verified": True,
         "no_gold_visible": True, "production_accepted": False}
     record_validate(plan, ph, rows, seal, tokenizer)
+    from memory_reader_strong_custody import check as check_before_effect
+    check_before_effect(plan, ph, rows, out)
     base.write(out / "seal.json", seal)
     return {"status": "SEALED_RESEARCH_ONLY", "attempts": len(rows),
             "statuses": dict(Counter(r["status"] for r in rows)),
@@ -387,6 +392,8 @@ def review(original, prepared, source_run, plan_dir, qwen_dir, model_dir, spec_p
     tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True,
                                             trust_remote_code=False, use_fast=True)
     record_validate(plan, ph, rows, seal, tokenizer)
+    from memory_reader_strong_custody import check as check_before_effect
+    custody = check_before_effect(plan, ph, rows, qwen_dir)
     original_data = base.validated_original(original, base.read_public(prepared, reviewer=True)[0])
     refs = {}
     for req in plan["requests"]:
@@ -398,6 +405,7 @@ def review(original, prepared, source_run, plan_dir, qwen_dir, model_dir, spec_p
         "journal_sha256": seal["journal_sha256"], "model_repo": REPO,
         "model_revision": REVISION, "model_spec_digest": material,
         "questions": plan["planned_questions"], "per_arm": scored,
+        "before_effect_custody": custody,
         "prompt_content_shared_with_135m": True,
         "native_tokenization_and_generation_budget_matched_to_135m": False,
         "publisher_annotated_evidence_privileged": True,
