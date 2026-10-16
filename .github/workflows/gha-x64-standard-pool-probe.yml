@@ -13,7 +13,7 @@ permissions:
 # Distinct public standard Linux x64 runner images can reveal whether only
 # one pool is starved; never infer a quota solely from these small samples.
 concurrency:
-  group: gha-x64-standard-pool-probe-${{ github.ref }}
+  group: gha-x64-standard-pool-probe-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -31,6 +31,10 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
+      - name: Install the same Python 3.12 on all Linux images
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
       - name: Runner identity and actual CI regression suite
         shell: bash
         run: |
