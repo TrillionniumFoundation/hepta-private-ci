@@ -1000,9 +1000,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         };
         validate_receipt(&intent, &receipt)?;
         self.trust.verify(&intent, &receipt)?;
+        // This is AFTER a durable prepared intent and an original effect
+        // response. A live confirmation RPC failure (including a bad/absent
+        // owner readback) cannot establish that the effect did not commit.
+        // Preserve the fixed intent and reconcile it; never issue Execute
+        // again just because current-state verification was unavailable.
         self.port
             .verify_committed(&intent, &receipt)
-            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         // An effect may finish after another owner revoked a predecessor or
         // replaced a frozen local frame. Before acknowledging the new step,
         // revalidate the original signed owner prefix and still-pending intent.
