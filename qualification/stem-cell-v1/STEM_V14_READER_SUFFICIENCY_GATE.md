@@ -116,3 +116,55 @@ their independence are **not authenticated**, and no bogus case-wise
 confidence interval or causal Cell benefit is calculated. The study
 still unconditionally returns \`HOLD_NO_GO\` and leaves production,
 Stem selection, Cell split, SYSTEM2, and FinalUse forbidden.
+
+
+## V14.2 original source-to-model-input materialization
+
+The read-only source builder
+`v14_reader_original_request_builder.py` now provides a physically usable
+entry point for original Reader execution: it deterministically derives all
+four request **bytes** from the same registered question and original source
+snippets. It forbids unknown fields, answers/gold in its declared schema,
+foreign/duplicate evidence references, duplicate input bytes despite different
+arm names, unsupported model identities and missing source text.
+
+Source input has exactly these top-level keys:
+
+- `schema` = `hepta.stem.v14.reader-sufficiency.v1.original-source-first.v1`
+- `source_only=true`, `gold_available_before_predictions=false`,
+  `production_authorized=false`
+- `objective_sha256`, `max_output_tokens`,
+  `models` (same pinned two-Reader manifest as V14)
+- `cases`: bounded question text, owner family/window, original
+  source ID/text census, four ordered evidence-ID assignments.
+
+No answer text, publisher labels, model checkpoint tensor or private prompt is
+committed to this public repository. The CLI writes two create-only files with
+0600 permissions: a source-free V14 plan and a separate **private** packet
+containing the actual rendered question/evidence prompts and original snippets.
+
+Example execution from the repository root:
+
+```sh
+python qualification/stem-cell-v1/v14_reader_original_request_builder.py \
+  --source PRIVATE/source-only-cases.json \
+  --plan PRIVATE/original-four-arm-plan.json \
+  --private-requests PRIVATE/original-reader-prompts.json
+```
+
+The model host must consume only those pinned private prompt bytes, record
+exact original model/tokenizer/runtime material, full output bytes and measured
+CPU/token usage, then seal its outputs before an independent source reviewer
+accesses heldout truth. The scorer refuses plan or answer identity drift, but
+a matching SHA is **not** proof of genuine model execution or evidence
+sufficiency. The chosen "sufficient" evidence still requires independent
+human/source-level attestation, and the lesion still requires proof that its
+removed premise was necessary. Source-only builder replay is **not** an
+independent reviewer.
+
+Nineteen new synthetic and adversarial unit cases exercise byte-level arm
+materialization, label smuggling, private file creation, duplicate/foreign
+evidence, source mutation, prompt substitution, model identity and input
+reconstruction. CI runs both normal and optimized Python test modes on exact
+PR HEAD. **No original V14 Reader calls, prospective family-level gains,
+model promotion, FinalUse or production authorization have occurred here.**
