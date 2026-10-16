@@ -91,6 +91,33 @@ def bin_metrics(truth: list[int], raw_outputs: list[dict]) -> dict:
     }
 
 
+def independent_head_margin(front: dict, width: int) -> dict:
+    """Independent conservative SAME-activation Q24 sign test; no final-use."""
+    need(type(front) is dict and type(width) is int and 5 <= width <= 256,
+         "missing bound native Head result/width")
+    activation = front.get("activation_q24")
+    logit = front.get("quantized_head_logit_q24")
+    need(type(activation) is list and len(activation) == width
+         and all(type(v) is int and abs(v) <= 8 * (1 << 24)
+                 for v in activation)
+         and type(logit) is int and -(1 << 63) <= logit < (1 << 63),
+         "invalid bounded signed-Q24 Head activation/logit")
+    # The total worst-case rounding uncertainty for the linear F32->Q24
+    # Head on the SAME bounded Q24 activation is (9*width+1)/2 Q24 LSB.
+    twice_bound = width * 9 + 1
+    status = (
+        "QUANTIZATION_AMBIGUOUS_ABSTAIN"
+        if 2 * abs(logit) <= twice_bound
+        else ("ACCEPT_POSITIVE_RESEARCH_ONLY" if logit > 0
+              else "ACCEPT_NEGATIVE_RESEARCH_ONLY")
+    )
+    need(type(front.get("head_sign_margin_twice_q24_lsb")) is int
+         and front["head_sign_margin_twice_q24_lsb"] == twice_bound
+         and front.get("head_sign_margin_status") == status,
+         "physical Rust Head margin differs from independent Q24 bound")
+    return {"logit_q24": logit, "status": status}
+
+
 def frozen_single_case_trace(row: dict) -> dict:
     need(type(row) is dict and set(row) == {
         "case_id", "source_text_sha256", "feature_q24", "split",
@@ -267,27 +294,7 @@ def run(args) -> dict:
                      and check["verified_native_adapter_head_event_count"] == 1,
                      "independent real-public Q24 numeric parity failed")
                 front = native_runs[0]["frontier"][0]
-                activation = front["activation_q24"]
-                logit = front["quantized_head_logit_q24"]
-                need(type(activation) is list and
-                     len(activation) == m["hidden_width"] and
-                     type(logit) is int,
-                     "invalid native Head activation/logit")
-                # Separate from the Rust routine: bound the maximum
-                # same-activation F32->Q24 Head sign error in half-LSB units.
-                twice_bound = len(activation) * 9 + 1
-                expected_status = (
-                    "QUANTIZATION_AMBIGUOUS_ABSTAIN"
-                    if 2 * abs(logit) <= twice_bound
-                    else ("ACCEPT_POSITIVE_RESEARCH_ONLY" if logit > 0
-                          else "ACCEPT_NEGATIVE_RESEARCH_ONLY")
-                )
-                need(front["head_sign_margin_twice_q24_lsb"] == twice_bound and
-                     front["head_sign_margin_status"] == expected_status,
-                     "physical Rust Head margin differs from independent Q24 bound")
-                found.append({
-                    "logit_q24": logit, "status": expected_status,
-                })
+                found.append(independent_head_margin(front, m["hidden_width"]))
                 receipts += 2
             truth = [int(y == task) for y in label_values]
             summary = bin_metrics(truth, found)
