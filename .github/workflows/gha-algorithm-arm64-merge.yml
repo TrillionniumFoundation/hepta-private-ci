@@ -1,0 +1,60 @@
+name: Algorithm Docs ARM64 exact PR synthetic merge qualification
+on:
+  push:
+    branches: [ci/gha-docs-arm64-qualification-20261016]
+    paths: [.github/workflows/gha-algorithm-arm64-merge.yml]
+permissions:
+  contents: read
+# Isolated run using immutable PR #2410 base/head and unchanged production
+# synthetic-merge, receipt and source policy checks.
+jobs:
+  merge-candidate:
+    name: Verify exact adaptive-document merge candidate
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Check out source for deterministic merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 78c14f781a57858f3df058cd324817c9705ac312
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: f8c9419df6ddeb36ff8b522a50219981fb8d9345
+          source-sha: 78c14f781a57858f3df058cd324817c9705ac312
+          pr-number: 2410
+          author-name: Hepta Algorithm Docs CI
+          author-email: hepta-algorithm-docs-ci@users.noreply.github.com
+          message: Synthetic algorithm-document merge
+
+      - name: Verify synthetic merge candidate
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          # The source-head job owns self-tests, source binding and generated
+          # status checks. Keep the merge job focused on merged-tree validity.
+          python3 scripts/hepta-algorithm-docs.py verify
+          python3 scripts/hepta-algorithm-docs.py receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/algorithm-merge-candidate.json
+          python3 scripts/hepta-algorithm-docs.py receipt-verify \
+            --input .hepta-evidence/algorithm-merge-candidate.json \
+            --expected-sha "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain merge receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-algorithm-merge-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/algorithm-merge-candidate.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
