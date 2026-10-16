@@ -7,6 +7,8 @@ on:
       - "scripts/memory_cell/test_historical_reader_format_source.py"
       - "scripts/memory_cell/ten_project_source_closure.py"
       - "scripts/memory_cell/test_ten_project_source_closure.py"
+      - "scripts/memory_cell/deno_lossy_projection_proof.py"
+      - "scripts/memory_cell/test_deno_lossy_projection_proof.py"
 permissions:
   contents: read
 concurrency:

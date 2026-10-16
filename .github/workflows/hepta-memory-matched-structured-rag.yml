@@ -7,6 +7,8 @@ on:
       - ".github/workflows/hepta-memory-matched-structured-rag.yml"
       - "scripts/memory_cell/ten_project_source_closure.py"
       - "scripts/memory_cell/test_ten_project_source_closure.py"
+      - "scripts/memory_cell/deno_lossy_projection_proof.py"
+      - "scripts/memory_cell/test_deno_lossy_projection_proof.py"
       - "scripts/memory_cell/deno_binary_git_source_gate.py"
       - "scripts/memory_cell/test_deno_binary_git_source_gate.py"
 permissions:
@@ -102,16 +104,25 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/binary-tests.log"
           python3 -m unittest discover -s scripts/memory_cell -p 'test_ten_project_source_closure.py' -v \
             2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/closure-tests.log"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_deno_lossy_projection_proof.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/ten-project-source-audit/single-byte-tests.log"
           git rev-parse HEAD > "$RUNNER_TEMP/ten-project-source-audit/source-head.txt"
           sha256sum \
             scripts/memory_cell/deno_binary_git_source_gate.py \
             scripts/memory_cell/test_deno_binary_git_source_gate.py \
             scripts/memory_cell/ten_project_source_closure.py \
             scripts/memory_cell/test_ten_project_source_closure.py \
+            scripts/memory_cell/deno_lossy_projection_proof.py \
+            scripts/memory_cell/test_deno_lossy_projection_proof.py \
             scripts/memory_cell/data/real-project-all80-original-source-byte-proof-20261012.json \
             scripts/memory_cell/data/real-project-extension-original-byte-preflight-20261013.json \
             scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json \
             > "$RUNNER_TEMP/ten-project-source-audit/source-SHA256SUMS"
+      - name: Independently prove unique lost byte against original frozen Git SHA
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/deno_lossy_projection_proof.py \
+            "$RUNNER_TEMP/ten-project-source-audit/deno-single-byte-reconstruction.json"
       - name: Recover binary Deno Git object from immutable historical tree
         run: |
           set -euo pipefail
@@ -139,6 +150,16 @@ jobs:
           assert report['human_labels_available'] is False
           assert report['real_project_task_outcomes_measured'] is False
           assert report['learned_memory_gain_established'] is False
+          original=json.loads(
+            (Path(os.environ['RUNNER_TEMP'])/'ten-project-source-audit/deno-original-binary.json').read_text()
+          )
+          reconstructed=json.loads(
+            (Path(os.environ['RUNNER_TEMP'])/'ten-project-source-audit/deno-single-byte-reconstruction.json').read_text()
+          )
+          assert reconstructed['sha1_recomputed_from_exhaustive_candidate']==original['original_blob_sha1']
+          assert reconstructed['original_byte_count']==original['verified_binary_bytes']==23
+          assert reconstructed['actual_binary_github_api_response_received'] is False
+          assert original['canonical_original_git_blob_hash_recomputed'] is True
           assert report['production_accepted'] is False
           PY
       - name: Retain negative evidence and tested source identity
