@@ -133,11 +133,14 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
     if [(r['task_id'],r['action']) for r in train_log] != expected_train:
         raise Invalid('original training model request order substituted')
     recalculated=[]
+    train_by_id={r['task_id']:r for r in train['rows']}
     train_gold={r['task_id']:r['label'] for r in train['rows']}
     for r in train_log:
         check_output(r)
         if r['source_kind'] != 'original_physical' or r['policy'] != 'train':
             raise Invalid('synthetic training Reader output')
+        if r['prompt_sha256'] != sha(encoded(make_prompt(train_by_id[r['task_id']]['text'],r['action']))):
+            raise Invalid('original TRAIN model prompt was substituted')
         recalculated.append({'task_id':r['task_id'],
           'bucket':next(x['bucket'] for x in train['rows'] if x['task_id']==r['task_id']),
           'group':next(x['group'] for x in train['rows'] if x['task_id']==r['task_id']),
