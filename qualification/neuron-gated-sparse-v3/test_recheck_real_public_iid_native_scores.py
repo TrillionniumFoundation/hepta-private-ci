@@ -87,6 +87,7 @@ def fixture():
         "static_label_prior_control":{
             "correct_cases":24,"true_positive_cases":8,
             "true_negative_cases":24,"delivered_accuracy":.75,
+            "balanced_accuracy":.5,
             "positive_recall":0.0,
             "not_original_deployed_v1_no_change":True,
             "not_a_temporal_learning_or_ndu_baseline":True,
