@@ -993,10 +993,15 @@ fn verified_completion_rejects_unprepared_original_effect_at_every_step() {
             previous = receipt.receipt_digest;
         }
         assert!(!owner.verified_complete().expect("no external drift"));
-        assert!(owner.verified_transcript().expect("local incomplete prefix").is_none());
+        assert!(
+            owner
+                .verified_transcript()
+                .expect("local incomplete prefix")
+                .is_none()
+        );
 
-        let step = super::CellSplitExecutionStepV1::at(completed)
-            .expect("only four original steps");
+        let step =
+            super::CellSplitExecutionStepV1::at(completed).expect("only four original steps");
         let intent = super::make_intent(&plan, &digest, step, &previous);
         let unledgered = FixturePort::receipt(&intent);
         state
