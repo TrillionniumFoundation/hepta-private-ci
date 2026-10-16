@@ -386,6 +386,15 @@ pub struct ArtifactCasLatencySnapshotV1 {
 
 /// Keeps the complete owner operation or timed subphase open until terminal
 /// state is recorded. Panic or capacity exhaustion cannot produce readiness.
+// The failure count doubles as a sticky readiness poison: unchecked wrap to
+// zero after u64::MAX would silently rearm a previously rejected Evidence
+// owner. Keep the full diagnostic count up to saturation, never modulo u64.
+fn latch_cas_metric_failure(counter: &AtomicU64) {
+    let _ = counter.fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
+        count.checked_add(1)
+    });
+}
+
 struct CasMetricsActivityV1<'a> {
     in_flight: &'a AtomicU64,
     failed_records: &'a AtomicU64,
@@ -395,7 +404,7 @@ struct CasMetricsActivityV1<'a> {
 impl Drop for CasMetricsActivityV1<'_> {
     fn drop(&mut self) {
         if std::thread::panicking() {
-            self.failed_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(self.failed_records);
         }
         if self.registered {
             self.in_flight.fetch_sub(1, Ordering::AcqRel);
@@ -448,7 +457,7 @@ impl ArtifactCasOwnerV1 {
                 .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
                 .is_err()
         {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
             return self;
         }
         self.metrics = Some(sink);
@@ -481,7 +490,7 @@ impl ArtifactCasOwnerV1 {
             return false;
         }
         if sink.flush().is_err() {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
             return false;
         }
         if self.metrics_in_flight.load(Ordering::Acquire) != 0
@@ -513,7 +522,7 @@ impl ArtifactCasOwnerV1 {
             })
             .is_ok();
         if !registered || !advanced || self.metrics.is_none() {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
         }
         CasMetricsActivityV1 {
             in_flight: &self.metrics_in_flight,
@@ -552,7 +561,7 @@ impl ArtifactCasOwnerV1 {
                 })
                 .is_err()
         {
-            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            latch_cas_metric_failure(&self.failed_metric_records);
         }
         result
     }
