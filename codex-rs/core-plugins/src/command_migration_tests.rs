@@ -17,27 +17,31 @@ const TEST_REWRITE_PROFILE: RewriteProfile = RewriteProfile::new(
 #[test]
 fn yaml_description_contract_is_frozen_before_security_parser_migration() {
     for (raw, expected) in [
-        ("description: Review changes", Some("Review changes")),
-        ("description: '  Review changes  '", Some("Review changes")),
-        ("description: true", Some("true")),
-        ("description: 42", Some("42")),
-        ("description: null", None),
-        ("description: [read, write]", None),
-        ("description:\n  nested: text", None),
-        ("description: !secret text", None),
-        ("description: !!str Review changes", None),
-        ("description: !!int 42", None),
-        ("description: !<tag:yaml.org,2002:str> Review changes", None),
-        ("description: !secret [read, write]", None),
-        ("!secret {description: Review changes}", None),
-        ("!<tag:yaml.org,2002:map> {description: Review changes}", None),
-        ("description: '!secret text'", Some("!secret text")),
-        ("description: \"!secret text\"", Some("!secret text")),
+        ("description: Review changes", "Review changes"),
+        ("description: '  Review changes  '", "Review changes"),
+        ("description: true", "true"),
+        ("description: 42", "42"),
+        ("description: '!secret text'", "!secret text"),
+        ("description: \"!secret text\"", "!secret text"),
     ] {
-        assert_eq!(parse_command_description(raw).as_deref(), expected, "{raw}");
+        let description = parse_command_description(raw).expect("valid untagged YAML");
+        assert_eq!(description.as_deref(), Some(expected), "{raw}");
+    }
+    for raw in [
+        "description: null",
+        "description: [read, write]",
+        "description:\n  nested: text",
+        "description: !secret text",
+        "description: !!str Review changes",
+        "description: !!int 42",
+        "description: !<tag:yaml.org,2002:str> Review changes",
+        "description: !secret [read, write]",
+        "!secret {description: Review changes}",
+        "!<tag:yaml.org,2002:map> {description: Review changes}",
+    ] {
+        assert_eq!(parse_command_description(raw), Err(InvalidCommandFrontmatter), "{raw}");
     }
 }
-
 #[test]
 fn command_skill_names_must_fit_codex_skill_loader_limit() {
     let source_name = "this-is-a-deeply-nested-command-with-a-very-long-name";
@@ -79,8 +83,8 @@ fn commands_with_overlong_descriptions_are_preserved() {
         TEST_REWRITE_PROFILE,
     );
     assert_eq!(
-        parse_command_content(&rendered).description.as_deref(),
-        Some(description.as_str())
+        parse_command_content(&rendered).description,
+        Ok(Some(description))
     );
 }
 
@@ -167,4 +171,186 @@ fn command_slug_collisions_are_skipped() {
             .unwrap(),
         Vec::<CommandSource>::new()
     );
+}
+
+#[test]
+fn safe_yaml_command_description_rejects_duplicate_or_aliased_identity() {
+    assert_eq!(
+        parse_command_description("description: trusted\ndescription: substituted"),
+        Err(InvalidCommandFrontmatter),
+    );
+    assert_eq!(
+        parse_command_description("description: &d trusted\ndescription: *d"),
+        Err(InvalidCommandFrontmatter),
+    );
+    assert_eq!(
+        parse_command_description("description: !invoke arbitrary-constructor"),
+        Err(InvalidCommandFrontmatter),
+    );
+}
+
+#[test]
+fn safe_yaml_command_migration_only_accepts_scalar_description() {
+    assert_eq!(
+        parse_command_description("description: 'a safe: command'"),
+        Ok(Some("a safe: command".to_string())),
+    );
+    assert_eq!(
+        parse_command_description("description:\n  - dangerous\n  - runtime"),
+        Err(InvalidCommandFrontmatter),
+    );
+    assert_eq!(
+        parse_command_description("description: !unknown custom-typed-content"),
+        Err(InvalidCommandFrontmatter),
+    );
+}
+
+#[test]
+fn safe_yaml_normalized_description_collisions_are_errors() {
+    for raw in [
+        "description: first\n' description ': second",
+        "' description ': second\ndescription: first",
+        "'description ': first\n' description': second",
+        "description: same\n' description ': same",
+        "description: valid\n' description ': []",
+        "description: valid\n'description\u{00a0}': other",
+    ] {
+        assert_eq!(
+            parse_command_description(raw),
+            Err(InvalidCommandFrontmatter),
+            "{raw}"
+        );
+    }
+}
+
+#[test]
+fn safe_yaml_absent_and_rejected_descriptions_stay_distinct() {
+    assert_eq!(parse_command_description("other: value"), Ok(None));
+    assert_eq!(
+        parse_command_description("' description ': 42"),
+        Ok(Some("42".to_string())),
+    );
+    assert_eq!(
+        parse_command_description("description: null"),
+        Err(InvalidCommandFrontmatter)
+    );
+    assert_eq!(
+        parse_command_description("[not, a, mapping]"),
+        Err(InvalidCommandFrontmatter)
+    );
+}
+
+#[test]
+fn safe_yaml_fallback_cannot_import_rejected_frontmatter() -> io::Result<()> {
+    let root = tempfile::TempDir::new()?;
+    let source = root.path().join("commands");
+    let target = root.path().join("skills");
+    fs::create_dir_all(&source)?;
+    for (index, raw) in [
+        "description: trusted\ndescription: substituted",
+        "description: !unreviewed tagged",
+        "description: &d trusted\ndescription: *d",
+        "description: trusted\n' description ': substituted",
+        "description: [nested, values]",
+        "[not, a, mapping]",
+        "description: 'unterminated",
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        fs::write(
+            source.join(format!("invalid-{index}.md")),
+            format!("---\n{raw}\n---\nUnaccepted command body.\n"),
+        )?;
+    }
+    fs::write(
+        source.join("valid.md"),
+        "Ordinary command without frontmatter.\n",
+    )?;
+    let profile = CommandMigrationProfile::new(
+        TEST_REWRITE_PROFILE,
+        CommandDescriptionMode::UseSourceNameFallback,
+    );
+    assert_eq!(
+        missing_command_names_with_profile(&source, &target, profile)?,
+        vec!["source-command-valid".to_string()],
+    );
+    assert_eq!(
+        import_commands_with_profile(&source, &target, profile)?,
+        vec!["source-command-valid".to_string()],
+    );
+    let entries = fs::read_dir(&target)?.collect::<io::Result<Vec<_>>>()?;
+    assert_eq!(entries.len(), 1);
+    let contents = fs::read_to_string(target.join("source-command-valid/SKILL.md"))?;
+    assert!(contents.contains("Ordinary command without frontmatter."));
+    Ok(())
+}
+
+#[test]
+fn safe_yaml_valid_missing_description_retains_original_fallback() {
+    for source in [
+        "A body without a header.",
+        "---\nother: value\n---\nA body.",
+    ] {
+        let document = parse_command_content(source);
+        assert!(document.description.is_ok());
+        assert_eq!(
+            command_skill_description(
+                &document,
+                "valid",
+                CommandDescriptionMode::UseSourceNameFallback,
+            ),
+            Some("Migrated source command `valid`".to_string()),
+        );
+        assert_eq!(
+            command_skill_description(
+                &document,
+                "valid",
+                CommandDescriptionMode::RequireFrontmatter,
+            ),
+            None,
+        );
+    }
+}
+
+#[test]
+fn safe_yaml_unterminated_header_is_not_absent_frontmatter() {
+    let document = parse_command_content("---\ndescription: unfinished\nA body.");
+    assert!(document.description.is_err());
+    assert_eq!(
+        command_skill_description(
+            &document,
+            "unfinished",
+            CommandDescriptionMode::UseSourceNameFallback,
+        ),
+        None,
+    );
+}
+
+#[test]
+fn safe_yaml_import_rechecks_rejection_after_source_discovery() -> io::Result<()> {
+    let root = tempfile::TempDir::new()?;
+    let source = root.path().join("commands");
+    let target = root.path().join("skills");
+    fs::create_dir_all(&source)?;
+    fs::create_dir_all(&target)?;
+    let path = source.join("changed.md");
+    fs::write(&path, "Ordinary body.\n")?;
+    let sources =
+        unique_supported_command_sources(&source, CommandDescriptionMode::UseSourceNameFallback)?;
+    assert_eq!(sources.len(), 1);
+    fs::write(
+        &path,
+        "---\ndescription: !unreviewed changed\n---\nNew body.\n",
+    )?;
+    let profile = CommandMigrationProfile::new(
+        TEST_REWRITE_PROFILE,
+        CommandDescriptionMode::UseSourceNameFallback,
+    );
+    assert_eq!(
+        import_command_sources(sources, &target, profile, CommandSkillSizeLimit::Unbounded)?,
+        Vec::<String>::new(),
+    );
+    assert_eq!(fs::read_dir(&target)?.count(), 0);
+    Ok(())
 }
