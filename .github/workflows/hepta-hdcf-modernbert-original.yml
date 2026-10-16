@@ -1,0 +1,218 @@
+name: hepta-hdcf-modernbert-original
+
+on:
+  push:
+    branches:
+      - research/hdcf-stem-graph-gates-20261016
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-modernbert-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hdcf-modernbert-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-and-original-byte-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run offline source, actual-Head SGD and provenance regressions
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile *.py
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_original_canary_audit test_modernbert_feature_bridge
+      - name: Fetch only original artifact 11877613315 and independently byte-recount it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11877613315/zip' \
+            -o "$RUNNER_TEMP/original-public-cell-learning.zip"
+          printf '%s  %s\n' 'fd89f174057d98bd2d4f03447d5d5dd9372723e70128ccdf2dcbe73f67a0a03a' \
+            "$RUNNER_TEMP/original-public-cell-learning.zip" | sha256sum --check
+          HDCF_ORIGINAL_CANARY_ZIP="$RUNNER_TEMP/original-public-cell-learning.zip" \
+            python3 -m unittest discover -s qualification/hdcf-research -p test_original_canary_audit.py -v
+          python3 qualification/hdcf-research/original_canary_audit.py \
+            --zip "$RUNNER_TEMP/original-public-cell-learning.zip" > "$RUNNER_TEMP/original-hdcf-audit.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hdcf-original-modernbert-independent-bytes
+          retention-days: 14
+          if-no-files-found: ignore
+          path: ${{ runner.temp }}/original-hdcf-audit.json
+
+  original-source-stage:
+    needs: source-and-original-byte-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: hdcf
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: original
+          ref: 758205d3de23ccbf76649b1446c271101dc917b0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Stage fixed original source without loading pretrained model
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/inputs-public" "$RUNNER_TEMP/labels-private"
+          python3 hdcf/qualification/hdcf-research/modernbert_feature_bridge.py stage \
+            --upstream-checkout original \
+            --root "$RUNNER_TEMP/fixed-banking77-original" \
+            --out-public "$RUNNER_TEMP/inputs-public/public.json" \
+            --out-private "$RUNNER_TEMP/labels-private/targets.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-public-inputs-no-test-labels
+          retention-days: 14
+          path: ${{ runner.temp }}/inputs-public/public.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-blind-targets-source-owner
+          retention-days: 14
+          path: ${{ runner.temp }}/labels-private/targets.json
+
+  pretrained-feature-producer:
+    needs: original-source-stage
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: hdcf
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: original
+          ref: 758205d3de23ccbf76649b1446c271101dc917b0
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-public-inputs-no-test-labels
+          path: ${{ runner.temp }}/public
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact stock CPU pretrained dependencies
+        run: |
+          set -euo pipefail
+          python3 -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python3 -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Physically load original fixed pretrained ModernBERT from immutable commit
+        run: |
+          set -euo pipefail
+          OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 original/qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --output "$RUNNER_TEMP/model-probe"
+          mkdir -p "$RUNNER_TEMP/exported-features"
+          OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 hdcf/qualification/hdcf-research/modernbert_feature_bridge.py produce \
+            --upstream-checkout original \
+            --snapshot "$RUNNER_TEMP/model-probe/snapshot" \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --out-features "$RUNNER_TEMP/exported-features/features.json" \
+            --out-receipt "$RUNNER_TEMP/exported-features/feature-receipt.json"
+      - name: Verify test targets absent from model worker artifact
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/public/targets.json"
+          test ! -e "$RUNNER_TEMP/exported-features/targets.json"
+          grep -q 'observed_encoder_forward_calls.*96' "$RUNNER_TEMP/exported-features/feature-receipt.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-original-modernbert-frozen-features
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/exported-features/features.json
+            ${{ runner.temp }}/exported-features/feature-receipt.json
+
+  train-cpu-cell-heads:
+    needs: pretrained-feature-producer
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-original-modernbert-frozen-features
+          path: ${{ runner.temp }}/frozen
+      - name: Physically train five matched Head treatments; no blind labels
+        run: |
+          set -euo pipefail
+          python3 qualification/hdcf-research/physical_cli.py train \
+            --features "$RUNNER_TEMP/frozen/features.json" --out "$RUNNER_TEMP/trial.json" \
+            --steps 256 --seed 7347
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-original-modernbert-head-trial
+          retention-days: 14
+          path: ${{ runner.temp }}/trial.json
+
+  independent-blind-review:
+    needs: [original-source-stage, pretrained-feature-producer, train-cpu-cell-heads]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-public-inputs-no-test-labels
+          path: ${{ runner.temp }}/public
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-blind-targets-source-owner
+          path: ${{ runner.temp }}/private
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-original-modernbert-frozen-features
+          path: ${{ runner.temp }}/frozen
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdcf-original-modernbert-head-trial
+          path: ${{ runner.temp }}/trial
+      - name: Independently verify source, predictor, target census and original Head scores
+        run: |
+          set -euo pipefail
+          python3 qualification/hdcf-research/modernbert_feature_bridge.py review \
+            --public "$RUNNER_TEMP/public/public.json" --private "$RUNNER_TEMP/private/targets.json" \
+            --features "$RUNNER_TEMP/frozen/features.json" \
+            --feature-receipt "$RUNNER_TEMP/frozen/feature-receipt.json" \
+            --trial "$RUNNER_TEMP/trial/trial.json" --out "$RUNNER_TEMP/review.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-original-modernbert-blind-review
+          retention-days: 14
+          path: ${{ runner.temp }}/review.json

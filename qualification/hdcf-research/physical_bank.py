@@ -18,7 +18,7 @@ SCHEMA = "hepta.hdcf.frozen-feature-bank.v1"
 MAX_INPUT_BYTES = 4_000_000
 MAX_TRAIN = 2048
 MAX_HELD = 1024
-MAX_DIM = 256
+MAX_DIM = 1024
 MAX_STEPS = 8192
 
 
