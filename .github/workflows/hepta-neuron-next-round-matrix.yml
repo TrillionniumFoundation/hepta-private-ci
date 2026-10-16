@@ -55,7 +55,7 @@ jobs:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==26.3
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Record actual source and environment
         run: |
