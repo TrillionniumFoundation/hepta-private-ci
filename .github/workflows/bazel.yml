@@ -247,7 +247,7 @@ jobs:
     timeout-minutes: 30
     # Preserve the existing required-check surface while the real work happens
     # in the sharded Windows jobs above.
-    if: always()
+    if: ${{ !cancelled() }}
     needs: test-windows-shard
     runs-on: ubuntu-24.04
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc

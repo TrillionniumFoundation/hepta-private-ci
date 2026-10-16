@@ -204,7 +204,7 @@ jobs:
 
   qualification-result:
     name: Converged learning result
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs: [formatting, qualification]
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
