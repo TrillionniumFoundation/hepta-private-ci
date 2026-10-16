@@ -44,7 +44,9 @@ def _directory_identity(directory_fd: int, path: Path) -> None:
         opened = os.fstat(directory_fd)
         named = path.lstat()
     except OSError as error:
-        raise InvalidEvidence(f"{path.name}: pinned directory unavailable: {error}") from error
+        raise InvalidEvidence(
+            f"{path.name}: pinned directory unavailable: {error}"
+        ) from error
     if (
         not stat.S_ISDIR(opened.st_mode)
         or not stat.S_ISDIR(named.st_mode)
@@ -177,11 +179,15 @@ def observe(
             _directory_identity(root_fd, root)
             for name, original in artifacts.items():
                 if _read_regular(root_fd, name, limits[name]) != original:
-                    raise InvalidEvidence(f"{name}: original evidence changed during custody")
+                    raise InvalidEvidence(
+                        f"{name}: original evidence changed during custody"
+                    )
             _directory_identity(root_fd, root)
 
         manifest = _strict_json(take("manifest.json", MAX_MANIFEST_BYTES), "manifest")
-        packet = _strict_json(take("measured-matrix.json", MAX_COMPARISON_BYTES), "matrix")
+        packet = _strict_json(
+            take("measured-matrix.json", MAX_COMPARISON_BYTES), "matrix"
+        )
         reported = _strict_json(
             take("diagnostic-comparison.json", MAX_COMPARISON_BYTES), "comparison"
         )
@@ -196,7 +202,9 @@ def observe(
         }
         for field, pin in frozen.items():
             if manifest.get(field) != pin or packet.get(field) != pin:
-                raise InvalidEvidence(f"observer's independently frozen {field} differs")
+                raise InvalidEvidence(
+                    f"observer's independently frozen {field} differs"
+                )
         recalculated = analyze(packet)
         if not isinstance(reported, dict) or reported != recalculated:
             raise InvalidEvidence("producer comparison differs from independent replay")
@@ -205,7 +213,9 @@ def observe(
         if reported.get("production_evidence_verified") or reported.get(
             "production_activation_authorized"
         ):
-            raise InvalidEvidence("producer packet asserted forbidden production authority")
+            raise InvalidEvidence(
+                "producer packet asserted forbidden production authority"
+            )
 
         rows = {(row["scopes"], row["mode"]): row for row in packet["runs"]}
         for scope in SCOPES:
@@ -258,7 +268,9 @@ def observe(
             recheck_captured_bytes()
             _directory_identity(output_fd, output)
             _write_exclusive(
-                output_fd, "COMPLETE", (hashlib.sha256(ledger_bytes).hexdigest() + "\n").encode()
+                output_fd,
+                "COMPLETE",
+                (hashlib.sha256(ledger_bytes).hexdigest() + "\n").encode(),
             )
             _directory_identity(output_fd, output)
             os.fsync(output_fd)
