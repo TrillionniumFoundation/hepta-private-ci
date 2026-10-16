@@ -1,0 +1,16 @@
+name: Ubuntu 26 x64 full reusable SDK qualification
+
+on:
+  push:
+    branches: [ci/gha-ubuntu26-x64-qualification-20261016]
+    paths: [.github/workflows/gha-ubuntu26-sdk-call.yml]
+
+permissions:
+  contents: read
+
+# Replays the repository's real reusable SDK workflow unchanged except for
+# Linux runner labels on this isolated branch. PR/main are not affected.
+jobs:
+  production-sdk:
+    uses: ./.github/workflows/sdk.yml
+    secrets: inherit
