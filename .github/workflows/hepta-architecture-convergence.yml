@@ -38,6 +38,37 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Pin the live PR base and confirm prospective merge parents
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # On stacked PRs the event's base.sha may be older than the current
+          # GitHub merge ref first parent. Bind the live head, without waiving
+          # any of the later two-parent and merge-tree exactness checks.
+          test -n "$PR_NUMBER" && test -n "$BASE_REF"
+          live_base="$(gh api "repos/$REPO/git/ref/heads/$BASE_REF" --jq '.object.sha')"
+          merge_sha="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" --jq '.object.sha')"
+          commit_json="$(gh api "repos/$REPO/git/commits/$merge_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          [[ "$live_base" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$live_base"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          printf 'BASE_SHA=%s\n' "$live_base" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          jq -n --arg event_base "$BASE_SHA" --arg live_base "$live_base" \
+            --arg source "$SOURCE_SHA" --arg merge "$merge_sha" \
+            '{schema:"hepta.architecture.live-base-binding.v1", event_base:$event_base,
+              live_base:$live_base, source:$source, prospective_merge:$merge,
+              verified_current_base_and_both_parents:true}' \
+            > "$RUNNER_TEMP/hepta-command-records/live-base-binding.json"
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
