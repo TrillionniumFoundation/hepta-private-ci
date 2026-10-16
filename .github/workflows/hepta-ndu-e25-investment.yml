@@ -1,0 +1,187 @@
+name: Hepta NDU E25 true five-param investment (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation/**'
+      - '.github/workflows/hepta-ndu-e25-investment.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  label-blind-actual-head-training:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Require exact successful E25 external original model and reviewer run
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,urllib.request
+          u='https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38727583089'
+          r=urllib.request.Request(u,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'], 'Accept':'application/vnd.github+json'})
+          with urllib.request.urlopen(r,timeout=60) as response:d=json.load(response)
+          if d.get('head_sha')!='1ab2615004fc524ca18d47aaa97f6dc59356d533' or d.get('status')!='completed' or d.get('conclusion')!='success':
+              raise ValueError('original six passage E25 model and scorer did not complete')
+          PY
+      - name: Fetch only original E15 historical training folds and E25 blind model evidence
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation
+          E="$RUNNER_TEMP/e26-original"
+          mkdir -p "$E" "$RUNNER_TEMP/e26-blind"
+          python "$D/download.py" --role blind --name historic --output "$E/original_reader_11946621518.zip"
+          python "$D/download.py" --role blind --name public --output "$E/github-original-11991113170.zip"
+          python "$D/download.py" --role blind --name model --output "$E/github-original-12010699818.zip"
+          python "$D/download.py" --role blind --name fold0 --output "$E/e15-owner-original-11949081037.zip"
+          python "$D/download.py" --role blind --name fold1 --output "$E/e15-owner-original-11948881417.zip"
+          python "$D/download.py" --role blind --name fold2 --output "$E/e15-owner-original-11948806536.zip"
+          python "$D/download.py" --role blind --name fold3 --output "$E/e15-owner-original-11948681555.zip"
+          test ! -e "$E/github-original-11991387730.zip"
+          test ! -e "$E/github-original-12018967923.zip"
+      - name: Run actual E15-training-only Head control across 51 new E25 candidates without labels
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation
+          E="$RUNNER_TEMP/e26-original"
+          OUT="$RUNNER_TEMP/e26-blind"
+          python -m py_compile "$D/study.py" "$D/audit.py" "$D/download.py" "$D/test_study.py"
+          sha256sum "$D/protocol.json" > "$OUT/protocol-source-sha256.txt"
+          for mode in normal optimized; do
+            FLAGS=(); if [ "$mode" = optimized ]; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" "$D/study.py" \
+              --historic "$E/original_reader_11946621518.zip" \
+              --public "$E/github-original-11991113170.zip" \
+              --model "$E/github-original-12010699818.zip" \
+              --fold0 "$E/e15-owner-original-11949081037.zip" \
+              --fold1 "$E/e15-owner-original-11948881417.zip" \
+              --fold2 "$E/e15-owner-original-11948806536.zip" \
+              --fold3 "$E/e15-owner-original-11948681555.zip" \
+              --output "$OUT/seal-$mode.json" | tee "$OUT/study-$mode.log"
+          done
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'e26-blind'
+          a,b=[json.loads((d/f'seal-{m}.json').read_text()) for m in ('normal','optimized')]
+          if a['rows']!=b['rows']:raise ValueError('normal vs optimized original E25 predictions diverged')
+          for r in (a,b):
+              if r['physical_total_optimizer_updates_including_all_separate_pilots']!=2752 or r['new_original_holdout_labels_used'] or not r['readout_original_frozen_brier_48_exactly_reproduced']:
+                  raise ValueError('missing real training, original lineage or held-label isolation')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e25-ndu-blind-training-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/e26-blind/
+          retention-days: 14
+          if-no-files-found: error
+
+  postseal-independent-original-human-review:
+    needs: label-blind-actual-head-training
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install independent numerical reviewer
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+      - uses: actions/download-artifact@v4
+        with:
+          name: e25-ndu-blind-training-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/e26-blind/
+      - name: Reacquire source from exact upstream IDs and ONLY NOW original E25 human truth
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation
+          E="$RUNNER_TEMP/e26-original"
+          mkdir -p "$E" "$RUNNER_TEMP/e26-review"
+          python "$D/download.py" --role review --name historic --output "$E/original_reader_11946621518.zip"
+          python "$D/download.py" --role review --name public --output "$E/github-original-11991113170.zip"
+          python "$D/download.py" --role review --name model --output "$E/github-original-12010699818.zip"
+          python "$D/download.py" --role review --name fold0 --output "$E/e15-owner-original-11949081037.zip"
+          python "$D/download.py" --role review --name fold1 --output "$E/e15-owner-original-11948881417.zip"
+          python "$D/download.py" --role review --name fold2 --output "$E/e15-owner-original-11948806536.zip"
+          python "$D/download.py" --role review --name fold3 --output "$E/e15-owner-original-11948681555.zip"
+          python "$D/download.py" --role review --name owner --output "$E/github-original-11991387730.zip"
+          python "$D/download.py" --role review --name score --output "$E/github-original-12018967923.zip"
+      - name: Independently rederive all 2752 SGD steps and original whole-question scores
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation
+          E="$RUNNER_TEMP/e26-original"
+          for mode in normal optimized; do
+            FLAGS=(); if [ "$mode" = optimized ]; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" "$D/audit.py" \
+              --historic "$E/original_reader_11946621518.zip" \
+              --public "$E/github-original-11991113170.zip" \
+              --model "$E/github-original-12010699818.zip" \
+              --owner "$E/github-original-11991387730.zip" \
+              --score "$E/github-original-12018967923.zip" \
+              --fold0 "$E/e15-owner-original-11949081037.zip" \
+              --fold1 "$E/e15-owner-original-11948881417.zip" \
+              --fold2 "$E/e15-owner-original-11948806536.zip" \
+              --fold3 "$E/e15-owner-original-11948681555.zip" \
+              --seal "$RUNNER_TEMP/e26-blind/seal-$mode.json" \
+              --output "$RUNNER_TEMP/e26-review/audit-$mode.json" | tee "$RUNNER_TEMP/e26-review/audit-$mode.log"
+          done
+          export E25_ORIGINAL_DIR="$E"
+          python -m unittest discover -s "$D" -p test_study.py -v 2>&1 | tee "$RUNNER_TEMP/e26-review/tests-normal.log"
+          python -O -m unittest discover -s "$D" -p test_study.py -v 2>&1 | tee "$RUNNER_TEMP/e26-review/tests-optimized.log"
+          grep -F 'Ran 45 tests' "$RUNNER_TEMP/e26-review/tests-normal.log"
+          grep -F 'Ran 45 tests' "$RUNNER_TEMP/e26-review/tests-optimized.log"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'e26-review'
+          a,b=[json.loads((d/f'audit-{m}.json').read_text()) for m in ('normal','optimized')]
+          def outcome(s):
+              return {k: {x:y for x,y in v.items() if x not in ('recorded_local_cached_cpu_ns',)} for k,v in s['metrics'].items()}
+          if outcome(a)!=outcome(b):raise ValueError('original human scorer differs between Python modes')
+          for r in (a,b):
+              if r['metrics']['fixed_8']['correct_candidates']!=34 or r['metrics']['ndu_discrete']['correct_candidates']!=31:
+                  raise ValueError('changed original passage-held task outcome')
+              if r['metrics']['fixed_8']['complete_questions']!=1 or r['metrics']['ndu_discrete']['complete_questions']!=1 or r['production_accepted']:
+                  raise ValueError('false whole-question rescue or production claim')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e25-ndu-original-human-independent-audit-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/e26-review/
+          retention-days: 14
+          if-no-files-found: error
