@@ -136,6 +136,25 @@ fn registered_near_match(
         _ => Err(fail("unregistered near-matched Cell candidate/tier")),
     }
 }
+/// Exact physical byte ledger computed from the pinned safetensors F32/I64 ABI.
+/// (width, rank, actual scalars, exact serialized file bytes) are independently
+/// measured before running this Rust executable, never caller-provided grants.
+fn registered_serialized_bytes(
+    arm: &str,
+    budget: usize,
+) -> Result<(usize, Option<usize>, usize, usize), String> {
+    match (budget, arm) {
+        (8192, "v2") => Ok((54, None, 1891, 8148)),
+        (8192, "v3") => Ok((45, None, 1711, 8172)),
+        (8192, "ssm") => Ok((47, None, 1740, 8052)),
+        (8192, "min_gru") => Ok((38, Some(1), 1559, 8156)),
+        (32768, "v2") => Ok((224, None, 7841, 32644)),
+        (32768, "v3") => Ok((191, None, 7259, 32716)),
+        (32768, "ssm") => Ok((201, None, 7438, 32708)),
+        (32768, "min_gru") => Ok((166, Some(1), 6807, 32756)),
+        _ => Err(fail("unregistered physical byte-budget Cell")),
+    }
+}
 fn digest(s: &str) -> Result<Digest32, String> {
     let parsed = Digest32::from_str(s).map_err(|_| fail("invalid lowercase digest"))?;
     if parsed.is_zero() {
@@ -741,6 +760,7 @@ fn args() -> Result<BTreeMap<String, String>, String> {
         "--cap",
         "--hidden-width",
         "--rank",
+        "--budget-kind",
     ];
     if map.len() < 6
         || map.keys().any(|x| !allowed.contains(&x.as_str()))
@@ -762,7 +782,16 @@ fn execute() -> Result<serde_json::Value, String> {
     let opts = args()?;
     let arm = arg(&opts, "--arm")?;
     let cap: usize = arg(&opts, "--cap")?.parse().map_err(|_| fail("bad cap"))?;
-    if ![2048, 8192].contains(&cap) {
+    let byte_kind = match opts.get("--budget-kind").map(String::as_str) {
+        None => false,
+        Some("SERIALIZED_SAFETENSORS_BYTES") => true,
+        _ => return Err(fail("unknown private budget kind")),
+    };
+    if byte_kind {
+        if ![8192, 32768].contains(&cap) {
+            return Err(fail("unregistered physical byte budget"));
+        }
+    } else if ![2048, 8192].contains(&cap) {
         return Err(fail(
             "16K/64K/256K near-matched geometry is not implemented",
         ));
@@ -780,7 +809,14 @@ fn execute() -> Result<serde_json::Value, String> {
     let width: usize = arg(&opts, "--hidden-width")?
         .parse()
         .map_err(|_| fail("invalid hidden width"))?;
-    let (registered_width, registered_rank, registered_count) = registered_near_match(arm, cap)?;
+    let (registered_width, registered_rank, registered_count, expected_file_size) =
+        if byte_kind {
+            let (w, r, n, bytes) = registered_serialized_bytes(arm, cap)?;
+            (w, r, n, Some(bytes))
+        } else {
+            let (w, r, n) = registered_near_match(arm, cap)?;
+            (w, r, n, None)
+        };
     if width != registered_width || rank != registered_rank {
         return Err(fail(
             "candidate width/rank differs from registered realized geometry",
@@ -788,6 +824,14 @@ fn execute() -> Result<serde_json::Value, String> {
     }
     let model_path = Path::new(arg(&opts, "--model")?);
     let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
+    if let Some(expected_size) = expected_file_size {
+        if bytes.len() != expected_size
+            || bytes.len() > cap
+            || (cap - bytes.len()) * 1_000_000 > cap * 20_000
+        {
+            return Err(fail("original physical byte budget violated"));
+        }
+    }
     let bank = physical_weights(&bytes, arm, width, rank, cap, source_width)?;
     if source_width != 32 || bank.parameter_count != registered_count {
         return Err(fail(
@@ -835,7 +879,12 @@ fn execute() -> Result<serde_json::Value, String> {
 
     Ok(json!({
         "schema":"hepta.neuron.near-matched-native-adapter-replay.v1",
-        "arm":arm, "private_parameter_cap":cap, "private_parameter_count":bank.parameter_count,
+        "arm":arm,
+        "private_parameter_cap":if byte_kind { None } else { Some(cap) },
+        "physical_safetensors_byte_ceiling":if byte_kind { Some(cap) } else { None },
+        "physical_model_file_bytes":bytes.len(),
+        "budget_kind":if byte_kind { "SERIALIZED_SAFETENSORS_BYTES" } else { "PRIVATE_PARAMETER_COUNT" },
+        "private_parameter_count":bank.parameter_count,
         "physical_tensor_count":bank.tensor_count,
         "selected_private_weight_sha256":model_sha.to_string(),
         "trace_sha256":trace_sha.to_string(),
@@ -967,6 +1016,22 @@ mod tests {
         );
         Ok(())
     }
+    #[test]
+    fn serialized_byte_budget_cannot_be_relabelled_as_parameter_count() {
+        assert_eq!(
+            registered_serialized_bytes("v2", 8192),
+            Ok((54, None, 1891, 8148)),
+        );
+        assert_eq!(
+            registered_serialized_bytes("min_gru", 32768),
+            Ok((166, Some(1), 6807, 32756)),
+        );
+        for arm in ["v2", "v3", "ssm", "min_gru"] {
+            assert!(registered_serialized_bytes(arm, 2048).is_err());
+            assert!(registered_serialized_bytes(arm, 262144).is_err());
+        }
+    }
+
     #[test]
     fn only_eight_registered_near_matched_physical_candidates_are_admitted() {
         assert_eq!(registered_near_match("v2", 2048), Ok((58, None, 2031)));
