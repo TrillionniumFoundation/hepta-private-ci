@@ -474,6 +474,8 @@ def run(args) -> dict:
                     "source_text_sha256": source_case["source_text_sha256"],
                     "logit_q24": signed_output["logit_q24"],
                     "head_sign_margin_status": signed_output["status"],
+                    "head_sign_margin_twice_q24_lsb":
+                        front["head_sign_margin_twice_q24_lsb"],
                     "native_cold_checkpoint_sha256": checkpoint,
                 })
                 receipts += 2
@@ -481,6 +483,7 @@ def run(args) -> dict:
                  "missing original heldout prediction case")
             prediction_record = {
                 "task_id": task, "arm": arm, "serialized_byte_budget": cap,
+                "hidden_width": m["hidden_width"],
                 "physical_model_sha256": m["weight_sha256"],
                 "cases": unlabeled_prediction_cases,
             }
