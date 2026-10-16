@@ -89,6 +89,10 @@ jobs:
 
   blob-size-policy:
     name: Blob size policy
+    # Queue the x64-only Fence job only after the portable source scope has
+    # completed. The required gate still rejects any failed/skipped scope or
+    # Fence result; the pinned Fence action and its audit policy are unchanged.
+    needs: scope
     uses: ./.github/workflows/blob-size-policy.yml
     secrets: inherit
 
