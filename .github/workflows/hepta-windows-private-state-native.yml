@@ -88,4 +88,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          if ((git status --porcelain --untracked-files=no) -ne "") { throw "unqualified worktree mutation" }
+          # @(...) yields an empty array when Git prints no status lines;
+          # comparing a null/scalar command result with "" can misclassify a
+          # clean Windows worktree. Preserve the fail-closed tracked-dirty gate.
+          $trackedStatus = @(git status --porcelain=v1 --untracked-files=no)
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($trackedStatus.Count -ne 0) {
+            $trackedStatus | ForEach-Object { Write-Output "Tracked change: $_" }
+            throw "unqualified worktree mutation"
+          }
