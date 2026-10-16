@@ -19,10 +19,8 @@ from v14_reader_sufficiency_gate import (
 )
 
 MODEL_SHA = '5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c'
-TOKEN_SHA = '9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224cfd888e47c'
-# Original checksum MUST be exact. This is intentionally a literal domain
-# independent of the model-execution producer's constants.
-TOKEN_SHA = '9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224cfd888e47c'.replace('cfd', 'cfd')
+TOKEN_SHA = '9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c'
+CONFIG_SHA = '8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a'
 CITATION = re.compile(r'\[([A-Za-z0-9._:/-]{1,128})\]')
 SCHEMA_PACKET = SCHEMA + '.original-candidate-physical-partial.v1'
 JOURNAL_MAX = 4 * 1024 * 1024
@@ -71,7 +69,9 @@ def exact(obj, fields, label):
 def review(original, plan, private, candidate, journal, journal_file):
     source = source_replay(original, plan, private)
     expected_model = plan['models']['candidate']
-    require(expected_model['weights_sha256'] == MODEL_SHA, 'wrong candidate weights')
+    require(expected_model['weights_sha256'] == MODEL_SHA
+            and expected_model['tokenizer_sha256'] == TOKEN_SHA,
+            'wrong original Reader model/tokenizer')
     require(candidate['schema'] == SCHEMA_PACKET, 'wrong physical candidate schema')
     exact(candidate, (
         'schema','source_sha256','plan_sha256','private_prompt_packet_sha256',
@@ -88,6 +88,7 @@ def review(original, plan, private, candidate, journal, journal_file):
             and candidate['private_prompt_packet_sha256'] == source['private_packet_sha256']
             and candidate['original_model_weights_sha256'] == expected_model['weights_sha256']
             and candidate['original_model_tokenizer_sha256'] == expected_model['tokenizer_sha256']
+            and candidate['original_model_config_sha256'] == CONFIG_SHA
             and candidate['original_runtime_sha256'] == expected_model['runtime_sha256']
             and candidate['journal_sha256'] == file_sha(journal_file),
             'source/model/runtime/journal material drift')
