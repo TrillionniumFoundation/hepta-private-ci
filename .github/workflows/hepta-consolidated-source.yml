@@ -531,7 +531,7 @@ jobs:
   engineering-product-gate:
     name: control.engineering product caller (${{ matrix.lane }})
     needs: [engineering-sandbox]
-    if: ${{ always() && needs.engineering-sandbox.result == 'success' }}
+    if: ${{ !cancelled() && needs.engineering-sandbox.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
