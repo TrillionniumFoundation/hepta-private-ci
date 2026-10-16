@@ -827,6 +827,10 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
                 Err(CellSplitExecutionErrorV1::Ambiguous)
             ));
             assert_eq!(state.borrow().verifications - before, completed);
+            assert!(matches!(
+                writer.verified_transcript(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
             assert_eq!(state.borrow().executions, completed + 1);
         }
         {
@@ -839,6 +843,10 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
             .expect("read-only reopen of unresolved intent");
             assert!(matches!(
                 observer.verified_complete(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert!(matches!(
+                observer.verified_transcript(),
                 Err(CellSplitExecutionErrorV1::Ambiguous)
             ));
             assert!(
@@ -866,6 +874,10 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
             recovered.verified_complete().expect("live original prefix"),
             completed + 1 == 4
         );
+        let transcript = recovered
+            .verified_transcript()
+            .expect("reconciled original transcript");
+        assert_eq!(transcript.is_some(), completed + 1 == 4);
     }
 }
 
