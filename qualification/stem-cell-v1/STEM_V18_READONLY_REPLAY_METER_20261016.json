@@ -1,0 +1,30 @@
+{
+  "actual_prospective_source_count": 0,
+  "prior_candidate_commit": "fa5dbba09faa98f65fef63048c467946ee9f5e8c",
+  "production_authorized": false,
+  "receipt_digest_consistent_across_processes": true,
+  "runs": [
+    {
+      "cpu_system_s": 0.101138,
+      "cpu_user_s": 0.69055,
+      "iteration": 1,
+      "major_faults": 0,
+      "peak_rss_kib_linux_wait4": 102440,
+      "receipt_sha256": "5c9cf67e1d91ca8ebc5adafd9963357a91ddb45361f43d0311c276150e29edb4",
+      "scope": "read-only V18 independent numpy 82-artifact replay+paired bootstrap; no training/Encoder/production worker"
+    },
+    {
+      "cpu_system_s": 0.078854,
+      "cpu_user_s": 0.698233,
+      "iteration": 2,
+      "major_faults": 0,
+      "peak_rss_kib_linux_wait4": 102420,
+      "receipt_sha256": "5c9cf67e1d91ca8ebc5adafd9963357a91ddb45361f43d0311c276150e29edb4",
+      "scope": "read-only V18 independent numpy 82-artifact replay+paired bootstrap; no training/Encoder/production worker"
+    }
+  ],
+  "schema": "hepta.stem.v18.original-readonly-replay-meter",
+  "signed_original_owner_attested": false,
+  "source_sha256": "9693d3a5be2dd4fb50b0e033d9798932237df0cabacd8d0b017d78ca1028d0f4",
+  "target_host_qualified": false
+}

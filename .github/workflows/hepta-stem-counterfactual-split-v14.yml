@@ -11,6 +11,10 @@ on:
       - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
       - "qualification/stem-cell-v1/*identity_alignment_v17*.py"
       - "qualification/stem-cell-v1/STEM_V17_IDENTITY_ALIGNMENT*"
+      - "qualification/stem-cell-v1/*v18_*"
+      - "qualification/stem-cell-v1/STEM_V18_*"
+      - "qualification/stem-cell-v1/*v19_*"
+      - "qualification/stem-cell-v1/STEM_V19_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   push:
     branches:
@@ -24,6 +28,10 @@ on:
       - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
       - "qualification/stem-cell-v1/*identity_alignment_v17*.py"
       - "qualification/stem-cell-v1/STEM_V17_IDENTITY_ALIGNMENT*"
+      - "qualification/stem-cell-v1/*v18_*"
+      - "qualification/stem-cell-v1/STEM_V18_*"
+      - "qualification/stem-cell-v1/*v19_*"
+      - "qualification/stem-cell-v1/STEM_V19_*"
       - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
   workflow_dispatch:
 
@@ -54,7 +62,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 cryptography==46.0.4
       - name: Mechanism-only tests without original publisher data
         working-directory: qualification/stem-cell-v1
         env:
@@ -74,6 +82,10 @@ jobs:
           python -O -m unittest -v test_stem_identity_alignment_v17.Mechanism
           python -m py_compile stem_identity_alignment_v17.py stem_identity_alignment_v17_review.py test_stem_identity_alignment_v17.py
           python -m py_compile stem_counterfactual_split_v14.py stem_counterfactual_split_v14_review.py test_stem_counterfactual_split_v14.py
+          python -m unittest -v test_v18_source_first_uncertainty.Mechanism test_v18_future_source_intake.Gate test_v18_public_negative_gate.Gate test_v19_replay_equivalence_gate.SourceOnly
+          python -O -m unittest -v test_v18_source_first_uncertainty.Mechanism test_v18_future_source_intake.Gate test_v18_public_negative_gate.Gate test_v19_replay_equivalence_gate.SourceOnly
+          python -m py_compile v18_source_first_uncertainty.py test_v18_source_first_uncertainty.py v18_future_source_intake.py test_v18_future_source_intake.py v18_public_negative_gate.py test_v18_public_negative_gate.py v19_replay_equivalence_gate.py test_v19_replay_equivalence_gate.py
+          python v18_public_negative_gate.py --result STEM_V18_SOURCE_FIRST_20261016.json --hold STEM_V18_FUTURE_SOURCE_HOLD_20261016.json --meter STEM_V18_READONLY_REPLAY_METER_20261016.json
       - name: Retrieve only the immutable original Actions archive
         if: github.event_name != 'pull_request'
         env:
@@ -166,6 +178,34 @@ jobs:
         with:
           name: v17-sanitized-review-${{ github.sha }}
           path: ${{ runner.temp }}/v17-sanitized-review.json
+          if-no-files-found: error
+      - name: V18 actual independent frozen-source retrospective recomputation
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V18_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V18_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V18_V16="$RUNNER_TEMP/v16-candidates"
+          export HEPTA_V18_V17="$RUNNER_TEMP/v17-candidates"
+          python -m unittest -v test_v18_source_first_uncertainty test_v18_future_source_intake test_v18_public_negative_gate test_v19_replay_equivalence_gate
+          python -O -m unittest -v test_v18_source_first_uncertainty test_v18_future_source_intake test_v18_public_negative_gate test_v19_replay_equivalence_gate
+          python v18_source_first_uncertainty.py --inputs "$HEPTA_V18_INPUTS" --v15 "$HEPTA_V18_V15" --v16 "$HEPTA_V18_V16" --v17 "$HEPTA_V18_V17" --output "$RUNNER_TEMP/v18-replayed.json"
+          python v18_future_source_intake.py --retrospective "$RUNNER_TEMP/v18-replayed.json" --out "$RUNNER_TEMP/v18-future-HOLD.json"
+          python v19_replay_equivalence_gate.py --inputs "$HEPTA_V18_INPUTS" --v15 "$HEPTA_V18_V15" --v16 "$HEPTA_V18_V16" --v17 "$HEPTA_V18_V17" --historical STEM_V18_SOURCE_FIRST_20261016.json --historical-hold STEM_V18_FUTURE_SOURCE_HOLD_20261016.json --out "$RUNNER_TEMP/v19-sanitized-original-replay.json"
+      - name: Upload only sanitized V18/V19 numerical and HOLD receipts
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-v19-original-replay-hold-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/v18-replayed.json
+            ${{ runner.temp }}/v18-future-HOLD.json
+            ${{ runner.temp }}/v19-sanitized-original-replay.json
           if-no-files-found: error
       - name: Require clean tracked source
         run: git diff --exit-code && git diff --cached --exit-code
