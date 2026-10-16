@@ -625,6 +625,55 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 
 #[cfg(unix)]
 #[test]
+fn original_pending_begin_inspector_fifo_marker_is_nonblocking_and_denied() {
+    let dir = private_control_dir();
+    let directory = std::fs::File::open(dir.path()).expect("private directory FD");
+    rustix::fs::mkfifoat(
+        &directory,
+        "pending-fifo-marker.wal.owner-lock",
+        rustix::fs::Mode::from_bits_truncate(0o600),
+    )
+    .expect("actual FIFO owner-lock injection");
+    let denied = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+        &dir.path().join("pending-fifo-marker.wal"),
+        &snapshot(3),
+        Digest32::ZERO,
+    );
+    assert!(matches!(denied, Err(NduPublicationErrorV1::Indeterminate)));
+}
+
+#[cfg(unix)]
+#[test]
+fn original_pending_begin_inspector_fifo_wal_is_nonblocking_and_denied() {
+    use std::os::unix::fs::OpenOptionsExt as _;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("pending-fifo-journal.wal");
+    let marker = dir.path().join("pending-fifo-journal.wal.owner-lock");
+    let _marker_file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .mode(0o600)
+        .open(&marker)
+        .expect("real private ordinary marker");
+    let directory = std::fs::File::open(dir.path()).expect("private directory FD");
+    rustix::fs::mkfifoat(
+        &directory,
+        "pending-fifo-journal.wal",
+        rustix::fs::Mode::from_bits_truncate(0o600),
+    )
+    .expect("actual FIFO WAL injection");
+    let denied = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+        &path,
+        &snapshot(3),
+        Digest32::ZERO,
+    );
+    assert!(matches!(denied, Err(NduPublicationErrorV1::Indeterminate)));
+}
+
+#[cfg(unix)]
+#[test]
 fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash() {
     let dir = private_control_dir();
     let path = dir.path().join("observed-orphan.wal");

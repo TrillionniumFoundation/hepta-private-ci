@@ -978,7 +978,10 @@ impl NduPublicationOwnerV1 {
         let mut marker_name = path.as_os_str().to_os_string();
         marker_name.push(".owner-lock");
         let marker_path = PathBuf::from(marker_name);
-        let flags = OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+        // A hostile FIFO at either pathname must never block the recovery
+        // reader before control_owner_file_identity rejects non-regular files.
+        // NONBLOCK applies only to these two read-only observer descriptors.
+        let flags = OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK;
         let marker = File::from(
             unixfs::openat(
                 &directory,

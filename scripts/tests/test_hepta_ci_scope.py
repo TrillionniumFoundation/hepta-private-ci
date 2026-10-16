@@ -117,7 +117,7 @@ class ScopeTests(unittest.TestCase):
             workflow,
         )
         self.assertIn(
-            "control-original-pending-begin-readonly.json\" --minimum-tests 2",
+            "control-original-pending-begin-readonly.json\" --minimum-tests 4",
             workflow,
         )
         self.assertLess(
