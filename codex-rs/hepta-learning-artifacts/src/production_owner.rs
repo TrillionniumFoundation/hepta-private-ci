@@ -14,6 +14,7 @@ use std::fmt;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -366,6 +367,9 @@ pub struct ArtifactCasOwnerV1 {
     cas_latency: Arc<PhaseLatencyHistogramV1>,
     signature_latency: Arc<PhaseLatencyHistogramV1>,
     metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    // One original Evidence binding for all clones of the same owner. A
+    // replacement cannot erase previously observed CAS/signature history.
+    metrics_binding_claimed: Arc<AtomicBool>,
     failed_metric_records: Arc<AtomicU64>,
 }
 
@@ -386,6 +390,7 @@ impl ArtifactCasOwnerV1 {
             cas_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             metrics: None,
+            metrics_binding_claimed: Arc::new(AtomicBool::new(false)),
             failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
     }
@@ -399,7 +404,22 @@ impl ArtifactCasOwnerV1 {
     }
 
     /// Production callers install the Evidence-owned sink before CAS use.
+    /// Never back-certify an unmetered CAS/signature or replace an existing
+    /// journal with another sink. Clones share this one-time binding claim
+    /// and the sticky failure latch, but never gain execution authority.
     pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        if self.metrics.is_some()
+            || self.failed_metric_records.load(Ordering::Acquire) != 0
+            || self.cas_latency.snapshot().observations != 0
+            || self.signature_latency.snapshot().observations != 0
+            || self
+                .metrics_binding_claimed
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+        {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            return self;
+        }
         self.metrics = Some(sink);
         self
     }
@@ -428,6 +448,12 @@ impl ArtifactCasOwnerV1 {
         phase: PhaseMetricKindV1,
         invoke: impl FnOnce() -> Result<T, E>,
     ) -> Result<T, E> {
+        // A clone without the original sink may still perform a research
+        // operation, but it must permanently revoke production telemetry
+        // readiness BEFORE the CAS/signature closure can have an effect.
+        if self.metrics.is_none() {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+        }
         let started = Instant::now();
         let result = invoke();
         let latency = started.elapsed();
@@ -1239,6 +1265,70 @@ mod tests {
         assert!(!owner.production_metrics_ready());
         assert!(!owner.flush_production_metrics());
         assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
+    }
+
+    #[test]
+    fn late_evidence_sink_cannot_back_certify_unmetered_cas() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-late"),
+            SigningKey::from_bytes(&[28; 32]),
+        )
+        .expect("owner");
+        let completed: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-late"),
+            Digest32::of_bytes(b"operation.metrics-late"),
+            PhaseMetricKindV1::Cas,
+            || Ok(9),
+        );
+        assert_eq!(completed, Ok(9));
+        assert_eq!(owner.latency_observations().cas.observations, 1);
+        assert!(!owner.production_metrics_ready());
+
+        let late = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(late.metrics.is_none());
+        assert!(!late.production_metrics_ready());
+        assert!(!late.flush_production_metrics());
+    }
+
+    #[test]
+    fn cross_clone_evidence_rebind_poisons_original_metrics_owner() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-clone"),
+            SigningKey::from_bytes(&[29; 32]),
+        )
+        .expect("owner");
+        let sibling = owner.clone();
+        let first = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(first.production_metrics_ready());
+
+        let conflicting = sibling.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(conflicting.metrics.is_none());
+        assert!(!conflicting.production_metrics_ready());
+        assert!(!first.production_metrics_ready());
+        assert!(!first.flush_production_metrics());
+    }
+
+    #[test]
+    fn unmetered_clone_revokes_previously_healthy_evidence_owner() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-sibling"),
+            SigningKey::from_bytes(&[30; 32]),
+        )
+        .expect("owner");
+        let unmetered_clone = owner.clone();
+        let active = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(active.production_metrics_ready());
+
+        let result: Result<(), ()> = unmetered_clone.timed(
+            Digest32::of_bytes(b"scope.metrics-sibling"),
+            Digest32::of_bytes(b"operation.metrics-sibling"),
+            PhaseMetricKindV1::Signature,
+            || Ok(()),
+        );
+        assert_eq!(result, Ok(()));
+        assert!(!active.production_metrics_ready());
+        assert!(!active.flush_production_metrics());
+        assert_eq!(active.latency_observations().signature.observations, 1);
     }
 
     fn id(value: &str) -> StableId {
