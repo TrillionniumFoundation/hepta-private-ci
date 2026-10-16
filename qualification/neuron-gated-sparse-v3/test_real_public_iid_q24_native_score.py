@@ -211,6 +211,11 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
         self.assertEqual(result["delivered_accuracy_with_abstain_counted_wrong"],1)
         self.assertEqual(result["positive_recall_8"],1)
         self.assertEqual(result["negative_specificity_24"],1)
+        self.assertEqual(result["balanced_accuracy_with_abstain_counted_wrong"],1.0)
+        self.assertEqual(result["true_positives"],8)
+        self.assertEqual(result["true_negatives"],24)
+        self.assertEqual(result["false_positives"],0)
+        self.assertEqual(result["false_negatives"],0)
 
     def test_abstain_is_never_counted_as_correct(self):
         labels,outputs=good()
