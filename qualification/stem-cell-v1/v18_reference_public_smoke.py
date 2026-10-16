@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import time
 
 from v17_reference_reader_physical import (
@@ -35,17 +36,21 @@ def public_probe(tokenizer, model, tensor_from, inference_context):
                              max_new_tokens=OUT_CAP,
                              pad_token_id=tokenizer.eos_token_id)
     tokens = out[0].tolist()
-    if tokens[:len(ids)] != ids or not 1 <= len(tokens)-len(ids) <= OUT_CAP:
+    if (type(tokens) is not list or any(type(x) is not int or x < 0 for x in tokens)
+        or tokens[:len(ids)] != ids or not 1 <= len(tokens)-len(ids) <= OUT_CAP):
         raise ValueError('public real-model generation prefix/output corrupt')
     decoded = tokenizer.decode(tokens[len(ids):], skip_special_tokens=True)
     if type(decoded) is not str:
         raise ValueError('invalid decoded output')
+    elapsed_cpu = time.process_time() - started
+    if not math.isfinite(elapsed_cpu) or elapsed_cpu < 0:
+        raise ValueError('invalid actual CPU measurement')
     return {'public_prompt_sha256': digest(PUBLIC_MESSAGES),
             'public_input_token_sha256': digest(ids),
             'public_output_token_sha256': digest(tokens[len(ids):]),
             'public_answer_sha256': digest_text(decoded),
             'input_tokens': len(ids), 'output_tokens': len(tokens)-len(ids),
-            'cpu_seconds': time.process_time()-started}
+            'cpu_seconds': elapsed_cpu}
 
 
 def main():
@@ -67,6 +72,8 @@ def main():
         raise ValueError('model bytes drifted during loading')
     result = public_probe(tok,model,lambda seq:torch.tensor(seq,dtype=torch.long),
                           torch.inference_mode)
+    if verify_model_files(a.model_dir, spec) != spec_digest:
+        raise ValueError('model bytes drifted during actual generation')
     print(json.dumps({'schema':SCHEMA+'.public-neural-smoke.v1',
                       'model_repo':REPO,'model_revision':REVISION,
                       'model_spec_sha256':spec_digest,**result,
