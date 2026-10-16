@@ -35,8 +35,8 @@ def audit(p):
         if not isinstance(r, dict) or set(r) != {"arm", "case_id", "root_id", "cohort", "correct", "old_task"}:
             raise Invalid("exact row fields required")
         a, c, root, cohort = r["arm"], r["case_id"], r["root_id"], r["cohort"]
-        if a not in ARMS or any(not isinstance(s, str) or not s or len(s) > 128 for s in (c, root)) or cohort not in ("train", "calibration", "future") or type(r["correct"]) is not bool or type(r["old_task"]) is not bool:
-            raise Invalid("invalid row identity")
+        if a not in ARMS or any(not isinstance(s, str) or not s or len(s) > 128 for s in (c, root)) or cohort not in ("train", "calibration") or type(r["correct"]) is not bool or type(r["old_task"]) is not bool:
+            raise Invalid("invalid row identity or unverified future cohort")
         if (a, c) in seen:
             raise Invalid("duplicate row")
         seen.add((a, c))
