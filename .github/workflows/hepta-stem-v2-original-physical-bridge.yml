@@ -29,7 +29,9 @@ env:
   PYTHONDONTWRITEBYTECODE: '1'
 jobs:
   offline-adversarial:
-    runs-on: ubuntu-24.04
+    # Real optimized/unoptimized source tests passed on hosted ARM64
+    # (isolated run 38912968310, job 117013143351).
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
