@@ -1,9 +1,9 @@
 """Source-bound E3 numerical ZIP verification; not an NDU or publisher attestation.
 
-`historical` audits actual completed E3 frozen Granite/DINO and OCR original
-physical ZIPs. `future` additionally requires the original reviewed GH API
-metadata receipt and four full original, successful-model numerical ZIPs.
-No execution of pretrained weights, no access to raw media/TEST labels.
+This implementation checks only completed HISTORICAL Granite/DINO and OCR
+numerical ZIPs. It does not audit any later clean five-arm run; that requires
+a separate original multi-artifact verifier and independent TEST evaluator.
+No pretrained weights, original media or TEST labels are opened.
 """
 from __future__ import annotations
 import argparse
