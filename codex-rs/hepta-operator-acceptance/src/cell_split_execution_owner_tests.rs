@@ -712,6 +712,52 @@ fn post_open_frozen_plan_tampering_fences_first_effect() {
 }
 
 #[test]
+fn incomplete_completion_check_detects_revoked_original_effect_without_reexecution() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    assert!(owner.advance().expect("first committed owner effect").is_some());
+    assert_eq!(state.borrow().executions, 1);
+    let before = state.borrow().verifications;
+    assert!(!owner.verified_complete().expect("valid partial prefix"));
+    assert_eq!(state.borrow().verifications - before, 1);
+
+    state.borrow_mut().commits.clear();
+    assert!(matches!(
+        owner.verified_complete(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(state.borrow().executions, 1, "never replay original effect");
+}
+
+#[test]
+fn incomplete_completion_check_rejects_tampered_local_frozen_identity() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    assert!(owner.advance().expect("first committed owner effect").is_some());
+    fs::write(root.path().join("cell-split-owner-trust-pins.json"), b"{}")
+        .expect("tamper original pinned trust");
+    assert!(matches!(
+        owner.verified_complete(),
+        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+    ));
+    assert_eq!(state.borrow().executions, 1, "incomplete check never dispatches");
+}
+
+#[test]
 fn completed_history_must_be_verified_against_current_original_owners() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
