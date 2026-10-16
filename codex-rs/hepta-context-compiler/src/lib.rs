@@ -40,6 +40,7 @@ pub use v2::ContextDeliveryPreparationV2;
 pub use v2::ContextDeliveryReceiptV2;
 pub use v2::ContextModelProfileV2;
 pub use v2::ContextProviderDeliveryDecisionV2;
+pub use v2::ContextProviderEvidenceInputV2;
 pub use v2::ContextProviderDeliveryVerifierV2;
 pub use v2::ContextRealizedItemV2;
 pub use v2::ContextRoleV2;
