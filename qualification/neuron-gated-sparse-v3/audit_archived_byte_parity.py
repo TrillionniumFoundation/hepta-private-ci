@@ -55,7 +55,12 @@ def read_json(raw: bytes) -> dict:
             need(name not in result, "duplicate JSON field")
             result[name] = value
         return result
-    out = json.loads(raw, object_pairs_hook=unique,
+    def finite_decimal(token: str) -> float:
+        value = float(token)
+        need(value == value and value != float("inf") and value != float("-inf"),
+             "nonfinite JSON float")
+        return value
+    out = json.loads(raw, object_pairs_hook=unique, parse_float=finite_decimal,
                      parse_constant=lambda _: (_ for _ in ()).throw(Refused("nonfinite JSON")))
     need(type(out) is dict, "non-object evidence")
     return out
