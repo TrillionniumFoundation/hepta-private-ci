@@ -3,7 +3,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import numpy as np
 import torch
 
 from v18_original_feature_paired import (
