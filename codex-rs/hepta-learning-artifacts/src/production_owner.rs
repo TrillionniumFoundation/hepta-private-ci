@@ -1485,6 +1485,37 @@ mod tests {
         assert!(owner.production_metrics_ready());
     }
 
+    #[test]
+    fn metric_epoch_overflow_cannot_reuse_an_old_flush_receipt() {
+        let owner = ArtifactCasOwnerV1::new(
+            id("artifact.metrics-epoch-limit"),
+            SigningKey::from_bytes(&[33; 32]),
+        )
+        .expect("owner")
+        .with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
+        assert!(!owner.production_metrics_ready());
+
+        // Inject the actual maximum into the owner-private counter. Unlike an
+        // arbitrary external Evidence assertion, this must not wrap to a
+        // previously flushed epoch or rearm production after one more effect.
+        owner.metrics_epoch.store(u64::MAX, Ordering::Release);
+        assert!(!owner.production_metrics_ready());
+        assert!(owner.flush_production_metrics());
+        assert!(owner.production_metrics_ready());
+
+        let result: Result<u32, ()> = owner.timed(
+            Digest32::of_bytes(b"scope.metrics-epoch-limit"),
+            Digest32::of_bytes(b"operation.metrics-epoch-limit"),
+            PhaseMetricKindV1::Cas,
+            || Ok(41),
+        );
+        assert_eq!(result, Ok(41));
+        assert_eq!(owner.metrics_epoch.load(Ordering::Acquire), u64::MAX);
+        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), 1);
+        assert!(!owner.production_metrics_ready());
+        assert!(!owner.flush_production_metrics());
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
