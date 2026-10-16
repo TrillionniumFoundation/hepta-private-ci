@@ -246,22 +246,35 @@ jobs:
               "--config=${{ matrix.bazel_config }}"
           }
 
-          set +e
-          run_v8_bazel
-          bazel_status=$?
-          set -e
-          if [[ ${bazel_status} -eq 0 ]]; then
-            exit 0
-          fi
-          if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" || "${TARGET}" != "aarch64-apple-darwin" ]]; then
-            exit "${bazel_status}"
-          fi
-
-          echo "Bazel exited 37 on macOS ARM; shutting down and retrying the identical V8 build once." >&2
-          ./.github/scripts/run_bazel_with_buildbuddy.py \
-            --noexperimental_remote_repo_contents_cache \
-            shutdown || true
-          run_v8_bazel
+          # Retry only transient upstream Chromium HTTP 503 fetches, never a
+          # failed build, checksum, compiler, or policy verdict. Each attempt
+          # uses the exact same pinned Bazel dependencies and target.
+          log_file="${RUNNER_TEMP}/rusty-v8-bazel-attempt.log"
+          attempt=1
+          mac_arm_37_retries=0
+          while :; do
+            set +e
+            run_v8_bazel 2>&1 | tee "$log_file"
+            bazel_status=${PIPESTATUS[0]}
+            set -e
+            if [[ "$bazel_status" -eq 0 ]]; then
+              exit 0
+            fi
+            # Preserve the existing one-time macOS ARM Bazel exit-37 recovery.
+            if [[ "$bazel_status" -eq 37 && "$RUNNER_OS" == macOS && "$TARGET" == aarch64-apple-darwin && "$mac_arm_37_retries" -eq 0 ]]; then
+              mac_arm_37_retries=1
+              echo "Bazel exit 37 on macOS ARM; retrying identical V8 build once." >&2
+            elif [[ "$attempt" -lt 3 ]] && grep -Fq 'chromium.googlesource.com' "$log_file" && grep -Eq '(returned error: 503|HTTP 503|error: 503)' "$log_file"; then
+              echo "Transient pinned Chromium upstream HTTP 503: retry ${attempt}/2." >&2
+              sleep "$((attempt * 10))"
+              attempt=$((attempt + 1))
+            else
+              exit "$bazel_status"
+            fi
+            ./.github/scripts/run_bazel_with_buildbuddy.py \
+              --noexperimental_remote_repo_contents_cache \
+              shutdown || true
+          done
 
       - name: Stage release pair
         env:
@@ -373,8 +386,37 @@ jobs:
           repository: denoland/rusty_v8
           ref: v${{ needs.metadata.outputs.v8_version }}
           path: upstream-rusty-v8
-          submodules: recursive
+          # Retrying *only* immutable gitlink checkouts avoids transient
+          # Chromium CDN 503 without replacing or weakening pinned sources.
+          submodules: false
           persist-credentials: false
+
+      - name: Fetch exact pinned upstream submodules (bounded 503 retry)
+        shell: bash
+        working-directory: upstream-rusty-v8
+        run: |
+          set -euo pipefail
+          log_file="${RUNNER_TEMP}/rusty-v8-submodule-fetch.log"
+          for attempt in 1 2 3; do
+            set +e
+            git -c protocol.version=2 submodule update --init --recursive --jobs 2 2>&1 | tee "$log_file"
+            fetch_status=${PIPESTATUS[0]}
+            set -e
+            if [[ "$fetch_status" -eq 0 ]]; then
+              # Git's gitlinks, not remote branch tips, define submodule identity.
+              git submodule status --recursive > "${RUNNER_TEMP}/rusty-v8-submodule-shas.txt"
+              if grep -Eq '^[-+U]' "${RUNNER_TEMP}/rusty-v8-submodule-shas.txt"; then
+                echo 'A pinned submodule is missing, conflicted or at the wrong SHA.' >&2
+                exit 1
+              fi
+              exit 0
+            fi
+            if [[ "$attempt" -eq 3 ]] || ! grep -Fq 'chromium.googlesource.com' "$log_file" || ! grep -Eq '(returned error: 503|HTTP 503|error: 503)' "$log_file"; then
+              exit "$fetch_status"
+            fi
+            echo "Chromium upstream HTTP 503; retry exact gitlinks ${attempt}/2." >&2
+            sleep "$((attempt * 10))"
+          done
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
