@@ -14,6 +14,8 @@ from pathlib import Path
 import re
 import time
 
+from v25_pinned_qwen_loader import load_local_qwen_fp32
+
 BASE_SCHEMA = 'hepta.stem.v16.original-literal-answer-witness.shadow.v1'
 SCHEMA = 'hepta.stem.v17.physical-reference-reader.shadow.v1'
 ARMS = ('none', 'retrieved', 'witness', 'lesion')
@@ -199,8 +201,9 @@ def execute(plan, source, ranks, model_folder, spec, output):
     torch.set_num_threads(2)
     tokenizer = AutoTokenizer.from_pretrained(model_folder, local_files_only=True,
                                                trust_remote_code=False, use_fast=True)
-    model = AutoModelForCausalLM.from_pretrained(model_folder, local_files_only=True,
-                trust_remote_code=False, use_safetensors=True, dtype=torch.float32).eval()
+    model = load_local_qwen_fp32(
+        model_folder, model_loader=AutoModelForCausalLM, torch_dtype=torch.float32
+    )
     # Verify the model material again after construction to detect TOCTOU mutation.
     if verify_model_files(model_folder, spec) != spec_hash:
         raise ValueError('model material changed during loading')

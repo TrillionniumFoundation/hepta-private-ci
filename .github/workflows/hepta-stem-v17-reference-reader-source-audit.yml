@@ -4,6 +4,9 @@ on:
     paths:
       - "qualification/stem-cell-v1/v17_reference_*.py"
       - "qualification/stem-cell-v1/v18_reference_material_stage.py"
+      - "qualification/stem-cell-v1/v25_pinned_qwen_loader.py"
+      - "qualification/stem-cell-v1/test_v25_pinned_qwen_loader.py"
+      - "qualification/stem-cell-v1/STEM_V25_QWEN_LOADER_COMPAT.md"
       - "qualification/stem-cell-v1/test_v18_reference_material_stage.py"
       - "qualification/stem-cell-v1/STEM_V18_REFERENCE_MATERIAL_AND_CENSORING.md"
       - "qualification/stem-cell-v1/v19_original_archive_preflight.py"
@@ -39,6 +42,8 @@ jobs:
             qualification/stem-cell-v1/test_v17_reference_reader.py \
             qualification/stem-cell-v1/v18_reference_material_stage.py \
             qualification/stem-cell-v1/test_v18_reference_material_stage.py \
+            qualification/stem-cell-v1/v25_pinned_qwen_loader.py \
+            qualification/stem-cell-v1/test_v25_pinned_qwen_loader.py \
             qualification/stem-cell-v1/v19_original_archive_preflight.py \
             qualification/stem-cell-v1/test_v19_original_archive_preflight.py
           python -m unittest discover -s qualification/stem-cell-v1 \
@@ -49,6 +54,10 @@ jobs:
             -p 'test_v18_reference_material_stage.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v18_reference_material_stage.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v25_pinned_qwen_loader.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 \
+            -p 'test_v25_pinned_qwen_loader.py' -v
           python -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v19_original_archive_preflight.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \

@@ -11,6 +11,7 @@ import json
 import math
 import time
 
+from v25_pinned_qwen_loader import load_local_qwen_fp32
 from v17_reference_reader_physical import (
     OUT_CAP, REPO, REVISION, SYSTEM, SCHEMA, digest, digest_text,
     read, verify_model_files,
@@ -65,9 +66,9 @@ def main():
     torch.set_num_threads(2)
     tok = AutoTokenizer.from_pretrained(a.model_dir, local_files_only=True,
                                         trust_remote_code=False, use_fast=True)
-    model = AutoModelForCausalLM.from_pretrained(a.model_dir,
-              local_files_only=True, trust_remote_code=False,
-              use_safetensors=True, dtype=torch.float32).eval()
+    model = load_local_qwen_fp32(
+        a.model_dir, model_loader=AutoModelForCausalLM, torch_dtype=torch.float32
+    )
     if verify_model_files(a.model_dir, spec) != spec_digest:
         raise ValueError('model bytes drifted during loading')
     result = public_probe(tok,model,lambda seq:torch.tensor(seq,dtype=torch.long),
