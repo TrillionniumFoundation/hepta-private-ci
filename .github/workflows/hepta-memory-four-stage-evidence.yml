@@ -1,0 +1,60 @@
+name: MemoryCell four-stage source evidence audit
+
+on:
+  push:
+    branches:
+      - "research/memorycell-four-stage-audit-20261016"
+    paths:
+      - "scripts/memory_cell/four_stage_evidence.py"
+      - "scripts/memory_cell/test_four_stage_evidence.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_FOUR_STAGE_AUDIT_20261016.md"
+      - ".github/workflows/hepta-memory-four-stage-evidence.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/four_stage_evidence.py"
+      - "scripts/memory_cell/test_four_stage_evidence.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_FOUR_STAGE_AUDIT_20261016.md"
+      - ".github/workflows/hepta-memory-four-stage-evidence.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-four-stage-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Fail-closed original evidence and adversarial prospective controls
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_four_stage_evidence.py' -v
+      - name: Audit actual pinned historical results without model calls
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/four-stage-receipt
+          python3 scripts/memory_cell/four_stage_evidence.py \
+            --output /tmp/four-stage-receipt/disposition.json
+          git rev-parse HEAD > /tmp/four-stage-receipt/source-commit.txt
+          sha256sum scripts/memory_cell/four_stage_evidence.py \
+            scripts/memory_cell/test_four_stage_evidence.py \
+            scripts/memory_cell/data/observed-strong-rag-disposition-38224780900.json \
+            scripts/memory_cell/data/historical-frozen-reader-multimetric-pareto-20261011.json \
+            scripts/memory_cell/data/matched-structured-rag-negative-20261016.json \
+            scripts/memory_cell/data/stem-two-run-negative-gate-20261011.json \
+            > /tmp/four-stage-receipt/input-sha256sums.txt
+          (cd /tmp/four-stage-receipt && sha256sum disposition.json source-commit.txt input-sha256sums.txt > SHA256SUMS)
+          git diff --exit-code
+      - name: Retain exact-head research provenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-four-stage-original-evidence-audit
+          path: /tmp/four-stage-receipt/
+          if-no-files-found: warn
