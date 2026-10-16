@@ -686,6 +686,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
         let receipts = self.read_verified_prefix(true)?;
+        // A prepared step may already have changed the original external
+        // owner even when its local Commit frame is absent. The Operator's
+        // read-only transcript action must never collapse that unknown effect
+        // into benign incompleteness; only the execution owner may reconcile.
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         if !self.is_complete() {
             return Ok(None);
         }

@@ -870,6 +870,97 @@ fn unresolved_prepared_verified_completion_requires_reconcile() {
 }
 
 #[test]
+fn unresolved_prepared_verified_completion_transcript_requires_reconcile() {
+    for committed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut writer = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("open original owner");
+            for _ in 0..committed {
+                writer.advance().expect("signed original predecessor");
+            }
+        }
+        {
+            let mut port = FixturePort::new(state.clone());
+            port.drop_ack = true;
+            let mut writer = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                port,
+            )
+            .expect("reopen original writer");
+            assert!(matches!(
+                writer.advance(),
+                Err(CellSplitExecutionErrorV1::External(_))
+            ));
+        }
+
+        // The Operator's transcript-only path must not turn an unknown
+        // post-effect/pre-Commit interval into a benign None receipt.
+        {
+            let mut observer = CellSplitExecutionOwnerV1::open_existing(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("read-only cold reopen");
+            let readbacks_before = state.borrow().verifications;
+            assert!(matches!(
+                observer.verified_transcript(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert_eq!(
+                state.borrow().verifications - readbacks_before,
+                committed
+            );
+            assert_eq!(observer.completed_steps(), committed);
+            assert_eq!(state.borrow().executions, committed + 1);
+            assert!(
+                !root
+                    .path()
+                    .join(format!("cell-split-{committed:02}-committed.json"))
+                    .exists()
+            );
+        }
+
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("reopen original writer for recovery");
+        assert_eq!(
+            recovered
+                .advance()
+                .expect("read-only reconcile the original effect")
+                .expect("original signed step")
+                .intent
+                .step
+                .index(),
+            committed
+        );
+        assert_eq!(
+            state.borrow().executions,
+            committed + 1,
+            "original external effect must never be replayed"
+        );
+        let transcript = recovered
+            .verified_transcript()
+            .expect("no outstanding prepared intent after reconciliation");
+        assert_eq!(transcript.is_some(), committed + 1 == 4);
+    }
+}
+
+#[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
