@@ -45,6 +45,21 @@ jobs:
           printf 'runner=%s arch=%s started=%s\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$(date -u +%FT%TZ)"
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
 
+  slim-python:
+    name: Ubuntu Slim isolated-container x64 Python control
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Run matching production scope/dependencies tests on container x64
+        run: |
+          set -euo pipefail
+          printf 'runner=%s arch=%s image=%s started=%s\\n' "$RUNNER_NAME" "$RUNNER_ARCH" "$ImageOS" "$(date -u +%FT%TZ)"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.test_hepta_readiness_semantics
+
   x64-python:
     name: Linux x64 real blocking-scope Python control
     runs-on: ubuntu-24.04
