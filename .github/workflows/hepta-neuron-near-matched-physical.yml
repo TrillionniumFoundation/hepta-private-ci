@@ -89,6 +89,13 @@ jobs:
             -p 'test_near_matched_byte_physical.py' -v
           python qualification/neuron-gated-sparse-v3/near_matched_byte_budget.py \
             --output "$RUNNER_TEMP/hepta-physical-byte-plan.json"
+      - name: Strict public Q24 source admission negative controls (no actual pretrained claim)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_public_q24_independent_cases.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_public_q24_independent_cases.py' -v
       - name: Freeze create-only distinct synthetic training and native trace
         run: |
           set -euo pipefail
