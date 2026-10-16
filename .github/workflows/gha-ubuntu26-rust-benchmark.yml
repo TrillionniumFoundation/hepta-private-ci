@@ -1,0 +1,29 @@
+name: Ubuntu 26 x64 real Rust benchmark smoke
+
+on:
+  push:
+    branches: [ci/gha-ubuntu26-x64-qualification-20261016]
+    paths: [.github/workflows/gha-ubuntu26-rust-benchmark.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: Real production Rust benchmark smoke on Ubuntu 26
+    runs-on: ubuntu-26.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Exact Rust CI benchmark smoke
+        run: just bench-smoke
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
