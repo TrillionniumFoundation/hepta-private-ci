@@ -9,7 +9,7 @@ import unittest
 
 from real_public_iid_q24_native_score import (
     Refused, bin_metrics, frozen_single_case_trace, independent_head_margin,
-    nearest_rank_us, run,
+    nearest_rank_us, run, bind_original_public_fit_and_heldout,
 )
 
 
@@ -35,6 +35,70 @@ def row():
 
 
 class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
+    def test_public_train_bytes_match_original_registered_fit_labels(self):
+        # Real source/score identity checks, with explicitly synthetic fixture.
+        from test_real_public_iid_q24_physical_train import stub_inputs
+        from real_public_iid_q24_native_score import digest
+        fit, plan = stub_inputs()
+        original = {
+            "input_id": "mock original public source identity",
+            "fit": [
+                {"id": row["case_id"],
+                 "text": "mock text " + str(index),
+                 "label": row["train_label"]}
+                for index, row in enumerate(fit["rows"])
+            ],
+            "heldout": [
+                {"id": f"held:{i}", "text": f"mock heldout {i}"}
+                for i in range(32)
+            ],
+        }
+        fit["source_input_id"] = original["input_id"]
+        held = {
+            "source_input_id": original["input_id"],
+            "input_feature_snapshot_sha256":
+                fit["input_feature_snapshot_sha256"],
+            "rows": [
+                {"case_id": row["id"], "split": "heldout",
+                 "source_text_sha256":
+                     digest(row["text"].encode("utf-8")),
+                 "feature_q24": [0]*32}
+                for row in original["heldout"]
+            ],
+        }
+        result = bind_original_public_fit_and_heldout(
+            original, fit, held, plan
+        )
+        self.assertEqual(result["real_public_train_sample_count"],64)
+        self.assertEqual(result["real_public_unlabeled_heldout_count"],32)
+        self.assertTrue(result["actual_fit_label_identities_bound_to_original_dataset"])
+        self.assertFalse(result["signed_independent_source_owner_verified"])
+        return original, fit, held, plan
+
+    def test_reject_modified_original_fit_label_after_physical_training(self):
+        original, fit, held, plan = (
+            self.test_public_train_bytes_match_original_registered_fit_labels()
+        )
+        original["fit"][2]["label"] = (original["fit"][2]["label"]+1)%4
+        with self.assertRaisesRegex(Refused,"training weights not bound"):
+            bind_original_public_fit_and_heldout(original,fit,held,plan)
+
+    def test_reject_swapped_training_source_text_sha_after_training(self):
+        original, fit, held, plan = (
+            self.test_public_train_bytes_match_original_registered_fit_labels()
+        )
+        fit["rows"][0]["source_text_sha256"] = "0"*64
+        with self.assertRaisesRegex(Refused,"training weights not bound"):
+            bind_original_public_fit_and_heldout(original,fit,held,plan)
+
+    def test_reject_heldout_original_registry_substitution(self):
+        original, fit, held, plan = (
+            self.test_public_train_bytes_match_original_registered_fit_labels()
+        )
+        held["rows"][0]["case_id"] = "foreign-heldout-case"
+        with self.assertRaisesRegex(Refused,"heldout source"):
+            bind_original_public_fit_and_heldout(original,fit,held,plan)
+
     def test_expensive_scorer_cannot_shadow_module_path_constructor(self):
         # This catches the actual source bug where run() referenced Path
         # before a function-local "from pathlib import Path" statement.
