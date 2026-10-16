@@ -227,7 +227,7 @@ class PreflightTests(TestCase):
 
     def test_complete_frozen_qwen_census_is_not_model_success(self):
         val=self.run_gate()
-        self.assertNotIn('"answer":',json.dumps(val))
+        self.assertNotIn('\"answer\":',json.dumps(val))
         self.assertNotIn('messages',json.dumps(val))
         self.assertFalse(val['model_quality_or_ndu_gain_verified'])
         self.assertFalse(val['model_input_tokens_matched_to_135m'])
