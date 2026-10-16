@@ -128,9 +128,11 @@ jobs:
       # cargo test exits 0 for a filter that matches ZERO tests. Count actual
       # executed tests; fixture-only source matches are not qualification.
       - name: Require eight executed Stem / original signed Batch ABI tests
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-stem-preview.json" --minimum-tests 8 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests:: -- --test-threads=1
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-stem-preview.json" --minimum-tests 8 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests:: -- --test-threads=1
       - name: Require 50 executed original Worker signed/native Batch regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-worker-batch.json" --minimum-tests 50 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib batched_neuron::tests:: -- --test-threads=1
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-worker-batch.json" --minimum-tests 50 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib batched_neuron::tests:: -- --test-threads=1
       - name: Require executed shared Arc mutation/nonce denial
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-shared-arc.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_ -- --test-threads=1
       - name: Require executed two-Cell one-physical-batch signed receipts
@@ -142,9 +144,11 @@ jobs:
       - name: Verify original Evidence writer Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-evidence -- --check
       - name: Require 34 executed original Evidence WAL/group-commit regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-journal.json" --minimum-tests 34 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_group_commit::tests:: -- --test-threads=1
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-journal.json" --minimum-tests 34 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_group_commit::tests:: -- --test-threads=1
       - name: Require 20 executed durable Metrics sink and restart regressions
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-sink.json" --minimum-tests 20 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_sink::tests:: -- --test-threads=1
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-evidence-sink.json" --minimum-tests 20 -- cargo +1.95.0 test --locked -p codex-hepta-evidence --lib metrics_sink::tests:: -- --test-threads=1
       - name: Strict original Evidence writer all-target Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
       - name: Verify Neuron external signed-NDU gate Rust formatting
