@@ -164,7 +164,10 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
+    let parsed: YamlValue = match serde_yaml::from_str_with_options(
+        raw_frontmatter,
+        serde_yaml::options! { reject_unsupported_tags: true },
+    ) {
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
     };
@@ -181,7 +184,17 @@ fn parse_frontmatter(
         if key.is_empty() {
             continue;
         }
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        // Distinct YAML keys can become the same application key after trim.
+        // Reject the whole document rather than choose a name or permission.
+        if frontmatter
+            .insert(key.to_string(), frontmatter_value_from_yaml(value))
+            .is_some()
+        {
+            return (
+                BTreeMap::new(),
+                Some(format!("duplicate normalized frontmatter key: {key}")),
+            );
+        }
     }
 
     (frontmatter, None)
@@ -308,3 +321,7 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "subagents_tests.rs"]
+mod tests;

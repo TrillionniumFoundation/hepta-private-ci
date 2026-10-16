@@ -70,9 +70,12 @@ impl CommandMigrationProfile {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct InvalidCommandFrontmatter;
+
 #[derive(Debug)]
 struct ParsedCommand {
-    description: Option<String>,
+    description: Result<Option<String>, InvalidCommandFrontmatter>,
     body: String,
 }
 
@@ -282,13 +285,13 @@ fn parse_command_content(content: &str) -> ParsedCommand {
         .or_else(|| content.strip_prefix("---\r\n"))
     else {
         return ParsedCommand {
-            description: None,
+            description: Ok(None),
             body: content.to_string(),
         };
     };
     let Some((end, body_start)) = frontmatter_end(rest) else {
         return ParsedCommand {
-            description: None,
+            description: Err(InvalidCommandFrontmatter),
             body: content.to_string(),
         };
     };
@@ -313,10 +316,28 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
     .min_by_key(|(end, _body_start)| *end)
 }
 
-fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_object()?;
-    mapping.get("description").and_then(yaml_scalar)
+fn parse_command_description(
+    raw_frontmatter: &str,
+) -> Result<Option<String>, InvalidCommandFrontmatter> {
+    let parsed: YamlValue = serde_yaml::from_str_with_options(
+        raw_frontmatter,
+        serde_yaml::options! { reject_unsupported_tags: true },
+    )
+    .map_err(|_| InvalidCommandFrontmatter)?;
+    let mapping = parsed.as_object().ok_or(InvalidCommandFrontmatter)?;
+    let mut descriptions = mapping
+        .iter()
+        .filter(|(key, _)| key.trim() == "description");
+    let Some((_, value)) = descriptions.next() else {
+        return Ok(None);
+    };
+    // Trimming must not turn two distinct YAML keys into a chosen identity.
+    if descriptions.next().is_some() {
+        return Err(InvalidCommandFrontmatter);
+    }
+    yaml_scalar(value)
+        .map(Some)
+        .ok_or(InvalidCommandFrontmatter)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {
@@ -356,8 +377,12 @@ fn command_skill_description(
     source_name: &str,
     description_mode: CommandDescriptionMode,
 ) -> Option<String> {
+    // A fallback supplies absent metadata; it cannot pardon rejected metadata.
+    // This check also runs after source discovery, immediately before rendering.
     document
         .description
+        .as_ref()
+        .ok()?
         .as_deref()
         .filter(|value| !value.trim().is_empty())
         .map(ToOwned::to_owned)
