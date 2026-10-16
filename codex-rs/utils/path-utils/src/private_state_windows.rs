@@ -588,14 +588,38 @@ mod tests {
         let ace_header = std::mem::size_of::<ACE_HEADER>();
         let first_ace = acl_start + acl_header;
         let allocated = acl_header + 32;
-        assert!(ace_span_fits_acl(acl_start, allocated, first_ace, ace_header));
+        assert!(ace_span_fits_acl(
+            acl_start, allocated, first_ace, ace_header
+        ));
         assert!(ace_span_fits_acl(acl_start, allocated, first_ace, 32));
-        assert!(!ace_span_fits_acl(acl_start, allocated, acl_start, ace_header));
-        assert!(!ace_span_fits_acl(acl_start, allocated, first_ace - 1, ace_header));
-        assert!(!ace_span_fits_acl(acl_start, allocated, first_ace, ace_header - 1));
+        assert!(!ace_span_fits_acl(
+            acl_start, allocated, acl_start, ace_header
+        ));
+        assert!(!ace_span_fits_acl(
+            acl_start,
+            allocated,
+            first_ace - 1,
+            ace_header
+        ));
+        assert!(!ace_span_fits_acl(
+            acl_start,
+            allocated,
+            first_ace,
+            ace_header - 1
+        ));
         assert!(!ace_span_fits_acl(acl_start, allocated, first_ace + 1, 32));
-        assert!(!ace_span_fits_acl(acl_start, acl_header - 1, first_ace, ace_header));
-        assert!(!ace_span_fits_acl(usize::MAX - 1, 32, usize::MAX - 1, ace_header));
+        assert!(!ace_span_fits_acl(
+            acl_start,
+            acl_header - 1,
+            first_ace,
+            ace_header
+        ));
+        assert!(!ace_span_fits_acl(
+            usize::MAX - 1,
+            32,
+            usize::MAX - 1,
+            ace_header
+        ));
         assert!(!ace_span_fits_acl(acl_start, allocated, usize::MAX - 1, 32));
     }
 
