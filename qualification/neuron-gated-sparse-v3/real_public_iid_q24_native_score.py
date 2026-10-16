@@ -23,7 +23,7 @@ from near_matched_byte_budget import BYTE_CAPS, choose as geometry
 from real_public_iid_q24_inputs import (
     CLASSES, read_original_public_inputs, verify_local_original_source,
 )
-from real_encoder_q24_snapshot_gate import read
+from real_encoder_q24_snapshot_gate import read, validate as admit_frozen_feature_snapshot
 from real_public_iid_q24_physical_train import validate_fit
 
 ARMS = ("v2", "v3", "ssm", "min_gru")
@@ -215,6 +215,83 @@ def bind_original_public_fit_and_heldout(
     }
 
 
+def verify_original_physical_public_q24_features(
+    producer_dir: Path, frozen_fit: dict, heldout: dict, original_inputs: dict,
+) -> dict:
+    """All 96 source vectors must equal actual producer's SHA-bound physical file.
+
+    Does not independently sign the Encoder/projector: it enforces immutable
+    same-study physical payload identity and retains production DENY_ALL.
+    """
+    root = Path(producer_dir)
+    need(root.is_dir() and not root.is_symlink(),
+         "missing/symlinked public physical Q24 source root")
+    raw_snapshot = read(root / "snapshot.json")
+    raw_registry = read(root / "registry.json")
+    raw_projection = read(root / "projection.safetensors")
+    raw_receipt = read(root / "producer-receipt.json")
+    snapshot = unique_json(raw_snapshot)
+    registry = unique_json(raw_registry)
+    receipt = unique_json(raw_receipt)
+    need(type(receipt) is dict and
+         receipt.get("schema") ==
+             "hepta.neuron.actual-public-encoder-q24-producer.v1" and
+         receipt.get("production_qualification") is False and
+         receipt.get("ndu_eligible") is False and
+         receipt.get("projection_owner_signature_verified") is False and
+         receipt.get("real_pretrained_encoder_invoked") is True and
+         receipt.get("physical_encoder_invocations") == 96 and
+         receipt.get("train_only_projection_fit_count") == 64 and
+         receipt.get("heldout_projection_fit_count") == 0 and
+         receipt.get("original_public_input_id") ==
+             original_inputs.get("input_id"),
+         "invalid original 96-case research producer custody")
+    need(digest(raw_snapshot) == receipt.get("snapshot_sha256") and
+         digest(raw_registry) == receipt.get("registry_sha256") and
+         digest(raw_projection) ==
+             receipt.get("projection_safetensors_sha256"),
+         "physical PCA projection/feature source was substituted")
+    verdict = admit_frozen_feature_snapshot(
+        snapshot, registry,
+        expected_encoder=receipt["encoder_snapshot_sha256"],
+        expected_projection=receipt["projection_safetensors_sha256"],
+        expected_registry_sha=receipt["registry_sha256"],
+    )
+    need(verdict["all_external_case_ids_covered"] is True and
+         verdict["production_qualification"] is False and
+         frozen_fit.get("input_feature_snapshot_sha256") ==
+             heldout.get("input_feature_snapshot_sha256") ==
+             receipt["snapshot_sha256"],
+         "training or heldout source not the original physically saved features")
+    index = {
+        row["case_id"]: (row["split"], row["source_text_sha256"],
+                         row["feature_q24"])
+        for row in snapshot["feature_rows"]
+    }
+    need(len(index) == 96, "duplicate actual public producer source case IDs")
+    for split, bundle in (("fit", frozen_fit), ("heldout", heldout)):
+        rows = bundle.get("rows")
+        need(type(rows) is list and
+             len(rows) == (64 if split == "fit" else 32),
+             "incomplete public physical Q24 fit/heldout source")
+        for row in rows:
+            need(type(row) is dict and
+                 row["case_id"] in index and
+                 index[row["case_id"]] ==
+                 (split, row["source_text_sha256"], row["feature_q24"]),
+                 "public Q24 model input differs from physical Encoder feature vector")
+    return {
+        "physical_original_encoder_snapshot_sha256":
+            receipt["encoder_snapshot_sha256"],
+        "physical_train_only_projection_sha256":
+            receipt["projection_safetensors_sha256"],
+        "physical_96_case_q24_snapshot_sha256": receipt["snapshot_sha256"],
+        "all_96_fit_and_heldout_vectors_reopened_and_equal": True,
+        "independently_signed_encoder_or_projection_verified": False,
+        "authority": "DENY_ALL",
+    }
+
+
 def run(args) -> dict:
     # No model training API, no fit/optimizer arguments. The original official
     # heldout targets only enter this separate process AFTER the models exist.
@@ -260,6 +337,9 @@ def run(args) -> dict:
     original_inputs = read_original_public_inputs(original_owner, args.public_data)
     frozen_source_audit = bind_original_public_fit_and_heldout(
         original_inputs, frozen_fit, held, frozen_plan
+    )
+    physical_encoder_feature_audit = verify_original_physical_public_q24_features(
+        args.public_q24_dir, frozen_fit, held, original_inputs
     )
     need(original_inputs["input_id"] == held.get("source_input_id"),
          "original public source input differs from frozen heldout")
@@ -410,6 +490,7 @@ def run(args) -> dict:
         "training_receipt_sha256": digest(training_raw),
         "physical_train_input_sha256": digest(frozen_fit_raw),
         "original_public_fit_label_source_census": frozen_source_audit,
+        "physical_public_feature_source_census": physical_encoder_feature_audit,
         "heldout_source_sha256": digest(read(Path(args.heldout))),
         "original_public_source_input_id": original_inputs["input_id"],
         "real_pretrained_encoder_feature_source_sha256":
@@ -447,6 +528,7 @@ def main() -> int:
     ap.add_argument("--plan", type=Path, required=True)
     ap.add_argument("--original-source", type=Path, required=True)
     ap.add_argument("--public-data", type=Path, required=True)
+    ap.add_argument("--public-q24-dir", type=Path, required=True)
     ap.add_argument("--binary", type=Path, required=True)
     ap.add_argument("--binary-sha256", required=True)
     ap.add_argument("--output", type=Path, required=True)
