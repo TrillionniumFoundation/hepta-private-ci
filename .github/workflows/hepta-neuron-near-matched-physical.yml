@@ -443,6 +443,7 @@ jobs:
           python qualification/neuron-gated-sparse-v3/recheck_real_public_iid_native_scores.py \
             --score "$RUNNER_TEMP/hepta-public-iid-heldout-score.json" \
             --heldout "$RUNNER_TEMP/hepta-public-iid-q24/heldout-unlabeled-q24.json" \
+            --training-receipt "$RUNNER_TEMP/hepta-public-iid-trained/training-receipt.json" \
             --original-source original-public-source \
             --public-data "$RUNNER_TEMP/hepta-public-data" \
             --output "$RUNNER_TEMP/hepta-public-iid-independent-score-audit.json"
@@ -452,6 +453,8 @@ jobs:
           p=Path(os.environ['RUNNER_TEMP'])/'hepta-public-iid-independent-score-audit.json'
           report=json.loads(p.read_text())
           assert report['distinct_physical_model_count']==32
+          assert report['physical_training_receipt_reopened_and_bound'] is True
+          assert report['training_cpu_seconds_are_descriptive_not_whole_system_cost'] is True
           assert report['independently_recomputed_label_free_native_records']==1024
           assert report['reported_native_processes']==2048
           assert len(report['descriptive_recomputed_scores'])==32
