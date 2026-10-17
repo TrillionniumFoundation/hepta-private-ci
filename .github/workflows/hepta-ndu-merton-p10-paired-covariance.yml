@@ -1,0 +1,101 @@
+name: Hepta NDU Merton P10 original paired covariance (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/covariance_p10/**'
+      - '.github/workflows/hepta-ndu-merton-p10-paired-covariance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact rational P10 plus independent adversarial tests in normal and optimized Python
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/covariance_p10
+          export PYTHONPATH="$D"
+          python -m compileall -q "$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+  exact-original-p5-independent-shadow:
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pinned P5 public 16 TRAIN + label-blind held source
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-train-and-label-blind-held-public
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/p10-origin/public
+      - name: Pinned P5 historical publisher held truth, postseal only
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-held-publisher-truth-review-only
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/p10-origin/gold
+      - name: Pinned 192 original physical calls and ordered start-done journal
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-original-reader-starts-and-seal
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/p10-origin/original
+      - name: Independently published P5 postseal reviewer
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-sanitized-postseal-review
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/p10-origin/review
+      - name: Revalidate ALL P5 raw/journal/model/source bytes with existing independent P7 gate
+        run: |
+          set -euo pipefail
+          python experiments/ndu_tree_fbsde_gates/merton/physical_evidence_p7/physical_evidence_gate.py \
+            --public /tmp/p10-origin/public \
+            --gold /tmp/p10-origin/gold \
+            --original /tmp/p10-origin/original \
+            --review /tmp/p10-origin/review \
+            --output /tmp/p10-original-p7-verified.json
+      - name: Freeze TRAIN-only paired covariance and 16-task shadow allocation before HELD truth
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/covariance_p10
+          python "$D/portfolio.py" --evidence /tmp/p10-origin --output /tmp/p10-frozen.json
+      - name: Second-program exact mathematical allocation and original paid-action support NO-GO
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/covariance_p10
+          python "$D/independent_audit.py" --evidence /tmp/p10-origin \
+            --frozen /tmp/p10-frozen.json --output /tmp/p10-independent.json
+      - name: Publish only sanitized rational moments, policy and support counts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p10-original-covariance-and-unsupported-policy-audit
+          path: |
+            /tmp/p10-frozen.json
+            /tmp/p10-independent.json
+          if-no-files-found: error
+          retention-days: 7
