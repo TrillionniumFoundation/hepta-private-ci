@@ -130,24 +130,26 @@ class OriginalTranscriptGateTests(unittest.TestCase):
 
     def test_detect_empty_arm_evidence_leak(self):
         plan, rows, transcripts = example()
-        target = next(t for t in transcripts if t["arm"] == "knowledge_only")
-        target["delivered_evidence"] = [
-            {
-                "id": "other",
-                "text": f'unrelated old context for {target["id"]}',
-            }
-        ]
-        row = next(
-            r
-            for r in rows
-            if all(
-                r[k] == target[k] for k in ("id", "arm", "reader", "condition")
+        # Keep frozen/reference source equality intact, so the test exercises
+        # the no-original-body contract rather than an earlier reader-parity gate.
+        for target in transcripts:
+            if target["arm"] != "knowledge_only" or target["condition"] != "hybrid":
+                continue
+            target["delivered_evidence"] = [
+                {
+                    "id": "other",
+                    "text": f'unrelated old context for {target["id"]}',
+                }
+            ]
+            row = next(
+                r
+                for r in rows
+                if all(
+                    r[k] == target[k] for k in ("id", "arm", "reader", "condition")
+                )
             )
-        )
-        row["source_digest"] = sha(target["delivered_evidence"])
-        with self.assertRaisesRegex(
-            ValueError, "no-evidence / parametric-only"
-        ):
+            row["source_digest"] = sha(target["delivered_evidence"])
+        with self.assertRaisesRegex(ValueError, "no-evidence / parametric-only"):
             audit(plan, rows, transcripts)
 
     def test_detect_changed_question_and_template(self):
