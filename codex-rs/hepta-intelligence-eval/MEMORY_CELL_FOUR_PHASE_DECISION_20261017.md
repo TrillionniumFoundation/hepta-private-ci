@@ -67,3 +67,31 @@ production admission rules remain unchanged.
 new externally sourced benchmark gold, independent human evidence-sufficiency
 certificate, learned parameter-memory advantage, long-run economic superiority
 or production rollout is claimed by this patch.
+
+## Full resource and cost scenario: no double-counting across reuse
+
+`lifecycle_accounting.complete_lifecycle_scenario` computes a genuinely
+reusable numerical scenario, not an execution result. It requires the same
+price unit (USD), specified retention days and raw physical evidence bytes for
+**both** alternatives. Extraction, indexing and training are charged once;
+retrieval, reader, tools and diagnoses are multiplied by N; maintenance,
+revocation and recovery are charged once for the stated retention window;
+raw evidence plus derived snapshots/index bytes incur an explicit
+USD-per-GiB-day storage charge:
+
+```text
+C(N,D) = C_extract + C_index + C_train
+       + N * (C_retrieve + C_reader + C_tools + C_diagnose)
+       + C_maintain(D) + C_revoke(D) + C_recover(D)
+       + (raw_bytes + derived_bytes) / GiB * D * storage_rate
+```
+
+Missing price or costs yield a partial nonnegative lower bound and a `null`
+complete total/difference; they are not replaced with zero. The calculation
+takes a prospective workload N and a user-supplied retention horizon D,
+which are **assumptions**, not observations. Input SHA-256 pins do not certify
+real billing, disjoint time/cost allocation, matched quality or source
+authorization. Even a numerically cheaper candidate is unqualified until
+the independently matched task-success, tools, hardware and operating costs
+are observed. Synthetic regression tests check conditional crossover,
+double-count avoidance, source retention, explicit unknowns and invalid costs.

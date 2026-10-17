@@ -143,6 +143,146 @@ def reuse_projection(
     )
 
 
+# Money and physical retained bytes are separate dimensions; never add byte
+# counts to CPU seconds or dollar amounts.
+COST_ONCE = ("extraction", "indexing", "training")
+COST_PER_QUERY = ("retrieval", "reader", "tools", "diagnostics")
+COST_PER_WINDOW = ("maintenance", "revocation", "recovery")
+
+
+def _usd(value):
+    if value is None:
+        return None
+    if (
+        type(value) not in (float, int)
+        or not math.isfinite(value)
+        or not 0 <= value <= 1e12
+    ):
+        raise ValueError("nonnegative finite USD cost or explicit unknown required")
+    return float(value)
+
+
+def complete_lifecycle_scenario(
+    arms, *, queries, retention_days, price_usd_per_gib_day
+):
+    """Compare alternatives under explicitly supplied identical USD assumptions.
+
+    Fixed costs are paid ONCE, per-read costs N times, and maintenance/revocation/
+    recovery once per stated retention window. Raw evidence and derived snapshots
+    are charged by stored GiB-days. This is algebra on caller supplied records,
+    NOT a claim that those bills, quality, source rights or workload were observed.
+    """
+    if (
+        not isinstance(arms, dict)
+        or set(arms) != {"strong_rag", "candidate"}
+        or not isinstance(queries, (list, tuple))
+        or not 1 <= len(queries) <= 100
+        or any(type(n) is not int or not 1 <= n <= 10_000_000 for n in queries)
+        or len(set(queries)) != len(queries)
+        or type(retention_days) is not int
+        or not 1 <= retention_days <= 36500
+    ):
+        raise ValueError("two exact arms and bounded reuse/retention horizons required")
+    price = _usd(price_usd_per_gib_day)
+    inputs = {}
+    for name, arm in arms.items():
+        if (
+            not isinstance(arm, dict)
+            or set(arm)
+            != {
+                "fixed_usd",
+                "per_query_usd",
+                "per_window_usd",
+                "raw_evidence_bytes",
+                "snapshot_and_index_bytes",
+                "receipt_sha256",
+            }
+            or not isinstance(arm["receipt_sha256"], str)
+            or not re.fullmatch(r"[0-9a-f]{64}", arm["receipt_sha256"])
+        ):
+            raise ValueError("bounded source-bound cost receipt required")
+        mapped = {}
+        for key, names in (
+            ("fixed_usd", COST_ONCE),
+            ("per_query_usd", COST_PER_QUERY),
+            ("per_window_usd", COST_PER_WINDOW),
+        ):
+            values = arm[key]
+            if not isinstance(values, dict) or set(values) != set(names):
+                raise ValueError("exactly declared cost components required")
+            mapped[key] = {k: _usd(values[k]) for k in names}
+        raw = arm["raw_evidence_bytes"]
+        extra = arm["snapshot_and_index_bytes"]
+        if (
+            type(raw) is not int
+            or not 0 < raw <= 10**15
+            or type(extra) is not int
+            or not 0 <= extra <= 10**15
+        ):
+            raise ValueError("raw evidence and snapshot bytes must be retained")
+        inputs[name] = (mapped, raw, extra, arm["receipt_sha256"])
+    output = []
+    for n in queries:
+        both = {}
+        for name in ("strong_rag", "candidate"):
+            categories, raw, extra, pin = inputs[name]
+            known = 0.0
+            missing = []
+            for section, multiplier in (
+                ("fixed_usd", 1),
+                ("per_query_usd", n),
+                ("per_window_usd", 1),
+            ):
+                for k, value in categories[section].items():
+                    if value is None:
+                        missing.append(f"{section}.{k}")
+                    else:
+                        known += multiplier * value
+            storage = (
+                None
+                if price is None
+                else (raw + extra) / 1024**3 * retention_days * price
+            )
+            if storage is None:
+                missing.append("storage_rate_usd_per_gib_day")
+            else:
+                known += storage
+            both[name] = {
+                "receipt_sha256": pin,
+                "raw_evidence_bytes_retained": raw,
+                "derived_bytes_retained": extra,
+                "storage_usd_for_horizon": storage,
+                "known_nonnegative_lower_bound_usd": known,
+                "unknown_cost_components": sorted(missing),
+                "complete_projected_cost_usd": known if not missing else None,
+                "complete_projected_usd_per_query": (
+                    known / n if not missing else None
+                ),
+            }
+        a = both["strong_rag"]["complete_projected_cost_usd"]
+        b = both["candidate"]["complete_projected_cost_usd"]
+        both["candidate_minus_strong_rag_usd"] = (
+            b - a if a is not None and b is not None else None
+        )
+        both["candidate_cheaper_on_supplied_assumptions"] = (
+            b < a if a is not None and b is not None else None
+        )
+        output.append({"queries": n, "arms": both})
+    return {
+        "schema": "hepta.memory-cell.full-tco-reuse-scenario.v1",
+        "currency": "USD",
+        "retention_days": retention_days,
+        "storage_price_usd_per_gib_day": price,
+        "horizons": output,
+        "observed_future_queries": 0,
+        "real_program_quality_and_tool_parity_authenticated": False,
+        "billing_and_nonoverlap_independently_authenticated": False,
+        "operational_recovery_and_revocation_qualified": False,
+        "economic_superiority_established": False,
+        "production_accepted": False,
+    }
+
+
 def paired_task_contrasts(rows, questions, arms, candidate):
     """Task correctness, not source-ID coverage, decides the observed comparison."""
     if (
