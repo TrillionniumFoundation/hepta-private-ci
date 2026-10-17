@@ -2,14 +2,14 @@ use std::fmt::Debug;
 
 use super::*;
 
-use crate::canonical_shared_encoder_feature_digest_v1;
-use crate::canonical_shared_encoder_input_digest_v1;
 use crate::SharedEncoderDriver;
 use crate::SharedEncoderDriverError;
 use crate::SharedEncoderOutputV1;
 use crate::SharedEncoderOwnerV1;
 use crate::SharedEncoderRequestV1;
 use crate::SharedFeatureBatchV1;
+use crate::canonical_shared_encoder_feature_digest_v1;
+use crate::canonical_shared_encoder_input_digest_v1;
 
 struct FakeDriver {
     output_features: Vec<i64>,
