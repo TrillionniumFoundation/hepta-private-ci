@@ -59,7 +59,11 @@ def strict_load(path):
             require(k not in result, "duplicate JSON key")
             result[k] = v
         return result
-    with open(path, "r", encoding="utf-8") as f:
+    from pathlib import Path
+    file = Path(path)
+    require(file.is_file() and not file.is_symlink() and file.stat().st_size <= 16 * 1024 * 1024,
+            "oversized, missing or symlinked input evidence")
+    with file.open("r", encoding="utf-8") as f:
         return json.load(f, object_pairs_hook=unique, parse_constant=lambda _: require(False, "nonfinite JSON"))
 
 
@@ -100,8 +104,8 @@ def validate_panel(panel):
                 sha(c["input_sha256"]) and nat(c["token_count"], positive=True) and
                 c["token_count"] <= b["max_tokens"], "source or token-bound mismatch")
         # Same original source bytes cannot be relabeled as a different independent group.
-        old = by_group.setdefault(c["source_sha256"], (c["group_id"], c["split"]))
-        require(old == (c["group_id"], c["split"]), "source-group leakage")
+        old = by_group.setdefault(c["source_sha256"], (c["group_id"], c["family_id"], c["split"]))
+        require(old == (c["group_id"], c["family_id"], c["split"]), "source-group/family leakage")
         counts[c["split"]] += 1
     require(all(counts[s] > 0 for s in ("fit", "cal", "test")), "empty split")
     require(len({(c["group_id"], c["split"]) for c in cases}) == len({c["group_id"] for c in cases}),
@@ -119,7 +123,7 @@ def validate_observation(panel, record):
         "predictions", "predictions_sha256", "authority", "production_promotion_permitted"},
         "malformed model observation")
     model = record["model"]
-    require(model in MODELS, "unregistered model")
+    require(type(model) is str and model in MODELS, "unregistered model")
     repo, rev, _, basis = MODELS[model]
     require(record["schema"] == SCHEMA and record["repo"] == repo and
             record["revision"] == rev and record["basis"] == basis and
@@ -207,7 +211,7 @@ def main(argv=None):
                 "refuse missing or symlinked custody input")
     result = evaluate(strict_load(args.panel), strict_load(args.sealed), strict_load(args.gold))
     out = Path(args.out)
-    require(out.parent.is_dir() and not out.is_symlink(), "invalid output parent")
+    require(out.parent.is_dir() and not out.parent.is_symlink() and not out.is_symlink(), "invalid output parent")
     data = (json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
     fd = os.open(out, flags, 0o600)
