@@ -64,6 +64,7 @@ impl ProductSplitBindingV1 {
     /// checked by the caller's immutable admission and native owners.
     pub fn validate(&self, plan: &WriterHandoffPlanV1) -> bool {
         self.split.operation_id == plan.operation_id
+            && self.split.artifact_id == self.artifact_id
             && !self.split.selected_artifact_digest.is_zero()
             && !self.split.selection_digest.is_zero()
             && !self.split.predecessor_route_digest.is_zero()
@@ -500,6 +501,7 @@ mod tests {
         let mut binding = ProductSplitBindingV1 {
             split: CellSplitBindingV1 {
                 operation_id: plan.operation_id.clone(),
+                artifact_id: id("artifact:1"),
                 selected_artifact_digest: d(b"artifact"),
                 selection_digest: d(b"selection"),
                 predecessor_route_digest: d(b"old-route"),
@@ -515,6 +517,9 @@ mod tests {
             cns_final_use_request_digest: d(b"final-use"),
         };
         assert!(binding.validate(&plan));
+        binding.artifact_id = id("same-bytes-foreign-registry");
+        assert!(!binding.validate(&plan));
+        binding.artifact_id = id("artifact:1");
         let mut snapshot = ProductPredecessorSnapshotReceiptV1 {
             operation_id: plan.operation_id.clone(),
             domain_id: plan.domain_id.clone(),
