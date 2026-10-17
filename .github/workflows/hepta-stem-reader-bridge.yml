@@ -1,0 +1,45 @@
+name: Hepta Stem Reader bridge (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-transfer-cell-artifact-p0/**"
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-stem-reader-bridge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-stem-reader-bridge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Stem/Reader bridge contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+
+      - name: Run Stem and Cell contract tests
+        run: python3 -m unittest discover -v -s qualification/stem-transfer-cell-artifact-p0 -p 'test_*.py'
+
+      - name: Run qualification bridge tests
+        run: python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'
+
+      - name: Compile bridge and inspect whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            qualification/stem-transfer-cell-artifact-p0/stem_transfer_cell_artifact.py \
+            qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_stem_bridge.py
+          git diff --check
