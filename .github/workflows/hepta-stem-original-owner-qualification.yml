@@ -6,6 +6,8 @@ on:
     branches:
       - security/hepta-original-neuron-effect-and-metrics-gates-20261015
       - integration/hepta-secure-original-shared-arc-batch-20261015
+      # Scoped source-only candidate: execute existing gates on its exact HEAD.
+      - research/hepta-neuron-borrowed-native-batch-20261017
   workflow_dispatch:
   pull_request:
     paths:
