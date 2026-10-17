@@ -21,6 +21,8 @@ pub struct CellEvidenceV1 {
     pub encoder_digest: Digest32,
     pub head_digest: Digest32,
     pub action_digest: Digest32,
+    pub value_q24: i64,
+    pub uncertainty_q24: i64,
     pub runtime_receipt_digest: Digest32,
     pub model_runtime_binding_digest: Digest32,
     pub confidence_ppm: u32,
@@ -93,6 +95,8 @@ pub fn bind_cell_evidence_v1(
         encoder_digest: head.encoder_digest(),
         head_digest: output.head_digest,
         action_digest: output.action_digest,
+        value_q24: output.value_q24,
+        uncertainty_q24: output.uncertainty_q24,
         runtime_receipt_digest,
         model_runtime_binding_digest: runtime.signal.model_runtime_digest,
         confidence_ppm: runtime.tick.confidence_ppm,
@@ -122,6 +126,8 @@ pub fn canonical_cell_evidence_digest_v1(
     bytes.extend_from_slice(evidence.encoder_digest.as_array());
     bytes.extend_from_slice(evidence.head_digest.as_array());
     bytes.extend_from_slice(evidence.action_digest.as_array());
+    bytes.extend_from_slice(&evidence.value_q24.to_be_bytes());
+    bytes.extend_from_slice(&evidence.uncertainty_q24.to_be_bytes());
     bytes.extend_from_slice(evidence.runtime_receipt_digest.as_array());
     bytes.extend_from_slice(evidence.model_runtime_binding_digest.as_array());
     bytes.extend_from_slice(&evidence.confidence_ppm.to_be_bytes());
