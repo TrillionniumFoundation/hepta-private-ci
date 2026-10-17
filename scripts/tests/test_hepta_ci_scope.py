@@ -339,6 +339,12 @@ class ScopeTests(unittest.TestCase):
             workflow.index(gate),
             workflow.index("control-ndu-atomic-owner.json"),
         )
+        # Exact source-head rustfmt must fail BEFORE the expensive native
+        # canary Cargo build, without weakening either original command.
+        self.assertLess(
+            workflow.index("      - name: Early locked CellSplit Control/CNS Rustfmt preflight"),
+            workflow.index("      - name: Early CellSplit canary and evaluator compile regression"),
+        )
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
