@@ -16,6 +16,12 @@ class T(unittest.TestCase):
  def test_three_way_binding_is_pinned_and_denied(self):
   b=bind_checkpoint_resource(cp(),resource(),window_id="future.1")
   self.assertEqual(b.candidate_id,"shared_head"); self.assertEqual(b.authority,"DENY_ALL"); self.assertEqual(len(b.binding_digest),64)
+ def test_binding_serialization_carries_digest(self):
+  b=bind_checkpoint_resource(cp(),resource(),window_id="future.1")
+  doc=b.to_dict()
+  self.assertEqual(doc["schema"],SCHEMA)
+  self.assertEqual(doc["binding_digest"],b.binding_digest)
+  self.assertEqual(doc["checkpoint_receipt_digest"],cp().receipt_digest)
  def test_candidate_and_identity_drift_are_rejected(self):
   with self.assertRaises(CheckpointResourceBindingError): bind_checkpoint_resource(cp(),resource("split_head"),window_id="future.1")
   r=resource(); object.__setattr__(r,"model_digest",d("other"))
