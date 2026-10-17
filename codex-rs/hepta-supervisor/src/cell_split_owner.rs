@@ -55,9 +55,18 @@ impl CellSplitBindingV1 {
 /// they are NOT a substitute for authenticating the owner that returned them.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellSplitNativeEvidenceV1 {
-    AdmissionStopped { native_ack: Digest32 },
-    Drained { native_ack: Digest32, outbox_watermark: u64, unknown_effects: u32 },
-    OldWriterFenced { native_ack: Digest32, observed_generation: Generation },
+    AdmissionStopped {
+        native_ack: Digest32,
+    },
+    Drained {
+        native_ack: Digest32,
+        outbox_watermark: u64,
+        unknown_effects: u32,
+    },
+    OldWriterFenced {
+        native_ack: Digest32,
+        observed_generation: Generation,
+    },
     ArtifactCasCommitted {
         native_ack: Digest32,
         payload_digest: Digest32,
@@ -75,7 +84,10 @@ pub enum CellSplitNativeEvidenceV1 {
         artifact_digest: Digest32,
         child_state_digest: Digest32,
     },
-    NewWriterFenced { native_ack: Digest32, observed_generation: Generation },
+    NewWriterFenced {
+        native_ack: Digest32,
+        observed_generation: Generation,
+    },
     CnsRouteCutover {
         native_ack: Digest32,
         predecessor_digest: Digest32,
@@ -229,34 +241,48 @@ impl CellSplitObservedReceiptV1 {
                 bytes.extend_from_slice(&observed_generation.get().to_be_bytes());
             }
             CellSplitNativeEvidenceV1::ArtifactCasCommitted {
-                payload_digest, readback_digest, registry_head_digest, ..
+                payload_digest,
+                readback_digest,
+                registry_head_digest,
+                ..
             } => {
                 for d in [payload_digest, readback_digest, registry_head_digest] {
                     bytes.extend_from_slice(d.as_array());
                 }
             }
             CellSplitNativeEvidenceV1::ChildMigrated {
-                artifact_digest, source_state_digest, child_state_digest, ..
+                artifact_digest,
+                source_state_digest,
+                child_state_digest,
+                ..
             } => {
                 for d in [artifact_digest, source_state_digest, child_state_digest] {
                     bytes.extend_from_slice(d.as_array());
                 }
             }
             CellSplitNativeEvidenceV1::ChildValidated {
-                artifact_digest, child_state_digest, ..
+                artifact_digest,
+                child_state_digest,
+                ..
             } => {
                 bytes.extend_from_slice(artifact_digest.as_array());
                 bytes.extend_from_slice(child_state_digest.as_array());
             }
             CellSplitNativeEvidenceV1::CnsRouteCutover {
-                predecessor_digest, successor_digest, observed_generation, ..
+                predecessor_digest,
+                successor_digest,
+                observed_generation,
+                ..
             } => {
                 bytes.extend_from_slice(predecessor_digest.as_array());
                 bytes.extend_from_slice(successor_digest.as_array());
                 bytes.extend_from_slice(&observed_generation.get().to_be_bytes());
             }
             CellSplitNativeEvidenceV1::Retired {
-                retired_generation, active_generation, active_route_digest, ..
+                retired_generation,
+                active_generation,
+                active_route_digest,
+                ..
             } => {
                 bytes.extend_from_slice(&retired_generation.get().to_be_bytes());
                 bytes.extend_from_slice(&active_generation.get().to_be_bytes());
@@ -371,7 +397,9 @@ pub enum CellSplitOwnerErrorV1<E> {
 }
 
 impl<E> From<WriterHandoffErrorV1> for CellSplitOwnerErrorV1<E> {
-    fn from(value: WriterHandoffErrorV1) -> Self { Self::Journal(value) }
+    fn from(value: WriterHandoffErrorV1) -> Self {
+        Self::Journal(value)
+    }
 }
 
 impl<E: std::fmt::Debug> std::fmt::Display for CellSplitOwnerErrorV1<E> {
