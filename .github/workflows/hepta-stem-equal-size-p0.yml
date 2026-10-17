@@ -1,5 +1,6 @@
 # Research-only physical-source Jobs are observable on the one *trusted*
-# same-repository PR branch as well as pushes. Fork PRs cannot run them.
+# same-repository PR branch or explicit workflow_dispatch. Fork PRs and
+# ordinary pushes cannot run them (avoids doubled multi-GB downloads).
 # No secrets, mutable model revisions, production authority or artifact promotion.
 name: Hepta Equal-Size Stem P0/P1 source and physical-byte gates (DENY_ALL)
 on:
@@ -101,7 +102,7 @@ jobs:
           print("real_tiny_cpu_runtime=true original_400m_421m_weights_loaded=false promotion=false")
           PY
   hub-metadata-only:
-    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-equal-size-p0-20261016')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-equal-size-p0-20261016')
     needs: source-fail-closed
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -147,7 +148,7 @@ jobs:
   physical-primary-source-bytes:
     # Genuine model checkpoint bytes; NO arbitrary .bin deserialization, Python
     # model import, inference or producer-published weight artifacts.
-    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-equal-size-p0-20261016')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-equal-size-p0-20261016')
     needs: [hub-metadata-only, runtime-interface-smoke]
     runs-on: ubuntu-24.04
     timeout-minutes: 60
