@@ -7,12 +7,14 @@ from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import unittest
+import sys
 
 
 ROOT = Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("modality_registry", ROOT / "neuron_shared_encoder" / "modality_registry.py")
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
 
 BoundModalityRegistriesV1 = MODULE.BoundModalityRegistriesV1
