@@ -45,9 +45,8 @@ assert 'torch' not in sys.modules
         self.assertIn('PYTHONPATH: qualification/stem-cell-v1:e27-donor/qualification/stem-cell-v1',workflow)
         self.assertIn("assert 'torch' not in sys.modules",workflow)
 
-
     def test_cost_bounded_train_uses_complete_source_paragraphs_without_labels(self):
-        from e27_reader_owner import select_groups, material_owner
+        from e27_reader_owner import select_groups
         def rows(n_groups, *, n_questions, n_answers, start=0):
             return [dict(
                 paragraph=f'case-{start + i}', question=f'q-{q}',
