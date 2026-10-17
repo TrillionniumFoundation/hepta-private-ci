@@ -121,3 +121,30 @@ python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_learned_shadow.py
 Do not interpret this fixture's smaller supervised prediction error as
 real System 2 reasoning gain, general FBSDE convergence or an equal-compute
 advantage over traditional Bellman recursion.
+
+## Bounded Rust additive graph reference
+
+`codex-rs/hepta-ndu/src/sngr_graph_shadow.rs` adds an in-process,
+read-only, strictly bounded additive Decision/Chance DAG evaluator.
+It does **not** own or execute a TaskFlow circuit, call any provider,
+issue external authority, or mutate an installed topology/Cell.
+The preflight validates even unreachable/illegal stored nodes, checks
+all probability distributions and identifiers, rejects cycles and
+deep graphs, and enforces declared node/edge/branch limits.
+Value recursion only chooses **legal** controlled actions and
+**expects** stochastic outcomes, using exact-id memoization for
+shared descendants. Tie-breaking uses stable action names.
+Synthetic value and choice digests are not independent task outcomes.
+The Rust unit fixtures mirror the original Python additive-DAG
+tests and reject malicious zero-probability targets and illegal
+hidden negative costs.
+
+Native Rust package testing remains required:
+
+```bash
+cd codex-rs && just test --locked -p codex-hepta-ndu
+```
+
+This is neither a general nonlinear NDU aggregator nor a proof of
+stochastic value-function convergence. Native compile/fmt/Clippy and
+hosted CI qualification remain separate from local Python success.
