@@ -82,6 +82,7 @@ pub use cell_split_planner::CellSplitGovernedPlannerV1;
 pub use cell_split_planner::CellSplitPlannerContextV1;
 pub use cell_split_planner::CellSplitPlannerErrorV1;
 pub use cell_split_planner::CellSplitProposalPolicyV1;
+pub use cell_split_planner::CellSplitProposalPolicyInputV1;
 pub use cell_split_planner::CellSplitTelemetryObservationV1;
 pub use cell_split_planner::CellSplitTelemetrySourceV1;
 pub use cell_split_planner::cell_split_signal_from_telemetry_v1;
