@@ -33,16 +33,14 @@ fn id(raw: &str) -> StableId {
 }
 
 fn public_head(cell: &str, encoder_digest: String, invert: bool) -> GatedHeadCandidateV2 {
+    let drive_gain_q24 = if invert { -(1 << 18) } else { 1 << 18 };
     GatedHeadCandidateV2 {
         cell_identity: cell.to_string(),
         encoder_digest,
         input_width: ACTUAL_PUBLIC_FIT_Q24.len(),
         output_width: 1,
         gate_q24: vec![1 << 24; ACTUAL_PUBLIC_FIT_Q24.len()],
-        drive_weights_q24: vec![
-            if invert { -(1 << 18) } else { 1 << 18 };
-            ACTUAL_PUBLIC_FIT_Q24.len()
-        ],
+        drive_weights_q24: vec![drive_gain_q24; ACTUAL_PUBLIC_FIT_Q24.len()],
         prediction_weights_q24: vec![0; ACTUAL_PUBLIC_FIT_Q24.len()],
         drive_bias_q24: vec![0],
         prediction_bias_q24: vec![0],
@@ -95,12 +93,7 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
         input_digest: Digest32::of_bytes(b"public fit first case exact order"),
     };
     let source = cache
-        .insert(
-            1,
-            identity,
-            1000,
-            Arc::from(ACTUAL_PUBLIC_FIT_Q24.to_vec()),
-        )
+        .insert(1, identity, 1000, Arc::from(ACTUAL_PUBLIC_FIT_Q24.to_vec()))
         .expect("one Q24 feature allocation");
     assert_eq!(cache.resident_bytes(), 32 * 8);
 
