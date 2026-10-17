@@ -23,6 +23,18 @@ def fixture():
         'model_repo':core.REPO,'model_revision':core.REVISION,
         'actual_weight_sha256':core.WEIGHT_SHA,'model_precision':'fp32_cpu',
         'actual_loaded_parameters':270_000_000,
+        'original_parameter_audit':{
+            'profile':'hepta.stem.source-value-coverage-fp32.v5',
+            'original_weight_sha256':core.WEIGHT_SHA,
+            'runtime_parameter_elements':270_000_000,
+            'runtime_unique_parameter_tensors':413,
+            'original_archive_tensor_count':1376,
+            'source_tensor_elements_including_unused_modalities':744_000_000,
+            'source_value_coverage_verified':True,
+            'strict_logical_name_mapping_verified':False,
+            'model_issuer_signature_verified':False,
+            'proof_digest':'a'*64,
+            'audit_wall_seconds_unattested':1.5},
         'native_width':768,'projected_width':384,'projection':core.PROJECTION,
         'prompt_name':'Classification',
         'initial_head_sha256':'a'*64,'trained_head_sha256':'b'*64,
@@ -34,6 +46,20 @@ def fixture():
                 'complete_wall_seconds':4.,'complete_cpu_seconds':3.,
                 'maxrss_bytes_linux_unattested':2_000_000_000,
                 'energy_joules':None,'complete_request_p99_ms':None},
+        'train_only_centroid':{
+            'schema':'hepta.stem.train-loo-centroid-calibration.v5',
+            'selected_temperature':1.0,
+            'registered_temperatures':[1.0,0.5,0.25,0.125,0.0625,0.03125,0.015625],
+            'fit_only_loocv_multiclass_brier':[0.1,0.2,0.3,0.4,0.5,0.6,0.7],
+            'fit_examples':64,'fit_per_class_counts':[16]*4,
+            'heldout_labels_used_for_calibration':False,
+            'heldout_calibration_metric_selected':False,
+            'new_head_sgd_steps':0,'train_feature_digest':'d'*64,
+            'output_rows':[{'case_id':row['case_id'],
+                            'source_sha256':row['source_sha256'],
+                            'probabilities':list(probabilities)} for row in held],
+            'fit_and_output_wall_seconds_unattested':0.1,
+            'new_model_forward_calls':0,'production_authorized':False},
         'fleet':{'fleet_cell_count':4096,'active_heads_per_call':32,
                  'head_parameter_count':4096*6914,
                  'head_weight_bytes_fp32':4096*6914*4,'timed_batched_calls':64,
@@ -109,6 +135,44 @@ class ReceiptTests(unittest.TestCase):
             with self.subTest(key=key),self.assertRaises(ValueError):
                 review.check_fourth(src,bad,g)
         bad=copy.deepcopy(r);bad['rows'][0]['label']=1
+        with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_train_only_centroid_outputs_and_no_heldout_tuning(self):
+        src,r,g=fixture()
+        scored=review.check_fourth(src,r,g)
+        self.assertIn('train_only_loocv_centroid',scored)
+        self.assertFalse(scored['train_only_loocv_centroid'][
+            'independent_source_future_qualified'])
+        for key,value in [('selected_temperature',0.02),
+                          ('heldout_labels_used_for_calibration',True),
+                          ('heldout_calibration_metric_selected',True),
+                          ('new_head_sgd_steps',1),('new_model_forward_calls',1),
+                          ('production_authorized',True),
+                          ('train_feature_digest','0'),
+                          ('fit_only_loocv_multiclass_brier',[0])]:
+            bad=copy.deepcopy(r)
+            bad['train_only_centroid'][key]=value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                review.check_fourth(src,bad,g)
+        bad=copy.deepcopy(r)
+        bad['train_only_centroid']['output_rows'][0]['case_id']='false'
+        with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_missing_random_or_forged_original_parameter_census(self):
+        src, r, g = fixture()
+        for key, val in [
+            ('source_value_coverage_verified',False),
+            ('runtime_parameter_elements',1000),
+            ('original_weight_sha256','0'*64),
+            ('model_issuer_signature_verified',True),
+            ('original_archive_tensor_count',1),
+        ]:
+            bad=copy.deepcopy(r)
+            bad['original_parameter_audit'][key]=val
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                review.check_fourth(src,bad,g)
+        bad=copy.deepcopy(r)
+        del bad['original_parameter_audit']
         with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
 
     def test_real_text_tower_parameter_census_and_initial_tensor_parity(self):

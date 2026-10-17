@@ -130,7 +130,13 @@ def _load_text_encoder():
     require(200_000_000 <= count <= 350_000_000
             and all(t.dtype == torch.float32 for t in parameters),
             'not an authentic float32 text-only pretrained model')
-    return model
+    import material_census_v5 as source_census
+    audit = source_census.verify_source_value_coverage(
+        model, path / 'model.safetensors', expected_sha=WEIGHT_SHA)
+    require(audit['runtime_parameter_elements'] == count and
+            audit['source_value_coverage_verified'] is True,
+            'model has a parameter without original checkpoint bytes')
+    return model, audit
 
 
 def physical_embedding(texts, model):
@@ -206,7 +212,7 @@ def physical_run(source):
     import stem_candidate_v1 as base
     torch.set_num_threads(2)
     begin, cpu = time.perf_counter(), time.process_time()
-    model = _load_text_encoder()
+    model, original_parameter_audit = _load_text_encoder()
     actual_loaded_parameters = sum(p.numel() for p in model.parameters())
     load_wall = time.perf_counter()-begin
     fittexts = [r['text'] for r in source['train']]
@@ -218,6 +224,10 @@ def physical_run(source):
     trained = base._torch_head_training(feats[:64], [r['label'] for r in source['train']],
                                         feats[64:], config={'seed':17,'steps':100,
                                         'learning_rate':.006,'per_cell_parameters':6914,'cells':4})
+    import train_only_centroid_v5 as calibrated_baseline
+    train_only_control = calibrated_baseline.calculate(
+        feats[:64], [r['label'] for r in source['train']],
+        feats[64:], source['heldout'])
     fleet = physical_fleet(feats[64])
     require(trained['total_head_parameters'] == 27656 and trained['steps'] == 100,
             'invalid trained Head budget')
@@ -226,6 +236,7 @@ def physical_run(source):
         'source_plan_sha256':source['source_plan_sha256'],
         'model_repo':REPO,'model_revision':REVISION,'actual_weight_sha256':WEIGHT_SHA,
         'model_precision':'fp32_cpu', 'actual_loaded_parameters':actual_loaded_parameters,
+        'original_parameter_audit':original_parameter_audit,
         'native_width':768,'projected_width':384,
         'projection':PROJECTION,'prompt_name':'Classification',
         'initial_head_sha256':trained['initial_head_sha256'],
@@ -241,7 +252,8 @@ def physical_run(source):
                 'complete_cpu_seconds':time.process_time()-cpu,
                 'maxrss_bytes_linux_unattested':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
                 'energy_joules':None,'complete_request_p99_ms':None},
-        'fleet':fleet,'future_windows':0,'human_verified_new_sources':0,
+        'fleet':fleet,'train_only_centroid':train_only_control,
+        'future_windows':0,'human_verified_new_sources':0,
         'ndu_task_utility_qualified':False,'cell_split_authorized':False,
         'production_authorized':False,'authority':'DENY_ALL','disposition':STATUS,
     }

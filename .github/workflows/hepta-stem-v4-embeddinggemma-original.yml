@@ -43,9 +43,14 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m py_compile "$EXP_DIR/stem_v4.py" "$EXP_DIR/review_v4.py" "$EXP_DIR/system2_v4.py" "$EXP_DIR/test_v4.py"
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+          python -m py_compile "$EXP_DIR/stem_v4.py" "$EXP_DIR/review_v4.py" "$EXP_DIR/system2_v4.py" "$EXP_DIR/test_v4.py" "$EXP_DIR/material_census_v5.py" "$EXP_DIR/test_material_census_v5.py" "$EXP_DIR/train_only_centroid_v5.py" "$EXP_DIR/test_train_only_centroid_v5.py"
           python -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
           python -O -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
+          python -m unittest discover -s "$EXP_DIR" -p 'test_material_census_v5.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_material_census_v5.py' -v
+          python -m unittest discover -s "$EXP_DIR" -p 'test_train_only_centroid_v5.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_train_only_centroid_v5.py' -v
 
   original-source-owner:
     needs: source-negative-and-physical-head-tests

@@ -18,9 +18,11 @@ sys.path.insert(0,str(core.ROOT / 'stem-optimal-v1'))
 ARMS = ('centroid','frozen_init','learned')
 FIELDS = {
     'schema','cohort','candidate','source_plan_sha256','model_repo','model_revision',
-    'actual_weight_sha256','model_precision','actual_loaded_parameters','native_width','projected_width',
+    'actual_weight_sha256','model_precision','actual_loaded_parameters','original_parameter_audit',
+    'native_width','projected_width',
     'projection','prompt_name','initial_head_sha256','trained_head_sha256',
-    'head_parameters','optimizer_steps','rows','cost','fleet','future_windows',
+    'head_parameters','optimizer_steps','rows','cost','fleet','train_only_centroid',
+    'future_windows',
     'human_verified_new_sources','ndu_task_utility_qualified',
     'cell_split_authorized','production_authorized','authority','disposition'
 }
@@ -51,6 +53,33 @@ def check_fourth(source, receipt, gold):
     core.require(type(receipt['actual_loaded_parameters']) is int and
                  200_000_000 <= receipt['actual_loaded_parameters'] <= 350_000_000,
                  'unqualified text-only loaded parameter census')
+    material = receipt['original_parameter_audit']
+    import material_census_v5 as source_census
+    core.require(type(material) is dict and set(material) == {
+        'profile','original_weight_sha256','runtime_parameter_elements',
+        'runtime_unique_parameter_tensors','original_archive_tensor_count',
+        'source_tensor_elements_including_unused_modalities',
+        'source_value_coverage_verified','strict_logical_name_mapping_verified',
+        'model_issuer_signature_verified','proof_digest',
+        'audit_wall_seconds_unattested'},
+        'missing required original parameter source census')
+    core.require(material['profile'] == source_census.PROFILE and
+                 material['original_weight_sha256'] == core.WEIGHT_SHA and
+                 material['runtime_parameter_elements'] == receipt['actual_loaded_parameters'] and
+                 type(material['runtime_unique_parameter_tensors']) is int and
+                 100 <= material['runtime_unique_parameter_tensors'] <= 2500 and
+                 type(material['original_archive_tensor_count']) is int and
+                 300 <= material['original_archive_tensor_count'] <= 5000 and
+                 type(material['source_tensor_elements_including_unused_modalities']) is int and
+                 600_000_000 <= material['source_tensor_elements_including_unused_modalities'] <= 1_000_000_000 and
+                 material['source_value_coverage_verified'] is True and
+                 material['strict_logical_name_mapping_verified'] is False and
+                 material['model_issuer_signature_verified'] is False and
+                 type(material['proof_digest']) is str and
+                 len(material['proof_digest']) == 64 and
+                 all(c in '0123456789abcdef' for c in material['proof_digest']) and
+                 safe_float(material['audit_wall_seconds_unattested'], 0, 10000),
+                 'original pretrained text parameters are unverified')
     core.require(receipt['model_precision'] == 'fp32_cpu' and
                  receipt['native_width'] == 768 and receipt['projected_width'] == 384 and
                  receipt['projection'] == core.PROJECTION and
@@ -122,8 +151,60 @@ def check_fourth(source, receipt, gold):
                          abs(sum(prob)-1)<1e-5, 'invalid probability distribution')
             result[arm]['correct'] += int(max(range(4),key=lambda i: prob[i])==y)
             result[arm]['brier_sum'] += sum((p-int(i==y))**2 for i,p in enumerate(prob))
-    return {arm:{'correct':values['correct'],'n':32,
-                 'brier':values['brier_sum']/32} for arm,values in result.items()}
+    import train_only_centroid_v5 as centroid
+    control = receipt['train_only_centroid']
+    core.require(type(control) is dict and set(control) == {
+        'schema','selected_temperature','registered_temperatures',
+        'fit_only_loocv_multiclass_brier','fit_examples','fit_per_class_counts',
+        'heldout_labels_used_for_calibration','heldout_calibration_metric_selected',
+        'new_head_sgd_steps','train_feature_digest','output_rows',
+        'fit_and_output_wall_seconds_unattested','new_model_forward_calls',
+        'production_authorized'}, 'missing train-only centroid control')
+    losses=control['fit_only_loocv_multiclass_brier']
+    core.require(control['schema'] == centroid.PROFILE and
+                 control['registered_temperatures'] == list(centroid.TEMPERATURES) and
+                 type(losses) is list and len(losses) == len(centroid.TEMPERATURES) and
+                 all(safe_float(v,0,2) for v in losses) and
+                 control['selected_temperature'] == centroid.TEMPERATURES[
+                    min(range(len(losses)),key=lambda i:(losses[i],i))] and
+                 control['fit_examples'] == 64 and
+                 control['fit_per_class_counts'] == [16]*4 and
+                 control['heldout_labels_used_for_calibration'] is False and
+                 control['heldout_calibration_metric_selected'] is False and
+                 control['new_head_sgd_steps'] == 0 and
+                 control['new_model_forward_calls'] == 0 and
+                 control['production_authorized'] is False and
+                 safe_float(control['fit_and_output_wall_seconds_unattested']) and
+                 type(control['train_feature_digest']) is str and
+                 len(control['train_feature_digest']) == 64 and
+                 all(ch in '0123456789abcdef' for ch in control['train_feature_digest']),
+                 'non-FIT-only or unbounded cheap baseline calibration')
+    cal_rows=control['output_rows']
+    core.require(type(cal_rows) is list and len(cal_rows) == 32,
+                 'missing calibrated centroid outputs')
+    scored={'correct':0,'brier_sum':0.0}
+    for row, registered in zip(cal_rows,expected):
+        core.require(type(row) is dict and set(row) == {
+            'case_id','source_sha256','probabilities'} and
+            row['case_id']==registered['case_id'] and
+            row['source_sha256']==registered['source_sha256'],
+            'calibrated source ID drift')
+        q = row['probabilities']
+        core.require(type(q) is list and len(q)==4 and
+                     all(safe_float(v,0,1) for v in q) and
+                     abs(sum(q)-1)<1e-5, 'invalid train-only centroid scores')
+        y=gold[row['case_id']]
+        scored['correct']+=int(max(range(4),key=q.__getitem__)==y)
+        scored['brier_sum']+=sum((v-int(i==y))**2 for i,v in enumerate(q))
+    result['train_only_loocv_centroid']={
+        'correct':scored['correct'],'n':32,'brier':scored['brier_sum']/32,
+        'temperature_selected_on_training_only':control['selected_temperature'],
+        'calibration_requires_additional_head_sgd':False,
+        'independent_source_future_qualified':False}
+    return {
+        arm:(values if arm=='train_only_loocv_centroid' else
+             {'correct':values['correct'],'n':32,'brier':values['brier_sum']/32})
+        for arm,values in result.items()}
 
 
 def ensure_matched_initial_heads(old_runs, fourth):

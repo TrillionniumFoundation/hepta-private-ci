@@ -10,6 +10,50 @@ Frozen base is the research-only V3 hard-charge BANKING77 cohort and the V1 thre
 2. **Equal-Head but *not* equal-representation/cost intervention**: The 768D native EmbeddingGemma representation is deterministically projected to 384D by `(x[0]+x[1])/2`, `(x[2]+x[3])/2`, etc., then L2 normalized. This is a deliberately lossy **research bridge**, not an EmbeddingGemma officially trained 384D Matryoshka representation. The preexisting V1 `4 × 6,914` gated Head is trained for exactly 100 Adam updates (seed 17, LR .006) using the *same* 64 FIT / 32 heldout V3 question identities as the three baseline models. The center-score, frozen Head and learned Head are all reported; 32 cases on one publisher cannot select a stem.
 3. **Physical Head fleet, bounded cheap System 2 baseline**: On one real frozen EmbeddingGemma feature, allocate each of 4,096 Head tensors (28,319,744 FP32 scalars), run a measured batch with exactly 32 active Heads, record Head-only batch p95/p99, RSS and nullable energy/end-to-end p99. Separately, `system2_v4.py` implements exact rational finite-horizon, fully bounded Bellman candidate selection on pre-boundary forecasts with explicit stop and resource budget. It is not a trained NDU, FBSDE or evidence of reasoning lift.
 
+## V5 physical source-parameter coverage admission (new, not complete checkpoint identity)
+
+The real original EmbeddingGemma text-only loader now **streams every tensor**
+from its SHA-256-pinned 740M-parameter original safetensors, converts the source
+values to FP32, and checks that each unique physically loaded FP32 text parameter
+is supported by an exact **shape + byte-value** match in the original checkpoint.
+It fails before any task forward if a parameter was newly randomly initialized,
+replaced, missing, nonfinite or changed. The additional work is included in the
+same load/cold-start wall and complete CPU/RSS receipts. No network access,
+train labels or Test labels are required by the check itself.
+
+This is a **value-origin check** and not an issuer signature, certified logical
+source-name mapping, or tamper-proof host attestation. Source values from unused
+vision/audio weights remain available in the original archive; the loaded FP32
+270M-class parameter count and disabled modality configs are separately checked.
+Some legitimate architecture conversions could fail closed due to tensor reshape,
+quantization or tied-parameter aliasing until explicitly audited. Do **not**
+remove the bound to get a passing green build.
+
+The independent reviewer requires the new strict tensor-coverage receipt, but
+has no original model material and therefore cannot independently re-run the
+full 1.49GB census. This is separately disclosed as **self-reported** model work.
+Real hosted execution and exact-head passing CI remain pending until observed.
+
+## V5 FIT-only zero-Head-SGD calibrated centroid control
+
+The genuine EmbeddingGemma 2 producer now produces a fourth descriptive score
+arm from **the same 96 real pretrained features**, with **no extra model
+forward** and **zero Head SGD steps**. It derives the four class centroids on the
+64 registered FIT examples, excludes each FIT example from its own class
+prototype when selecting a temperature, evaluates **all 7 fixed positive
+candidate temperatures** on only the 64 FIT labels, then freezes the lowest
+FIT-only leave-one-out Brier temperature before scoring all 32 label-free heldout
+embeddings. The independent late-label reviewer checks the fixed candidate grid,
+train-only invariants, source IDs, costs and calibrated 32-item predictions.
+It reports the new accuracy/Brier beside original centroid, frozen Head and
+100-SGD trained Head, not as any official stem winner.
+
+This is an *EG2-only* new matched-input cheap control. Historical Granite47/97
+V3 receipts only allow postseal temperature **sensitivity**, not an actual
+FIT-only calibrated output; do not compare their postseal-oracle temperature
+scores as if they were equivalently trained controls. A fair cross-model
+calibrated-control experiment remains an explicit future gate.
+
 ## Original mmBERT140 comparator denial (observed V3 physical failure)
 
 The original V3 mmBERT job `117331622649` on run `39002204047` completed
