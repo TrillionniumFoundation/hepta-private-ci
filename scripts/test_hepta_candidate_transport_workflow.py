@@ -208,7 +208,6 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         self.assertEqual(observation["observation_status"], "unknown")
         self.assertIsNone(observation["write_transport_denied"])
 
-
     def test_base_merge_guard_fails_closed_when_main_advances(self):
         workflow = (
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"
