@@ -998,8 +998,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 .execute(&intent)
                 .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
         };
-        validate_receipt(&intent, &receipt)?;
-        self.trust.verify(&intent, &receipt)?;
+        // The prepared intent is durable and the original owner may already
+        // have committed. A malformed/forged ACK cannot prove non-execution:
+        // retain this key for read-only original-owner reconciliation.
+        validate_receipt(&intent, &receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.trust
+            .verify(&intent, &receipt)
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         // This is AFTER a durable prepared intent and an original effect
         // response. A live confirmation RPC failure (including a bad/absent
         // owner readback) cannot establish that the effect did not commit.

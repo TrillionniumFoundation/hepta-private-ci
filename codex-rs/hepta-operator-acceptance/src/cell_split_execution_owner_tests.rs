@@ -25,10 +25,17 @@ struct Observed {
     verifications: usize,
 }
 
+#[derive(Clone, Copy, Debug)]
+enum AckCorruption {
+    InvalidSequence,
+    ForgedSignature,
+}
+
 #[derive(Clone)]
 struct FixturePort {
     observed: Rc<RefCell<Observed>>,
     drop_ack: bool,
+    ack_corruption: Option<AckCorruption>,
     fail_reconcile: bool,
     fail_preflight: bool,
     reject_signature: bool,
@@ -45,6 +52,7 @@ impl FixturePort {
         Self {
             observed,
             drop_ack: false,
+            ack_corruption: None,
             fail_reconcile: false,
             fail_preflight: false,
             reject_signature: false,
@@ -119,7 +127,16 @@ impl CellSplitExecutionPortV1 for FixturePort {
         if self.drop_ack {
             return Err("ack lost after durable effect");
         }
-        Ok(receipt)
+        let mut ack = receipt;
+        match self.ack_corruption {
+            Some(AckCorruption::InvalidSequence) => ack.owner_sequence = 0,
+            Some(AckCorruption::ForgedSignature) => {
+                ack.owner_signature_bytes[0] ^= 0x80;
+                ack.receipt_digest = receipt_digest(&ack).expect("corrupted ACK digest");
+            }
+            None => {}
+        }
+        Ok(ack)
     }
 
     fn reconcile(
@@ -558,6 +575,66 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
             "never replay Execute"
         );
         assert!(committed.is_file(), "only live readback can close intent");
+    }
+}
+
+/// A source ACK can be malformed even when the original owner committed an
+/// authentic signed result. The coordinator must not treat that ACK as proof
+/// that the effect did not happen or dispatch the same effect a second time.
+#[test]
+fn original_effect_with_invalid_ack_is_ambiguous_until_signed_cold_reconcile() {
+    for corruption in [
+        AckCorruption::InvalidSequence,
+        AckCorruption::ForgedSignature,
+    ] {
+        let root = private_tempdir();
+        let observed = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut port = FixturePort::new(observed.clone());
+            port.ack_corruption = Some(corruption);
+            let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("frozen original owner");
+            assert!(matches!(
+                owner.advance(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+            assert_eq!(owner.completed_steps(), 0);
+            assert_eq!(observed.borrow().executions, 1);
+            assert!(root.path().join("cell-split-00-prepared.json").is_file());
+            assert!(!root.path().join("cell-split-00-committed.json").exists());
+            assert!(matches!(
+                owner.verified_transcript(),
+                Err(CellSplitExecutionErrorV1::Ambiguous)
+            ));
+        }
+
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(observed.clone()),
+        )
+        .expect("reopen same intent and signer trust");
+        assert!(matches!(
+            recovered.verified_complete(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        let receipt = recovered
+            .advance()
+            .expect("original signed read-only reconcile")
+            .expect("original committed receipt");
+        assert_eq!(
+            receipt,
+            observed
+                .borrow()
+                .commits
+                .get(&receipt.intent.idempotency_key)
+                .expect("original durable effect")
+                .clone()
+        );
+        assert_eq!(recovered.completed_steps(), 1);
+        assert_eq!(observed.borrow().executions, 1, "no second Execute");
+        assert!(root.path().join("cell-split-00-committed.json").is_file());
     }
 }
 
