@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - integration/hepta-cell-split-p0-58-cas-frozen-20261016
+      - integration/hepta-cell-split-p4-original-custody-on-p0-58-20261016
     paths:
       - scripts/hepta_cell_split_matrix_capture.py
       - scripts/hepta_cell_split_evidence_observer.py

@@ -37,8 +37,47 @@ MAX_HOST_RESULT_BYTES = 256 * 1024
 MAX_LOG_BYTES = 2 * 1024 * 1024
 
 
+def require_pinned_capture_root(directory_fd: int, output: Path) -> None:
+    """Fail closed on a renamed or substituted original capture directory."""
+    try:
+        opened = os.fstat(directory_fd)
+        named = output.lstat()
+    except OSError as error:
+        raise InvalidEvidence(f"capture directory unavailable: {error}") from error
+    if (
+        not stat.S_ISDIR(opened.st_mode)
+        or not stat.S_ISDIR(named.st_mode)
+        or (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino)
+        or opened.st_uid != os.geteuid()
+        or named.st_uid != os.geteuid()
+        or opened.st_mode & 0o077 != 0
+        or named.st_mode & 0o077 != 0
+    ):
+        raise InvalidEvidence(
+            "capture directory identity changed or private ownership mismatch"
+        )
+
+
+def create_capture_file(directory_fd: int, name: str):
+    """Create original 0600 output files relative to the pinned directory."""
+    if not name or name in (".", "..") or "/" in name or "\\" in name:
+        raise InvalidEvidence("invalid capture filename")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    fd = os.open(name, flags, 0o600, dir_fd=directory_fd)
+    return os.fdopen(fd, "wb")
+
+
+def capture_name_exists(directory_fd: int, name: str) -> bool:
+    try:
+        os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        return False
+    return True
+
+
 def read_stable_raw(
-    path: Path, limit: int, label: str
+    path: Path, limit: int, label: str, *, directory_fd: int | None = None
 ) -> tuple[bytes, tuple[int, int]]:
     """Read bounded original bytes and return their verified device/inode identity."""
     flags = (
@@ -48,7 +87,14 @@ def read_stable_raw(
         | getattr(os, "O_NONBLOCK", 0)
     )
     try:
-        with os.fdopen(os.open(path, flags), "rb") as source:
+        with os.fdopen(
+            os.open(
+                path if directory_fd is None else path.name,
+                flags,
+                dir_fd=directory_fd,
+            ),
+            "rb",
+        ) as source:
             before = os.fstat(source.fileno())
             if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
                 raise InvalidEvidence(f"{label}: regular single-linked file required")
@@ -56,7 +102,11 @@ def read_stable_raw(
                 raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
             raw = source.read(limit + 1)
             after = os.fstat(source.fileno())
-        named = path.lstat()
+        named = (
+            path.lstat()
+            if directory_fd is None
+            else os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+        )
     except OSError as error:
         raise InvalidEvidence(f"{label}: file unavailable: {error}") from error
     if len(raw) > limit:
@@ -199,113 +249,139 @@ def execute_matrix(
     # An external model command runs inside this directory. Keep raw diagnostic
     # measurements and logs private even with a permissive process umask.
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
-    with (output / "manifest.json").open("x", encoding="utf-8") as record:
-        record.write(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
-
-    # A later workload may rewrite earlier files. Freeze the original bytes
-    # and re-open their original inodes before publishing a diagnostic packet.
-    # Detached observer custody remains independently mandatory.
-    frozen: dict[str, tuple[int, bytes, tuple[int, int]]] = {}
-
-    def freeze(path: Path, limit: int) -> bytes:
-        raw, inode = read_stable_raw(path, limit, path.name)
-        frozen[path.name] = (limit, hashlib.sha256(raw).digest(), inode)
-        return raw
-
-    freeze(output / "manifest.json", MAX_MANIFEST_BYTES)
-    measurements = []
-    for scope in SCOPES:
-        for mode in MODES:
-            prefix = output / f"{scope}-{mode}"
-            result_path = prefix.with_suffix(".json")
-            env = os.environ.copy()
-            env["HEPTA_CELL_SPLIT_RESULT_PATH"] = str(result_path.resolve())
-            env["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"] = str(scope)
-            env["HEPTA_CELL_SPLIT_EXPECTED_MODE"] = mode
-            argv = commands[(scope, mode)]
-            stdout_path = prefix.with_suffix(".stdout.log")
-            stderr_path = prefix.with_suffix(".stderr.log")
-            # A previous workload is untrusted. Never accept a file it planted
-            # for a later case, even if its schema, SHA and counters look valid.
-            # lexists also catches dangling links. Exclusive log opens protect
-            # against a new race between this check and subprocess dispatch.
-            if any(
-                os.path.lexists(path)
-                for path in (result_path, stdout_path, stderr_path)
-            ):
-                raise InvalidEvidence(
-                    f"{scope}/{mode}: pre-existing result or log before workload"
-                )
-            # Freeze source identity for *each* workload: a command may modify
-            # tracked source after the initial matrix-level preflight.
-            verify_exact_source(repository, manifest["source_sha"])
-            with stdout_path.open("xb") as stdout:
-                with stderr_path.open("xb") as stderr:
-                    try:
-                        result = subprocess.run(
-                            argv,
-                            cwd=repository,
-                            env=env,
-                            stdout=stdout,
-                            stderr=stderr,
-                            timeout=timeout_seconds,
-                            check=False,
-                        )
-                    except (OSError, subprocess.TimeoutExpired) as error:
-                        raise InvalidEvidence(
-                            f"{scope}/{mode}: workload unavailable or timed out: {error}"
-                        ) from error
-            if result.returncode != 0:
-                raise InvalidEvidence(
-                    f"{scope}/{mode}: workload exited {result.returncode}"
-                )
-            # Reject a result even if it reports the expected SHA when the
-            # executed workload changed the checkout. Never start the next run.
-            verify_exact_source(repository, manifest["source_sha"])
-            # Validate the very same bytes that are retained for final replay.
-            raw_row = freeze(result_path, MAX_HOST_RESULT_BYTES)
-            try:
-                observed = strict_json_loads(raw_row)
-            except (UnicodeDecodeError, ValueError) as error:
-                raise InvalidEvidence(
-                    f"{scope}/{mode}: invalid host JSON: {error}"
-                ) from error
-            measurements.append(validate_measurement(observed, manifest, scope, mode))
-            freeze(stdout_path, MAX_LOG_BYTES)
-            freeze(stderr_path, MAX_LOG_BYTES)
-
-    # Identical parsed metrics are insufficient: any earlier raw result, log
-    # or manifest mutation invalidates capture. Do not write a complete packet.
-    for name, (limit, original_sha, original_inode) in frozen.items():
-        current, current_inode = read_stable_raw(output / name, limit, name)
-        if (
-            current_inode != original_inode
-            or hashlib.sha256(current).digest() != original_sha
-        ):
-            raise InvalidEvidence(
-                f"{name}: original host evidence changed after measurement"
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise InvalidEvidence("pinned capture directory support required")
+    root_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    root_flags |= getattr(os, "O_CLOEXEC", 0)
+    directory_fd = os.open(output, root_flags)
+    try:
+        require_pinned_capture_root(directory_fd, output)
+        with create_capture_file(directory_fd, "manifest.json") as record:
+            record.write(
+                (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode()
             )
 
-    packet = {
-        "schema": "hepta.cell-split.performance.v1",
-        "source_sha": manifest["source_sha"],
-        "hardware_id": manifest["hardware_id"],
-        "model_digest": manifest["model_digest"],
-        "workload_digest": manifest["workload_digest"],
-        "runs": measurements,
-    }
-    # Validate complete comparable evidence, but never sign/activate it.
-    comparison = analyze(packet)
-    # Last check before publishing a complete diagnostic packet, including
-    # concurrent tracked-file edits made during comparison/serialization.
-    verify_exact_source(repository, manifest["source_sha"])
-    # Never follow a result symlink planted by one of the 16 workloads.
-    # Complete packets remain diagnostic, not signed activation evidence.
-    with (output / "measured-matrix.json").open("x", encoding="utf-8") as record:
-        record.write(json.dumps(packet, sort_keys=True, indent=2) + "\n")
-    with (output / "diagnostic-comparison.json").open("x", encoding="utf-8") as record:
-        record.write(json.dumps(comparison, sort_keys=True, indent=2) + "\n")
-    return comparison
+        # A later workload may rewrite earlier files. Freeze the original bytes
+        # and re-open their original inodes before publishing a diagnostic packet.
+        # Detached observer custody remains independently mandatory.
+        frozen: dict[str, tuple[int, bytes, tuple[int, int]]] = {}
+
+        def freeze(path: Path, limit: int) -> bytes:
+            require_pinned_capture_root(directory_fd, output)
+            raw, inode = read_stable_raw(
+                path, limit, path.name, directory_fd=directory_fd
+            )
+            frozen[path.name] = (limit, hashlib.sha256(raw).digest(), inode)
+            return raw
+
+        freeze(output / "manifest.json", MAX_MANIFEST_BYTES)
+        measurements = []
+        for scope in SCOPES:
+            for mode in MODES:
+                prefix = output / f"{scope}-{mode}"
+                result_path = prefix.with_suffix(".json")
+                require_pinned_capture_root(directory_fd, output)
+                env = os.environ.copy()
+                env["HEPTA_CELL_SPLIT_RESULT_PATH"] = str(result_path.resolve())
+                env["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"] = str(scope)
+                env["HEPTA_CELL_SPLIT_EXPECTED_MODE"] = mode
+                argv = commands[(scope, mode)]
+                stdout_path = prefix.with_suffix(".stdout.log")
+                stderr_path = prefix.with_suffix(".stderr.log")
+                # A previous workload is untrusted. Never accept a file it planted
+                # for a later case, even if its schema, SHA and counters look valid.
+                # lexists also catches dangling links. Exclusive log opens protect
+                # against a new race between this check and subprocess dispatch.
+                if any(
+                    capture_name_exists(directory_fd, path.name)
+                    for path in (result_path, stdout_path, stderr_path)
+                ):
+                    raise InvalidEvidence(
+                        f"{scope}/{mode}: pre-existing result or log before workload"
+                    )
+                # Freeze source identity for *each* workload: a command may modify
+                # tracked source after the initial matrix-level preflight.
+                verify_exact_source(repository, manifest["source_sha"])
+                with create_capture_file(directory_fd, stdout_path.name) as stdout:
+                    with create_capture_file(directory_fd, stderr_path.name) as stderr:
+                        try:
+                            result = subprocess.run(
+                                argv,
+                                cwd=repository,
+                                env=env,
+                                stdout=stdout,
+                                stderr=stderr,
+                                timeout=timeout_seconds,
+                                check=False,
+                            )
+                        except (OSError, subprocess.TimeoutExpired) as error:
+                            raise InvalidEvidence(
+                                f"{scope}/{mode}: workload unavailable or "
+                                f"timed out: {error}"
+                            ) from error
+                require_pinned_capture_root(directory_fd, output)
+                if result.returncode != 0:
+                    raise InvalidEvidence(
+                        f"{scope}/{mode}: workload exited {result.returncode}"
+                    )
+                # Reject a result even if it reports the expected SHA when the
+                # executed workload changed the checkout. Never start the next run.
+                verify_exact_source(repository, manifest["source_sha"])
+                # Validate the very same bytes that are retained for final replay.
+                raw_row = freeze(result_path, MAX_HOST_RESULT_BYTES)
+                try:
+                    observed = strict_json_loads(raw_row)
+                except (UnicodeDecodeError, ValueError) as error:
+                    raise InvalidEvidence(
+                        f"{scope}/{mode}: invalid host JSON: {error}"
+                    ) from error
+                measurements.append(
+                    validate_measurement(observed, manifest, scope, mode)
+                )
+                freeze(stdout_path, MAX_LOG_BYTES)
+                freeze(stderr_path, MAX_LOG_BYTES)
+
+        # Identical parsed metrics are insufficient: any earlier raw result, log
+        # or manifest mutation invalidates capture. Do not write a complete packet.
+        for name, (limit, original_sha, original_inode) in frozen.items():
+            require_pinned_capture_root(directory_fd, output)
+            current, current_inode = read_stable_raw(
+                output / name, limit, name, directory_fd=directory_fd
+            )
+            if (
+                current_inode != original_inode
+                or hashlib.sha256(current).digest() != original_sha
+            ):
+                raise InvalidEvidence(
+                    f"{name}: original host evidence changed after measurement"
+                )
+
+        packet = {
+            "schema": "hepta.cell-split.performance.v1",
+            "source_sha": manifest["source_sha"],
+            "hardware_id": manifest["hardware_id"],
+            "model_digest": manifest["model_digest"],
+            "workload_digest": manifest["workload_digest"],
+            "runs": measurements,
+        }
+        # Validate complete comparable evidence, but never sign/activate it.
+        comparison = analyze(packet)
+        # Last check before publishing a complete diagnostic packet, including
+        # concurrent tracked-file edits made during comparison/serialization.
+        verify_exact_source(repository, manifest["source_sha"])
+        # Never follow a result symlink planted by one of the 16 workloads.
+        # Complete packets remain diagnostic, not signed activation evidence.
+        require_pinned_capture_root(directory_fd, output)
+        with create_capture_file(directory_fd, "measured-matrix.json") as record:
+            record.write((json.dumps(packet, sort_keys=True, indent=2) + "\n").encode())
+        with create_capture_file(directory_fd, "diagnostic-comparison.json") as record:
+            record.write(
+                (json.dumps(comparison, sort_keys=True, indent=2) + "\n").encode()
+            )
+        require_pinned_capture_root(directory_fd, output)
+        return comparison
+    finally:
+        os.close(directory_fd)
 
 
 def main() -> int:

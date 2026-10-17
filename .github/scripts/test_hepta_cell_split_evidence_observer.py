@@ -33,7 +33,7 @@ class IndependentByteCustodyTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.capture = self.root / "capture"
-        self.capture.mkdir()
+        self.capture.mkdir(mode=0o700)
         self.output = self.root / "observer-copy"
         self.manifest = synthetic_manifest()
         self.packet = synthetic_matrix()
@@ -73,6 +73,20 @@ class IndependentByteCustodyTests(unittest.TestCase):
             )
             (self.capture / f"{name}.stdout.log").write_bytes(b"stdout test\n")
             (self.capture / f"{name}.stderr.log").write_bytes(b"stderr test\n")
+
+    def replace_identical_inode(self, filename):
+        """Replace a captured path without changing any of its bytes."""
+        path = self.capture / filename
+        replacement = self.capture / f".replacement-{filename}"
+        with path.open("rb") as original:
+            prior = os.fstat(original.fileno())
+            replacement.write_bytes(original.read())
+            os.replace(replacement, path)
+            current = path.stat()
+            self.assertNotEqual(
+                (prior.st_dev, prior.st_ino),
+                (current.st_dev, current.st_ino),
+            )
 
     def inspect(self, *, destination=None, **overrides):
         pins = {
@@ -250,6 +264,45 @@ class IndependentByteCustodyTests(unittest.TestCase):
                 self.inspect()
         self.assertFalse((self.output / "COMPLETE").exists())
 
+    def test_identical_bytes_replaced_inode_during_copy_cannot_seal(self):
+        original_write = _write_exclusive
+        changed = False
+
+        def write_and_replace(fd, name, data):
+            nonlocal changed
+            original_write(fd, name, data)
+            if not changed:
+                changed = True
+                self.replace_identical_inode("manifest.json")
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(
+                InvalidEvidence, "inode replaced during custody"
+            ):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
+    def test_identical_bytes_replaced_after_ledger_cannot_seal(self):
+        original_write = _write_exclusive
+
+        def write_and_replace(fd, name, data):
+            original_write(fd, name, data)
+            if name == "custody-ledger.json":
+                self.replace_identical_inode("64-no_split.json")
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(
+                InvalidEvidence, "inode replaced during custody"
+            ):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
     def test_replaced_capture_directory_cannot_join_different_runs(self):
         original_write = _write_exclusive
         changed = False
@@ -290,6 +343,37 @@ class IndependentByteCustodyTests(unittest.TestCase):
                 self.inspect()
         self.assertFalse((self.output / "COMPLETE").exists())
         self.assertFalse((self.root / "orphaned-output" / "COMPLETE").exists())
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "Unix owner identity required")
+    def test_public_or_peer_writable_capture_directory_cannot_be_custodied(self):
+        for mode in (0o755, 0o770, 0o777):
+            with self.subTest(mode=oct(mode)):
+                self.capture.chmod(mode)
+                with self.assertRaisesRegex(InvalidEvidence, "private ownership"):
+                    self.inspect()
+                self.assertFalse(self.output.exists())
+        self.capture.chmod(0o700)
+        self.assertFalse(self.inspect()["production_activation_authorized"])
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "Unix owner identity required")
+    def test_capture_directory_becoming_public_while_copying_cannot_seal(self):
+        original_write = _write_exclusive
+        mutated = False
+
+        def relax_directory(fd, name, data):
+            nonlocal mutated
+            original_write(fd, name, data)
+            if not mutated:
+                mutated = True
+                self.capture.chmod(0o777)
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=relax_directory,
+        ):
+            with self.assertRaisesRegex(InvalidEvidence, "private ownership"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
 
 
 if __name__ == "__main__":

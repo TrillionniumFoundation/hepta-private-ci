@@ -527,6 +527,88 @@ if scope == 64 and mode == "logical_split":
                 execute_matrix(packet, ROOT, output, 30)
             self.assertFalse((output / "measured-matrix.json").exists())
 
+    @unittest.skipUnless(
+        hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NOFOLLOW"),
+        "pinned Unix directory handles required",
+    )
+    def test_workload_cannot_substitute_capture_root_between_original_reads(self):
+        packet = manifest()
+        fixture_script = """
+import json
+import os
+from pathlib import Path
+
+result = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+root = result.parent
+displaced = root.with_name("displaced-original-capture")
+root.rename(displaced)
+if os.environ["HEPTA_TEST_REPLACE_KIND"] == "symlink":
+    root.symlink_to(displaced, target_is_directory=True)
+else:
+    root.mkdir(mode=0o700)
+result.write_text(json.dumps(row), encoding="utf-8")
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        for replacement in ("directory", "symlink"):
+            with (
+                self.subTest(replacement=replacement),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                output = Path(directory) / "matrix"
+                with (
+                    patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                    patch.dict(
+                        os.environ,
+                        {
+                            "HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet)),
+                            "HEPTA_TEST_REPLACE_KIND": replacement,
+                        },
+                    ),
+                    self.assertRaisesRegex(
+                        InvalidEvidence, "capture directory identity changed"
+                    ),
+                ):
+                    execute_matrix(packet, ROOT, output, 30)
+                self.assertFalse((output / "measured-matrix.json").exists())
+                self.assertFalse((output / "diagnostic-comparison.json").exists())
+
+    @unittest.skipUnless(
+        hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NOFOLLOW"),
+        "pinned Unix directory handles required",
+    )
+    def test_workload_widening_capture_directory_permissions_fails_closed(self):
+        packet = manifest()
+        script = """
+import json
+import os
+from pathlib import Path
+
+result = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+result.write_text(json.dumps(row), encoding="utf-8")
+result.parent.chmod(0o777)
+"""
+        packet["runs"][0]["argv"] = [sys.executable, "-c", script]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "matrix"
+            with (
+                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch.dict(
+                    os.environ,
+                    {"HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet))},
+                ),
+                self.assertRaisesRegex(InvalidEvidence, "private ownership"),
+            ):
+                execute_matrix(packet, ROOT, output, 30)
+            self.assertFalse((output / "measured-matrix.json").exists())
+            self.assertFalse((output / "64-logical_split.stdout.log").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
