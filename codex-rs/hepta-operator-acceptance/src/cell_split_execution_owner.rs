@@ -682,6 +682,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if self.pending {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
+        // A next-owner effect may appear while the original predecessor's
+        // signed readback is in flight. Recheck that exact original owner
+        // after verifying the durable prefix. This is a bounded diagnostic
+        // observation, not an atomic multi-owner snapshot or Final-use grant.
+        self.probe_next_unprepared_original()?;
         Ok(self.is_complete())
     }
 
@@ -706,6 +711,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Ambiguous);
         }
         if !self.is_complete() {
+            // Original next-owner effects can commit while slower signed
+            // predecessors are being read. Do not export benign None based
+            // solely on a stale pre-prefix negative observation.
+            self.probe_next_unprepared_original()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
@@ -962,11 +971,19 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
-            // Owner readbacks are potentially slow. Selector/NDU membership
-            // may be withdrawn while the last predecessor is being verified.
-            // Revalidate again before writing the prepared intent. This
-            // remains only a read-only guard; actual effect owners enforce
-            // independent final-use at the physical commit boundary.
+            // The first original signed negative was NOT a reservation.
+            // An external effect can appear under this same immutable
+            // idempotency key while the NDU/Selector admission callback and
+            // signed predecessor readbacks run. Refuse it before local Prepare
+            // rather than stranding an invalid out-of-ledger operation.
+            self.port
+                .preflight_uncommitted(&intent)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // The late original negative RPC can itself be slow. Revalidate
+            // the immutable local ledger and live original predecessors once
+            // more, then recheck Selector/NDU before preparing. These probes
+            // are NOT an atomic multi-owner snapshot or a Final-use grant.
+            self.verify_committed_prefix()?;
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
@@ -992,9 +1009,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         };
         validate_receipt(&intent, &receipt)?;
         self.trust.verify(&intent, &receipt)?;
+        // The original owner may already have committed this effect even
+        // when its final signed current-state readback fails. Preserve the
+        // one prepared key for reconciliation; do not advertise a definite
+        // no-effect External or dispatch Execute again.
         self.port
             .verify_committed(&intent, &receipt)
-            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         // An effect may finish after another owner revoked a predecessor or
         // replaced a frozen local frame. Before acknowledging the new step,
         // revalidate the original signed owner prefix and still-pending intent.
