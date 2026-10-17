@@ -408,6 +408,14 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         }
     }
 
+    pub fn attach_manifest(
+        &mut self,
+        manifest: CompositionManifestV1,
+    ) -> Result<CompositionReceipt, CompositionError> {
+        manifest.validate()?;
+        self.attach_cell(manifest.key(), manifest.head(), manifest.private_memory_bytes)
+    }
+
     pub fn attach_cell(
         &mut self,
         key: CompositionKey,
