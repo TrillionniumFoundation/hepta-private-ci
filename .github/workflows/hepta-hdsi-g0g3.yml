@@ -43,8 +43,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           cd "$EXP_DIR"
           python -m py_compile feature_bus.py circuit_ndu.py physical_fanout.py review_fanout.py test_hdsi.py
-          python -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.ReviewerTests
-          python -O -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.ReviewerTests
+          python -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests
+          python -O -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests
           git -C ../.. diff --check
 
   original-source-owner:

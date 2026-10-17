@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 from functools import lru_cache
 import re
+from types import MappingProxyType
 
 
 class Denied(ValueError):
@@ -88,6 +89,13 @@ class Decision:
 
 
 class EvidenceCircuit:
+    __slots__ = ("objective", "facts", "by_id", "initial", "_sealed")
+
+    def __setattr__(self, name, value):
+        if getattr(self, "_sealed", False):
+            raise Denied("immutable objective/graph during an episode")
+        object.__setattr__(self, name, value)
+
     def __init__(self, objective: Objective, facts: tuple[Fact, ...]) -> None:
         objective.verify_shape()
         if type(facts) is not tuple or not 1 <= len(facts) <= 128:
@@ -102,8 +110,9 @@ class EvidenceCircuit:
             seen.add(fact.fact_id)
         self.objective = objective
         self.facts = tuple(sorted(facts, key=lambda f: f.fact_id))
-        self.by_id = {f.fact_id: f for f in self.facts}
+        self.by_id = MappingProxyType({f.fact_id: f for f in self.facts})
         self.initial = State(objective.start, 0, (), Q(0), rat(objective.preference_initial))
+        self._sealed = True
 
     def complete(self, s: State) -> bool:
         return s.depth == len(self.objective.relations) and s.current == self.objective.end
@@ -144,9 +153,14 @@ class EvidenceCircuit:
     def ndu_backward(self) -> Decision:
         """Registered deterministic U_k=instant+gamma U_next, NOT a BSDE."""
         gamma = rat(self.objective.gamma, Q(1, 2), Q(1))
+        explored = 0
 
         @lru_cache(maxsize=65536)
         def rec(s: State) -> Decision:
+            nonlocal explored
+            explored += 1
+            if explored > 100_000:
+                raise Denied("recursive NDU search exceeds state budget")
             best = Decision(self.terminal(s), (), self.complete(s))
             for f in self.choices(s):
                 c = rec(self.advance(s, f))
@@ -194,3 +208,42 @@ class EvidenceCircuit:
                 "hops": len(backward.path), "nonlinear_fbsde_solved": False,
                 "pretrained_reasoning_verified": False, "production_authorized": False,
                 "disposition": "HOLD_NO_GO"}
+
+
+Q32_SCALE = 1 << 32
+
+
+def q32_mul_ties_even(left: int, right: int) -> int:
+    """Model-free parity primitive for Rust hepta-ndu/fixed.rs (not a Rust call)."""
+    if (type(left) is not int or type(right) is not int or
+            not -(1 << 63) <= left < (1 << 63) or
+            not -(1 << 63) <= right < (1 << 63)):
+        raise Denied("signed i64 Q32 inputs required")
+    signed = left * right
+    quotient, remainder = divmod(abs(signed), Q32_SCALE)
+    if remainder > Q32_SCALE // 2 or (remainder == Q32_SCALE // 2 and quotient % 2):
+        quotient += 1
+    result = -quotient if signed < 0 else quotient
+    if not -(1 << 63) <= result < (1 << 63):
+        raise Denied("Q32 arithmetic overflow")
+    return result
+
+
+def native_ndu_golden_reference() -> dict:
+    """docs/learning/NDU_FBSDE_SPEC.md NDU-GV-001 exact integer example.
+
+    Pure Python numerical contract, not production Rust integration and not a
+    stochastic FBSDE solve. Terminal is an externally supplied fixed 1.0.
+    """
+    gamma = 3435973837  # nearest/ties-even representation of 0.8
+    terminal = Q32_SCALE
+    u1 = Q32_SCALE // 4 + q32_mul_ties_even(gamma, terminal)
+    u0 = Q32_SCALE // 2 + q32_mul_ties_even(gamma, u1)
+    p = (0, Q32_SCALE // 4, -(Q32_SCALE // 4))
+    if (p, (u0, u1, terminal)) != (
+            (0, 1073741824, -1073741824),
+            (5755256177, 4509715661, 4294967296)):
+        raise Denied("native NDU published golden mismatch")
+    return {"id": "NDU-GV-001", "preference_raw": list(p),
+            "utility_raw": [u0, u1, terminal], "source": "Rust Q32 reference",
+            "rust_executed": False, "general_fbsde_solved": False}

@@ -12,7 +12,8 @@ import math
 import unittest
 
 from feature_bus import Borrow, Denied as BusDenied, Scope, SharedFeatureBus
-from circuit_ndu import Denied as CircuitDenied, EvidenceCircuit, Fact, Objective, rat
+from circuit_ndu import (Denied as CircuitDenied, EvidenceCircuit, Fact, Objective, rat,
+                         native_ndu_golden_reference, q32_mul_ties_even)
 from physical_fanout import ACTIVE, PER_HEAD, SIZES, WIDTH, head_scores, head_scores_tensor, make_heads
 from review_fanout import review, Denied as ReviewDenied
 
@@ -163,12 +164,12 @@ class CircuitTests(unittest.TestCase):
     def test_dangerous_branch_refused_by_risk(self):
         f = fact("alt", "n0", "r0", "bad", "0", "1")
         c = graph(extra=(f,))
-        c.objective = dataclasses.replace(c.objective, max_risk="0")
+        c = EvidenceCircuit(dataclasses.replace(c.objective, max_risk="0"), c.facts)
         self.assertEqual(c.compare_same_profile()["proof"], ["f0", "f1", "f2"])
 
     def test_wrong_end_abstain(self):
         c = graph()
-        c.objective = dataclasses.replace(c.objective, end="unexpected")
+        c = EvidenceCircuit(dataclasses.replace(c.objective, end="unexpected"), c.facts)
         r = c.compare_same_profile()
         self.assertEqual(r["proof"], [])
         self.assertFalse(r["success"])
@@ -201,6 +202,24 @@ class CircuitTests(unittest.TestCase):
         with self.assertRaises(CircuitDenied):
             EvidenceCircuit(c.objective, c.facts + (c.facts[0],))
 
+    def test_frozen_circuit_ownership_and_snapshot(self):
+        c = graph()
+        with self.assertRaises(CircuitDenied):
+            c.objective = dataclasses.replace(c.objective, end="other")
+        with self.assertRaises(TypeError):
+            c.by_id["f0"] = fact("bad", "a", "r0", "b")
+        self.assertEqual(c.compare_same_profile()["proof"], ["f0", "f1", "f2"])
+
+    def test_exponential_branching_fails_closed_at_budget(self):
+        fs = []
+        for i in range(6):
+            for j in range(10):
+                fs.append(fact(f"edge{i}:{j}", f"n{i}", f"r{i}", f"n{i+1}", "0"))
+        objective = Objective("n0", "n6", tuple(f"r{i}" for i in range(6)), "1", "1", "0")
+        c = EvidenceCircuit(objective, tuple(fs))
+        with self.assertRaises(CircuitDenied):
+            c.ndu_backward()
+
     def test_malformed_preference_and_goal_denied(self):
         for p in ("-0.1", "1.2", "NaN", "1/0", "1/10000001"):
             with self.assertRaises(CircuitDenied):
@@ -214,6 +233,22 @@ class CircuitTests(unittest.TestCase):
                 EvidenceCircuit(graph().objective, (fact("x", "a", "r0", "b", fee=x),))
         with self.assertRaises(CircuitDenied):
             EvidenceCircuit(graph().objective, (dataclasses.replace(fact("x", "a", "r0", "b"), source_sha="abc"),))
+
+
+class NativeNduReferenceTests(unittest.TestCase):
+    def test_published_q32_recursive_utility_golden(self):
+        x = native_ndu_golden_reference()
+        self.assertEqual(x["utility_raw"], [5755256177, 4509715661, 4294967296])
+        self.assertFalse(x["rust_executed"])
+
+    def test_signed_q32_round_to_even_and_overflow(self):
+        self.assertEqual(q32_mul_ties_even(1, 1 << 31), 0)
+        self.assertEqual(q32_mul_ties_even(3, 1 << 31), 2)
+        self.assertEqual(q32_mul_ties_even(-3, 1 << 31), -2)
+        with self.assertRaises(CircuitDenied):
+            q32_mul_ties_even(1 << 63, 2)
+        with self.assertRaises(CircuitDenied):
+            q32_mul_ties_even((1 << 63)-1, (1 << 63)-1)
 
 
 class PhysicalHeadTests(unittest.TestCase):
