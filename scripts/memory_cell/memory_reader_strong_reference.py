@@ -184,6 +184,21 @@ def write_start(path, row):
         os.fsync(f.fileno())
 
 
+def load_frozen_qwen(model_class, model_dir, *, precision):
+    """Pinned Transformers 4.53.3 model loading contract.
+
+    In this frozen dependency, `dtype` is passed through to the model
+    constructor and Qwen3ForCausalLM rejects it; `torch_dtype` is the
+    supported from_pretrained loader setting. Never silently upgrade the
+    package or add a non-model fallback to work around this.
+    """
+    return model_class.from_pretrained(
+        model_dir, local_files_only=True, trust_remote_code=False,
+        use_safetensors=True, torch_dtype=precision,
+        attn_implementation="eager",
+    ).eval()
+
+
 def worker(plan_dir, model_dir, model_spec_path, output_dir):
     plan, ph = preflight(plan_dir)
     out = Path(output_dir)
@@ -196,9 +211,7 @@ def worker(plan_dir, model_dir, model_spec_path, output_dir):
     torch.set_num_threads(2)
     tokenizer = AutoTokenizer.from_pretrained(model_dir, local_files_only=True,
                                               trust_remote_code=False, use_fast=True)
-    model = AutoModelForCausalLM.from_pretrained(model_dir, local_files_only=True,
-                            trust_remote_code=False, use_safetensors=True,
-                            dtype=torch.float32, attn_implementation="eager").eval()
+    model = load_frozen_qwen(AutoModelForCausalLM, model_dir, precision=torch.float32)
     model.requires_grad_(False)
     if snapshot(model_dir, model_spec_path)[1] != material:
         raise ValueError("Qwen3 model source changed during load")
