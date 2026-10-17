@@ -490,51 +490,34 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         &mut self,
     ) -> Result<WriterHandoffCheckpointV1, CellSplitOwnerErrorV1<N::Error>> {
         let checkpoint = self.journal.checkpoint().clone();
-        // A valid historical CAS acknowledgement does not mean its source
-        // lineage remains eligible today. Re-query CURRENT native Artifact
-        // authority before all later state/fence/route effects. Otherwise a
-        // revoked model could be installed after an apparently valid migrate.
-        if matches!(
-            checkpoint.phase,
-            WriterHandoffPhaseV1::Migrated
-                | WriterHandoffPhaseV1::Validated
-                | WriterHandoffPhaseV1::NewWriterFenced
-                | WriterHandoffPhaseV1::RoutePublished
-                | WriterHandoffPhaseV1::Retired
-        ) {
-            let cas = self.require_observation(
-                &checkpoint.plan,
-                WriterHandoffPhaseV1::Snapshotted,
-            )?;
-            if !matches!(
-                cas.evidence,
-                CellSplitNativeEvidenceV1::ArtifactCasCommitted { .. }
-            ) {
-                return Err(CellSplitOwnerErrorV1::InvalidObservation);
+        if checkpoint.phase == WriterHandoffPhaseV1::Quarantined {
+            return Err(CellSplitOwnerErrorV1::Quarantined);
+        }
+
+        // Validate the immutable source of truth *before* any new native
+        // effect. Replaying a newer successful-looking CAS/migration receipt
+        // cannot replace the exact original receipt previously fsynced into
+        // the Supervisor chain. Product native adapters must preserve
+        // historical readback by phase and operation ID across restarts.
+        let chain = self.journal.acknowledged_evidence_chain_v1()?;
+        let mut previous = None;
+        for (phase, originally_acknowledged) in chain {
+            if phase == WriterHandoffPhaseV1::Prepared {
+                continue; // Prepared holds a plan digest, not a native ACK.
+            }
+            let observed = self.require_observation(&checkpoint.plan, phase)?;
+            if observed.evidence_digest() != originally_acknowledged {
+                return Err(CellSplitOwnerErrorV1::ObservationDrift);
+            }
+            if phase == checkpoint.phase {
+                previous = Some(observed);
             }
         }
         if checkpoint.phase == WriterHandoffPhaseV1::Retired {
-            let observed = self.require_observation(&checkpoint.plan, checkpoint.phase)?;
-            if observed.evidence_digest() != checkpoint.evidence_digest {
-                return Err(CellSplitOwnerErrorV1::ObservationDrift);
-            }
             return Ok(checkpoint);
         }
-        let Some(target) = next_phase(checkpoint.phase) else {
-            return Err(CellSplitOwnerErrorV1::Quarantined);
-        };
-
-        // A restored journal cannot silently hide drift of the most recently
-        // ACKed native operation. The immutable receipt must remain readable.
-        let previous = if checkpoint.phase == WriterHandoffPhaseV1::Prepared {
-            None
-        } else {
-            let value = self.require_observation(&checkpoint.plan, checkpoint.phase)?;
-            if value.evidence_digest() != checkpoint.evidence_digest {
-                return Err(CellSplitOwnerErrorV1::ObservationDrift);
-            }
-            Some(value)
-        };
+        let target = next_phase(checkpoint.phase)
+            .ok_or(CellSplitOwnerErrorV1::Quarantined)?;
 
         // Never perform a second mutation when the native owner is uncertain.
         let observed = match self.native.lookup(&checkpoint.plan, target)
