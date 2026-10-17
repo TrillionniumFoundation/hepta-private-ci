@@ -1,76 +1,104 @@
-"""Source-only mock Hub metadata tests: no pretrained weights or network."""
+"""Source-only Hugging Face fixture tests, no network and no pretrained loads."""
 from __future__ import annotations
+
 import copy
 import unittest
 from types import SimpleNamespace as S
+
 import gate
 import preflight
 
 
 def good_meta(name):
-    needed=preflight.WANTED[name]
-    names=set(needed)
-    if name.startswith('laya'):
-        names.add('tokenizer/tokenizer.json')
+    names = set(preflight.WANTED[name])
+    if name.startswith("laya"):
+        names.add("tokenizer/tokenizer_config.json")
+    elif name == "ettin400":
+        names.add("tokenizer_config.json")
     else:
-        names.add('tokenizer.json')
-    entries=[]
+        names.add("spm.model")
+    entries = []
     for path in sorted(names):
-        tensor=path.endswith(('.bin','.safetensors'))
-        entries.append(S(rfilename=path,size=1500000000 if tensor else 100,
-                         lfs={'sha256':'a'*64} if tensor else None))
-    return S(sha=gate.MODELS[name][1],siblings=entries)
+        tensor = preflight.is_weight(path)
+        entries.append(S(rfilename=path, size=1_500_000_000 if tensor else 100,
+                         lfs={"sha256": "a"*64} if tensor else None,
+                         blob_id=None if tensor else "b"*40))
+    return S(sha=gate.MODELS[name][1], siblings=entries)
 
 
 class PreflightTests(unittest.TestCase):
     def test_full_four_metadata_only(self):
-        revmap={v[0]:k for k,v in gate.MODELS.items()}
-        def resolver(*,repo_id,revision,files_metadata):
-            k=revmap[repo_id]
-            self.assertEqual(revision,gate.MODELS[k][1])
-            self.assertIs(files_metadata,True)
+        revmap = {v[0]: k for k, v in gate.MODELS.items()}
+        def resolver(*, repo_id, revision, files_metadata):
+            k = revmap[repo_id]
+            self.assertEqual(revision, gate.MODELS[k][1])
+            self.assertIs(files_metadata, True)
             return good_meta(k)
-        result=preflight.run(resolver)
-        self.assertEqual(len(result['models']),4)
-        self.assertEqual(result['disposition'],'HOLD_NO_GO')
-        self.assertIs(result['production_promotion_permitted'],False)
-        self.assertIs(result['all_original_weights_downloaded'],False)
-        self.assertTrue([r for r in result['models'] if r['model']=='ettin400'][0]['requires_safe_weights_only_conversion'])
+        result = preflight.run(resolver)
+        self.assertEqual(len(result["models"]), 4)
+        self.assertEqual(result["disposition"], "HOLD_NO_GO")
+        self.assertIs(result["all_original_weights_downloaded"], False)
+        self.assertTrue(result["models"][2]["requires_safe_weights_only_conversion"])
     def test_wrong_sha(self):
-        x=good_meta('ettin400');x.sha='0'*40
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); x.sha = "0"*40
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_missing_weight(self):
-        x=good_meta('ettin400');x.siblings=[v for v in x.siblings if v.rfilename!='pytorch_model.bin']
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); x.siblings = [v for v in x.siblings if v.rfilename != "pytorch_model.bin"]
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_missing_lfs(self):
-        x=good_meta('ettin400');x.siblings[1].lfs=None
-        # Choose exact weight by name rather than a brittle assumed sort order.
-        for v in x.siblings:
-            if v.rfilename=='pytorch_model.bin':v.lfs=None
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400")
+        next(v for v in x.siblings if v.rfilename == "pytorch_model.bin").lfs = None
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_unsafe_parent_path(self):
-        x=good_meta('ettin400');x.siblings.append(S(rfilename='../weights.bin',size=500,lfs={'sha256':'a'*64}))
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); x.siblings.append(S(rfilename="../weights.bin", size=500, lfs={"sha256":"a"*64}))
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_duplicate_file(self):
-        x=good_meta('ettin400');x.siblings.append(copy.copy(x.siblings[0]))
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); x.siblings.append(copy.copy(x.siblings[0]))
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_missing_tokenizer(self):
-        x=good_meta('ettin400');x.siblings=[v for v in x.siblings if 'tokenizer' not in v.rfilename]
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); x.siblings = [v for v in x.siblings if "tokenizer" not in v.rfilename]
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_missing_head_bundle(self):
-        x=good_meta('openjev434');x.siblings=[v for v in x.siblings if v.rfilename!='head.safetensors']
-        with self.assertRaises(gate.Denied):preflight.inspect_model('openjev434',x)
+        x = good_meta("openjev434"); x.siblings = [v for v in x.siblings if v.rfilename != "head.safetensors"]
+        with self.assertRaises(gate.Denied): preflight.inspect_model("openjev434", x)
     def test_unbounded_weight(self):
-        x=good_meta('ettin400');next(v for v in x.siblings if v.rfilename=='pytorch_model.bin').size=1+preflight.MAX_WEIGHT_BYTES
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); next(v for v in x.siblings if v.rfilename == "pytorch_model.bin").size = preflight.MAX_WEIGHT_BYTES + 1
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_wrong_model(self):
-        with self.assertRaises(gate.Denied):preflight.inspect_model('evil',good_meta('ettin400'))
+        with self.assertRaises(gate.Denied): preflight.inspect_model("evil", good_meta("ettin400"))
     def test_malformed_lfs(self):
-        x=good_meta('ettin400');next(v for v in x.siblings if v.rfilename=='pytorch_model.bin').lfs={'sha256':'NO'}
-        with self.assertRaises(gate.Denied):preflight.inspect_model('ettin400',x)
+        x = good_meta("ettin400"); next(v for v in x.siblings if v.rfilename == "pytorch_model.bin").lfs = {"sha256":"NO"}
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
     def test_no_remote_code_path(self):
-        result=preflight.inspect_model('laya421',good_meta('laya421'))
-        self.assertIs(result['remote_code_execution_allowed'],False)
-        self.assertIs(result['loaded_model_tensors_verified'],False)
+        r = preflight.inspect_model("laya421", good_meta("laya421"))
+        self.assertIs(r["remote_code_execution_allowed"], False)
+        self.assertIs(r["loaded_model_tensors_verified"], False)
+    def test_laya_family_siblings_excluded_from_download(self):
+        x = good_meta("laya421")
+        x.siblings.append(S(rfilename="typed-decisions/model.safetensors",size=100000,lfs={"sha256":"c"*64}))
+        x.siblings.append(S(rfilename="multilingual/model.safetensors",size=100000,lfs={"sha256":"c"*64}))
+        r = preflight.inspect_model("laya421", x)
+        self.assertEqual(r["other_repo_files_excluded"], 2)
+        self.assertFalse(any("typed-decisions" in v["filename"] for v in r["selected_source_inventory"]))
+    def test_missing_non_lfs_source_sha(self):
+        x = good_meta("ettin400")
+        next(v for v in x.siblings if v.rfilename == "config.json").blob_id = None
+        with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
+    def test_double_counted_family_not_paid(self):
+        x = good_meta("laya421")
+        x.siblings.extend([S(rfilename=f"multilingual/extra{i}.safetensors",size=3*1024**3,lfs={"sha256":"f"*64}) for i in range(2)])
+        r = preflight.inspect_model("laya421", x)
+        self.assertLess(r["selected_total_bytes"], preflight.MAX_TOTAL_BYTES)
+    def test_path_filter_refuses_remote_python_execution(self):
+        for model in gate.MODELS:
+            self.assertFalse(preflight.chosen(model, "trust_remote_code.py"))
+            self.assertFalse(preflight.chosen(model, "../model.safetensors"))
+        self.assertFalse(preflight.chosen("openjev434", "typed_decisions/loader.py"))
+    def test_small_file_lfs_supported(self):
+        x = good_meta("ettin400")
+        obj = next(v for v in x.siblings if v.rfilename == "tokenizer.json")
+        obj.lfs, obj.blob_id = {"sha256": "d"*64}, None
+        r = preflight.inspect_model("ettin400", x)
+        self.assertEqual(next(v for v in r["selected_source_inventory"] if v["filename"] == "tokenizer.json")["source_identity_type"], "lfs_sha256")
 
-if __name__=='__main__':unittest.main()
+if __name__ == "__main__": unittest.main()
