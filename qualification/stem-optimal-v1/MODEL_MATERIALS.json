@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.stem.original-candidate-model-material.v1",
+  "precision": "float32_cpu",
+  "preprocessing": "tokenizer_native_trunc128_masked_mean_l2",
+  "training": {"seed": 17, "steps": 100, "learning_rate": 0.006, "per_cell_parameters": 6914, "cells": 4},
+  "candidates": {
+    "granite47": {
+      "repo": "ibm-granite/granite-embedding-small-english-r2",
+      "revision": "54a8d2616a0844355a5164432d3f6dafb37b17a3",
+      "weight_file": "model.safetensors",
+      "weight_sha256": "0ff41dfcf977d2b8a127ae43ac31c8a28f8e6bdf6560e24b4beb02e33e69a062",
+      "parameters_approx": 47000000,
+      "width": 384,
+      "license": "apache-2.0"
+    },
+    "granite97": {
+      "repo": "ibm-granite/granite-embedding-97m-multilingual-r2",
+      "revision": "c61e626a6255c490879d0af885078b61929d51f6",
+      "weight_file": "model.safetensors",
+      "weight_sha256": "f3ea88b230492811046145513710e76b4cc8c2ad49e8708da0e7247e548903be",
+      "parameters_approx": 97441152,
+      "width": 384,
+      "license": "apache-2.0"
+    },
+    "mmbert140": {
+      "repo": "jhu-clsp/mmBERT-small",
+      "revision": "0eb3d056ec1d6333cf4e19b0966dfde342a41a3a",
+      "weight_file": "model.safetensors",
+      "weight_sha256": "7ee7a6939b730a35e5d2a3e2263a1d1e992d10bc7f86b3470e9cb3cd482c590d",
+      "parameters_approx": 140000000,
+      "width": 384,
+      "license": "mit",
+      "weight_sha_origin": "upstream safetensors conversion discussion; checked against actual bytes before loading; failure means pin invalid"
+    }
+  },
+  "unresolved_controls": ["exact_legacy421_material", "modernbert149_manifest", "embeddinggemma2_multi_modal", "future_source_families", "same_hardware_complete_lifecycle"],
+  "research_only": true,
+  "production_authorized": false
+}
