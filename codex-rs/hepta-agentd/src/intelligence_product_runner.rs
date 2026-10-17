@@ -197,9 +197,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     run_snapshot,
                     context_attachment,
                 };
-                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(
-                    prepared,
-                )))
+                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(prepared)))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
