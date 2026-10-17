@@ -180,6 +180,7 @@ pub enum CompositionError {
     DuplicateCellInFanout,
     InvalidRequest,
     DriverFailure(&'static str),
+    ArithmeticOverflow,
 }
 
 impl fmt::Display for CompositionError {
@@ -250,7 +251,10 @@ impl SharedEncoderPool {
                 if encoder.shared_memory_bytes != shared_memory_bytes {
                     return Err(CompositionError::EncoderIdentityMismatch);
                 }
-                encoder.references += 1;
+                encoder.references = encoder
+                    .references
+                    .checked_add(1)
+                    .ok_or(CompositionError::ArithmeticOverflow)?;
                 false
             }
             None => {
@@ -278,8 +282,15 @@ impl SharedEncoderPool {
     }
 
     pub fn detach_cell(&mut self, cell_id: &str) -> Result<CompositionReceipt, CompositionError> {
+        let key = self
+            .cells
+            .get(cell_id)
+            .map(|cell| cell.key.clone())
+            .ok_or(CompositionError::CellNotBound)?;
+        if !self.encoders.contains_key(&key) {
+            return Err(CompositionError::CellKeyMismatch);
+        }
         let cell = self.cells.remove(cell_id).ok_or(CompositionError::CellNotBound)?;
-        let key = cell.key.clone();
         let encoder = self.encoders.get_mut(&key).ok_or(CompositionError::CellKeyMismatch)?;
         encoder.references = encoder.references.saturating_sub(1);
         let shared_memory_bytes = encoder.shared_memory_bytes;
@@ -338,9 +349,17 @@ impl SharedEncoderPool {
         self.cells.len()
     }
 
-    pub fn total_resident_memory_bytes(&self) -> u64 {
-        self.encoders.values().map(|item| item.shared_memory_bytes).sum::<u64>()
-            + self.cells.values().map(|item| item.head.private_memory_bytes).sum::<u64>()
+    pub fn total_resident_memory_bytes(&self) -> Result<u64, CompositionError> {
+        let shared = self.encoders.values().try_fold(0_u64, |total, item| {
+            total
+                .checked_add(item.shared_memory_bytes)
+                .ok_or(CompositionError::ArithmeticOverflow)
+        })?;
+        self.cells.values().try_fold(shared, |total, item| {
+            total
+                .checked_add(item.head.private_memory_bytes)
+                .ok_or(CompositionError::ArithmeticOverflow)
+        })
     }
 
 
@@ -752,7 +771,7 @@ mod tests {
         assert!(first.encoder_loaded);
         assert!(!second.encoder_loaded);
         assert_eq!(pool.resident_encoder_count(), 1);
-        assert_eq!(pool.total_resident_memory_bytes(), 140);
+        assert_eq!(pool.total_resident_memory_bytes().expect("memory"), 140);
         let fanout = pool.fanout(&key("cuda-0"), &["cell-a".into(), "cell-b".into()]).expect("fanout");
         assert_eq!(fanout.shared_memory_bytes, 100);
         assert_eq!(fanout.private_head_memory_bytes, 40);
