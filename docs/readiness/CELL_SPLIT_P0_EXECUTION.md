@@ -31,6 +31,12 @@ A conclusive native Absent permits one idempotency-keyed execution; timeout,
 split-brain, unavailable receipt, uncertain commit or indeterminate readback must
 return Indeterminate and MUST NOT trigger a retry.
 
+The coordinator re-queries the native CURRENT Artifact CAS owner on every
+subsequent change after migration and again before route publication and
+retirement. Any source revocation, missing native receipt, payload tamper or
+indeterminate result blocks further external effects even when the original
+historical CAS checkpoint remains valid.
+
 The checkpoint receipt commits to a domain-separated binary encoding of the
 typed native observation and the frozen artifact/route binding. Reopening must
 use DurableWriterHandoffJournalV1::recover_at_least with an independently
