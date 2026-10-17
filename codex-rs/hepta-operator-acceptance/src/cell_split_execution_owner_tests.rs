@@ -41,6 +41,8 @@ struct FixturePort {
     reject_signature: bool,
     tamper_frozen_during_preflight: Option<std::path::PathBuf>,
     tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
+    #[cfg(unix)]
+    replace_identical_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
     inject_unledgered_during_live_readback: Rc<RefCell<Option<CellSplitExecutionIntentV1>>>,
     revoke_previous_during_preflight: bool,
     revoke_selection_during_preflight: Option<Rc<RefCell<bool>>>,
@@ -58,6 +60,8 @@ impl FixturePort {
             reject_signature: false,
             tamper_frozen_during_preflight: None,
             tamper_during_live_readback: Rc::new(RefCell::new(None)),
+            #[cfg(unix)]
+            replace_identical_during_live_readback: Rc::new(RefCell::new(None)),
             inject_unledgered_during_live_readback: Rc::new(RefCell::new(None)),
             revoke_previous_during_preflight: false,
             revoke_selection_during_preflight: None,
@@ -171,6 +175,19 @@ impl CellSplitExecutionPortV1 for FixturePort {
         }
         if let Some(path) = self.tamper_during_live_readback.borrow_mut().take() {
             fs::write(path, b"{}").map_err(|_| "fixture could not tamper local readback frame")?;
+        }
+        #[cfg(unix)]
+        if let Some(path) = self.replace_identical_during_live_readback.borrow_mut().take() {
+            // Equal original bytes and mode, but a different physical inode.
+            // Only source-fixture code can deliberately corrupt this directory.
+            let alternative = path.with_extension("equal-byte-replacement");
+            fs::copy(&path, &alternative).map_err(|_| "fixture copy failed")?;
+            let original_mode = fs::metadata(&path)
+                .map_err(|_| "fixture metadata unavailable")?
+                .permissions();
+            fs::set_permissions(&alternative, original_mode)
+                .map_err(|_| "fixture chmod failed")?;
+            fs::rename(&alternative, &path).map_err(|_| "fixture rename failed")?;
         }
         if self.reject_signature || receipt.owner_signature_bytes.len() != 64 {
             return Err("signature rejected");
@@ -2204,6 +2221,101 @@ fn new_effect_is_not_acknowledged_if_unknown_frame_arrives_during_readback() {
     assert!(!root.path().join("cell-split-00-committed.json").exists());
     assert!(owner.advance().is_err());
     assert_eq!(state.borrow().executions, 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn byte_identical_frame_replacement_during_effect_never_acknowledges_or_reexecutes() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let port = FixturePort::new(state.clone());
+    let replace = port.replace_identical_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+    *replace.borrow_mut() = Some(root.path().join("cell-split-00-prepared.json"));
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "original local split frame identity changed"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(owner.advance().is_err(), "no replay after inode substitution");
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn byte_identical_frame_replacement_during_transcript_denies_positive_evidence() {
+    for filename in [
+        "cell-split-frozen-plan.json",
+        "cell-split-owner-trust-pins.json",
+        "cell-split-00-prepared.json",
+        "cell-split-00-committed.json",
+    ] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let port = FixturePort::new(state.clone());
+        let replace = port.replace_identical_during_live_readback.clone();
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+        for _ in 0..4 {
+            owner.advance().expect("signed operation").expect("original receipt");
+        }
+        *replace.borrow_mut() = Some(root.path().join(filename));
+        assert!(
+            matches!(
+                owner.verified_transcript(),
+                Err(CellSplitExecutionErrorV1::Invalid(
+                    "original local split frame identity changed"
+                ))
+            ),
+            "identical-byte path substitution was accepted: {filename}"
+        );
+        assert_eq!(state.borrow().executions, 4);
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn byte_identical_frame_replacement_during_cold_recovery_denies_rehydration() {
+    for filename in [
+        "cell-split-frozen-plan.json",
+        "cell-split-owner-trust-pins.json",
+        "cell-split-00-prepared.json",
+        "cell-split-00-committed.json",
+    ] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("original owner");
+            for _ in 0..4 {
+                owner.advance().expect("signed operation").expect("original receipt");
+            }
+        }
+        let port = FixturePort::new(state.clone());
+        *port.replace_identical_during_live_readback.borrow_mut() =
+            Some(root.path().join(filename));
+        assert!(
+            matches!(
+                CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port),
+                Err(CellSplitExecutionErrorV1::Invalid(
+                    "original local split frame identity changed"
+                ))
+            ),
+            "cold recovery accepted equal-byte replacement: {filename}"
+        );
+        assert_eq!(state.borrow().executions, 4);
+    }
 }
 
 #[test]
