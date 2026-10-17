@@ -69,6 +69,7 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
         weights_digest: catalog,
         tokenizer_digest: tokenizer.to_string(),
         preprocessor_digest: preprocessor.to_string(),
+        normalizer_digest: Digest32::of_bytes(b"frozen train-fitted scaling").to_string(),
         quantization_digest: quantization.to_string(),
         runtime_digest: "7".repeat(64),
         device_digest: "8".repeat(64),
@@ -120,7 +121,7 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
             weights_digest: selected.weights_digest.clone(),
             expected_output_width: 1,
         };
-        let digest = canonical_shared_neuron_payload_digest_v2(&item).expect("V2 payload");
+        let digest = canonical_shared_neuron_payload_digest_v3(&item).expect("V2 payload");
         item.authorization.payload_digest = digest.clone();
         item.authorization.lease_payload_digest = digest;
         item
@@ -266,6 +267,7 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
         weights_digest: catalog,
         tokenizer_digest: tokenizer.to_string(),
         preprocessor_digest: preprocessor.to_string(),
+        normalizer_digest: Digest32::of_bytes(b"frozen train-fitted scaling").to_string(),
         quantization_digest: quantization.to_string(),
         runtime_digest: "7".repeat(64),
         device_digest: "8".repeat(64),
@@ -360,7 +362,7 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
                 expected_output_width: 1,
             };
             let payload =
-                canonical_shared_neuron_payload_digest_v2(&item).expect("bounded Cell payload");
+                canonical_shared_neuron_payload_digest_v3(&item).expect("bounded Cell payload");
             item.authorization.payload_digest = payload.clone();
             item.authorization.lease_payload_digest = payload;
             requests.push(item);

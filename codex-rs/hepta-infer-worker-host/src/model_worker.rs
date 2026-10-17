@@ -28,6 +28,8 @@ pub struct ModelManifest {
     pub weights_digest: String,
     pub tokenizer_digest: String,
     pub preprocessor_digest: String,
+    /// Exact feature normalizer, separate from preprocessing.
+    pub normalizer_digest: String,
     pub quantization_digest: String,
     pub runtime_digest: String,
     pub device_digest: String,
@@ -391,6 +393,7 @@ fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
         (&value.weights_digest, "weights"),
         (&value.tokenizer_digest, "tokenizer"),
         (&value.preprocessor_digest, "preprocessor"),
+        (&value.normalizer_digest, "normalizer"),
         (&value.quantization_digest, "quantization"),
         (&value.runtime_digest, "runtime"),
         (&value.device_digest, "device"),
@@ -866,7 +869,9 @@ mod shared_v2;
 pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
 pub use shared_v2::SharedNeuronFeatureRequestV2;
 pub use shared_v2::SharedNeuronFeatureResultV2;
+pub use shared_v2::SharedNeuronFeatureResultV3;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
 
 #[cfg(test)]
 #[path = "model_worker_public_q24_tests.rs"]

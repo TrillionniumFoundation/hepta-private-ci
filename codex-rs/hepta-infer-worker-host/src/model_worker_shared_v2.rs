@@ -49,7 +49,7 @@ pub struct SharedNeuronFeatureRequestV2 {
 /// Reference-only, non-authorizing execution result; hashes are provenance,
 /// NOT signatures and NOT a claim that final-use authority was issued.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SharedNeuronFeatureResultV2 {
+pub struct SharedNeuronFeatureResultV3 {
     pub request_id: String,
     pub reservation_id: String,
     pub cell_id: StableId,
@@ -58,6 +58,7 @@ pub struct SharedNeuronFeatureResultV2 {
     pub scope_id: StableId,
     pub feature_identity_digest: Digest32,
     pub feature_content_digest: Digest32,
+    pub normalizer_digest: Digest32,
     pub head_digest: String,
     pub worker_generation: u64,
     pub status: ExecutionStatus,
@@ -70,6 +71,9 @@ pub struct SharedNeuronFeatureResultV2 {
     pub observation_digest: Digest32,
     pub authority: NonAuthorizingPosture,
 }
+
+/// Compatibility name for the previous draft result shape.
+pub type SharedNeuronFeatureResultV2 = SharedNeuronFeatureResultV3;
 
 /// A real backend has to implement this separately from the V1 Vec API.
 /// CPU GatedHead reference implements it with scalar kernels, not a GPU GEMM.
@@ -86,12 +90,32 @@ pub(crate) trait NeuronSharedFeatureBatchDriverV2: ModelDriver {
 pub fn canonical_shared_neuron_payload_digest_v2(
     req: &SharedNeuronFeatureRequestV2,
 ) -> Result<String, Error> {
+    canonical_shared_neuron_payload_digest_with_domain(
+        req,
+        b"hepta.infer-worker.shared-neuron-payload.v2",
+    )
+}
+
+/// Explicit V3 payload contract; legacy V2 payload digests cannot be replayed.
+pub fn canonical_shared_neuron_payload_digest_v3(
+    req: &SharedNeuronFeatureRequestV2,
+) -> Result<String, Error> {
+    canonical_shared_neuron_payload_digest_with_domain(
+        req,
+        b"hepta.infer-worker.shared-neuron-payload.v3",
+    )
+}
+
+fn canonical_shared_neuron_payload_digest_with_domain(
+    req: &SharedNeuronFeatureRequestV2,
+    domain: &[u8],
+) -> Result<String, Error> {
     let identity_digest = req
         .snapshot
         .identity
         .digest()
         .map_err(|_| Error::FeatureContract)?;
-    let mut bytes = b"hepta.infer-worker.shared-neuron-payload.v2".to_vec();
+    let mut bytes = domain.to_vec();
     for value in [
         req.authorization.request_id.as_str(),
         req.authorization.reservation_id.as_str(),
@@ -163,6 +187,14 @@ fn validate_item_without_content_hash(
     validate_request(now_ms, &req.authorization)?;
     validate_digest(&req.head_digest, "head")?;
     validate_digest(&req.weights_digest, "weights")?;
+    for (id, field) in [
+        (&req.principal_id, "principal"),
+        (&req.purpose_id, "purpose"),
+        (&req.scope_id, "scope"),
+        (&req.cell_id, "cell"),
+    ] {
+        validate_identity(id.as_str(), field)?;
+    }
     if req.authorization.cancelled {
         return Err(Error::FeatureContract);
     }
@@ -202,6 +234,7 @@ fn validate_item_without_content_hash(
     }
     if identity.tokenizer_digest.to_string() != manifest.tokenizer_digest
         || identity.preprocessor_digest.to_string() != manifest.preprocessor_digest
+        || identity.normalizer_digest.to_string() != manifest.normalizer_digest
         || identity.quantization_digest.to_string() != manifest.quantization_digest
         || req.weights_digest != manifest.weights_digest
         || req.authorization.model_digest != manifest.model_digest
@@ -209,7 +242,7 @@ fn validate_item_without_content_hash(
     {
         return Err(Error::ModelMismatch);
     }
-    let actual = canonical_shared_neuron_payload_digest_v2(req)?;
+    let actual = canonical_shared_neuron_payload_digest_v3(req)?;
     if actual != req.authorization.payload_digest
         || actual != req.authorization.lease_payload_digest
     {
@@ -253,11 +286,13 @@ fn validate_batch_feature_content_v2(
 
 fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
+    let mut cells = BTreeSet::new();
     if requests.iter().any(|item| {
         item.principal_id != first.principal_id
             || item.purpose_id != first.purpose_id
             || item.scope_id != first.scope_id
             || item.snapshot.identity.scope_id != first.snapshot.identity.scope_id
+            || !cells.insert(item.cell_id.as_str())
     }) {
         return Err(Error::FeatureContract);
     }
@@ -313,7 +348,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
         requests: Vec<SharedNeuronFeatureRequestV2>,
-    ) -> Result<Vec<SharedNeuronFeatureResultV2>, Error> {
+    ) -> Result<Vec<SharedNeuronFeatureResultV3>, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS_V2 {
@@ -491,8 +526,8 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 .digest()
                 .map_err(|_| Error::FeatureContract)?;
             let observation_digest =
-                observation_digest_v2(request, &features, status, self.generation, identity_digest);
-            outputs.push(SharedNeuronFeatureResultV2 {
+                observation_digest_v3(request, &features, status, self.generation, identity_digest);
+            outputs.push(SharedNeuronFeatureResultV3 {
                 request_id: request.authorization.request_id.clone(),
                 reservation_id: request.authorization.reservation_id.clone(),
                 cell_id: request.cell_id.clone(),
@@ -501,6 +536,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 scope_id: request.scope_id.clone(),
                 feature_identity_digest: identity_digest,
                 feature_content_digest: request.snapshot.content_digest,
+                normalizer_digest: request.snapshot.identity.normalizer_digest,
                 head_digest: request.head_digest.clone(),
                 worker_generation: self.generation,
                 status,
@@ -518,17 +554,28 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     }
 }
 
-fn observation_digest_v2(
+fn observation_digest_v3(
     request: &SharedNeuronFeatureRequestV2,
     observation: &DriverNeuronFeatureObservation,
     status: ExecutionStatus,
     generation: u64,
     identity_digest: Digest32,
 ) -> Digest32 {
-    let mut bytes = b"hepta.infer-worker.shared-neuron-observation.v2".to_vec();
+    let mut bytes = b"hepta.infer-worker.shared-neuron-observation.v3".to_vec();
     bytes.extend_from_slice(request.authorization.payload_digest.as_bytes());
     bytes.extend_from_slice(identity_digest.as_array());
     bytes.extend_from_slice(request.snapshot.content_digest.as_array());
+    bytes.extend_from_slice(request.snapshot.identity.normalizer_digest.as_array());
+    for id in [
+        &request.principal_id,
+        &request.purpose_id,
+        &request.scope_id,
+        &request.cell_id,
+    ] {
+        let raw = id.as_str().as_bytes();
+        bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
+        bytes.extend_from_slice(raw);
+    }
     bytes.extend_from_slice(request.head_digest.as_bytes());
     bytes.extend_from_slice(&generation.to_be_bytes());
     bytes.push(match status {
@@ -612,7 +659,7 @@ mod tests {
             weights_digest: "e".repeat(64),
             expected_output_width: 2,
         };
-        let digest = canonical_shared_neuron_payload_digest_v2(&value).expect("payload");
+        let digest = canonical_shared_neuron_payload_digest_v3(&value).expect("payload");
         value.authorization.payload_digest = digest.clone();
         value.authorization.lease_payload_digest = digest;
         value
@@ -688,12 +735,97 @@ mod tests {
         let b = req("cell.b", "request.b", Arc::clone(&shared));
         assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
         assert_ne!(
-            canonical_shared_neuron_payload_digest_v2(&a).expect("a"),
-            canonical_shared_neuron_payload_digest_v2(&b).expect("b")
+            canonical_shared_neuron_payload_digest_v3(&a).expect("a"),
+            canonical_shared_neuron_payload_digest_v3(&b).expect("b")
         );
         assert_eq!(
             a.snapshot.features_q24.as_ref(),
             &[1_i64 << 23, -(1_i64 << 22)]
+        );
+    }
+
+    #[test]
+    fn v3_legacy_replay_and_normalizer_drift_reject_before_dispatch() {
+        let request = req("cell.a", "request.v3", frame(2));
+        let v2 = canonical_shared_neuron_payload_digest_v2(&request).expect("v2");
+        assert_ne!(v2, request.authorization.payload_digest);
+        let identity = &request.snapshot.identity;
+        let manifest = super::super::ModelManifest {
+            model_id: "model.shared".into(),
+            model_digest: "b".repeat(64),
+            weights_digest: "e".repeat(64),
+            tokenizer_digest: identity.tokenizer_digest.to_string(),
+            preprocessor_digest: identity.preprocessor_digest.to_string(),
+            normalizer_digest: identity.normalizer_digest.to_string(),
+            quantization_digest: identity.quantization_digest.to_string(),
+            runtime_digest: "1".repeat(64),
+            device_digest: "2".repeat(64),
+            maximum_tokens: 128,
+        };
+        let mut legacy = request.clone();
+        legacy.authorization.payload_digest = v2.clone();
+        legacy.authorization.lease_payload_digest = v2;
+        assert_eq!(
+            validate_item(&legacy, 100, 3, 2, &manifest),
+            Err(Error::PayloadMismatch)
+        );
+        assert!(validate_item(&request, 100, 3, 2, &manifest).is_ok());
+        let mut mismatched = request.clone();
+        let mut frozen = (*mismatched.snapshot).clone();
+        frozen.identity.normalizer_digest = Digest32::of_bytes(b"new normalizer");
+        mismatched.snapshot = Arc::new(frozen);
+        let revised = canonical_shared_neuron_payload_digest_v3(&mismatched).expect("v3");
+        mismatched.authorization.payload_digest = revised.clone();
+        mismatched.authorization.lease_payload_digest = revised;
+        assert_eq!(
+            validate_item(&mismatched, 100, 3, 2, &manifest),
+            Err(Error::ModelMismatch)
+        );
+    }
+
+    #[test]
+    fn v3_observation_binds_all_cell_identities_and_normalizer() {
+        let request = req("cell.a", "request.observation", frame(2));
+        let observation = DriverNeuronFeatureObservation {
+            terminal_observed: true,
+            succeeded: true,
+            encoder_digest: request.snapshot.identity.encoder_digest.to_string(),
+            head_digest: request.head_digest.clone(),
+            drive_q24: vec![1],
+            prediction_q24: vec![2],
+            observed_memory_bytes: 64,
+            transient_allocation_bytes: 48,
+            queue_age_micros: 3,
+            latency_micros: 4,
+        };
+        let snapshot_digest = request.snapshot.identity.digest().expect("identity");
+        let baseline =
+            observation_digest_v3(&request, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest);
+        for index in 0..4 {
+            let mut changed = request.clone();
+            match index {
+                0 => changed.principal_id = id("principal.other"),
+                1 => changed.purpose_id = id("purpose.other"),
+                2 => changed.scope_id = id("scope.other"),
+                3 => changed.cell_id = id("cell.other"),
+                _ => unreachable!(),
+            }
+            assert_ne!(
+                observation_digest_v3(
+                    &changed, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest
+                ),
+                baseline
+            );
+        }
+        let mut changed = request;
+        let mut snapshot = (*changed.snapshot).clone();
+        snapshot.identity.normalizer_digest = Digest32::of_bytes(b"other normalizer");
+        changed.snapshot = Arc::new(snapshot);
+        assert_ne!(
+            observation_digest_v3(
+                &changed, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest
+            ),
+            baseline
         );
     }
 
@@ -706,14 +838,23 @@ mod tests {
             weights_digest: "e".repeat(64),
             tokenizer_digest: a.snapshot.identity.tokenizer_digest.to_string(),
             preprocessor_digest: a.snapshot.identity.preprocessor_digest.to_string(),
+            normalizer_digest: a.snapshot.identity.normalizer_digest.to_string(),
             quantization_digest: a.snapshot.identity.quantization_digest.to_string(),
             runtime_digest: "1".repeat(64),
             device_digest: "2".repeat(64),
             maximum_tokens: 64,
         };
         assert!(validate_item(&a, 10, 3, 2, &manifest).is_ok());
+        manifest.normalizer_digest = "f".repeat(64);
+        assert_eq!(validate_item(&a, 10, 3, 2, &manifest), Err(Error::ModelMismatch));
+        manifest.normalizer_digest = a.snapshot.identity.normalizer_digest.to_string();
         let same_partition = req("cell.b", "req.2", frame(2));
         assert!(validate_batch_partition_v2(&[a.clone(), same_partition.clone()]).is_ok());
+        let duplicate_cell = req("cell.a", "req.duplicate", frame(2));
+        assert_eq!(
+            validate_batch_partition_v2(&[a.clone(), duplicate_cell]),
+            Err(Error::FeatureContract)
+        );
         // Both members below have individually valid content and lease
         // payload digests. Only the cross-principal/purpose *cohort* is
         // forbidden: an untrusted Caller must not use a CPU/GPU batch to
@@ -729,7 +870,7 @@ mod tests {
                 other_snapshot.identity.purpose_id = mixed.purpose_id.clone();
             }
             mixed.snapshot = Arc::new(other_snapshot);
-            let payload = canonical_shared_neuron_payload_digest_v2(&mixed).expect("mixed payload");
+            let payload = canonical_shared_neuron_payload_digest_v3(&mixed).expect("mixed payload");
             mixed.authorization.payload_digest = payload.clone();
             mixed.authorization.lease_payload_digest = payload;
             assert!(validate_item(&mixed, 10, 3, 2, &manifest).is_ok());
@@ -745,7 +886,7 @@ mod tests {
         changed_scope.identity.scope_id = other_scope.scope_id.clone();
         other_scope.snapshot = Arc::new(changed_scope);
         let scope_digest =
-            canonical_shared_neuron_payload_digest_v2(&other_scope).expect("scope digest");
+            canonical_shared_neuron_payload_digest_v3(&other_scope).expect("scope digest");
         other_scope.authorization.payload_digest = scope_digest.clone();
         other_scope.authorization.lease_payload_digest = scope_digest;
         assert!(validate_item(&other_scope, 10, 3, 2, &manifest).is_ok());
@@ -809,7 +950,7 @@ mod tests {
         changed = a.clone();
         changed.snapshot = Arc::new(extended);
         assert_ne!(
-            canonical_shared_neuron_payload_digest_v2(&changed).expect("extended expiry"),
+            canonical_shared_neuron_payload_digest_v3(&changed).expect("extended expiry"),
             a.authorization.payload_digest
         );
         assert_eq!(
@@ -829,7 +970,7 @@ mod tests {
                 _ => unreachable!(),
             }
             assert_ne!(
-                canonical_shared_neuron_payload_digest_v2(&changed).expect("admission field"),
+                canonical_shared_neuron_payload_digest_v3(&changed).expect("admission field"),
                 a.authorization.payload_digest
             );
         }
@@ -909,6 +1050,7 @@ mod tests {
             weights_digest: "e".repeat(64),
             tokenizer_digest: identity.tokenizer_digest.to_string(),
             preprocessor_digest: identity.preprocessor_digest.to_string(),
+            normalizer_digest: identity.normalizer_digest.to_string(),
             quantization_digest: identity.quantization_digest.to_string(),
             runtime_digest: "1".repeat(64),
             device_digest: "2".repeat(64),
@@ -980,6 +1122,7 @@ mod tests {
             weights_digest: "e".repeat(64),
             tokenizer_digest: identity.tokenizer_digest.to_string(),
             preprocessor_digest: identity.preprocessor_digest.to_string(),
+            normalizer_digest: identity.normalizer_digest.to_string(),
             quantization_digest: identity.quantization_digest.to_string(),
             runtime_digest: "1".repeat(64),
             device_digest: "2".repeat(64),

@@ -528,6 +528,7 @@ mod tests {
             weights_digest: "3".repeat(64),
             tokenizer_digest: "4".repeat(64),
             preprocessor_digest: "5".repeat(64),
+            normalizer_digest: "9".repeat(64),
             quantization_digest: "6".repeat(64),
             runtime_digest: "7".repeat(64),
             device_digest: "8".repeat(64),
@@ -687,7 +688,8 @@ mod tests {
         let encoder = Digest32::of_bytes(b"frozen encoder");
         let mut candidate = head("cell.a");
         candidate.encoder_digest = encoder.to_string();
-        let selected = manifest_for(&[candidate.clone()]);
+        let mut selected = manifest_for(&[candidate.clone()]);
+        selected.normalizer_digest = Digest32::of_bytes(b"normalizer").to_string();
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
         let digest = driver.register_head(candidate).expect("head");
         let handle = driver.load(&selected).expect("loaded");
@@ -803,6 +805,7 @@ mod tests {
         let mut selected = manifest_for(&[first.clone(), second.clone()]);
         selected.tokenizer_digest = Digest32::of_bytes(b"tokenizer").to_string();
         selected.preprocessor_digest = Digest32::of_bytes(b"preprocessor").to_string();
+        selected.normalizer_digest = Digest32::of_bytes(b"normalizer").to_string();
         selected.quantization_digest = Digest32::of_bytes(b"quantization").to_string();
 
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
@@ -851,7 +854,7 @@ mod tests {
                 expected_output_width: 1,
             };
             let digest =
-                super::super::canonical_shared_neuron_payload_digest_v2(&request).expect("payload");
+                super::super::canonical_shared_neuron_payload_digest_v3(&request).expect("payload");
             request.authorization.payload_digest = digest.clone();
             request.authorization.lease_payload_digest = digest;
             request
@@ -978,7 +981,7 @@ mod tests {
         worker.load_model(1, selected).expect("load");
         let mut aliased = b.clone();
         aliased.authorization.reservation_id = a.authorization.reservation_id.clone();
-        let alias_digest = super::super::canonical_shared_neuron_payload_digest_v2(&aliased)
+        let alias_digest = super::super::canonical_shared_neuron_payload_digest_v3(&aliased)
             .expect("alias digest");
         aliased.authorization.payload_digest = alias_digest.clone();
         aliased.authorization.lease_payload_digest = alias_digest;
@@ -1005,7 +1008,7 @@ mod tests {
                 isolated_snapshot.identity.purpose_id = mixed.purpose_id.clone();
             }
             mixed.snapshot = std::sync::Arc::new(isolated_snapshot);
-            let mixed_digest = super::super::canonical_shared_neuron_payload_digest_v2(&mixed)
+            let mixed_digest = super::super::canonical_shared_neuron_payload_digest_v3(&mixed)
                 .expect("fresh mixed-partition payload");
             mixed.authorization.payload_digest = mixed_digest.clone();
             mixed.authorization.lease_payload_digest = mixed_digest;
@@ -1025,7 +1028,7 @@ mod tests {
         let mut forged_snapshot = (*forged.snapshot).clone();
         forged_snapshot.content_digest = Digest32::of_bytes(b"forged-feature-content");
         forged.snapshot = std::sync::Arc::new(forged_snapshot);
-        let forged_payload = super::super::canonical_shared_neuron_payload_digest_v2(&forged)
+        let forged_payload = super::super::canonical_shared_neuron_payload_digest_v3(&forged)
             .expect("forged payload binding");
         forged.authorization.payload_digest = forged_payload.clone();
         forged.authorization.lease_payload_digest = forged_payload;
@@ -1056,7 +1059,7 @@ mod tests {
         // this ambiguous execution as a safe request-local rejection.
         let mut wrong_head = b;
         wrong_head.head_digest = a.head_digest.clone();
-        let payload = super::super::canonical_shared_neuron_payload_digest_v2(&wrong_head)
+        let payload = super::super::canonical_shared_neuron_payload_digest_v3(&wrong_head)
             .expect("rebind wrong head");
         wrong_head.authorization.payload_digest = payload.clone();
         wrong_head.authorization.lease_payload_digest = payload;
