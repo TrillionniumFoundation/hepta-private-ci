@@ -8,6 +8,8 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
+      - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-context-compiler/**"
       - "codex-rs/core/src/client.rs"
       - "codex-rs/core/src/client_tests.rs"
@@ -171,6 +173,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/provider-stream.json" --minimum-tests 1 -- just test --locked -p codex-core -E 'test(client::provider_policy_tests) | test(client::tests)'
+
+      - name: Test canonical seven-owner intelligence composition and outcome bounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/intelligence.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence
 
       - name: Test native TaskFlow authorized effects and circuit contracts
         shell: bash

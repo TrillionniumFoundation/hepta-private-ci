@@ -460,10 +460,12 @@ pub struct CanonicalTerminalReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+/// An advisory outcome whose potentially large, immutable proof receipts are
+/// boxed once per run, never copied per Cell. This grants no dispatch authority.
 pub enum CanonicalRunOutcomeV1 {
-    Ready(IntelligenceHostEnvelopeV1),
-    Abstained(CanonicalTerminalReceiptV1),
-    SlowPath(CanonicalTerminalReceiptV1),
+    Ready(Box<IntelligenceHostEnvelopeV1>),
+    Abstained(Box<CanonicalTerminalReceiptV1>),
+    SlowPath(Box<CanonicalTerminalReceiptV1>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -728,8 +730,8 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
                 authority: AuthorityPosture::DENY_ALL,
             };
             return Ok(match decision.decision {
-                AdvisoryDecisionV1::Abstained => CanonicalRunOutcomeV1::Abstained(terminal),
-                AdvisoryDecisionV1::SlowPath => CanonicalRunOutcomeV1::SlowPath(terminal),
+                AdvisoryDecisionV1::Abstained => CanonicalRunOutcomeV1::Abstained(Box::new(terminal)),
+                AdvisoryDecisionV1::SlowPath => CanonicalRunOutcomeV1::SlowPath(Box::new(terminal)),
                 AdvisoryDecisionV1::Selected { .. } => unreachable!(),
             });
         }
@@ -783,7 +785,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         bytes.extend_from_slice(digest.as_array());
     }
 
-    Ok(CanonicalRunOutcomeV1::Ready(IntelligenceHostEnvelopeV1 {
+    let envelope = IntelligenceHostEnvelopeV1 {
         run_id: request.run_id,
         snapshot_digest,
         objective_digest: request.snapshot.objective_digest(),
@@ -798,7 +800,8 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         trace_digest,
         envelope_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    }))
+    };
+    Ok(CanonicalRunOutcomeV1::Ready(Box::new(envelope)))
 }
 
 fn run_stage<P, O, F>(
