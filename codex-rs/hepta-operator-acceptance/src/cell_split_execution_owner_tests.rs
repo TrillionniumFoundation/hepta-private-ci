@@ -110,7 +110,12 @@ impl CellSplitExecutionPortV1 for FixturePort {
         if let Some((at, path)) = &self.tamper_on_preflight_number
             && self.preflight_reads == *at
         {
-            fs::write(path, b"{}").map_err(|_| "fixture could not alter final preflight")?;
+            if path.exists() {
+                fs::write(path, b"{}").map_err(|_| "fixture could not alter final preflight")?;
+            } else {
+                crate::durable::write_private_new(path, b"{}")
+                    .map_err(|_| "fixture could not add original-shaped final frame")?;
+            }
         }
         if let Some(path) = &self.tamper_frozen_during_preflight {
             fs::write(path, b"{}").map_err(|_| "fixture could not alter frozen trust")?;
