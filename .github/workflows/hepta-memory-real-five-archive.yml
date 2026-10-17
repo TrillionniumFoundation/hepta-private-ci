@@ -1,0 +1,76 @@
+name: MemoryCell five-archive verified Reader and RAG evidence
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/real_memory_five_archive_gate.py"
+      - "scripts/memory_cell/test_real_memory_five_archive_gate.py"
+      - ".github/workflows/hepta-memory-real-five-archive.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-real-five-archive-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  original-readonly:
+    if: >-
+      github.event.pull_request.number == 2607 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: scripts/memory_cell
+      REVIEWER_HEAD: ${{ github.event.pull_request.head.sha }}
+      HEPTA_REAL_READER_ARCHIVES: /tmp/memory-real-archives
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Retrieve pinned original model and task artifacts
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEWER_HEAD"
+          mkdir -p "$HEPTA_REAL_READER_ARCHIVES" /tmp/real-memory-review
+          for binding in \
+            "11669174727:source.zip" \
+            "11674486085:smol.zip" \
+            "11674741321:qwen.zip" \
+            "11696514149:strong.zip" \
+            "11696898778:replay.zip"; do
+            id="${binding%%:*}"
+            name="${binding#*:}"
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > "$HEPTA_REAL_READER_ARCHIVES/$name"
+          done
+      - name: Validate all five immutable archives and reexecute original program tasks
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_real_memory_five_archive_gate.py' -v \
+            2>&1 | tee /tmp/real-memory-review/tests.log
+          python3 scripts/memory_cell/real_memory_five_archive_gate.py \
+            "$HEPTA_REAL_READER_ARCHIVES/source.zip" \
+            "$HEPTA_REAL_READER_ARCHIVES/smol.zip" \
+            "$HEPTA_REAL_READER_ARCHIVES/qwen.zip" \
+            "$HEPTA_REAL_READER_ARCHIVES/strong.zip" \
+            "$HEPTA_REAL_READER_ARCHIVES/replay.zip" \
+            /tmp/real-memory-review/recomputed-decision.json
+          printf '%s\n' "$REVIEWER_HEAD" > /tmp/real-memory-review/reviewer-head.txt
+          printf '%s\n' '208 historical real model outputs; no new model execution, independent human review or production approval' > /tmp/real-memory-review/scope.txt
+      - name: Retain failure evidence and original source identities
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/real-memory-review
+          printf '%s\n' "$REVIEWER_HEAD" > /tmp/real-memory-review/reviewer-head.txt
+          sha256sum scripts/memory_cell/real_memory_five_archive_gate.py \
+            scripts/memory_cell/test_real_memory_five_archive_gate.py \
+            > /tmp/real-memory-review/code-SHA256SUMS
+          (cd /tmp/real-memory-review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-five-original-archive-verified-decision
+          path: /tmp/real-memory-review
+          if-no-files-found: error

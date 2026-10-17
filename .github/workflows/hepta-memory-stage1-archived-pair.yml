@@ -1,0 +1,88 @@
+name: MemoryCell archived real reader paired audit
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-stage1-archived-pair.yml"
+      - "scripts/memory_cell/stage1_reader_pair.py"
+      - "scripts/memory_cell/test_stage1_reader_pair.py"
+      - "scripts/memory_cell/stage1_partial_reader_audit.py"
+      - "scripts/memory_cell/test_stage1_partial_reader_audit.py"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stage1-archived-pair-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    if: >-
+      github.event.pull_request.number == 2607 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GENERATOR_COMMIT: 5c9acdb340975adc2d16927fdb744023bd973bd8
+      ORIGINAL_RUN: 39007522955
+      REVIEWER_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Test actual auditor before reading model claims
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEWER_HEAD"
+          mkdir -p /tmp/paired-evidence
+          printf '%s\n' "$REVIEWER_HEAD" > /tmp/paired-evidence/reviewer-head.txt
+          printf '%s\n' "$GENERATOR_COMMIT" > /tmp/paired-evidence/original-generating-head.txt
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_pair.py' -v 2>&1 | tee /tmp/paired-evidence/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_partial_reader_audit.py' -v 2>&1 | tee -a /tmp/paired-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-stage1-real-smol-*
+          run-id: 39007522955
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage1-artifacts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage1-labels
+      - name: Audit cancelled 1.7B real prefix with complete planned denominator
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/paired-evidence/auditor-resources.txt python3 scripts/memory_cell/stage1_partial_reader_audit.py \
+            --root /tmp/original-stage1-artifacts \
+            --labels /tmp/original-stage1-labels/labels.json \
+            --source "$GENERATOR_COMMIT" \
+            --output /tmp/paired-evidence/partial-original-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('/tmp/paired-evidence/partial-original-report.json').read_text())
+          if (report["production_accepted"] or report["capacity_superiority_established"]
+              or report["complete_original_reader_execution"]
+              or report["durable_prefix"] >= report["planned"]):
+              raise ValueError("partial model run was misclassified as complete or qualified")
+          print(json.dumps({k: v for k, v in report.items() if k != "rows"}, indent=2))
+          PY
+      - name: Retain exact review receipt even when original model data are incomplete
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/paired-evidence
+          printf '%s\n' "$REVIEWER_HEAD" > /tmp/paired-evidence/reviewer-head.txt
+          printf '%s\n' "$GENERATOR_COMMIT" > /tmp/paired-evidence/original-generating-head.txt
+          printf '%s\n' "$ORIGINAL_RUN" > /tmp/paired-evidence/original-run-id.txt
+          printf '%s\n' 'Read-only historic model output verification, not new generation, human sufficiency or production acceptance' > /tmp/paired-evidence/scope.txt
+          (cd /tmp/paired-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stage1-original-reader-paired-audit
+          path: /tmp/paired-evidence
+          if-no-files-found: error

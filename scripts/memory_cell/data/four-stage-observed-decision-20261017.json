@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.memory-cell.four-stage-observed-decision.v1",
+  "provenance": {
+    "as_of_utc_date": "2026-10-17",
+    "new_model_calls": 0,
+    "new_training_steps": 0,
+    "original_answers_rewritten": false,
+    "archival_artifact_ids": {
+      "authored_source": 11669174727,
+      "smollm2_1_7b": 11674486085,
+      "qwen2_5_3b": 11674741321,
+      "qwen_40_calibration_72_evaluation": 11696514149,
+      "independent_readonly_replay": 11696898778
+    },
+    "outer_zip_sha256": {
+      "authored_source": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+      "smollm2_1_7b": "67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae",
+      "qwen2_5_3b": "831ce9658bafcbaf04f4a15879982e58317322f7cd5137724498d7d20df7bb98",
+      "qwen_40_calibration_72_evaluation": "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107",
+      "independent_readonly_replay": "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225"
+    },
+    "real_reader_generator": "59f9eadd5cc919359079e04442f7343838a60057",
+    "rag_generator": "c24fad24b65984a6255a8854c6714c141911ff79",
+    "frozen_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+  },
+  "stage1_reader": {
+    "paired_actual_reader_attempts": 48,
+    "identical_delivered_sources": 48,
+    "smol_correct": {
+      "empty": 0,
+      "hybrid": 1,
+      "entity_time": 2,
+      "organized": 3,
+      "program_support": 3,
+      "without_prerequisite": 2
+    },
+    "qwen_correct": {
+      "empty": 0,
+      "hybrid": 3,
+      "entity_time": 8,
+      "organized": 8,
+      "program_support": 8,
+      "without_prerequisite": 4
+    },
+    "organized_reader_capacity_net_correct_gain": 5,
+    "lesion_gold_literal_retained": 4,
+    "lesion_gold_literal_removed": 4,
+    "human_certified_oracle_sufficiency": false,
+    "independent_premise_necessity_established": false,
+    "only_reader_capacity_gain_is_not_memory_learning": true
+  },
+  "stage2_nonparametric": {
+    "real_calibration_calls": 40,
+    "real_evaluation_calls": 72,
+    "hybrid_success": 3,
+    "entity_time_success": 8,
+    "organized_success": 8,
+    "graph_extra_correct_over_entity_time": 0,
+    "organized_input_tokens_saved": 573,
+    "calibration_leave_one_out_stable": false,
+    "independent_future_generalization_certified": false
+  },
+  "stage3_parameter": {
+    "learned_policy_independent_gain_certified": false,
+    "experience_knowledge_independent_gain_certified": false,
+    "knowledge_only_compression_fidelity_certified": false,
+    "training_frozen_before_new_tasks_authenticated": false,
+    "decision": "NO_GO_PARAMETRIC_UNTIL_INDEPENDENT_MATCHED_BASELINE_BEATEN"
+  },
+  "stage4_lifecycle": {
+    "prospective_independent_windows_observed": 0,
+    "effective_independent_families_floor_met": false,
+    "original_raw_evidence_retained_bytes": 19584,
+    "original_evidence_storage_cannot_be_free": true,
+    "independent_semantic_citation_precision": null,
+    "extraction_index_training_serving_maintenance_revocation_recovery_storage_total_usd": null,
+    "production_accepted": false
+  },
+  "original_program_subprocess_reexecutions": 24,
+  "data_are_authored_exposed_development": true,
+  "statistical_superiority_established": false,
+  "independent_reviewer_approval": false,
+  "multimodal_or_10t_100t_equivalence_established": false,
+  "production_accepted": false
+}

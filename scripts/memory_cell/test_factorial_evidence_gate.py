@@ -61,7 +61,7 @@ def fixture():
                             "success": condition == "oracle",
                             "answer_digest": digest("answer"),
                             "source_digest": digest("source" + condition),
-                            "reader_revision": "immutable-model-sha",
+                            "reader_revision": f"immutable-model-{reader}-sha",
                             "prompt_digest": digest("same-prompt"),
                             "tokens": 500,
                             "cost": {k: 1.0 for k in COST_KEYS},
@@ -89,6 +89,45 @@ class FactorialAuditTest(unittest.TestCase):
         )
         self.assertFalse(report["production_qualified"])
         self.assertTrue(report["diagnosis"]["learning_candidate_rejected"])
+
+    def test_reject_unrepresented_prospective_task_family(self):
+        plan, rows = fixture()
+        plan["cases"][3]["task"] = "new_fact"
+        # Observation digests bind the changed registration, not a stale plan.
+        for row in rows:
+            row["plan_sha256"] = sha(plan)
+        with self.assertRaisesRegex(ValueError, "every preregistered task family"):
+            analyze(plan, rows)
+
+    def test_reject_unchanged_premise_ablation_payload(self):
+        plan, rows = fixture()
+        for row in rows:
+            if row["condition"] == "ablated":
+                row["source_digest"] = digest("sourceoracle")
+        with self.assertRaisesRegex(ValueError, "payload collision"):
+            analyze(plan, rows)
+
+    def test_reject_oracle_that_is_actually_empty(self):
+        plan, rows = fixture()
+        for row in rows:
+            if row["condition"] == "oracle":
+                row["source_digest"] = digest("sourcenone")
+        with self.assertRaisesRegex(ValueError, "payload collision"):
+            analyze(plan, rows)
+
+    def test_reader_reference_must_be_a_different_model(self):
+        plan, rows = fixture()
+        for row in rows:
+            row["reader_revision"] = "same-revision-both-tiers"
+        with self.assertRaisesRegex(ValueError, "distinct immutable revisions"):
+            analyze(plan, rows)
+
+    def test_parametric_only_can_have_no_raw_evidence_under_all_conditions(self):
+        plan, rows = fixture()
+        for row in rows:
+            if row["arm"] == "knowledge_only":
+                row["source_digest"] = digest("identical-empty-evidence")
+        self.assertFalse(analyze(plan, rows)["production_qualified"])
 
     def test_reject_missing_arm(self):
         plan, rows = fixture()
