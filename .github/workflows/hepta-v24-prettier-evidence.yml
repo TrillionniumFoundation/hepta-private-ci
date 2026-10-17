@@ -1,0 +1,72 @@
+name: hepta-v24-prettier-evidence
+
+on:
+  push:
+    branches:
+      - research/stem-v24-prettier-source-convergence-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-pinned-format-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require exact immutable source
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install only the root formatter with frozen workspace lock
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --filter codex-monorepo... --ignore-scripts
+          pnpm exec prettier --version
+      - name: Reconstruct exact provider formatter patch (do not commit)
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write \
+            .github/workflows/hepta-group-reasoning-research.yml \
+            .github/workflows/hepta-stem-v13-cheap-retrieval.yml \
+            .github/workflows/hepta-stem-v13-original-reader-negative.yml \
+            .github/workflows/hepta-stem-v18-original-physical.yml \
+            .github/workflows/hepta-stem-v19-trainonly-original.yml \
+            .github/workflows/hepta-stem-v20-independent-adam.yml \
+            .github/workflows/hepta-stem-v21-original-cross-family.yml \
+            .github/workflows/hepta-stem-v22-source-integrity.yml
+          git diff --check
+          git diff --binary -- \
+            .github/workflows/hepta-group-reasoning-research.yml \
+            .github/workflows/hepta-stem-v13-cheap-retrieval.yml \
+            .github/workflows/hepta-stem-v13-original-reader-negative.yml \
+            .github/workflows/hepta-stem-v18-original-physical.yml \
+            .github/workflows/hepta-stem-v19-trainonly-original.yml \
+            .github/workflows/hepta-stem-v20-independent-adam.yml \
+            .github/workflows/hepta-stem-v21-original-cross-family.yml \
+            .github/workflows/hepta-stem-v22-source-integrity.yml \
+            > "$RUNNER_TEMP/v24-prettier.patch"
+          test -s "$RUNNER_TEMP/v24-prettier.patch"
+          cp "$RUNNER_TEMP/v24-prettier.patch" "$RUNNER_TEMP/v24-prettier-verified.patch"
+          sha256sum "$RUNNER_TEMP/v24-prettier-verified.patch" > "$RUNNER_TEMP/V24_SHA256SUMS.txt"
+          git diff --name-only
+      - name: Publish source-only generated patch for exact review, no model data
+        uses: actions/upload-artifact@v4
+        with:
+          name: v24-prettier-exact-source-patch
+          path: |
+            ${{ runner.temp }}/v24-prettier-verified.patch
+            ${{ runner.temp }}/V24_SHA256SUMS.txt
+          if-no-files-found: error
