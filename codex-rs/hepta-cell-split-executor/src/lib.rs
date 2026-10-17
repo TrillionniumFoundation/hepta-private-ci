@@ -277,13 +277,35 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     /// cannot fabricate a successful receipt with only a matching digest.
     ///
     /// The receipt is **volatile**. On restart it must be reconciled against
-    /// an independently durable CNS owner before resuming this split.
+    /// an independently durable CNS owner before resuming this split. The
+    /// exact Supervisor journal must already be at NewWriterFenced; this
+    /// method cannot endorse an out-of-order native route mutation.
     pub fn attach_live_cutover(
         &mut self,
+        journal: &mut DurableWriterHandoffJournalV1,
         applied: RuntimeTopologyApplyReceiptV1,
         now: u64,
     ) -> Result<(), ProductSplitNativeErrorV1<O::Error>> {
         self.advance_current_time(now)?;
+        // The native Final-use apply can happen independently, but this
+        // bridge must never accept its receipt as an in-order split cutover
+        // before the exact successor writer-fence is durably acknowledged.
+        let checkpoint = journal.checkpoint();
+        if checkpoint.plan != self.plan
+            || checkpoint.phase != WriterHandoffPhaseV1::NewWriterFenced
+        {
+            return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
+        }
+        // Re-check current Artifact and state snapshot eligibility before
+        // associating a live route with this split. Final ledger advancement
+        // will also compare every earlier native ACK with its original
+        // persisted checkpoint, not just a fresh digest.
+        if !matches!(
+            self.lookup_owned(WriterHandoffPhaseV1::Snapshotted)?,
+            CellSplitLookupV1::Observed(_)
+        ) {
+            return Err(ProductSplitNativeErrorV1::InvalidNativeReadback);
+        }
         if !self.binding.validate_selection(&self.plan, self.selection)
             || !self.binding.validate_cutover(&self.plan, &applied)
         {
