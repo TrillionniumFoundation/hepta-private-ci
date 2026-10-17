@@ -3309,7 +3309,7 @@ impl NeuronFeatureDriver for BorrowedNativeTestDriver {
         if requests.len() != 2
             || requests.iter().any(|view| {
                 !view.request.feature_vector_q24.is_empty()
-                    || view.feature_vector_q24 != [0, 1 << 24]
+                    || view.feature_vector_q24 != [0, 1 << 24].as_slice()
             })
         {
             return Err(Error::FeatureContract);
