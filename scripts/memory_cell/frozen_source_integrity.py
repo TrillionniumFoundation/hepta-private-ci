@@ -68,8 +68,9 @@ def verify_archive(root=ROOT):
         expected = "frozen_source/" + basename + ".source"
         if SOURCES[key] != (expected, PINS[basename][0]):
             raise ValueError("model audit no longer references original code: " + key)
+    format_source = root / "frozen_source" / "locomo_format_trial.py.source"
     if (
-        TRIAL.resolve() != (root / "frozen_source/locomo_format_trial.py.source").resolve()
+        TRIAL.resolve() != format_source.resolve()
         or SOURCE_SHA256 != PINS["locomo_format_trial.py"][1]
     ):
         raise ValueError("format audit no longer references original code")

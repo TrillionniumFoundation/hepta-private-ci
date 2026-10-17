@@ -1,5 +1,6 @@
 """Reject corrupted physical-generation sources or semantic rewrites."""
 
+import hashlib
 import shutil
 from pathlib import Path
 import tempfile
@@ -36,7 +37,6 @@ class ImmutableGeneratingSourceTests(unittest.TestCase):
 
     def test_git_object_hash_includes_blob_prefix(self):
         raw = b"print('example')\n"
-        import hashlib
         sha, digest = object_ids(raw)
         self.assertEqual(digest, hashlib.sha256(raw).hexdigest())
         self.assertEqual(sha, hashlib.sha1(b"blob 17\0" + raw).hexdigest())
