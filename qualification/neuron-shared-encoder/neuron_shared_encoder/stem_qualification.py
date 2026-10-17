@@ -129,6 +129,8 @@ class SourceDisjointSplitV1:
     dedupe_report_digest: str
     train_count: int
     eval_count: int
+    future_count: int
+    ood_count: int
     overlap_count: int
     source_family_count: int
     future_window_count: int
@@ -152,7 +154,7 @@ class SourceDisjointSplitV1:
             _digest(name, value)
         source_digests = {self.train_source_digest, self.eval_source_digest, self.future_source_digest, self.ood_source_digest}
         _require(len(source_digests) == 4, "train/eval/future/ood sources must be disjoint")
-        for name, value in (("train_count", self.train_count), ("eval_count", self.eval_count)):
+        for name, value in (("train_count", self.train_count), ("eval_count", self.eval_count), ("future_count", self.future_count), ("ood_count", self.ood_count)):
             _integer(name, value, minimum=1)
         _integer("source_family_count", self.source_family_count, minimum=2)
         _integer("future_window_count", self.future_window_count, minimum=2)
@@ -389,9 +391,20 @@ class StemQualificationRunV1:
         _require(type(self.metrics) is tuple and self.metrics, "metrics must be a non-empty tuple")
         _require(len({metric.metric_id for metric in self.metrics}) == len(self.metrics), "metric IDs must be unique")
         _require(self.metrics == tuple(sorted(self.metrics, key=lambda metric: metric.metric_id)), "metrics must be sorted by ID")
+        allowed_sources = {
+            self.source_split.eval_source_digest,
+            self.source_split.future_source_digest,
+            self.source_split.ood_source_digest,
+        }
         for metric in self.metrics:
-            _require(metric.heldout_source_digest == self.source_split.eval_source_digest, "metric source differs from split")
-            _require(metric.sample_count <= self.source_split.eval_count, "metric sample count exceeds evaluation cohort")
+            _require(metric.heldout_source_digest in allowed_sources, "metric source is not an eval/future/OOD cohort")
+            sample_limit = {
+                self.source_split.eval_source_digest: self.source_split.eval_count,
+                self.source_split.future_source_digest: self.source_split.future_count,
+                self.source_split.ood_source_digest: self.source_split.ood_count,
+            }[metric.heldout_source_digest]
+            _require(metric.sample_count <= sample_limit, "metric sample count exceeds held-out cohort")
+        _require({metric.heldout_source_digest for metric in self.metrics} == allowed_sources, "qualification metrics must cover eval, future and OOD cohorts")
         _require(self.resources.runtime_digest == self.checkpoint.runtime_digest, "resource runtime differs from checkpoint runtime")
         _require(self.resources.hardware_digest == self.checkpoint.device_identity_digest, "resource hardware differs from checkpoint device")
 
