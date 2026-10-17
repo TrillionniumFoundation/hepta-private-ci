@@ -105,6 +105,14 @@ function requireScalarPayload(payload) {
   return Object.freeze(snapshot);
 }
 
+function rejectForbiddenFields(value, name) {
+  for (const key of Object.keys(value)) {
+    if (FORBIDDEN_FIELDS.has(key)) {
+      throw new TypeError(`${name} contains a forbidden field`);
+    }
+  }
+}
+
 function normalizeQuery(query) {
   requireRecord(query, "runtime query");
   return Object.freeze({
@@ -115,6 +123,7 @@ function normalizeQuery(query) {
 
 function normalizeSnapshot(snapshot, query) {
   requireRecord(snapshot, "runtime snapshot");
+  rejectForbiddenFields(snapshot, "runtime snapshot");
   const moduleId = requireStableId(snapshot.moduleId, "snapshot.moduleId");
   if (moduleId !== query.moduleId) {
     throw new TypeError("module port returned a different module identity");
@@ -148,6 +157,7 @@ function normalizeSnapshot(snapshot, query) {
 
 function normalizeProposal(proposal) {
   requireRecord(proposal, "proposal");
+  rejectForbiddenFields(proposal, "proposal");
   if (!ACTIONS.has(proposal.action)) {
     throw new TypeError("proposal.action is not registered");
   }
@@ -176,6 +186,7 @@ function normalizeProposal(proposal) {
 
 function normalizeReceipt(receipt, proposal) {
   requireRecord(receipt, "proposal receipt");
+  rejectForbiddenFields(receipt, "proposal receipt");
   if (
     receipt.scopeId !== proposal.scopeId ||
     receipt.operationId !== proposal.operationId
@@ -188,12 +199,26 @@ function normalizeReceipt(receipt, proposal) {
   if (!STATUSES.has(receipt.status)) {
     throw new TypeError("proposal receipt status is not registered");
   }
+  const observedResourceRevision = requirePositive(
+    receipt.observedResourceRevision,
+    "receipt.observedResourceRevision",
+  );
+  if (observedResourceRevision < proposal.expectedResourceRevision) {
+    throw new TypeError("proposal receipt regressed resource revision");
+  }
   const observedBodyGeneration = requirePositive(
     receipt.observedBodyGeneration,
     "receipt.observedBodyGeneration",
   );
   if (observedBodyGeneration < proposal.expectedBodyGeneration) {
     throw new TypeError("proposal receipt regressed body generation");
+  }
+  const observedAuthorityEpoch = requirePositive(
+    receipt.observedAuthorityEpoch,
+    "receipt.observedAuthorityEpoch",
+  );
+  if (observedAuthorityEpoch < proposal.expectedAuthorityEpoch) {
+    throw new TypeError("proposal receipt regressed authority epoch");
   }
   const message = receipt.message ?? "";
   if (typeof message !== "string" || new TextEncoder().encode(message).byteLength > MAX_MESSAGE_BYTES) {
@@ -204,15 +229,9 @@ function normalizeReceipt(receipt, proposal) {
     operationId: proposal.operationId,
     payloadDigest: proposal.payloadDigest,
     status: receipt.status,
-    observedResourceRevision: requirePositive(
-      receipt.observedResourceRevision,
-      "receipt.observedResourceRevision",
-    ),
+    observedResourceRevision,
     observedBodyGeneration,
-    observedAuthorityEpoch: requirePositive(
-      receipt.observedAuthorityEpoch,
-      "receipt.observedAuthorityEpoch",
-    ),
+    observedAuthorityEpoch,
     message,
     exposesDeliveryIdentity: false,
   });
