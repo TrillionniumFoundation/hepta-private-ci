@@ -117,6 +117,15 @@ class NeuralServingTests(unittest.TestCase):
         self.assertIsNotNone(self.model.posterior_head)
         self.assertIsNotNone(self.model.z_head)
 
+    def test_selected_model_is_frozen_and_training_mode_rejected(self):
+        self.assertTrue(all(not p.requires_grad for p in self.model.parameters()))
+        self.assertFalse(self.model.training)
+        self.model.train()
+        with self.assertRaisesRegex(PilotError, "frozen"):
+            CellServing(self.model, self.torch, CallMeter(max_calls=2))
+        self.model.eval()
+        CellServing(self.model, self.torch, CallMeter(max_calls=2))
+
     def test_inference_budget_and_scoped_fallback_fail_closed(self):
         serving = CellServing(self.model, self.torch, CallMeter(max_calls=1))
         serving.predict((), 0.71, 0.06)

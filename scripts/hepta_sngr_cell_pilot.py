@@ -214,6 +214,8 @@ def train_network(seed: int = 17, train_samples: int = 4096, steps: int = 450):
         optimizer.step()
     seconds = time.perf_counter() - start
     network.eval()
+    for parameter in network.parameters():
+        parameter.requires_grad_(False)  # selected inference snapshot is not trainable
     return network, {"train_seconds": seconds, "training_examples": train_samples, "optimizer_steps": steps, "seed": seed, "synthetic_training_dataset_sha256": data_digest}
 
 
@@ -242,6 +244,8 @@ class CellServing:
     """Typed, scope-local exact-cache serving; never shares mutable episode state."""
 
     def __init__(self, model, torch, meter: CallMeter):
+        if model.training or any(p.requires_grad for p in model.parameters()):
+            raise PilotError("selected inference model must be frozen and in eval mode")
         self.model, self.torch, self.meter = model, torch, meter
         self.cache: dict[tuple[tuple[int, ...], float, float], Prediction] = {}
 
