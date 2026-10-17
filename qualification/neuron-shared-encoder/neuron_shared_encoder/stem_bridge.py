@@ -177,7 +177,7 @@ class QualificationReceiptV1:
             raise ContractError("unknown receipt status")
         if tuple(sorted(set(self.missing_fields))) != self.missing_fields:
             raise ContractError("missing_fields must be sorted and unique")
-        numeric_names = ("quality", "flops", "memory_bytes", "latency_ms", "risk", "stem_params", "projector_params", "resident_cell_params", "active_cell_params", "state_params", "cache_params", "logical_cells", "active_cells")
+        numeric_names = ("quality", "flops", "memory_bytes", "latency_ms", "risk", "stem_params", "projector_params", "resident_cell_params", "active_cell_params", "state_params", "cache_params", "logical_cells", "active_cells", "reader_citations")
         actual_missing = tuple(name for name in numeric_names if getattr(self, name) is None)
         if tuple(sorted(actual_missing)) != self.missing_fields:
             raise ContractError("missing_fields must exactly describe absent receipt values")
