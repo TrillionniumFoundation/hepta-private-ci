@@ -1453,7 +1453,9 @@ fn observe_event(
                 .map_err(|error| format!("invalid App Server delta witness: {error}"))?
                 .is_some()
             {
-                return Err("agent message delta unexpectedly produced a terminal receipt".to_string());
+                return Err(
+                    "agent message delta unexpectedly produced a terminal receipt".to_string(),
+                );
             }
             if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
                 return Err("output byte limit exceeded".to_string());

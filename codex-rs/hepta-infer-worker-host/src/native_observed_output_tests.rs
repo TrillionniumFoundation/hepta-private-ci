@@ -245,8 +245,10 @@ fn token_usage_requires_exact_transport_identity_before_accounting() {
     assert!(!output.terminal_observed);
 
     let regressed = observed(token_usage_notification(9), 7);
-    assert!(observe_event(&mut output, &regressed, &binding)
-        .unwrap_err()
-        .contains("provider cumulative usage regressed"));
+    assert!(
+        observe_event(&mut output, &regressed, &binding)
+            .unwrap_err()
+            .contains("provider cumulative usage regressed")
+    );
     assert_eq!(output.observed_output_tokens, Some(10));
 }
