@@ -1,0 +1,52 @@
+{
+  "by_arm": {
+    "empty": {
+      "emitted_any_citation_label": 0,
+      "mean_token_f1": 0.052835302835302835,
+      "scorable": 8
+    },
+    "rrf": {
+      "emitted_any_citation_label": 0,
+      "mean_token_f1": 0.12184574684574684,
+      "scorable": 8
+    },
+    "rrf_cell": {
+      "emitted_any_citation_label": 0,
+      "mean_token_f1": 0.12265638798657666,
+      "scorable": 8
+    },
+    "temporal": {
+      "emitted_any_citation_label": 0,
+      "mean_token_f1": 0.07751887903063714,
+      "scorable": 8
+    },
+    "trained_cell": {
+      "emitted_any_citation_label": 0,
+      "mean_token_f1": 0.05318994601889339,
+      "scorable": 8
+    }
+  },
+  "citation_marker_occurrences_from_any_response": 0,
+  "date_utc": "2026-10-17",
+  "disposition": "no_reader_memorycell_gain_keep_temporal_and_tuned_hybrid_baselines",
+  "limitations": "10 correlated historical dialogue questions; 8 string-scorable references per arm; FP32 original offline Reader not HF/BF16 parity-certified; no independent semantic judge and no accepted citations.",
+  "original_postseal_scoring_sha256": "bb25a0f2e11662e2592f55a9c01f88fe1a45ff55dba1de6fee742f23492b9393",
+  "original_reader_backend": "source-verified-SmolLM2-135M-CPU-FP32-original-weights",
+  "original_reader_generated_language_attempts": 50,
+  "original_reader_model_identity": "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c",
+  "original_reader_output_journal_sha256": "da577e20660102e0d5a40f59b5729c4192f95b9717ffdfffb57129cb5aa2a3b7",
+  "original_reader_seal_sha256": "34f7e997dbbd642fd3fe588b72d825100684921aa474994ac3ae70655a6e49a9",
+  "production_accepted": false,
+  "rank_source_sha256": "165e7965accc8cb19bb4b64d63791bc9e081bff033e07c21a0f1747a0990bcdf",
+  "reader_new_token_ceiling": 48,
+  "registered_HF_BF16_Reader_parity_verified": false,
+  "schema": "hepta.parametric-stem-original-reader-local-observation.v1",
+  "scorable_string_answer_questions_each_arm": 8,
+  "semantic_citation_entailment_verified": false,
+  "semantic_qa_independently_adjudicated": false,
+  "source_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "source_label_visible_to_reader_worker": false,
+  "source_question_count": 10,
+  "source_scope_is_original_historical_authored_benchmark": true,
+  "statistical_superiority": false
+}
