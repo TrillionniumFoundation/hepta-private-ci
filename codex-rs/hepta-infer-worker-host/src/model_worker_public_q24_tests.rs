@@ -18,10 +18,10 @@ use codex_hepta_types::StableId;
 use super::*;
 
 const ACTUAL_PUBLIC_FIT_Q24: [i64; 32] = [
-    -16501532, -6373458, 16309110, -4703798, 1276234, 6019820, -11537169, 3783772,
-    -1943562, 40578788, 4675449, -25092980, 20439360, -14262581, 41451036, -12258270,
-    -9908741, -11855340, -35283540, 10655086, -4886386, -35993984, 24983592, -17560524,
-    7399320, -1415938, -528902, -8278336, -20101038, -16129745, -11021302, -20885794,
+    -16501532, -6373458, 16309110, -4703798, 1276234, 6019820, -11537169, 3783772, -1943562,
+    40578788, 4675449, -25092980, 20439360, -14262581, 41451036, -12258270, -9908741, -11855340,
+    -35283540, 10655086, -4886386, -35993984, 24983592, -17560524, 7399320, -1415938, -528902,
+    -8278336, -20101038, -16129745, -11021302, -20885794,
 ];
 const ACTUAL_PUBLIC_CONTENT_DIGEST_V2: &str =
     "fb533c3b50f785b5979142b9f05122e53a7ed523368f8abcbc69c40530aa6ce2";
@@ -127,7 +127,10 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
     };
     let r1 = request("cell.public.one", "req.public.one", h1);
     let r2 = request("cell.public.two", "req.public.two", h2);
-    assert!(Arc::ptr_eq(&r1.snapshot.features_q24, &r2.snapshot.features_q24));
+    assert!(Arc::ptr_eq(
+        &r1.snapshot.features_q24,
+        &r2.snapshot.features_q24
+    ));
 
     let grant = ResourceGrant {
         grant_id: "grant.public.research".to_string(),
@@ -140,15 +143,12 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
         maximum_memory_bytes: 8192,
         semantic_digest: "1".repeat(64),
     };
-    let mut worker = InferenceWorker::new(
-        1,
-        "worker.public.research".to_string(),
-        3,
-        grant,
-        driver,
-    )
-    .expect("research worker");
-    worker.load_model(1, selected).expect("frozen research bundle");
+    let mut worker =
+        InferenceWorker::new(1, "worker.public.research".to_string(), 3, grant, driver)
+            .expect("research worker");
+    worker
+        .load_model(1, selected)
+        .expect("frozen research bundle");
     let observed = worker
         .run_shared_neuron_features_batch_v2(100, "model.public-q24.fixture", vec![r1, r2])
         .expect("two distinct Cell outputs");
@@ -160,7 +160,10 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
     assert_eq!(observed[1].drive_q24, vec![1_702_365]);
     assert_eq!(observed[0].prediction_q24, vec![0]);
     assert_eq!(observed[1].prediction_q24, vec![0]);
-    assert_ne!(observed[0].observation_digest, observed[1].observation_digest);
+    assert_ne!(
+        observed[0].observation_digest,
+        observed[1].observation_digest
+    );
     assert!(!observed[0].authority.grants_any());
     assert!(!observed[1].authority.grants_any());
     assert_eq!(worker.driver.batch_calls(), 1);
