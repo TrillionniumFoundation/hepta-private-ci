@@ -612,6 +612,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // Other loaded models remain resident even during a single Cell call.
+        let resident_bytes = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
@@ -651,6 +659,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             });
         }
 
+        // The retained owned feature Vec and two Q24 output Vecs must fit
+        // before backend invocation; each is distinct from model residency.
+        let input_bytes = u64::try_from(request.feature_vector_q24.len())
+            .map_err(|_| Error::ArithmeticOverflow)?
+            .checked_mul(8)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let output_bytes = u64::try_from(request.expected_output_width)
+            .map_err(|_| Error::ArithmeticOverflow)?
+            .checked_mul(16)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let minimum_bytes = resident_bytes
+            .checked_add(input_bytes)
+            .and_then(|total| total.checked_add(output_bytes))
+            .ok_or(Error::ArithmeticOverflow)?;
+        if minimum_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         loaded.active_requests = loaded
             .active_requests
             .checked_add(1)
@@ -672,7 +697,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 return Err(error);
             }
         };
-        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
+        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes)
+            || !neuron_batch_reported_memory_within_grant(
+                std::iter::once(&observed),
+                minimum_bytes,
+                loaded.handle.observed_memory_bytes,
+                request.expected_output_width,
+                self.grant.maximum_memory_bytes,
+            )
+        {
             self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
