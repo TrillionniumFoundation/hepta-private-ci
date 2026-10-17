@@ -55,8 +55,10 @@ def _directory_identity(directory_fd: int, path: Path) -> None:
         raise InvalidEvidence(f"{path.name}: pinned directory identity changed")
 
 
-def _read_regular(directory_fd: int, name: str, limit: int) -> bytes:
-    """Read one regular inode relative to the same pinned directory handle."""
+def _read_regular(
+    directory_fd: int, name: str, limit: int
+) -> tuple[bytes, tuple[int, int]]:
+    """Read stable bytes and the actual inode from the same pinned directory."""
     if not name or name in (".", "..") or "/" in name or "\\" in name:
         raise InvalidEvidence("invalid evidence filename")
     flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0)
@@ -97,7 +99,7 @@ def _read_regular(directory_fd: int, name: str, limit: int) -> bytes:
         or not stat.S_ISREG(named.st_mode)
     ):
         raise InvalidEvidence(f"{name}: evidence changed while observed")
-    return raw
+    return raw, (before.st_dev, before.st_ino)
 
 
 def _strict_json(raw: bytes, name: str) -> Any:
@@ -168,17 +170,24 @@ def observe(
         _directory_identity(root_fd, root)
         artifacts: dict[str, bytes] = {}
         limits: dict[str, int] = {}
+        original_inodes: dict[str, tuple[int, int]] = {}
 
         def take(name: str, limit: int) -> bytes:
-            raw = _read_regular(root_fd, name, limit)
+            raw, inode = _read_regular(root_fd, name, limit)
             artifacts[name] = raw
             limits[name] = limit
+            original_inodes[name] = inode
             return raw
 
         def recheck_captured_bytes() -> None:
             _directory_identity(root_fd, root)
             for name, original in artifacts.items():
-                if _read_regular(root_fd, name, limits[name]) != original:
+                current, inode = _read_regular(root_fd, name, limits[name])
+                if inode != original_inodes[name]:
+                    raise InvalidEvidence(
+                        f"{name}: original evidence inode replaced during custody"
+                    )
+                if current != original:
                     raise InvalidEvidence(
                         f"{name}: original evidence changed during custody"
                     )
