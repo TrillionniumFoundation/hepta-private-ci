@@ -27,12 +27,8 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def read_json(path):
-    path = Path(path)
-    insist(
-        path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_FILE,
-        "bounded original JSON file required",
-    )
+def strict_json(raw):
+    """Reject ambiguous JSON everywhere, including per-answer journal lines."""
 
     def distinct(pairs):
         result = {}
@@ -44,9 +40,16 @@ def read_json(path):
     def nonfinite(value):
         raise ValueError("nonfinite JSON value " + value)
 
-    return json.loads(
-        path.read_bytes(), object_pairs_hook=distinct, parse_constant=nonfinite
+    return json.loads(raw, object_pairs_hook=distinct, parse_constant=nonfinite)
+
+
+def read_json(path):
+    path = Path(path)
+    insist(
+        path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_FILE,
+        "bounded original JSON file required",
     )
+    return strict_json(path.read_bytes())
 
 
 def verify_inventory(root):
@@ -143,7 +146,7 @@ def records_from_run(root, *, tier, expected_source):
         raw_bytes.endswith(b"\n") and len(raw_bytes) <= MAX_FILE,
         "truncated original answer journal",
     )
-    entries = [json.loads(line) for line in raw_bytes.splitlines()]
+    entries = [strict_json(line) for line in raw_bytes.splitlines()]
     scored = read_json(root / "run/diagnostic/execution/scored-answers.json")
     insist(
         isinstance(scored, list) and len(scored) == len(entries),
