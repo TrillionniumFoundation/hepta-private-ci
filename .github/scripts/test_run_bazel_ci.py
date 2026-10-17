@@ -411,7 +411,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn('if [[ "${RUNNER_OS}" == "Linux" ]]; then', workflow)
         self.assertIn("v8_transport_args+=(--noremote_cache_async)", workflow)
         self.assertIn('"${v8_transport_args[@]}"', workflow)
-        self.assertNotIn("common:ci-linux --noremote_cache_async", (SCRIPTS.parent.parent / ".bazelrc").read_text(encoding="utf-8"))
+        self.assertNotIn(
+            "common:ci-linux --noremote_cache_async",
+            (SCRIPTS.parent.parent / ".bazelrc").read_text(encoding="utf-8"),
+        )
 
     def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
         self,
