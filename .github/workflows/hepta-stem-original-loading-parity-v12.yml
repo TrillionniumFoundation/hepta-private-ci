@@ -1,0 +1,174 @@
+name: Hepta original pretrained loader + Head identity diagnosis V12 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-v9-pretrained-loading-diagnostic-20261017]
+    paths:
+      - 'qualification/stem-original-loading-v12/**'
+      - '.github/workflows/hepta-stem-original-loading-parity-v12.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-original-loading-v12/**'
+      - '.github/workflows/hepta-stem-original-loading-parity-v12.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-loader-v12-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  D12: qualification/stem-original-loading-v12
+  PYTHONPATH: qualification/stem-original-loading-v12:qualification/stem-optimal-v9:qualification/stem-optimal-v8:qualification/stem-optimal-v5:qualification/stem-optimal-v1
+
+jobs:
+  source-only-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run no-weight loader provenance and false-green failure tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$D12"/*.py
+          python -m unittest discover -s "$D12" -p 'test_*.py' -v
+          python -O -m unittest discover -s "$D12" -p 'test_*.py' -v
+
+  physically-reopen-original-pinned-checkpoints:
+    needs: source-only-negative-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v9-pretrained-loading-diagnostic-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - candidate: granite47
+            profile: auto_model
+          - candidate: granite97
+            profile: auto_model
+          - candidate: mmbert140
+            profile: auto_model
+          - candidate: mmbert140
+            profile: full_mlm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download exact six original archive ZIPs including the old V9 failed Head owner
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role source_v3 --role source_v4 --role cheap_v4 \
+            --role granite47 --role granite97 --role mmbert140
+      - name: Install exact original V9 public Torch CPU / Transformers stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6 packaging==25.0
+      - name: Observe exact actual weight bytes, missing base tensors, pretrained 72-sequence forwards and Head SHA/drift
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/observed"
+          python "$D12/pretrained_load_diag_v12.py" \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" \
+            --materials qualification/stem-optimal-v1/MODEL_MATERIALS.json \
+            --candidate '${{ matrix.candidate }}' \
+            --profile '${{ matrix.profile }}' \
+            --output "$RUNNER_TEMP/observed/diagnostic-${{ matrix.candidate }}-${{ matrix.profile }}.json"
+          (cd "$RUNNER_TEMP/observed" && sha256sum 'diagnostic-${{ matrix.candidate }}-${{ matrix.profile }}.json' > 'diagnostic-${{ matrix.candidate }}-${{ matrix.profile }}.sha256')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v12-loader-${{ matrix.candidate }}-${{ matrix.profile }}-denyall
+          path: |
+            ${{ runner.temp }}/observed/diagnostic-${{ matrix.candidate }}-${{ matrix.profile }}.json
+            ${{ runner.temp }}/observed/diagnostic-${{ matrix.candidate }}-${{ matrix.profile }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-model-free-review:
+    needs: physically-reopen-original-pinned-checkpoints
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-v12-loader-*-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/observed
+      - name: Check four physically produced JSON sidecars and authentic originals
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/observed" && sha256sum --check diagnostic-granite47-auto_model.sha256 diagnostic-granite97-auto_model.sha256 diagnostic-mmbert140-auto_model.sha256 diagnostic-mmbert140-full_mlm.sha256)
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role granite47 --role granite97 --role mmbert140
+      - name: Independently reject model-incomplete and Head-mismatched success claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$D12/independent_loading_review_v12.py" \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" \
+            --receipt "$RUNNER_TEMP/observed/diagnostic-granite47-auto_model.json" \
+            --receipt "$RUNNER_TEMP/observed/diagnostic-granite97-auto_model.json" \
+            --receipt "$RUNNER_TEMP/observed/diagnostic-mmbert140-auto_model.json" \
+            --receipt "$RUNNER_TEMP/observed/diagnostic-mmbert140-full_mlm.json" \
+            --output "$RUNNER_TEMP/independent-original-loader-review-v12.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'independent-original-loader-review-v12.json').read_text())
+          assert r['production_authorized'] is False
+          assert r['authority'] == 'DENY_ALL' and r['disposition'] == 'HOLD_NO_GO'
+          assert set(r['profiles']) == {'granite47-auto_model','granite97-auto_model','mmbert140-auto_model','mmbert140-full_mlm'}
+          print('NEGATIVE_OR_DIAGNOSTIC_MODEL_LOADER_REPLAY_NOT_STEM_SELECTION')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-v12-independent-original-loading-diagnostics-denyall
+          path: ${{ runner.temp }}/independent-original-loader-review-v12.json
+          if-no-files-found: error
+          retention-days: 7
