@@ -14,6 +14,7 @@ from dataclasses import asdict, dataclass
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
 import re
 import sys
@@ -80,6 +81,7 @@ def _integer(name: str, value: Any, minimum: int = 0, maximum: int | None = None
 
 def _finite_nonnegative(name: str, value: Any) -> None:
     _require(type(value) in (int, float), f"{name} must be numeric")
+    _require(math.isfinite(float(value)), f"{name} must be finite")
     _require(float(value) >= 0.0, f"{name} must be non-negative")
 
 
