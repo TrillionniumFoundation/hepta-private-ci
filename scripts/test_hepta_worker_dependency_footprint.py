@@ -52,5 +52,11 @@ class FootprintTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             report({"packages": []})
 
+    def test_missing_dependency_kind_fails_closed(self):
+        data = fixture()
+        del data["resolve"]["nodes"][0]["deps"][0]["dep_kinds"]
+        with self.assertRaises(ValueError):
+            report(data)
+
 if __name__ == "__main__":
     unittest.main()
