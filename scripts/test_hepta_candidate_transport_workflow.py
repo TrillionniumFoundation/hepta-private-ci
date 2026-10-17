@@ -214,7 +214,7 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text()
         marker = (
-            "      - name: Verify GitHub prospective merge ref matches this exact candidate\\n"
+            "      - name: Verify GitHub prospective merge ref matches this exact candidate\n"
         )
         shell = textwrap.dedent(
             workflow.split(marker, 1)[1]
@@ -232,7 +232,7 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
                 'test "$1" = api || exit 91\n'
                 'test "$2" = '
                 "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/main "
-                "|| exit 92\\n"
+                "|| exit 92\n"
                 'printf "advanced-main\\n"\n'
             )
             gh.chmod(0o700)
