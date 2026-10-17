@@ -15,7 +15,10 @@ SOURCES = {
         "frozen_source/locomo_reader_four_regimes.py.source",
         "72ec79ef98f3916c86390db8d8f9725446301ff1",
     ),
-    "replay": ("frozen_source/locomo_reader_replay.py.source", "4da31dfac6f2eb806c252548e719a5107193121a"),
+    "replay": (
+        "frozen_source/locomo_reader_replay.py.source",
+        "4da31dfac6f2eb806c252548e719a5107193121a",
+    ),
     "report": (
         "data/locomo-eight-root-real-smol135-20261016.json",
         "daea9baf005f489720f4181cc7073d950bf3afaa",

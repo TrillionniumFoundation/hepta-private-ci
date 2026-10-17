@@ -34,7 +34,9 @@ class LocalOriginalReaderResearchReceiptTests(unittest.TestCase):
         report = self.fixture()
         self.assertEqual(report["observed"]["by_arm"]["empty"]["choice_correct"], 0)
         self.assertEqual(
-            report["retrospective_refusal_ablation"]["by_arm"]["empty"]["fixed_refusal_correct"],
+            report["retrospective_refusal_ablation"]["by_arm"]["empty"][
+                "fixed_refusal_correct"
+            ],
             8,
         )
         self.assertEqual(replay_published(report)["model_requests"], 48)
