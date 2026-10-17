@@ -6,6 +6,7 @@ on:
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-codex-adapter/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agent-protocol/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
       - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
@@ -125,6 +126,12 @@ jobs:
         run: |
           set -euo pipefail
           cargo clippy --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+
+      - name: Verify bounded Agentd control JSON protocol and Final-use witness parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/agent-protocol.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol
 
       - name: Revalidate actual v1 Automation migration before heavyweight owner build
         shell: bash
