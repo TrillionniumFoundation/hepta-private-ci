@@ -104,6 +104,10 @@ def validate_plan(plan):
         "at least two stated source families required",
     )
     require(
+        {c["task"] for c in cases} == set(TASKS),
+        "every preregistered task family needs held-out cases",
+    )
+    require(
         plan.get("registered_before_exposure") is True,
         "must preregister before task exposure",
     )
@@ -191,6 +195,22 @@ def analyze(plan, rows):
         by_key[key] = row
     missing = expected - seen
     require(not missing, f"incomplete matrix: {len(missing)} observations missing")
+    # A removed-premise condition cannot diagnose necessity when its delivered
+    # evidence is byte-identical to the sufficient-evidence condition. This
+    # guards mislabeled, no-op lesions, not the semantic quality of the lesion.
+    # The two controls must also be distinguishable from the no-evidence arm.
+    for cid in cases:
+        for arm in ARMS:
+            for reader in READERS:
+                evidence = {
+                    condition: by_key[(cid, arm, condition, reader)]["source_digest"]
+                    for condition in CONDITIONS
+                }
+                require(
+                    evidence["oracle"] != evidence["ablated"]
+                    and evidence["oracle"] != evidence["none"],
+                    "oracle/ablation/no-evidence payload collision",
+                )
     # Across evidence conditions, lock the actual reader revision and prompt per arm
     # while allowing the evidence payload to change.
     for cid in cases:
