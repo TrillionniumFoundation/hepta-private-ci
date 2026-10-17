@@ -12,11 +12,10 @@ on:
       - 'scripts/memory_cell/test_memory_reader_source_citation.py'
       - 'codex-rs/hepta-intelligence-eval/MEMORY_READER_STRONG_REFERENCE_20261016.md'
       - '.github/workflows/hepta-memory-reader-strong-reference.yml'
-  # Physical attempt is conditionally armed by one short-lived PR title marker.
-  # The marker is removed after that exact PR event is queued; later source
-  # changes run only inexpensive pull_request checks.
+  # Only this specifically named frozen research branch may execute the physical trial.
+  # PR events perform source-only validation and cannot opt in by changing title.
   push:
-    branches: [research/memory-strong-reader-v2-20261016]
+    branches: [research/memory-strong-reader-v4-original-20261017]
     paths:
       - '.github/workflows/hepta-memory-reader-strong-reference.yml'
 permissions:
@@ -57,7 +56,7 @@ jobs:
             -p 'test_memory_reader_source_citation.py' -v
           git diff --exit-code
   original-plan:
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[RUN-QWEN-ONCE]')) }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/research/memory-strong-reader-v4-original-20261017' }}
     needs: source-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -112,7 +111,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
   pinned-strong-physical-and-postseal:
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[RUN-QWEN-ONCE]')) }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/research/memory-strong-reader-v4-original-20261017' }}
     needs: original-plan
     runs-on: ubuntu-24.04
     timeout-minutes: 240
