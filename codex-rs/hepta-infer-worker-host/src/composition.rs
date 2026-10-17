@@ -53,6 +53,7 @@ pub struct CompositionManifestV1 {
     pub runtime_digest: String,
     pub device_digest: String,
     pub head_digest: String,
+    pub shared_memory_bytes: u64,
     pub private_memory_bytes: u64,
     pub maximum_tokens: u32,
 }
@@ -69,6 +70,7 @@ impl CompositionManifestV1 {
         cell_id: String,
         normalization_digest: String,
         head_digest: String,
+        shared_memory_bytes: u64,
         private_memory_bytes: u64,
     ) -> Self {
         Self {
@@ -82,6 +84,7 @@ impl CompositionManifestV1 {
             runtime_digest: manifest.runtime_digest.clone(),
             device_digest: manifest.device_digest.clone(),
             head_digest,
+            shared_memory_bytes,
             private_memory_bytes,
             maximum_tokens: manifest.maximum_tokens,
         }
@@ -114,6 +117,7 @@ impl CompositionManifestV1 {
 pub struct CellHeadManifest {
     pub cell_id: String,
     pub head_digest: String,
+    pub shared_memory_bytes: u64,
     pub private_memory_bytes: u64,
     pub maximum_tokens: u32,
 }
@@ -217,7 +221,11 @@ impl SharedEncoderPool {
         manifest: CompositionManifestV1,
     ) -> Result<CompositionReceipt, CompositionError> {
         manifest.validate()?;
-        self.attach_cell(manifest.key(), manifest.head(), manifest.private_memory_bytes)
+        self.attach_cell(
+            manifest.key(),
+            manifest.head(),
+            manifest.shared_memory_bytes,
+        )
     }
 
     pub fn attach_cell(
@@ -437,7 +445,11 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         manifest: CompositionManifestV1,
     ) -> Result<CompositionReceipt, CompositionError> {
         manifest.validate()?;
-        self.attach_cell(manifest.key(), manifest.head(), manifest.private_memory_bytes)
+        self.attach_cell(
+            manifest.key(),
+            manifest.head(),
+            manifest.shared_memory_bytes,
+        )
     }
 
     pub fn attach_model_manifest(
@@ -446,6 +458,7 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         cell_id: String,
         normalization_digest: String,
         head_digest: String,
+        shared_memory_bytes: u64,
         private_memory_bytes: u64,
     ) -> Result<CompositionReceipt, CompositionError> {
         let composition = CompositionManifestV1::from_model_manifest(
@@ -453,6 +466,7 @@ impl<D: CompositionDriver> CompositionWorker<D> {
             cell_id,
             normalization_digest,
             head_digest,
+            shared_memory_bytes,
             private_memory_bytes,
         );
         self.attach_manifest(composition)
@@ -648,6 +662,7 @@ mod tests {
             runtime_digest: "runtime-v1".into(),
             device_digest: "cuda-0".into(),
             head_digest: format!("head-{cell_id}"),
+            shared_memory_bytes: 100,
             private_memory_bytes: 20,
             maximum_tokens: 128,
         }
@@ -687,6 +702,7 @@ mod tests {
             "cell-a".into(),
             "normalization-v1".into(),
             "head-a".into(),
+            100,
             20,
         );
         manifest.validate().expect("composition manifest");
@@ -718,10 +734,13 @@ mod tests {
                 "cell-a".into(),
                 "normalization-v1".into(),
                 "head-a".into(),
+                100,
                 20,
             )
             .expect("legacy manifest bridge");
         assert!(receipt.encoder_loaded);
+        assert_eq!(receipt.shared_memory_bytes, 100);
+        assert_eq!(receipt.private_head_memory_bytes, 20);
         assert_eq!(worker.active_cell_count(), 1);
         assert_eq!(worker.resident_encoder_count(), 1);
     }
