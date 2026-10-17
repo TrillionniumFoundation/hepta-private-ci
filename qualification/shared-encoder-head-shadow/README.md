@@ -42,7 +42,25 @@ Download the archived ZIP from Actions artifact **12068510329**, preserving its 
     python real_public_q24_shadow.py --snapshot stem-real-public-q24-feature-snapshot.zip --output shadow-rerun.json
     python -m unittest -v test_real_public_q24_shadow
 
-The runner refuses to overwrite an existing result. To reproduce the panel, import **run** from the script and invoke it for the five declared seeds; take the arithmetic mean of the returned four-fold metrics. The current local study passed four positive/negative controls, including fabricated heldout labels, forged source authority and corrupted safetensors. This does not establish the Rust PR CI status.
+The runner refuses to overwrite an existing result. To reproduce the panel, import **run** from the script and invoke it for the five declared seeds; take the arithmetic mean of the returned four-fold metrics. The current local study passed five positive/negative controls, including fabricated heldout labels, forged source authority and corrupted safetensors. This does not establish the Rust PR CI status.
+
+## Archived real Q24 → native Rust scalar Head fixture
+
+[model_worker_public_q24_tests.rs](../../codex-rs/hepta-infer-worker-host/src/model_worker_public_q24_tests.rs)
+includes **32 signed Q24 values from the exact public pretrained snapshot**, with
+independently computed Hepta V2 content digest
+**fb533c3b50f785b5979142b9f05122e53a7ed523368f8abcbc69c40530aa6ce2**.
+The research test stages one shared physical Arc input for **two separately
+reserved Cell Head invocations** and expects deterministic signed Q24 drive
+outputs **-1,702,365** and **+1,702,365**. It verifies distinct per-Cell
+observations and zero authority. This test has **not yet received a current-head
+Rust CI compile/test receipt**.
+
+These Rust Heads use a **diagonal fixed-point gate plus dense Q24 readout**.
+The Python rank-4 residual sigmoid-gated research Head is **not the same tensor
+architecture**, and its learned parameters are **not imported into Rust**.
+A real trained-Head serialization/quantization-parity test remains required
+before claiming end-to-end training-to-deployment transfer.
 
 ## Remaining acceptance gates
 
