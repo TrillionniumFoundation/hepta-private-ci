@@ -20,6 +20,9 @@ WANTED = {
     "openjev434": ("model.safetensors", "head.safetensors", "config.json", "tokenizer.json"),
 }
 MAX_FILES = 512
+# Public Hugging Face snapshots normally contain this Git bookkeeping file.
+# It is *not* a model/Tokenizer input; no other hidden path is admitted.
+IGNORED_GIT_METADATA = frozenset({".gitattributes"})
 MAX_WEIGHT_BYTES = 3 * 1024**3
 MAX_SMALL_BYTES = 32 * 1024**2
 MAX_TOTAL_BYTES = 4 * 1024**3
@@ -74,7 +77,13 @@ def inspect_model(model_name, metadata):
             "missing/unbounded upstream file census")
     for f in siblings:
         n = getattr(f, "rfilename", None)
-        require(member(n) and n not in names, "unsafe, missing or duplicate source path")
+        if n in IGNORED_GIT_METADATA:
+            # Exact, root-only Git transport metadata; never selected for use.
+            # Still reject a duplicate member and retain it in the full census.
+            require(n not in names, "duplicate Git bookkeeping file")
+        else:
+            require(member(n) and n not in names,
+                    "unsafe, missing or duplicate source path")
         names[n] = f
     require(set(WANTED[model_name]).issubset(names), "required checkpoint/config/tokenizer absent")
     selected = sorted(name for name in names if chosen(model_name, name))
