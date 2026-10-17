@@ -177,6 +177,21 @@ pub struct ArtifactOwnerRecoveryV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Actual native Artifact CAS readback for a frozen Cell Split candidate.
+/// Obtained by reopening a durable owner publication, a signed current
+/// registry view and the immutable payload bytes. This is an observation,
+/// NOT selection, final-use authorization or physical-split acceptance.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellSplitArtifactCasReadbackV1 {
+    pub operation_id: StableId,
+    pub artifact_id: StableId,
+    pub payload_digest: Digest32,
+    pub readback_digest: Digest32,
+    pub registry_head_digest: Digest32,
+    pub native_ack_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 #[derive(Clone, Debug)]
 struct VerifiedArtifactWriterLeaseV1 {
     producer_id: StableId,
@@ -887,6 +902,165 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok(registry)
+    }
+
+    /// Product Cell Split requires a current-head floor authenticated and
+    /// stored outside this artifact owner's rollback domain. A locally valid
+    /// signed head alone cannot prove that older, valid backups were not
+    /// restored. Source callers may still inspect local history without a
+    /// floor, but may not use it for native physical-split admission.
+    pub fn require_cell_split_anti_rollback_floor_v1(
+        &self,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        if self.required_current_head.is_none() {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        self.discover_current_head(now)?
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
+        Ok(())
+    }
+
+    /// Reconcile one exact acknowledged native CAS publication for a future
+    /// Cell Split. This reads the persisted publication chain, verifies the
+    /// current *signed* registry frontier, and reopens real payload bytes.
+    ///
+    /// Missing/partially acknowledged operations are indeterminate, never a
+    /// license for the Split owner to issue an unsafe second CAS write. A
+    /// current revocation or retired artifact also fails closed.
+    pub fn observe_cell_split_artifact_cas_v1(
+        &self,
+        operation_id: &StableId,
+        artifact_id: &StableId,
+        expected_content_digest: Digest32,
+        now: u64,
+    ) -> Result<CellSplitArtifactCasReadbackV1, ArtifactOwnerHostError> {
+        if expected_content_digest.is_zero() {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let recovered = self
+            .recover_publication(operation_id)?
+            .ok_or(ArtifactOwnerHostError::Indeterminate)?;
+        let checkpoint = recovered.checkpoint;
+        if checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
+            || checkpoint.acknowledged_at.is_none()
+            || checkpoint.state_digest.is_zero()
+        {
+            return Err(ArtifactOwnerHostError::Indeterminate);
+        }
+        let registry_receipt = checkpoint
+            .registry_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let witness_receipt = checkpoint
+            .witness_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        if registry_receipt.head_digest.is_zero()
+            || witness_receipt.witness_digest.is_zero()
+            || registry_receipt.binding != witness_receipt.binding
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        // The historical checkpoint must really contain the exact registered
+        // artifact. This prevents unrelated committed operations from serving
+        // as a synthetic Split CAS receipt.
+        let predecessor = self.recover_registry_by_head(
+            checkpoint.expected_registry_predecessor_head,
+        )?;
+        if predecessor.manifest(artifact_id).is_some() {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let historical = self.recover_registry_by_head(registry_receipt.head_digest)?;
+        let before = predecessor.records();
+        let after = historical.records();
+        // Only a single exact Register transition created by this operation
+        // can be used as evidence that *this* publication produced the pin.
+        // Matching payload bytes in some unrelated later snapshot is not a
+        // native publication receipt for this split.
+        let Some(new_length) = before.len().checked_add(1) else {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        };
+        if after.len() != new_length || after.get(..before.len()) != Some(before) {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let registration = after
+            .last()
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let expected_event_id = StableId::new(format!(
+            "artifact-publication:{}",
+            checkpoint.intent_digest,
+        ))
+        .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
+        if registration.predecessor_chain_digest
+                != predecessor.snapshot().head_digest
+            || registration.chain_digest != registry_receipt.head_digest
+            || !matches!(
+                &registration.event,
+                ArtifactEvent::Register { event_id, manifest }
+                    if event_id == &expected_event_id
+                        && &manifest.artifact_id == artifact_id
+            )
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let original_manifest = historical
+            .manifest(artifact_id)
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        if original_manifest.content_digest != expected_content_digest {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+
+        // Authenticated CURRENT means that a valid old snapshot cannot
+        // resurrect revoked or replaced candidate bytes.
+        let current = self.current_registry_view(now)?;
+        let current_manifest = current
+            .registry()
+            .manifest(artifact_id)
+            .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
+        if current_manifest != original_manifest {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        let path = self.root.join("payloads").join(format!(
+            "{}-{}.bin",
+            artifact_id, expected_content_digest
+        ));
+        let bytes = read_candidate_payload(
+            File::open(&path)?,
+            current.registry(),
+            artifact_id,
+        )?;
+        let readback_digest = Digest32::of_bytes(&bytes);
+        if readback_digest != expected_content_digest {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        // The ACK is bound to immutable historical owner receipts and the
+        // actual bytes. Current-head identity is revalidated on each read;
+        // advancing the signed head alone does not mutate the old ACK.
+        let mut data = b"hepta.learning-artifacts.cell-split-cas-readback.v1\0".to_vec();
+        push_id(&mut data, operation_id);
+        push_id(&mut data, artifact_id);
+        for digest in [
+            checkpoint.state_digest,
+            checkpoint.intent_digest,
+            registration.event_digest,
+            registration.chain_digest,
+            registry_receipt.head_digest,
+            registry_receipt.file_digest,
+            witness_receipt.witness_digest,
+            witness_receipt.file_digest,
+            expected_content_digest,
+            readback_digest,
+        ] {
+            data.extend_from_slice(digest.as_array());
+        }
+        Ok(CellSplitArtifactCasReadbackV1 {
+            operation_id: operation_id.clone(),
+            artifact_id: artifact_id.clone(),
+            payload_digest: expected_content_digest,
+            readback_digest,
+            registry_head_digest: registry_receipt.head_digest,
+            native_ack_digest: Digest32::of_bytes(&data),
+            authority: AuthorityPosture::DENY_ALL,
+        })
     }
 
     /// Return the latest non-terminal transaction checkpoints. Product service
@@ -1877,6 +2051,105 @@ mod tests {
             .resume_publication(snapshot, 21)
             .fixture("exact snapshot resumes");
         assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::PayloadDurable);
+    }
+
+    #[test]
+    fn cell_split_cas_readback_requires_actual_acknowledged_bytes_and_current_head() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("native artifact owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let (registry, mut transaction) =
+            deterministic_publication(&owner, &withdrawals, 20);
+        let operation = id("process-operation");
+        let artifact = id("candidate");
+        let payload_digest = digest("payload");
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                20,
+            ),
+            Err(ArtifactOwnerHostError::Indeterminate)
+        ));
+
+        owner
+            .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
+            .fixture("native CAS write and verify");
+        owner
+            .ensure_registry_durable(
+                &mut transaction,
+                &registry,
+                &withdrawals,
+                digest("binding"),
+                20,
+            )
+            .fixture("native registry snapshot");
+        let head = signed_head(&key, scope_digest, registry.snapshot().head_digest);
+        owner
+            .ensure_witness_durable(&mut transaction, &head, &withdrawals, 20)
+            .fixture("signed head publication");
+        // A signed current head without the acknowledged native transaction
+        // is still not an execution receipt.
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                20,
+            ),
+            Err(ArtifactOwnerHostError::Indeterminate)
+        ));
+        owner
+            .acknowledge(&mut transaction, &withdrawals, 20)
+            .fixture("durable owner acknowledgement");
+
+        let observed = owner
+            .observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                21,
+            )
+            .fixture("native CAS observed from exact signed registry and bytes");
+        assert_eq!(observed.payload_digest, payload_digest);
+        assert_eq!(observed.readback_digest, payload_digest);
+        assert_eq!(observed.registry_head_digest, registry.snapshot().head_digest);
+        assert!(!observed.native_ack_digest.is_zero());
+        assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
+
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                digest("different-artifact"),
+                21,
+            ),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+
+        let payload_path = directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            artifact, payload_digest
+        ));
+        fs::write(payload_path, b"tampered").fixture("tamper native payload");
+        assert!(owner
+            .observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                21,
+            )
+            .is_err());
     }
 
     #[test]

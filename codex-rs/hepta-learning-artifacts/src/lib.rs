@@ -98,6 +98,7 @@ pub use model::LineageDisposition;
 pub use model::RegistryAppendDisposition;
 pub use model::RegistryAppendReceipt;
 pub use model::StateChange;
+pub use owner_host::CellSplitArtifactCasReadbackV1;
 pub use owner_host::ArtifactOwnerHostError;
 pub use owner_host::ArtifactOwnerPublicationCheckpointV1;
 pub use owner_host::ArtifactOwnerRecoveryV1;
