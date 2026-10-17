@@ -1,0 +1,114 @@
+name: Hepta Stem V31 original same-source feature-cost and task-outcome gate (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v31_original_cost_utility.py"
+      - "qualification/stem-cell-v1/test_v31_original_cost_utility.py"
+      - "qualification/stem-cell-v1/STEM_V31_ORIGINAL_COST_UTILITY_NO_GO_20261017.md"
+      - "qualification/stem-cell-v1/STEM_V31_ORIGINAL_SAME_SOURCE_NO_GO_20261017.json"
+      - ".github/workflows/hepta-stem-v31-cost-utility-join.yml"
+  push:
+    branches:
+      - research/stem-v31-original-cost-utility-no-go-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v31-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact-source no-network source and adversarial unit tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m py_compile v31_original_cost_utility.py test_v31_original_cost_utility.py
+          python -m unittest -v test_v31_original_cost_utility
+          python -O -m unittest -v test_v31_original_cost_utility
+
+  original-source-qualification:
+    # An already completed original publisher label replay and a separate
+    # actual dual-Encoder CPU run: this job NEVER downloads pretrained weights.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v31-original-cost-utility-no-go-20261017' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Acquire two ORIGINAL completed publisher/physical evidence artifacts, not replacement fixtures
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          # V25 64-case independent original-publisher label replay, original job 117183873758.
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/12081452577/zip" > "$RUNNER_TEMP/v25-real-publisher-labels.zip"
+          echo "0e623ec89014d7e0fa5cc0391d368443ac952599f353dc631597458cc9f434b0  $RUNNER_TEMP/v25-real-publisher-labels.zip" | sha256sum -c -
+          # V30 corrected Granite+DINO 4-arm physical source, original job 117386128272.
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/12101143188/zip" > "$RUNNER_TEMP/v30-real-corrected-feature-cost.zip"
+          echo "90b5ef1d7e95609a1439ce0c948b47cb96827d560b82c4ef7078a068e218446f  $RUNNER_TEMP/v30-real-corrected-feature-cost.zip" | sha256sum -c -
+      - name: Independently recount same-source historical accuracy and real feature CPU without authority
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python qualification/stem-cell-v1/v31_original_cost_utility.py \
+            --historical-zip "$RUNNER_TEMP/v25-real-publisher-labels.zip" \
+            --physical-zip "$RUNNER_TEMP/v30-real-corrected-feature-cost.zip" \
+            --output "$RUNNER_TEMP/v31-same-original-source-nogo.json"
+          cmp "$RUNNER_TEMP/v31-same-original-source-nogo.json" qualification/stem-cell-v1/STEM_V31_ORIGINAL_SAME_SOURCE_NO_GO_20261017.json
+          python - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'v31-same-original-source-nogo.json').read_text())
+          assert d['decision']=='NO_GO_RESOURCE_ONLY_NO_UTILITY_UPLIFT'
+          assert d['original_test_cases']==64 and d['selected_vision_cases']==21
+          assert d['historical_no_change_correct']==d['historical_conditional_correct']==17
+          assert d['historical_rescues']==d['historical_harms']==5
+          assert d['history_and_physical_source_sha_identical'] is True
+          assert d['case_level_joint_prediction_replay_authenticated'] is False
+          assert d['independent_future_windows']==0
+          assert d['ndu_net_benefit'] is None
+          assert d['scientific_promotion_authorized'] is False
+          assert d['production_authorized'] is False and d['stem_winner_verified'] is False
+          assert d['authority']=='DENY_ALL'
+          print('Physical source identity and historical negative outcome joined: NO_GO')
+          PY_CHECK
+      - name: Publish only sanitized frozen numerical decision (no source, labels, media, models)
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v31-original-source-cost-utility-nogo-${{ github.sha }}
+          path: ${{ runner.temp }}/v31-same-original-source-nogo.json
+          if-no-files-found: error
+          retention-days: 7
