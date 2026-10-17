@@ -1,0 +1,81 @@
+{
+  "claimed_future_generalization": false,
+  "claimed_multimodal_generation": false,
+  "claimed_natural_answer_success": false,
+  "claimed_ndu_causal_gain": false,
+  "disposition": "HOLD_NO_GO",
+  "evidence": {
+    "bm25_256docs_any_at5": 9,
+    "bm25_full_original_bm25_pairs": 58728,
+    "bm25_full_original_corpus_any_at5": 48,
+    "bm25_full_original_documents": 2447,
+    "bm25_full_original_evidence_any_reachable": 96,
+    "bm25_full_original_wall_seconds_unattested": 0.11443633600015346,
+    "frozen_cosine_any_at5": 12,
+    "full_corpus_control_has_different_candidate_budget": true,
+    "rank8_any_at5": 2,
+    "rank8_vs_cosine": {
+      "harms": 11,
+      "rescues": 1,
+      "ties": 84
+    },
+    "sham_rank8_any_at5": 1,
+    "zero_feature_any_at5": 0
+  },
+  "experiment_identity": "HDSI-G5-20261017-ROOT-SEPARATE-P0",
+  "implementation": {
+    "full_original_model_unit_tests_pass": 21,
+    "full_original_model_unit_tests_python_O_pass": 21,
+    "local_python": "3.13.5",
+    "local_torch": "2.10.0+cpu",
+    "native_rust_module_modified": false,
+    "python_custom_fp32_encoder_not_official_hf_parity": true,
+    "source_only_security_unit_tests_ordinary_pass": 20,
+    "source_only_security_unit_tests_python_O_pass": 20
+  },
+  "physical": {
+    "actual_encoder_batch_calls": 180,
+    "actual_encoder_completed_sequence_forwards": 2799,
+    "actual_original_encoder_token_positions": 75726,
+    "actual_original_model_weight_verified_before_forward": true,
+    "cpu_process_seconds_unattested": 35.13901963,
+    "cpu_wall_seconds_unattested": 35.13204993099998,
+    "energy_joules": null,
+    "fit_wall_seconds_nested": 2.046473505999984,
+    "head_params_per_arm": 6144,
+    "held_human_gold_not_mounted_in_model_runner": true,
+    "identical_predictions_and_head_weights_across_label_removed_repeat": true,
+    "logical_fanout_borrows": 2800,
+    "max_rss_bytes_unattested": 445411328,
+    "sham_head_weight_sha256": "a850a015fb0179af2a27986c91fe88a8d8901153ccdcf00d512003cb819335c3",
+    "sham_training_optimizer_steps": 100,
+    "target_host_p99_ms": null,
+    "true_head_weight_sha256": "b800d074873ef98f453de00b14ead5630b899daf261ce4bc35464719124a8df9",
+    "true_training_optimizer_steps": 100
+  },
+  "production_authorized": false,
+  "schema": "hepta.hdsi.g5.original-minilm-local-evidence-ledger.v1",
+  "scope": {
+    "held_conversation_roots": 4,
+    "held_original_questions": 96,
+    "held_questions_with_all_in_bank_evidence": 16,
+    "held_questions_with_any_in_bank_evidence": 31,
+    "max_source_docs_per_root": 256,
+    "original_source_first_label_free_held": true,
+    "train_conversation_roots": 6,
+    "train_original_questions": 144,
+    "training_questions_with_in_bank_evidence": 55
+  },
+  "source": {
+    "encoder_safetensors_sha256": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+    "exact_held_predictions_digest": "1e679cbaa91c5eb0fdef20f95f00b834ae5cf799078098b640390445da696dc8",
+    "full_corpus_cheap_review_file_sha256": "54edae2a95bb5562890e25650a02d07db2701fb43d39f8bfd39f8054ec9f3493",
+    "independent_review_file_sha256": "1b119789f9f1478846f35917e75f0033050d62a763ffbe0f682a50f9e31293b7",
+    "original_locomo_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "original_publisher": "LoCoMo (historical public corpus)",
+    "outer_historical_archive_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+    "prelabel_receipt_file_sha256": "8402f297fa6851a84a5c1ce314cb16e1819d21fc00820ba959986efa022fd194",
+    "source_plan_digest": "3e6c874e118e32b07948570fefc0b2c24dff8fa4944188c7ce264befb35c35f3",
+    "source_plan_file_sha256": "284a364af7754ee586a9e4e757ad325dfe8f6446f29fed6b86c4118ea6e9a6a8"
+  }
+}

@@ -1,0 +1,210 @@
+name: Hepta HDSI G5 genuine MiniLM LoCoMo evidence head (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g5-original-evidence-20261017]
+    paths:
+      - 'qualification/hdsi-g0g3/g5*'
+      - 'qualification/hdsi-g0g3/G5_ORIGINAL_EVIDENCE.md'
+      - 'qualification/hdsi-g0g3/G5_LOCAL_*.json'
+      - '.github/workflows/hepta-hdsi-g5-original.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdsi-g0g3/g5*'
+      - 'qualification/hdsi-g0g3/G5_ORIGINAL_EVIDENCE.md'
+      - 'qualification/hdsi-g0g3/G5_LOCAL_*.json'
+      - '.github/workflows/hepta-hdsi-g5-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hdsi-g5-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  STUDY: qualification/hdsi-g0g3
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Exact SHA, strict source/score/no-label-leak tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd "$STUDY"
+          python -m py_compile g5_original_evidence.py g5_batched_encoder.py g5_independent_review.py g5_material_custody.py g5_full_corpus_cheap.py test_g5_original_evidence.py
+          python -m unittest -v test_g5_original_evidence.G5SourceOnlyTests
+          python -O -m unittest -v test_g5_original_evidence.G5SourceOnlyTests
+          python -m json.tool G5_LOCAL_ORIGINAL_REVIEW_20261017.json >/dev/null
+          python -m json.tool G5_LOCAL_SOURCE_AND_COST_20261017.json >/dev/null
+          python -m json.tool G5_LOCAL_FULL_CORPUS_BM25_20261017.json >/dev/null
+          cd ../..
+          git diff --check
+
+  original-publisher-and-model-owner:
+    needs: source-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g5-original-evidence-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Verify historical GitHub artifact and split human gold from producer material
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g5-stage"
+          python "$STUDY/g5_material_custody.py" --mode source_owner \
+            --archive "$RUNNER_TEMP/g5-original-locked.zip" \
+            --root "$RUNNER_TEMP/g5-stage/model" \
+            --source "$RUNNER_TEMP/g5-stage/public.json"
+          test ! -e "$RUNNER_TEMP/g5-stage/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g5-stage/model/reader"
+          (cd "$RUNNER_TEMP/g5-stage" && sha256sum public.json > public.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g5-sealed-public-and-encoder-no-test-gold
+          path: ${{ runner.temp }}/g5-stage/
+          retention-days: 1
+          if-no-files-found: error
+
+  genuine-original-encoder-and-head-train:
+    needs: original-publisher-and-model-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: g5-sealed-public-and-encoder-no-test-gold
+          path: ${{ runner.temp }}/g5-stage
+      - name: Verify label-free handoff and install original pretrained CPU kernel runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/g5-stage" && sha256sum --check public.sha256)
+          test ! -e "$RUNNER_TEMP/g5-stage/model/locomo.json"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+          python - <<'PY'
+          import torch,safetensors
+          assert torch.__version__.split('+')[0]=='2.6.0'
+          assert safetensors.__version__=='0.6.2'
+          PY
+      - name: Actual original SHA checked 2799+ model sequences and two 100-step Cell Head trainings
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/g5-stage/model/locomo.json"
+          mkdir -p "$RUNNER_TEMP/g5-physical"
+          python "$STUDY/g5_original_evidence.py" infer \
+            --root "$RUNNER_TEMP/g5-stage/model" \
+            --source "$RUNNER_TEMP/g5-stage/public.json" \
+            --output "$RUNNER_TEMP/g5-physical/prelabel.json"
+          (cd "$RUNNER_TEMP/g5-physical" && sha256sum prelabel.json > prelabel.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g5-original-real-model-prelabel-denyall
+          path: ${{ runner.temp }}/g5-physical/
+          retention-days: 1
+          if-no-files-found: error
+
+  independent-original-human-evidence-postseal:
+    needs: genuine-original-encoder-and-head-train
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: g5-sealed-public-and-encoder-no-test-gold
+          path: ${{ runner.temp }}/g5-stage
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: g5-original-real-model-prelabel-denyall
+          path: ${{ runner.temp }}/g5-physical
+      - name: Verify SEALED prediction bytes before opening publisher answers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/g5-stage" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g5-physical" && sha256sum --check prelabel.sha256)
+      - name: Reacquire original human evidence, independently reconstruct and score all 96 held questions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$STUDY/g5_material_custody.py" --mode reviewer \
+            --archive "$RUNNER_TEMP/g5-independent-original.zip" \
+            --root "$RUNNER_TEMP/g5-original-private"
+          python "$STUDY/g5_independent_review.py" \
+            --original "$RUNNER_TEMP/g5-original-private/locomo.json" \
+            --source "$RUNNER_TEMP/g5-stage/public.json" \
+            --run "$RUNNER_TEMP/g5-physical/prelabel.json" \
+            --output "$RUNNER_TEMP/g5-independent-review.json"
+          python "$STUDY/g5_full_corpus_cheap.py" \
+            --original "$RUNNER_TEMP/g5-original-private/locomo.json" \
+            --output "$RUNNER_TEMP/g5-cheap-full-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ['RUNNER_TEMP'])/'g5-independent-review.json').read_text())
+          assert x['historical_original_publisher_questions']==96
+          assert x['source_independent_held_conversation_roots']==4
+          assert x['disposition']=='HOLD_NO_GO' and x['production_authorized'] is False
+          assert x['ndu_incremental_utility_verified'] is False
+          print('Human EVIDENCE retrieval scores are descriptive, never natural answer truth or promotion')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g5-independent-original-human-evidence-aggregate-denyall
+          path: |
+            ${{ runner.temp }}/g5-independent-review.json
+            ${{ runner.temp }}/g5-cheap-full-review.json
+          retention-days: 7
+          if-no-files-found: error
