@@ -437,7 +437,9 @@ fn orphan_control_cns_read_only_rejects_revision_race_inside_signed_route_rpc() 
     let signer = SigningKey::from_bytes(&[42; 32]);
     let (runtime, plan, binding, intent, mut port) =
         fixture(false, true, signer.clone(), signer.clone());
-    let before = runtime.topology_snapshot().expect("original serving runtime");
+    let before = runtime
+        .topology_snapshot()
+        .expect("original serving runtime");
     // SYNTHETIC historical signed CNS proof: no real Control B/C, cutover,
     // Final-use grant, or independent production signer is exercised here.
     let mut historical = CellSplitCnsRuntimeCommitV1 {

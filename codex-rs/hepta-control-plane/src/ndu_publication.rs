@@ -947,7 +947,9 @@ impl NduPublicationOwnerV1 {
         expected_predecessor: &NduSnapshotRefV1,
         expected_checkpoint: Digest32,
     ) -> Result<NduPublicationPendingBeginV1, NduPublicationErrorV1> {
-        use rustix::fs::{self as unixfs, Mode, OFlags};
+        use rustix::fs::Mode;
+        use rustix::fs::OFlags;
+        use rustix::fs::{self as unixfs};
         use std::os::unix::fs::MetadataExt;
 
         expected_predecessor

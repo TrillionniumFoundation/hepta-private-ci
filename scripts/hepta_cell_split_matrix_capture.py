@@ -240,9 +240,7 @@ def execute_matrix(
     # Complete packets remain diagnostic, not signed activation evidence.
     with (output / "measured-matrix.json").open("x", encoding="utf-8") as record:
         record.write(json.dumps(packet, sort_keys=True, indent=2) + "\n")
-    with (output / "diagnostic-comparison.json").open(
-        "x", encoding="utf-8"
-    ) as record:
+    with (output / "diagnostic-comparison.json").open("x", encoding="utf-8") as record:
         record.write(json.dumps(comparison, sort_keys=True, indent=2) + "\n")
     return comparison
 
