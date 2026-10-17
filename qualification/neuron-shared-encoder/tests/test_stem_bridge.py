@@ -112,6 +112,17 @@ class StemBridgeTests(unittest.TestCase):
         self.assertEqual(ledger.logical_params, 133)
         self.assertEqual(ledger.active_params, 121)
 
+    def test_incomplete_receipt_is_preserved_and_cannot_be_zero_filled(self):
+        incomplete = receipt(stem_params=None, receipt_status="INCOMPLETE", missing_fields=("stem_params",))
+        with self.assertRaises(ContractError):
+            incomplete.to_ledger()
+        with self.assertRaises(ContractError):
+            incomplete.to_transfer_case()
+
+    def test_complete_receipt_cannot_hide_a_missing_field(self):
+        with self.assertRaises(ContractError):
+            receipt(stem_params=None)
+
     def test_transfer_matrix_rejects_budget_mismatch(self):
         with self.assertRaises(ContractError):
             transfer_matrix_from_receipts(STEM, (receipt(), receipt(task_id="task.reader.b", budget_digest=digest("other-budget"))), digest("budget"))
@@ -139,6 +150,14 @@ class StemBridgeTests(unittest.TestCase):
             receipt(model_input_gold_visible=True)
         with self.assertRaises(ContractError):
             ReaderGateReceiptV1("REAL_SHADOW", True, True, 1.0, 0.9, 0.8, 0.01, 0.02, 0.001, 1.0, 1.0, 0, True)
+
+    def test_incomplete_reader_evidence_cannot_become_a_gate(self):
+        evidence = ReaderGateReceiptV1(
+            "INCOMPLETE", True, False, None, None, None, None, None, None, None, None, None,
+            missing_fields=("baseline_ucb", "citation_coverage", "deleted_replay", "ece", "fallback_coverage", "future_lcb", "old_task_degradation", "ood_false_acceptance", "rollback_recovery"),
+        )
+        with self.assertRaises(ContractError):
+            evidence.to_split_gate()
 
 
 if __name__ == "__main__":
