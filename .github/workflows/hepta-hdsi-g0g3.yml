@@ -1,0 +1,223 @@
+name: Hepta HDSI G0-G3 scoped original Granite97 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g0g3-20261017]
+    paths:
+      - 'qualification/hdsi-g0g3/**'
+      - '.github/workflows/hepta-hdsi-g0g3.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdsi-g0g3/**'
+      - '.github/workflows/hepta-hdsi-g0g3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hdsi-g0g3-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXP_DIR: qualification/hdsi-g0g3
+  PARENT_DIR: qualification/stem-optimal-v1
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  source-only-conformance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Exact head and model-free security/algorithm controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd "$EXP_DIR"
+          python -m py_compile feature_bus.py circuit_ndu.py physical_fanout.py review_fanout.py test_hdsi.py real_minilm_reference.py review_real_minilm.py test_real_minilm_reference.py
+          python -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests test_real_minilm_reference.MiniLMSourceTests
+          python -O -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests test_real_minilm_reference.MiniLMSourceTests
+          git -C ../.. diff --check
+
+  original-source-owner:
+    needs: source-only-conformance
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g0g3-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Independently byte-pin the authentic public publisher; seal label-free task sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/hdsi-source"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hdsi-source'
+          expected = {'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                      'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          revision = '57ec275d8078af65b7731c2a98be812d844a6d6b'
+          for key in ('train','test'):
+              url = f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{key}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'hepta-hdsi-original-source-v1'}),timeout=40) as response:
+                  if response.geturl()!=url: raise SystemExit('redirected publisher source')
+                  data=response.read(2_000_001)
+              if not 0 < len(data) <= 2_000_000 or hashlib.sha256(data).hexdigest()!=expected[key]:
+                  raise SystemExit('unpinned publisher data')
+              (root / f'{key}.csv').write_bytes(data)
+          PY
+          python "$PARENT_DIR/stem_candidate_v1.py" prepare \
+            --train "$RUNNER_TEMP/hdsi-source/train.csv" \
+            --test "$RUNNER_TEMP/hdsi-source/test.csv" \
+            --output "$RUNNER_TEMP/hdsi-source/source.json"
+          cd "$RUNNER_TEMP/hdsi-source"
+          sha256sum source.json > source.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-original-source-unlabelled
+          path: |
+            ${{ runner.temp }}/hdsi-source/source.json
+            ${{ runner.temp }}/hdsi-source/source.sha256
+          retention-days: 7
+          if-no-files-found: error
+
+  actual-original-granite97:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdsi-original-source-unlabelled
+          path: ${{ runner.temp }}/hdsi-source
+      - name: Verify input seal and install pinned reference runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/hdsi-source" && sha256sum --check source.sha256)
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          python - <<'PY'
+          import torch,transformers
+          assert torch.__version__.split('+')[0]=='2.6.0'
+          assert transformers.__version__=='4.57.1'
+          PY
+      - name: Physically allocate gated Heads and test synthetic SGD mechanism
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$EXP_DIR"
+          python -m unittest -v test_hdsi.PhysicalHeadTests
+          python -O -m unittest -v test_hdsi.PhysicalHeadTests
+      - name: Actual SHA-verified Granite97 CPU forward and 64-4096 scoped fleet accounting
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hdsi-physical"
+          python "$EXP_DIR/physical_fanout.py" \
+            --source "$RUNNER_TEMP/hdsi-source/source.json" \
+            --materials "$PARENT_DIR/MODEL_MATERIALS.json" \
+            --output "$RUNNER_TEMP/hdsi-physical/receipt.json"
+          (cd "$RUNNER_TEMP/hdsi-physical" && sha256sum receipt.json > receipt.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-original-physical-unattested-denyall
+          path: |
+            ${{ runner.temp }}/hdsi-physical/receipt.json
+            ${{ runner.temp }}/hdsi-physical/receipt.sha256
+          retention-days: 7
+          if-no-files-found: error
+
+  independent-source-and-accounting-review:
+    needs: actual-original-granite97
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdsi-original-source-unlabelled
+          path: ${{ runner.temp }}/hdsi-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: hdsi-original-physical-unattested-denyall
+          path: ${{ runner.temp }}/hdsi-physical
+      - name: Independently reacquire source, rejoin all 32 identities, validate every cost counter
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/hdsi-source" && sha256sum --check source.sha256)
+          (cd "$RUNNER_TEMP/hdsi-physical" && sha256sum --check receipt.sha256)
+          mkdir -p "$RUNNER_TEMP/hdsi-review"
+          python - <<'PY'
+          import hashlib,os,urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'hdsi-review'
+          expected={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                    'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          for key in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{key}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hdsi-late-independent-review-v1'}),timeout=40) as resp:
+                  if resp.geturl()!=url: raise SystemExit('source redirect')
+                  raw=resp.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=expected[key]:
+                  raise SystemExit('publisher bytes changed')
+              (root/f'{key}.csv').write_bytes(raw)
+          PY
+          python "$EXP_DIR/review_fanout.py" \
+            --source "$RUNNER_TEMP/hdsi-source/source.json" \
+            --materials "$PARENT_DIR/MODEL_MATERIALS.json" \
+            --receipt "$RUNNER_TEMP/hdsi-physical/receipt.json" \
+            --original-train "$RUNNER_TEMP/hdsi-review/train.csv" \
+            --original-test "$RUNNER_TEMP/hdsi-review/test.csv" \
+            --output "$RUNNER_TEMP/hdsi-review/review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'hdsi-review/review.json').read_text())
+          assert d['original_source_independently_replayed'] is True
+          assert d['metadata_graph_only'] is True
+          assert d['disposition']=='HOLD_NO_GO' and d['production_authorized'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-independent-accounting-denyall
+          path: ${{ runner.temp }}/hdsi-review/review.json
+          retention-days: 7
+          if-no-files-found: error
