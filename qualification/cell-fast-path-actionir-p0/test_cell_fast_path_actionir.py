@@ -56,7 +56,7 @@ def candidate(program: ActionIRV1):
         authorization_version="auth.v3",
         backend="wasm_aot",
         target="cpu",
-        evidence={"lane": "synthetic", "executed": False},
+        evidence={"lane": "synthetic", "source": "contract-test"},
     )
 
 
@@ -95,6 +95,18 @@ class ActionIRContractTests(unittest.TestCase):
         for key in ("raw_pointer", "syscall", "machine_code", "ptx", "opcode"):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 op(args={key: "1"})
+
+    def test_shadow_evidence_rejects_execution_claims(self):
+        with self.assertRaises(ValueError):
+            compile_shadow_candidate(
+                ir(op(1)),
+                candidate_id="candidate.evidence",
+                capability_manifest_digest=D,
+                authorization_version="auth.v3",
+                backend="wasm_aot",
+                target="cpu",
+                evidence={"lane": "synthetic", "executed": True},
+            )
 
     def test_unknown_operation_is_rejected(self):
         with self.assertRaises(ValueError):
@@ -173,7 +185,7 @@ class ActionIRContractTests(unittest.TestCase):
             authorization_version="auth.v3",
             backend="cuda_graph",
             target="gpu",
-            evidence={"lane": "synthetic", "executed": False},
+            evidence={"lane": "synthetic", "source": "contract-test"},
         )
         self.assertNotEqual(wasm.artifact_digest, cuda.artifact_digest)
 
