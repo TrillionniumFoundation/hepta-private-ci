@@ -108,6 +108,23 @@ def replay_published(record):
          "posthoc refusal analysis promoted")
     for arm in ARMS:
         candidate = per_arm[arm]
+        # The empty arm has no possible answer candidate. Its eight safe
+        # refusals are counted by the diagnostic refusal evaluator, not as
+        # strict exact matches against the published target answer. There is
+        # no post-hoc forced guess without any delivered candidate.
+        if arm == "empty":
+            deny(
+                candidate["planned"] == 8
+                and candidate["fixed_refusal_correct"] == 8
+                and candidate["abstentions"] == 8
+                and candidate["posthoc_forced_guess_correct"] == 0
+                and candidate["correct_suppressed_by_abstention"] == 0
+                and candidate["wrong_suppressed_by_abstention"] == 0
+                and candidate["guess_unsupported"] == 0
+                and candidate["unchanged"] == 0,
+                "no-evidence abstention cannot become an answer-space win",
+            )
+            continue
         deny(
             candidate["planned"] == 8
             and candidate["fixed_refusal_correct"] == by_arm[arm]["choice_correct"]

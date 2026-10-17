@@ -30,6 +30,22 @@ class LocalOriginalReaderResearchReceiptTests(unittest.TestCase):
         self.assertEqual(record["new_model_calls"], 0)
         self.assertFalse(record["production_qualified"])
 
+    def test_no_evidence_refusal_and_answer_success_stay_distinct(self):
+        report = self.fixture()
+        self.assertEqual(report["observed"]["by_arm"]["empty"]["choice_correct"], 0)
+        self.assertEqual(report["retrospective_refusal_ablation"]["by_arm"]["empty"]["fixed_refusal_correct"], 8)
+        self.assertEqual(replay_published(report)["model_requests"], 48)
+
+    def test_no_evidence_forced_guess_or_fake_correct_refusal_rejected(self):
+        for key, value in (("posthoc_forced_guess_correct", 1),
+                           ("fixed_refusal_correct", 7),
+                           ("guess_unsupported", 1)):
+            with self.subTest(key=key):
+                report = self.fixture()
+                report["retrospective_refusal_ablation"]["by_arm"]["empty"][key] = value
+                with self.assertRaisesRegex(ValueError, "no-evidence abstention"):
+                    replay_published(report)
+
     def test_fabricated_historical_runtime_parity_denied(self):
         report = self.fixture()
         report["execution_provenance"][
