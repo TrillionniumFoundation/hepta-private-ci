@@ -935,9 +935,7 @@ impl StateCheckpointOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateTombstoneReceiptV1, ProductionOwnerError> {
-        if reason_digest.is_zero()
-            || self.entries.get(&cell_id).is_none_or(Vec::is_empty)
-        {
+        if reason_digest.is_zero() || self.entries.get(&cell_id).is_none_or(Vec::is_empty) {
             return Err(ProductionOwnerError::StateNotFound(cell_id));
         }
         if self.tombstones.contains_key(&cell_id) {
