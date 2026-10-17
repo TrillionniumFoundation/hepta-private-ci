@@ -39,14 +39,17 @@ impl RuntimeStateAdapter for ReadOnlyState {
     }
 }
 
-/// Test-only witness. Unlike the production protocol it has no mutation
-/// authority, and it must NEVER return an admitted successor or positive
-/// original commit.
+/// Test-only witness. It can return a historical signed record for
+/// read-only negative regressions, but never admits a successor, writes a
+/// runtime mutation or grants production CNS/Control authority.
 struct DenyingWitness {
     _authority_root: tempfile::TempDir,
     signer: SigningKey,
     stale_nonce: bool,
     deny_authority: bool,
+    signed_history: Option<CellSplitCnsRuntimeCommitV1>,
+    durable_sequence: u64,
+    advance_durable_sequence_after_read: bool,
 }
 
 impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
@@ -120,11 +123,16 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
         &mut self,
         _key: &str,
     ) -> Result<Option<CellSplitCnsRuntimeCommitV1>, Self::Error> {
-        Ok(None)
+        Ok(self.signed_history.clone())
     }
 
     fn current_durable_sequence(&mut self, _cns_id: &str) -> Result<u64, Self::Error> {
-        Ok(1)
+        let observed = self.durable_sequence;
+        if self.advance_durable_sequence_after_read {
+            self.advance_durable_sequence_after_read = false;
+            self.durable_sequence += 1;
+        }
+        Ok(observed)
     }
 }
 
@@ -216,6 +224,9 @@ fn fixture(
             signer: actual_key,
             stale_nonce,
             deny_authority,
+            signed_history: None,
+            durable_sequence: 1,
+            advance_durable_sequence_after_read: false,
         },
     )
     .expect("CNS runtime bridge");
@@ -324,6 +335,56 @@ fn independent_control_snapshot(plan: &CellSplitExecutionPlanV1) -> NduSnapshotR
             .expect("frozen plan has canonical NDU digest"),
         projection_head_digest: Digest32::of_bytes(b"control-observer-projection"),
     }
+}
+
+#[test]
+fn direct_original_cns_receipt_refuses_replay_after_durable_frontier_advance() {
+    let signer = SigningKey::from_bytes(&[42; 32]);
+    let (runtime, plan, binding, intent, mut port) =
+        fixture(false, true, signer.clone(), signer.clone());
+    let before = runtime
+        .topology_snapshot()
+        .expect("original serving runtime");
+    // A synthetic historically signed record exercises verification ONLY;
+    // this fixture never runs a physical cutover or creates Control Commit.
+    let mut historical = CellSplitCnsRuntimeCommitV1 {
+        idempotency_key: intent.idempotency_key.clone(),
+        cns_id: binding.cns_id.clone(),
+        predecessor_route_digest: binding.predecessor_route_digest.clone(),
+        successor_route_digest: binding.successor_route_digest.clone(),
+        predecessor_generation: plan.parent_generation,
+        successor_generation: plan.child_generation,
+        authority_epoch: binding.authority_epoch,
+        committed_sequence: 11,
+        original_runtime_receipt_bytes: Vec::new(),
+        original_runtime_signature_bytes: Vec::new(),
+    };
+    let bytes = CellSplitCnsRuntimeAttestationV1::for_commit(&plan, &historical)
+        .canonical_bytes()
+        .expect("canonical historical attestation");
+    historical.original_runtime_signature_bytes = signer.sign(&bytes).to_bytes().to_vec();
+    historical.original_runtime_receipt_bytes = bytes;
+    port.witness.signed_history = Some(historical.clone());
+
+    port.witness.durable_sequence = 12;
+    assert!(
+        port.verify_original_commit(&historical).is_err(),
+        "a newer original CNS revision must fence even a valid old signature"
+    );
+    port.witness.durable_sequence = 11;
+    assert!(
+        port.verify_original_commit(&historical).is_ok(),
+        "same original revision authenticates the historical record only"
+    );
+    port.witness.advance_durable_sequence_after_read = true;
+    assert!(
+        port.verify_original_commit(&historical).is_err(),
+        "CNS frontier drift between readbacks must fence stale original proof"
+    );
+    assert_eq!(
+        runtime.topology_snapshot().expect("unchanged serving host"),
+        before
+    );
 }
 
 #[test]

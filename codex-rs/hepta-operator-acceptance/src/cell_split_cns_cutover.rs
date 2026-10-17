@@ -435,7 +435,12 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
                 .port
                 .committed_sequence(&self.binding.cns_id)
                 .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
-            if current_sequence == 0 || record.committed_sequence > current_sequence {
+            // A later CNS journal revision is not evidence that this older
+            // signed cutover remains the currently committed route. Even
+            // when the serving route's digest happens to match again, an
+            // advanced frontier may conceal rollback / ABA replacement.
+            // Demand the exact original runtime commitment revision.
+            if current_sequence != record.committed_sequence {
                 return Err(CellSplitCnsCutoverErrorV1::Invalid);
             }
         }
@@ -451,7 +456,29 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             .verify_preconditions(&self.plan, intent)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         let original = self.checked_original(intent)?;
+        let before_sequence = self
+            .port
+            .committed_sequence(&self.binding.cns_id)
+            .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
+        if before_sequence == 0 {
+            return Err(CellSplitCnsCutoverErrorV1::Invalid);
+        }
         let live = self.checked_live()?;
+        // The signed route lookup can race a separately committed CNS
+        // revision. It must not launder an old signed effect after a newer
+        // journal high-water, even when the route digest appears unchanged.
+        let after_sequence = self
+            .port
+            .committed_sequence(&self.binding.cns_id)
+            .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
+        if after_sequence != before_sequence
+            || original
+                .as_ref()
+                .is_some_and(|record| record.committed_sequence != after_sequence)
+            || self.checked_original(intent)? != original
+        {
+            return Err(CellSplitCnsCutoverErrorV1::Invalid);
+        }
         match original {
             Some(record) if self.is_child(&live) => Ok(Some(CellSplitOwnedEffectV1 {
                 owner_sequence: record.committed_sequence,

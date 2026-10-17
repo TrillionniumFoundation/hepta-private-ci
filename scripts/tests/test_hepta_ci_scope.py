@@ -203,6 +203,18 @@ class ScopeTests(unittest.TestCase):
             gate.index("control-ndu-atomic-owner.json"),
             gate.index("control-ndu-process-exit-between-b-c.json"),
         )
+        # The original Control suite contains real process-exit/SIGKILL
+        # regressions. POSIX locks can be temporarily inherited across fork
+        # before CLOEXEC. Run the SAME full suite serially, without skipping
+        # any of the 30 observed native cases or relaxing orphan recovery.
+        owner_key = "control-ndu-atomic-owner.json"
+        owner_line = next(line for line in gate.splitlines() if owner_key in line)
+        self.assertIn("--minimum-tests 30", owner_line)
+        self.assertIn(
+            "--lib ndu_publication -- --nocapture --test-threads=1",
+            owner_line,
+        )
+
 
     def test_neuron_original_effect_non_test_denial_gate(self):
         # A public callback cannot be an independent Control/Evidence owner.
