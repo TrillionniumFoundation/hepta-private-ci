@@ -60,7 +60,7 @@ pub fn bind_cell_evidence_v1(
     output: &CellHeadOutputV1,
     runtime: &NeuronRuntimeOutputV1,
 ) -> Result<CellEvidenceV1, CellEvidenceError> {
-    if output.cell_id != *head.cell_id() {
+    if &output.cell_id != head.cell_id() {
         return Err(CellEvidenceError::CellBindingMismatch);
     }
     if output.head_digest != head.head_digest() {
