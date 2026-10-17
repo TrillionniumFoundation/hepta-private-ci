@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/memory_cell/memory_reader_strong_reference.py'
       - 'scripts/memory_cell/test_memory_reader_strong_reference.py'
+      - 'scripts/memory_cell/test_memory_reader_qwen453_loader.py'
       - 'scripts/memory_cell/memory_reader_strong_custody.py'
       - 'scripts/memory_cell/test_memory_reader_strong_custody.py'
       - 'scripts/memory_cell/memory_reader_source_citation.py'
@@ -42,6 +43,7 @@ jobs:
             scripts/memory_cell/test_memory_reader_strong_reference.py \
             scripts/memory_cell/memory_reader_strong_custody.py \
             scripts/memory_cell/test_memory_reader_strong_custody.py \
+            scripts/memory_cell/test_memory_reader_qwen453_loader.py \
             scripts/memory_cell/memory_reader_source_citation.py \
             scripts/memory_cell/test_memory_reader_source_citation.py
           # Source-only CI cannot claim the optional original-plan/journal tests ran.
@@ -49,6 +51,8 @@ jobs:
             -p 'test_memory_reader_strong_reference.py' -v
           python3 -m unittest discover -s scripts/memory_cell \
             -p 'test_memory_reader_strong_custody.py' -v
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_memory_reader_qwen453_loader.py' -v
           python3 -m unittest discover -s scripts/memory_cell \
             -p 'test_memory_reader_source_citation.py' -v
           git diff --exit-code
