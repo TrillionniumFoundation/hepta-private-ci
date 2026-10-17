@@ -81,6 +81,19 @@ class ReaderFixtureBridgeTests(unittest.TestCase):
         with self.assertRaises(ReaderFixtureError):
             build_request(module, {"manifest_sha256": MANIFEST_DIGEST}, task(), "none")
 
+    def test_evidence_text_mismatch_is_rejected(self):
+        module = good_module()
+
+        def construct_request(corpus, case, arm):
+            return (
+                {"repository_source": "docs/source.md", "source_excerpt_untrusted": "different"},
+                {},
+            )
+
+        module.construct_request = construct_request
+        with self.assertRaises(ReaderFixtureError):
+            build_request(module, {"manifest_sha256": MANIFEST_DIGEST}, task(), "full")
+
     def test_missing_registered_script_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(ReaderFixtureError):
