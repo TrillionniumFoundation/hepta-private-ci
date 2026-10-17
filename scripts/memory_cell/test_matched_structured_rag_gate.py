@@ -21,7 +21,13 @@ class FrozenSameReaderGateTests(unittest.TestCase):
 
     def sample(self):
         plan, report, replay, rows, raw = self.fixture
-        return copy.deepcopy(plan), copy.deepcopy(report), copy.deepcopy(replay), copy.deepcopy(rows), raw
+        return (
+            copy.deepcopy(plan),
+            copy.deepcopy(report),
+            copy.deepcopy(replay),
+            copy.deepcopy(rows),
+            raw,
+        )
 
     def test_observed_negative_matched_baseline(self):
         got = audit(*self.sample())
@@ -35,7 +41,9 @@ class FrozenSameReaderGateTests(unittest.TestCase):
     def test_artifact_byte_mutation_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             forged = Path(temporary) / "tampered.zip"
-            forged.write_bytes(Path(os.environ["HEPTA_MATCHED_RAG_ARCHIVE"]).read_bytes() + b"X")
+            forged.write_bytes(
+                Path(os.environ["HEPTA_MATCHED_RAG_ARCHIVE"]).read_bytes() + b"X"
+            )
             with self.assertRaisesRegex(ValueError, "GitHub artifact SHA"):
                 payload(forged)
 
