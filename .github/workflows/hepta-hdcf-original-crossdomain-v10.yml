@@ -1,0 +1,92 @@
+name: hepta-hdcf-original-crossdomain-v10
+
+on:
+  push:
+    branches:
+      - research/hdcf-crossdomain-v10-20261017
+    paths:
+      - 'qualification/hdcf-research/original_crossdomain_v10.py'
+      - 'qualification/hdcf-research/test_original_crossdomain_v10.py'
+      - 'qualification/hdcf-research/ORIGINAL_CROSSDOMAIN_V10.md'
+      - '.github/workflows/hepta-hdcf-original-crossdomain-v10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hdcf-original-crossdomain-v10-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  original-source-crossdomain-review:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Exact source and sealed parent prerequisites
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -f qualification/hdcf-research/original_beans_v9.py
+          test -f qualification/hdcf-research/modernbert_feature_bridge.py
+          test -f qualification/hdcf-research/original_crossdomain_v10.py
+          python3 -m py_compile qualification/hdcf-research/original_crossdomain_v10.py qualification/hdcf-research/test_original_crossdomain_v10.py
+      - name: Fetch exact original four archives with no bearer token on CDN
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 original_crossdomain_v10.py download --kind modern_trial --out "$RUNNER_TEMP/modern-trial.zip"
+          python3 original_crossdomain_v10.py download --kind modern_targets --out "$RUNNER_TEMP/modern-targets.zip"
+          python3 original_crossdomain_v10.py download --kind modern_review --out "$RUNNER_TEMP/modern-review.zip"
+          python3 original_crossdomain_v10.py download --kind beans_review --out "$RUNNER_TEMP/beans-review.zip"
+      - name: Original independent pair review, adversarial checks and fail-closed opt mode
+        env:
+          HDCF_V10_MODERN_TRIAL: ${{ runner.temp }}/modern-trial.zip
+          HDCF_V10_MODERN_TARGETS: ${{ runner.temp }}/modern-targets.zip
+          HDCF_V10_MODERN_REVIEW: ${{ runner.temp }}/modern-review.zip
+          HDCF_V10_BEANS_REVIEW: ${{ runner.temp }}/beans-review.zip
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_original_crossdomain_v10
+          python3 -O -m unittest -v test_original_crossdomain_v10
+          python3 original_crossdomain_v10.py audit \
+            --modern-trial "$HDCF_V10_MODERN_TRIAL" \
+            --modern-targets "$HDCF_V10_MODERN_TARGETS" \
+            --modern-review "$HDCF_V10_MODERN_REVIEW" \
+            --beans-review "$HDCF_V10_BEANS_REVIEW" \
+            --out "$RUNNER_TEMP/crossdomain-v10-sanitized-hold.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'crossdomain-v10-sanitized-hold.json'
+          result=json.loads(p.read_text())
+          assert result['schema']=='hepta.hdcf.original-crossdomain-evidence-v10'
+          assert result['disposition']=='HOLD_NO_GO_DENY_ALL'
+          assert result['production_authorized'] is False
+          assert result['joint_pooled_significance_test_performed'] is False
+          assert result['complete_lifecycle_tco_attested'] is False
+          assert [v['original_cases'] for v in result['panels']]==[32,24]
+          print('V10_ORIGINAL_TEXT_AND_IMAGE_PAIRED_RESULT_VERIFIED_HOLD_DENY_ALL')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hdcf-original-crossdomain-v10-sanitized-hold
+          path: ${{ runner.temp }}/crossdomain-v10-sanitized-hold.json
+          if-no-files-found: error
+          retention-days: 7
