@@ -81,8 +81,9 @@ receipt and must not be interpreted as the verified V2 proof chain:
   remains the provider-owned exact-attempt witness; the independent delivery
   verifier must authenticate that witness against the current
   `ContextDeliveryPreparationV2`;
-- `observe_delivery` accepts only a structurally valid
-  `ProviderInvocationReceipt` plus an independent
+- `observe_delivery` accepts a non-authorizing
+  `ContextDeliveryObservationStampV2` (delivery identity and observed time),
+  a structurally valid `ProviderInvocationReceipt` plus an independent
   `ContextProviderDeliveryVerifierV2` decision, verifies the exact payload
   binding, verifier-authenticated pre-dispatch preparation linkage,
   provider/model identity, attempt and terminal

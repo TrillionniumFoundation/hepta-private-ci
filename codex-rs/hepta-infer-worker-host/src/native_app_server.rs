@@ -48,10 +48,10 @@ use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerRequestBinding;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
+use codex_hepta_codex_adapter::adapt_execution_port_request_v1;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
-use codex_hepta_codex_adapter::adapt_request;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
@@ -67,12 +67,15 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ExecutionPortIntentV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_execution_port.rs"]
+mod native_execution_port;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
@@ -565,17 +568,20 @@ impl AppServerModelDriver {
         let adapted_at_ms = unix_time_ms()?;
         let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
-        let source_admission_digest: Digest32 = control
-            .native_record(request_id)
-            .ok_or("missing durable native admission")?
-            .request
-            .payload_digest
-            .parse()?;
+        // Read the original Control journal, not the Codex envelope, to
+        // establish source, operation and generation before final-use.
+        let original_port = native_execution_port::bind_reserved_native_port_v1(
+            control
+                .native_record(request_id)
+                .ok_or("missing durable native admission")?,
+            request_id,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+        )?;
+        let source_admission_digest = original_port.source_admission_digest;
         let adapter_intent = CodexOperationIntent {
-            operation_id: StableId::new(format!(
-                "native:{}",
-                Digest32::of_bytes(request_id.as_bytes())
-            ))?,
+            operation_id: original_port.operation_id.clone(),
             thread_id: StableId::new(started.thread.id.clone())?,
             method_id: StableId::new(TURN_START_METHOD_ID)?,
             payload_digest,
@@ -585,7 +591,7 @@ impl AppServerModelDriver {
                 .ok_or("native execution deadline overflow")?,
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
-                agent_generation: Generation::new(self.config.generation)?,
+                agent_generation: original_port.generation,
                 session_id: StableId::new(started.thread.session_id.clone())?,
                 client_user_message_id: StableId::new(request_id.to_string())?,
                 user_input_digest,
@@ -595,7 +601,19 @@ impl AppServerModelDriver {
                 connection_id,
             }),
         };
-        let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
+        // The backend-neutral borrowed intent is validated against the exact
+        // App Server turn/start intent before the original Final-use claim.
+        // This adds no executor, process hop, durable writer or capability.
+        let port_intent = ExecutionPortIntentV1 {
+            operation_id: &original_port.operation_id,
+            source_admission_digest: original_port.source_admission_digest,
+            generation: original_port.generation,
+            payload_digest,
+            lease_payload_digest: payload_digest,
+            deadline_ms: adapter_intent.deadline_ms,
+        };
+        let request_receipt =
+            adapt_execution_port_request_v1(adapted_at_ms, &port_intent, &adapter_intent)?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,
@@ -1434,6 +1452,32 @@ fn observe_event(
             }
             output.output.push_str(&delta.delta);
         }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item {
+                // A Responses API output_item.done can carry the entire text
+                // without any preceding text delta. Bind the real App Server
+                // connection before accepting that completed item as output.
+                // This is content observation, never terminality or authority.
+                let unexpected_terminal =
+                    adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                        .map_err(|error| format!("invalid App Server item witness: {error}"))?;
+                if unexpected_terminal.is_some() {
+                    return Err(
+                        "item/completed unexpectedly produced a terminal receipt".to_string()
+                    );
+                }
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("completed agent message exceeds output byte limit".to_string());
+                }
+                // Streaming deltas have already supplied this answer when
+                // present. Never count the completed item a second time.
+                if output.output.is_empty() {
+                    output.output.push_str(text);
+                }
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1492,3 +1536,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_observed_output_tests.rs"]
+mod observed_output_tests;

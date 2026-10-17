@@ -971,6 +971,24 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Rewind the latest owner-fence schema before removing its referenced
+    // outcome table. SQLite validates trigger bodies when ALTER TABLE later
+    // rewrites automation_runs; a dangling timer drain trigger would make a
+    // genuine v1 fixture impossible and conceal the real migration test.
+    for statement in [
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_drain",
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_transition",
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_no_delete",
+        "DROP TABLE IF EXISTS automation_timer_lifecycle",
+        "DROP TRIGGER IF EXISTS destination_operation_dedupe_immutable",
+        "DROP TRIGGER IF EXISTS destination_operation_dedupe_no_delete",
+        "DROP TABLE IF EXISTS destination_operation_dedupe",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v1 owner schema");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
