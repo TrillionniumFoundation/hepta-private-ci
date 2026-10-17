@@ -317,7 +317,6 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertIn("--minimum-tests 5", gate)
 
-
     def test_original_control_orphan_begin_readonly_gate_runs_before_owner_effects(self):
         scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
         self.assertTrue(scope["native"])
@@ -328,6 +327,7 @@ class ScopeTests(unittest.TestCase):
             / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text(encoding="utf-8")
         gate = "control-original-pending-begin-readonly.json"
+        self.assertIn("control-ndu-sigkill-between-b-c.json", workflow)
         self.assertEqual(workflow.count(gate), 1)
         self.assertIn(
             "--minimum-tests 2 -- cargo test --locked --manifest-path "
