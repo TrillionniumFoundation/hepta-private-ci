@@ -649,6 +649,33 @@ mod tests {
         assert_eq!(worker.resident_encoder_count(), 2);
     }
 
+
+    #[test]
+    fn legacy_model_manifest_bridge_preserves_runtime_identity() {
+        let model = crate::model_worker::ModelManifest {
+            model_id: "base.1".into(),
+            model_digest: "a".repeat(64),
+            weights_digest: "b".repeat(64),
+            tokenizer_digest: "c".repeat(64),
+            preprocessor_digest: "d".repeat(64),
+            quantization_digest: "e".repeat(64),
+            runtime_digest: "f".repeat(64),
+            device_digest: "g".repeat(64),
+            maximum_tokens: 128,
+        };
+        let manifest = CompositionManifestV1::from_model_manifest(
+            &model,
+            "cell-a".into(),
+            "normalization-v1".into(),
+            "head-a".into(),
+            20,
+        );
+        manifest.validate().expect("composition manifest");
+        assert_eq!(manifest.key().weights_digest, model.weights_digest);
+        assert_eq!(manifest.key().tokenizer_digest, model.tokenizer_digest);
+        assert_eq!(manifest.head().cell_id, "cell-a");
+    }
+
     #[test]
     fn shared_encoder_loads_once_and_heads_fan_out() {
         let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
