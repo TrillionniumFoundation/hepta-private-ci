@@ -1,0 +1,229 @@
+name: Hepta MemoryCell original Reader premise and format contrast (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-reader-capacity-20261017]
+    paths:
+      - 'scripts/memory_cell/reader_premise_format.py'
+      - 'scripts/memory_cell/test_reader_premise_format.py'
+      - 'codex-rs/hepta-intelligence-eval/READER_PREMISE_FORMAT_CAUSAL_20261017.md'
+      - '.github/workflows/hepta-reader-premise-format.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-reader-premise-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-and-bounded-original-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned frozen CPU research environment
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - name: Independent synthetic adversarial contracts
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-preflight-receipts
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_premise_format.py -v 2>&1 | tee /tmp/premise-preflight-receipts/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/premise-staged
+      - name: Create exact original public source and frozen Cell rankings
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-source
+          tar -C /tmp/premise-source -xzf /tmp/premise-staged/memory-inputs.tar.gz memory-inputs/locomo.json memory-inputs/encoder
+          test "$(sha256sum /tmp/premise-source/memory-inputs/locomo.json | cut -d' ' -f1)" = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/premise-source/memory-inputs/locomo.json /tmp/premise-prepared > /tmp/premise-preflight-receipts/prepared.json
+          mkdir /tmp/premise-public
+          cp /tmp/premise-prepared/{public,manifest}.json /tmp/premise-public/
+          test ! -e /tmp/premise-public/private.json
+          python3 scripts/memory_cell/parametric_stem_reader.py run \
+            /tmp/premise-public /tmp/premise-source/memory-inputs/encoder /tmp/premise-frozen-rank \
+            > /tmp/premise-preflight-receipts/frozen-source-rank.json
+          python3 scripts/memory_cell/reader_premise_format.py prepare \
+            /tmp/premise-public /tmp/premise-frozen-rank \
+            /tmp/premise-source/memory-inputs/locomo.json /tmp/premise-plan \
+            > /tmp/premise-preflight-receipts/original-reference-source-plan.json
+          test ! -e /tmp/premise-plan/private.json
+          test "$(find /tmp/premise-plan -maxdepth 1 -type f | wc -l)" -eq 2
+      - name: Stage Reader weights separately from original archive and labels
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-reader-transport
+          tar -C /tmp/premise-reader-transport -xzf /tmp/premise-staged/memory-inputs.tar.gz memory-inputs/reader
+          mv /tmp/premise-reader-transport/memory-inputs/reader/* /tmp/premise-reader-transport/
+          rmdir /tmp/premise-reader-transport/memory-inputs/reader /tmp/premise-reader-transport/memory-inputs
+          (cd /tmp/premise-reader-transport && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 scripts/memory_cell/reader_weight_transport.py /tmp/premise-reader-transport > /tmp/premise-preflight-receipts/reader-model-only.json
+          test "$(find /tmp/premise-reader-transport -maxdepth 1 -type f | wc -l)" -eq 9
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-frozen-public-rank
+          path: /tmp/premise-frozen-rank/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-frozen-public-source
+          path: /tmp/premise-public/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-oracle-source-plan-no-answers
+          path: /tmp/premise-plan/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-reader-only-eight-model-files
+          path: /tmp/premise-reader-transport/
+          if-no-files-found: error
+      - name: Original source receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/premise-preflight-receipts
+          git rev-parse HEAD > /tmp/premise-preflight-receipts/head.txt
+          (cd /tmp/premise-preflight-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-source-and-tests-not-acceptance
+          path: /tmp/premise-preflight-receipts/
+          if-no-files-found: error
+  blind-original-reader-40:
+    needs: source-and-bounded-original-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Frozen original SmolLM2 CPU dependencies
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-oracle-source-plan-no-answers
+          path: /tmp/premise-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-reader-only-eight-model-files
+          path: /tmp/premise-reader-transport
+      - name: Authenticate model-only transport; raw original is absent
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-reader-receipts
+          test ! -e /tmp/premise-plan/private.json
+          test ! -e /tmp/premise-plan/locomo.json
+          test ! -e /tmp/premise-reader-transport/locomo.json
+          python3 scripts/memory_cell/reader_weight_transport.py /tmp/premise-reader-transport > /tmp/premise-reader-receipts/reader-transport.json
+      - name: Execute original 40 generations without answer gold
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/premise-reader-receipts/resources.txt \
+            python3 scripts/memory_cell/reader_premise_format.py run \
+              /tmp/premise-plan /tmp/premise-reader-transport /tmp/premise-reader-output \
+            > /tmp/premise-reader-receipts/execution.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-original-40-unscored
+          path: /tmp/premise-reader-output/
+          if-no-files-found: error
+      - name: Exact-head original-Reader receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/premise-reader-receipts
+          git rev-parse HEAD > /tmp/premise-reader-receipts/head.txt
+          (cd /tmp/premise-reader-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-reader-resources-not-acceptance
+          path: /tmp/premise-reader-receipts/
+          if-no-files-found: error
+  independent-source-and-reader-replay:
+    needs: blind-original-reader-40
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Frozen original source/Reader verification dependencies
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-oracle-source-plan-no-answers
+          path: /tmp/premise-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-frozen-public-source
+          path: /tmp/premise-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-frozen-public-rank
+          path: /tmp/premise-frozen-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-40-unscored
+          path: /tmp/premise-reader-output
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/premise-verifier-staged
+      - name: Independently replay original Reader and then score
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-verifier-original /tmp/premise-verifier-model /tmp/premise-review-receipts
+          tar -C /tmp/premise-verifier-original -xzf /tmp/premise-verifier-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          tar -C /tmp/premise-verifier-model -xzf /tmp/premise-verifier-staged/memory-inputs.tar.gz memory-inputs/reader
+          mv /tmp/premise-verifier-model/memory-inputs/reader/* /tmp/premise-verifier-model/
+          rmdir /tmp/premise-verifier-model/memory-inputs/reader /tmp/premise-verifier-model/memory-inputs
+          (cd /tmp/premise-verifier-model && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 scripts/memory_cell/reader_weight_transport.py /tmp/premise-verifier-model > /tmp/premise-review-receipts/reader-pins.json
+          /usr/bin/time -v -o /tmp/premise-review-receipts/reader-replay-resources.txt \
+            python3 scripts/memory_cell/reader_premise_format.py review \
+              /tmp/premise-public /tmp/premise-frozen-rank \
+              /tmp/premise-verifier-original/memory-inputs/locomo.json \
+              /tmp/premise-plan /tmp/premise-reader-output /tmp/premise-verifier-model \
+              /tmp/premise-review-receipts/report.json > /tmp/premise-review-receipts/summary.json
+      - name: Original reviewer SHA256 receipts
+        if: always()
+        run: |
+          mkdir -p /tmp/premise-review-receipts
+          git rev-parse HEAD > /tmp/premise-review-receipts/head.txt
+          (cd /tmp/premise-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-independent-40-postseal-not-acceptance
+          path: /tmp/premise-review-receipts/
+          if-no-files-found: error
