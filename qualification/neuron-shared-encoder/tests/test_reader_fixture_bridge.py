@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from neuron_shared_encoder.reader_fixture_bridge import (  # noqa: E402
     ARM_NAMES,
+    REGISTERED_FROZEN_CASE_SHA256,
     ReaderFixtureError,
     build_four_condition_requests,
     build_request,
@@ -51,6 +52,9 @@ def good_module() -> SimpleNamespace:
 
 
 class ReaderFixtureBridgeTests(unittest.TestCase):
+    def test_manifest_digest_is_pinned(self):
+        self.assertEqual(REGISTERED_FROZEN_CASE_SHA256, "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89")
+
     def test_four_condition_adapter_keeps_exact_arm_order(self):
         requests = tuple(build_request(good_module(), {"manifest_sha256": MANIFEST_DIGEST}, task(), arm) for arm in ARM_NAMES)
         self.assertEqual(tuple(request.arm for request in requests), ARM_NAMES)
@@ -104,7 +108,7 @@ class ReaderFixtureBridgeTests(unittest.TestCase):
             """
             SCHEMA = 'hepta.sngr.reader-evidence-fixture.v1'
             ARM_NAMES = ('none', 'distractor', 'withheld', 'full')
-            FROZEN_CASE_SHA256 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            FROZEN_CASE_SHA256 = 'eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89'
             def load_cases(path):
                 return {'manifest_sha256': FROZEN_CASE_SHA256, 'tasks': [
                     {'id': 'task_reader_a', 'question': 'Which cited fact is supported by the source excerpt?',
