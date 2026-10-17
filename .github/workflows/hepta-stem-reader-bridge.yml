@@ -35,6 +35,14 @@ jobs:
       - name: Run qualification bridge tests
         run: python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'
 
+      - name: Run modality and real-qualification contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/neuron-shared-encoder/test_modality_registry.py
+          python3 qualification/neuron-shared-encoder/test_registry_bridge.py
+          PYTHONPATH=qualification/neuron-shared-encoder python3 qualification/neuron-shared-encoder/test_stem_qualification.py
+
       - name: Bind the registered Reader fixture (no model)
         run: |
           python3 - <<'PY'
@@ -62,6 +70,12 @@ jobs:
             qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/modality_registry.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/registry_bridge.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/stem_qualification.py \
+            qualification/neuron-shared-encoder/test_modality_registry.py \
+            qualification/neuron-shared-encoder/test_registry_bridge.py \
+            qualification/neuron-shared-encoder/test_stem_qualification.py \
             qualification/neuron-shared-encoder/tests/test_stem_bridge.py \
             qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py
           git diff --check
