@@ -78,7 +78,9 @@ jobs:
           original = source.read_text(encoding="utf-8")
           old = '''                entry.name()
             ));'''
-          replacement = '''                entry.name().map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?
+          replacement = '''                entry.name().map_err(|err| {
+                    format!("failed to read curated plugins zip entry name: {err}")
+                })?
             ));'''
           if original.count(old) != 1:
               raise SystemExit("ZIP9 ZipFile::name API site drifted; aborting candidate")
@@ -131,7 +133,7 @@ jobs:
           if [[ -n "${ZIP9_CANDIDATE:-}" ]]; then
             cp "$ZIP9_CANDIDATE/codex-rs/Cargo.toml" "$evidence/Cargo.toml"
             cp "$ZIP9_CANDIDATE/codex-rs/Cargo.lock" "$evidence/Cargo.lock"
-            git -C "$ZIP9_CANDIDATE" diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock > "$evidence/actual-cargo-diff.patch"
+            git -C "$ZIP9_CANDIDATE" diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/core-plugins/src/startup_sync.rs > "$evidence/actual-cargo-diff.patch"
           fi
           git diff --check
           git diff --exit-code
