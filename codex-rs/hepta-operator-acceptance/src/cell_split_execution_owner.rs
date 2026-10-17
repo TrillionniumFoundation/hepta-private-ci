@@ -567,10 +567,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // any original owner. A remote readback may race with local corruption
         // or replacement; neither a reconstructed cursor nor a fresh open
         // may accept the resulting mixed local history.
-        let (plan_bytes, frozen_plan_instance) = read_frame_with_snapshot(&path)?
-            .ok_or(CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"))?;
-        let (pins_bytes, frozen_pins_instance) = read_frame_with_snapshot(&pins_path)?
-            .ok_or(CellSplitExecutionErrorV1::Invalid("owner trust pins disappeared"))?;
+        let (plan_bytes, frozen_plan_instance) = read_frame_with_snapshot(&path)?.ok_or(
+            CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
+        )?;
+        let (pins_bytes, frozen_pins_instance) = read_frame_with_snapshot(&pins_path)?.ok_or(
+            CellSplitExecutionErrorV1::Invalid("owner trust pins disappeared"),
+        )?;
         if plan_bytes != bytes || pins_bytes != frozen_pins {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "frozen identity changed before owner recovery",
