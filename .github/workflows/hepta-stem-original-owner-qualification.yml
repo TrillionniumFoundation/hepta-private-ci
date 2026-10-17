@@ -20,6 +20,7 @@ on:
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-evidence/**"
       - ".github/workflows/hepta-architecture-convergence.yml"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
@@ -124,6 +125,16 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-context-delivery.json" --minimum-tests 25 -- cargo +1.95.0 test --locked -p codex-hepta-context-compiler --lib v2::tests:: -- --nocapture
       - name: Strict Context Delivery provider-verifier Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
+      # The signed Worker loads persistent one-use nonce frames through this
+      # original Contracts owner. Validate real tests and strict Clippy here;
+      # a passing Learning Artifacts suite alone cannot certify Final-use.
+      - name: Require original Final-use Contracts Rust formatting
+        run: cargo +1.95.0 fmt --package codex-hepta-contracts -- --check
+      - name: Require two executed Final-use nonce WAL replay regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-final-use-claims.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-contracts --lib final_use::store::tests:: -- --test-threads=1
+      - name: Strict original Final-use Contracts all-target Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-contracts --all-targets -- -D warnings
       # The original Worker brings this CAS/State owner in transitively; do
       # not permit a passing Core check to hide its strict-Clippy failures.
       - name: Require original Learning Artifacts owner Rust formatting
