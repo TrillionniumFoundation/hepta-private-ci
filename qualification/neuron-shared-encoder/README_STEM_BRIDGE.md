@@ -110,3 +110,42 @@ projector, or claim text/image/video/audio generation. They only prevent a
 future experiment from mixing modal widths, Stem generations, source tower
 identities, mutable features, or untracked evidence while the actual frozen
 checkpoint and equal-budget transfer matrix are still pending.
+
+
+## Componentized resource receipts
+
+`neuron_shared_encoder.component_resource_receipts` is the P2 accounting
+boundary. A `ComponentResourceReceiptV1` records the same candidate and
+budget identity while keeping nine charged components separate:
+
+`encoder`, `tower`, `projector`, `decoder`, `cell`, `controller`,
+`state`, `cache`, and `verifier`. Each component carries its own
+implementation digest, device digest, calls, input tokens, FLOPs, peak memory,
+p95 latency, energy, and resident/active parameters. A separate
+`DeviceReceiptV1` binds the device identity, runtime digest, device kind,
+precision, device count, end-to-end peak memory, and measured energy.
+
+The receipt also binds model, tokenizer, preprocessor, runtime, source and
+Git blob digests. `COMPLETE` records must contain every component, a device
+receipt, all digests, and explicit Reader calls/input-token charges.
+`INCOMPLETE` records preserve the exact missing field names and fail closed
+before budget qualification; values are never zero-filled. The raw
+`evidence_class` is preserved exactly. In particular,
+`REAL_MODEL_LOCAL_QUALIFICATION` is not renamed to `REAL_SHADOW`, and
+synthetic or historical receipts cannot enter the strict adapter.
+
+`validate_against_budget()` binds both `budget_digest` and
+`cost_weights_digest` and checks calls, input tokens, FLOPs, device memory,
+latency, and energy against the fixed P1 caps. `to_resource_cost()` and
+`to_prospective_receipt()` are available only for complete
+`REAL_SHADOW` receipts. The legacy `ResourceCostV1` projection groups
+tower/projector with encoder and decoder/state/cache with Cell because its
+schema has fewer buckets; `AGGREGATION_POLICY` is recorded and the scalar
+`total_units` remains an experiment-local accounting unit, never a claim
+that unlike physical dimensions are interchangeable.
+
+This contract still does not run a model, train a Cell, select a device,
+activate a split, or grant System2 authority. A future real receipt adapter
+must preserve the harness's native evidence class and independently verify the
+pinned checkpoint, tokenizer/preprocessor, runtime, source bytes, and device
+measurements before any receipt can be considered by the P1 transfer matrix.
