@@ -114,7 +114,7 @@ def bind_public_iid(snapshot: dict, registry: dict, receipt: dict,
          receipt.get("ndu_eligible") is False and
          receipt.get("original_selected_v1_no_change_verified") is False and
          receipt.get("projection_owner_signature_verified") is False,
-         "physical public Encoder producer lacks complete non-authorizing receipt")
+         "physical public Encoder source producer lacks complete non-authorizing receipt")
     need(receipt.get("projection_safetensors_sha256") == projection_sha256
          and receipt.get("registry_sha256") == registry_sha256
          and receipt.get("snapshot_sha256") == snapshot_sha256,
