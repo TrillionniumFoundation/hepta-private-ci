@@ -96,6 +96,46 @@ class PhysicalSourceTests(unittest.TestCase):
             receipt=source_bytes.acquire("ettin400",lookup,dl,stage)
             (stage/"config.json").write_bytes(b"tampered content")
             with self.assertRaises(review_bytes.Rejected): review_bytes.audit(receipt,stage)
+    def test_second_process_denies_late_added_model_config(self):
+        lookup,dl,_=harness("ettin400")
+        with tempfile.TemporaryDirectory() as td:
+            stage=Path(td)/"stage"
+            receipt=source_bytes.acquire("ettin400",lookup,dl,stage)
+            # The *first* source-byte scan has already passed.
+            (stage/"generation_config.json").write_text('{"eos_token_id":0}')
+            with self.assertRaisesRegex(review_bytes.Rejected, "unregistered"):
+                review_bytes.audit(receipt,stage)
+
+    def test_second_process_denies_late_added_tokenizer_symlink(self):
+        lookup,dl,_=harness("ettin400")
+        with tempfile.TemporaryDirectory() as td:
+            stage=Path(td)/"stage"
+            receipt=source_bytes.acquire("ettin400",lookup,dl,stage)
+            (stage/"tokenizer_extra.json").symlink_to("tokenizer.json")
+            with self.assertRaisesRegex(review_bytes.Rejected,"symlink"):
+                review_bytes.audit(receipt,stage)
+
+    def test_second_process_denies_unregistered_empty_dir(self):
+        lookup,dl,_=harness("ettin400")
+        with tempfile.TemporaryDirectory() as td:
+            stage=Path(td)/"stage"
+            receipt=source_bytes.acquire("ettin400",lookup,dl,stage)
+            (stage/"unregistered").mkdir()
+            with self.assertRaisesRegex(review_bytes.Rejected,"unregistered"):
+                review_bytes.audit(receipt,stage)
+
+    def test_second_process_allows_only_ordinary_hub_cache(self):
+        lookup,dl,_=harness("ettin400")
+        with tempfile.TemporaryDirectory() as td:
+            stage=Path(td)/"stage"
+            receipt=source_bytes.acquire("ettin400",lookup,dl,stage)
+            cache=stage/".cache"/"huggingface";cache.mkdir(parents=True)
+            (cache/"download").write_bytes(b"cache")
+            self.assertTrue(review_bytes.audit(receipt,stage)["independently_rehashed_exact_physical_bytes"])
+            (cache/"escape").symlink_to("download")
+            with self.assertRaisesRegex(review_bytes.Rejected,"symlink"):
+                review_bytes.audit(receipt,stage)
+
     def test_missing_source_denied(self):
         lookup,_,raw=harness("ettin400")
         changed=dict(raw);changed.pop("tokenizer.json")
