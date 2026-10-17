@@ -122,6 +122,59 @@ class Examples(unittest.TestCase):
         self.assertIn("fromJSON(", direct)
         self.assertIn("--case-index", direct)
 
+    def test_ten_absolute_50_shard_runs_cover_exactly_500_unique_tests(self):
+        cases = [f"scripts.sample.Tests.test_{i:04d}" for i in range(620)]
+        seen = set()
+        digests = set()
+        for batch in range(10):
+            index = batch * 50
+            item = plan(cases, "A", 50, absolute_offset=True, start_index=index)
+            self.assertTrue(item["slice_ready"])
+            self.assertEqual(item["start_index"], index)
+            self.assertEqual(item["selected_count"], 50)
+            digests.add(item["manifest_sha256"])
+            selected = {select_direct_case(item, i) for i in range(50)}
+            self.assertEqual(len(selected), 50)
+            self.assertFalse(seen.intersection(selected))
+            seen.update(selected)
+        self.assertEqual(len(digests), 1)
+        self.assertEqual(seen, set(cases[:500]))
+
+    def test_absolute_slice_rejects_invalid_coordinates(self):
+        cases = [f"scripts.sample.Tests.test_{i:04d}" for i in range(210)]
+        for absolute, offset in (
+            (True, -1),
+            (True, True),
+            (True, 1),
+            (False, 50),
+            ("true", 0),
+        ):
+            with (
+                self.subTest(absolute=absolute, offset=offset),
+                self.assertRaises(ValueError),
+            ):
+                plan(cases, "A", 50, absolute_offset=absolute, start_index=offset)
+        short = plan(cases, "A", 50, absolute_offset=True, start_index=200)
+        self.assertFalse(short["slice_ready"])
+        self.assertEqual(short["selected_count"], 0)
+        with self.assertRaises(ValueError):
+            select_direct_case(short, 0)
+
+    def test_scatter_dispatch_is_independent_of_pending_large_matrices(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text()
+        group = next(
+            line
+            for line in workflow.splitlines()
+            if line.startswith("  group: gh-fleet-")
+        )
+        self.assertIn("inputs.absolute_offset", group)
+        self.assertIn("inputs.start_index", group)
+        self.assertIn("inputs.per_cohort", group)
+        self.assertIn("inputs.per_cohort == 50", workflow)
+        self.assertIn("--absolute-offset --start-index", workflow)
+        self.assertNotIn("    needs: plan", workflow.split("  real-test:", 1)[1])
+
 
 class TestFleetAudit(unittest.TestCase):
     def test_distinguish_run_backlog_from_actual_running_jobs(self):

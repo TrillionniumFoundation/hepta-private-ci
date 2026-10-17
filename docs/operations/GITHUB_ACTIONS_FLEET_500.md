@@ -157,3 +157,32 @@ at 04:33:10Z. All read paths returned complete without API errors.
 This does **not** establish a maximum available concurrent capacity,
 does **not** establish a 500-job peak, and does **not** include every
 recently completed workflow.
+
+
+## Short-run vs 250-job head-of-line admission comparison (scatter)
+
+GitHub can report hundreds of *real* pending jobs even when only a small
+number of already admitted jobs are running. This is independent of the
+published Enterprise concurrent-job ceiling. A 250-job run may have a
+different scheduling/admission profile than several 50-job runs. Test this
+without duplicating work by setting \`absolute_offset=true\` and aligning
+\`start_index\` with \`per_cohort\`.
+
+Example: ten separate \`workflow_dispatch\` calls using
+\`mode=fanout\`, \`execute=true\`, \`cohort=A\`, \`runner=ubuntu-24.04-arm\`,
+\`per_cohort=50\`, one *identical* pinned \`source_sha\`, and
+\`start_index\` values 0, 50, 100, ..., 450. This produces **500 distinct
+actual test method identifiers in ten independent concurrency groups**;
+none rely on a \`plan\` job to become runnable.
+
+For a low-cost scheduler comparison first use two runs with
+\`per_cohort=16\`, \`start_index=0\` and \`16\`. Wait for actual runner
+allocation, not merely run creation. The legacy two-cohort A/B mode is
+unchanged when \`absolute_offset=false\`. Malformed/unaligned coordinates,
+unknown per-cohort sizes, insufficient real tests and a wrong source SHA
+fail closed.
+
+This design does **not** guarantee 500 *simultaneously running* jobs:
+individually short tests and GitHub's runner admission rate can keep the
+peak far below 500 even if all 500 jobs eventually complete. Measure
+actual overlapping execution intervals with the org-capacity audit.

@@ -18,7 +18,7 @@ import subprocess
 import sys
 
 MAX_PER_COHORT = 250
-SUPPORTED_DIRECT_COUNTS = frozenset({8, 16, 32, 64, 128, 250})
+SUPPORTED_DIRECT_COUNTS = frozenset({8, 16, 32, 50, 64, 128, 250})
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
@@ -76,7 +76,14 @@ def collect_tests(root: Path) -> list[str]:
     return sorted(selected)
 
 
-def plan(test_ids: list[str], cohort: str, per_cohort: int) -> dict:
+def plan(
+    test_ids: list[str],
+    cohort: str,
+    per_cohort: int,
+    *,
+    absolute_offset: bool = False,
+    start_index: int = 0,
+) -> dict:
     if cohort not in {"A", "B"}:
         raise ValueError("cohort must be A or B")
     if (
@@ -87,15 +94,36 @@ def plan(test_ids: list[str], cohort: str, per_cohort: int) -> dict:
         raise ValueError("per_cohort must be an integer from 1 to 250")
     if len(test_ids) != len(set(test_ids)):
         raise ValueError("duplicate test identifiers are forbidden")
+    if not isinstance(absolute_offset, bool):
+        raise ValueError("absolute_offset must be boolean")
+    if type(start_index) is not int or start_index < 0:
+        raise ValueError("start_index must be a nonnegative integer")
+    if absolute_offset:
+        if per_cohort not in SUPPORTED_DIRECT_COUNTS:
+            raise ValueError(
+                "absolute fanout supports only known 8/16/32/50/64/128/250 counts"
+            )
+        if start_index % per_cohort:
+            raise ValueError("start_index must be aligned to per_cohort")
+        offset = start_index
+    else:
+        if start_index != 0:
+            raise ValueError("start_index without absolute_offset is ambiguous")
+        offset = 0 if cohort == "A" else per_cohort
     fingerprint = hashlib.sha256("\n".join(test_ids).encode()).hexdigest()
-    enough = len(test_ids) >= 2 * per_cohort
-    offset = 0 if cohort == "A" else per_cohort
+    full_two_ready = len(test_ids) >= 2 * per_cohort
+    enough = len(test_ids) >= offset + per_cohort and (
+        absolute_offset or full_two_ready
+    )
     cases = test_ids[offset : offset + per_cohort] if enough else []
     return {
         "cohort": cohort,
         "per_cohort": per_cohort,
         "available_tests": len(test_ids),
-        "full_two_cohort_ready": enough,
+        "full_two_cohort_ready": full_two_ready,
+        "slice_ready": enough,
+        "absolute_offset": absolute_offset,
+        "start_index": offset,
         "manifest_sha256": fingerprint,
         "selected_count": len(cases),
         "matrix": {"include": [{"case": case} for case in cases]},
@@ -106,9 +134,11 @@ def select_direct_case(result: dict, index: int) -> str:
     """Fail closed when a static direct matrix and source-derived plan disagree."""
     count = result["per_cohort"]
     if count not in SUPPORTED_DIRECT_COUNTS:
-        raise ValueError("direct fanout allows only 8,16,32,64,128,250 jobs per cohort")
-    if not result["full_two_cohort_ready"]:
-        raise ValueError("insufficient real test methods for both cohorts")
+        raise ValueError(
+            "direct fanout allows only 8,16,32,50,64,128,250 jobs per cohort"
+        )
+    if not result["slice_ready"]:
+        raise ValueError("insufficient real methods for this exact source-bound slice")
     if not isinstance(index, int) or isinstance(index, bool) or not 0 <= index < count:
         raise ValueError("direct shard index out of bounds")
     cases = result["matrix"]["include"]
@@ -139,6 +169,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Require explicit SHA pin and full two-cohort readiness",
     )
+    parser.add_argument("--absolute-offset", action="store_true")
+    parser.add_argument("--start-index", type=int, default=0)
     parser.add_argument("--case-index", type=int, default=None)
     parser.add_argument("--github-output", type=Path)
     parser.add_argument("--receipt", type=Path)
@@ -156,11 +188,17 @@ def main(argv: list[str] | None = None) -> int:
                 )
         if args.execute and not args.expected_sha:
             raise ValueError("execution requires --expected-sha (same pin for A and B)")
-        result = plan(collect_tests(root), args.cohort, args.per_cohort)
+        result = plan(
+            collect_tests(root),
+            args.cohort,
+            args.per_cohort,
+            absolute_offset=args.absolute_offset,
+            start_index=args.start_index,
+        )
         result["source_sha"] = _git_head(root) if (root / ".git").exists() else None
-        if args.execute and not result["full_two_cohort_ready"]:
+        if args.execute and not result["slice_ready"]:
             raise ValueError(
-                f"not enough unique unittest methods: {result['available_tests']} < {2 * args.per_cohort}"
+                "not enough unique unittest methods for requested source-bound slice"
             )
         if args.case_index is not None:
             if not args.execute:
@@ -174,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
                 out.write(
                     f"matrix={json.dumps(result['matrix'], separators=(',', ':'))}\n"
                 )
-                out.write(f"ready={str(result['full_two_cohort_ready']).lower()}\n")
+                out.write(f"ready={str(result['slice_ready']).lower()}\n")
                 out.write(f"count={result['selected_count']}\n")
                 out.write(f"manifest_sha256={result['manifest_sha256']}\n")
                 if args.case_index is not None:
