@@ -16,7 +16,6 @@ use crate::hnmf::ContractGenerationV1;
 use crate::hnmf::ContractIdV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::ModalityKindV1;
-use crate::hnmf::PPM;
 use crate::hnmf_learning::EngramPopulationV1;
 
 pub const MEMORY_CELL_MANIFEST_SCHEMA_VERSION: u32 = 1;
