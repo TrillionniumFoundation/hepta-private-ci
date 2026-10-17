@@ -44,6 +44,7 @@ pub struct GroupCellObservationV1 {
     pub cell_id: String,
     pub head_digest: Digest32,
     pub action_digest: Digest32,
+    pub evidence_digest: Digest32,
     pub value_q32: i64,
     pub cost_micros: u64,
     pub uncertainty_q32: i64,
@@ -225,6 +226,7 @@ fn validate_trace(
         for (name, digest) in [
             ("head_digest", cell.head_digest),
             ("action_digest", cell.action_digest),
+            ("evidence_digest", cell.evidence_digest),
         ] {
             if digest.is_zero() {
                 return Err(GroupSystem2Error::ZeroDigest(name));
@@ -351,6 +353,7 @@ fn decision_trace_digest(
         push_text_unchecked(&mut bytes, &cell.cell_id);
         bytes.extend_from_slice(cell.head_digest.as_array());
         bytes.extend_from_slice(cell.action_digest.as_array());
+        bytes.extend_from_slice(cell.evidence_digest.as_array());
         bytes.extend_from_slice(&cell.value_q32.to_be_bytes());
         bytes.extend_from_slice(&cell.cost_micros.to_be_bytes());
         bytes.extend_from_slice(&cell.uncertainty_q32.to_be_bytes());
