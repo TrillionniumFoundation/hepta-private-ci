@@ -22,6 +22,7 @@ from gate import AUTHORITY, MODELS, require
 import preflight
 import review_bytes
 import source_bytes
+import runtime_snapshot
 
 SCHEMA = "hepta.stem.equal-size.physical-forward.v1"
 MAX_PROBE_TOKENS = 128
@@ -177,7 +178,11 @@ def _laya_forward(stage):
 def run(model, receipt, stage):
     proof = checked_receipt(receipt, stage, model)
     before = _resource()
-    result = _laya_forward(stage) if model == "laya421" else _ettin_forward(stage)
+    # Neither backend can access the mutable original downloader directory.
+    # Only independently verified, byte-rechecked allowlisted files are copied
+    # to an isolated private runtime snapshot before any model imports.
+    with runtime_snapshot.isolated_verified_runtime(receipt, stage) as frozen:
+        result = _laya_forward(frozen) if model == "laya421" else _ettin_forward(frozen)
     after = _resource()
     require(result["original_cpu_base_forward_calls"] == 1 and
             result["actual_tensor_values_loaded"] > 0 and
@@ -188,6 +193,7 @@ def run(model, receipt, stage):
             "output":result, "clock_wall_ns_self_reported":after["wall_ns"]-before["wall_ns"],
             "clock_cpu_ns_self_reported":after["cpu_ns"]-before["cpu_ns"],
             "peak_rss_kib_linux_self_reported":after["maxrss_kib_linux"],
+            "isolated_allowlist_runtime_snapshot_verified":True,
             "real_forward_on_fixed_unlabeled_probe":True,
             "heldout_human_task_score":None,
             "equal_head_training_budget_verified":False,
