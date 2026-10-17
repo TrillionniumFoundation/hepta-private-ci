@@ -1019,11 +1019,19 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // If this fails, leave the durable intent pending for reconciliation:
         // the external operation may already have committed and MUST NOT be
         // dispatched a second time.
-        self.verify_committed_prefix()?;
+        // From the durable prepared frame onward, a verified external effect
+        // may have committed even if the local ledger can no longer be read
+        // or durably extended. The caller must never classify either failure
+        // as a safe non-execution and issue a different Execute.
+        self.verify_committed_prefix()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        let committed_bytes =
+            canonical_json(&receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
-            &canonical_json(&receipt)?,
-        )?;
+            &committed_bytes,
+        )
+        .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         self.previous_receipt_digest = receipt.receipt_digest.clone();
         self.cursor += 1;
         self.pending = false;

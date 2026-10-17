@@ -2109,13 +2109,42 @@ fn effect_completion_does_not_acknowledge_replaced_local_trust_frames() {
     *tamper.borrow_mut() = Some(root.path().join("cell-split-owner-trust-pins.json"));
     assert!(matches!(
         owner.advance(),
-        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+        Err(CellSplitExecutionErrorV1::Ambiguous)
     ));
     assert_eq!(state.borrow().executions, 1);
     assert_eq!(owner.completed_steps(), 0);
     assert!(root.path().join("cell-split-00-prepared.json").exists());
     assert!(!root.path().join("cell-split-00-committed.json").exists());
     assert!(owner.advance().is_err(), "cannot retry an ambiguous effect");
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn post_effect_committed_frame_collision_is_ambiguous_and_never_reexecuted() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let port = FixturePort::new(state.clone());
+    let tamper = port.tamper_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+
+    // Inject a conflicting committed frame after the external owner records
+    // the effect, but before the coordinator can write its durable receipt.
+    // A local ledger collision must never be mistaken for a failed mutation.
+    let conflicting_frame = root.path().join("cell-split-00-committed.json");
+    *tamper.borrow_mut() = Some(conflicting_frame.clone());
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Ambiguous)
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").is_file());
+    assert_eq!(
+        fs::read(&conflicting_frame).expect("injected collision evidence"),
+        b"{}"
+    );
+    assert!(owner.advance().is_err(), "collision cannot trigger re-execute");
     assert_eq!(state.borrow().executions, 1);
 }
 
@@ -2193,9 +2222,7 @@ fn new_effect_is_not_acknowledged_if_unknown_frame_arrives_during_readback() {
     *tamper.borrow_mut() = Some(root.path().join("cell-split-04-committed.json"));
     assert!(matches!(
         owner.advance(),
-        Err(CellSplitExecutionErrorV1::Invalid(
-            "unknown cell split durable frame"
-        ))
+        Err(CellSplitExecutionErrorV1::Ambiguous)
     ));
     // The real external effect may already exist, so no retry is permitted.
     assert_eq!(state.borrow().executions, 1);
