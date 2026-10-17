@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.public-q24-python-rust-head-parity.v1",
+  "source_artifact": {
+    "actions_run": 38902031341,
+    "artifact_id": 12068510329,
+    "zip_sha256": "dfbef09702004bae8ce111f360584b6c9c641cc1b4475b71ef2b6d68af95a77a",
+    "seal_sha256": "180955ec4e74cb985851f7c1ba5ae295b91fc3b5ea2188379e8a958e557e7cc2",
+    "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+    "dataset_revision": "57ec275d8078af65b7731c2a98be812d844a6d6b"
+  },
+  "method": {
+    "learner": "torch.nn.Linear(32,4), AdamW lr 0.01 weight_decay 0.01; seed 17 steps 120 CPU; frozen Q24 gate",
+    "training_rows": 64,
+    "heldout_rows_unlabeled": 32,
+    "fp32_trainable_parameters": 132,
+    "q24_registered_tensor_parameters": 392,
+    "q24_registered_bytes": 3136,
+    "quantization": "Q24 ties-even"
+  },
+  "observed_offline": {
+    "max_q24_logit_drift_train": 26,
+    "max_q24_logit_drift_unlabeled_test": 31,
+    "argmax_disagreements_train": 0,
+    "argmax_disagreements_unlabeled_test": 0
+  },
+  "candidate_binding": {
+    "encoder_digest": "7bc5015a2197d7a0ea18c10965addaf80adac220e266a95fa789223606986365",
+    "head_digests": [
+      "c99ba1a41cfd661c193f72842527efb65a1676ca246f4d20eea6f58c5715045e",
+      "6ef27bdc2a7ef3001f43dc0b017af37a9cccd4bcd25958406ab9d3c1c972cafd",
+      "04dd5b16e79621c31f1610bc2611376418af4827c9679b9a82752388e815c322",
+      "8afe057946437e905086d9af0ae110d9103512c72a77c689c79c53eb712d08c8"
+    ],
+    "catalog_digest": "147f1c8d6453ea51001e873b7dd93e37254f1e8b53aae3c103aa3441245f3640"
+  },
+  "authority": "DENY_ALL",
+  "production_promotion": false,
+  "pretrained_runtime_independently_reexecuted": false,
+  "heldout_labels_scored": false,
+  "ndu_future_window_efficacy_verified": false,
+  "torch_version": "2.10.0+cpu",
+  "note": "Offline Python scalar Q24 arithmetic reference vs PyTorch FP32 is executed; Rust source fixture is not a cargo-test receipt. Conformance requires the exact PR CI owner test."
+}
