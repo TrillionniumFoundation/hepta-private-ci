@@ -642,3 +642,37 @@ fn tampered_durable_history_fails_before_any_new_native_effect() {
     assert_eq!(native.execute_count, effects);
     assert!(!native.stage(WriterHandoffPhaseV1::Drained).exists());
 }
+
+#[test]
+fn externally_retained_minimum_rejects_old_complete_journal_backup() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan())
+        .expect("create journal");
+    let prepared = journal.checkpoint().clone();
+    let old_backup = fs::read(root.path().join("split-journal"))
+        .expect("capture old complete journal prefix");
+    advance(&mut journal, &mut native).expect("native admission close");
+    let acknowledged = journal.checkpoint().clone();
+    journal.require_acknowledged_floor_v1(&prepared)
+        .expect("prepared minimum is in chain");
+    journal.require_acknowledged_floor_v1(&acknowledged)
+        .expect("latest acknowledged minimum is in chain");
+    let effects = native.execute_count;
+    drop(journal);
+
+    // A valid older file is restored atomically as if an old backup were used;
+    // local checksums and chain links are all internally consistent.
+    fs::write(root.path().join("split-journal"), old_backup)
+        .expect("restore complete but stale history");
+    let mut recovered = DurableWriterHandoffJournalV1::recover(file(&root))
+        .expect("legacy unanchored recovery accepts valid old backup");
+    assert_eq!(recovered.checkpoint(), &prepared);
+    assert!(matches!(
+        recovered.require_acknowledged_floor_v1(&acknowledged),
+        Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing)
+    ));
+    assert_eq!(native.execute_count, effects);
+    assert!(!native.stage(WriterHandoffPhaseV1::Drained).exists());
+}
+

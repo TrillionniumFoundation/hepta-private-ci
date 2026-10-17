@@ -55,6 +55,17 @@ CAS checkpoint remains structurally valid. This full-chain reread is bounded
 by the journal's existing 8 MiB cap; it does NOT replace independently retained
 anti-rollback minimum custody or native signature verification.
 
+The production bridge's advance_receipt_gated_phase and attach_live_cutover
+APIs require an independently authenticated and externally retained minimum
+WriterHandoffCheckpointV1. The Supervisor rehashes its actual bounded on-disk
+chain and checks that the exact minimum checkpoint is a member before any
+next-step execution or live CNS receipt admission. A previously valid complete
+backup that predates this minimum must fail closed; the product host must
+maintain and authenticate the external minimum and refresh it on acknowledgment.
+A Rust checkpoint value supplied from the untrusted local journal is NOT
+external anti-rollback proof. Native independent observer custody is still
+unimplemented and cannot be assumed from this API.
+
 The checkpoint receipt commits to a domain-separated binary encoding of the
 typed native observation and the frozen artifact/route binding. Reopening must
 use DurableWriterHandoffJournalV1::recover_at_least with an independently

@@ -358,9 +358,9 @@ impl DurableWriterHandoffJournalV1 {
     /// cannot defend against restoring this journal together with its own
     /// local witness. Product recovery must still supply recover_at_least
     /// with an independently retained checkpoint minimum.
-    pub fn acknowledged_evidence_chain_v1(
+    fn read_acknowledged_checkpoints_v1(
         &mut self,
-    ) -> Result<Vec<(WriterHandoffPhaseV1, Digest32)>, WriterHandoffErrorV1> {
+    ) -> Result<Vec<WriterHandoffCheckpointV1>, WriterHandoffErrorV1> {
         if self.poisoned {
             return Err(WriterHandoffErrorV1::Poisoned);
         }
@@ -395,13 +395,13 @@ impl DurableWriterHandoffJournalV1 {
             validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
             if chain
                 .iter()
-                .any(|(phase, _): &(WriterHandoffPhaseV1, Digest32)| {
-                    *phase == checkpoint.phase
+                .any(|earlier: &WriterHandoffCheckpointV1| {
+                    earlier.phase == checkpoint.phase
                 })
             {
                 return Err(WriterHandoffErrorV1::Corrupt);
             }
-            chain.push((checkpoint.phase, checkpoint.evidence_digest));
+            chain.push(checkpoint.clone());
             previous = Some(checkpoint);
             cursor = end + 1;
         }
@@ -409,6 +409,42 @@ impl DurableWriterHandoffJournalV1 {
             return Err(WriterHandoffErrorV1::Corrupt);
         }
         Ok(chain)
+    }
+
+
+    /// Return the exact evidence for every previously acknowledged phase.
+    /// The current journal is re-validated from its immutable on-disk chain,
+    /// including each revision, payload digest and predecessor link.
+    pub fn acknowledged_evidence_chain_v1(
+        &mut self,
+    ) -> Result<Vec<(WriterHandoffPhaseV1, Digest32)>, WriterHandoffErrorV1> {
+        Ok(self
+            .read_acknowledged_checkpoints_v1()?
+            .into_iter()
+            .map(|checkpoint| (checkpoint.phase, checkpoint.evidence_digest))
+            .collect())
+    }
+
+    /// Require that a *separately authenticated and retained* minimum
+    /// checkpoint belongs exactly to the currently validated durable chain.
+    ///
+    /// The caller must authenticate this floor outside the local journal's
+    /// rollback/failure domain. A syntactically valid old backup is rejected
+    /// if the external floor names a later acknowledged revision. No native
+    /// operation should be attempted before this check succeeds.
+    pub fn require_acknowledged_floor_v1(
+        &mut self,
+        minimum: &WriterHandoffCheckpointV1,
+    ) -> Result<(), WriterHandoffErrorV1> {
+        if self
+            .read_acknowledged_checkpoints_v1()?
+            .iter()
+            .any(|checkpoint| checkpoint == minimum)
+        {
+            Ok(())
+        } else {
+            Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing)
+        }
     }
 
     /// Persist one observed handoff phase. Exact retries of the currently

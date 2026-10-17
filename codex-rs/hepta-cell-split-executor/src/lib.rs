@@ -31,6 +31,7 @@ use codex_hepta_supervisor::CellSplitOwnerErrorV1;
 use codex_hepta_supervisor::CellSplitOwnerV1;
 use codex_hepta_supervisor::DurableWriterHandoffJournalV1;
 use codex_hepta_supervisor::WriterHandoffCheckpointV1;
+use codex_hepta_supervisor::WriterHandoffErrorV1;
 use codex_hepta_supervisor::WriterHandoffPhaseV1;
 use codex_hepta_supervisor::WriterHandoffPlanV1;
 use codex_hepta_types::AuthorityPosture;
@@ -200,6 +201,7 @@ pub enum ProductSplitNativeErrorV1<E> {
     PlanOrBindingMismatch,
     InvalidNativeReadback,
     Artifact(LearningArtifactOwnerServiceError),
+    Journal(WriterHandoffErrorV1),
     RuntimeReadbackUnavailable,
     External(E),
     /// This bridge never publishes CAS or routes. Such a request must be
@@ -283,10 +285,14 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     pub fn attach_live_cutover(
         &mut self,
         journal: &mut DurableWriterHandoffJournalV1,
+        externally_retained_minimum: &WriterHandoffCheckpointV1,
         applied: RuntimeTopologyApplyReceiptV1,
         now: u64,
     ) -> Result<(), ProductSplitNativeErrorV1<O::Error>> {
         self.advance_current_time(now)?;
+        journal
+            .require_acknowledged_floor_v1(externally_retained_minimum)
+            .map_err(ProductSplitNativeErrorV1::Journal)?;
         // The native Final-use apply can happen independently, but this
         // bridge must never accept its receipt as an in-order split cutover
         // before the exact successor writer-fence is durably acknowledged.
@@ -330,6 +336,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     pub fn advance_receipt_gated_phase(
         &mut self,
         journal: &mut DurableWriterHandoffJournalV1,
+        externally_retained_minimum: &WriterHandoffCheckpointV1,
         now: u64,
     ) -> Result<
         WriterHandoffCheckpointV1,
@@ -337,6 +344,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     > {
         self.advance_current_time(now)
             .map_err(CellSplitOwnerErrorV1::Native)?;
+        journal
+            .require_acknowledged_floor_v1(externally_retained_minimum)
+            .map_err(CellSplitOwnerErrorV1::Journal)?;
         if !self.binding.validate_selection(&self.plan, self.selection) {
             return Err(CellSplitOwnerErrorV1::Native(
                 ProductSplitNativeErrorV1::PlanOrBindingMismatch,
