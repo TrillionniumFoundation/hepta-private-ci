@@ -479,6 +479,8 @@ def qualify_from_receipt(
         objective_digest=objective_digest,
         evaluation_plan_digest=evaluation_plan_digest,
         cases_digest=cases_digest,
+        budget_digest=budget_digest,
+        cost_profile_digest=cost_profile_digest,
         evidence_manifest_digest=evidence_manifest_digest,
         metrics=metrics,
         resources=resources,
