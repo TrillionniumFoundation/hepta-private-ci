@@ -166,6 +166,17 @@ where
         })
     }
 
+    /// Bind one shared Encoder owner to the existing runtime configuration.
+    ///
+    /// The runtime config supplies the immutable Encoder digest and generation;
+    /// the concrete driver remains the only host/model execution boundary.
+    pub fn from_runtime_config(
+        config: &crate::NeuronRuntimeConfigV1,
+        driver: D,
+    ) -> Result<Self, SharedEncoderError> {
+        Self::new(config.encoder_digest, config.generation, driver)
+    }
+
     #[must_use]
     pub fn encoder_digest(&self) -> Digest32 {
         self.encoder_digest
