@@ -149,6 +149,31 @@ pub struct CellSplitObservedReceiptV1 {
 }
 
 impl CellSplitObservedReceiptV1 {
+    /// Bind an already-observed native operation result to the immutable
+    /// Supervisor plan. This method computes commitments; it does NOT verify
+    /// the provenance, signature, persistence or authorization of the native
+    /// operation. Product adapters MUST obtain the evidence from actual owner
+    /// readback before invoking it.
+    pub fn bind_observed_native(
+        plan: &WriterHandoffPlanV1,
+        binding: &CellSplitBindingV1,
+        evidence: CellSplitNativeEvidenceV1,
+    ) -> Option<Self> {
+        let value = Self {
+            operation_id: plan.operation_id.clone(),
+            domain_id: plan.domain_id.clone(),
+            old_generation: plan.old_generation,
+            new_generation: plan.new_generation,
+            authority_epoch: plan.authority_epoch,
+            handoff_plan_digest: handoff_plan_digest(plan),
+            binding_digest: binding.digest(),
+            evidence,
+        };
+        value
+            .validate(plan, binding, value.evidence.phase())
+            .then_some(value)
+    }
+
     fn validate(
         &self,
         plan: &WriterHandoffPlanV1,
