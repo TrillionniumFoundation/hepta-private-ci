@@ -59,7 +59,11 @@ def run(repo: Path, receipt: Path | None = None, *, stream=None) -> int:
     try:
         loader = unittest.TestLoader()
         suite = unittest.TestSuite()
+        importlib.invalidate_caches()
         for name in inv["source_modules"]:
+            # Always import the exact checkout files, never stale imported fixture
+            # names from an earlier suite invocation in the same interpreter.
+            sys.modules.pop(name, None)
             # Imports and load_tests may fail normally; never synthesize passes.
             suite.addTests(loader.loadTestsFromName(name))
         count = suite.countTestCases()
