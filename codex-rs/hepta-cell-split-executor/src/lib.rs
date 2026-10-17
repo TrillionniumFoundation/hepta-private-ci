@@ -142,6 +142,19 @@ pub struct ProductPredecessorSnapshotReceiptV1 {
     pub native_snapshot_ack: Digest32,
 }
 
+impl ProductPredecessorSnapshotReceiptV1 {
+    /// Exact identity and nonempty owner acknowledgment; the State Owner
+    /// adapter must separately authenticate origin and persistence.
+    pub fn matches_plan(&self, plan: &WriterHandoffPlanV1) -> bool {
+        self.operation_id == plan.operation_id
+            && self.domain_id == plan.domain_id
+            && self.source_writer == plan.source_writer
+            && self.predecessor_generation == plan.old_generation
+            && !self.source_snapshot_digest.is_zero()
+            && !self.native_snapshot_ack.is_zero()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductPredecessorSnapshotLookupV1 {
     /// An actual persisted state Owner readback with verified native identity.
@@ -347,13 +360,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
                         return Ok(CellSplitLookupV1::Indeterminate);
                     }
                 };
-                if snapshot.operation_id != self.plan.operation_id
-                    || snapshot.domain_id != self.plan.domain_id
-                    || snapshot.source_writer != self.plan.source_writer
-                    || snapshot.predecessor_generation != self.plan.old_generation
-                    || snapshot.source_snapshot_digest.is_zero()
-                    || snapshot.native_snapshot_ack.is_zero()
-                {
+                if !snapshot.matches_plan(&self.plan) {
                     return Err(ProductSplitNativeErrorV1::InvalidNativeReadback);
                 }
                 CellSplitNativeEvidenceV1::ArtifactCasCommitted {
@@ -503,6 +510,21 @@ mod tests {
             cns_final_use_request_digest: d(b"final-use"),
         };
         assert!(binding.validate(&plan));
+        let mut snapshot = ProductPredecessorSnapshotReceiptV1 {
+            operation_id: plan.operation_id.clone(),
+            domain_id: plan.domain_id.clone(),
+            source_writer: plan.source_writer.clone(),
+            predecessor_generation: plan.old_generation,
+            source_snapshot_digest: d(b"native-predecessor-state"),
+            native_snapshot_ack: d(b"native-state-owner-ack"),
+        };
+        assert!(snapshot.matches_plan(&plan));
+        snapshot.predecessor_generation = plan.new_generation;
+        assert!(!snapshot.matches_plan(&plan));
+        snapshot.predecessor_generation = plan.old_generation;
+        snapshot.native_snapshot_ack = Digest32::ZERO;
+        assert!(!snapshot.matches_plan(&plan));
+
         let mut selector_receipt = SelfEvolutionSelectionReceiptV1 {
             selection_id: id("selection:1"),
             objective_digest: d(b"objective"),
