@@ -140,7 +140,10 @@ function normalizeSnapshot(snapshot, query) {
   if (typeof snapshot.ready !== "boolean") {
     throw new TypeError("snapshot.ready must be boolean");
   }
-  if (snapshot.authorityGranted === true || snapshot.directStoreWrite === true) {
+  if (
+    ("authorityGranted" in snapshot && snapshot.authorityGranted !== false) ||
+    ("directStoreWrite" in snapshot && snapshot.directStoreWrite !== false)
+  ) {
     throw new TypeError("UI snapshot cannot advertise authority or direct store access");
   }
   return Object.freeze({
