@@ -1,0 +1,196 @@
+name: Hepta Stem original V5 paired original ZIP reviewer (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-original-paired-v5-20261017]
+    paths:
+      - 'qualification/stem-optimal-v5/**'
+      - '.github/workflows/hepta-stem-original-paired-v5.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v5/**'
+      - '.github/workflows/hepta-stem-original-paired-v5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-original-v5-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXP_DIR: qualification/stem-optimal-v5
+  PYTHONPATH: qualification/stem-optimal-v5:qualification/stem-optimal-v3:qualification/stem-optimal-v4:qualification/stem-optimal-v1
+
+jobs:
+  source-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      paired_ready: ${{ steps.detect.outputs.paired_ready }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact-head source-only conformance; no pretrained claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$EXP_DIR/paired_review_v5.py" "$EXP_DIR/download_original_zip_v5.py" "$EXP_DIR/test_paired_review_v5.py" "$EXP_DIR/test_download_original_zip_v5.py"
+          python -m json.tool "$EXP_DIR/ORIGINAL_PAIR_V5.json" >/dev/null
+          python -m unittest discover -s "$EXP_DIR" -p 'test_*.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_*.py' -v
+      - id: detect
+        name: Explicit physical-review readiness, no claimed success from skipped model jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          doc = json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())
+          cheap = doc['artifacts']['cheap_v4']
+          ready = (type(cheap['artifact_id']) is int and cheap['artifact_id'] > 0 and
+                   all(type(cheap[k]) is str and re.fullmatch(r'[0-9a-f]{64}', cheap[k])
+                       for k in ('archive_sha256','json_sha256')))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('paired_ready=' + str(bool(ready)).lower() + '\n')
+          print('ORIGINAL_PAIRED_REVIEW_READY' if ready else 'HOLD_NO_CHEAP_ORIGINAL_ARTIFACT_LOCK')
+          PY
+
+  original-nogold-zip-custody:
+    needs: source-negative-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-original-paired-v5-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download and byte-verify only exact original V3 and V4 source ZIPs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python "$EXP_DIR/download_original_zip_v5.py" \
+            --manifest "$EXP_DIR/ORIGINAL_PAIR_V5.json" --output-dir "$RUNNER_TEMP/original-zip" \
+            --role source_v3 --role source_v4 --role granite47 --role granite97 --role mmbert140
+      - name: Replay original model predictions without original heldout gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as check
+          lock = json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())['artifacts']
+          root = Path(os.environ['RUNNER_TEMP']) / 'original-zip'
+          docs = {r: check.locked_json(root / (r + '.zip'), lock, r) for r in
+                  ('source_v3','source_v4','granite47','granite97','mmbert140')}
+          assert docs['source_v3'] == docs['source_v4']
+          result = check.original_nogold(docs['source_v3'],
+              {r: docs[r] for r in check.NEURAL})
+          assert result['authority'] == 'DENY_ALL' and result['original_publisher_labels_opened'] is False
+          out = Path(os.environ['RUNNER_TEMP']) / 'v5-nogold-original.json'
+          out.write_bytes(check.canonical(result) + b'\n')
+          print('ORIGINAL_FIVE_ZIP_NOGOLD_CHECKED', check.sha(out.read_bytes()))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v5-original-five-zip-nogold-denyall
+          path: ${{ runner.temp }}/v5-nogold-original.json
+          if-no-files-found: error
+          retention-days: 7
+
+  original-paired-late-label-review:
+    needs: source-negative-tests
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && needs.source-negative-tests.outputs.paired_ready == 'true' && github.ref_name == 'research/stem-original-paired-v5-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Get six exact original complete artifact ZIPs (not caller-provided JSON)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python "$EXP_DIR/download_original_zip_v5.py" \
+            --manifest "$EXP_DIR/ORIGINAL_PAIR_V5.json" --output-dir "$RUNNER_TEMP/original-zip" \
+            --role source_v3 --role source_v4 --role granite47 --role granite97 --role mmbert140 --role cheap_v4
+      - name: Reacquire exact publisher labels only after immutable original ZIPs are opened
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/original-publisher"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])/'original-publisher'
+          revision = '57ec275d8078af65b7731c2a98be812d844a6d6b'
+          known = {'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                   'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for split in ('train','test'):
+              url = f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'hepta-original-paired-review-v5'}), timeout=35) as req:
+                  if req.geturl() != url:
+                      raise ValueError('publisher source redirected')
+                  raw=req.read(2_000_001)
+              if not 0 < len(raw) <= 2_000_000 or hashlib.sha256(raw).hexdigest() != known[split]:
+                  raise ValueError('publisher original data SHA mismatch')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+      - name: Independently re-evaluate original neural and lexical predictions, Holm-correct three primary pairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$EXP_DIR/paired_review_v5.py" \
+            --manifest "$EXP_DIR/ORIGINAL_PAIR_V5.json" \
+            --source-v3 "$RUNNER_TEMP/original-zip/source_v3.zip" \
+            --source-v4 "$RUNNER_TEMP/original-zip/source_v4.zip" \
+            --granite47 "$RUNNER_TEMP/original-zip/granite47.zip" \
+            --granite97 "$RUNNER_TEMP/original-zip/granite97.zip" \
+            --mmbert140 "$RUNNER_TEMP/original-zip/mmbert140.zip" \
+            --cheap-v4 "$RUNNER_TEMP/original-zip/cheap_v4.zip" \
+            --train "$RUNNER_TEMP/original-publisher/train.csv" \
+            --test "$RUNNER_TEMP/original-publisher/test.csv" \
+            --materials qualification/stem-optimal-v1/MODEL_MATERIALS.json \
+            --output "$RUNNER_TEMP/stem-v5-paired-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          z = json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-v5-paired-review.json').read_text())
+          assert z['case_count'] == 32 and z['publisher_original_sha_verified'] is True
+          assert z['independent_lexical_numeric_replay'] is True
+          assert z['authority'] == 'DENY_ALL' and z['disposition'] == 'HOLD_NO_GO'
+          assert z['stem_winner_verified'] is False and z['production_authorized'] is False
+          assert z['source_independent_families'] == 1 and z['future_windows'] == 0
+          print('Original paired single-source research only; all production gates remain closed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v5-original-paired-review-denyall
+          path: ${{ runner.temp }}/stem-v5-paired-review.json
+          retention-days: 7
+          if-no-files-found: error
