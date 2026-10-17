@@ -32,7 +32,7 @@ class MockReader:
     def infer(self,article,action):
         self.calls.append((sha(article.encode()),action))
         prompt=make_prompt(article,action)
-        result='FINAL=0' if action=='direct' else 'FINAL=1' if action=='reason' else 'FINAL=2'
+        result='FINAL=0' if action=='direct' else 'FINAL=1' if action in ('reason','reason_equalcap') else 'FINAL=2'
         mode = action == 'reason'
         return {'prompt_sha256':sha(encoded(prompt)),
           'input_token_ids_sha256':sha(encoded([4,5])),
@@ -119,7 +119,13 @@ class PhysicalContractTests(unittest.TestCase):
         self.assertEqual(r.model.kwargs[1]['max_new_tokens'],96)
         self.assertTrue(r.model.kwargs[1]['do_sample'])
         self.assertEqual(r.model.kwargs[1]['temperature'],0.6)
+        equalcap=r.infer(article,'reason_equalcap')
+        self.assertFalse(equalcap['thinking_mode'])
+        self.assertEqual(equalcap['thinking_segment_tokens'],0)
+        self.assertEqual(equalcap['answer'],'FINAL=1')
+        self.assertEqual(r.model.kwargs[2]['max_new_tokens'],96)
         self.assertEqual(direct['sampling_seed'],reasoning['sampling_seed'])
+        self.assertEqual(reasoning['sampling_seed'],equalcap['sampling_seed'])
 
     def test_real_reader_truncated_thought_uses_no_final_class(self):
         from contextlib import nullcontext
@@ -145,13 +151,14 @@ class PhysicalContractTests(unittest.TestCase):
         self.assertIsNone(o['predicted_class'])
         self.assertFalse(o['thinking_complete'])
 
-    def test_new_p3_protocol_does_not_alias_p2_artifacts(self):
+    def test_new_p4_protocol_does_not_alias_p3_artifacts(self):
         from physical_online import SCHEMA
-        self.assertEqual(SCHEMA,'hepta.ndu-merton.p3.true-thinking-on-policy.v1')
+        self.assertEqual(SCHEMA,'hepta.ndu-merton.p4.equal-cap-thinking-control.v1')
 
     def test_no_thinking_and_thinking_use_same_user_prompt(self):
         article = 'A sufficiently long public news article about current business and weather.'
         self.assertEqual(make_prompt(article, 'direct'), make_prompt(article, 'reason'))
+        self.assertEqual(make_prompt(article, 'reason'), make_prompt(article,'reason_equalcap'))
         self.assertEqual(prompt_seed(make_prompt(article,'direct')),
                          prompt_seed(make_prompt(article,'reason')))
 
@@ -243,6 +250,97 @@ class PhysicalContractTests(unittest.TestCase):
             review(self.manifest,self.train,self.held,self.gold,plan,completed,
                    out/'original-starts-and-dones.jsonl')
 
+    def test_equalcap_schedule_is_frozen_complete_and_alternating(self):
+        out,plan,completed,summary=self.run_complete()
+        schedule=plan['paired_equalcap_schedule']
+        self.assertEqual(len(schedule),16)
+        self.assertEqual(len(completed['paired_equalcap_trace']),16)
+        for index in range(8):
+            pair=schedule[2*index:2*index+2]
+            self.assertEqual(pair[0]['task_id'],pair[1]['task_id'])
+            self.assertEqual(set(x['action'] for x in pair),{'reason','reason_equalcap'})
+            self.assertEqual(pair[0]['action'], 'reason' if index%2==0 else 'reason_equalcap')
+            self.assertEqual(set(x['policy'] for x in pair),{'equal_cap'})
+        self.assertEqual([(r['task_id'],r['action']) for r in completed['paired_equalcap_trace']],
+                         [(r['task_id'],r['action']) for r in schedule])
+
+    def test_equalcap_source_seed_and_prompt_identical(self):
+        out,plan,completed,summary=self.run_complete()
+        rows=completed['paired_equalcap_trace']
+        for i in range(0,len(rows),2):
+            self.assertEqual(rows[i]['prompt_sha256'],rows[i+1]['prompt_sha256'])
+            self.assertEqual(rows[i]['sampling_seed'],rows[i+1]['sampling_seed'])
+        self.assertTrue(all(r['thinking_mode']==(r['action']=='reason') for r in rows))
+
+    def test_postseal_never_credits_unselected_equalcap_as_free(self):
+        out,plan,completed,summary=self.run_complete()
+        self.assertEqual(summary['additional_paid_equalcap_invocations'],16)
+        self.assertEqual(summary['paired_equalcap_96_token_contrast']['paired_tasks'],8)
+        stats=summary['paired_equalcap_96_token_contrast']['thinking_mode_vs_equalcap_nonthinking']
+        self.assertEqual([r['action'] for r in stats],['reason','reason_equalcap'])
+        self.assertEqual([r['actual_independent_model_invocations'] for r in stats],[8,8])
+        self.assertEqual(sum(stats[0]['correct']==j for j in range(9)),1)
+        self.assertTrue(stats[0]['total_thinking_tokens'] > 0)
+        self.assertEqual(stats[1]['total_thinking_tokens'],0)
+        self.assertEqual(sum(summary['paired_equalcap_96_token_contrast'][key] for key in (
+            'taskwise_thinking_wins','taskwise_thinking_losses','taskwise_both_correct','taskwise_neither_correct')),8)
+
+    def test_missing_equalcap_physical_request_fails_closed(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['paired_equalcap_trace'].pop()
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_duplicate_equalcap_task_does_not_match_precommitted_schedule(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['paired_equalcap_trace'][1]['task_id']=completed['paired_equalcap_trace'][0]['task_id']
+        completed['paired_equalcap_trace'][1]['action']='reason'
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_resealed_equalcap_schedule_order_tampering_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['paired_equalcap_schedule'][0],plan['paired_equalcap_schedule'][1] = (
+            plan['paired_equalcap_schedule'][1],plan['paired_equalcap_schedule'][0])
+        from public_source import sha,encoded
+        completed['frozen_plan_sha256']=sha(encoded(plan))
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_forged_equalcap_mode_meter_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        rec=next(x for x in completed['paired_equalcap_trace'] if x['action']=='reason_equalcap')
+        rec['thinking_mode']=True
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_forged_equalcap_prompt_sha_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['paired_equalcap_trace'][0]['prompt_sha256']='f'*64
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_missing_equalcap_original_journal_event_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        journal=out/'original-starts-and-dones.jsonl'
+        lines=journal.read_text().splitlines()
+        lines.pop()
+        journal.write_text('\n'.join(lines)+'\n')
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,journal)
+
+    def test_equalcap_action_does_not_enter_p1_action_manifest(self):
+        from physical_online import PORTFOLIO_ACTIONS, EQUAL_CAP_ACTIONS, ACTION_MAX
+        self.assertEqual(set(PORTFOLIO_ACTIONS),{'direct','reason','verify'})
+        self.assertEqual(EQUAL_CAP_ACTIONS,('reason','reason_equalcap'))
+        self.assertEqual(ACTION_MAX['reason'],ACTION_MAX['reason_equalcap'])
+        self.assertNotIn('reason_equalcap',{r['name'] for r in self.manifest['actions']})
+
     def test_original_source_partition(self):
         self.assertEqual(len(self.train['rows']),16)
         self.assertEqual(len(self.held['rows']),8)
@@ -255,11 +353,18 @@ class PhysicalContractTests(unittest.TestCase):
         out,plan,completed,summary=self.run_complete()
         self.assertEqual(completed['actual_training_requests'],48)
         self.assertEqual(completed['actual_online_policy_requests'],56)
-        self.assertEqual(len(self.reader.calls),104)
-        self.assertEqual(summary['physical_on_policy_generation_invocations_self_reported'],104)
+        self.assertEqual(completed['actual_equalcap_contrast_requests'],16)
+        self.assertEqual(len(self.reader.calls),120)
+        self.assertEqual(summary['physical_on_policy_generation_invocations_self_reported'],120)
+        self.assertEqual(summary['additional_paid_equalcap_invocations'],16)
         self.assertEqual(len(summary['seven_policy_results']),7)
         self.assertEqual([r['policy'] for r in summary['seven_policy_results']],list(POLICIES))
         self.assertFalse(summary['actual_model_savings_proven'])
+        paired=summary['paired_equalcap_96_token_contrast']
+        self.assertEqual(paired['paired_tasks'],8)
+        self.assertEqual(paired['thinking_mode_vs_equalcap_nonthinking'][0]['max_generated_token_ceiling'],96)
+        self.assertEqual(paired['thinking_mode_vs_equalcap_nonthinking'][1]['max_generated_token_ceiling'],96)
+        self.assertFalse(paired['observed_saved_compute_claim'])
         self.assertGreater(summary['actual_training_input_output_tokens'],0)
         for row in summary['seven_policy_results']:
             self.assertTrue(row['cold_start_calibration_fee_shared_not_summable'])

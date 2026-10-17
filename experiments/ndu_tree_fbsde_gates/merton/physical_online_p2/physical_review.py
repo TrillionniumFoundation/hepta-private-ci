@@ -22,7 +22,7 @@ def quantile(rows, q):
     return s[max(0,math.ceil(len(s)*q)-1)]
 
 
-def journal(path: Path, plan_sha: str, train_rows: list, served: list) -> None:
+def journal(path: Path, plan_sha: str, train_rows: list, served: list, contrasts: list) -> None:
     if not path.is_file() or path.is_symlink() or path.stat().st_size > 4_000_000:
         raise Invalid('original durable inference journal missing')
     # JSONL strict parsing, no duplicate keys, reject extra lines and out-of-order events.
@@ -45,11 +45,19 @@ def journal(path: Path, plan_sha: str, train_rows: list, served: list) -> None:
         expected.extend([{'event':'start',**eid},
                          {'event':'done',**eid,'output_sha256':sha(encoded(rec))}])
     expected.append({'event':'plan_frozen','sha256':plan_sha})
-    for rec in served:
+    for ix, rec in enumerate(served):
         eid={'stage':'held','policy':rec['policy'],'task_id':rec['task_id'],
              'action':rec['action'],'plan_sha256':plan_sha}
         expected.extend([{'event':'start',**eid},
                          {'event':'done',**eid,'output_sha256':sha(encoded(rec))}])
+        if (ix + 1) % len(POLICIES) == 0:
+            task_index = ix // len(POLICIES)
+            for pair in contrasts[2*task_index:2*task_index+2]:
+                ceid={'stage':'contrast','policy':pair['policy'],
+                      'task_id':pair['task_id'], 'action':pair['action'],
+                      'plan_sha256':plan_sha}
+                expected.extend([{'event':'start',**ceid},
+                                 {'event':'done',**ceid,'output_sha256':sha(encoded(pair))}])
     if len(rows) != len(expected) or any(parse_line(raw) != exp for raw,exp in zip(rows,expected)):
         raise Invalid('missing/misordered/preplanted original physical attempts')
 
@@ -76,6 +84,7 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
     if type(plan) is not dict or set(plan) != {'schema','manifest_sha256','train_source_sha256',
             'held_public_sha256','train_original_calls','train_original_outputs_sha256',
             'train_record','public_record','portfolio_attempt','selected_request_schedule',
+            'paired_equalcap_schedule',
             'reader','research_only_deny_all'}:
         raise Invalid('frozen plan structural drift')
     if plan['schema'] != SCHEMA+'.frozen-plan' or plan['research_only_deny_all'] is not True:
@@ -100,12 +109,23 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
                                       'action': arm['assignments'][tid]})
     if plan['selected_request_schedule'] != expected_schedule:
         raise Invalid('frozen physical policy schedule substitution')
+    # Independent equal-cap contrast: no training outcomes may choose the
+    # comparison arms or their timing. Both must always run on every held case.
+    expected_pairs = []
+    for i, case in enumerate(sorted(public['cases'], key=lambda x: x['task_id'])):
+        ordered = ('reason','reason_equalcap') if i % 2 == 0 else ('reason_equalcap','reason')
+        for action in ordered:
+            expected_pairs.append({'task_id':case['task_id'],
+                                   'policy':'equal_cap','action':action})
+    if plan['paired_equalcap_schedule'] != expected_pairs:
+        raise Invalid('unfrozen or tampered 96-token matched contrast schedule')
     frozen_sha=sha(encoded(plan))
     if type(completed) is not dict or set(completed) != {
         'schema','frozen_plan_sha256','manifest_sha256','train_original_sha256',
         'plan_frozen_before_held_requests','original_pretrained_reader_execution',
         'physical_model_identity','actual_training_requests','actual_online_policy_requests',
         'total_generation_invocations','original_train_trace','actual_policy_trace',
+        'actual_equalcap_contrast_requests','paired_equalcap_trace',
         'model_load_cpu_seconds','model_load_wall_seconds','execution_cpu_seconds',
         'execution_wall_seconds','actual_model_savings_verified',
         'independent_model_execution_attestation','independent_human_task_scoring',
@@ -142,11 +162,14 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         if type(metric) not in (float,int) or not math.isfinite(metric) or not 0 <= metric < 86400:
             raise Invalid('invalid original full-lifecycle CPU/wall meter: '+metric_name)
     train_log=completed['original_train_trace']; served=completed['actual_policy_trace']
-    if type(train_log) is not list or type(served) is not list or (
+    contrasts=completed['paired_equalcap_trace']
+    if type(train_log) is not list or type(served) is not list or type(contrasts) is not list or (
         len(train_log) != len(train['rows'])*len(acts) or len(served) != len(held_public['rows'])*len(POLICIES) or
+        len(contrasts) != 2*len(held_public['rows']) or
         completed['actual_training_requests'] != len(train_log) or
         completed['actual_online_policy_requests'] != len(served) or
-        completed['total_generation_invocations'] != len(train_log)+len(served) or
+        completed['actual_equalcap_contrast_requests'] != len(contrasts) or
+        completed['total_generation_invocations'] != len(train_log)+len(served)+len(contrasts) or
         plan['train_original_calls'] != len(train_log) or
         plan['train_original_outputs_sha256'] != sha(encoded(train_log)) or
         completed['train_original_sha256'] != sha(encoded(train_log))):
@@ -181,7 +204,17 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         original_prompt = make_prompt(names[r['task_id']]['text'], r['action'])
         if r['prompt_sha256'] != sha(encoded(original_prompt)) or r['sampling_seed'] != prompt_seed(original_prompt):
             raise Invalid('original held model prompt/sampling seed was substituted')
-    journal(journal_path,frozen_sha,train_log,served)
+    if [(r['policy'],r['task_id'],r['action']) for r in contrasts] != [
+            (p['policy'],p['task_id'],p['action']) for p in expected_pairs]:
+        raise Invalid('matched 96-token physical contrast order was substituted')
+    for r in contrasts:
+        check_output(r)
+        if r['source_kind'] != 'original_physical' or r['policy'] != 'equal_cap' or r['task_id'] not in names:
+            raise Invalid('unqualified original matched-contrast Reader output')
+        original_prompt = make_prompt(names[r['task_id']]['text'], r['action'])
+        if r['prompt_sha256'] != sha(encoded(original_prompt)) or r['sampling_seed'] != prompt_seed(original_prompt):
+            raise Invalid('matched contrast prompt or seed did not originate from public task')
+    journal(journal_path,frozen_sha,train_log,served,contrasts)
     training_tokens=sum(x['input_tokens']+x['output_tokens'] for x in train_log)
     training_cpu=sum(x['measured_cpu_seconds'] for x in train_log)
     by_policy={}
@@ -214,6 +247,49 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
             'external_correct_minus_FULL_serving_token_tariff':str(correct - tariff*counted),
             'illustrative_single_arm_cold_start_net_tokens_only':str(correct - tariff*(counted+training_tokens)),
             'cold_start_calibration_fee_shared_not_summable':True})
+    # Paid paired contrast uses *only* original public task-specific prompts
+    # and a 96-token generation maximum in both Qwen3 modes. The observed
+    # generated-token counts need not be equal: early EOS is valid behavior.
+    matched={r['task_id']: {} for r in contrasts}
+    for r in contrasts:
+        if r['action'] in matched[r['task_id']]:
+            raise Invalid('duplicate equal-cap arm for task')
+        matched[r['task_id']][r['action']]=r
+    if set(matched) != set(names) or any(set(v) != {'reason','reason_equalcap'} for v in matched.values()):
+        raise Invalid('matched contrast paired-task support missing')
+    paired_gain=paired_loss=paired_both=paired_neither=0
+    for tid, sides in matched.items():
+        truth=labels[tid]['label']
+        think = sides['reason']['predicted_class'] == truth
+        plain = sides['reason_equalcap']['predicted_class'] == truth
+        paired_gain += int(think and not plain)
+        paired_loss += int(plain and not think)
+        paired_both += int(think and plain)
+        paired_neither += int(not think and not plain)
+    paired_profile=[]
+    for action in ('reason','reason_equalcap'):
+        rows=[matched[tid][action] for tid in sorted(matched)]
+        paired_profile.append({
+          'action':action, 'max_generated_token_ceiling':96,
+          'actual_independent_model_invocations':len(rows),
+          'correct':sum(r['predicted_class'] == labels[r['task_id']]['label'] for r in rows),
+          'total_input_tokens':sum(r['input_tokens'] for r in rows),
+          'total_generated_tokens':sum(r['output_tokens'] for r in rows),
+          'total_thinking_tokens':sum(r['thinking_segment_tokens'] for r in rows),
+          'incomplete_thinking':sum(r['thinking_mode'] and not r['thinking_complete'] for r in rows),
+          'cpu_seconds':round(sum(r['measured_cpu_seconds'] for r in rows),9),
+          'wall_seconds':round(sum(r['measured_wall_seconds'] for r in rows),9),
+          'p95_request_wall_ms':round(1000*quantile([r['measured_wall_seconds'] for r in rows],.95),3),
+          'p99_request_wall_ms':round(1000*quantile([r['measured_wall_seconds'] for r in rows],.99),3),
+        })
+    paired_contrast={
+       'schema':SCHEMA+'.matched-equal-cap', 'same_user_prompt_and_sampling_seed':True,
+       'thinking_mode_vs_equalcap_nonthinking':paired_profile,
+       'taskwise_thinking_wins':paired_gain, 'taskwise_thinking_losses':paired_loss,
+       'taskwise_both_correct':paired_both, 'taskwise_neither_correct':paired_neither,
+       'paired_tasks':len(matched), 'observed_saved_compute_claim':False,
+       'science_boundary':'HISTORICAL_PUBLIC_8_TASKS_NOT_PROSPECTIVE_NO_CAUSAL_GENERALIZATION',
+    }
     # Same objective has same frozen decisions; physically executed copies may still differ.
     if (plan['portfolio_attempt']['attempt']['policies'][-2]['assignments'] !=
         plan['portfolio_attempt']['attempt']['policies'][-1]['assignments']):
@@ -223,7 +299,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
        'frozen_plan_sha256':frozen_sha,
        'completed_original_sha256':sha(encoded(completed)),
        'model_identity':identity,
-       'physical_on_policy_generation_invocations_self_reported':len(train_log)+len(served),
+       'physical_on_policy_generation_invocations_self_reported':len(train_log)+len(served)+len(contrasts),
+       'additional_paid_equalcap_invocations':len(contrasts),
        'actual_training_input_output_tokens':training_tokens,
        'actual_training_cpu_seconds':round(training_cpu,9),
        'actual_model_load_cpu_seconds':completed['model_load_cpu_seconds'],
@@ -231,6 +308,7 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
        'original_total_execution_cpu_seconds':completed['execution_cpu_seconds'],
        'original_total_execution_wall_seconds':completed['execution_wall_seconds'],
        'seven_policy_results':scores,
+       'paired_equalcap_96_token_contrast':paired_contrast,
        'historical_public_test_set_not_future_window':True,
        'independent_hardware_attestation':False,
        'actual_model_savings_proven':False,
