@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
+use std::sync::Weak;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -110,8 +111,10 @@ impl StdError for SharedFeatureErrorV2 {}
 pub struct SharedFeatureCacheV2 {
     maximum_entries: usize,
     maximum_bytes: usize,
+    // Counts cached buffers AND retired buffers held by external Arc readers.
     resident_bytes: usize,
     snapshots: BTreeMap<String, Arc<ImmutableFeatureSnapshotV2>>,
+    retired: Vec<(Weak<ImmutableFeatureSnapshotV2>, usize)>,
 }
 
 impl SharedFeatureCacheV2 {
@@ -124,6 +127,7 @@ impl SharedFeatureCacheV2 {
             maximum_bytes,
             resident_bytes: 0,
             snapshots: BTreeMap::new(),
+            retired: Vec::new(),
         })
     }
 
@@ -135,6 +139,9 @@ impl SharedFeatureCacheV2 {
         self.snapshots.is_empty()
     }
 
+    /// Conservative cache-owner allocation floor. Revoked/expired snapshots
+    /// still held by live readers count until a subsequent reclamation pass.
+    /// This is not a measured OS RSS or accelerator allocation.
     pub fn resident_bytes(&self) -> usize {
         self.resident_bytes
     }
@@ -159,6 +166,7 @@ impl SharedFeatureCacheV2 {
             return Err(SharedFeatureErrorV2::InvalidFeature);
         }
         let content_digest = feature_content_digest_v2(&features_q24);
+        self.reclaim_retired();
         // An expired key may be re-admitted, but a live immutable identity
         // must never be silently replaced. Old Arc readers remain immutable
         // and still require independent final-use checks.
@@ -190,14 +198,18 @@ impl SharedFeatureCacheV2 {
             .ok_or(SharedFeatureErrorV2::Overflow)?;
         // Reclaim expired capacity only when needed. Live entries are never
         // evicted to satisfy a different Cell or principal.
-        if self.snapshots.len() >= self.maximum_entries || next_bytes > self.maximum_bytes {
+        if self.snapshots.len().saturating_add(self.retired.len()) >= self.maximum_entries
+            || next_bytes > self.maximum_bytes
+        {
             self.purge_expired(now_ms);
             next_bytes = self
                 .resident_bytes
                 .checked_add(bytes)
                 .ok_or(SharedFeatureErrorV2::Overflow)?;
         }
-        if self.snapshots.len() >= self.maximum_entries || next_bytes > self.maximum_bytes {
+        if self.snapshots.len().saturating_add(self.retired.len()) >= self.maximum_entries
+            || next_bytes > self.maximum_bytes
+        {
             return Err(SharedFeatureErrorV2::CapacityExceeded);
         }
         let snapshot = Arc::new(ImmutableFeatureSnapshotV2 {
@@ -262,13 +274,34 @@ impl SharedFeatureCacheV2 {
 
     fn retain(&mut self, keep: impl Fn(&ImmutableFeatureSnapshotV2) -> bool) -> usize {
         let old_count = self.snapshots.len();
-        self.snapshots.retain(|_, snapshot| keep(snapshot));
-        self.resident_bytes = self
-            .snapshots
-            .values()
-            .map(|snapshot| snapshot.features_q24.len() * 8)
-            .sum();
+        let retired = &mut self.retired;
+        self.snapshots.retain(|_, snapshot| {
+            if keep(snapshot) {
+                return true;
+            }
+            // Removal from the map does not physically release an Arc held by
+            // another Cell. A weak tombstone retains its quota charge without
+            // keeping the actual snapshot alive.
+            if Arc::strong_count(snapshot) > 1 {
+                retired.push((
+                    Arc::downgrade(snapshot),
+                    snapshot.features_q24.len().saturating_mul(8),
+                ));
+            }
+            false
+        });
+        self.reclaim_retired();
         old_count - self.snapshots.len()
+    }
+
+    fn reclaim_retired(&mut self) {
+        self.retired.retain(|(snapshot, _)| snapshot.strong_count() > 0);
+        let cached_bytes = self.snapshots.values().fold(0_usize, |total, snapshot| {
+            total.saturating_add(snapshot.features_q24.len().saturating_mul(8))
+        });
+        self.resident_bytes = self.retired.iter().fold(cached_bytes, |total, (_, bytes)| {
+            total.saturating_add(*bytes)
+        });
     }
 }
 
@@ -398,9 +431,19 @@ mod tests {
             Err(SharedFeatureErrorV2::InvalidFeature)
         );
         assert_eq!(cache.len(), 2);
+        // The old reader still owns physical memory even after the cache
+        // expires its map entry. Reject admission rather than undercount it.
+        assert_eq!(
+            cache.insert(20, new_id.clone(), 40, Arc::from([3_i64])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
+        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.resident_bytes(), 16);
+        assert_eq!(old_snapshot.features_q24.as_ref(), &[1]);
+        drop(old_snapshot);
         cache
             .insert(20, new_id.clone(), 40, Arc::from([3_i64]))
-            .expect("expired capacity may be reused");
+            .expect("released expired reader capacity may be reused");
         assert_eq!(cache.len(), 2);
         assert_eq!(cache.resident_bytes(), 16);
         assert!(cache.get(20, &old_id).expect("expired lookup").is_none());
@@ -410,7 +453,6 @@ mod tests {
             .expect("live lookup")
             .expect("present");
         assert!(Arc::ptr_eq(&live_snapshot, &live_hit));
-        assert_eq!(old_snapshot.features_q24.as_ref(), &[1]);
     }
 
     #[test]
@@ -424,11 +466,17 @@ mod tests {
             cache.insert(19, id.clone(), 30, Arc::from([3_i64, 4])),
             Err(SharedFeatureErrorV2::ConflictingSnapshot)
         );
+        let original_digest = original.content_digest;
+        assert_eq!(
+            cache.insert(20, id.clone(), 30, Arc::from([3_i64, 4])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
+        assert_eq!(original.features_q24.as_ref(), &[1, 2]);
+        drop(original);
         let replacement = cache
             .insert(20, id, 30, Arc::from([3_i64, 4]))
-            .expect("expired identity may be readmitted");
-        assert_ne!(original.content_digest, replacement.content_digest);
-        assert_eq!(original.features_q24.as_ref(), &[1, 2]);
+            .expect("expired identity may be readmitted after old reader drops");
+        assert_ne!(original_digest, replacement.content_digest);
         assert_eq!(replacement.features_q24.as_ref(), &[3, 4]);
         assert_eq!(cache.len(), 1);
         assert_eq!(cache.resident_bytes(), 16);
