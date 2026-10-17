@@ -1,0 +1,112 @@
+name: Hepta Stem V27 original late-label conditional vision (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v27_conditional_vision_replay.py"
+      - "qualification/stem-cell-v1/test_v27_conditional_vision_replay.py"
+      - "qualification/stem-cell-v1/STEM_V27_LATE_LABEL_REPLAY_20261017.md"
+      - ".github/workflows/hepta-stem-v27-late-label-replay.yml"
+  push:
+    branches:
+      - research/stem-v27-late-label-original-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v27-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact-source checks and synthetic adversarial tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          python -m py_compile v27_conditional_vision_replay.py test_v27_conditional_vision_replay.py
+          python -m unittest -v test_v27_conditional_vision_replay
+          python -O -m unittest -v test_v27_conditional_vision_replay
+
+  original-late-label-replay:
+    needs: source-contract
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v27-late-label-original-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Verify archive and seal label-blind route BEFORE source label access
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXACT_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          umask 077
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$RUNNER_TEMP/original-e3.zip"
+          echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $RUNNER_TEMP/original-e3.zip" | sha256sum -c -
+          python qualification/stem-cell-v1/v27_conditional_vision_replay.py seal \
+            --archive "$RUNNER_TEMP/original-e3.zip" \
+            --plan "$RUNNER_TEMP/privately-sealed-plan.json"
+          sha256sum "$RUNNER_TEMP/privately-sealed-plan.json" > "$RUNNER_TEMP/plan.sha256"
+      - name: Re-acquire immutable original ScienceQA-IMG source after route seal
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'datasets==3.6.0' 'huggingface_hub==0.36.0' 'Pillow==11.3.0' 'pyarrow==21.0.0'
+          python experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-late-label-source"
+          echo "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202  $RUNNER_TEMP/e3-late-label-source/inputs/sources.jsonl" | sha256sum -c -
+      - name: Enforce private route readback, all-eight-arm original independent labels, sanitized HOLD
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum --check "$RUNNER_TEMP/plan.sha256"
+          python qualification/stem-cell-v1/v27_conditional_vision_replay.py review \
+            --archive "$RUNNER_TEMP/original-e3.zip" \
+            --plan "$RUNNER_TEMP/privately-sealed-plan.json" \
+            --sources "$RUNNER_TEMP/e3-late-label-source/inputs/sources.jsonl" \
+            --labels "$RUNNER_TEMP/e3-late-label-source/private_labels/test_labels.jsonl" \
+            --output "$RUNNER_TEMP/v27-sanitized-hold.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'v27-sanitized-hold.json').read_text())
+          assert d['cases']==64 and d['counterfactual_image_lookups']==21
+          assert d['counterfactual_changed_decisions']==19
+          assert d['disposition']=='HOLD_NO_GO' and d['authority']=='DENY_ALL'
+          assert d['production_authorized'] is False
+          assert d['physical_conditional_encoder_forwards'] is None
+          print('Original late-label retrospective case audit: HOLD / DENY_ALL')
+          PY
+      - name: Publish only sanitized original aggregate, no private plan/media/labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v27-retrospective-aggregate-hold-${{ github.sha }}
+          path: ${{ runner.temp }}/v27-sanitized-hold.json
+          if-no-files-found: error
+          retention-days: 7
