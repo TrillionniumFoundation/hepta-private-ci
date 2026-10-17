@@ -15,7 +15,7 @@ permissions:
   contents: read
 concurrency:
   group: stem-equal-size-p0-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   source-fail-closed:
     runs-on: ubuntu-24.04
