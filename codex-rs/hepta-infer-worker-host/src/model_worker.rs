@@ -813,8 +813,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // legacy V1 driver receives owned requests for compatibility; neither
         // path may disguise sequential calls as a native batch.
         let borrowed_backend = self.driver.supports_neuron_feature_borrowed_batch(&handle);
-        let mut legacy_requests = Vec::new();
-        let results = if borrowed_backend {
+        let (results, legacy_requests) = if borrowed_backend {
             let views = requests
                 .iter()
                 .map(|(request, shared)| BorrowedNeuronFeatureRequestV1 {
@@ -822,17 +821,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                     feature_vector_q24: shared.as_slice(),
                 })
                 .collect::<Vec<_>>();
-            self.driver.run_neuron_features_borrowed_batch(&handle, &views)
+            (
+                self.driver.run_neuron_features_borrowed_batch(&handle, &views),
+                None,
+            )
         } else {
-            legacy_requests = requests
+            let legacy_requests = requests
                 .iter()
                 .map(|(request, shared)| {
                     let mut owned = request.clone();
                     owned.feature_vector_q24 = shared.as_slice().to_vec();
                     owned
                 })
-                .collect();
-            self.driver.run_neuron_features_batch(&handle, &legacy_requests)
+                .collect::<Vec<_>>();
+            let result = self
+                .driver
+                .run_neuron_features_batch(&handle, &legacy_requests);
+            (result, Some(legacy_requests))
         };
         // An unknown backend outcome must never be replayed. Retire all active
         // markers before checking the result or projecting any typed receipt.
@@ -846,16 +851,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // V1 receipts still contain the original complete Q24 Vec. Borrowed
         // backends pay this one compatibility materialization only AFTER the
         // physical model call, not once per Cell before backend dispatch.
-        let requests = if borrowed_backend {
-            requests
+        let requests = match legacy_requests {
+            Some(owned) => owned,
+            None => requests
                 .into_iter()
                 .map(|(mut request, shared)| {
                     request.feature_vector_q24 = shared.as_slice().to_vec();
                     request
                 })
-                .collect::<Vec<_>>()
-        } else {
-            legacy_requests
+                .collect::<Vec<_>>(),
         };
         if results.len() != requests.len() {
             return Err(Error::FeatureOutputMismatch);
