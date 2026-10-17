@@ -4,18 +4,19 @@ on:
     branches:
       - "research/memorycell-ruff-diagnostics-20261016"
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: memory-ruff-exact-20261016
   cancel-in-progress: false
 jobs:
   format-export:
+    if: ${{ !startsWith(github.event.head_commit.message, 'format(memory):') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          persist-credentials: false
+          persist-credentials: true
           fetch-depth: 2
       - name: Verify source revision and pinned formatter
         run: |
@@ -76,6 +77,18 @@ jobs:
           git diff -- scripts/memory_cell/deno_binary_git_source_gate.py scripts/memory_cell/deno_lossy_projection_proof.py scripts/memory_cell/matched_structured_rag_gate.py scripts/memory_cell/ten_project_source_closure.py scripts/memory_cell/test_deno_binary_git_source_gate.py scripts/memory_cell/test_deno_lossy_projection_proof.py scripts/memory_cell/test_ten_project_source_closure.py > /tmp/memory-ruff-export/ruff.patch
           test -s /tmp/memory-ruff-export/ruff.patch
           (cd /tmp/memory-ruff-export && find formatted original -type f -print0 | sort -z | xargs -0 sha256sum > FORMAT-SHA256SUMS)
+      - name: Commit AST-preserving Ruff files to isolated diagnostic branch only
+        run: |
+          set -euo pipefail
+          git add -- scripts/memory_cell/deno_binary_git_source_gate.py scripts/memory_cell/deno_lossy_projection_proof.py scripts/memory_cell/matched_structured_rag_gate.py scripts/memory_cell/ten_project_source_closure.py scripts/memory_cell/test_deno_binary_git_source_gate.py scripts/memory_cell/test_deno_lossy_projection_proof.py scripts/memory_cell/test_ten_project_source_closure.py
+          if git diff --cached --quiet; then
+            echo "Source already Ruff-formatted; no commit needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "format(memory): Ruff-only seven-file AST-preserving repair on scratch branch"
+          git push origin HEAD:refs/heads/research/memorycell-ruff-diagnostics-20261016
       - name: Archive exact formatter source and diagnostic patch
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
