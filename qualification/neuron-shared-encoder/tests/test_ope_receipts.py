@@ -205,6 +205,22 @@ class OPEReceiptTests(unittest.TestCase):
                 10, 1,
             )
 
+    def test_target_policy_must_be_inside_logged_support(self):
+        with self.assertRaises(OPEReceiptError):
+            PolicyDecisionReceiptV1(
+                "episode-1",
+                canonical_candidate_set_digest(("baseline",)),
+                ("baseline",),
+                "baseline",
+                "missing-target-policy",
+                1.0,
+                1.0,
+                SUPPORT,
+                BUDGET,
+                POLICY,
+                "policy-principal",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
