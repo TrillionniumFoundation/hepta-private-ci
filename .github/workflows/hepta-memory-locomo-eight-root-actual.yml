@@ -21,6 +21,9 @@ on:
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_FORMAT_NEGATIVE_20261016.md"
       - "scripts/memory_cell/locomo_blind_sufficiency.py"
       - "scripts/memory_cell/test_locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/frozen_source_integrity.py"
+      - "scripts/memory_cell/test_frozen_source_integrity.py"
+      - "scripts/memory_cell/frozen_source/**"
       - "scripts/memory_cell/data/locomo-blind-source-first-20261016.json"
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_BLIND_SUFFICIENCY_20261016.md"
       - ".github/workflows/hepta-memory-locomo-eight-root-actual.yml"
@@ -43,6 +46,9 @@ on:
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_FORMAT_NEGATIVE_20261016.md"
       - "scripts/memory_cell/locomo_blind_sufficiency.py"
       - "scripts/memory_cell/test_locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/frozen_source_integrity.py"
+      - "scripts/memory_cell/test_frozen_source_integrity.py"
+      - "scripts/memory_cell/frozen_source/**"
       - "scripts/memory_cell/data/locomo-blind-source-first-20261016.json"
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_BLIND_SUFFICIENCY_20261016.md"
       - ".github/workflows/hepta-memory-locomo-eight-root-actual.yml"
@@ -70,6 +76,8 @@ jobs:
           python3 scripts/memory_cell/locomo_format_result_gate.py > /tmp/locomo-format-negative.json
           python3 -m compileall -q scripts/memory_cell/locomo_format_trial.py scripts/memory_cell/locomo_literal_sufficiency_audit.py scripts/memory_cell/locomo_format_result_gate.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_blind_sufficiency.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_frozen_source_integrity.py' -v
+          python3 scripts/memory_cell/frozen_source_integrity.py > /tmp/locomo-archived-source-integrity.json
           python3 scripts/memory_cell/locomo_blind_sufficiency.py audit-public --receipt scripts/memory_cell/data/locomo-blind-source-first-20261016.json > /tmp/locomo-blind-source-only.json
           python3 -m compileall -q scripts/memory_cell/locomo_blind_sufficiency.py
           git diff --exit-code
@@ -82,4 +90,5 @@ jobs:
             /tmp/locomo-research-negative.json
             /tmp/locomo-format-negative.json
             /tmp/locomo-blind-source-only.json
+            /tmp/locomo-archived-source-integrity.json
           if-no-files-found: warn
