@@ -149,14 +149,17 @@ jobs:
           /tmp/reader-python/bin/pip install -r /tmp/original/environment.txt
           mkdir -p /tmp/output
           /tmp/reader-python/bin/pip freeze > /tmp/output/python-lock.txt
-      - name: Stage exact publisher model and execute actual four-condition shard
+      - name: Stage exact publisher model revision with verified network fetch
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/output/staging-resource.txt /tmp/reader-python/bin/python scripts/memory_cell/reader_reference.py stage "$TIER" /tmp/model
+      - name: Execute real four-condition shard offline
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/output/staging-resource.txt /tmp/reader-python/bin/python scripts/memory_cell/reader_reference.py stage "$TIER" /tmp/model
           /usr/bin/time -v -o /tmp/output/inference-resource.txt /tmp/reader-python/bin/python - <<'PY'
           import hashlib,json,os
           from pathlib import Path
