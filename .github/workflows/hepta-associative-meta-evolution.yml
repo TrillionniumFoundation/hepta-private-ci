@@ -1,0 +1,165 @@
+name: Hepta MemoryCell source-only meta evolution research (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-graph-causal-20261016]
+    paths:
+      - 'scripts/memory_cell/associative_meta_evolution.py'
+      - 'scripts/memory_cell/test_associative_meta_evolution.py'
+      - 'scripts/memory_cell/meta_memory_portfolio.py'
+      - 'scripts/memory_cell/test_meta_memory_portfolio.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_META_EVOLUTION_20261017.md'
+      - '.github/workflows/hepta-associative-meta-evolution.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-meta-evolution-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  privileged-source-preparation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Original inherited and new adversarial contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/meta-source-receipts
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_associative_graph_causal.py' -v 2>&1 | tee /tmp/meta-source-receipts/base-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_associative_meta_evolution.py' -v 2>&1 | tee /tmp/meta-source-receipts/meta-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_meta_memory_portfolio.py' -v 2>&1 | tee /tmp/meta-source-receipts/portfolio-tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/meta-original-staged
+      - name: Prepare original source cohort (private labels excluded from export)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/meta-original
+          tar -C /tmp/meta-original -xzf /tmp/meta-original-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/meta-original/memory-inputs/locomo.json | cut -d' ' -f1)" = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare /tmp/meta-original/memory-inputs/locomo.json /tmp/meta-prepared > /tmp/meta-source-receipts/preparation.json
+          mkdir /tmp/meta-public
+          cp /tmp/meta-prepared/{public,manifest}.json /tmp/meta-public/
+          test ! -e /tmp/meta-public/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: meta-public-only
+          path: /tmp/meta-public/
+          if-no-files-found: error
+      - name: Prepare SHA256 and exact-head receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/meta-source-receipts
+          git rev-parse HEAD > /tmp/meta-source-receipts/head.txt
+          (cd /tmp/meta-source-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: meta-source-tests-not-acceptance
+          path: /tmp/meta-source-receipts/
+          if-no-files-found: error
+  label-blind-train-and-rank:
+    needs: privileged-source-preparation
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: meta-public-only
+          path: /tmp/meta-public
+      - name: Train equal-parameter source-only heads and seal seven arms
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/meta-public/private.json
+          mkdir /tmp/meta-train-receipts
+          /usr/bin/time -v -o /tmp/meta-train-receipts/resources.txt \
+            python3 scripts/memory_cell/associative_meta_evolution.py run \
+              /tmp/meta-public /tmp/meta-unscored-run \
+            > /tmp/meta-train-receipts/run.json
+          cp /tmp/meta-unscored-run/{predictions,seal}.json /tmp/meta-train-receipts/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: meta-original-unscored
+          path: /tmp/meta-unscored-run/
+          if-no-files-found: error
+      - name: Exact resource/source SHA256 receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/meta-train-receipts
+          git rev-parse HEAD > /tmp/meta-train-receipts/head.txt
+          (cd /tmp/meta-train-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: meta-train-receipts-not-acceptance
+          path: /tmp/meta-train-receipts/
+          if-no-files-found: error
+  isolated-postseal-review:
+    needs: label-blind-train-and-rank
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: meta-public-only
+          path: /tmp/meta-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: meta-original-unscored
+          path: /tmp/meta-unscored-run
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/meta-original-staged
+      - name: Independently reimport, rerun, and score original evidence IDs
+        run: |
+          set -euo pipefail
+          mkdir /tmp/meta-review-original /tmp/meta-review-receipts
+          tar -C /tmp/meta-review-original -xzf /tmp/meta-original-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/meta-review-original/memory-inputs/locomo.json /tmp/meta-review-prepared \
+            > /tmp/meta-review-receipts/prepared.json
+          cmp /tmp/meta-public/public.json /tmp/meta-review-prepared/public.json
+          cmp /tmp/meta-public/manifest.json /tmp/meta-review-prepared/manifest.json
+          python3 scripts/memory_cell/associative_meta_evolution.py review \
+            /tmp/meta-review-prepared /tmp/meta-unscored-run \
+            /tmp/meta-review-receipts/report.json > /tmp/meta-review-receipts/summary.json
+          python3 scripts/memory_cell/meta_memory_portfolio.py review \
+            /tmp/meta-review-prepared /tmp/meta-unscored-run \
+            /tmp/meta-review-receipts/portfolio.json > /tmp/meta-review-receipts/portfolio-summary.json
+          test "$(python3 -c 'import json;print(json.load(open("/tmp/meta-review-receipts/portfolio.json"))["disposition"])')" = 'retain_temporal_deny_topology_growth'
+      - name: Exact-head signed-by-nobody SHA256 receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/meta-review-receipts
+          git rev-parse HEAD > /tmp/meta-review-receipts/head.txt
+          (cd /tmp/meta-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: meta-postseal-not-acceptance
+          path: /tmp/meta-review-receipts/
+          if-no-files-found: error

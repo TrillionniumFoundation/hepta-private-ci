@@ -1,0 +1,129 @@
+{
+  "admission_decision": "deny_no_incremental_evidence_over_fixed_temporal_graph",
+  "all_gold_available": 224,
+  "baseline_predictions_exact_mismatch_counts_240_questions": {
+    "bm25": 0,
+    "fixed_graph": 0,
+    "temporal": 0
+  },
+  "by_arm": {
+    "bm25": {
+      "any_at_8": 125,
+      "complete_at_8": 107,
+      "reference_scored": 238
+    },
+    "fixed_graph": {
+      "any_at_8": 144,
+      "complete_at_8": 134,
+      "reference_scored": 238
+    },
+    "rewired_typed": {
+      "any_at_8": 122,
+      "complete_at_8": 105,
+      "reference_scored": 238
+    },
+    "shared_gate": {
+      "any_at_8": 136,
+      "complete_at_8": 119,
+      "reference_scored": 238
+    },
+    "swapped_type": {
+      "any_at_8": 135,
+      "complete_at_8": 118,
+      "reference_scored": 238
+    },
+    "temporal": {
+      "any_at_8": 146,
+      "complete_at_8": 136,
+      "reference_scored": 238
+    },
+    "typed_split": {
+      "any_at_8": 137,
+      "complete_at_8": 121,
+      "reference_scored": 238
+    }
+  },
+  "code_git_blob_sha": "23c14639eb07b5fd47a8ebc4ce8c7aad1a5dd9db",
+  "date_utc": "2026-10-17",
+  "dialogue_groups": 10,
+  "four_parameter_head_per_group": true,
+  "full_lifecycle_cost_measured": false,
+  "hosted_exact_head_integration_completed": false,
+  "independent_human_semantic_adjudication": false,
+  "learned_topology": false,
+  "limitations": "Historical development cohort; source-derived weak continuity proxy; no independent external families, no semantic Reader, no calibrated causal or utility learning, same-source retrieval, no certified live revocation; local upstream parser recreated, hosted exact-source path pending.",
+  "local_process_fully_isolated_from_reference_files": false,
+  "local_source_parser": "compatibility-shim-reproduces-original-3-arm-predictions-exactly",
+  "model_generated_language_answers": 0,
+  "observed_peak_rss_kib": 109296,
+  "observed_wall_clock_run_seconds": 13.94,
+  "original_dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "original_public_artifact_id": 12056496280,
+  "original_unscored_artifact_id": 12069900947,
+  "original_upstream_run_id": 38905393013,
+  "paired_complete_at_8": {
+    "rewired_typed_minus_typed_split": {
+      "gained": 3,
+      "lost": 19,
+      "net": -16,
+      "tied": 216
+    },
+    "typed_split_minus_fixed_graph": {
+      "gained": 1,
+      "lost": 14,
+      "net": -13,
+      "tied": 223
+    },
+    "typed_split_minus_shared_gate": {
+      "gained": 2,
+      "lost": 0,
+      "net": 2,
+      "tied": 236
+    },
+    "typed_split_minus_swapped_type": {
+      "gained": 3,
+      "lost": 0,
+      "net": 3,
+      "tied": 235
+    },
+    "typed_split_minus_temporal": {
+      "gained": 2,
+      "lost": 17,
+      "net": -15,
+      "tied": 219
+    }
+  },
+  "per_family_typed_minus_temporal": {
+    "conv-26": -2,
+    "conv-30": -2,
+    "conv-41": 0,
+    "conv-42": -1,
+    "conv-43": -2,
+    "conv-44": -2,
+    "conv-47": -1,
+    "conv-48": -1,
+    "conv-49": -2,
+    "conv-50": -2
+  },
+  "postseal_local_review_sha256": "faf849ce3d0218bf53c11a02a0fdf216f91b467e4ff2020e4f63d7876c621398",
+  "pretrained_encoder_calls": 0,
+  "private_source_sha256": "e31263ac88da57438b871f25e8210a57c78dcc95d31aa18acb68b12e13005f63",
+  "production_accepted": false,
+  "public_sha256": "c0b3f17d5ee6c2e10db894e5ce112e814fdb9d65e64c34981d5e1ba9587284ba",
+  "questions": 240,
+  "reader_calls": 0,
+  "rebuilt_original_public_and_manifest_byte_identical": true,
+  "reference_scored": 238,
+  "reference_unresolved": 2,
+  "schema": "hepta.memory-meta-evolution-source-observation.v1",
+  "scope": "local-original-source-retrospective-shadow",
+  "shared_and_split_parameter_touches_per_group": 512,
+  "source_messages": 5804,
+  "source_only_model_journal_sha256": "2340a46f6c7477de11a43721bdd3572926c9e9a38327cbe6a604fa46272d6800",
+  "source_only_run_seal_sha256": "e88e29198345f2be30bd04227f4b5e01424bad78b9b1581ddef12a82d25de413",
+  "statistical_superiority": false,
+  "top_k": 8,
+  "training_worker_input_contains_reference_labels": false,
+  "unlearning_proven": false,
+  "upstream_graph_commit": "dde5ee160b11bdb1e6bddf1c5e27dac41fd630cb"
+}
