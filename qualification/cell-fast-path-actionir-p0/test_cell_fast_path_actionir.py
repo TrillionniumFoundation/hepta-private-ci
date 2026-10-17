@@ -153,6 +153,16 @@ class ActionIRContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             FastPathRuntimeReceiptV1(**{**base, "effect_committed": True})
 
+    def test_receipt_app_identity_is_bound_to_candidate(self):
+        item = candidate(ir(op(1)))
+        with self.assertRaises(ValueError):
+            build_shadow_receipt(
+                item,
+                app_identity="app.other",
+                pre_observation_digest=D,
+                post_observation_digest=E,
+            )
+
     def test_candidate_cache_key_changes_with_backend(self):
         program = ir(op(1))
         wasm = candidate(program)
