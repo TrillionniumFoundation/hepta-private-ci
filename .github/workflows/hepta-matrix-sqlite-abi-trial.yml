@@ -1,0 +1,168 @@
+name: Hepta Matrix SQLite ABI trial (scratch only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/matrix-security/sqlite_abi_trial.py"
+      - "qualification/matrix-security/test_sqlite_abi_trial.py"
+      - ".github/workflows/hepta-matrix-sqlite-abi-trial.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-sqlite-abi-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contracts:
+    name: Verify pinned source, security and runtime links (L1 only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind SHA and reject hostile candidate inputs
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_sqlite_abi_trial.py'
+          git diff --check
+          git diff --exit-code
+
+  genuine-resolver:
+    name: Genuine narrowed SDK SQLite ABI trial; no release authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    needs: source-contracts
+    env:
+      HEPTA_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch signed release commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Fetch reviewed AnyMap3 migration
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Stage disposable exact Hepta SDK and one SQLite version change
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEPTA_SHA"
+          STAGE="$RUNNER_TEMP/abi-hepta-$GITHUB_RUN_ID"
+          SDK="$RUNNER_TEMP/abi-upstream-$GITHUB_RUN_ID"
+          git worktree add --detach "$STAGE" "$HEPTA_SHA"
+          python3 qualification/matrix-security/minimal_hepta_source_stage.py \
+            --stage "$STAGE" --release upstream-release \
+            --migration upstream-anymap-commit --candidate-dir "$SDK" \
+            --source-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/abi-source.json"
+          python3 qualification/matrix-security/narrow_matrix_sdk_workspace.py \
+            --stage "$STAGE" --source-report "$RUNNER_TEMP/abi-source.json" \
+            --source-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/abi-workspace.json"
+          python3 qualification/matrix-security/sqlite_abi_trial.py stage \
+            --sdk-root "$SDK" --hepta-stage "$STAGE" \
+            --source-report "$RUNNER_TEMP/abi-source.json" \
+            --workspace-report "$RUNNER_TEMP/abi-workspace.json" \
+            --hepta-sha "$HEPTA_SHA" --output "$RUNNER_TEMP/abi-trial.json"
+          echo "ABI_HEPTA_STAGE=$STAGE" >> "$GITHUB_ENV"
+          echo "ABI_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+      - name: Install candidate-only Rust 1.96 toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve genuine E2EE and SQLite dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 900 cargo +1.96.0 metadata \
+            --manifest-path "$ABI_HEPTA_STAGE/codex-rs/Cargo.toml" \
+            --format-version 1 > "$RUNNER_TEMP/abi-metadata.json" \
+            2> "$RUNNER_TEMP/abi-metadata.stderr" || {
+              tail -n 120 "$RUNNER_TEMP/abi-metadata.stderr"
+              exit 1
+            }
+          python3 qualification/matrix-security/sqlite_abi_trial.py audit \
+            --sdk-root "$ABI_SDK_ROOT" --hepta-stage "$ABI_HEPTA_STAGE" \
+            --trial-report "$RUNNER_TEMP/abi-trial.json" \
+            --metadata "$RUNNER_TEMP/abi-metadata.json" \
+            --output "$RUNNER_TEMP/abi-audit.json"
+      - name: Compile actual Matrix SDK E2EE and SQLite adapter (scratch)
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          timeout 1800 cargo +1.96.0 check --locked \
+            --manifest-path "$ABI_HEPTA_STAGE/codex-rs/Cargo.toml" \
+            -p codex-hepta-matrix-sdk --all-targets \
+            > "$RUNNER_TEMP/abi-compile.stdout" \
+            2> "$RUNNER_TEMP/abi-compile.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          status = int(os.environ["STATUS"])
+          report = {
+              "schema": "hepta.matrix-sqlite-abi-compile.v1",
+              "source_sha": os.environ["HEPTA_SHA"],
+              "scratch_adapter_compiled": status == 0,
+              "cargo_exit_code": status,
+              "cargo_deny_verified": False,
+              "sqlite_wal_restart_verified": False,
+              "matrix_e2ee_runtime_verified": False,
+              "production_authorized": False,
+          }
+          (Path(os.environ["RUNNER_TEMP"]) / "abi-compile.json").write_text(
+              json.dumps(report, indent=2, sort_keys=True) + "\n")
+          PY
+          if test "$status" -ne 0; then
+            tail -n 120 "$RUNNER_TEMP/abi-compile.stderr"
+          fi
+          exit "$status"
+      - name: Upload real resolver/compiler evidence without authorizing promotion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sqlite-abi-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/abi-source.json
+            ${{ runner.temp }}/abi-workspace.json
+            ${{ runner.temp }}/abi-trial.json
+            ${{ runner.temp }}/abi-metadata.stderr
+            ${{ runner.temp }}/abi-audit.json
+            ${{ runner.temp }}/abi-compile.json
+            ${{ runner.temp }}/abi-compile.stderr
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Ensure checked out product source is untouched
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -n "${ABI_HEPTA_STAGE:-}" && test -e "$ABI_HEPTA_STAGE"; then
+            git worktree remove --force "$ABI_HEPTA_STAGE"
+          fi
+          git diff --check
+          git diff --exit-code

@@ -3,6 +3,7 @@
 
 import json
 import os
+import platform
 import shlex
 import shutil
 import subprocess
@@ -43,6 +44,36 @@ elif command == 'query':
         sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
     else:
         print('//codex-rs/fake:library')
+elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ALWAYS') == '1':
+    print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ONCE'):
+    marker = Path(os.environ['BAZEL_PROBE_SERVER_CRASH_ONCE'])
+    if not marker.exists():
+        marker.write_text('synthetic Bazel JVM socket crash', encoding='utf-8')
+        print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
+        sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_AND_COMPILER_FAIL') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    print('error[E0599]: missing method in source')
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    print('FAIL: //fake:target')
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_ALWAYS') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_ONCE'):
+    marker = Path(os.environ['BAZEL_PROBE_DOWNLOAD_504_ONCE'])
+    if not marker.exists():
+        marker.write_text('simulated pinned archive transport 504', encoding='utf-8')
+        print('ERROR: dependency archive download failed')
+        print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+        sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -360,6 +391,33 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertFalse(Path(pattern_file).exists())
 
+    def test_macos_ci_serializes_bazel_9_cache_uploads_without_waivers(self) -> None:
+        # Bazel 9.0.0 can race a late-discovered C++ input with background
+        # upload of an action's stdout/stderr (bazelbuild/bazel#30693).
+        # Keep the actual target matrix, remote cache/RBE and all safety gates.
+        bazelrc = (SCRIPTS.parent.parent / ".bazelrc").read_text(encoding="utf-8")
+        configs = [
+            line
+            for line in bazelrc.splitlines()
+            if line and not line.lstrip().startswith("#")
+        ]
+        self.assertIn("common:ci-macos --noremote_cache_async", configs)
+        self.assertEqual(
+            sum(line.endswith("--noremote_cache_async") for line in configs), 1
+        )
+        for global_prefix in (
+            "common ",
+            "common:ci ",
+            "common:ci-linux ",
+            "common:ci-windows ",
+            "common:ci-windows-cross ",
+        ):
+            self.assertNotIn(global_prefix + "--noremote_cache_async", configs)
+        self.assertIn(
+            "common:ci-macos --strategy=TestRunner=darwin-sandbox,local", configs
+        )
+        self.assertIn("common:ci-macos --config=ci-bazel", configs)
+
     def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
         self,
     ) -> None:
@@ -376,6 +434,101 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn(f"--test_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertNotIn("--host_platform=//:local_windows", args)
         self.assertNotIn("--jobs=8", args)
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_transient_server_socket_retries_same_full_targets(
+        self,
+    ) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_SERVER_CRASH_ONCE"] = str(
+            self.root / "server-crashed.marker"
+        )
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "one failed server and one complete rerun")
+        self.assertEqual(
+            calls[0], calls[1], "the retry must preserve all flags and targets"
+        )
+        self.assertIn("retrying the identical full target set once", result.stdout)
+        self.assertIn("Server terminated abruptly", result.stdout)
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_persistent_socket_crash_cannot_pass_after_one_retry(
+        self,
+    ) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_SERVER_CRASH_ALWAYS"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(
+            len(calls), 2, "persistent infrastructure failure must remain blocking"
+        )
+        self.assertEqual(calls[0], calls[1])
+
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
+    def test_macos_intel_real_test_failure_never_gets_server_retry(self) -> None:
+        self.env["RUNNER_OS"] = "macOS"
+        self.env["BAZEL_PROBE_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(
+            len(calls), 1, "real test or linker errors are never server flakiness"
+        )
+
+    def test_pinned_504_archive_download_gets_exactly_one_complete_retry(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_ONCE"] = str(
+            self.root / "repository-download-504.marker"
+        )
+        result, calls = self.run_wrapper(
+            "--", "test", "--", "//fake:target", "//fake:another-target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(
+            calls[0], calls[1], "CI may not shrink its target set on retry"
+        )
+        self.assertIn("GET returned 504 Gateway Time-out", result.stdout)
+        self.assertIn(
+            "retrying the identical complete Bazel target set once", result.stdout
+        )
+
+    def test_repeated_dependency_gateway_failure_keeps_ci_red(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_ALWAYS"] = "1"
+        result, calls = self.run_wrapper("--", "build", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "persistent external 504 must remain blocking")
+        self.assertEqual(calls[0], calls[1])
+
+    def test_real_test_failure_cannot_be_disguised_with_504_transport(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(
+            len(calls), 1, "real failed test overrides transient fetch retry"
+        )
+        self.assertNotIn(
+            "retrying the identical complete Bazel target set", result.stdout
+        )
+
+    def test_rustc_diagnostic_during_504_never_gets_a_network_retry(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_AND_COMPILER_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "build", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1, "a rustc source error must not be retried away")
+        self.assertIn("error[E0599]", result.stdout)
 
     def test_failure_preserves_status_linker_diagnostics_and_test_log_configuration(
         self,
