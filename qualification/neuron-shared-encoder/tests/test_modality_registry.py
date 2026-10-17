@@ -119,6 +119,12 @@ class ModalityRegistryTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             tower("text", current_run_mutation=True)
 
+    def test_registry_rejects_nonfinite_temporal_resolution(self):
+        with self.assertRaises(ContractError):
+            tower("audio", temporal_resolution_hz=float("nan"))
+        with self.assertRaises(ContractError):
+            tower("video", temporal_resolution_hz=float("inf"))
+
     def test_real_evidence_requires_receipt_without_renaming_evidence_class(self):
         with self.assertRaises(ContractError):
             tower("text", evidence_class="REAL_MODEL_LOCAL_QUALIFICATION")
