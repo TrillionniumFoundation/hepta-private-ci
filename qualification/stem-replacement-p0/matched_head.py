@@ -18,6 +18,10 @@ import gate
 SCHEMA = "hepta.stem.equal-size.matched-head.v1"
 FEATURE_SCHEMA = "hepta.stem.equal-size.original-frozen-feature-bank.v1"
 FIT_SCHEMA = "hepta.stem.equal-size.fit-labels.v1"
+# Shared initialization across models, independently verifiable without Torch.
+# Earlier Torch-default initialization never had a frozen oracle and is NOT
+# a qualified common starting state. This is an explicit research protocol v2.
+INITIALIZATION = "hepta.stem.head-init.pcg64-f32.v2"
 WIDTH = 128
 HIDDEN = 32
 PARAMS = WIDTH * HIDDEN + HIDDEN + HIDDEN + 1  # 4,161
@@ -147,12 +151,42 @@ def project_bank(bank):
     return y, cost
 
 
+def initial_head_arrays(seed):
+    """Versioned *model-agnostic* PCG64 initialization, no trained projection.
+
+    Every model with the same registered seed starts with byte-identical FP32
+    Head tensors. Unlike Torch-default initialization this has a complete,
+    NumPy-replayable source definition for the independent observer.
+    """
+    import numpy as np
+    require(type(seed) is int and 0 <= seed <= 2**31 - 1, "invalid deterministic seed")
+    rng = np.random.Generator(np.random.PCG64(seed))
+    geometries = (("0.weight", (HIDDEN, WIDTH), WIDTH),
+                  ("0.bias", (HIDDEN,), WIDTH),
+                  ("2.weight", (1, HIDDEN), HIDDEN),
+                  ("2.bias", (1,), HIDDEN))
+    result = {}
+    for name, shape, fan_in in geometries:
+        bound = 1.0 / math.sqrt(fan_in)
+        result[name] = rng.uniform(-bound, bound, size=shape).astype(np.float32)
+    return result
+
+
+def tensor_digest(tensors):
+    output = hashlib.sha256()
+    for name, tensor in sorted(tensors.items()):
+        output.update(name.encode("ascii") + b"\0" + tensor.tobytes(order="C"))
+    return output.hexdigest()
+
+
 def new_head(torch, seed):
-    require(type(seed) is int and 0 <= seed <= 2**31-1, "invalid deterministic seed")
-    torch.manual_seed(seed)
+    expected = initial_head_arrays(seed)
     head = torch.nn.Sequential(torch.nn.Linear(WIDTH, HIDDEN),
                                torch.nn.Sigmoid(), torch.nn.Linear(HIDDEN, 1))
     require(sum(p.numel() for p in head.parameters()) == PARAMS, "head budget drift")
+    with torch.no_grad():
+        for name, tensor in head.state_dict().items():
+            tensor.copy_(torch.from_numpy(expected[name]))
     return head
 
 
@@ -167,6 +201,8 @@ def train_one(panel, bank, labels, *, seed=None):
             budget["head_optimizer"] == "sgd-lr-0.1" and budget["precision"] == "float32",
             "not a matched 4,161-parameter / 40-step trial")
     seed = budget["head_seed"] if seed is None else seed
+    require(type(seed) is int and seed == budget["head_seed"],
+            "unregistered random-seed override / head budget mismatch")
     x, projection_cost = project_bank(bank)
     xs = torch.from_numpy(x.copy())
     fit_ids = [i for i, c in enumerate(panel["cases"]) if c["split"] == "fit"]
@@ -190,9 +226,8 @@ def train_one(panel, bank, labels, *, seed=None):
     current = {k: v.detach().cpu().numpy().copy() for k, v in head.state_dict().items()}
     require(all(np.isfinite(v).all() for v in current.values()) and np.isfinite(all_logits).all(),
             "nonfinite parameters or predictions")
-    weight_digest = hashlib.sha256()
-    for name, tensor in sorted(current.items()):
-        weight_digest.update(name.encode("ascii") + b"\0" + tensor.tobytes(order="C"))
+    initial_digest = tensor_digest(orig)
+    current_digest = tensor_digest(current)
     # This content is an in-memory PRIVATE verifier handoff, not a signed artifact.
     split = {s: [{"case_id": c["case_id"], "logit": float(all_logits[i])}
                  for i, c in enumerate(panel["cases"]) if c["split"] == s]
@@ -203,7 +238,9 @@ def train_one(panel, bank, labels, *, seed=None):
               "actual_original_encoder_source_sha256": bank["source_weights_sha256"],
               "trainable_params": PARAMS, "steps": STEPS, "learning_rate": LR,
               "projection": projection_cost, "feature_dim": dim,
-              "head_weight_sha256": weight_digest.hexdigest(), "seed": seed,
+              "head_weight_sha256": current_digest,
+              "initial_head_sha256": initial_digest,
+              "initialization": INITIALIZATION, "seed": seed,
               "fit_train_cpu_ns_self_reported": train_cpu,
               "fit_train_wall_ns_self_reported": train_wall,
               "projected_inputs_reused_for_head": True,
