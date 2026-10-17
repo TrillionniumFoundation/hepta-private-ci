@@ -496,6 +496,31 @@ mod tests {
     }
 
     #[test]
+    fn four_thousand_ninety_six_logical_readers_share_one_feature_allocation() {
+        let key = identity("principal", "purpose", 2);
+        let mut cache = SharedFeatureCacheV2::new(1, MAX_DIMENSION * 8).expect("cache");
+        let original = cache
+            .insert(1, key.clone(), 1000, Arc::from(vec![0_i64; MAX_DIMENSION]))
+            .expect("insert");
+        let mut readers = Vec::with_capacity(4096);
+        for _ in 0..4096 {
+            readers.push(
+                cache
+                    .get(2, &key)
+                    .expect("lookup")
+                    .expect("resident snapshot"),
+            );
+        }
+        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.resident_bytes(), MAX_DIMENSION * 8);
+        assert!(
+            readers
+                .iter()
+                .all(|reader| Arc::ptr_eq(&reader.features_q24, &original.features_q24))
+        );
+    }
+
+    #[test]
     fn isolation_preprocessing_and_source_frontier_each_change_cache_identity() {
         let source = identity("principal", "purpose", 3);
         let mut cache = SharedFeatureCacheV2::new(4, 128).expect("cache");
