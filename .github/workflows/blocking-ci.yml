@@ -172,8 +172,8 @@ jobs:
           after="$(free_bytes)"
           echo "Scoped native host available bytes after=$after"
           df -h "$GITHUB_WORKSPACE"
-          printf 'source=%s\\nfree_before_bytes=%s\\nfree_after_bytes=%s\\nminimum_required_bytes=%s\\n' \\
-            "$(git rev-parse HEAD)" "$before" "$after" "$target" \\
+          printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\nminimum_required_bytes=%s\n' \
+            "$(git rev-parse HEAD)" "$before" "$after" "$target" \
             > "$RUNNER_TEMP/hepta-scoped-disk.txt"
           # Deny instead of shrinking or skipping the affected test graph.
           test "$after" -ge "$target"
