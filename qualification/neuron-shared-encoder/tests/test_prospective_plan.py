@@ -158,6 +158,10 @@ class ProspectivePlanTests(unittest.TestCase):
                 tuple(candidate(identifier) for identifier in REQUIRED_CANDIDATES[:-1]),
             )
 
+    def test_multi_presentation_is_deferred_until_case_schema_v2(self):
+        with self.assertRaises(ProspectivePlanError):
+            ReaderDesignV1(MANIFEST, SOURCE, task_count=2, presentations=4)
+
     def test_teacher_and_full_fork_are_reference_only(self):
         with self.assertRaises(ProspectivePlanError):
             CandidateArmV1("full_fork", "full_fork", OTHER_STEM, digest("a"), digest("h"), OBJECTIVE, BUDGET, 1000, 100, 1, 0, False, True, True, False)
@@ -231,7 +235,8 @@ class ProspectivePlanTests(unittest.TestCase):
             for candidate_id in gate_ids
         }
         evidence = {candidate_id: digest("evidence:" + candidate_id) for candidate_id in gate_ids}
-        advisory = build_system2_interval_gate(item, intervals, costs, evidence).advisory()
+        evidence_classes = {candidate_id: "REAL_SHADOW" for candidate_id in gate_ids}
+        advisory = build_system2_interval_gate(item, intervals, costs, evidence, evidence_classes, complete_cases()).advisory()
         self.assertEqual(advisory["decision"], "NO_GO")
         self.assertIsNone(advisory["candidate_id"])
         self.assertFalse(advisory["model_efficacy_measured"])
@@ -257,7 +262,8 @@ class ProspectivePlanTests(unittest.TestCase):
             for candidate_id in gate_ids
         }
         evidence = {candidate_id: digest("evidence:" + candidate_id) for candidate_id in gate_ids}
-        gate = build_system2_interval_gate(item, intervals, costs, evidence)
+        evidence_classes = {candidate_id: "REAL_SHADOW" for candidate_id in gate_ids}
+        gate = build_system2_interval_gate(item, intervals, costs, evidence, evidence_classes, complete_cases())
         advisory = gate.advisory()
         self.assertEqual(advisory["decision"], "ADVISORY_SELECT")
         self.assertEqual(advisory["candidate_id"], "split_head")
