@@ -19,6 +19,8 @@ from typing import Any, Iterable, Mapping, Sequence
 SCHEMA_TOWER = "hepta.modality.tower-registry.v1"
 SCHEMA_PROJECTOR = "hepta.modality.projector-registry.v1"
 FREEZE_POLICY = "immutable_frozen_registry"
+# The bound envelope ABI accepts at most 2048 latent dimensions.
+MAX_MULTIMODAL_WIDTH = 2048
 MODALITIES = ("audio", "image", "text", "video")
 _QUANTIZATIONS = frozenset({"fp32", "bf16", "fp16", "int8", "int4", "q24"})
 _PROJECTOR_KINDS = frozenset({"linear", "mlp", "perceiver", "gated_cross_attention"})
@@ -80,7 +82,7 @@ class ModalityTowerSpecV1:
         _identifier("tower_id", self.tower_id)
         _digest("tower_digest", self.tower_digest)
         _digest("preprocessor_digest", self.preprocessor_digest)
-        _integer("output_width", self.output_width, minimum=1, maximum=8192)
+        _integer("output_width", self.output_width, minimum=1, maximum=MAX_MULTIMODAL_WIDTH)
         _integer("max_input_tokens", self.max_input_tokens, minimum=1, maximum=10_000_000)
         _require(self.quantization in _QUANTIZATIONS, "unsupported tower quantization")
         _require(type(self.frozen) is bool and self.frozen, "modality towers must be frozen for this registry")
@@ -116,7 +118,7 @@ class ProjectorSpecV1:
         _identifier("projector_id", self.projector_id)
         _digest("projector_digest", self.projector_digest)
         _integer("input_width", self.input_width, minimum=1, maximum=8192)
-        _integer("output_width", self.output_width, minimum=1, maximum=8192)
+        _integer("output_width", self.output_width, minimum=1, maximum=MAX_MULTIMODAL_WIDTH)
         _integer("slots", self.slots, minimum=1, maximum=256)
         _require(self.kind in _PROJECTOR_KINDS, "unsupported projector kind")
         for name, value in (
@@ -193,7 +195,7 @@ class ProjectorRegistryV1:
 
     def __post_init__(self) -> None:
         _digest("stem_digest", self.stem_digest)
-        _integer("target_width", self.target_width, minimum=1, maximum=8192)
+        _integer("target_width", self.target_width, minimum=1, maximum=MAX_MULTIMODAL_WIDTH)
         _integer("generation", self.generation, minimum=0, maximum=2**31 - 1)
         _require(self.freeze_policy == FREEZE_POLICY, "projector registry must be immutable")
         _require(type(self.projectors) is tuple, "projectors must be an immutable tuple")
@@ -242,7 +244,7 @@ class BoundModalityRegistriesV1:
 
     def __post_init__(self) -> None:
         _digest("stem_digest", self.stem_digest)
-        _integer("stem_hidden_width", self.stem_hidden_width, minimum=1, maximum=8192)
+        _integer("stem_hidden_width", self.stem_hidden_width, minimum=1, maximum=MAX_MULTIMODAL_WIDTH)
         _digest("tower_registry_digest", self.tower_registry_digest)
         _digest("projector_registry_digest", self.projector_registry_digest)
         _require(tuple(sorted(set(self.modalities))) == self.modalities, "bound modalities must be sorted and unique")
@@ -318,6 +320,7 @@ def registry_manifest(
 
 __all__ = [
     "BoundModalityRegistriesV1",
+    "MAX_MULTIMODAL_WIDTH",
     "ModalityTowerRegistryV1",
     "ModalityTowerSpecV1",
     "ProjectorRegistryV1",
