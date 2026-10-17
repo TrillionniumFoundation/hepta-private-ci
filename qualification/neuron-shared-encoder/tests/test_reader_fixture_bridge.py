@@ -132,7 +132,7 @@ class ReaderFixtureBridgeTests(unittest.TestCase):
             (root / "scripts" / "hepta_sngr_reader_cases.json").write_text("{}\n", encoding="utf-8")
             requests = build_four_condition_requests(root, "task_reader_a")
             self.assertEqual(tuple(request.arm for request in requests), ARM_NAMES)
-            self.assertTrue(all(request.manifest_sha256 == MANIFEST_DIGEST for request in requests))
+            self.assertTrue(all(request.manifest_sha256 == REGISTERED_FROZEN_CASE_SHA256 for request in requests))
 
 
 if __name__ == "__main__":
