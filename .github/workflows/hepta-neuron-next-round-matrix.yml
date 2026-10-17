@@ -41,6 +41,11 @@ jobs:
 
   execution-regressions:
     runs-on: ubuntu-24.04
+    # This job must read the exact original ScienceQA research archive, not
+    # skip OriginalMaterial or replace it with synthetic observations.
+    permissions:
+      contents: read
+      actions: read
     timeout-minutes: 15
     env:
       OMP_NUM_THREADS: "1"
@@ -55,13 +60,23 @@ jobs:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==26.3
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==26.3 cryptography==50.0.2
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Record actual source and environment
         run: |
           git rev-parse HEAD > "$RUNNER_TEMP/stem-source.txt"
           python -m pip freeze > "$RUNNER_TEMP/stem-environment.txt"
-      - name: Execute complete focused suite without skips
+      - name: Require pinned original V24 archive before broad execution regressions
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$RUNNER_TEMP/original-v24-scienceqa-11945106672.zip"
+          echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $RUNNER_TEMP/original-v24-scienceqa-11945106672.zip" | sha256sum -c -
+          printf 'HEPTA_V24_ORIGINAL_ZIP=%s\n' "$RUNNER_TEMP/original-v24-scienceqa-11945106672.zip" >> "$GITHUB_ENV"
+      - name: Execute focused suite with mandatory original V24 and explicit optional skips
         shell: bash
         run: |
           set -euo pipefail
