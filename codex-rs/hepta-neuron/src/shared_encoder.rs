@@ -112,6 +112,7 @@ pub enum SharedEncoderError {
     OutputDigestMismatch,
     EmptyOutput,
     OutputLimitExceeded(usize),
+    InputRangeViolation,
     OutputRangeViolation,
     Driver(SharedEncoderDriverError),
 }
@@ -234,7 +235,7 @@ fn validate_request<D>(
         .iter()
         .any(|value| !(-MAX_SHARED_FEATURE_Q24..=MAX_SHARED_FEATURE_Q24).contains(value))
     {
-        return Err(SharedEncoderError::OutputRangeViolation);
+        return Err(SharedEncoderError::InputRangeViolation);
     }
     if canonical_shared_encoder_input_digest_v1(&request.input_features_q24) != request.input_digest {
         return Err(SharedEncoderError::InputDigestMismatch);
