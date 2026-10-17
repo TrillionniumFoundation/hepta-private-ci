@@ -973,7 +973,13 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         code = self.lexical_code(relative)
         bootstrap = code.find("fn open_production_with_directory_hook(")
         self.assertGreaterEqual(bootstrap, 0, "pinned directory owner missing")
-        live = code[bootstrap : code.find("pub fn compare_and_publish_checkpoint(", bootstrap)]
+        inspect_start = code.find("pub fn inspect_original_pending_begin_v1(", bootstrap)
+        self.assertGreater(
+            inspect_start,
+            bootstrap,
+            "read-only original Begin recovery must follow the canonical writer",
+        )
+        live = code[bootstrap:inspect_start]
         self.assertIn(
             "control_parent_dir_identity(&parent_dir, parent)",
             live,
@@ -1003,6 +1009,65 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
         self.assertNotIn("lock_options.open(", live)
         self.assertNotIn("journal_options.open(", live)
+        # This is a SECOND, explicitly reviewed, non-mutating opener.
+        # Preserve the original two writable openat calls and forbid any
+        # additional hidden opener anywhere in the original Control module.
+        observer = code[inspect_start : code.find("pub fn current(", inspect_start)]
+        self.assertEqual(
+            observer.count("unixfs::openat("),
+            2,
+            "only the original marker and WAL may be opened by the read-only observer",
+        )
+        self.assertEqual(
+            code.count("unixfs::openat("),
+            4,
+            "extra Control file openers require independent review",
+        )
+        self.assertRegex(
+            observer,
+            r"let flags\s*=\s*OFlags::RDONLY\s*\|\s*OFlags::NOFOLLOW\s*"
+            r"\|\s*OFlags::CLOEXEC",
+            "both Observer files must be opened read-only and no-follow",
+        )
+        for forbidden in (
+            "OFlags::RDWR",
+            "OFlags::APPEND",
+            "OFlags::CREATE",
+            "OFlags::EXCL",
+            ".write_all(",
+            ".sync_all(",
+            "publish_cutover_with_external_effect(",
+        ):
+            self.assertNotIn(
+                forbidden,
+                observer,
+                f"read-only pending Begin observation may not gain effect authority: {forbidden}",
+            )
+        self.assertRegex(
+            observer,
+            r"marker\s*\.try_lock_shared\(\)",
+            "observer must refuse an active original marker writer",
+        )
+        self.assertRegex(
+            observer,
+            r"file\.try_lock_shared\(\)",
+            "observer must refuse an active original WAL writer",
+        )
+        for required in (
+            "control_parent_dir_identity(&directory, parent)?",
+            "control_owner_file_identity(&file, path)?",
+            "control_owner_file_identity(&marker, &marker_path)?",
+            "validate_replay(&event, current, checkpoint, pending)",
+            "let pending = pending.ok_or(NduPublicationErrorV1::Stale)?",
+            "current != Some(predecessor)",
+            "before.mtime() != after.mtime()",
+            "before.ctime() != after.ctime()",
+        ):
+            self.assertIn(
+                required,
+                observer,
+                "independent forensic read must replay and repin the ORIGINAL bytes",
+            )
         native = (
             ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
         ).read_text(encoding="utf-8")

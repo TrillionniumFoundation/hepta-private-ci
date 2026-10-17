@@ -317,6 +317,29 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertIn("--minimum-tests 5", gate)
 
+
+    def test_original_control_orphan_begin_readonly_gate_runs_before_owner_effects(self):
+        scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["effects"])
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        gate = "control-original-pending-begin-readonly.json"
+        self.assertEqual(workflow.count(gate), 1)
+        self.assertIn(
+            "--minimum-tests 2 -- cargo test --locked --manifest-path "
+            "codex-rs/Cargo.toml -p codex-hepta-control-plane --lib "
+            "original_pending_begin_inspector_",
+            workflow,
+        )
+        self.assertLess(
+            workflow.index(gate),
+            workflow.index("control-ndu-atomic-owner.json"),
+        )
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
             "codex-rs/hepta-types/src/lib.rs",
