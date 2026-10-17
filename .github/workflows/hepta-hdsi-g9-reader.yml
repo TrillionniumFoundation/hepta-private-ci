@@ -1,0 +1,227 @@
+name: Hepta HDSI G9 original answer Reader diagnostic (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g9-reader-sufficiency-20261017]
+    paths:
+      - "qualification/hdsi-g0g3/g9_*"
+      - "qualification/hdsi-g0g3/test_g9_reader.py"
+      - "qualification/hdsi-g0g3/G9_*"
+      - ".github/workflows/hepta-hdsi-g9-reader.yml"
+  pull_request:
+    paths:
+      - "qualification/hdsi-g0g3/g9_*"
+      - "qualification/hdsi-g0g3/test_g9_reader.py"
+      - "qualification/hdsi-g0g3/G9_*"
+      - ".github/workflows/hepta-hdsi-g9-reader.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hdsi-g9-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  STUDY: qualification/hdsi-g0g3
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify source-only contracts without Torch, gold or weight downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python -m py_compile "$STUDY/g9_native_reader.py" "$STUDY/g9_reader_panel.py" "$STUDY/g9_physical_reader.py" "$STUDY/g9_independent_review.py" "$STUDY/g9_material_custody.py" "$STUDY/test_g9_reader.py"
+          cd "$STUDY"
+          python -S -m unittest -q test_g9_reader.G9SourceTests
+          python -O -S -m unittest -q test_g9_reader.G9SourceTests
+          python -m json.tool G9_LOCAL_ORIGINAL_ANSWER_REVIEW_20261017.json >/dev/null
+          cd ../..
+          git diff --check
+
+  original-source-owner:
+    needs: source-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g9-reader-sufficiency-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: SHA verify original historical LoCoMo and seal answer-free four-arm panel
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/g9-public"
+          python "$STUDY/g9_material_custody.py" --mode source --archive "$RUNNER_TEMP/g9-source.zip" --out "$RUNNER_TEMP/g9-model-only" --packet "$RUNNER_TEMP/g9-public/panel.json"
+          test ! -e "$RUNNER_TEMP/g9-model-only/locomo.json"
+          test -f "$RUNNER_TEMP/g9-model-only/reader/model.safetensors"
+          (cd "$RUNNER_TEMP/g9-public" && sha256sum panel.json > panel.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g9-original-answer-free-four-arm-panel
+          path: ${{ runner.temp }}/g9-public/
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g9-original-reader-model-only-no-gold
+          path: ${{ runner.temp }}/g9-model-only/
+          if-no-files-found: error
+          retention-days: 1
+
+  actual-original-reader:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g9-original-answer-free-four-arm-panel
+          path: ${{ runner.temp }}/g9-public
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g9-original-reader-model-only-no-gold
+          path: ${{ runner.temp }}/g9-model-only
+      - name: Verify sealed public panel before loading any model
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          (cd "$RUNNER_TEMP/g9-public" && sha256sum --check panel.sha256)
+      - name: Verify SHA-pinned model-only staging and absence of original publisher QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/g9-model-only/locomo.json"
+          test ! -e "$RUNNER_TEMP/g9-model-only/reader/locomo.json"
+          test ! -e "$RUNNER_TEMP/g9-model.zip"
+          test ! -e "$RUNNER_TEMP/g9-source.zip"
+          python -S - <<'PYMODELCHECK'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,os.environ['STUDY'])
+          from g9_native_reader import verify_material
+          verify_material(Path(os.environ['RUNNER_TEMP'])/'g9-model-only/reader')
+          PYMODELCHECK
+      - name: Install pinned PyTorch CPU reference runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2 regex==2026.5.9
+      - name: Physically execute 16 original questions times four matched evidence arms
+        shell: bash
+        env:
+          OMP_NUM_THREADS: "4"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g9-real"
+          for original_root in conv-47 conv-48 conv-49 conv-50; do
+            python "$STUDY/g9_physical_reader.py" --model "$RUNNER_TEMP/g9-model-only/reader" \
+              --panel "$RUNNER_TEMP/g9-public/panel.json" --root "$original_root" \
+              --output "$RUNNER_TEMP/g9-real/${original_root}.json"
+          done
+          (cd "$RUNNER_TEMP/g9-real" && sha256sum conv-*.json > four-roots.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g9-original-135m-reader-prelabel-output
+          path: ${{ runner.temp }}/g9-real/
+          if-no-files-found: error
+          retention-days: 1
+
+  independent-publisher-answer-review:
+    needs: actual-original-reader
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g9-original-answer-free-four-arm-panel
+          path: ${{ runner.temp }}/g9-public
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g9-original-135m-reader-prelabel-output
+          path: ${{ runner.temp }}/g9-real
+      - name: Independently verify all four sealed source/reader output files before accessing any gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          (cd "$RUNNER_TEMP/g9-public" && sha256sum --check panel.sha256)
+          (cd "$RUNNER_TEMP/g9-real" && sha256sum --check four-roots.sha256)
+      - name: Reacquire original publisher answers on a different runner
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python "$STUDY/g9_material_custody.py" --mode review --archive "$RUNNER_TEMP/g9-gold.zip" --out "$RUNNER_TEMP/g9-gold"
+          test ! -e "$RUNNER_TEMP/g9-gold/reader"
+      - name: Independent stdlib-only answer and actual model cost audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g9-score"
+          python -S "$STUDY/g9_independent_review.py" --original "$RUNNER_TEMP/g9-gold/locomo.json" \
+            --panel "$RUNNER_TEMP/g9-public/panel.json" \
+            --run "$RUNNER_TEMP/g9-real/conv-47.json" --run "$RUNNER_TEMP/g9-real/conv-48.json" \
+            --run "$RUNNER_TEMP/g9-real/conv-49.json" --run "$RUNNER_TEMP/g9-real/conv-50.json" \
+            --output "$RUNNER_TEMP/g9-score/sanitized-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'g9-score/sanitized-review.json').read_text())
+          assert r['answer_scored_cases']==15 and r['paid_original_model']['prefills']==64
+          assert r['production_authorized'] is False and r['disposition']=='HOLD_NO_GO'
+          assert r['future_independent_verified'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g9-independent-historical-original-answer-denyall
+          path: ${{ runner.temp }}/g9-score/sanitized-review.json
+          if-no-files-found: error
+          retention-days: 7
