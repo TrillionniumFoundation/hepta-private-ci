@@ -110,7 +110,6 @@ impl FilesystemNative {
         ack: Digest32,
     ) -> io::Result<CellSplitObservedReceiptV1> {
         let artifact = self.binding.selected_artifact_digest;
-        let child = digest(&fs::read(self.root.join("child-state")).unwrap_or_default());
         let evidence = match phase {
             WriterHandoffPhaseV1::AdmissionStopped => {
                 CellSplitNativeEvidenceV1::AdmissionStopped { native_ack: ack }
@@ -139,12 +138,16 @@ impl FilesystemNative {
                 native_ack: ack,
                 artifact_digest: artifact,
                 source_state_digest: digest(b"source-state"),
-                child_state_digest: child,
+                child_state_digest: digest(&fs::read(self.root.join("child-state"))?),
             },
             WriterHandoffPhaseV1::Validated => CellSplitNativeEvidenceV1::ChildValidated {
                 native_ack: ack,
                 artifact_digest: artifact,
-                child_state_digest: if self.bad_child { digest(b"wrong-child") } else { child },
+                child_state_digest: if self.bad_child {
+                    digest(b"wrong-child")
+                } else {
+                    digest(&fs::read(self.root.join("child-state"))?)
+                },
             },
             WriterHandoffPhaseV1::NewWriterFenced => {
                 CellSplitNativeEvidenceV1::NewWriterFenced {
@@ -158,7 +161,11 @@ impl FilesystemNative {
                     native_ack: ack,
                     predecessor_digest: self.binding.predecessor_route_digest,
                     successor_digest: route,
-                    observed_generation: if self.bad_route { plan.old_generation } else { plan.new_generation },
+                    observed_generation: if self.bad_route {
+                        plan.old_generation
+                    } else {
+                        plan.new_generation
+                    },
                 }
             }
             WriterHandoffPhaseV1::Retired => {
@@ -181,7 +188,11 @@ impl FilesystemNative {
             new_generation: plan.new_generation,
             authority_epoch: plan.authority_epoch,
             handoff_plan_digest: handoff_plan_digest(plan),
-            binding_digest: if self.drift { digest(b"stale-binding") } else { self.binding.digest() },
+            binding_digest: if self.drift {
+                digest(b"stale-binding")
+            } else {
+                self.binding.digest()
+            },
             evidence,
         })
     }
@@ -281,8 +292,12 @@ fn every_phase_is_durable_recoverable_and_never_reexecuted_on_reopen() {
         assert_eq!(journal.checkpoint(), &checkpoint);
     }
     assert_eq!(native.execute_count, stages.len());
-    assert_eq!(advance(&mut journal, &mut native).expect("idempotent terminal").phase,
-               WriterHandoffPhaseV1::Retired);
+    assert_eq!(
+        advance(&mut journal, &mut native)
+            .expect("idempotent terminal")
+            .phase,
+        WriterHandoffPhaseV1::Retired
+    );
     assert_eq!(native.execute_count, stages.len());
 }
 
@@ -302,7 +317,10 @@ fn indeterminate_and_missing_acknowledged_receipts_stop_execution() {
     let mut native = FilesystemNative::open(&root);
     let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
     native.indeterminate = Some(WriterHandoffPhaseV1::AdmissionStopped);
-    assert!(matches!(advance(&mut journal, &mut native), Err(CellSplitOwnerErrorV1::Indeterminate)));
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::Indeterminate)
+    ));
     assert_eq!(native.execute_count, 0);
     native.indeterminate = None;
     advance(&mut journal, &mut native).expect("first stage");
@@ -335,7 +353,9 @@ fn cas_readback_and_migration_state_mismatch_fail_closed() {
     let root = TempDir::new().expect("temp");
     let mut native = FilesystemNative::open(&root);
     let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
-    for _ in 0..3 { advance(&mut journal, &mut native).expect("pre CAS"); }
+    for _ in 0..3 {
+        advance(&mut journal, &mut native).expect("pre CAS");
+    }
     native.bad_cas = true;
     assert!(matches!(
         advance(&mut journal, &mut native),
@@ -358,7 +378,9 @@ fn cns_wrong_generation_does_not_publish_route_in_ledger() {
     let root = TempDir::new().expect("temp");
     let mut native = FilesystemNative::open(&root);
     let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
-    for _ in 0..7 { advance(&mut journal, &mut native).expect("before route"); }
+    for _ in 0..7 {
+        advance(&mut journal, &mut native).expect("before route");
+    }
     native.bad_route = true;
     assert!(matches!(
         advance(&mut journal, &mut native),
