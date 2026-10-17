@@ -1,0 +1,100 @@
+name: Hepta Stem V11 train-only online escalation (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-online-source-v11-20261017]
+    paths:
+      - 'qualification/stem-optimal-v11/**'
+      - '.github/workflows/hepta-stem-online-route-v11.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v11/**'
+      - '.github/workflows/hepta-stem-online-route-v11.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-v11-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V11: qualification/stem-optimal-v11
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-only full adversarial suite; no gold and no pretrained model
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$V11/online_route_v11.py" "$V11/test_online_route_v11.py"
+          python -m unittest discover -s "$V11" -p 'test_online_route_v11.py' -v
+          python -O -m unittest discover -s "$V11" -p 'test_online_route_v11.py' -v
+
+  original-prelabel-online-policy:
+    needs: source-only
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-online-source-v11-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read exact original publisher/cheap ZIPs, no test labels or model weights
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role source_v3 --role source_v4 --role cheap_v4
+      - name: Compute fourfold fit-only online threshold, byte-replay original cheap feature scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$V11/online_route_v11.py" \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" \
+            --output "$RUNNER_TEMP/v11-online-route.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ['RUNNER_TEMP'])/'v11-online-route.json').read_text())
+          assert report['target_fit_escalations'] == 16
+          assert report['fit_fold_census'] == {'0':16,'1':16,'2':16,'3':16}
+          assert report['whole_batch_test_ranking_used'] is False
+          assert report['test_labels_used_for_selection'] is False
+          assert report['actual_new_pretrained_encoder_forwards'] == 0
+          assert report['physical_encoder_savings_verified'] is False
+          assert report['production_authorized'] is False
+          assert report['authority'] == 'DENY_ALL' and report['disposition'] == 'HOLD_NO_GO'
+          print('ORIGINAL_FIXED_FIT_ONLY_ONLINE_ROUTE_NO_PRETRAINED_FORWARD',
+                report['actual_historical_route_count'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-v11-original-fit-only-online-route-denyall
+          path: ${{ runner.temp }}/v11-online-route.json
+          if-no-files-found: error
+          retention-days: 7
