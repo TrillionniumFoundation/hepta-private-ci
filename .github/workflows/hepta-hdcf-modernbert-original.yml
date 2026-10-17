@@ -233,6 +233,19 @@ jobs:
         with:
           name: hdcf-original-modernbert-head-trial
           path: ${{ runner.temp }}/trial
+      - name: Independently reread original publisher labels after frozen model/Head terminal
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/reviewer-publisher-only"
+          for split in train test; do
+            curl --fail --silent --show-error --location --retry 2 \
+              "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/$split.csv" \
+              -o "$RUNNER_TEMP/reviewer-publisher-only/$split.csv"
+          done
+          printf '%s  %s\n' 'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b' \
+            "$RUNNER_TEMP/reviewer-publisher-only/train.csv" | sha256sum --check
+          printf '%s  %s\n' 'd12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d' \
+            "$RUNNER_TEMP/reviewer-publisher-only/test.csv" | sha256sum --check
       - name: Independently verify source, predictor, target census and original Head scores
         run: |
           set -euo pipefail
@@ -240,6 +253,8 @@ jobs:
             --public "$RUNNER_TEMP/public/public.json" --private "$RUNNER_TEMP/private/targets.json" \
             --features "$RUNNER_TEMP/frozen/features.json" \
             --feature-receipt "$RUNNER_TEMP/frozen/feature-receipt.json" \
+            --publisher-train "$RUNNER_TEMP/reviewer-publisher-only/train.csv" \
+            --publisher-test "$RUNNER_TEMP/reviewer-publisher-only/test.csv" \
             --trial "$RUNNER_TEMP/trial/trial.json" --out "$RUNNER_TEMP/review.json"
       - name: Assert deterministic Head replay, without claiming full model TCO
         run: |
@@ -266,6 +281,12 @@ jobs:
           assert science['native_execution_authorized'] is False
           assert science['production_authorized'] is False
           assert record['production_authorized'] is False
+          assert record['held_targets_recomputed_from_original_publisher_source'] is True
+          source = record['publisher_held_source_revalidation']
+          assert source['exact_publisher_csv_bytes_matched_predeclared_git_revision'] is True
+          assert source['all_32_blind_binary_targets_reconstructed_from_original_4class'] is True
+          assert source['publisher_signature_independently_verified'] is False
+          assert source['production_authorized'] is False
           print({'replayed':replay['original_prediction_rows_replayed'],
                  'trial':replay['trial_identity'],'production_authorized':False})
           PY

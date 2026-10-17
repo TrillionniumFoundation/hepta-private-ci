@@ -272,3 +272,34 @@ Run the added test in standard and Python optimized mode:
 python3 -m unittest -v test_paired_utility_gate
 python3 -O -m unittest -v test_paired_utility_gate
 ```
+
+## V7 staged-only reviewer-source correction (non-authorizing)
+
+Previous V6 `review_original` checked the 32 blind-row identities/types and
+binary target envelope but **did not independently recompute each target value
+from the pinned original publisher test CSV**. A different binary label under
+an unchanged source ID could therefore be accepted as a task outcome. This is
+an evidence-authenticity blocker, not merely a lower accuracy value.
+
+`held_target_source_revalidation.py` repairs this by independently parsing the
+precommitted original BANKING77 train/test CSV byte streams after training,
+reconstructing the exact 64+32 source selection and original four-class labels,
+checking every training label, checking all 32 blind binary labels, and checking
+the label-blind type route separately. Any changed source byte, target, type,
+row order, omitted record or source ancestry fails closed. The review CLI now
+requires `--publisher-train` and `--publisher-test`: unlike training or the
+model producer, only the reviewer can read these source labels.
+
+A small dedicated source-only GitHub workflow executes the exact publisher
+source preparation, then re-fetches both fixed source files in a reviewer-only
+step and checks this new no-model reviewer. No pretrained forward is claimed
+by the source-only workflow. The pending original **V6 heavyweight physical
+Encoder run is deliberately not cancelled or mutated**: this repair is staged
+as an independent child PR. Reconcile the child through normal source/merge
+checks before the next physical training candidate.
+
+The new result confirms only exact source **byte agreement** against known
+Git/SHA values and correct reconstruction. It does not cryptographically
+authenticate the publisher, prove genuine independent/future dataset efficacy,
+attest CPU/GPU timings, or authorize any effect, new Cell, or production model.
+No reviewer signature is invented. All output is `DENY_ALL`.
