@@ -191,6 +191,19 @@ class GateTests(unittest.TestCase):
                 gate.main(["--panel",str(d/"panel.json"),"--sealed",str(d/"sealed.json"),
                            "--gold",str(d/"gold.json"),"--out",str(d/"summary.json")])
 
+    def test_malformed_nonhashable_model_rejected(self):
+        p,r,g=fixture();r[1]['model']=[];self.assertDenied(p,r,g)
+
+    def test_source_rebranded_as_independent_family(self):
+        p,r,g=fixture();p['cases'][1]['family_id']='invented-new-publisher';self.assertDenied(p,r,g)
+
+    def test_strict_input_size_budget(self):
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'oversized.json'
+            with path.open('wb') as f:
+                f.truncate(16*1024*1024+1)
+            with self.assertRaises(gate.Denied):gate.strict_load(path)
+
     def test_no_model_loader_or_mutator_api(self):
         self.assertFalse(hasattr(gate,'promote_model'))
         self.assertFalse(hasattr(gate,'select_model'))
