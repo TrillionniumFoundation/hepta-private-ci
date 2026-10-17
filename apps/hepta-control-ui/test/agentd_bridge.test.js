@@ -116,14 +116,22 @@ test("bridge forwards a value-only proposal and returns admission receipt", () =
 test("bridge rejects pointer, socket, and final-use fields", () => {
   for (const key of [
     "requestAddr",
+    "request_addr",
     "controlFd",
+    "control_fd",
     "deviceFd",
+    "device_fd",
     "capSpaceId",
+    "cap_space_id",
     "bootId",
+    "boot_id",
     "sequence",
     "finalUse",
+    "final_use",
     "signature",
+    "signed_grant",
     "socketPath",
+    "socket_path",
   ]) {
     assert.throws(
       () => createAuthorityFreeAgentdBridge(fakePort()).submitProposal(
