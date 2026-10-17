@@ -12,7 +12,7 @@ use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
-use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
+use codex_hepta_infer_core::build_neuron_feature_receipt_from_slice_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -731,11 +731,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        // Execute against the borrowed Q24 allocation, then move the
-        // original request into its typed receipt. No clone of the full
-        // feature vector is needed for the single-request backend path.
+        // The original signed request remains borrowed through receipt
+        // construction. Do not copy its Q24 vector just to hash the V1 input.
         let observed = self.run_neuron_features(now_ms, model_id, &request)?;
-        feature_receipt_from_observation(request, observed)
+        feature_receipt_from_observation_with_slice(
+            &request,
+            &request.feature_vector_q24,
+            observed,
+        )
     }
 
     /// No sequential fallback: a multi-request group must be handled by a
@@ -813,7 +816,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // legacy V1 driver receives owned requests for compatibility; neither
         // path may disguise sequential calls as a native batch.
         let borrowed_backend = self.driver.supports_neuron_feature_borrowed_batch(&handle);
-        let (results, legacy_requests) = if borrowed_backend {
+        let results = if borrowed_backend {
             let views = requests
                 .iter()
                 .map(|(request, shared)| BorrowedNeuronFeatureRequestV1 {
@@ -821,11 +824,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                     feature_vector_q24: shared.as_slice(),
                 })
                 .collect::<Vec<_>>();
-            (
-                self.driver.run_neuron_features_borrowed_batch(&handle, &views),
-                None,
-            )
+            self.driver.run_neuron_features_borrowed_batch(&handle, &views)
         } else {
+            // Only the original V1 backend ABI needs one owned feature
+            // vector per member. The borrowed backend needs none.
             let legacy_requests = requests
                 .iter()
                 .map(|(request, shared)| {
@@ -834,10 +836,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                     owned
                 })
                 .collect::<Vec<_>>();
-            let result = self
-                .driver
-                .run_neuron_features_batch(&handle, &legacy_requests);
-            (result, Some(legacy_requests))
+            self.driver.run_neuron_features_batch(&handle, &legacy_requests)
         };
         // An unknown backend outcome must never be replayed. Retire all active
         // markers before checking the result or projecting any typed receipt.
@@ -848,24 +847,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
         let results = results?;
-        // V1 receipts still contain the original complete Q24 Vec. Borrowed
-        // backends pay this one compatibility materialization only AFTER the
-        // physical model call, not once per Cell before backend dispatch.
-        let requests = match legacy_requests {
-            Some(owned) => owned,
-            None => requests
-                .into_iter()
-                .map(|(mut request, shared)| {
-                    request.feature_vector_q24 = shared.as_slice().to_vec();
-                    request
-                })
-                .collect::<Vec<_>>(),
-        };
+        // The V1 receipt retains original digests and output bytes, but not
+        // a full feature vector. Hash the shared Q24 slice with the new
+        // parity-tested infer-core helper: no post-dispatch Vec materialization.
         if results.len() != requests.len() {
             return Err(Error::FeatureOutputMismatch);
         }
         let mut receipts = Vec::with_capacity(requests.len());
-        for (request, batch) in requests.into_iter().zip(results) {
+        for ((request, shared), batch) in requests.into_iter().zip(results) {
             if batch.request_id != request.authorization.request_id
                 || batch.input_digest != request.input_digest
             {
@@ -900,20 +889,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 latency_micros: observed.latency_micros,
                 terminal_observed: observed.terminal_observed,
             };
-            receipts.push(feature_receipt_from_observation(request, execution)?);
+            receipts.push(feature_receipt_from_observation_with_slice(
+                &request,
+                shared.as_slice(),
+                execution,
+            )?);
         }
         Ok(receipts)
     }
 }
 
-fn feature_receipt_from_observation(
-    request_copy: NeuronFeatureRequest,
+fn feature_receipt_from_observation_with_slice(
+    request_copy: &NeuronFeatureRequest,
+    features_q24: &[i64],
     observed: NeuronFeatureExecutionObservation,
 ) -> Result<NeuronFeatureReceiptV1, Error> {
     let generation =
         Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
     let control_request = NeuronFeatureRequestV1 {
-        request_id: StableId::new(request_copy.authorization.request_id)
+        request_id: StableId::new(request_copy.authorization.request_id.clone())
             .map_err(|_| Error::FeatureContract)?,
         generation,
         model_id: StableId::new(observed.manifest.model_id.clone())
@@ -922,7 +916,7 @@ fn feature_receipt_from_observation(
         head_digest: parse_digest32(&request_copy.head_digest)?,
         weights_digest: parse_digest32(&request_copy.weights_digest)?,
         input_digest: parse_digest32(&request_copy.input_digest)?,
-        feature_vector_q24: request_copy.feature_vector_q24,
+        feature_vector_q24: Vec::new(),
         expected_output_width: request_copy.expected_output_width,
     };
     let runtime_tuple = NeuronModelRuntimeTupleV1 {
@@ -941,8 +935,9 @@ fn feature_receipt_from_observation(
         ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
         ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
     };
-    build_neuron_feature_receipt_v1(
+    build_neuron_feature_receipt_from_slice_v1(
         &control_request,
+        features_q24,
         runtime_tuple,
         NeuronFeatureObservationV1 {
             encoder_digest: parse_digest32(&observed.encoder_digest)?,
