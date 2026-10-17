@@ -1,0 +1,272 @@
+name: Hepta original same-Encoder centroid calibration V7 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-original-encoder-centroid-v7-20261017]
+    paths:
+      - 'qualification/stem-optimal-v7/**'
+      - '.github/workflows/hepta-stem-original-encoder-centroid-v7.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v7/**'
+      - '.github/workflows/hepta-stem-original-encoder-centroid-v7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-encoder-centroid-v7-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V7: qualification/stem-optimal-v7
+  V5: qualification/stem-optimal-v5
+  V1: qualification/stem-optimal-v1
+  PYTHONPATH: qualification/stem-optimal-v7:qualification/stem-optimal-v6:qualification/stem-optimal-v5:qualification/stem-optimal-v3:qualification/stem-optimal-v1
+
+jobs:
+  source-only-numeric-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU-only numerical test runtime (no pretrained material)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+      - name: Exact source-only Torch/NumPy/safetensors parity and tamper negatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile "$V7/encoder_centroid_v7.py" "$V7/independent_encoder_centroid_v7.py" "$V7/test_encoder_centroid_v7.py"
+          python -m unittest discover -s "$V7" -p 'test_encoder_centroid_v7.py' -v
+          python -O -m unittest discover -s "$V7" -p 'test_encoder_centroid_v7.py' -v
+
+  original-source-owner:
+    needs: source-only-numeric-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-original-encoder-centroid-v7-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Physically reopen V3 original source artifact by pinned complete ZIP
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/v7-old" "$RUNNER_TEMP/v7-source"
+          python "$V5/download_original_zip_v5.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v7-old" --role source_v3
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as original
+          import calibrated_lexical_v6 as lineage
+          root = Path(os.environ['RUNNER_TEMP'])
+          manifest = json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())
+          source = original.locked_json(root/'v7-old/source_v3.zip', manifest['artifacts'], 'source_v3')
+          lineage.validate_source(source)
+          path = root/'v7-source/original-source.json'
+          path.write_bytes(lineage.canonical(source) + b'\n')
+          print('Source original physical ZIP accepted',lineage.digest(path.read_bytes()))
+          PY
+          (cd "$RUNNER_TEMP/v7-source" && sha256sum original-source.json > original-source.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v7-original-unlabelled-source
+          path: |
+            ${{ runner.temp }}/v7-source/original-source.json
+            ${{ runner.temp }}/v7-source/original-source.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-pretrained-encoder-centroid:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v7-original-unlabelled-source
+          path: ${{ runner.temp }}/v7-source
+      - name: Verify actual original material and immutable runtime versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v7-source" && sha256sum --check original-source.sha256)
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          python - <<'PY'
+          import torch, transformers, numpy, safetensors
+          assert torch.__version__.split('+')[0] == '2.6.0'
+          assert transformers.__version__ == '4.57.1'
+          assert numpy.__version__ == '2.2.6'
+          PY
+      - name: Actual pinned public Encoder forward, independent train-only four-fold centroid calibration
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '2'
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v7-physical"
+          python "$V7/encoder_centroid_v7.py" \
+            --source "$RUNNER_TEMP/v7-source/original-source.json" \
+            --materials "$V1/MODEL_MATERIALS.json" \
+            --candidate '${{ matrix.candidate }}' \
+            --feature-file "$RUNNER_TEMP/v7-physical/features-${{ matrix.candidate }}.safetensors" \
+            --output "$RUNNER_TEMP/v7-physical/receipt-${{ matrix.candidate }}.json"
+          (cd "$RUNNER_TEMP/v7-physical" && sha256sum 'receipt-${{ matrix.candidate }}.json' 'features-${{ matrix.candidate }}.safetensors' > 'evidence-${{ matrix.candidate }}.sha256')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v7-original-${{ matrix.candidate }}-denyall
+          path: |
+            ${{ runner.temp }}/v7-physical/receipt-${{ matrix.candidate }}.json
+            ${{ runner.temp }}/v7-physical/features-${{ matrix.candidate }}.safetensors
+            ${{ runner.temp }}/v7-physical/evidence-${{ matrix.candidate }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-publisher-feature-replay:
+    needs: original-pretrained-encoder-centroid
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v7-original-unlabelled-source
+          path: ${{ runner.temp }}/v7-source
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-v7-original-*-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/v7-physical
+      - name: Independently reopen exact V3 original learned and T1-centroid model archives
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v7-source" && sha256sum --check original-source.sha256)
+          (cd "$RUNNER_TEMP/v7-physical" && sha256sum --check evidence-granite47.sha256 evidence-granite97.sha256 evidence-mmbert140.sha256)
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+          mkdir -p "$RUNNER_TEMP/v7-original-v3" "$RUNNER_TEMP/v7-reviewed-labels"
+          python "$V5/download_original_zip_v5.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v7-original-v3" \
+            --role granite47 --role granite97 --role mmbert140
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as locked
+          root=Path(os.environ['RUNNER_TEMP'])
+          m=json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())
+          for key in ('granite47','granite97','mmbert140'):
+              original=locked.locked_json(root/'v7-original-v3'/f'{key}.zip',m['artifacts'],key)
+              (root/'v7-original-v3'/f'v3-{key}.json').write_bytes(locked.canonical(original)+b'\n')
+          PY
+      - name: Reacquire exact independent original publisher labels *after* all original producer receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'v7-reviewed-labels'
+          sha={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+               'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          for split in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'hepta-independent-trainonly-centroid-v7'}),timeout=35) as response:
+                  if response.geturl()!=url:
+                      raise ValueError('unexpected publisher redirect')
+                  raw=response.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=sha[split]:
+                  raise ValueError('changed publisher label bytes')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+      - name: Independent NumPy replay of physical safetensors, train-only temperature and original Head baselines
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$V7/independent_encoder_centroid_v7.py" \
+            --train "$RUNNER_TEMP/v7-reviewed-labels/train.csv" \
+            --test "$RUNNER_TEMP/v7-reviewed-labels/test.csv" \
+            --source "$RUNNER_TEMP/v7-source/original-source.json" \
+            --materials "$V1/MODEL_MATERIALS.json" \
+            --v3-granite47 "$RUNNER_TEMP/v7-original-v3/v3-granite47.json" \
+            --v3-granite97 "$RUNNER_TEMP/v7-original-v3/v3-granite97.json" \
+            --v3-mmbert140 "$RUNNER_TEMP/v7-original-v3/v3-mmbert140.json" \
+            --v7-granite47 "$RUNNER_TEMP/v7-physical/receipt-granite47.json" \
+            --v7-granite97 "$RUNNER_TEMP/v7-physical/receipt-granite97.json" \
+            --v7-mmbert140 "$RUNNER_TEMP/v7-physical/receipt-mmbert140.json" \
+            --features-granite47 "$RUNNER_TEMP/v7-physical/features-granite47.safetensors" \
+            --features-granite97 "$RUNNER_TEMP/v7-physical/features-granite97.safetensors" \
+            --features-mmbert140 "$RUNNER_TEMP/v7-physical/features-mmbert140.safetensors" \
+            --output "$RUNNER_TEMP/v7-calibrated-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ['RUNNER_TEMP'])/'v7-calibrated-review.json').read_text())
+          assert report['original_pub_bytes_verified'] is True
+          assert report['training_only_calibration_replayed'] is True
+          assert report['original_v3_t1_matched'] is True
+          assert report['source_independent_families']==1 and report['future_windows']==0
+          assert report['original_labels_previously_exposed'] is True
+          assert report['authority']=='DENY_ALL' and report['disposition']=='HOLD_NO_GO'
+          assert report['production_authorized'] is False and report['stem_winner_verified'] is False
+          for name,score in report['models'].items():
+              print(name,'T=',score['train_only']['temperature'],
+                    'calibrated_correct=',score['centroids']['train_calibrated_centroid']['correct'],
+                    'calibrated_Brier=',score['centroids']['train_calibrated_centroid']['mean_multiclass_brier'],
+                    'original_learned_Brier=',score['original_learned_multiclass_brier'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v7-independent-original-encoder-centroid-denyall
+          path: ${{ runner.temp }}/v7-calibrated-review.json
+          retention-days: 7
+          if-no-files-found: error
