@@ -68,3 +68,22 @@ Added a focused `post_readback_selection_withdrawal_cannot_report_completed_spli
 regression and updated exact-head expectations. The Control orphan inspector
 tests observed green at the original #2642 SHA do not automatically qualify
 this merged source SHA.
+
+## Current original-owner evidence after NDU callbacks
+
+After the first successful, signed native effect readback, the independent
+Selector/NDU callback can block long enough for the **same** original native
+effect owner to withdraw or replace that previously verified effect. The
+coordinator now performs another read-only original-effect
+`verify_committed(intent, receipt)` after this callback. If it fails, the
+previously fsynced `Prepared` remains ambiguous, with no second Execute.
+After that live native readback, a fourth current NDU/Selector check guards
+withdrawal during the additional RPC. The exact locked local ledger and
+signer pins are revalidated after each slow callback.
+
+Two more native fixture regressions cover loss of the original effect at all
+four stages and NDU withdrawal during the second signed owner readback.
+The Architecture workflow explicitly runs them as separate `--minimum-tests 1`
+records, and its scope regression enforces those records. They are not
+production-issuer proofs and cannot close the residual cross-service atomic
+Final-use gap.

@@ -1127,6 +1127,26 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.verify_local_prefix_after_callback()
             .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
 
+        // The native effect's first authenticated readback preceded a
+        // potentially slow NDU/Selector callback. While that callback ran,
+        // the original effect owner might have withdrawn the commit. Re-query
+        // the SAME original native owner by the SAME intent key, never Execute.
+        // Its absence, timeout or changed receipt leaves Prepared ambiguous.
+        self.port
+            .verify_committed(&intent, &receipt)
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // The last native readback may itself race with Selector withdrawal.
+        // Revalidate current selection again before local acknowledgment.
+        // These alternating owner checks narrow but cannot eliminate a
+        // cross-service race: only the original native Final-use/CAS fence
+        // can enforce atomic mutation authorization.
+        revalidate().map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
         let committed_bytes =
             canonical_json(&receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         let committed_path = frame_path(&self.root, self.cursor, "committed");

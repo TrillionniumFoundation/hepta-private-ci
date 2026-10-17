@@ -400,14 +400,24 @@ class ScopeTests(unittest.TestCase):
             gate,
         )
         regressions = {
-            "cell-split-posteffect-ndu-four-owners.json":
-                "post_effect_selector_revocation_keeps_every_original_owner_reconcile_only",
-            "cell-split-posteffect-ndu-native-readback.json":
-                "selector_withdrawal_during_post_effect_owner_readback_blocks_commit",
-            "cell-split-posteffect-ndu-local-ledger.json":
-                "post_effect_admission_callback_cannot_replace_frozen_owner_identity",
-            "cell-split-final-completion-selection.json":
-                "post_readback_selection_withdrawal_cannot_report_completed_split",
+            "cell-split-posteffect-ndu-four-owners.json": (
+                "post_effect_selector_revocation_keeps_every_original_owner_reconcile_only"
+            ),
+            "cell-split-posteffect-ndu-native-readback.json": (
+                "selector_withdrawal_during_post_effect_owner_readback_blocks_commit"
+            ),
+            "cell-split-posteffect-ndu-local-ledger.json": (
+                "post_effect_admission_callback_cannot_replace_frozen_owner_identity"
+            ),
+            "cell-split-posteffect-native-withdrawal.json": (
+                "original_effect_withdrawn_during_post_effect_admission_cannot_be_committed"
+            ),
+            "cell-split-posteffect-second-native-revoke.json": (
+                "selector_revoked_during_second_native_readback_denies_local_commit"
+            ),
+            "cell-split-final-completion-selection.json": (
+                "post_readback_selection_withdrawal_cannot_report_completed_split"
+            ),
         }
         for receipt, name in regressions.items():
             with self.subTest(receipt=receipt):

@@ -2826,3 +2826,82 @@ fn post_effect_admission_callback_cannot_replace_frozen_owner_identity() {
     assert!(root.path().join("cell-split-00-prepared.json").is_file());
     assert!(!root.path().join("cell-split-00-committed.json").exists());
 }
+
+#[test]
+fn original_effect_withdrawn_during_post_effect_admission_cannot_be_committed() {
+    // All four canonical native effect owners remain independently signed.
+    // A late withdrawal after the FIRST native readback cannot be hidden
+    // behind a still-valid NDU candidate or an old signed effect receipt.
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("canonical original owner");
+        for _ in 0..completed {
+            owner.advance().expect("signed predecessor");
+        }
+        let mut checks = 0_usize;
+        let outcome = owner.advance_with_admission(|| {
+            checks += 1;
+            if checks == 3 {
+                let key = {
+                    let observed = state.borrow();
+                    observed
+                        .commits
+                        .iter()
+                        .find(|(_, receipt)| receipt.intent.step.index() == completed)
+                        .map(|(key, _)| key.clone())
+                        .expect("physically committed original effect")
+                };
+                assert!(state.borrow_mut().commits.remove(&key).is_some());
+            }
+            Ok(())
+        });
+        assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Ambiguous)));
+        assert_eq!(checks, 3, "readback must deny before a fourth admission");
+        assert_eq!(state.borrow().executions, completed + 1);
+        assert_eq!(owner.completed_steps(), completed);
+        let prepared = root.path().join(format!("cell-split-{completed:02}-prepared.json"));
+        let committed = root.path().join(format!("cell-split-{completed:02}-committed.json"));
+        assert!(prepared.is_file(), "keep original, fsynced intent");
+        assert!(!committed.exists(), "withdrawn native effect cannot be acknowledged");
+        assert!(matches!(
+            owner.advance_with_admission(|| Ok(())),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(state.borrow().executions, completed + 1);
+    }
+}
+
+#[test]
+fn selector_revoked_during_second_native_readback_denies_local_commit() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let selected = Rc::new(RefCell::new(true));
+    let mut port = FixturePort::new(state.clone());
+    // First native confirmation occurs before the third admission read.
+    // Revoke during the SECOND readback to require a fourth admission fence.
+    port.revoke_selection_on_readback = Some((selected.clone(), 2));
+    let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+        .expect("canonical owner");
+    let mut checks = 0_usize;
+    let outcome = owner.advance_with_admission(|| {
+        checks += 1;
+        if *selected.borrow() {
+            Ok(())
+        } else {
+            Err("NDU withdrawn on second original owner readback".to_string())
+        }
+    });
+    assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Ambiguous)));
+    assert_eq!(checks, 4, "final post-native admission must run");
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").is_file());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+}

@@ -263,6 +263,11 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-four-owners.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_effect_selector_revocation_keeps_every_original_owner_reconcile_only -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-native-readback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib selector_withdrawal_during_post_effect_owner_readback_blocks_commit -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-local-ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_effect_admission_callback_cannot_replace_frozen_owner_identity -- --nocapture --test-threads=1
+          # The original effect itself can be withdrawn during a slow NDU
+          # callback, or the NDU candidate during the second native readback.
+          # Both must leave the same fsynced Prepared key unresolved.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-native-withdrawal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib original_effect_withdrawn_during_post_effect_admission_cannot_be_committed -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-second-native-revoke.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib selector_revoked_during_second_native_readback_denies_local_commit -- --nocapture --test-threads=1
           # Final positive CLI completion status must re-read current NDU
           # selection after four original owner readbacks. This is a status
           # denial, never an effect or a production Final-use grant.
