@@ -24,6 +24,7 @@ use http::StatusCode;
 use tokio::sync::oneshot;
 use tokio::sync::oneshot::error::TryRecvError;
 
+use super::ResponseEventProviderPolicy;
 use super::map_response_events;
 use crate::model_provider_policy::ProviderAttemptOwner;
 use crate::model_provider_policy::bytes_sha256;
@@ -120,8 +121,10 @@ async fn completed_is_hidden_until_exact_terminal_is_acknowledged() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -172,8 +175,10 @@ async fn terminal_failure_suppresses_completed_and_last_response() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -209,8 +214,10 @@ async fn consumer_drop_records_partial_indeterminate_terminal() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -245,8 +252,10 @@ async fn unauthorized_stream_error_records_rejected_before_downstream_error() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -274,8 +283,10 @@ async fn eof_records_partial_indeterminate_terminal() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -309,8 +320,10 @@ async fn terminal_acknowledgement_wait_is_not_consumer_timeout_driven() {
         test_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_provider(),
-        Some(owner),
-        /*redact_provider_errors*/ false,
+        ResponseEventProviderPolicy {
+            attempt: Some(owner),
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
