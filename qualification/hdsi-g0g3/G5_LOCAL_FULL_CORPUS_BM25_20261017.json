@@ -1,0 +1,44 @@
+{
+  "applies_to_different_doc_budget": true,
+  "cannot_be_counted_as_matched_256_doc_head_lift": true,
+  "disposition": "HOLD_NO_GO",
+  "metrics": {
+    "all_at_5": 36,
+    "all_gold_in_full_corpus": 95,
+    "any_at_1": 21,
+    "any_at_10": 56,
+    "any_at_3": 40,
+    "any_at_5": 48,
+    "at_least_one_gold_in_full_corpus": 96,
+    "bm25_document_question_comparisons": 58728,
+    "denominator": 96,
+    "full_corpus_cheap_cpu_wall_seconds_unattested": 0.11443633600015346,
+    "original_transcript_documents": 2447
+  },
+  "production_authorized": false,
+  "roots": {
+    "conv-47": {
+      "bm25_any_at_5": 10,
+      "question_count": 24,
+      "source_utterances": 689
+    },
+    "conv-48": {
+      "bm25_any_at_5": 10,
+      "question_count": 24,
+      "source_utterances": 681
+    },
+    "conv-49": {
+      "bm25_any_at_5": 17,
+      "question_count": 24,
+      "source_utterances": 509
+    },
+    "conv-50": {
+      "bm25_any_at_5": 11,
+      "question_count": 24,
+      "source_utterances": 568
+    }
+  },
+  "schema": "hepta.hdsi.g5.full-original-corpus-bm25-diagnostic.v1",
+  "source_first_fixed_questions": true,
+  "source_original_sha": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+}
