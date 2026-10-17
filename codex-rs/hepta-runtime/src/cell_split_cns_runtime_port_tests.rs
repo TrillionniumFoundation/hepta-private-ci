@@ -50,6 +50,7 @@ struct DenyingWitness {
     signed_history: Option<CellSplitCnsRuntimeCommitV1>,
     durable_sequence: u64,
     advance_durable_sequence_after_read: bool,
+    advance_durable_sequence_on_signed_route: bool,
     original_commit_reads: usize,
     live_route_reads: usize,
 }
@@ -75,6 +76,11 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
         nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error> {
         self.live_route_reads += 1;
+        if self.advance_durable_sequence_on_signed_route {
+            // Synthetic WAL-only revision; retain the identical signed route.
+            self.advance_durable_sequence_on_signed_route = false;
+            self.durable_sequence += 1;
+        }
         let observed_nonce = if self.stale_nonce {
             "00".repeat(32)
         } else {
@@ -231,6 +237,7 @@ fn fixture(
             signed_history: None,
             durable_sequence: 1,
             advance_durable_sequence_after_read: false,
+            advance_durable_sequence_on_signed_route: false,
             original_commit_reads: 0,
             live_route_reads: 0,
         },
@@ -422,6 +429,55 @@ fn orphan_control_cns_read_only_rejects_unfrozen_successor_before_any_rpc() {
         port.witness.live_route_reads, 0,
         "wrong NDU child must deny before external signed route reads",
     );
+    assert_eq!(runtime.topology_snapshot().unwrap(), before);
+}
+
+#[test]
+fn orphan_control_cns_read_only_rejects_revision_race_inside_signed_route_rpc() {
+    let signer = SigningKey::from_bytes(&[42; 32]);
+    let (runtime, plan, binding, intent, mut port) =
+        fixture(false, true, signer.clone(), signer.clone());
+    let before = runtime.topology_snapshot().expect("original serving runtime");
+    // SYNTHETIC historical signed CNS proof: no real Control B/C, cutover,
+    // Final-use grant, or independent production signer is exercised here.
+    let mut historical = CellSplitCnsRuntimeCommitV1 {
+        idempotency_key: intent.idempotency_key.clone(),
+        cns_id: binding.cns_id.clone(),
+        predecessor_route_digest: binding.predecessor_route_digest.clone(),
+        successor_route_digest: binding.successor_route_digest.clone(),
+        predecessor_generation: plan.parent_generation,
+        successor_generation: plan.child_generation,
+        authority_epoch: binding.authority_epoch,
+        committed_sequence: 11,
+        original_runtime_receipt_bytes: Vec::new(),
+        original_runtime_signature_bytes: Vec::new(),
+    };
+    let bytes = CellSplitCnsRuntimeAttestationV1::for_commit(&plan, &historical)
+        .canonical_bytes()
+        .expect("test-only CNS attestation");
+    historical.original_runtime_signature_bytes = signer.sign(&bytes).to_bytes().to_vec();
+    historical.original_runtime_receipt_bytes = bytes;
+    port.witness.signed_history = Some(historical.clone());
+    port.witness.durable_sequence = 11;
+
+    let stable = port
+        .signed_route_with_current_original_commit(&historical)
+        .expect("test-only signed parent route with stable CNS revision");
+    assert_eq!(stable.generation, plan.parent_generation);
+    assert_eq!(port.witness.durable_sequence, 11);
+    let original_reads = port.witness.original_commit_reads;
+    // A new CNS durable revision during the RPC does not have to change
+    // route generation, artifact, signature validity or route digest.
+    port.witness.advance_durable_sequence_on_signed_route = true;
+    let error = port
+        .signed_route_with_current_original_commit(&historical)
+        .expect_err("post-route revision must invalidate old original receipt");
+    assert!(
+        error.contains("current durable frontier"),
+        "original CNS revision changed but the read-only join accepted it: {error}"
+    );
+    assert_eq!(port.witness.durable_sequence, 12);
+    assert!(port.witness.original_commit_reads > original_reads);
     assert_eq!(runtime.topology_snapshot().unwrap(), before);
 }
 

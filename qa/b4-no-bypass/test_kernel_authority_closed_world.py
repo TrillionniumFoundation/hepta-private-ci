@@ -1082,10 +1082,15 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
         )
         start = source.find("pub fn inspect_orphan_control_and_signed_cns_v1(")
-        end = source.find("fn live_runtime(", start)
+        helper_start = source.find(
+            "fn signed_route_with_current_original_commit(", start
+        )
+        end = source.find("fn live_runtime(", helper_start)
         self.assertGreater(start, 0, "read-only orphan join must exist")
-        self.assertGreater(end, start, "read-only join must be method-scoped")
-        observation = source[start:end]
+        self.assertGreater(helper_start, start, "post-route durable CNS check missing")
+        self.assertGreater(end, helper_start, "read-only join must be scoped")
+        observation = source[start:helper_start]
+        helper = source[helper_start:end]
         self.assertIn(
             "pub posture: NonAuthorizingPosture,",
             source,
@@ -1110,16 +1115,29 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             )
         # Lexical code strips comments and string literals deliberately.
         # Count genuine original-owner calls, not diagnostic message text.
-        for required, minimum in (
-            ("inspect_original_pending_begin_v1(", 3),
-            ("verify_original_commit(", 2),
-            ("signed_route(", 2),
-        ):
-            self.assertGreaterEqual(
-                observation.count(required),
-                minimum,
-                "the original WAL, signed CNS record and live route need replay",
-            )
+        self.assertGreaterEqual(
+            observation.count("inspect_original_pending_begin_v1("),
+            3,
+            "the three original WAL reads must remain",
+        )
+        self.assertEqual(
+            observation.count("signed_route_with_current_original_commit("),
+            2,
+            "each signed route RPC must revalidate original CNS revision",
+        )
+        self.assertEqual(
+            helper.count("verify_original_commit("),
+            2,
+            "exact CNS original revision must be checked twice per route",
+        )
+        self.assertLess(
+            helper.find("verify_original_commit("),
+            helper.find("signed_route("),
+        )
+        self.assertGreater(
+            helper.rfind("verify_original_commit("),
+            helper.find("signed_route("),
+        )
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")

@@ -485,8 +485,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             .read_original_commit(&self.intent.idempotency_key)
             .map_err(|error| error.to_string())?
             .ok_or("original CNS effect is unresolved; never replay")?;
-        self.verify_original_commit(&original)?;
-        let first = self.signed_route(&secure_cns_nonce()?)?;
+        let first = self.signed_route_with_current_original_commit(&original)?;
         if first.generation != self.plan.child_generation
             || first.artifact_digest != self.plan.child_artifact_digest
             || first.route_digest != self.binding.successor_route_digest
@@ -503,8 +502,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         if pending != during {
             return Err("original Control orphan frontier drifted during signed CNS read".into());
         }
-        self.verify_original_commit(&original)?;
-        let current = self.signed_route(&secure_cns_nonce()?)?;
+        let current = self.signed_route_with_current_original_commit(&original)?;
         if current.generation != first.generation
             || current.artifact_digest != first.artifact_digest
             || current.route_digest != first.route_digest
@@ -528,6 +526,20 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             original_cns_commit: original,
             signed_serving_route: current,
         })
+    }
+
+    /// A valid signed route may race a new durable CNS revision even if
+    /// the route digest stays the same. Fence original Commit and sequence
+    /// both before and after EACH challenge-bound signed route read.
+    /// This read-only check is not a distributed linearization point.
+    fn signed_route_with_current_original_commit(
+        &mut self,
+        original: &CellSplitCnsRuntimeCommitV1,
+    ) -> Result<CellSplitCnsLiveRouteV1, String> {
+        self.verify_original_commit(original)?;
+        let signed = self.signed_route(&secure_cns_nonce()?)?;
+        self.verify_original_commit(original)?;
+        Ok(signed)
     }
 
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {
