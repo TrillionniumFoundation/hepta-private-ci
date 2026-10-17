@@ -38,7 +38,7 @@ def initial(seed):
 
 
 def independent_fit(redacted,seed,arm):
-    weights=initial(seed)
+    weights=initial(seed)[:1].copy() if arm=="shared_one" else initial(seed)
     train=redacted['train']
     features=[np.r_[np.asarray(row['features'],dtype=np.float64),1.] for row in train]
     numbers=list(range(len(train)))
@@ -102,7 +102,12 @@ def audit_math(redacted,result)->dict:
         for arm in original_models:
             weights=independent_fit(redacted,seed,arm)
             signed=hashlib.sha256(b'hepta.p06.head-weights.v1\x00'+weights.tobytes()).hexdigest()
-            if signed==trial['training'][arm]['weights_sha256']:
+            report=trial['training'][arm]
+            if (report['actually_allocated_weight_tensor_shape']!=list(weights.shape)
+                    or report['actually_allocated_weight_tensor_bytes']!=weights.nbytes
+                    or report['resident_parameter_scalars']!=weights.size):
+                raise ValueError("declared resident parameter allocation contradicts independent tensor")
+            if signed==report['weights_sha256']:
                 exact_digest_matches+=1
             # This independently authored implementation uses einsum order;
             # FP64 probabilities, rather than bytes, must be validated below.

@@ -244,7 +244,9 @@ def fit_predict(bundle: dict) -> dict:
         models={}
         total_updates={}
         for arm in TRAINED:
-            w=init.copy()
+            # Shared-single truly allocates ONE trainable class Head, unlike
+            # the equal-sized two-slot controls. Do not charge a virtual count.
+            w=init[:1].copy() if arm=="shared_one" else init.copy()
             order=[];rng_order=random.Random(seed+77)
             while len(order)<SGD_STEPS:
                 permutation=list(range(len(training)));rng_order.shuffle(permutation);order.extend(permutation)
@@ -265,7 +267,9 @@ def fit_predict(bundle: dict) -> dict:
             models[arm]=w
             total_updates[arm]={"steps":SGD_STEPS,"active_head_parameters_touched":SGD_STEPS*PARAMS_PER_HEAD,
                                 "resident_parameter_slots":1 if arm=="shared_one" else 2,
-                                "resident_parameter_scalars":PARAMS_PER_HEAD if arm=="shared_one" else 2*PARAMS_PER_HEAD,
+                                "resident_parameter_scalars":int(w.size),
+                                "actually_allocated_weight_tensor_shape":list(w.shape),
+                                "actually_allocated_weight_tensor_bytes":int(w.nbytes),
                                 "forward_heads_per_query":2 if arm=="shared_twin" else 1,
                                 "weights_sha256":hashlib.sha256(b"hepta.p06.head-weights.v1\x00"+w.tobytes()).hexdigest()}
         predictions=[]

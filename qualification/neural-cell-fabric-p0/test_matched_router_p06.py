@@ -127,6 +127,8 @@ class SourceOnly(unittest.TestCase):
             for arm in ('split','random_route','shared_twin','shared_one'):
                 self.assertEqual(trial['training'][arm]['steps'],SGD_STEPS)
                 self.assertEqual(trial['training'][arm]['active_head_parameters_touched'],SGD_STEPS*PARAMS_PER_HEAD)
+                self.assertEqual(trial['training'][arm]['actually_allocated_weight_tensor_shape'],
+                                 [1 if arm=='shared_one' else 2,4,385])
 
     def test_17_separate_arithmetic_oracle_matches_real_synthetic_cpu_sgd(self):
         result=fit_predict(self.bundle)
@@ -190,6 +192,8 @@ class OriginalModelMaterial(unittest.TestCase):
                 self.assertEqual(row['training'][arm]['resident_parameter_scalars'],2*PARAMS_PER_HEAD)
                 self.assertEqual(row['training'][arm]['active_head_parameters_touched'],SGD_STEPS*PARAMS_PER_HEAD)
             self.assertEqual(row['training']['shared_twin']['forward_heads_per_query'],2)
+            self.assertEqual(row['training']['shared_one']['resident_parameter_scalars'],PARAMS_PER_HEAD)
+            self.assertEqual(row['training']['shared_one']['actually_allocated_weight_tensor_bytes'],PARAMS_PER_HEAD*8)
 
     def test_24_true_original_features_give_independent_arithmetic_parity(self):
         cert=audit_math(self.real,self.prelabel)
