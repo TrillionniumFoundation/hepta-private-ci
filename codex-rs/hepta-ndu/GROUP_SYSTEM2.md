@@ -32,6 +32,13 @@ The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be
 introduced behind the same owner boundary and compared against this baseline.
 
+The neuron crate now emits CellEvidenceV1 after binding a CellHeadOutputV1 to
+the existing local runtime receipt. The observation adapter widens its Q24
+value and uncertainty to the Group NDU's Q32 coordinate and derives the
+resource cost from execution time plus queue age. This is the first executable
+bridge from shared Encoder/per-Cell head evidence into the group continuation
+gate; it still grants no authority and does not make a learned System2 claim.
+
 ## Next integration
 
 The next implementation slice should add a real shared Encoder owner and an
