@@ -42,12 +42,12 @@ evaluator and therefore verifies each registered Git blob, quoted line, and
 withheld control before a model request can be bound. This is still an input
 integrity check, not evidence that a model answered correctly.
 
-`ReaderRequestV1` contains only the evaluator-generated `state` and `questions`
-payloads accepted by the Reader API. It recursively rejects evaluator-only
-gold fields before a caller can pass the request to a model. The adapter does
-not invoke a model or score answers. The registered fixture still requires a
-real source checkout and the pinned local checkpoint before any efficacy claim
-could be made.
+`ReaderRequestV1` contains only the evaluator-generated `state` and
+`questions` payloads accepted by the Reader API. It recursively rejects
+evaluator-only gold fields before a caller can pass the request to a model. The
+adapter does not invoke a model or score answers. The registered fixture still
+requires a real source checkout and the pinned local checkpoint before any
+efficacy claim could be made.
 
 ## Prospective equal-budget transfer plan
 
@@ -111,7 +111,6 @@ future experiment from mixing modal widths, Stem generations, source tower
 identities, mutable features, or untracked evidence while the actual frozen
 checkpoint and equal-budget transfer matrix are still pending.
 
-
 ## Componentized resource receipts
 
 `neuron_shared_encoder.component_resource_receipts` is the P2 accounting
@@ -149,3 +148,27 @@ activate a split, or grant System2 authority. A future real receipt adapter
 must preserve the harness's native evidence class and independently verify the
 pinned checkpoint, tokenizer/preprocessor, runtime, source bytes, and device
 measurements before any receipt can be considered by the P1 transfer matrix.
+
+## Pinned checkpoint provenance receipt
+
+`neuron_shared_encoder.checkpoint_receipt` closes the identity gap between
+the existing Stem protocol and a future real model run. `PinnedCheckpointReceiptV1`
+requires one exact checkpoint digest plus model, tokenizer, preprocessor,
+runtime, Reader manifest, request, held-label, source, and Git blob digests.
+It also requires the harness to report that the checkpoint was actually
+loaded, an independent `future` or `ood` source split, model-hidden gold,
+and no current-run mutation.
+
+The raw evidence class is preserved. `REAL_MODEL_LOCAL_QUALIFICATION` remains
+local qualification and cannot be adapted to a strict `REAL_SHADOW` gate;
+synthetic and historical fixtures remain diagnostic. `INCOMPLETE` receipts
+carry exact missing fields and are rejected before transfer, OPE,
+component-resource adaptation, System2, or Cell split. `bind_identity()`
+requires the componentized resource receipt to carry the same checkpoint
+bundle and source identities, so a scalar cost record cannot be detached from
+the model that produced it.
+
+This is still only a provenance contract. It does not load, run, score, train,
+select, or activate any model. A later harness adapter must create the receipt
+from measured bytes and runtime state before the equal-budget Reader matrix
+and X/P/Y/Z OPE can be considered.
