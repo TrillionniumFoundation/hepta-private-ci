@@ -287,15 +287,22 @@ impl SharedEncoderPool {
             .get(cell_id)
             .map(|cell| cell.key.clone())
             .ok_or(CompositionError::CellNotBound)?;
-        if !self.encoders.contains_key(&key) {
-            return Err(CompositionError::CellKeyMismatch);
-        }
+        let (references, shared_memory_bytes) = match self.encoders.get(&key) {
+            Some(encoder) if encoder.references > 0 => {
+                (encoder.references, encoder.shared_memory_bytes)
+            }
+            Some(_) => return Err(CompositionError::ArithmeticOverflow),
+            None => return Err(CompositionError::CellKeyMismatch),
+        };
         let cell = self.cells.remove(cell_id).ok_or(CompositionError::CellNotBound)?;
-        let encoder = self.encoders.get_mut(&key).ok_or(CompositionError::CellKeyMismatch)?;
-        encoder.references = encoder.references.saturating_sub(1);
-        let shared_memory_bytes = encoder.shared_memory_bytes;
-        if encoder.references == 0 {
+        if references == 1 {
             self.encoders.remove(&key);
+        } else {
+            let encoder = self
+                .encoders
+                .get_mut(&key)
+                .ok_or(CompositionError::CellKeyMismatch)?;
+            encoder.references = references - 1;
         }
         Ok(CompositionReceipt {
             cell_id: cell_id.to_owned(),
