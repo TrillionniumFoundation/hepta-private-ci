@@ -24,7 +24,6 @@ use crate::durable::canonical_json;
 use crate::durable::lock_existing_sidecar;
 use crate::durable::lock_sidecar;
 use crate::durable::same_file_snapshot;
-use crate::durable::secure_read;
 use crate::durable::secure_read_with_snapshot;
 use crate::durable::secure_root;
 use crate::durable::sha256;
