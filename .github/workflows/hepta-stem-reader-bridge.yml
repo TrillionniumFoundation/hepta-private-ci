@@ -64,8 +64,10 @@ jobs:
             qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/prospective_plan.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/modality_registry.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/component_resource_receipts.py \
             qualification/neuron-shared-encoder/tests/test_stem_bridge.py \
             qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py \
             qualification/neuron-shared-encoder/tests/test_prospective_plan.py \
-            qualification/neuron-shared-encoder/tests/test_modality_registry.py
+            qualification/neuron-shared-encoder/tests/test_modality_registry.py \
+            qualification/neuron-shared-encoder/tests/test_component_resource_receipts.py
           git diff --check
