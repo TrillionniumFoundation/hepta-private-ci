@@ -28,7 +28,6 @@ const QUEUE_RETRY: Duration = Duration::from_millis(50);
 const DISPATCH_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-dispatch.v1\0";
 const ACK_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-ack.v1\0";
 const NOT_APPLIED_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-not-applied.v1\0";
-const QUARANTINE_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-quarantined.v1\0";
 const UNKNOWN_EFFECT_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-unknown-effect.v1\0";
 
 /// Independent grant source. Implementations may talk to an external issuer or
