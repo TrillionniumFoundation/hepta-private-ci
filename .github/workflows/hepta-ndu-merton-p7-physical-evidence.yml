@@ -1,0 +1,80 @@
+name: Hepta NDU Merton P7 original physical evidence gate (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/physical_evidence_p7/**'
+      - '.github/workflows/hepta-ndu-merton-p7-physical-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-evidence-no-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pinned original public train and label-blind held inputs (not synthetic)
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-train-and-label-blind-held-public
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/hepta-p5-evidence/public
+      - name: Pinned source-owner held publisher truth, postseal-use only
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-held-publisher-truth-review-only
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/hepta-p5-evidence/gold
+      - name: Pinned original Qwen3 execution, frozen plan and ordered journal
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-original-reader-starts-and-seal
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/hepta-p5-evidence/original
+      - name: Pinned separately published postseal reviewer
+        uses: actions/download-artifact@v4
+        with:
+          name: hepta-p5-sanitized-postseal-review
+          run-id: 39000773484
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: /tmp/hepta-p5-evidence/review
+      - name: Exact-head syntax and 22 original/adversarial tests in normal and optimized Python
+        env:
+          HEPTA_P7_EVIDENCE_ROOT: /tmp/hepta-p5-evidence
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_evidence_p7
+          export PYTHONPATH="$D"
+          python -m compileall -q "$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+      - name: Independent original physical raw evidence and forward-looking NO_GO
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_evidence_p7
+          python "$D/physical_evidence_gate.py" \
+            --public /tmp/hepta-p5-evidence/public \
+            --gold /tmp/hepta-p5-evidence/gold \
+            --original /tmp/hepta-p5-evidence/original \
+            --review /tmp/hepta-p5-evidence/review \
+            --output /tmp/hepta-p7-real-audit.json
+      - name: Publish sanitized numeric audit only, never raw source/model records
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p7-original-physical-no-go-audit
+          path: /tmp/hepta-p7-real-audit.json
+          if-no-files-found: error
+          retention-days: 7
