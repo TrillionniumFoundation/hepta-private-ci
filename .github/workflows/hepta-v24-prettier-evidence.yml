@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - research/stem-v24-prettier-source-convergence-20261016
+  pull_request:
+    paths:
+      - .github/workflows/hepta-v24-prettier-evidence.yml
+      - .github/workflows/hepta-group-reasoning-research.yml
+      - .github/workflows/hepta-stem-v13-cheap-retrieval.yml
+      - .github/workflows/hepta-stem-v13-original-reader-negative.yml
+      - .github/workflows/hepta-stem-v18-original-physical.yml
+      - .github/workflows/hepta-stem-v19-trainonly-original.yml
+      - .github/workflows/hepta-stem-v20-independent-adam.yml
+      - .github/workflows/hepta-stem-v21-original-cross-family.yml
+      - .github/workflows/hepta-stem-v22-source-integrity.yml
   workflow_dispatch:
 
 permissions:
@@ -16,11 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Require exact immutable source
         env:
-          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
