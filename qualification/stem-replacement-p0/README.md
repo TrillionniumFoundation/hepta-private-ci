@@ -194,3 +194,33 @@ python physical_forward.py --model ettin400 \
   --stage /secure/research/hepta-source-ettin400 \
   --out /secure/research/hepta-forward-ettin400.json
 ```
+
+## P1.6: runtime input isolation after verified physical bytes (2026-10-17)
+
+The optional physical CPU-forward lane now passes **only a clean, temporary,
+private, allowlist-only model runtime tree** to the Laya or Ettin loader.
+`runtime_snapshot.isolated_verified_runtime` independently reopens the
+pinned original-byte receipt, copies each registered source file with
+no-follow/regular-file checks, recomputes the original LFS SHA-256 or Git blob
+identity while copying, and independently rehashes the new runtime tree.
+No Hugging Face downloader cache or unregistered model/tokenizer/config file
+enters that runtime tree. It is removed on exit. Laya's known tokenizer
+normalization is confined to private runtime copies, not the staged original.
+
+This closes the ordinary downloader-directory drift gap between source-byte
+review and model import. It does **not** establish a hostile same-UID process
+sandbox, a publisher signature, a final-use grant, or any scientific utility.
+The native forward receipt records
+`isolated_allowlist_runtime_snapshot_verified=true` only after this path.
+Missing/tampered files or refused runtime copies fail before model import;
+the source tests use tiny *synthetic* mock checkpoints. In the bounded source
+suite, seven added snapshot-specific tests cover exact-copy/reopen, tampering,
+late-added config, downloader cache exclusion, original-file preservation,
+symlinks and missing checkpoint bytes. Both normal and optimized local
+Python runs complete 84 tests; exact-HEAD hosted CI, original 400M/421M
+CPU-forward and full blocking-ci outcomes remain independently unverified.
+
+The additional snapshot copy counts toward physical wall/CPU/RSS/disk
+resource cost; zero-cost reuse and 4096-Cell target-host claims are forbidden.
+This PR stays DRAFT / RESEARCH_ONLY / DENY_ALL / HOLD_NO_GO. No main merge,
+model selection, CNS cutover, FinalUse or physical Cell Split.
