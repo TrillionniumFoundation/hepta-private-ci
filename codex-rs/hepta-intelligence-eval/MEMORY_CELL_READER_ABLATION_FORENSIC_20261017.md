@@ -96,3 +96,21 @@ Run the existing immutable replay admission
 The separate `factorial_evidence_gate.py` now reports paired reader,
 nonparametric and parameter contrasts and expressly refuses retrospective
 development outputs as production credentials.
+
+## Same-head reproducibility
+
+The standalone stdlib replay is
+`scripts/memory_cell/audit_reader_ablation_replay.py`. It verifies the
+three original input/model ZIPs, **every embedded SHA256SUMS member**, original
+pre-score answer identity, 48/48 paired delivered evidence packets, original
+precommitted program labels, exact answer literal visibility and the checked-in
+eight-case machine receipt. Any changed answer, SHA, evidence, model pairing or
+reported outcome fails closed. It makes **zero** model calls.
+
+The dedicated read-only workflow
+`.github/workflows/hepta-memory-reader-ablation-forensic.yml` fetches the
+registered archives by immutable artifact ID, runs this exact checker and
+uploads its output. CI success would validate the *historical evidence
+reconstruction only*. It cannot substitute for human reviewer certification,
+new held-out program cases, statistical independence, runtime cost or
+`blocking-ci`.
