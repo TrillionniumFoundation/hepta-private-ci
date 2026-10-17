@@ -33,6 +33,7 @@ pub fn group_cell_observation_from_evidence_v1(
         cell_id: evidence.cell_id.as_str().to_owned(),
         head_digest: evidence.head_digest,
         action_digest: evidence.action_digest,
+        evidence_digest: evidence.evidence_digest,
         value_q32,
         cost_micros,
         uncertainty_q32,
