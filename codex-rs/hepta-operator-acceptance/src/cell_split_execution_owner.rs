@@ -25,9 +25,11 @@ use crate::durable::lock_existing_sidecar;
 use crate::durable::lock_sidecar;
 use crate::durable::same_file_snapshot;
 use crate::durable::secure_read;
+use crate::durable::secure_read_with_snapshot;
 use crate::durable::secure_root;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
+use crate::durable::write_private_new_with_snapshot;
 
 const SCHEMA: &str = "hepta.learning.cell-split.execution-owner.v1";
 const MAX_RECORD_BYTES: usize = 64 * 1024;
@@ -566,27 +568,29 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // any original owner. A remote readback may race with local corruption
         // or replacement; neither a reconstructed cursor nor a fresh open
         // may accept the resulting mixed local history.
-        let frozen_plan_instance = fs::symlink_metadata(&path)?;
-        let frozen_pins_instance = fs::symlink_metadata(&pins_path)?;
+        let (plan_bytes, frozen_plan_instance) = read_frame_with_snapshot(&path)?
+            .ok_or(CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"))?;
+        let (pins_bytes, frozen_pins_instance) = read_frame_with_snapshot(&pins_path)?
+            .ok_or(CellSplitExecutionErrorV1::Invalid("owner trust pins disappeared"))?;
+        if plan_bytes != bytes || pins_bytes != frozen_pins {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "frozen identity changed before owner recovery",
+            ));
+        }
         let mut frame_snapshots = Vec::with_capacity(STEP_COUNT);
         let mut frame_instances = Vec::with_capacity(STEP_COUNT);
         for index in 0..STEP_COUNT {
             let prepared_path = frame_path(&root, index, "prepared");
             let committed_path = frame_path(&root, index, "committed");
-            let prepared = read_frame(&prepared_path)?;
-            let committed = read_frame(&committed_path)?;
-            frame_instances.push((
-                if prepared.is_some() {
-                    Some(fs::symlink_metadata(&prepared_path)?)
-                } else {
-                    None
-                },
-                if committed.is_some() {
-                    Some(fs::symlink_metadata(&committed_path)?)
-                } else {
-                    None
-                },
-            ));
+            let (prepared, prepared_instance) = match read_frame_with_snapshot(&prepared_path)? {
+                Some((bytes, metadata)) => (Some(bytes), Some(metadata)),
+                None => (None, None),
+            };
+            let (committed, committed_instance) = match read_frame_with_snapshot(&committed_path)? {
+                Some((bytes, metadata)) => (Some(bytes), Some(metadata)),
+                None => (None, None),
+            };
+            frame_instances.push((prepared_instance, committed_instance));
             frame_snapshots.push((prepared, committed));
         }
         let mut cursor = 0;
@@ -1036,11 +1040,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // these negative observations do NOT create an atomic commit.
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             let prepared_path = frame_path(&self.root, self.cursor, "prepared");
-            write_private_new(&prepared_path, &canonical_json(&intent)?)?;
-            // Set pending immediately after durable preparation: even a
-            // failed identity read must never allow a second Execute.
+            let prepared_instance =
+                write_private_new_with_snapshot(&prepared_path, &canonical_json(&intent)?)?;
+            // The write helper returns the fsynced original descriptor's
+            // metadata rather than trusting a second path lookup.
             self.pending = true;
-            self.frame_instances[self.cursor].0 = Some(fs::symlink_metadata(&prepared_path)?);
+            self.frame_instances[self.cursor].0 = Some(prepared_instance);
         }
         // The prepared intent is already fsynced. From this point onward,
         // any RPC/transport failure may hide a committed original effect.
@@ -1078,8 +1083,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // dispatched a second time.
         self.verify_committed_prefix()?;
         let committed_path = frame_path(&self.root, self.cursor, "committed");
-        write_private_new(&committed_path, &canonical_json(&receipt)?)?;
-        self.frame_instances[self.cursor].1 = Some(fs::symlink_metadata(&committed_path)?);
+        let committed_instance =
+            write_private_new_with_snapshot(&committed_path, &canonical_json(&receipt)?)?;
+        self.frame_instances[self.cursor].1 = Some(committed_instance);
         self.previous_receipt_digest = receipt.receipt_digest.clone();
         self.cursor += 1;
         self.pending = false;
@@ -1218,8 +1224,14 @@ fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplit
 }
 
 fn read_frame(path: &Path) -> Result<Option<Vec<u8>>, CellSplitExecutionErrorV1> {
+    Ok(read_frame_with_snapshot(path)?.map(|(bytes, _)| bytes))
+}
+
+fn read_frame_with_snapshot(
+    path: &Path,
+) -> Result<Option<(Vec<u8>, fs::Metadata)>, CellSplitExecutionErrorV1> {
     match fs::symlink_metadata(path) {
-        Ok(_) => Ok(Some(secure_read(path, MAX_RECORD_BYTES)?)),
+        Ok(_) => Ok(Some(secure_read_with_snapshot(path, MAX_RECORD_BYTES)?)),
         Err(error) if error.kind() == ErrorKind::NotFound => Ok(None),
         Err(error) => Err(error.into()),
     }
