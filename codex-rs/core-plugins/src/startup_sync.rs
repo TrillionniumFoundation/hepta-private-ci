@@ -1076,7 +1076,10 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         // Never materialize a privileged or symlink-like archive entry.
         // ZipArchive::extract() is intentionally not used, but archived Unix
         // mode bits still require independent fail-closed checks.
-        let safe_mode = entry.unix_mode().map(safe_curated_zip_file_mode).transpose()?;
+        let safe_mode = entry
+            .unix_mode()
+            .map(|mode| safe_curated_zip_entry_mode(mode, entry.is_dir()))
+            .transpose()?;
         let output_path = destination.join(&output_relative);
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
@@ -1116,12 +1119,14 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
 
 // Enforce a regular-file-only archive policy independently of the ZIP crate.
 // A plugin zipball never needs SUID/SGID/sticky bits or symlink/device entries.
-fn safe_curated_zip_file_mode(mode: u32) -> Result<u32, String> {
+fn safe_curated_zip_entry_mode(mode: u32, is_dir: bool) -> Result<u32, String> {
     const FILE_TYPE_MASK: u32 = 0o170000;
     const REGULAR_FILE: u32 = 0o100000;
+    const DIRECTORY: u32 = 0o040000;
     const PRIVILEGED_BITS: u32 = 0o7000;
     let kind = mode & FILE_TYPE_MASK;
-    if mode & PRIVILEGED_BITS != 0 || (kind != 0 && kind != REGULAR_FILE) {
+    let expected_kind = if is_dir { DIRECTORY } else { REGULAR_FILE };
+    if mode & PRIVILEGED_BITS != 0 || (kind != 0 && kind != expected_kind) {
         return Err("curated plugins zip entry contains privileged or non-file Unix mode".into());
     }
     Ok(mode & 0o777)
