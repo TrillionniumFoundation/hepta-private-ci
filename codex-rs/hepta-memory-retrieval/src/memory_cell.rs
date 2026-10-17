@@ -109,7 +109,7 @@ pub fn run_memory_cell_tick(
     if input.objective_digest.digest() != cue.objective_digest {
         return Err(MemoryCellRuntimeErrorV1::Binding("objective_digest"));
     }
-    if input.snapshot_digest.digest() != engram_snapshot.snapshot_digest {
+    if input.snapshot_digest.digest() != cue.snapshot_key.vector_digest {
         return Err(MemoryCellRuntimeErrorV1::Binding("snapshot_digest"));
     }
     if engram_snapshot.generation_vector_digest != cue.snapshot_key.vector_digest {
@@ -130,7 +130,9 @@ pub fn run_memory_cell_tick(
     } else {
         MemoryCellStatusV1::Abstained
     };
-    let recall_packet_digest = contract_digest(recall.packet.packet_digest)?;
+    let recall_packet_digest = selected
+        .then(|| contract_digest(recall.packet.packet_digest))
+        .transpose()?;
     let candidate_digest = contract_digest(recall.receipt_digest)?;
     let successor_checkpoint_digest = selected
         .then(|| shadow_checkpoint_digest(input, &recall))
@@ -164,7 +166,7 @@ pub fn run_memory_cell_tick(
         status,
         predecessor_checkpoint_digest: input.predecessor_checkpoint_digest.clone(),
         successor_checkpoint_digest,
-        recall_packet_digest: Some(recall_packet_digest),
+        recall_packet_digest,
         candidate_digest: Some(candidate_digest),
         coverage_ppm,
         confidence_ppm,
