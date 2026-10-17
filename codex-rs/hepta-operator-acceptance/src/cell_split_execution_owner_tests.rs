@@ -1277,7 +1277,10 @@ fn final_negative_rpc_cannot_return_healthy_incomplete_after_local_frame_mutatio
         for (filename, expected) in [
             ("cell-split-frozen-plan.json", "frozen plan drift"),
             ("cell-split-owner-trust-pins.json", "owner trust pins drift"),
-            ("cell-split-00-prepared.json", "unexpected successor frame; reopen required"),
+            (
+                "cell-split-00-prepared.json",
+                "unexpected successor frame; reopen required",
+            ),
         ] {
             let root = private_tempdir();
             let state = Rc::new(RefCell::new(Observed::default()));
@@ -2257,7 +2260,10 @@ fn post_effect_committed_frame_collision_is_ambiguous_and_never_reexecuted() {
         fs::read(&conflicting_frame).expect("injected collision evidence"),
         b"{}".to_vec()
     );
-    assert!(owner.advance().is_err(), "collision cannot trigger re-execute");
+    assert!(
+        owner.advance().is_err(),
+        "collision cannot trigger re-execute"
+    );
     assert_eq!(state.borrow().executions, 1);
 }
 
