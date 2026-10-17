@@ -82,6 +82,11 @@ def _sha(value: Any) -> str:
     return hashlib.sha256(_canonical(value)).hexdigest()
 
 
+def canonical_candidate_set_digest(candidate_ids: tuple[str, ...] | list[str]) -> str:
+    """Digest the complete sorted action support, including cardinality."""
+    return _sha({"candidate_ids": sorted(candidate_ids)})
+
+
 @dataclass(frozen=True)
 class ContextReceiptV1:
     """X: model-visible context and independent source identity."""
@@ -152,7 +157,12 @@ class PolicyDecisionReceiptV1:
         _require(self.candidate_ids and len(set(self.candidate_ids)) == len(self.candidate_ids), "candidate_ids must be non-empty and unique")
         for candidate_id in self.candidate_ids:
             _identifier("candidate_id", candidate_id)
+        _require(
+            self.candidate_set_digest == canonical_candidate_set_digest(self.candidate_ids),
+            "candidate_set_digest does not bind the complete candidate support",
+        )
         _require(self.selected_candidate_id in self.candidate_ids, "selected candidate is outside the logged candidate set")
+        _require(self.target_policy_id in self.candidate_ids, "target policy is outside the logged candidate set")
         _probability("logging_propensity", self.logging_propensity, allow_zero=False)
         _probability("target_propensity", self.target_propensity)
         _require(type(self.model_input_gold_visible) is bool, "model_input_gold_visible must be boolean")
@@ -264,7 +274,10 @@ class OPEResourceReceiptV1:
     def __post_init__(self) -> None:
         _identifier("episode_id", self.episode_id)
         _digest("budget_digest", self.budget_digest)
-        _require(self.evidence_class in {REAL_SHADOW, SYNTHETIC_SMOKE, INCOMPLETE}, "unknown resource evidence class")
+        # An incomplete resource cannot be projected into OPE.  Preserve such
+        # records in the upstream ledger, but reject them at this adapter
+        # boundary instead of silently mapping them to synthetic smoke.
+        _require(self.evidence_class in {REAL_SHADOW, SYNTHETIC_SMOKE}, "OPE resource evidence must be REAL_SHADOW or SYNTHETIC_SMOKE")
         for name in ("forward_calls", "input_tokens", "resident_params", "active_params"):
             _require(type(getattr(self, name)) is int and getattr(self, name) >= 0, f"{name} must be a non-negative integer")
         _require(self.active_params <= self.resident_params, "active_params cannot exceed resident_params")
@@ -299,7 +312,7 @@ class XYZEpisodeV1:
         _require(self.outcome.episode_id == self.episode_id, "Y episode mismatch")
         _require(self.resources.episode_id == self.episode_id, "Z episode mismatch")
         _require(self.decision.budget_digest == self.resources.budget_digest, "P/Z budget mismatch")
-        _require(self.evidence_class in {REAL_SHADOW, SYNTHETIC_SMOKE, INCOMPLETE}, "unknown episode evidence class")
+        _require(self.evidence_class in {REAL_SHADOW, SYNTHETIC_SMOKE}, "OPE episode evidence must be REAL_SHADOW or SYNTHETIC_SMOKE")
         _require(self.resources.evidence_class == self.evidence_class, "episode/resource evidence mismatch")
         _require(self.context.source_split in {"future", "ood", "train"}, "invalid X source split")
         _require(self.decision.policy_principal_id != self.outcome.observer_principal_id, "policy and outcome principals must be independent")
@@ -522,6 +535,7 @@ __all__ = [
     "SCHEMA_Z",
     "SYNTHETIC_SMOKE",
     "XYZEpisodeV1",
+    "canonical_candidate_set_digest",
     "estimate_ope",
     "validate_xyz_episode",
 ]
