@@ -1,0 +1,156 @@
+name: GitHub Actions fleet audit and real-test fanout
+
+on:
+  pull_request:
+    paths:
+      - scripts/github_actions_fleet_500.py
+      - scripts/github_actions_runner_audit.py
+      - scripts/test_github_actions_fleet_500.py
+      - .github/workflows/github-actions-fleet-500.yml
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Audit live queue or plan/execute actual unittest methods
+        type: choice
+        required: true
+        default: audit
+        options: [audit, fanout]
+      cohort:
+        description: First or second non-overlapping set
+        type: choice
+        required: true
+        default: A
+        options: [A, B]
+      per_cohort:
+        description: Unique real test methods per cohort, 1 to 250
+        type: number
+        required: true
+        default: 250
+      source_sha:
+        description: Exact 40-hex commit SHA; REQUIRED when execute=true
+        type: string
+        required: false
+      execute:
+        description: False plans only; True executes pinned real tests
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}
+  cancel-in-progress: false
+
+jobs:
+  selftest:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Verify fleet planning and telemetry regressions
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500
+
+  capacity-audit:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'audit'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Count observed workflow runs and actual running jobs separately
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 scripts/github_actions_runner_audit.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --active-runs 60 \
+            --output "$RUNNER_TEMP/github-actions-capacity.json"
+      - name: Retain read-only capacity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-capacity-${{ github.run_id }}
+          path: ${{ runner.temp }}/github-actions-capacity.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  plan:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    outputs:
+      matrix: ${{ steps.shards.outputs.matrix }}
+      ready: ${{ steps.shards.outputs.ready }}
+      count: ${{ steps.shards.outputs.count }}
+      manifest_sha256: ${{ steps.shards.outputs.manifest_sha256 }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+          persist-credentials: false
+      - name: Build non-overlapping manifest from actual unittest methods
+        id: shards
+        env:
+          COHORT: ${{ inputs.cohort }}
+          PER_COHORT: ${{ inputs.per_cohort }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+          EXECUTE: ${{ inputs.execute }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--root . --cohort "$COHORT" --per-cohort "$PER_COHORT"
+                --github-output "$GITHUB_OUTPUT" --receipt "$RUNNER_TEMP/fleet-shards.json")
+          if [[ -n "$PINNED_SHA" ]]; then
+            args+=(--expected-sha "$PINNED_SHA")
+          fi
+          if [[ "$EXECUTE" == "true" ]]; then
+            args+=(--execute)
+          fi
+          python3 scripts/github_actions_fleet_500.py "${args[@]}"
+          python3 -c 'import json,sys; x=json.load(open(sys.argv[1])); print(json.dumps({k:v for k,v in x.items() if k != "matrix"},indent=2))' "$RUNNER_TEMP/fleet-shards.json"
+      - name: Retain source-bound plan even in preview
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-fleet-plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/fleet-shards.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  real-test:
+    needs: plan
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute && needs.plan.outputs.ready == 'true'
+    name: ${{ matrix.case }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 250
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Assert exact source identity
+        env:
+          PINNED_SHA: ${{ inputs.source_sha }}
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$PINNED_SHA"
+      - name: Execute one real unittest method
+        env:
+          TEST_CASE: ${{ matrix.case }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH="$GITHUB_WORKSPACE/scripts" python3 -m unittest -v "$TEST_CASE"
+
