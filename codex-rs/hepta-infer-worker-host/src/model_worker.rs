@@ -11,6 +11,7 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_infer_core::SharedFeatureBufferV1;
 use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -509,6 +510,16 @@ pub struct NeuronFeatureRequest {
     pub expected_output_width: usize,
 }
 
+/// Backend-only view of one original signed V1 request and its independently
+/// verified immutable Q24 buffer. The request is metadata-only; the slice is
+/// borrowed from the original worker's Arc, not re-materialized for a Cell.
+/// This carries no grant, issuer, lifetime extension or execution authority.
+#[derive(Clone, Copy, Debug)]
+pub struct BorrowedNeuronFeatureRequestV1<'a> {
+    pub request: &'a NeuronFeatureRequest,
+    pub feature_vector_q24: &'a [i64],
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DriverNeuronFeatureObservation {
     pub terminal_observed: bool,
@@ -581,6 +592,21 @@ pub trait NeuronFeatureDriver: ModelDriver {
     ) -> Result<Vec<DriverNeuronFeatureBatchObservationV1>, Error> {
         Err(Error::BatchUnsupported)
     }
+
+    /// Opt-in for a genuinely single-call batch implementation that consumes
+    /// immutable borrowed features. No legacy loop fallback is permitted.
+    /// An implementation must report the identical ordered V1 correlations.
+    fn supports_neuron_feature_borrowed_batch(&self, _handle: &DriverModelHandle) -> bool {
+        false
+    }
+
+    fn run_neuron_features_borrowed_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _requests: &[BorrowedNeuronFeatureRequestV1<'_>],
+    ) -> Result<Vec<DriverNeuronFeatureBatchObservationV1>, Error> {
+        Err(Error::BatchUnsupported)
+    }
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
@@ -590,7 +616,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub(crate) fn can_run_neuron_feature_batch(&self, model_id: &str) -> bool {
         self.models
             .get(model_id)
-            .is_some_and(|loaded| self.driver.supports_neuron_feature_batch(&loaded.handle))
+            .is_some_and(|loaded| {
+                self.driver.supports_neuron_feature_borrowed_batch(&loaded.handle)
+                    || self.driver.supports_neuron_feature_batch(&loaded.handle)
+            })
     }
 
     pub(crate) fn run_neuron_features(
@@ -715,7 +744,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         &mut self,
         now_ms: u64,
         model_id: &str,
-        requests: Vec<NeuronFeatureRequest>,
+        requests: Vec<(NeuronFeatureRequest, SharedFeatureBufferV1)>,
     ) -> Result<Vec<NeuronFeatureReceiptV1>, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
@@ -737,9 +766,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let manifest = loaded.manifest.clone();
         let handle = loaded.handle.clone();
         let mut distinct = BTreeSet::new();
-        for request in &requests {
+        for (request, shared) in &requests {
+            // An original V1 metadata envelope may not smuggle a second owned
+            // feature vector alongside the signed immutable Arc.
+            if !request.feature_vector_q24.is_empty() {
+                return Err(Error::FeatureContract);
+            }
             validate_request(now_ms, &request.authorization)?;
-            validate_neuron_feature_request(request)?;
+            validate_neuron_feature_request_with_slice(request, shared.as_slice())?;
             let auth = &request.authorization;
             if auth.cancelled || !distinct.insert(auth.request_id.clone()) {
                 return Err(Error::FeatureContract);
@@ -758,7 +792,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             {
                 return Err(Error::TokenLimit);
             }
-            let digest = canonical_neuron_feature_payload_digest(request);
+            let digest =
+                canonical_neuron_feature_payload_digest_with_slice(request, shared.as_slice());
             if auth.payload_digest != digest || auth.lease_payload_digest != digest {
                 return Err(Error::PayloadMismatch);
             }
@@ -768,22 +803,60 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .active_requests
             .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?;
-        for request in &requests {
+        for (request, _) in &requests {
             self.active_requests.insert(
                 request.authorization.request_id.clone(),
                 model_id.to_owned(),
             );
         }
-        // One physical driver call, no per-request fallback and no retry after
-        // unknown/partial backend effects. All active markers are retired.
-        let results = self.driver.run_neuron_features_batch(&handle, &requests);
-        for request in &requests {
+        // A backend must explicitly opt into a true borrowed batch. The
+        // legacy V1 driver receives owned requests for compatibility; neither
+        // path may disguise sequential calls as a native batch.
+        let borrowed_backend = self.driver.supports_neuron_feature_borrowed_batch(&handle);
+        let mut legacy_requests = Vec::new();
+        let results = if borrowed_backend {
+            let views = requests
+                .iter()
+                .map(|(request, shared)| BorrowedNeuronFeatureRequestV1 {
+                    request,
+                    feature_vector_q24: shared.as_slice(),
+                })
+                .collect::<Vec<_>>();
+            self.driver.run_neuron_features_borrowed_batch(&handle, &views)
+        } else {
+            legacy_requests = requests
+                .iter()
+                .map(|(request, shared)| {
+                    let mut owned = request.clone();
+                    owned.feature_vector_q24 = shared.as_slice().to_vec();
+                    owned
+                })
+                .collect();
+            self.driver.run_neuron_features_batch(&handle, &legacy_requests)
+        };
+        // An unknown backend outcome must never be replayed. Retire all active
+        // markers before checking the result or projecting any typed receipt.
+        for (request, _) in &requests {
             self.active_requests
                 .remove(&request.authorization.request_id);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
         let results = results?;
+        // V1 receipts still contain the original complete Q24 Vec. Borrowed
+        // backends pay this one compatibility materialization only AFTER the
+        // physical model call, not once per Cell before backend dispatch.
+        let requests = if borrowed_backend {
+            requests
+                .into_iter()
+                .map(|(mut request, shared)| {
+                    request.feature_vector_q24 = shared.as_slice().to_vec();
+                    request
+                })
+                .collect::<Vec<_>>()
+        } else {
+            legacy_requests
+        };
         if results.len() != requests.len() {
             return Err(Error::FeatureOutputMismatch);
         }
@@ -920,16 +993,22 @@ pub(crate) fn canonical_neuron_feature_payload_digest_with_slice(
 }
 
 fn validate_neuron_feature_request(value: &NeuronFeatureRequest) -> Result<(), Error> {
+    validate_neuron_feature_request_with_slice(value, &value.feature_vector_q24)
+}
+
+fn validate_neuron_feature_request_with_slice(
+    value: &NeuronFeatureRequest,
+    features: &[i64],
+) -> Result<(), Error> {
     validate_digest(&value.encoder_digest, "encoder")?;
     validate_digest(&value.head_digest, "head")?;
     validate_digest(&value.weights_digest, "weights")?;
     validate_digest(&value.input_digest, "neuron input")?;
-    if value.feature_vector_q24.is_empty()
-        || value.feature_vector_q24.len() > MAX_NEURON_FEATURES
+    if features.is_empty()
+        || features.len() > MAX_NEURON_FEATURES
         || value.expected_output_width == 0
         || value.expected_output_width > MAX_NEURON_FEATURES
-        || value
-            .feature_vector_q24
+        || features
             .iter()
             .any(|item| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(item))
     {
