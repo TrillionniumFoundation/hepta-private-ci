@@ -3290,11 +3290,10 @@ impl NeuronFeatureDriver for ScalarOvergrantOnceDriver {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         let mut result = Driver.run_neuron_features(handle, request)?;
-        if self
+        let previous_calls = self
             .calls
-            .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
-            == 0
-        {
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if previous_calls == 0 {
             // 1024 resident + 3073 transient breaches the original 4096
             // worker grant after the backend has physically returned.
             result.transient_allocation_bytes = 3073;

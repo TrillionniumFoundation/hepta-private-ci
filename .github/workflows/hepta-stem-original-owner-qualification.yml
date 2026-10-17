@@ -80,7 +80,7 @@ jobs:
           # immutable. Both reviewed Worker safety edits are exact-pinned.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "3be236cfb507ad26c256f9e20c4cbad5293e6e9e"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "9028ee53c4fbdf74d14f8a43c9dfff69c473bdb4"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "72d7ce1f81d3bd5d38e9119a26e790cdc2dcdcf8"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
