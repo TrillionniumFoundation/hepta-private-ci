@@ -1,0 +1,94 @@
+{
+  "actions": {
+    "bellman": {
+      "evidence_hit10": 27,
+      "evidence_hit5": 26,
+      "observed_net_preference_units": 209300,
+      "paid_question_count": 3,
+      "stopped": 54,
+      "submitted": 42
+    },
+    "bm25": {
+      "evidence_hit10": 56,
+      "evidence_hit5": 48,
+      "observed_net_preference_units": 336000,
+      "paid_question_count": 0,
+      "stopped": 0,
+      "submitted": 96
+    },
+    "fixed": {
+      "evidence_hit10": 60,
+      "evidence_hit5": 48,
+      "observed_net_preference_units": 307200,
+      "paid_question_count": 32,
+      "stopped": 0,
+      "submitted": 96
+    },
+    "ndu": {
+      "evidence_hit10": 27,
+      "evidence_hit5": 26,
+      "observed_net_preference_units": 209300,
+      "paid_question_count": 3,
+      "stopped": 54,
+      "submitted": 42
+    }
+  },
+  "cell_split_authorized": false,
+  "common_full_document_bm25_pair_checks": 58728,
+  "disposition": "HOLD_NO_GO",
+  "future_task_quality_verified": false,
+  "held_conversation_roots": 4,
+  "historical_held_questions": 96,
+  "model_free_independent_review": true,
+  "natural_answer_quality_verified": false,
+  "ndu_specific_task_gain_verified": false,
+  "new_publisher_family_verified": false,
+  "paid_original_model_selected_batches": 89,
+  "paid_original_model_selected_sequences": 1342,
+  "paid_rerank_question_operations": 35,
+  "paired_with_bm25": {
+    "fixed": {
+      "harms": 2,
+      "rescues": 2,
+      "ties": 92
+    },
+    "ndu": {
+      "harms": 23,
+      "rescues": 1,
+      "ties": 72
+    }
+  },
+  "production_authorized": false,
+  "schema": "hepta.hdsi.g7.independent-original-human-action-review.v1",
+  "source_publisher_sha_verified": true,
+  "source_root_results": {
+    "conv-47": {
+      "bellman": 6,
+      "bm25": 10,
+      "fixed": 11,
+      "ndu": 6
+    },
+    "conv-48": {
+      "bellman": 6,
+      "bm25": 10,
+      "fixed": 10,
+      "ndu": 6
+    },
+    "conv-49": {
+      "bellman": 8,
+      "bm25": 17,
+      "fixed": 17,
+      "ndu": 8
+    },
+    "conv-50": {
+      "bellman": 6,
+      "bm25": 11,
+      "fixed": 10,
+      "ndu": 6
+    }
+  },
+  "target_host_energy_joules": null,
+  "train_encoder_sequences": 1680,
+  "train_roots": 6,
+  "verified_dollar_cost": null
+}
