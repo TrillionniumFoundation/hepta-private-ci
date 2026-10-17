@@ -50,6 +50,8 @@ struct DenyingWitness {
     signed_history: Option<CellSplitCnsRuntimeCommitV1>,
     durable_sequence: u64,
     advance_durable_sequence_after_read: bool,
+    original_commit_reads: usize,
+    live_route_reads: usize,
 }
 
 impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
@@ -72,6 +74,7 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
         runtime: &RuntimeTopologySnapshotV1,
         nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error> {
+        self.live_route_reads += 1;
         let observed_nonce = if self.stale_nonce {
             "00".repeat(32)
         } else {
@@ -123,6 +126,7 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
         &mut self,
         _key: &str,
     ) -> Result<Option<CellSplitCnsRuntimeCommitV1>, Self::Error> {
+        self.original_commit_reads += 1;
         Ok(self.signed_history.clone())
     }
 
@@ -227,6 +231,8 @@ fn fixture(
             signed_history: None,
             durable_sequence: 1,
             advance_durable_sequence_after_read: false,
+            original_commit_reads: 0,
+            live_route_reads: 0,
         },
     )
     .expect("CNS runtime bridge");
@@ -377,6 +383,14 @@ fn orphan_control_cns_read_only_requires_real_original_begin() {
             .contains("original Control orphan Begin unavailable")
     );
     assert!(port.witness.signed_history.is_none());
+    assert_eq!(
+        port.witness.original_commit_reads, 0,
+        "missing original Control B must deny before remote CNS commit RPC",
+    );
+    assert_eq!(
+        port.witness.live_route_reads, 0,
+        "missing original B cannot trigger even a signed serving route RPC",
+    );
     assert_eq!(std::fs::read(&wal).unwrap(), original_wal);
     assert_eq!(runtime.topology_snapshot().unwrap(), before);
 }
@@ -400,6 +414,14 @@ fn orphan_control_cns_read_only_rejects_unfrozen_successor_before_any_rpc() {
         "orphan Control lineage is not bound to frozen split"
     );
     assert!(port.witness.signed_history.is_none());
+    assert_eq!(
+        port.witness.original_commit_reads, 0,
+        "wrong NDU child must deny before querying durable CNS owner",
+    );
+    assert_eq!(
+        port.witness.live_route_reads, 0,
+        "wrong NDU child must deny before external signed route reads",
+    );
     assert_eq!(runtime.topology_snapshot().unwrap(), before);
 }
 
