@@ -170,6 +170,8 @@ def build_request(module: ModuleType, corpus: dict[str, Any], task: dict[str, An
         raise ReaderFixtureError("Reader evaluator returned malformed model payload")
     if state.get("repository_source") != source_path:
         raise ReaderFixtureError("model request source identity disagrees with evaluator evidence")
+    if state.get("source_excerpt_untrusted") != evidence:
+        raise ReaderFixtureError("model request evidence disagrees with evaluator evidence")
     return ReaderRequestV1(
         task_id=task["id"],
         arm=arm,
