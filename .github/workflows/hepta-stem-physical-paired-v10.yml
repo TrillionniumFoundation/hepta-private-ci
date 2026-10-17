@@ -42,7 +42,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --disable-pip-version-check packaging==25.0
+          python -m pip install --disable-pip-version-check packaging==25.0 numpy==2.2.6
       - name: Strict pinned-source local physics and independent cost arithmetic
         shell: bash
         run: |
