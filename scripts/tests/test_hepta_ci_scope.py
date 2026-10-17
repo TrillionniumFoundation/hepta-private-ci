@@ -345,6 +345,21 @@ class ScopeTests(unittest.TestCase):
             workflow.index("      - name: Early locked CellSplit Control/CNS Rustfmt preflight"),
             workflow.index("      - name: Early CellSplit canary and evaluator compile regression"),
         )
+        product = "control-wal-forensic-product-build.json"
+        self.assertEqual(workflow.count(product), 1)
+        self.assertIn(
+            "--minimum-tests 0 -- cargo check --locked --manifest-path "
+            "codex-rs/Cargo.toml -p codex-hepta-control-plane --lib",
+            workflow,
+        )
+        self.assertLess(
+            workflow.index("      - name: Early locked CellSplit Control/CNS Rustfmt preflight"),
+            workflow.index(product),
+        )
+        self.assertLess(
+            workflow.index(product),
+            workflow.index("      - name: Early CellSplit canary and evaluator compile regression"),
+        )
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [

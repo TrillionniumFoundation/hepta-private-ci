@@ -219,6 +219,14 @@ jobs:
           # Cheap exact-source Rustfmt failure before native inference and
           # long Worker/Evidence suites. Later full gates remain mandatory.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -p codex-hepta-operator-acceptance -- --check
+      - name: Early original Control WAL recovery observer non-test compile
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # The orphan-B readback is a public product API: compile without
+          # cfg(test) before trusting its separate Unix test fixtures.
+          # This step cannot sign an effect, issue a Final-use grant or Commit.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-forensic-product-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib
       - name: Early CellSplit canary and evaluator compile regression
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
