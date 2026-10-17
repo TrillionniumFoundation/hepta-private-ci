@@ -60,6 +60,9 @@ def make_candidate(program: ActionIRV1, *, backend="wasm_aot", target="cpu"):
         program,
         candidate_id="candidate.reflex.4",
         capability_manifest_digest=D,
+        runtime_tuple_digest=G,
+        policy_digest=E,
+        snapshot_id="snapshot-4",
         authorization_version=make_auth().digest,
         backend=backend,
         target=target,
@@ -199,6 +202,27 @@ class ShadowQualificationTests(unittest.TestCase):
         )
         result = qualify(item, program, wrong_binding)
         self.assertIn("STEM_MISMATCH", result.decision.reason_codes)
+
+        stale_binding = make_context(item)
+        stale_binding = type(stale_binding)(
+            envelope=stale_binding.envelope,
+            binding=type(stale_binding.binding)(
+                **{
+                    **stale_binding.binding.as_dict(),
+                    "runtime_tuple_digest": H,
+                    "snapshot_id": "snapshot-5",
+                }
+            ),
+            budget=stale_binding.budget,
+            capability_scope_digest=stale_binding.capability_scope_digest,
+            policy_digest=stale_binding.policy_digest,
+            target_handle_digest=stale_binding.target_handle_digest,
+            window_tree_digest=stale_binding.window_tree_digest,
+            mode=stale_binding.mode,
+        )
+        stale_result = qualify(item, program, stale_binding)
+        self.assertIn("RUNTIME_TUPLE_MISMATCH", stale_result.decision.reason_codes)
+        self.assertIn("SNAPSHOT_MISMATCH", stale_result.decision.reason_codes)
 
     def test_capability_and_policy_scope_mismatch(self):
         program = make_ir(op())
