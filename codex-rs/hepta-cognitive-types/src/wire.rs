@@ -16,6 +16,9 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use crate::hnmf::CrossModalBindingV1;
+use crate::memory_cell::MemoryCellManifestV1;
+use crate::memory_cell::MemoryCellTickInputV1;
+use crate::memory_cell::MemoryCellTickReceiptV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::MemoryEventV1;
 use crate::hnmf::ModalitySpanRefV1;
@@ -138,6 +141,27 @@ impl_contract!(
     "hepta.hnmf.forget-propagation-receipt.v1",
     65_536,
     ForgetPropagationReceiptV1::validate
+);
+impl_contract!(
+    MemoryCellManifestV1,
+    "MemoryCellManifestV1",
+    "hepta.memory-cell.manifest.v1",
+    65_536,
+    MemoryCellManifestV1::validate
+);
+impl_contract!(
+    MemoryCellTickInputV1,
+    "MemoryCellTickInputV1",
+    "hepta.memory-cell.tick-input.v1",
+    65_536,
+    MemoryCellTickInputV1::validate
+);
+impl_contract!(
+    MemoryCellTickReceiptV1,
+    "MemoryCellTickReceiptV1",
+    "hepta.memory-cell.tick-receipt.v1",
+    65_536,
+    MemoryCellTickReceiptV1::validate
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
