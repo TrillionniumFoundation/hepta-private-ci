@@ -112,6 +112,10 @@ class ModalityRegistryTests(unittest.TestCase):
         self.assertEqual(manifest["binding"]["authority"], "DENY_ALL")
         self.assertEqual(manifest["binding"]["stem_digest"], FakeStem.stem_digest)
 
+    def test_incomplete_stem_is_rejected_explicitly(self) -> None:
+        with self.assertRaises(RegistryError):
+            bind_modality_registries(object(), valid_towers(), valid_projectors())
+
     def test_generation_mismatch_rejected(self) -> None:
         with self.assertRaises(RegistryError):
             bind_modality_registries(FakeStem(), replace(valid_towers(), generation=1), valid_projectors())
