@@ -684,18 +684,17 @@ mod tests {
         );
 
         let receipt = service.publish(request.clone()).fixture("publish");
-        let native = service
-            .observe_cell_split_artifact_cas_v1(
+        assert!(matches!(
+            service.observe_cell_split_artifact_cas_v1(
                 &id("operation"),
                 &id("candidate"),
                 digest("payload"),
                 20,
-            )
-            .fixture("current production owner CAS readback");
-        assert_eq!(native.operation_id, id("operation"));
-        assert_eq!(native.artifact_id, id("candidate"));
-        assert_eq!(native.readback_digest, digest("payload"));
-        assert!(!native.native_ack_digest.is_zero());
+            ),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::CurrentHeadRollback
+            ))
+        ));
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
@@ -733,7 +732,21 @@ mod tests {
                 21,
             )
             .fixture("native CAS receipt after owner restart");
-        assert_eq!(native, reopened_native);
+        assert_eq!(reopened_native.operation_id, id("operation"));
+        assert_eq!(reopened_native.artifact_id, id("candidate"));
+        assert_eq!(reopened_native.readback_digest, digest("payload"));
+        assert!(!reopened_native.native_ack_digest.is_zero());
+        assert_eq!(
+            reopened
+                .observe_cell_split_artifact_cas_v1(
+                    &id("operation"),
+                    &id("candidate"),
+                    digest("payload"),
+                    21,
+                )
+                .fixture("idempotent anchored native readback"),
+            reopened_native,
+        );
         assert_eq!(
             reopened
                 .current_registry_view(21)
