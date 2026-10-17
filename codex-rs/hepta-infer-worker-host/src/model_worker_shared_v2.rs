@@ -218,9 +218,10 @@ fn validate_item_without_content_hash(
     Ok(())
 }
 
-/// The shared-feature identity does not yet carry an independently attested
-/// Scope ID. Until the producer/owner binds that Scope explicitly, a physical
-/// batch must never mix different principal/purpose partitions. Each member
+/// Scope, principal, purpose and source frontier are caller-provided here;
+/// their provenance must be independently attested by the owning source and
+/// final-use authority. Until then, batches remain research-only and may not
+/// coalesce distinct isolation partitions. Each member
 /// also undergoes its own signed-admission-independent V2 request validation.
 /// Verify real immutable feature bytes once per physically shared Arc buffer
 /// within one already isolated batch. Distinct Arc allocations always get
@@ -725,7 +726,8 @@ mod tests {
         other_scope.scope_id = id("scope.foreign");
         changed_scope.identity.scope_id = other_scope.scope_id.clone();
         other_scope.snapshot = Arc::new(changed_scope);
-        let scope_digest = canonical_shared_neuron_payload_digest_v2(&other_scope).expect("scope digest");
+        let scope_digest =
+            canonical_shared_neuron_payload_digest_v2(&other_scope).expect("scope digest");
         other_scope.authorization.payload_digest = scope_digest.clone();
         other_scope.authorization.lease_payload_digest = scope_digest;
         assert!(validate_item(&other_scope, 10, 3, 2, &manifest).is_ok());
