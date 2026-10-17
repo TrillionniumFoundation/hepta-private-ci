@@ -80,6 +80,10 @@ def validate_material(material, *, mode):
                 n_cases += 1
             if mode == 'train' and 0 in labels and 1 in labels:
                 mixed_questions += 1
-    if (mode == 'train' and (positives == 0 or mixed_questions == 0)) or n_cases > 1200 or n_q > 288:
-        raise ValueError('insufficient/oversized original source support')
+    if n_cases > 1200 or n_q > 288:
+        raise ValueError(f'original source tensor budget exceeded: questions={n_q}, candidates={n_cases}')
+    if mode == 'train' and positives == 0:
+        raise ValueError('TRAIN source contains no positive native answer')
+    if mode == 'train' and mixed_questions == 0:
+        raise ValueError('TRAIN source contains no within-question mixed-label contrast')
     return group_ids, n_q, n_cases
