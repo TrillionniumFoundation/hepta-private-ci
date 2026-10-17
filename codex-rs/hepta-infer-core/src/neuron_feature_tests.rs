@@ -106,7 +106,6 @@ fn non_success_status_cannot_smuggle_numerical_output() {
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
 }
 
-
 #[test]
 fn borrowed_slice_exactly_matches_owned_v1_receipt_without_feature_vec() {
     let owned = request();
