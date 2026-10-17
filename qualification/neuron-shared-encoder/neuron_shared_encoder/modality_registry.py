@@ -152,6 +152,8 @@ class ModalityTowerRegistryV1:
         _digest("stem_digest", self.stem_digest)
         _integer("generation", self.generation, minimum=0, maximum=2**31 - 1)
         _require(self.freeze_policy == FREEZE_POLICY, "tower registry must be immutable")
+        _require(type(self.towers) is tuple, "towers must be an immutable tuple")
+        _require(all(isinstance(tower, ModalityTowerSpecV1) for tower in self.towers), "towers contain an invalid spec")
         _require(0 < len(self.towers) <= len(MODALITIES), "invalid tower count")
         modalities = tuple(tower.modality for tower in self.towers)
         _require(tuple(sorted(set(modalities))) == modalities, "tower modalities must be sorted and unique")
@@ -194,6 +196,8 @@ class ProjectorRegistryV1:
         _integer("target_width", self.target_width, minimum=1, maximum=8192)
         _integer("generation", self.generation, minimum=0, maximum=2**31 - 1)
         _require(self.freeze_policy == FREEZE_POLICY, "projector registry must be immutable")
+        _require(type(self.projectors) is tuple, "projectors must be an immutable tuple")
+        _require(all(isinstance(projector, ProjectorSpecV1) for projector in self.projectors), "projectors contain an invalid spec")
         _require(0 < len(self.projectors) <= len(MODALITIES), "invalid projector count")
         modalities = tuple(projector.modality for projector in self.projectors)
         _require(tuple(sorted(set(modalities))) == modalities, "projector modalities must be sorted and unique")
@@ -262,6 +266,9 @@ def bind_modality_registries(
     """
 
     _require(stem.stem_digest == towers.stem_digest == projectors.stem_digest, "registry/Stem digest mismatch")
+    stem_generation = getattr(stem, "current_generation", None)
+    _require(type(stem_generation) is int, "Stem must declare current_generation")
+    _require(towers.generation == projectors.generation == stem_generation, "registry generation mismatch")
     _require(stem.hidden_width == projectors.target_width, "projector width does not match Stem width")
     _require(towers.modalities == projectors.modalities, "tower/projector modality sets differ")
     registered_projectors = tuple(stem.modality_projectors)
@@ -301,6 +308,8 @@ def registry_manifest(
     }
     if binding is not None:
         _require(binding.stem_digest == towers.stem_digest, "binding Stem digest mismatch")
+        _require(binding.tower_registry_digest == towers.registry_digest, "binding tower registry digest mismatch")
+        _require(binding.projector_registry_digest == projectors.registry_digest, "binding projector registry digest mismatch")
         result["binding"] = binding.to_dict()
     return result
 
