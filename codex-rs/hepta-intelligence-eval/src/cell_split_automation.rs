@@ -36,6 +36,7 @@ use codex_hepta_types::StableId;
 
 use crate::CellRoleQualificationReplayV1;
 use crate::CellSplitCanaryReceiptV1;
+use crate::CellSplitCanarySampleV1;
 use crate::CellSplitLifecycleErrorV1;
 use crate::CellSplitLifecycleEventV1;
 use crate::CellSplitLifecycleJournalV1;
@@ -1799,9 +1800,11 @@ mod tests {
                 digest(31),
                 digest(32),
                 digest(33),
-                10,
-                self.canary_failures,
-                true,
+                CellSplitCanarySampleV1 {
+                    observed_requests: 10,
+                    failed_requests: self.canary_failures,
+                    rollback_verified: true,
+                },
             )
             .expect("canary"))
         }
@@ -1928,9 +1931,11 @@ mod tests {
             digest(151),
             digest(152),
             digest(153),
-            10,
-            0,
-            true,
+            CellSplitCanarySampleV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+                rollback_verified: true,
+            },
         )
         .expect("canary receipt");
         journal.finish_canary(&canary).expect("canary finish");
@@ -2275,9 +2280,11 @@ mod tests {
             digest(172),
             digest(173),
             digest(174),
-            10,
-            0,
-            true,
+            CellSplitCanarySampleV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+                rollback_verified: true,
+            },
         )
         .expect("canary");
         journal.finish_canary(&canary).expect("retained");
