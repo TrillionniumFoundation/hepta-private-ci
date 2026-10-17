@@ -180,6 +180,7 @@ impl FilesystemNative {
             old_generation: plan.old_generation,
             new_generation: plan.new_generation,
             authority_epoch: plan.authority_epoch,
+            handoff_plan_digest: handoff_plan_digest(plan),
             binding_digest: if self.drift { digest(b"stale-binding") } else { self.binding.digest() },
             evidence,
         })
@@ -201,6 +202,17 @@ impl CellSplitNativeOwnerV1 for FilesystemNative {
         let bytes = match fs::read(path) {
             Ok(bytes) => bytes,
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                // A native side effect without its publication receipt is
+                // indeterminate, not proof that it never happened.
+                let partial_path = match phase {
+                    WriterHandoffPhaseV1::Snapshotted => Some("cas-artifact"),
+                    WriterHandoffPhaseV1::Migrated => Some("child-state"),
+                    WriterHandoffPhaseV1::RoutePublished => Some("cns-route"),
+                    _ => None,
+                };
+                if partial_path.is_some_and(|name| self.root.join(name).exists()) {
+                    return Ok(CellSplitLookupV1::Indeterminate);
+                }
                 return Ok(CellSplitLookupV1::Absent);
             }
             Err(error) => return Err(error),
@@ -356,4 +368,23 @@ fn cns_wrong_generation_does_not_publish_route_in_ledger() {
     native.bad_route = false;
     advance(&mut journal, &mut native).expect("native route observed, recover without replay");
     assert_eq!(native.execute_count, 8);
+}
+
+#[test]
+fn incomplete_native_cas_intent_remains_indeterminate_without_retry() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..3 {
+        advance(&mut journal, &mut native).expect("before native CAS");
+    }
+    persist_create_only(&native.root.join("cas-artifact"), b"artifact")
+        .expect("simulate crash after CAS write and before native ACK");
+    let count = native.execute_count;
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::Indeterminate)
+    ));
+    assert_eq!(native.execute_count, count);
+    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::OldWriterFenced);
 }
