@@ -54,3 +54,11 @@ Still blocked: model issuer signatures, independent new time/source-family
 HELDOUT, same-machine 421M lifecycle and real target-host 4096-Cell
 p95/p99/RSS/GPU/energy/WAL/recovery, genuine learning retention and NDU
 net utility, signed FinalUse, and any physical Split or product model change.
+
+
+## Physical diagnostic trigger
+
+The push-only exact-branch lane is the authoritative place to acquire the
+pinned original material and run the four read-only loader profiles. This
+source-only document change deliberately triggers that lane; it does not
+change model code, weights, scoring, or any authority posture.
