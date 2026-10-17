@@ -15,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod cell_evidence;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -30,6 +31,10 @@ mod cell_head;
 mod sparse;
 mod witness;
 
+pub use cell_evidence::bind_cell_evidence_v1;
+pub use cell_evidence::canonical_cell_evidence_digest_v1;
+pub use cell_evidence::CellEvidenceError;
+pub use cell_evidence::CellEvidenceV1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
