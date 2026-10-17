@@ -153,6 +153,28 @@ class ScopeTests(unittest.TestCase):
             "the compiled product-feature library must be checked before external denial",
         )
 
+    def test_orphan_control_cns_signed_read_only_owner_is_native(self):
+        scope = select(["codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["effects"])
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        gate = "cns-orphan-control-readonly-join.json"
+        self.assertEqual(workflow.count(gate), 1)
+        self.assertIn(
+            "--minimum-tests 3 -- cargo test --locked --manifest-path "
+            "codex-rs/Cargo.toml -p codex-hepta-runtime "
+            "--features cell-split-cns-port --lib orphan_control_cns_read_only_",
+            workflow,
+        )
+        self.assertLess(
+            workflow.index("cns-prod-feature-compile.json"),
+            workflow.index(gate),
+        )
+
     def test_original_control_abrupt_process_exit_recovery_native_gate(self):
         # Genuine Control B and an external test marker must survive process
         # exit without being promoted by a cold-start counterfeit Control C.
