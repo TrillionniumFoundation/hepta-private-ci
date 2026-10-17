@@ -30,8 +30,12 @@ def ensure(test, reason):
 def pairs(groups, left, right):
     wins = sum(v[right] and not v[left] for v in groups.values())
     losses = sum(v[left] and not v[right] for v in groups.values())
-    return dict(wins=wins, losses=losses, ties=len(groups)-wins-losses,
-                delta=(wins-losses)/len(groups))
+    return dict(
+        wins=wins,
+        losses=losses,
+        ties=len(groups) - wins - losses,
+        delta=(wins - losses) / len(groups),
+    )
 
 
 def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
@@ -123,7 +127,9 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
             ensure(len(matched) == 48, "not a full 48-answer Reader run")
             models[name] = dict(
                 arms=cost,
-                frozen_model_file_bytes=sum(x["bytes"] for x in inv["inventory"].values()),
+                frozen_model_file_bytes=sum(
+                    x["bytes"] for x in inv["inventory"].values()
+                ),
                 matched_observed_effects=dict(
                     entity_time_vs_hybrid=pairs(by_case, "hybrid", "entity_time"),
                     organized_vs_entity_time=pairs(by_case, "entity_time", "organized"),
@@ -137,11 +143,14 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
                and a["receipt"]["query_digest"] == b["receipt"]["query_digest"]
                and a["receipt"]["bundle_digest"] == b["receipt"]["bundle_digest"]
                and a["receipt"]["token_limit"] == b["receipt"]["token_limit"]
-               and a["receipt"]["delivered_evidence"] == b["receipt"]["delivered_evidence"],
+               and a["receipt"]["delivered_evidence"]
+               == b["receipt"]["delivered_evidence"],
                "Reader capacity comparison received unmatched evidence")
     literal_still_visible = 0
     for qid, item in labels.items():
-        remaining = outputs["qwen-3b"][qid, "without_prerequisite"]["receipt"]["delivered_evidence"]
+        remaining = outputs["qwen-3b"][qid, "without_prerequisite"]["receipt"][
+            "delivered_evidence"
+        ]
         original = " ".join(source["excerpt"] for source in remaining)
         literal_still_visible += bool(re.search(
             rf"(?<![A-Za-z0-9_-]){re.escape(item['expected'])}(?![A-Za-z0-9_-])",
@@ -170,8 +179,12 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
         ),
         stage2=dict(
             qwen_hybrid_success=models["qwen-3b"]["arms"]["hybrid"]["success"],
-            qwen_entity_time_success=models["qwen-3b"]["arms"]["entity_time"]["success"],
-            organized_extra_correct_over_entity_time=rag["incremental_graph_task_success"],
+            qwen_entity_time_success=models["qwen-3b"]["arms"]["entity_time"][
+                "success"
+            ],
+            organized_extra_correct_over_entity_time=rag[
+                "incremental_graph_task_success"
+            ],
             organized_input_tokens_saved=rag["organized_input_tokens_saved"],
             independent_generalization_qualified=False,
         ),
@@ -183,7 +196,9 @@ def analyze(source_zip, smol_zip, qwen_zip, strong_zip, replay_zip):
             parametric_candidate_accepted=False,
         ),
         stage4=dict(
-            raw_evidence_bytes_retained=sum(len(v["content"].encode()) for v in docs.values()),
+            raw_evidence_bytes_retained=sum(
+                len(v["content"].encode()) for v in docs.values()
+            ),
             extraction_index_and_serving_costs_fully_paid=False,
             actual_prospective_calendar_windows=0,
             maintenance_revocation_recovery_usd=None,
