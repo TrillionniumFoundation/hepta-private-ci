@@ -1,0 +1,27 @@
+name: hepta-cell-fast-path-actionir
+
+on:
+  pull_request:
+    paths:
+      - "qualification/cell-fast-path-actionir-p0/**"
+      - ".github/workflows/hepta-cell-fast-path-actionir.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: actionir-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile contract
+        run: python -m py_compile qualification/cell-fast-path-actionir-p0/cell_fast_path_actionir.py
+      - name: Run contract tests
+        run: |
+          PYTHONPATH=qualification/cell-fast-path-actionir-p0 \
+            python -m unittest discover -s qualification/cell-fast-path-actionir-p0 -p 'test_*.py' -v
