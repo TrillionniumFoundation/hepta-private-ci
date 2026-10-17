@@ -1,4 +1,4 @@
-name: Hepta Equal-Size Stem P0 source and observer gates (DENY_ALL)
+name: Hepta Equal-Size Stem P0/P1 source and physical-byte gates (DENY_ALL)
 'on':
   pull_request:
     paths:
@@ -28,32 +28,32 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
-      - name: Exact source compilation and 50 synthetic/adversarial gates (normal)
+      - name: Compile and execute original-source, physical-byte, adversarial tests
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py
-          python -m unittest -q test_gate test_preflight
-      - name: Optimized Python cannot bypass fail-closed gates
+          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py source_bytes.py review_bytes.py test_source_bytes.py
+          python -m unittest -q test_gate test_preflight test_source_bytes
+      - name: Optimized-mode source and physical-byte guards
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -O -m unittest -q test_gate test_preflight
-      - name: Review-only production isolation
+          python -O -m unittest -q test_gate test_preflight test_source_bytes
+      - name: Reject promotion and arbitrary code execution
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
           python - <<'PY'
-          import gate
+          import gate, preflight, source_bytes
           assert gate.AUTHORITY == 'DENY_ALL'
           assert len(gate.MODELS) == 4
-          for value in gate.MODELS.values():
-              assert len(value[1]) == 40
+          assert preflight.SCHEMA.endswith('.v2')
           assert not any(hasattr(gate, s) for s in ('load_model','select_model','promote_model'))
-          print('source_only=true production_authorized=false genuine_model_score=false')
+          print('source_test_only=true genuine_pretrained_model_forward=false promotion=false')
           PY
   hub-metadata-only:
     if: github.event_name != 'pull_request'
+    needs: source-fail-closed
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -64,22 +64,76 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
-      - name: Pin only the metadata API dependency
+      - name: Exact metadata client version
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: 'huggingface_hub==0.36.0'
           python -m pip check
-      - name: Pin real Hub commit and full tensor/LFS metadata (NO weight download)
+      - name: Pin four complete original Hub identities without model download
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python preflight.py --out "$RUNNER_TEMP/metadata-only.json"
+          python preflight.py --out "$RUNNER_TEMP/four-metadata.json"
           python - <<'PY'
-          import json, os
+          import json,os
           from pathlib import Path
-          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'metadata-only.json').read_text())
-          assert r['disposition']=='HOLD_NO_GO'
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'four-metadata.json').read_text())
+          assert len(r['models'])==4 and r['disposition']=='HOLD_NO_GO'
           assert r['all_original_weights_downloaded'] is False
-          assert len(r['models'])==4
+          for x in r['models']:
+              assert x['selected_source_inventory'] and x['snapshot_weight_bytes_checked'] is False
+              assert x['production_promotion_permitted'] is False
           print('metadata_only=true four_sources=true original_weights_downloaded=false')
+          PY
+  physical-primary-source-bytes:
+    # Genuine model checkpoint bytes; NO arbitrary .bin deserialization, Python
+    # model import, inference or producer-published weight artifacts.
+    if: github.event_name != 'pull_request'
+    needs: hub-metadata-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [ettin400, laya421]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install fixed Hub/Xet file transport only
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'huggingface_hub==0.36.0'
+          python -m pip check
+      - name: Download pinned bytes and independently re-hash in a separate process
+        env:
+          STEM_MODEL: ${{ matrix.model }}
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          HF_HUB_DOWNLOAD_TIMEOUT: '120'
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python source_bytes.py --model "$STEM_MODEL" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --out "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json"
+          python review_bytes.py \
+            --receipt "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --out "$RUNNER_TEMP/hepta-reviewed-$STEM_MODEL.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          model=os.environ['STEM_MODEL']
+          p=Path(os.environ['RUNNER_TEMP']) / ('hepta-reviewed-'+model+'.json')
+          r=json.loads(p.read_text())
+          assert r['independently_rehashed_exact_physical_bytes'] is True
+          assert r['actual_model_forward_verified'] is False
+          assert r['issuer_signature_verified'] is False
+          assert r['production_promotion_permitted'] is False
+          assert r['disposition']=='HOLD_NO_GO'
+          print(f'{model}: independently verified on-disk source hashes, NOT model loading/inference')
           PY
