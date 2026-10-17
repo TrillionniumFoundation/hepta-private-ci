@@ -1,0 +1,251 @@
+name: Hepta V9 original physical Granite47 conditional execution (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-physical-selective-v9-20261017]
+    paths:
+      - 'qualification/stem-optimal-v9/**'
+      - '.github/workflows/hepta-stem-original-physical-selective-v9.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v9/**'
+      - '.github/workflows/hepta-stem-original-physical-selective-v9.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-v9-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V9: qualification/stem-optimal-v9
+  V5: qualification/stem-optimal-v5
+  V1: qualification/stem-optimal-v1
+  PYTHONPATH: qualification/stem-optimal-v9:qualification/stem-optimal-v8:qualification/stem-optimal-v5:qualification/stem-optimal-v4:qualification/stem-optimal-v3:qualification/stem-optimal-v1
+
+jobs:
+  source-only-adversarial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned CPU-only test material (no model weight downloads)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check packaging==25.0
+      - name: Real Torch hook fixture and independent bounded count negative tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile "$V9/physical_selective_v9.py" "$V9/independent_physical_review_v9.py" "$V9/test_physical_selective_v9.py" "$V9/test_independent_physical_review_v9.py"
+          python -m unittest discover -s "$V9" -p 'test_*.py' -v
+          python -O -m unittest discover -s "$V9" -p 'test_*.py' -v
+
+  original-no-gold-input-owner:
+    needs: source-only-adversarial
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-physical-selective-v9-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Open exact V3/V4 original GitHub ZIPs with token isolated from archive host
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python "$V5/download_original_zip_v5.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/stem-v9-raw" \
+            --role source_v3 --role source_v4 --role cheap_v4 --role granite47
+      - name: Verify frozen source and full original-prelabel lineage before any model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-v9-input"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as v5
+          import physical_selective_v9 as v9
+          root=Path(os.environ['RUNNER_TEMP'])
+          locked=json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())['artifacts']
+          docs={name:v5.locked_json(root/'stem-v9-raw'/f'{name}.zip',locked,name)
+                for name in ('source_v3','source_v4','cheap_v4','granite47')}
+          assert docs['source_v3']==docs['source_v4'], 'original publisher identity drift'
+          material=json.loads(Path('qualification/stem-optimal-v1/MODEL_MATERIALS.json').read_text())
+          selected,_,_=v9.preflight(docs['source_v3'],docs['cheap_v4'],docs['granite47'],material,'selective')
+          assert len(selected)==8
+          for name,alias in (('source_v3','source.json'),('cheap_v4','cheap.json'),('granite47','old.json')):
+              (root/'stem-v9-input'/alias).write_bytes(v9.canonical(docs[name])+b'\n')
+          print('Original material/recomputed route preflight passed, no test labels opened')
+          PY
+          (cd "$RUNNER_TEMP/stem-v9-input" && sha256sum source.json cheap.json old.json > evidence.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v9-verified-original-prelabel-inputs-denyall
+          path: |
+            ${{ runner.temp }}/stem-v9-input/source.json
+            ${{ runner.temp }}/stem-v9-input/cheap.json
+            ${{ runner.temp }}/stem-v9-input/old.json
+            ${{ runner.temp }}/stem-v9-input/evidence.sha256
+          retention-days: 7
+          if-no-files-found: error
+
+  original-granite47-physical-paired:
+    needs: original-no-gold-input-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v9-verified-original-prelabel-inputs-denyall
+          path: ${{ runner.temp }}/stem-v9-input
+      - name: Reopen source and install immutable original Granite47 CPU runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/stem-v9-input" && sha256sum --check evidence.sha256)
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6 packaging==25.0
+          python - <<'PY'
+          import torch,transformers,numpy,packaging
+          assert torch.__version__.split('+')[0]=='2.6.0'
+          assert transformers.__version__=='4.57.1'
+          assert numpy.__version__=='2.2.6'
+          assert packaging.__version__=='25.0'
+          PY
+      - name: Two independently paid fresh processes on same original runner, 8 then 32 heldout
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-v9-out"
+          for mode in selective full; do
+            python "$V9/physical_selective_v9.py" \
+              --source "$RUNNER_TEMP/stem-v9-input/source.json" \
+              --cheap "$RUNNER_TEMP/stem-v9-input/cheap.json" \
+              --original "$RUNNER_TEMP/stem-v9-input/old.json" \
+              --materials "$V1/MODEL_MATERIALS.json" \
+              --mode "$mode" \
+              --output "$RUNNER_TEMP/stem-v9-out/$mode.json"
+          done
+          (cd "$RUNNER_TEMP/stem-v9-out" && sha256sum selective.json full.json > paid.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v9-original-granite47-8-vs-32-paid-denyall
+          path: |
+            ${{ runner.temp }}/stem-v9-out/selective.json
+            ${{ runner.temp }}/stem-v9-out/full.json
+            ${{ runner.temp }}/stem-v9-out/paid.sha256
+          retention-days: 7
+          if-no-files-found: error
+
+  original-independent-late-label-review:
+    needs: original-granite47-physical-paired
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v9-verified-original-prelabel-inputs-denyall
+          path: ${{ runner.temp }}/stem-v9-input
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v9-original-granite47-8-vs-32-paid-denyall
+          path: ${{ runner.temp }}/stem-v9-out
+      - name: Check complete prelabel receipts then independently download genuine publisher TEST labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/stem-v9-input" && sha256sum --check evidence.sha256)
+          (cd "$RUNNER_TEMP/stem-v9-out" && sha256sum --check paid.sha256)
+          mkdir -p "$RUNNER_TEMP/stem-v9-labels"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'stem-v9-labels'
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          known={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                 'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for split in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-v9-independent-publisher'}),timeout=35) as request:
+                  if request.geturl()!=url: raise ValueError('original publisher redirect')
+                  raw=request.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=known[split]:
+                  raise ValueError('original publisher source bytes drift')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+      - name: Independently compare real 8/32 paid model receipts and score same-source historical task
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$V9/independent_physical_review_v9.py" \
+            --source "$RUNNER_TEMP/stem-v9-input/source.json" \
+            --cheap "$RUNNER_TEMP/stem-v9-input/cheap.json" \
+            --original "$RUNNER_TEMP/stem-v9-input/old.json" \
+            --materials "$V1/MODEL_MATERIALS.json" \
+            --selective "$RUNNER_TEMP/stem-v9-out/selective.json" \
+            --full "$RUNNER_TEMP/stem-v9-out/full.json" \
+            --train "$RUNNER_TEMP/stem-v9-labels/train.csv" \
+            --test "$RUNNER_TEMP/stem-v9-labels/test.csv" \
+            --output "$RUNNER_TEMP/stem-v9-independent.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          report=json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-v9-independent.json').read_text())
+          assert report['authority']=='DENY_ALL' and report['disposition']=='HOLD_NO_GO'
+          assert report['true_new_selective_heldout_sequences']==8
+          assert report['true_new_full_heldout_sequences']==32
+          assert report['actual_selective_forward_hook_calls']==5
+          assert report['actual_full_forward_hook_calls']==6
+          assert report['full_lifecycle_savings_qualified'] is False
+          assert report['production_authorized'] is False and report['stem_winner_verified'] is False
+          print('Genuine conditional pretrained forward comparison: research-only',report['physical_selective'],report['physical_full'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v9-independent-original-physical-review-denyall
+          path: ${{ runner.temp }}/stem-v9-independent.json
+          retention-days: 7
+          if-no-files-found: error
