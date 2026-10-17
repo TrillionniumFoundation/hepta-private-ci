@@ -151,3 +151,61 @@ These are source-ID diagnostics only. Model language generations: 0; learned
 source content: none; trained topology endpoints: none; independent source
 families, semantic citations, future-time transfer and full cost: unproven.
 Production acceptance and superiority remain false.
+
+## 2026-10-17 stage 2: reviewer-only memory-portfolio learning / no-growth gate
+
+`scripts/memory_cell/meta_memory_portfolio.py` is the next **retrospective**
+MetaMemory/utility-selector experiment, not a running NDU agent or FBSDE solver.
+Only the *reviewer*, after exact source-only reexecution and SHA-verified model
+journal, may read the original LoCoMo evidence references. It fits a two-class
+(temporal/general) source-visible arm selector on **nine authored dialogue
+groups**, evaluates the tenth, then rotates through all ten held-out groups.
+Historical evidence-ID complete@8 is its only reward. Labels from a held-out
+group are not used in the fit for that group; the reviewer process is **not
+physically isolated** per fold, and the ten groups are correlated authored
+development data. Training uses historical published labels, not source-only
+self-supervision. There is no prospective evaluation or new language model
+generation. Missing-source and unscorable questions remain in planned totals.
+
+The candidate actions are BM25, fixed temporal, combined fixed graph, shared
+four-parameter gate, and equal-parameter typed split; wrong-route and rewired
+lesions are not admissible action candidates. Laplace smoothing is fixed at
+Beta(1,1), with >=16 reference-supported examples per observable query class
+and a 2.5-percentage-point estimated gain margin above the temporal reference.
+At every fold, no change to the temporal graph remained the selected action:
+
+| Retrospective outcome | Observed |
+| --- | ---: |
+| Original dialogue groups | 10 |
+| Planned questions | 240 |
+| Canonical-reference questions | 238 |
+| Policy selected fixed temporal among valid references | **238 / 238** |
+| Baseline temporal complete reference Top-8 | **136 / 238** |
+| Held-out memory portfolio complete reference Top-8 | **136 / 238** |
+| Paired gained / lost | **0 / 0** |
+| New Reader/model generations | 0 |
+
+This is a **nonpositive** result: no evidence of better source retrieval by
+differentiated MemoryCells and no basis for autonomous network growth. The
+full retrospective local output SHA256 is
+`cc2ba3b8138b372f3dfcc9ba7b87009e923090d8fd12b9afa1fbb035125650a7`;
+the sanitized source-identity and negative-decision record is
+`META_MEMORY_PORTFOLIO_ORIGINAL_20261017.json`. Hosted original-source replay
+and exact-head CI must still complete before claiming hosted qualification.
+
+Reproduction, after the existing pinned `associative_graph_causal.py prepare`
+and the immutable seven-arm `associative_meta_evolution.py run`:
+
+```bash
+PYTHONPATH=scripts/memory_cell python3 -m unittest discover \
+  -s scripts/memory_cell -p 'test_meta_memory_portfolio.py' -v
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/meta_memory_portfolio.py \
+  review PREPARED SEVEN_ARM_SEALED_RUN NEW_META_PORTFOLIO_REPORT
+```
+
+**Hard no-go:** even a later positive held-out source-ID delta cannot grant
+parameter selection, real user fact authority, source deletion/unlearning,
+production routing, graph split/merge/rewire, NDU objective revision, or FinalUse
+without independent semantic Reader sufficiency, actual complete lifecycle
+cost, prospective families, source permissions and existing owner/admission
+signatures. This path contributes diagnostic policy evidence only.
