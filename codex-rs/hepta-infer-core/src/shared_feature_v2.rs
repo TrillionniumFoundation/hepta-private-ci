@@ -114,7 +114,9 @@ pub struct SharedFeatureCacheV2 {
     // Counts cached buffers AND retired buffers held by external Arc readers.
     resident_bytes: usize,
     snapshots: BTreeMap<String, Arc<ImmutableFeatureSnapshotV2>>,
-    retired: Vec<(Weak<ImmutableFeatureSnapshotV2>, usize)>,
+    // Track both the snapshot and its underlying Arc<[i64]> allocation:
+    // callers may retain either independently after cache eviction.
+    retired: Vec<(Weak<ImmutableFeatureSnapshotV2>, Weak<[i64]>, usize)>,
 }
 
 impl SharedFeatureCacheV2 {
@@ -282,9 +284,10 @@ impl SharedFeatureCacheV2 {
             // Removal from the map does not physically release an Arc held by
             // another Cell. A weak tombstone retains its quota charge without
             // keeping the actual snapshot alive.
-            if Arc::strong_count(snapshot) > 1 {
+            if Arc::strong_count(snapshot) > 1 || Arc::strong_count(&snapshot.features_q24) > 1 {
                 retired.push((
                     Arc::downgrade(snapshot),
+                    Arc::downgrade(&snapshot.features_q24),
                     snapshot.features_q24.len().saturating_mul(8),
                 ));
             }
@@ -295,13 +298,16 @@ impl SharedFeatureCacheV2 {
     }
 
     fn reclaim_retired(&mut self) {
-        self.retired.retain(|(snapshot, _)| snapshot.strong_count() > 0);
+        self.retired.retain(|(snapshot, features, _)| {
+            snapshot.strong_count() > 0 || features.strong_count() > 0
+        });
         let cached_bytes = self.snapshots.values().fold(0_usize, |total, snapshot| {
             total.saturating_add(snapshot.features_q24.len().saturating_mul(8))
         });
-        self.resident_bytes = self.retired.iter().fold(cached_bytes, |total, (_, bytes)| {
-            total.saturating_add(*bytes)
-        });
+        self.resident_bytes = self
+            .retired
+            .iter()
+            .fold(cached_bytes, |total, (_, _, bytes)| total.saturating_add(*bytes));
     }
 }
 
@@ -525,6 +531,30 @@ mod tests {
             1
         );
         assert_eq!(cache.len(), 1);
+    }
+
+    #[test]
+    fn detached_feature_arc_still_consumes_quota_after_snapshot_eviction() {
+        let key = identity("old", "purpose", 2);
+        let new_key = identity("new", "purpose", 2);
+        let mut cache = SharedFeatureCacheV2::new(1, 16).expect("cache");
+        let detached: Arc<[i64]> = Arc::from([1_i64, 2]);
+        let snapshot = cache
+            .insert(1, key, 5, Arc::clone(&detached))
+            .expect("insert");
+        drop(snapshot);
+        assert_eq!(cache.purge_expired(5), 1);
+        assert_eq!(cache.len(), 0);
+        assert_eq!(cache.resident_bytes(), 16);
+        assert_eq!(
+            cache.insert(5, new_key.clone(), 20, Arc::from([3_i64, 4])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
+        drop(detached);
+        cache
+            .insert(5, new_key, 20, Arc::from([3_i64, 4]))
+            .expect("detached buffer finally freed");
+        assert_eq!(cache.resident_bytes(), 16);
     }
 
     #[test]
