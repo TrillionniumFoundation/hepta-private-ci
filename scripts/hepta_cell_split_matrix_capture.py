@@ -37,7 +37,6 @@ MAX_HOST_RESULT_BYTES = 256 * 1024
 MAX_LOG_BYTES = 2 * 1024 * 1024
 
 
-
 def require_pinned_capture_root(directory_fd: int, output: Path) -> None:
     """Fail closed on a renamed or substituted original capture directory."""
     try:

@@ -527,7 +527,6 @@ if scope == 64 and mode == "logical_split":
                 execute_matrix(packet, ROOT, output, 30)
             self.assertFalse((output / "measured-matrix.json").exists())
 
-
     @unittest.skipUnless(
         hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NOFOLLOW"),
         "pinned Unix directory handles required",
@@ -578,8 +577,6 @@ result.write_text(json.dumps(row), encoding="utf-8")
                 self.assertFalse(
                     (output / "diagnostic-comparison.json").exists()
                 )
-
-
 
 
 if __name__ == "__main__":
