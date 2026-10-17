@@ -457,6 +457,14 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     let authority = ExternalFinalUse(Arc::new(AtomicBool::new(true)));
     let socket = fixture.root.path().join("cas-owner.sock");
     let listener = UnixListener::bind(&socket).expect("CAS service socket");
+    // The coordinator may issue additional nonce-bound reads when validating
+    // its frozen prefix or recovering. Keep the original CAS service alive
+    // until the coordinator is finished, rather than assuming an RPC count.
+    listener
+        .set_nonblocking(true)
+        .expect("nonblocking original CAS listener");
+    let shutdown = Arc::new(AtomicBool::new(false));
+    let shutdown_for_server = Arc::clone(&shutdown);
     let store = fixture.store.clone();
     let parent = fixture.parent.clone();
     let child = fixture.child.clone();
@@ -478,11 +486,16 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
             backend,
         )
         .expect("signed CAS owner");
-        for _ in 0..5 {
-            let (mut stream, _) = listener.accept().expect("coordinator CAS call");
-            service
-                .serve_connection(&mut stream)
-                .expect("real signed CAS operation");
+        while !shutdown_for_server.load(Ordering::Acquire) {
+            match listener.accept() {
+                Ok((mut stream, _)) => service
+                    .serve_connection(&mut stream)
+                    .expect("real signed CAS operation"),
+                Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                    thread::sleep(Duration::from_millis(2));
+                }
+                Err(error) => panic!("original CAS listener unexpectedly failed: {error}"),
+            }
         }
     });
     let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
@@ -529,6 +542,7 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
             "unknown migration is not re-executed"
         );
     }
+    shutdown.store(true, Ordering::Release);
     server.join().expect("four-step owner test server");
 }
 

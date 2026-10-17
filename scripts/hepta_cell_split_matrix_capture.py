@@ -9,6 +9,7 @@ JSON. The resulting packet is diagnostic until independently attested.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -32,10 +33,14 @@ SCHEMA = "hepta.cell-split.execution-matrix.v1"
 MEASUREMENT_SCHEMA = "hepta.cell-split.host-measurement.v1"
 MAX_MANIFEST_BYTES = 128 * 1024
 MAX_HOST_RESULT_BYTES = 256 * 1024
+# Identical to the detached raw-byte observer's log cap.
+MAX_LOG_BYTES = 2 * 1024 * 1024
 
 
-def read_bounded_json(path: Path, limit: int, label: str) -> Any:
-    """Read an external JSON packet without unbounded memory or FIFO waits."""
+def read_stable_raw(
+    path: Path, limit: int, label: str
+) -> tuple[bytes, tuple[int, int]]:
+    """Read bounded original bytes and return their verified device/inode identity."""
     flags = (
         os.O_RDONLY
         | getattr(os, "O_CLOEXEC", 0)
@@ -44,16 +49,42 @@ def read_bounded_json(path: Path, limit: int, label: str) -> Any:
     )
     try:
         with os.fdopen(os.open(path, flags), "rb") as source:
-            metadata = os.fstat(source.fileno())
-            if not stat.S_ISREG(metadata.st_mode):
-                raise InvalidEvidence(f"{label}: regular file required")
-            if metadata.st_size > limit:
+            before = os.fstat(source.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+                raise InvalidEvidence(f"{label}: regular single-linked file required")
+            if before.st_size > limit:
                 raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
             raw = source.read(limit + 1)
+            after = os.fstat(source.fileno())
+        named = path.lstat()
     except OSError as error:
         raise InvalidEvidence(f"{label}: file unavailable: {error}") from error
     if len(raw) > limit:
         raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
+
+    def identity(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+        return (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_size,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
+
+    if (
+        len(raw) != before.st_size
+        or identity(before) != identity(after)
+        or identity(before) != identity(named)
+        or not stat.S_ISREG(named.st_mode)
+        or named.st_nlink != 1
+    ):
+        raise InvalidEvidence(f"{label}: original evidence changed during read")
+    return raw, (before.st_dev, before.st_ino)
+
+
+def read_bounded_json(path: Path, limit: int, label: str) -> Any:
+    """Read a stable original JSON packet without FIFO waits or duplicate keys."""
+    raw, _ = read_stable_raw(path, limit, label)
     try:
         return strict_json_loads(raw)
     except (UnicodeDecodeError, ValueError) as error:
@@ -170,6 +201,18 @@ def execute_matrix(
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     with (output / "manifest.json").open("x", encoding="utf-8") as record:
         record.write(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
+
+    # A later workload may rewrite earlier files. Freeze the original bytes
+    # and re-open their original inodes before publishing a diagnostic packet.
+    # Detached observer custody remains independently mandatory.
+    frozen: dict[str, tuple[int, bytes, tuple[int, int]]] = {}
+
+    def freeze(path: Path, limit: int) -> bytes:
+        raw, inode = read_stable_raw(path, limit, path.name)
+        frozen[path.name] = (limit, hashlib.sha256(raw).digest(), inode)
+        return raw
+
+    freeze(output / "manifest.json", MAX_MANIFEST_BYTES)
     measurements = []
     for scope in SCOPES:
         for mode in MODES:
@@ -219,10 +262,30 @@ def execute_matrix(
             # Reject a result even if it reports the expected SHA when the
             # executed workload changed the checkout. Never start the next run.
             verify_exact_source(repository, manifest["source_sha"])
-            observed = read_bounded_json(
-                result_path, MAX_HOST_RESULT_BYTES, f"{scope}/{mode} host result"
-            )
+            # Validate the very same bytes that are retained for final replay.
+            raw_row = freeze(result_path, MAX_HOST_RESULT_BYTES)
+            try:
+                observed = strict_json_loads(raw_row)
+            except (UnicodeDecodeError, ValueError) as error:
+                raise InvalidEvidence(
+                    f"{scope}/{mode}: invalid host JSON: {error}"
+                ) from error
             measurements.append(validate_measurement(observed, manifest, scope, mode))
+            freeze(stdout_path, MAX_LOG_BYTES)
+            freeze(stderr_path, MAX_LOG_BYTES)
+
+    # Identical parsed metrics are insufficient: any earlier raw result, log
+    # or manifest mutation invalidates capture. Do not write a complete packet.
+    for name, (limit, original_sha, original_inode) in frozen.items():
+        current, current_inode = read_stable_raw(output / name, limit, name)
+        if (
+            current_inode != original_inode
+            or hashlib.sha256(current).digest() != original_sha
+        ):
+            raise InvalidEvidence(
+                f"{name}: original host evidence changed after measurement"
+            )
+
     packet = {
         "schema": "hepta.cell-split.performance.v1",
         "source_sha": manifest["source_sha"],

@@ -1,0 +1,55 @@
+name: Hepta CellSplit original matrix source integrity
+
+on:
+  pull_request:
+    branches:
+      - integration/hepta-cell-split-p0-57-stable-20261016
+    paths:
+      - scripts/hepta_cell_split_matrix_capture.py
+      - scripts/hepta_cell_split_evidence_observer.py
+      - scripts/hepta_cell_split_perf_gate.py
+      - .github/scripts/test_hepta_cell_split_matrix_capture.py
+      - .github/scripts/test_hepta_cell_split_evidence_observer.py
+      - .github/workflows/hepta-cell-split-matrix-source.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-split-matrix-source-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  original-matrix-source:
+    name: Original 16-way source protocol (nonproduction)
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact submitted source HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact original source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Execute source-only original capture adversarial regressions
+        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_matrix_capture.py' -v
+      - name: Execute independently parsed comparative-matrix regressions
+        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
+      - name: Execute independent raw-byte observer custody regressions
+        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_evidence_observer.py' -v
+      - name: Verify checkout remained unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"

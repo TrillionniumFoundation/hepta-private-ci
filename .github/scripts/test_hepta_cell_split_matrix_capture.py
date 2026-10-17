@@ -361,6 +361,172 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
 
+    def test_later_workload_cannot_rewrite_previous_original_bytes(self):
+        """A valid numeric aggregate is not proof the original bytes survived."""
+        packet = manifest()
+        fixture_script = """
+import json
+import os
+from pathlib import Path
+
+result = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+scope = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+mode = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = scope
+row["mode"] = mode
+result.write_text(json.dumps(row), encoding="utf-8")
+if scope == 64 and mode == "logical_split":
+    path = result.parent / os.environ["HEPTA_TEST_TAMPER_TARGET"]
+    with path.open("ab") as handle:
+        handle.write(b" ")
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        for previous in (
+            "manifest.json",
+            "64-no_split.json",
+            "64-no_split.stdout.log",
+            "64-no_split.stderr.log",
+        ):
+            with (
+                self.subTest(previous=previous),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                output = Path(directory) / "matrix"
+                with (
+                    patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                    patch.dict(
+                        os.environ,
+                        {
+                            "HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet)),
+                            "HEPTA_TEST_TAMPER_TARGET": previous,
+                        },
+                    ),
+                    self.assertRaisesRegex(
+                        InvalidEvidence, "original host evidence changed"
+                    ),
+                ):
+                    execute_matrix(packet, ROOT, output, 30)
+                self.assertFalse((output / "measured-matrix.json").exists())
+                self.assertFalse((output / "diagnostic-comparison.json").exists())
+
+    def test_replaced_inode_with_identical_bytes_cannot_survive_matrix_capture(self):
+        """SHA equality alone must not launder replacement of an original inode."""
+        packet = manifest()
+        fixture_script = """
+import json
+import os
+from pathlib import Path
+
+result = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+scope = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+mode = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = scope
+row["mode"] = mode
+result.write_text(json.dumps(row), encoding="utf-8")
+if scope == 64 and mode == "logical_split":
+    original = result.parent / os.environ["HEPTA_TEST_REPLACE_TARGET"]
+    # Keep the original file descriptor open so the filesystem cannot reuse
+    # the retired inode number for the identical-byte replacement.
+    with original.open("rb") as predecessor:
+        original_bytes = predecessor.read()
+        original.unlink()
+        original.write_bytes(original_bytes)
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        for previous in (
+            "manifest.json",
+            "64-no_split.json",
+            "64-no_split.stdout.log",
+        ):
+            with (
+                self.subTest(previous=previous),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                output = Path(directory) / "matrix"
+                with (
+                    patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                    patch.dict(
+                        os.environ,
+                        {
+                            "HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet)),
+                            "HEPTA_TEST_REPLACE_TARGET": previous,
+                        },
+                    ),
+                    self.assertRaisesRegex(
+                        InvalidEvidence, "original host evidence changed"
+                    ),
+                ):
+                    execute_matrix(packet, ROOT, output, 30)
+                self.assertFalse((output / "measured-matrix.json").exists())
+                self.assertFalse((output / "diagnostic-comparison.json").exists())
+
+    def test_oversized_host_log_aborts_before_later_cases(self):
+        packet = manifest()
+        fixture_script = """
+import json
+import os
+from pathlib import Path
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
+print("x" * (2 * 1024 * 1024 + 1))
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "matrix"
+            with (
+                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch.dict(
+                    os.environ,
+                    {"HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet))},
+                ),
+                self.assertRaisesRegex(InvalidEvidence, "exceeds"),
+            ):
+                execute_matrix(packet, ROOT, output, 30)
+            self.assertTrue((output / "64-no_split.stdout.log").exists())
+            self.assertFalse((output / "64-logical_split.stdout.log").exists())
+            self.assertFalse((output / "measured-matrix.json").exists())
+
+    @unittest.skipUnless(hasattr(os, "symlink"), "symlink required")
+    def test_later_workload_cannot_substitute_prior_result_symlink(self):
+        packet = manifest()
+        fixture_script = """
+import json
+import os
+from pathlib import Path
+result = Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"])
+scope = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+mode = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = scope
+row["mode"] = mode
+result.write_text(json.dumps(row))
+if scope == 64 and mode == "logical_split":
+    earlier = result.parent / "64-no_split.json"
+    earlier.unlink()
+    earlier.symlink_to(result)
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "matrix"
+            with (
+                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch.dict(
+                    os.environ,
+                    {"HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet))},
+                ),
+                self.assertRaises(InvalidEvidence),
+            ):
+                execute_matrix(packet, ROOT, output, 30)
+            self.assertFalse((output / "measured-matrix.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
