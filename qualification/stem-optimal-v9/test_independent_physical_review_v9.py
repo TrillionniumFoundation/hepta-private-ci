@@ -107,6 +107,27 @@ class IndependentPhysicalReviewTests(unittest.TestCase):
                 verify.checked_run(bad,'selective',self.source,self.cheap,
                                    self.old,self.materials,self.selected['selected_case_ids'])
 
+    def test_mock_original_publisher_handoff_always_denies_production(self):
+        """Fixture scoring is not independent publisher qualification or model authority."""
+        gold = {case['case_id']: 0 for case in self.source['heldout']}
+        fake_original = types.SimpleNamespace(FIXED_SHA={'train':'fixture','test':'fixture'})
+        with patch.object(verify.publisher, 'original', fake_original, create=True), \
+             patch.object(verify.publisher, 'reconstruct',
+                          return_value=({'train': self.source['train'],
+                                         'heldout': self.source['heldout']}, gold), create=True), \
+             patch.object(verify.lexical, 'review_original',
+                          return_value={'independent_algorithm_replay':True,
+                                        'publisher_original_sha_verified':True}, create=True):
+            result=verify.review(b'synthetic-train', b'synthetic-test', self.source,
+                                 self.cheap, self.old, self.materials,
+                                 self.selected, self.full)
+        self.assertEqual(result['actual_selective_forward_hook_calls'], 5)
+        self.assertEqual(result['actual_full_forward_hook_calls'], 6)
+        self.assertEqual(result['physical_selective']['n'],32)
+        self.assertFalse(result['full_lifecycle_savings_qualified'])
+        self.assertFalse(result['production_authorized'])
+        self.assertEqual(result['disposition'],'HOLD_NO_GO')
+
     def test_original_cheap_routing_and_score_are_deterministic(self):
         expected,cheap=verify.rerank(self.cheap,self.source)
         self.assertEqual(expected,self.selected['selected_case_ids'])
