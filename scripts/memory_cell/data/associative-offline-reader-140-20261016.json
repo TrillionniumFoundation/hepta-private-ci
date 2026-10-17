@@ -1,0 +1,162 @@
+{
+  "actual_offline_frozen_weight_reader_attempts": 140,
+  "caveats": {
+    "historical_preexposed_tasks": true,
+    "independent_adjudicator": false,
+    "no_claim_of_parametric_learning_gain": true,
+    "reader_ability_diagnostic_only": true,
+    "semantic_precision": null
+  },
+  "fixed_questions": 20,
+  "independent_semantic_entailment_verified": false,
+  "independent_source_family_authentication_verified": false,
+  "lesion_paired": {
+    "complete_evidence_count_by_case": {
+      "multi": 8,
+      "single": 12
+    },
+    "losses": 5,
+    "mean_full_minus_removed": 0.04585274103738293,
+    "scored": 15,
+    "ties": 5,
+    "wins": 5
+  },
+  "memorycell_superiority_claim": false,
+  "model_transport": {
+    "bytes": 272437573,
+    "original_signed_by_independent_party": false,
+    "registered_identity": "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c"
+  },
+  "official_transformers_bf16_equivalence_certified": false,
+  "premise_diagnostic": {
+    "by_arm": {
+      "annotated_all": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.13376682020319258,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      },
+      "annotated_minus_one": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.08791407916580965,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      }
+    }
+  },
+  "premise_journal_sha256": "724c424c7c9ae193c1e5625872ce4127f71e09d5665e7716fe9f91b787357f93",
+  "production_accepted": false,
+  "ranked_journal_sha256": "76370f59cf4f8cae6f4117b824e7ab686aeefdffa0aefdab639da8d79238a68d",
+  "ranked_reader": {
+    "by_arm": {
+      "bm25": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.04240930532325857,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      },
+      "empty": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.04791703349979217,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      },
+      "question_conditioned": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.04995984735357558,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      },
+      "rrf": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.060075425426146085,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      },
+      "rrf_question_conditioned": {
+        "citation": {
+          "abstention_phrases": 0,
+          "answered_without_markers": 20,
+          "markers": 0,
+          "valid_source_labels": 0
+        },
+        "mean_token_f1": 0.05661944289153265,
+        "planned": 20,
+        "scored": 15,
+        "statuses": {
+          "succeeded": 20,
+          "unscorable_reference": 5
+        }
+      }
+    }
+  },
+  "reproduction": {
+    "cpu_threads": 2,
+    "hf_parity_verified": false,
+    "parent_checked": "11cb02f1ba1c28b2f173b16e528a6bf7330e423e",
+    "source_branch": "codex/associative-cell-type-split-20261015",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.offline-reader-140-diagnostic.research.v1",
+  "source_groups": 10,
+  "source_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "study_cohort": {
+    "independent_prospective": false,
+    "postseal_gold_opened": true,
+    "source_scope": "10 historical LoCoMo conversations, 20 preselected questions"
+  }
+}

@@ -1,0 +1,240 @@
+name: Hepta privileged Reader Unicode source recovery (research only)
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_reader_unicode_recovery.py'
+      - 'scripts/memory_cell/test_associative_reader_unicode_recovery.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_READER_UNICODE_RECOVERY.md'
+      - '.github/workflows/hepta-associative-reader-unicode-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-reader-unicode-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-trusted-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned research CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/unicode-env
+          /tmp/unicode-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/unicode-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/unicode-receipts
+          /tmp/unicode-env/bin/pip freeze > /tmp/unicode-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-original-stage
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: privileged-premise-reader-inputs-no-answers
+          run-id: 38868340459
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-v1-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-v1-public
+      - name: Verify exact pinned source and existing sealed Reader plan
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/unicode-trusted-source /tmp/unicode-fixture/v1plan
+          tar -C /tmp/unicode-trusted-source -xzf /tmp/unicode-original-stage/memory-inputs.tar.gz memory-inputs/locomo.json
+          cp /tmp/unicode-trusted-source/memory-inputs/locomo.json /tmp/unicode-fixture/locomo.json
+          cp /tmp/unicode-v1-plan/{plan,seal}.json /tmp/unicode-fixture/v1plan/
+          cp /tmp/unicode-v1-public/public/public.json /tmp/unicode-fixture/public.json
+          test "$(sha256sum /tmp/unicode-fixture/locomo.json | cut -d' ' -f1)" = 79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+          test "$(sha256sum /tmp/unicode-fixture/v1plan/plan.json | cut -d' ' -f1)" = 404c0fa14adc96d1a20e8c8a894e5f9e6f77392da8cced05bdadc6248c0686eb
+          test "$(sha256sum /tmp/unicode-fixture/public.json | cut -d' ' -f1)" = e3c9fe407afcc08a153eeb0122b107314443335cb8f153b6557693bdbf900455
+      - name: Source-only V2 mechanics and adversarial tamper regressions
+        env:
+          HEPTA_ASSOC_UNICODE_FIXTURE: /tmp/unicode-fixture
+        run: |
+          set -euo pipefail
+          /tmp/unicode-env/bin/python -m unittest discover -s scripts/memory_cell -p 'test_associative_reader_unicode_recovery.py' -v \
+            2>&1 | tee /tmp/unicode-receipts/tests.log
+      - name: Create separate UTF-8 source-only privileged diagnostic
+        run: |
+          set -euo pipefail
+          /tmp/unicode-env/bin/python scripts/memory_cell/associative_reader_unicode_recovery.py \
+            plan /tmp/unicode-fixture/locomo.json /tmp/unicode-fixture/v1plan \
+            /tmp/unicode-fixture/public.json /tmp/unicode-v2-plan \
+            > /tmp/unicode-receipts/plan-summary.json
+          test "$(sha256sum /tmp/unicode-v2-plan/plan.json | cut -d' ' -f1)" = 209f6849e7ec1bf4c87d7bfc3434bfe26884633dcfdbe06acee3c8b2ec949a2d
+          test "$(find /tmp/unicode-v2-plan -maxdepth 1 -type f | wc -l)" -eq 2
+          test ! -e /tmp/unicode-v2-plan/private.json
+      - name: Retain source/plan SHA256 receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/unicode-receipts/exact-head.txt
+          (cd /tmp/unicode-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: unicode-recovery-source-test-receipts-not-acceptance
+          path: /tmp/unicode-receipts
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unicode-recovered-premise-reader-inputs-only
+          path: /tmp/unicode-v2-plan
+          if-no-files-found: error
+  frozen-reader:
+    needs: source-only-trusted-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exact frozen Reader CPU reference environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/unicode-reader-env
+          /tmp/unicode-reader-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/unicode-reader-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/unicode-reader-receipts
+          /tmp/unicode-reader-env/bin/pip freeze > /tmp/unicode-reader-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: unicode-recovered-premise-reader-inputs-only
+          path: /tmp/unicode-reader-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-frozen-reader-weights-only
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-reader-model
+      - name: Validate every Reader weight and discard legacy manifest
+        run: |
+          set -euo pipefail
+          /tmp/unicode-reader-env/bin/python -m reader_weight_transport \
+            /tmp/unicode-reader-model --legacy-self-entry \
+            > /tmp/unicode-reader-receipts/reader-weight-audit.json
+          rm /tmp/unicode-reader-model/SHA256SUMS
+          test "$(find /tmp/unicode-reader-model -maxdepth 1 -type f | wc -l)" -eq 8
+          test "$(find /tmp/unicode-reader-plan -maxdepth 1 -type f | wc -l)" -eq 2
+          test ! -e /tmp/unicode-reader-plan/private.json
+          test ! -e /tmp/unicode-reader-plan/locomo.json
+      - name: Execute registered frozen Reader on the 20 actual paired queries
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/unicode-reader-receipts/resources.txt \
+            /tmp/unicode-reader-env/bin/python scripts/memory_cell/associative_reader_unicode_recovery.py \
+              reader /tmp/unicode-reader-plan /tmp/unicode-reader-model /tmp/unicode-reader-output \
+              > /tmp/unicode-reader-receipts/execution.json
+          cp /tmp/unicode-reader-output/{reader-journal,reader-seal}.json /tmp/unicode-reader-receipts/
+      - name: Exact failed/successful model read receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/unicode-reader-receipts/exact-head.txt
+          (cd /tmp/unicode-reader-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: unicode-frozen-reader-unscored-not-acceptance
+          path: /tmp/unicode-reader-receipts
+          if-no-files-found: error
+  independent-review:
+    needs: frozen-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned verifier environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/unicode-review-env
+          /tmp/unicode-review-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/unicode-review-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          mkdir -p /tmp/unicode-review-receipts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: unicode-recovered-premise-reader-inputs-only
+          path: /tmp/unicode-review-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: unicode-frozen-reader-unscored-not-acceptance
+          path: /tmp/unicode-review-reader
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: privileged-premise-reader-inputs-no-answers
+          run-id: 38868340459
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-review-v1-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          run-id: 38851466159
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-review-v1-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/unicode-review-original
+      - name: Restore original source only in independent review worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/unicode-review-trusted
+          tar -C /tmp/unicode-review-trusted -xzf /tmp/unicode-review-original/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/unicode-review-trusted/memory-inputs/locomo.json | cut -d' ' -f1)" = 79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+      - name: Independently rederive exact plan then review sealed real Reader outputs
+        run: |
+          set -euo pipefail
+          /tmp/unicode-review-env/bin/python scripts/memory_cell/associative_reader_unicode_recovery.py \
+            review /tmp/unicode-review-trusted/memory-inputs/locomo.json \
+            /tmp/unicode-review-v1-plan /tmp/unicode-review-v1-public/public/public.json \
+            /tmp/unicode-review-plan /tmp/unicode-review-reader \
+            /tmp/unicode-review-receipts/premise-review.json \
+            > /tmp/unicode-review-receipts/report-summary.json
+      - name: Retain review SHA256 ledger
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/unicode-review-receipts/exact-head.txt
+          (cd /tmp/unicode-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: unicode-reader-review-not-production-acceptance
+          path: /tmp/unicode-review-receipts
+          if-no-files-found: error

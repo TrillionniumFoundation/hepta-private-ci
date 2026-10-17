@@ -1,0 +1,271 @@
+name: Hepta associative full-source question-conditioned and fixed-reader research
+on:
+  pull_request:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - 'scripts/memory_cell/associative_question_conditioned.py'
+      - 'scripts/memory_cell/test_associative_question_conditioned.py'
+      - 'codex-rs/hepta-intelligence-eval/ASSOCIATIVE_QUESTION_CONDITIONED.md'
+      - '.github/workflows/hepta-associative-question-conditioned-fullsource.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: associative-question-conditioned-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  blind-source-ranking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 160
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU research runtime
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-qc-receipts
+          python3 -m venv /tmp/memory-qc-env
+          /tmp/memory-qc-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-qc-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/memory-qc-env/bin/pip freeze > /tmp/memory-qc-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/qc-pinned
+      - name: Extract pinned original source, Encoder and frozen Reader bytes
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qc-source
+          tar -C /tmp/qc-source -xzf /tmp/qc-pinned/memory-inputs.tar.gz \
+            memory-inputs/locomo.json \
+            memory-inputs/encoder/config.json \
+            memory-inputs/encoder/model.safetensors \
+            memory-inputs/encoder/tokenizer.json \
+            memory-inputs/encoder/tokenizer_config.json \
+            memory-inputs/encoder/special_tokens_map.json \
+            memory-inputs/encoder/vocab.txt \
+            memory-inputs/reader/model.safetensors \
+            memory-inputs/reader/tokenizer.json \
+            memory-inputs/reader/special_tokens_map.json \
+            memory-inputs/reader/merges.txt \
+            memory-inputs/reader/config.json \
+            memory-inputs/reader/tokenizer_config.json \
+            memory-inputs/reader/generation_config.json \
+            memory-inputs/reader/vocab.json
+          test "$(sha256sum /tmp/qc-source/memory-inputs/locomo.json | cut -d ' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+      - name: Test source/family and label-isolation contracts
+        env:
+          HEPTA_ASSOC_LOCOMO_FILE: /tmp/qc-source/memory-inputs/locomo.json
+        run: |
+          set -euo pipefail
+          /tmp/memory-qc-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_associative_question_conditioned.py' -v 2>&1 | tee /tmp/memory-qc-receipts/tests.log
+      - name: Verify strict Reader model transport integrity regressions
+        run: |
+          set -euo pipefail
+          /tmp/memory-qc-env/bin/python -m unittest discover -s scripts/memory_cell \
+            -p 'test_reader_weight_transport.py' -v 2>&1 \
+            | tee /tmp/memory-qc-receipts/reader-transport-tests.log
+      - name: Execute mandatory frozen Encoder parity against Transformers
+        run: |
+          set -euo pipefail
+          /tmp/memory-qc-env/bin/python - <<'PY'
+          import json
+          from associative_minilm_offline import PARITY_TEXTS, compare_with_transformers
+          result=compare_with_transformers('/tmp/qc-source/memory-inputs/encoder', PARITY_TEXTS)
+          if result.get('parity_verified') is not True:
+              raise RuntimeError('HF parity not verified')
+          with open('/tmp/memory-qc-receipts/hf-parity.json','x') as f:
+              json.dump(result,f,sort_keys=True)
+          PY
+      - name: Materialize physically separated public source view
+        run: |
+          set -euo pipefail
+          /tmp/memory-qc-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/qc-source/memory-inputs/locomo.json /tmp/qc-prepared \
+            > /tmp/memory-qc-receipts/source-admission.json
+          mkdir -p /tmp/qc-public
+          cp /tmp/qc-prepared/{public,manifest}.json /tmp/qc-public/
+          test ! -e /tmp/qc-public/private.json
+      - name: Frozen weights and seven-arm 240-question complete source ranking
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-qc-receipts/resources.txt \
+            /tmp/memory-qc-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            run /tmp/qc-public /tmp/qc-source/memory-inputs/encoder /tmp/qc-run \
+            > /tmp/memory-qc-receipts/execution-summary.json
+          /tmp/memory-qc-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            review /tmp/qc-prepared /tmp/qc-run /tmp/memory-qc-receipts/review.json \
+            > /tmp/memory-qc-receipts/review-summary.json
+      - name: Retain exact source and test receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-qc-receipts
+          git rev-parse HEAD > /tmp/memory-qc-receipts/exact-head.txt
+          (cd /tmp/memory-qc-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: qc-fullsource-ranking-research-receipts
+          path: /tmp/memory-qc-receipts
+          if-no-files-found: error
+      - name: Publish label-free ranked view for isolated Reader
+        run: |
+          set -euo pipefail
+          test -f /tmp/qc-run/seal.json
+          mkdir -p /tmp/qc-reader-inputs/public /tmp/qc-reader-inputs/rank
+          cp /tmp/qc-public/{public,manifest}.json /tmp/qc-reader-inputs/public/
+          cp /tmp/qc-run/{journal,seal}.json /tmp/qc-reader-inputs/rank/
+          test ! -e /tmp/qc-reader-inputs/public/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: qc-fullsource-public-reader-inputs
+          path: /tmp/qc-reader-inputs
+          if-no-files-found: error
+      - name: Stage Reader model ONLY, excluding original corpus and labels
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qc-reader-weights-only
+          cp /tmp/qc-source/memory-inputs/reader/* /tmp/qc-reader-weights-only/
+          test "$(find /tmp/qc-reader-weights-only -maxdepth 1 -type f | wc -l)" -eq 8
+          (cd /tmp/qc-reader-weights-only && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: qc-frozen-reader-weights-only
+          path: /tmp/qc-reader-weights-only
+          if-no-files-found: error
+  frozen-reader:
+    needs: blind-source-ranking
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned frozen-reader CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qc-reader-receipts
+          python3 -m venv /tmp/qc-reader-env
+          /tmp/qc-reader-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/qc-reader-env/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/qc-reader-env/bin/pip freeze > /tmp/qc-reader-receipts/python-lock.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          path: /tmp/qc-reader-inputs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-frozen-reader-weights-only
+          path: /tmp/qc-reader-model
+      - name: Verify only frozen reader model files; no original source archive
+        run: |
+          set -euo pipefail
+          /tmp/qc-reader-env/bin/python -m reader_weight_transport /tmp/qc-reader-model \
+            > /tmp/qc-reader-receipts/reader-weight-verification.json
+          rm /tmp/qc-reader-model/SHA256SUMS
+          test ! -e /tmp/qc-reader-inputs/public/private.json
+          test ! -e /tmp/qc-reader-model/memory-inputs.tar.gz
+      - name: Execute fixed Reader on predeclared two questions per dialogue, five arms
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/qc-reader-receipts/resources.txt \
+            /tmp/qc-reader-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+              reader /tmp/qc-reader-inputs/public /tmp/qc-reader-inputs/rank \
+              /tmp/qc-reader-model /tmp/qc-reader-output \
+              > /tmp/qc-reader-receipts/execution-summary.json
+          cp /tmp/qc-reader-output/{reader-journal,reader-seal}.json /tmp/qc-reader-receipts/
+      - name: Retain actual exact HEAD and complete reader receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/qc-reader-receipts/exact-head.txt
+          (cd /tmp/qc-reader-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: qc-frozen-reader-unscored-not-acceptance
+          path: /tmp/qc-reader-receipts
+          if-no-files-found: error
+  independent-scoring-transfer:
+    needs: frozen-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned CPU package environment for verifier
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/qc-review-env
+          /tmp/qc-review-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/qc-review-env/bin/pip install -r scripts/memory_cell/requirements.txt
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-fullsource-public-reader-inputs
+          path: /tmp/qc-verify-inputs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: qc-frozen-reader-unscored-not-acceptance
+          path: /tmp/qc-verify-reader
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/qc-verify-stage
+      - name: Reconstruct hidden references only AFTER sealed Reader completion
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qc-verifier-source /tmp/qc-final-receipts
+          tar -C /tmp/qc-verifier-source -xzf /tmp/qc-verify-stage/memory-inputs.tar.gz memory-inputs/locomo.json
+          /tmp/qc-review-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            prepare /tmp/qc-verifier-source/memory-inputs/locomo.json /tmp/qc-private-reviewed \
+            > /tmp/qc-final-receipts/rebuilt-source.json
+          cmp /tmp/qc-private-reviewed/public.json /tmp/qc-verify-inputs/public/public.json
+          cmp /tmp/qc-private-reviewed/manifest.json /tmp/qc-verify-inputs/public/manifest.json
+          /tmp/qc-review-env/bin/python scripts/memory_cell/associative_question_conditioned.py \
+            review-reader /tmp/qc-private-reviewed /tmp/qc-verify-inputs/rank \
+            /tmp/qc-verify-reader /tmp/qc-final-receipts/fixed-reader-review.json \
+            > /tmp/qc-final-receipts/summary.json
+      - name: Retain digest-bound exact-source transfer
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qc-final-receipts
+          git rev-parse HEAD > /tmp/qc-final-receipts/exact-head.txt
+          (cd /tmp/qc-final-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: qc-fullsource-blinded-reader-review-not-acceptance
+          path: /tmp/qc-final-receipts
+          if-no-files-found: error
