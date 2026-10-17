@@ -6,6 +6,8 @@ on:
       - "scripts/memory_cell/factorial_evidence_gate.py"
       - "scripts/memory_cell/factorial_transcript_integrity.py"
       - "scripts/memory_cell/FACTORIAL_TRANSCRIPT_LAB.md"
+      - "scripts/memory_cell/stage1_reader_pair.py"
+      - "scripts/memory_cell/test_stage1_reader_pair.py"
 permissions:
   contents: read
   actions: read
@@ -116,87 +118,28 @@ jobs:
         with:
           pattern: memory-stage1-real-*
           path: /tmp/stage1-paired
-      - name: Compare original answers with matched actual source bytes
+      - name: Check strict read-only paired-audit regressions
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_pair.py' -v
+      - name: Compare all original attempts without dropping unavailable cases
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          PYTHONPATH: scripts/memory_cell
         run: |
           set -euo pipefail
           mkdir -p /tmp/stage1-comparison
+          python3 scripts/memory_cell/stage1_reader_pair.py \
+            --root /tmp/stage1-paired \
+            --source "$EXPECTED_HEAD" \
+            --output /tmp/stage1-comparison/paired-report.json
           python3 - <<'PY'
-          import hashlib, json
+          import json
           from pathlib import Path
-          root = Path('/tmp/stage1-paired')
-          names = ('smol-135m', 'smol-1.7b')
-          by_tier = {}
-          for tier in names:
-              directory = root / ('memory-stage1-real-' + tier)
-              declared = {}
-              for line in (directory / 'SHA256SUMS').read_text().splitlines():
-                  digest, relative = line.split(maxsplit=1)
-                  relative = relative.removeprefix('./')
-                  if relative in declared:
-                      raise ValueError('duplicate result file')
-                  file = (directory / relative).resolve()
-                  if not file.is_relative_to(directory.resolve()) or not file.is_file():
-                      raise ValueError('unsafe result file')
-                  if hashlib.sha256(file.read_bytes()).hexdigest() != digest:
-                      raise ValueError('original result bytes changed')
-                  declared[relative] = digest
-              actual = {
-                  p.relative_to(directory).as_posix()
-                  for p in directory.rglob('*') if p.is_file() and p.name != 'SHA256SUMS'
-              }
-              if actual != set(declared):
-                  raise ValueError('incomplete original result manifest')
-              if (directory / 'tested-commit.txt').read_text().strip() != __import__('os').environ['EXPECTED_HEAD']:
-                  raise ValueError('different code source')
-              records = json.loads((directory / 'run/diagnostic/execution/scored-answers.json').read_text())
-              keys = [(r['question_id'], r['arm']) for r in records]
-              if len(keys) != len(set(keys)) or not keys:
-                  raise ValueError('duplicate or empty reader answer census')
-              by_tier[tier] = {key: r for key, r in zip(keys, records)}
-          first, second = (by_tier[name] for name in names)
-          if set(first) != set(second):
-              raise ValueError('not a paired question/condition population')
-          rows = []
-          revisions = [set(), set()]
-          for key in sorted(first):
-              a, b = first[key], second[key]
-              if a['status'] != 'succeeded' or b['status'] != 'succeeded':
-                  raise ValueError('failed original generation cannot become a successful pair')
-              r1, r2 = a['receipt'], b['receipt']
-              revisions[0].add(r1['reader_identity'])
-              revisions[1].add(r2['reader_identity'])
-              if r1['delivered_evidence'] != r2['delivered_evidence']:
-                  raise ValueError('reader capacity comparison changed delivered source bytes')
-              rows.append({
-                  'question_id': key[0], 'condition': key[1],
-                  'frozen_diagnostic_f1': a['f1'],
-                  'reference_diagnostic_f1': b['f1'],
-                  'diagnostic_delta': b['f1'] - a['f1'],
-                  'delivered_evidence_sha256': hashlib.sha256(json.dumps(r1['delivered_evidence'], sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
-                  'frozen_original_answer_sha256': hashlib.sha256(a['answer'].encode()).hexdigest(),
-                  'reference_original_answer_sha256': hashlib.sha256(b['answer'].encode()).hexdigest(),
-              })
-          if any(len(s) != 1 for s in revisions) or revisions[0] == revisions[1]:
-              raise ValueError('reference did not use a distinct pinned model revision')
-          report = {
-              'schema': 'hepta.memory.stage1.paired-real-reader.v1',
-              'tested_commit': __import__('os').environ['EXPECTED_HEAD'],
-              'original_development_questions': len({r['question_id'] for r in rows}),
-              'paired_attempts': len(rows),
-              'reader_models': {names[i]: next(iter(s)) for i, s in enumerate(revisions)},
-              'diagnostic_mean_delta': sum(r['diagnostic_delta'] for r in rows) / len(rows),
-              'rows': rows,
-              'new_independent_source_families_authenticated': 0,
-              'semantic_sufficiency_independently_established': False,
-              'reader_capacity_is_memory_gain': False,
-              'production_accepted': False,
-          }
-          target = Path('/tmp/stage1-comparison/paired-report.json')
-          target.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
-          print(json.dumps({k: v for k, v in report.items() if k != 'rows'}))
+          result = json.loads(Path('/tmp/stage1-comparison/paired-report.json').read_text())
+          print(json.dumps({k: v for k, v in result.items() if k != 'rows'}))
           PY
+          (cd /tmp/stage1-comparison && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
