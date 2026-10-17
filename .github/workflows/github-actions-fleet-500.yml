@@ -6,6 +6,8 @@ on:
       - scripts/github_actions_fleet_500.py
       - scripts/github_actions_runner_audit.py
       - scripts/test_github_actions_fleet_500.py
+      - scripts/github_actions_org_capacity.py
+      - scripts/test_github_actions_org_capacity.py
       - .github/workflows/github-actions-fleet-500.yml
   workflow_dispatch:
     inputs:
@@ -55,7 +57,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify fleet planning and telemetry regressions
-        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500 scripts.test_github_actions_org_capacity
 
   capacity-audit:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'audit'

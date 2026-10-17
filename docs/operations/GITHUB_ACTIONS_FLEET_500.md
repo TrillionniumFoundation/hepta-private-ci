@@ -7,6 +7,8 @@
 - Source-only deterministic planner: scripts/github_actions_fleet_500.py
 - Read-only GitHub API telemetry: scripts/github_actions_runner_audit.py
 - Adversarial unit tests: scripts/test_github_actions_fleet_500.py
+- Org-wide interval overlap proof: scripts/github_actions_org_capacity.py
+  and scripts/test_github_actions_org_capacity.py
 
 This machinery neither creates runner registrations nor purchases Larger
 Runners. It does not cancel existing CI or bypass required checks.
@@ -16,7 +18,7 @@ Runners. It does not cancel existing CI or bypass required checks.
 The public hepta-private-ci main commit
 f8c9419df6ddeb36ff8b522a50219981fb8d9345 contained 76 Python test
 files under scripts/, with 903 AST-defined test_* methods before adding
-fleet tests. After adding eight planner/audit regressions, 911 statically
+fleet tests. After adding sixteen planner/audit and org-peak regressions, 919 statically
 recognizable unittest.TestCase methods were available in the local
 source-only scan. Not all 909 were independently run. The planner selects
 500 different method identifiers, not 500 fake sleeps or build duplicates.
@@ -87,3 +89,38 @@ Continue optimization with real Nextest archive/shard evidence after
 the pilot; consider cache deduplication and fair budgeting rather than
 permanently burning 500 full-repository checkouts.
 
+
+## Proof of actual simultaneous organization-wide jobs
+
+Run from a trusted machine holding an existing authenticated \`gh\` session.
+No token contents are ever written to the report:
+
+\`\`\`bash
+GITHUB_TOKEN="$(gh auth token)" \
+  python3 scripts/github_actions_org_capacity.py \
+    --org TrillionniumFoundation \
+    --workers 8 --max-runs 200 \
+    --output /tmp/hepta-gha-org-capacity.json
+\`\`\`
+
+The collector enumerates accessible active org repositories and workflow
+runs, then paginates jobs and reconstructs execution time intervals. A job
+is counted only when it has a real assigned runner, a trustworthy
+\`started_at\`, and either \`completed_at\` or an in-progress observation
+whose conservative end is the **start** of its job GET request.
+
+The maximum overlap of those intervals is a **provable lower bound** for
+simultaneous running jobs, even when REST queries occur at different
+times. It is never computed by summing non-atomic "in_progress" counters.
+Missing repos/pages/permissions or API errors are recorded as incomplete.
+The collector cannot claim that **500 was actually reached** unless at least
+500 such intervals overlap. It does not register, create, cancel, retry or
+dispatch workflows. GitHub org-level metrics can provide corroborating
+historical performance and queue-delay trends.
+
+A separate direct API queue census on 2026-10-17 04:26 UTC enumerated
+443 workflow runs marked queued: 161 newer than one hour and 282 older
+than one day. A bounded 103-run sample found 58 zero-job records and
+45 with jobs, with no API failures. It is incorrect to interpret all
+443 queued workflows as runnable Jobs or platform capacity demand.
+The sampled historical zero-job records were left untouched.
