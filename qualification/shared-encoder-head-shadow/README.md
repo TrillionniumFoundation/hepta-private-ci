@@ -71,3 +71,5 @@ before claiming end-to-end training-to-deployment transfer.
 5. Compare total serving/training/evaluation budget against actual shared Laya/no-change and evaluate group-independent future outcomes, NDU, negative transfer, and 64/256/1024/4096 target-host resource profiles.
 
 **No production promotion, main merge, CNS cutover, or Cell Split is authorized by this research evidence.**
+
+Queued or pending GitHub checks are not receipts; retain `DENY_ALL` until every required exact-head check is terminal-success.
