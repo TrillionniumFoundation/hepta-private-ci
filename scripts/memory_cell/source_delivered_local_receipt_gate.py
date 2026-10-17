@@ -35,48 +35,91 @@ def replay_published(record):
     review = record.get("source_and_program_replay")
     ablation = record.get("retrospective_refusal_ablation")
     interpretation = record.get("interpretation")
-    deny(all(isinstance(x, dict) for x in (origin, observed, review, ablation, interpretation)),
-         "missing published source boundaries")
+    deny(
+        all(
+            isinstance(x, dict)
+            for x in (origin, observed, review, ablation, interpretation)
+        ),
+        "missing published source boundaries",
+    )
     deny(
         origin.get("original_input_zip_sha256") == SOURCE_SHA
         and origin.get("original_weights_sha256") == MODEL_SHA
         and origin.get("model_runtime") == "independent-port-Torch-2.10.0+cpu-FP32"
-        and origin.get("original_experiment_runtime_pytorch_2_5_1_parity_verified") is False
+        and origin.get("original_experiment_runtime_pytorch_2_5_1_parity_verified")
+        is False
         and origin.get("inference_generated_on_github_actions") is False
         and origin.get("github_actions_job_result_qualified") is False,
         "new Reader generation relabelled as hosted canonical parity",
     )
     by_arm = observed.get("by_arm")
-    deny(isinstance(by_arm, dict) and set(by_arm) == set(ARMS), "six-arm census changed")
-    totals = dict(calls=0, failed=0, worker=0, choices=0, supported=0, tokens=0, hypotheses=0)
+    deny(
+        isinstance(by_arm, dict) and set(by_arm) == set(ARMS), "six-arm census changed"
+    )
+    totals = dict(
+        calls=0, failed=0, worker=0, choices=0, supported=0, tokens=0, hypotheses=0
+    )
     for arm in ARMS:
         s = by_arm[arm]
         deny(isinstance(s, dict), "arm evidence invalid")
-        for name in ("planned", "model_calls", "failed", "choice_correct",
-                     "supported_success", "full_declared_support", "hypotheses",
-                     "input_tokens", "refusals", "worker_checks", "worker_success"):
-            deny(type(s.get(name)) is int and 0 <= s[name] <= 100000,
-                 "invalid finite original count: " + arm + "/" + name)
-        deny(s["planned"] == s["model_calls"] == 8
-             and s["failed"] == 0 and s["worker_checks"] == 2
-             and s["supported_success"] <= s["choice_correct"]
-             and s["supported_success"] <= s["full_declared_support"]
-             and s["refusals"] <= 8
-             and s["worker_success"] <= 2, "task or actual program count drift")
-        for key, field in (("calls", "model_calls"), ("failed", "failed"),
-                           ("worker", "worker_checks"), ("choices", "choice_correct"),
-                           ("supported", "supported_success"), ("tokens", "input_tokens"),
-                           ("hypotheses", "hypotheses")):
+        for name in (
+            "planned",
+            "model_calls",
+            "failed",
+            "choice_correct",
+            "supported_success",
+            "full_declared_support",
+            "hypotheses",
+            "input_tokens",
+            "refusals",
+            "worker_checks",
+            "worker_success",
+        ):
+            deny(
+                type(s.get(name)) is int and 0 <= s[name] <= 100000,
+                "invalid finite original count: " + arm + "/" + name,
+            )
+        deny(
+            s["planned"] == s["model_calls"] == 8
+            and s["failed"] == 0
+            and s["worker_checks"] == 2
+            and s["supported_success"] <= s["choice_correct"]
+            and s["supported_success"] <= s["full_declared_support"]
+            and s["refusals"] <= 8
+            and s["worker_success"] <= 2,
+            "task or actual program count drift",
+        )
+        for key, field in (
+            ("calls", "model_calls"),
+            ("failed", "failed"),
+            ("worker", "worker_checks"),
+            ("choices", "choice_correct"),
+            ("supported", "supported_success"),
+            ("tokens", "input_tokens"),
+            ("hypotheses", "hypotheses"),
+        ):
             totals[key] += s[field]
-    deny(totals == dict(calls=48, failed=0, worker=12, choices=28, supported=24,
-                        tokens=19801, hypotheses=98),
-         "actual model/typed support/worker census changed")
-    deny(by_arm["empty"]["choice_correct"] == by_arm["empty"]["supported_success"] == 0
-         and by_arm["empty"]["refusals"] == 8
-         and by_arm["without_prerequisite"]["choice_correct"] == 4
-         and by_arm["without_prerequisite"]["full_declared_support"] == 0
-         and by_arm["without_prerequisite"]["supported_success"] == 0,
-         "unjustified missing-premise success claim")
+    deny(
+        totals
+        == dict(
+            calls=48,
+            failed=0,
+            worker=12,
+            choices=28,
+            supported=24,
+            tokens=19801,
+            hypotheses=98,
+        ),
+        "actual model/typed support/worker census changed",
+    )
+    deny(
+        by_arm["empty"]["choice_correct"] == by_arm["empty"]["supported_success"] == 0
+        and by_arm["empty"]["refusals"] == 8
+        and by_arm["without_prerequisite"]["choice_correct"] == 4
+        and by_arm["without_prerequisite"]["full_declared_support"] == 0
+        and by_arm["without_prerequisite"]["supported_success"] == 0,
+        "unjustified missing-premise success claim",
+    )
     deny(
         observed.get("registered_old_exposed_questions") == 8
         and observed.get("arms") == 6
@@ -96,22 +139,25 @@ def replay_published(record):
         and review.get("source_only_candidate_census_verified") is True
         and review.get("explicit_typed_causal_chain_reconstructed") is True
         and review.get("original_program_worker_execution_replays") == 12
-        and review.get("conditional_log_probabilities_independently_recomputed") is False
+        and review.get("conditional_log_probabilities_independently_recomputed")
+        is False
         and review.get("semantic_human_entailment") is False,
         "second-process mechanical replay misrepresented",
     )
     per_arm = ablation.get("by_arm")
-    deny(isinstance(per_arm, dict) and set(per_arm) == set(ARMS)
-         and ablation.get("uses_saved_original_logits_only") is True
-         and ablation.get("new_model_forwards") == 0
-         and ablation.get("safe_refusal_rule_validated") is False,
-         "posthoc refusal analysis promoted")
+    deny(
+        isinstance(per_arm, dict)
+        and set(per_arm) == set(ARMS)
+        and ablation.get("uses_saved_original_logits_only") is True
+        and ablation.get("new_model_forwards") == 0
+        and ablation.get("safe_refusal_rule_validated") is False,
+        "posthoc refusal analysis promoted",
+    )
     for arm in ARMS:
         candidate = per_arm[arm]
-        # The empty arm has no possible answer candidate. Its eight safe
-        # refusals are counted by the diagnostic refusal evaluator, not as
-        # strict exact matches against the published target answer. There is
-        # no post-hoc forced guess without any delivered candidate.
+        # Without delivered candidate values, successful refusal and an exact
+        # target-answer hit are two different diagnostics. Do not credit the
+        # empty arm with an answer-space win or invent a forced guess.
         if arm == "empty":
             deny(
                 candidate["planned"] == 8
@@ -140,16 +186,27 @@ def replay_published(record):
     deny(
         per_arm["empty"]["posthoc_forced_guess_correct"] == 0
         and per_arm["hybrid"]["posthoc_forced_guess_correct"] == 5
-        and all(per_arm[a]["posthoc_forced_guess_correct"] == 8
-                for a in ("entity_time", "organized", "program_support"))
+        and all(
+            per_arm[a]["posthoc_forced_guess_correct"] == 8
+            for a in ("entity_time", "organized", "program_support")
+        )
         and per_arm["without_prerequisite"]["guess_unsupported"] == 4
         and per_arm["without_prerequisite"]["posthoc_forced_guess_correct"] == 4,
         "posthoc guessing cannot erase missing prerequisite",
     )
     deny(
-        interpretation.get("same_reader_organized_vs_hybrid_descriptive_supported_success_gain") == 4
-        and interpretation.get("same_reader_organized_vs_complete_entity_time_supported_success_gain") == 0
-        and interpretation.get("lesioned_gold_value_visible_but_source_chain_incomplete_in_four_cases") is True
+        interpretation.get(
+            "same_reader_organized_vs_hybrid_descriptive_supported_success_gain"
+        )
+        == 4
+        and interpretation.get(
+            "same_reader_organized_vs_complete_entity_time_supported_success_gain"
+        )
+        == 0
+        and interpretation.get(
+            "lesioned_gold_value_visible_but_source_chain_incomplete_in_four_cases"
+        )
+        is True
         and interpretation.get("parametric_memory_gain_established") is False
         and interpretation.get("independent_future_source_families") == 0
         and interpretation.get("actual_autonomous_repository_repair_tasks") == 0
@@ -177,13 +234,18 @@ def main():
     parser.add_argument("receipt", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    deny(not args.receipt.is_symlink()
-         and args.receipt.is_file() and args.receipt.stat().st_size < 32768,
-         "regular bounded sanitized receipt required")
+    deny(
+        not args.receipt.is_symlink()
+        and args.receipt.is_file()
+        and args.receipt.stat().st_size < 32768,
+        "regular bounded sanitized receipt required",
+    )
     content = json.loads(args.receipt.read_bytes())
     report = replay_published(content)
-    deny(not args.output.exists() and not args.output.is_symlink(),
-         "no overwrite of prior audit")
+    deny(
+        not args.output.exists() and not args.output.is_symlink(),
+        "no overwrite of prior audit",
+    )
     args.output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n")
     print(json.dumps(report, sort_keys=True))
 

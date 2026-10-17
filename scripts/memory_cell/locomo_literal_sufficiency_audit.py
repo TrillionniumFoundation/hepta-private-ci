@@ -27,8 +27,13 @@ def normalized(value):
 def literal_span(target, text):
     """Literal token substring, not semantic entailment or target selection."""
     left, right = normalized(target), normalized(text)
-    return bool(left and any(tuple(right[i:i + len(left)]) == left
-                             for i in range(len(right) - len(left) + 1)))
+    return bool(
+        left
+        and any(
+            tuple(right[i : i + len(left)]) == left
+            for i in range(len(right) - len(left) + 1)
+        )
+    )
 
 
 def census(corpus, plan, sealed):
@@ -53,15 +58,22 @@ def census(corpus, plan, sealed):
         target = str(question["answer"])
         if not target.strip():
             raise ValueError("empty original publisher annotation")
-        all_turns = [turn["text"] for key, session in root["conversation"].items()
-                     if re.fullmatch(r"session_[0-9]+", key)
-                     for turn in session if isinstance(turn, dict)
-                     and isinstance(turn.get("text"), str)]
-        counts["whole_conversation_literal"] += literal_span(target, " ".join(all_turns))
+        all_turns = [
+            turn["text"]
+            for key, session in root["conversation"].items()
+            if re.fullmatch(r"session_[0-9]+", key)
+            for turn in session
+            if isinstance(turn, dict) and isinstance(turn.get("text"), str)
+        ]
+        counts["whole_conversation_literal"] += literal_span(
+            target, " ".join(all_turns)
+        )
         for arm in ARMS:
             request = request_map[case["qid"], arm]
-            if request["root_sha256"] != case["root_sha256"] or \
-                    request["question"] != question["question"]:
+            if (
+                request["root_sha256"] != case["root_sha256"]
+                or request["question"] != question["question"]
+            ):
                 raise ValueError("original question/lineage drift")
             delivery = request["sources"]
             counts[arm] += literal_span(target, " ".join(x["text"] for x in delivery))
@@ -79,42 +91,55 @@ def analyze(dataset, earlier, later):
     original_sealed = (earlier / "sealed-inputs.json").read_bytes()
     old_plan = json.loads((earlier / "preregistered.json").read_bytes())
     latest_plan = json.loads((later / "preregistered.json").read_bytes())
-    if (sha(old_raw) != OLD_RAW_SHA or sha(new_raw) != NEW_RAW_SHA or
-            sha(original_sealed) != SOURCE_PIN or
-            latest_plan.get("sealed_prompt_sha256") !=
-            sha((later / "sealed-prompts.json").read_bytes())):
+    if (
+        sha(old_raw) != OLD_RAW_SHA
+        or sha(new_raw) != NEW_RAW_SHA
+        or sha(original_sealed) != SOURCE_PIN
+        or latest_plan.get("sealed_prompt_sha256")
+        != sha((later / "sealed-prompts.json").read_bytes())
+    ):
         raise ValueError("source/original model journal pin drift")
     source = source_file(dataset, DATA_SHA)
     totals = census(source, old_plan, json.loads(original_sealed))
-    return dict(schema="hepta.memory.locomo-exposed-literal-coverage-audit.v1",
-                evaluated_old_public_conversation_roots=8,
-                matched_label_source_target_only_after_seal=True,
-                original_32_model_calls_recomputed=0,
-                latest_48_model_calls_recomputed=0,
-                reference_only_publisher_answers=True,
-                literal_target_in_one_annotated_witness=totals["single_annotated_witness_literal"],
-                literal_target_in_full_root=totals["whole_conversation_literal"],
-                literal_target_by_original_evidence_arm={a:totals[a] for a in ARMS},
-                missing_literal_does_not_imply_insufficient_evidence=True,
-                present_literal_does_not_certify_sufficiency=True,
-                independent_human_review=None, original_reader_generation_success=0,
-                independent_future_families=0, model_training_steps=0,
-                complete_lifecycle_cost=None, production_accepted=False,
-                decision="DENY_ALL")
+    return dict(
+        schema="hepta.memory.locomo-exposed-literal-coverage-audit.v1",
+        evaluated_old_public_conversation_roots=8,
+        matched_label_source_target_only_after_seal=True,
+        original_32_model_calls_recomputed=0,
+        latest_48_model_calls_recomputed=0,
+        reference_only_publisher_answers=True,
+        literal_target_in_one_annotated_witness=totals[
+            "single_annotated_witness_literal"
+        ],
+        literal_target_in_full_root=totals["whole_conversation_literal"],
+        literal_target_by_original_evidence_arm={a: totals[a] for a in ARMS},
+        missing_literal_does_not_imply_insufficient_evidence=True,
+        present_literal_does_not_certify_sufficiency=True,
+        independent_human_review=None,
+        original_reader_generation_success=0,
+        independent_future_families=0,
+        model_training_steps=0,
+        complete_lifecycle_cost=None,
+        production_accepted=False,
+        decision="DENY_ALL",
+    )
 
 
 if __name__ == "__main__":
     import argparse
-    parser=argparse.ArgumentParser(description=__doc__)
+
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("original_published_locomo", type=Path)
     parser.add_argument("prior_sealed_run", type=Path)
     parser.add_argument("latest_sealed_run", type=Path)
     parser.add_argument("output", type=Path)
-    args=parser.parse_args()
-    value=analyze(args.original_published_locomo,args.prior_sealed_run,args.latest_sealed_run)
+    args = parser.parse_args()
+    value = analyze(
+        args.original_published_locomo, args.prior_sealed_run, args.latest_sealed_run
+    )
     if args.output.exists() or args.output.is_symlink():
         raise ValueError("refuse to overwrite source review")
     with args.output.open("x") as writer:
-        json.dump(value,writer,indent=2,sort_keys=True,allow_nan=False)
+        json.dump(value, writer, indent=2, sort_keys=True, allow_nan=False)
         writer.write("\n")
-    print(json.dumps(value,sort_keys=True))
+    print(json.dumps(value, sort_keys=True))

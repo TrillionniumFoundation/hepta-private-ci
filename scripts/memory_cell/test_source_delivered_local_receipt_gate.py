@@ -33,13 +33,18 @@ class LocalOriginalReaderResearchReceiptTests(unittest.TestCase):
     def test_no_evidence_refusal_and_answer_success_stay_distinct(self):
         report = self.fixture()
         self.assertEqual(report["observed"]["by_arm"]["empty"]["choice_correct"], 0)
-        self.assertEqual(report["retrospective_refusal_ablation"]["by_arm"]["empty"]["fixed_refusal_correct"], 8)
+        self.assertEqual(
+            report["retrospective_refusal_ablation"]["by_arm"]["empty"]["fixed_refusal_correct"],
+            8,
+        )
         self.assertEqual(replay_published(report)["model_requests"], 48)
 
     def test_no_evidence_forced_guess_or_fake_correct_refusal_rejected(self):
-        for key, value in (("posthoc_forced_guess_correct", 1),
-                           ("fixed_refusal_correct", 7),
-                           ("guess_unsupported", 1)):
+        for key, value in (
+            ("posthoc_forced_guess_correct", 1),
+            ("fixed_refusal_correct", 7),
+            ("guess_unsupported", 1),
+        ):
             with self.subTest(key=key):
                 report = self.fixture()
                 report["retrospective_refusal_ablation"]["by_arm"]["empty"][key] = value
@@ -70,17 +75,13 @@ class LocalOriginalReaderResearchReceiptTests(unittest.TestCase):
 
     def test_deleted_prerequisite_cannot_earn_task_success(self):
         report = self.fixture()
-        report["observed"]["by_arm"]["without_prerequisite"][
-            "supported_success"
-        ] = 4
+        report["observed"]["by_arm"]["without_prerequisite"]["supported_success"] = 4
         with self.assertRaisesRegex(ValueError, "task or actual program count drift"):
             replay_published(report)
 
     def test_retrospective_forced_guess_is_never_safe_adoption(self):
         report = self.fixture()
-        report["retrospective_refusal_ablation"][
-            "safe_refusal_rule_validated"
-        ] = True
+        report["retrospective_refusal_ablation"]["safe_refusal_rule_validated"] = True
         with self.assertRaisesRegex(ValueError, "posthoc refusal analysis promoted"):
             replay_published(report)
 

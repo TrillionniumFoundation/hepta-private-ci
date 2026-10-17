@@ -16,7 +16,12 @@ from locomo_format_trial import (
     messages,
     sha,
 )
-from locomo_format_result_gate import audit, audit_literal, literal_pinned, source_pinned
+from locomo_format_result_gate import (
+    audit,
+    audit_literal,
+    literal_pinned,
+    source_pinned,
+)
 
 
 class OriginalFormatReceiptTests(unittest.TestCase):
@@ -48,7 +53,11 @@ class OriginalFormatReceiptTests(unittest.TestCase):
             ("annotated_witness:linear_evidence", "input_tokens", 1),
             ("empty:question_first", "output_tokens", 0),
             ("annotated_witness:original_json", "json_echo", 0),
-            ("annotated_witness:linear_evidence", "citation_markers_structurally_valid", 0),
+            (
+                "annotated_witness:linear_evidence",
+                "citation_markers_structurally_valid",
+                0,
+            ),
         ):
             data = self.sample()
             data["by_arm"][key][field] = value
@@ -103,8 +112,11 @@ class OriginalFormatReceiptTests(unittest.TestCase):
 
     def test_blind_source_and_format_output_cannot_use_targets(self):
         req = dict(
-            qid="q", root_sha256="root", question="Where did Alex travel?",
-            arm="annotated_witness", source_ids=["s"],
+            qid="q",
+            root_sha256="root",
+            question="Where did Alex travel?",
+            arm="annotated_witness",
+            source_ids=["s"],
             sources=[dict(id="s", speaker="Alex", text="We went to Oslo.")],
         )
         outputs = [messages(req, form) for form in FORMATS]
@@ -124,12 +136,19 @@ class OriginalFormatReceiptTests(unittest.TestCase):
         rows = []
         for i in range(8):
             for arm in ("empty", "bm25_top3", "annotated_witness", "witness_lesion"):
-                rows.append(dict(
-                    qid=f"q{i}", root_sha256=f"r{i}", question="Where?",
-                    arm=arm, source_ids=[], sources=[],
-                ))
-        source = dict(schema="hepta.memory.locomo-fixed-reader-private-input.v1",
-                      requests=rows)
+                rows.append(
+                    dict(
+                        qid=f"q{i}",
+                        root_sha256=f"r{i}",
+                        question="Where?",
+                        arm=arm,
+                        source_ids=[],
+                        sources=[],
+                    )
+                )
+        source = dict(
+            schema="hepta.memory.locomo-fixed-reader-private-input.v1", requests=rows
+        )
         self.assertEqual(len(frozen_requests(source)), 16)
         corrupt = copy.deepcopy(source)
         corrupt["requests"][1]["qid"] = "q1"
@@ -147,21 +166,31 @@ class OriginalFormatReceiptTests(unittest.TestCase):
     def test_sealed_original_source_and_model_plan_hashes_guarded(self):
         import locomo_format_trial as trial
         from locomo_format_trial import SCHEMA, GENERATOR, EVIDENCE_ARMS, FORMATS
+
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp)
             # Source-only fixture exercises checksum rejection; no model calls.
-            sealed = dict(schema=GENERATOR, trials=[
-                dict(request=dict(qid=f"q{i}", arm=arm), format=form)
-                for i in range(8) for arm in EVIDENCE_ARMS for form in FORMATS
-            ])
+            sealed = dict(
+                schema=GENERATOR,
+                trials=[
+                    dict(request=dict(qid=f"q{i}", arm=arm), format=form)
+                    for i in range(8)
+                    for arm in EVIDENCE_ARMS
+                    for form in FORMATS
+                ],
+            )
             content = json.dumps(sealed).encode()
             (directory / "sealed-prompts.json").write_bytes(content)
-            registry = dict(schema=SCHEMA, source_original_sha256=SOURCE_PIN,
-                            sealed_prompt_sha256=sha(content),
-                            code_sha256=sha(Path(trial.__file__).read_bytes()),
-                            prompt_formats=list(FORMATS),
-                            evidence_conditions=list(EVIDENCE_ARMS), model_calls=48,
-                            learning_updates=0)
+            registry = dict(
+                schema=SCHEMA,
+                source_original_sha256=SOURCE_PIN,
+                sealed_prompt_sha256=sha(content),
+                code_sha256=sha(Path(trial.__file__).read_bytes()),
+                prompt_formats=list(FORMATS),
+                evidence_conditions=list(EVIDENCE_ARMS),
+                model_calls=48,
+                learning_updates=0,
+            )
             (directory / "preregistered.json").write_text(json.dumps(registry))
             _, controls = load_registered(directory)
             self.assertEqual(len(controls), 48)

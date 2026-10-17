@@ -15,9 +15,7 @@ import subprocess
 import sys
 import zipfile
 
-from delivered_candidate_reader import (
-    SCHEMA, sha_file, validate_raw_rows
-)
+from delivered_candidate_reader import SCHEMA, sha_file, validate_raw_rows
 from local_causal_reader import ABSTAIN, answer as source_chain
 from offline_event_reader_trial import ARMS, inputs, write
 from offline_smol_reader import PINS
@@ -25,8 +23,13 @@ from offline_smol_reader import PINS
 
 def read_json(path, max_size):
     path = Path(path)
-    if path.is_symlink() or not path.is_file() or not 1 <= path.stat().st_size <= max_size:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or not 1 <= path.stat().st_size <= max_size
+    ):
         raise ValueError("bounded regular original record required")
+
     def duplicate(fields):
         out = {}
         for k, value in fields:
@@ -34,9 +37,13 @@ def read_json(path, max_size):
                 raise ValueError("duplicate original journal JSON key")
             out[k] = value
         return out
+
     def invalid(value):
         raise ValueError("nonfinite original record " + value)
-    return json.loads(path.read_text(), object_pairs_hook=duplicate, parse_constant=invalid)
+
+    return json.loads(
+        path.read_text(), object_pairs_hook=duplicate, parse_constant=invalid
+    )
 
 
 def audit(archive, execution, expected_commit):
@@ -48,7 +55,8 @@ def audit(archive, execution, expected_commit):
     summary = read_json(execution / "summary.json", 262144)
     raw_path = execution / "raw-answers.jsonl"
     if (
-        raw_path.is_symlink() or not raw_path.is_file()
+        raw_path.is_symlink()
+        or not raw_path.is_file()
         or raw_path.stat().st_size > 4 * 1024 * 1024
         or sha_file(raw_path) != summary.get("original_raw_journal_sha256")
     ):
@@ -72,14 +80,15 @@ def audit(archive, execution, expected_commit):
         or summary.get("independently_admitted_future_families") != 0
         or summary.get("reference_reader_executed") is not False
         or summary.get("complete_tco_usd") is not None
-        or summary.get("actual_original_reader_forward_attempts") != sum(
-            r["status"] == "succeeded" for r in raw
-        )
+        or summary.get("actual_original_reader_forward_attempts")
+        != sum(r["status"] == "succeeded" for r in raw)
         or summary.get("original_attempts") != 48
     ):
         raise ValueError("original source/model/disposition binding mismatch")
     scores = read_json(execution / "postsealed-scored.json", 4 * 1024 * 1024)
-    if sha_file(execution / "postsealed-scored.json") != summary.get("original_scored_journal_sha256"):
+    if sha_file(execution / "postsealed-scored.json") != summary.get(
+        "original_scored_journal_sha256"
+    ):
         raise ValueError("postsealed score journal digest mismatch")
     if not isinstance(scores, list) or len(scores) != 48:
         raise ValueError("original scored task census incomplete")
@@ -93,7 +102,8 @@ def audit(archive, execution, expected_commit):
     gold = {r["id"]: r for r in json.loads(target_bytes)}
     worker = execution / "original-event-probe.py"
     if (
-        worker.is_symlink() or not worker.is_file()
+        worker.is_symlink()
+        or not worker.is_file()
         or sha_file(worker) != hashlib.sha256(worker_bytes).hexdigest()
     ):
         raise ValueError("original authored worker executable changed")
@@ -103,16 +113,22 @@ def audit(archive, execution, expected_commit):
         qid = case["query"]["identity"]
         for arm in ARMS:
             result = scored[(qid, arm)]
-            raw_row = next(x for x in raw if x["question_id"] == qid and x["arm"] == arm)
+            raw_row = next(
+                x for x in raw if x["question_id"] == qid and x["arm"] == arm
+            )
             if (
-                result.get("question_id") != qid or result.get("arm") != arm
+                result.get("question_id") != qid
+                or result.get("arm") != arm
                 or result.get("chosen") != raw_row.get("chosen")
                 or result.get("status") != raw_row["status"]
                 or result.get("input_tokens") != raw_row.get("input_tokens")
-                or result.get("evaluated_hypotheses") != raw_row.get("evaluated_hypotheses")
+                or result.get("evaluated_hypotheses")
+                != raw_row.get("evaluated_hypotheses")
                 or result.get("model_seconds") != raw_row["model_seconds"]
             ):
-                raise ValueError("postsealed row not paired to original reader response")
+                raise ValueError(
+                    "postsealed row not paired to original reader response"
+                )
             truth = gold[qid]
             closure = source_chain(case["query"], raw_row["selected"], sources)
             complete = closure["status"] == "answered"
@@ -122,14 +138,22 @@ def audit(archive, execution, expected_commit):
             supported = bool(correct and complete and chain_value == chosen)
             procedure = None
             if case["kind"] == "procedure":
-                request = dict(operation="execute", recipe=truth["procedure"],
-                               supplied=chosen if chosen != ABSTAIN and chosen is not None else "invalid_response")
+                request = dict(
+                    operation="execute",
+                    recipe=truth["procedure"],
+                    supplied=chosen
+                    if chosen != ABSTAIN and chosen is not None
+                    else "invalid_response",
+                )
                 if len(json.dumps(request)) > 16384:
                     raise ValueError("original procedure byte bound exceeded")
                 attempt = subprocess.run(
                     [sys.executable, "-I", "-S", str(worker)],
-                    input=json.dumps(request), text=True, capture_output=True,
-                    timeout=10, check=False,
+                    input=json.dumps(request),
+                    text=True,
+                    capture_output=True,
+                    timeout=10,
+                    check=False,
                 )
                 procedure = dict(
                     exit_code=attempt.returncode,
@@ -141,11 +165,14 @@ def audit(archive, execution, expected_commit):
             if (
                 result["strict_candidate_correct"] is not bool(correct)
                 or result["typed_source_chain_complete"] is not complete
-                or result["typed_chain_matched_chosen"] is not bool(chain_value == chosen)
+                or result["typed_chain_matched_chosen"]
+                is not bool(chain_value == chosen)
                 or result["supported_task_success"] is not bool(supported)
                 or result["verified_original_constrained_program"] != procedure
             ):
-                raise ValueError("independent source/program replay disagrees with scored row")
+                raise ValueError(
+                    "independent source/program replay disagrees with scored row"
+                )
             c = totals[arm]
             c["planned"] += 1
             c["actual_model_forwards"] += raw_row["status"] == "succeeded"
@@ -154,14 +181,18 @@ def audit(archive, execution, expected_commit):
             c["typed_source_chain_complete"] += complete
             c["supported_task_success"] += supported
             c["original_worker_calls"] += procedure is not None
-            c["original_worker_success"] += procedure is not None and procedure["exit_code"] == 0
+            c["original_worker_success"] += (
+                procedure is not None and procedure["exit_code"] == 0
+            )
             c["evaluated_hypotheses"] += raw_row.get("evaluated_hypotheses", 0)
             c["prompt_tokens"] += raw_row.get("input_tokens", 0)
             c["refusals"] += chosen == ABSTAIN
     for arm in ARMS:
         for name, count in totals[arm].items():
             if summary["by_arm"][arm][name] != count:
-                raise ValueError("original per-arm published metric drift: " + arm + "/" + name)
+                raise ValueError(
+                    "original per-arm published metric drift: " + arm + "/" + name
+                )
     if tool_replays != 12:
         raise ValueError("missing original bounded program reexecutions")
     return dict(

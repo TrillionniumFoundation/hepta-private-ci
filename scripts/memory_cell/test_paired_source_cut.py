@@ -13,85 +13,129 @@ from paired_source_cut import audit, bind_contract, canonical_sha, read_pinned
 EMPTY_SHA = hashlib.sha256(b"").hexdigest()
 KINDS = ("new_fact", "updated_fact", "composition", "program")
 ARMS = (
-    "base:none", "base:retrieved", "base:sufficient", "base:lesion",
-    "reference:none", "reference:retrieved", "reference:sufficient",
-    "reference:lesion", "base:organized", "base:learned_policy",
-    "base:knowledge", "base:knowledge_only",
+    "base:none",
+    "base:retrieved",
+    "base:sufficient",
+    "base:lesion",
+    "reference:none",
+    "reference:retrieved",
+    "reference:sufficient",
+    "reference:lesion",
+    "base:organized",
+    "base:learned_policy",
+    "base:knowledge",
+    "base:knowledge_only",
 )
 
 
 def fixture():
     cut = dict(
         schema="hepta.memory.prospective-source-cut.v1",
-        contains_answers=False, publisher_answer_oracle=False,
+        contains_answers=False,
+        publisher_answer_oracle=False,
         registered_at="2026-10-12T00:00:00Z",
         frozen_at="2026-10-14T00:00:00Z",
         policy_snapshot_sha256="6" * 64,
         knowledge_snapshot_sha256="7" * 64,
         sources=[
-            dict(id="training", family="training-root", partition="train",
-                 kind="new_fact", source_digest="1" * 64,
-                 source_at="2026-10-13T00:00:00Z",
-                 exposed_at="2026-10-13T00:00:00Z"),
-            dict(id="selection", family="selection-root", partition="select",
-                 kind="updated_fact", source_digest="2" * 64,
-                 source_at="2026-10-13T00:00:00Z",
-                 exposed_at="2026-10-13T00:00:00Z"),
+            dict(
+                id="training",
+                family="training-root",
+                partition="train",
+                kind="new_fact",
+                source_digest="1" * 64,
+                source_at="2026-10-13T00:00:00Z",
+                exposed_at="2026-10-13T00:00:00Z",
+            ),
+            dict(
+                id="selection",
+                family="selection-root",
+                partition="select",
+                kind="updated_fact",
+                source_digest="2" * 64,
+                source_at="2026-10-13T00:00:00Z",
+                exposed_at="2026-10-13T00:00:00Z",
+            ),
         ],
     )
     for i, kind in enumerate(KINDS):
-        cut["sources"].append(dict(
-            id=f"case-{i}", family=f"test-family-{i}",
-            partition="test", kind=kind, source_digest=str(i + 3) * 64,
-            question_sha256="d" * 64, candidate_pool_sha256="e" * 64,
-            source_at="2026-10-13T02:00:00Z",
-            exposed_at="2026-10-15T00:00:00Z",
-        ))
+        cut["sources"].append(
+            dict(
+                id=f"case-{i}",
+                family=f"test-family-{i}",
+                partition="test",
+                kind=kind,
+                source_digest=str(i + 3) * 64,
+                question_sha256="d" * 64,
+                candidate_pool_sha256="e" * 64,
+                source_at="2026-10-13T02:00:00Z",
+                exposed_at="2026-10-15T00:00:00Z",
+            )
+        )
     cut_sha = canonical_sha(cut)
     cases = []
     rows = []
     for i, kind in enumerate(KINDS):
         src = cut["sources"][i + 2]
-        cases.append(dict(
-            id=src["id"], family=src["family"], kind=kind,
-            question_sha256=src["question_sha256"],
-            snapshot_frozen_at=cut["frozen_at"],
-            revealed_at=src["exposed_at"],
-            candidate_pool_sha256=src["candidate_pool_sha256"],
-            policy_snapshot_sha256=cut["policy_snapshot_sha256"],
-            knowledge_snapshot_sha256=cut["knowledge_snapshot_sha256"],
-        ))
-        for arm in ARMS:
-            rows.append(dict(
-                task_id=src["id"], arm=arm,
-                source_cut_sha256=cut_sha,
-                original_source_sha256=src["source_digest"],
-                status="succeeded",
-                reader_sha256="f" * 64 if arm.startswith("reference:") else "b" * 64,
-                prompt_template_sha256="a" * 64, tools_sha256="c" * 64,
+        cases.append(
+            dict(
+                id=src["id"],
+                family=src["family"],
+                kind=kind,
+                question_sha256=src["question_sha256"],
+                snapshot_frozen_at=cut["frozen_at"],
+                revealed_at=src["exposed_at"],
                 candidate_pool_sha256=src["candidate_pool_sha256"],
-                evidence_sha256=EMPTY_SHA if arm in
-                ("base:none", "reference:none", "base:knowledge_only") else "5" * 64,
-                specialization_sha256=(
-                    "6" * 64 if arm == "base:learned_policy" else
-                    "7" * 64 if arm in ("base:knowledge", "base:knowledge_only")
-                    else EMPTY_SHA
-                ),
-                input_budget=2048, output_budget=64,
-                input_tokens=32, output_tokens=8,
-                strict_task_success=False, complete_citation_chain=False,
-            ))
+                policy_snapshot_sha256=cut["policy_snapshot_sha256"],
+                knowledge_snapshot_sha256=cut["knowledge_snapshot_sha256"],
+            )
+        )
+        for arm in ARMS:
+            rows.append(
+                dict(
+                    task_id=src["id"],
+                    arm=arm,
+                    source_cut_sha256=cut_sha,
+                    original_source_sha256=src["source_digest"],
+                    status="succeeded",
+                    reader_sha256="f" * 64
+                    if arm.startswith("reference:")
+                    else "b" * 64,
+                    prompt_template_sha256="a" * 64,
+                    tools_sha256="c" * 64,
+                    candidate_pool_sha256=src["candidate_pool_sha256"],
+                    evidence_sha256=EMPTY_SHA
+                    if arm in ("base:none", "reference:none", "base:knowledge_only")
+                    else "5" * 64,
+                    specialization_sha256=(
+                        "6" * 64
+                        if arm == "base:learned_policy"
+                        else "7" * 64
+                        if arm in ("base:knowledge", "base:knowledge_only")
+                        else EMPTY_SHA
+                    ),
+                    input_budget=2048,
+                    output_budget=64,
+                    input_tokens=32,
+                    output_tokens=8,
+                    strict_task_success=False,
+                    complete_citation_chain=False,
+                )
+            )
     plan = dict(
         schema="hepta.memory.four-stage-prospective-plan.v1",
-        arms=list(ARMS), cases=cases,
-        contains_gold_answers=False, answer_space_oracle=False,
+        arms=list(ARMS),
+        cases=cases,
+        contains_gold_answers=False,
+        answer_space_oracle=False,
         source_cut_sha256=cut_sha,
         frozen_execution=dict(
             base_reader_sha256="b" * 64,
             reference_reader_sha256="f" * 64,
             prompt_template_sha256="a" * 64,
             tools_sha256="c" * 64,
-            input_budget=2048, output_budget=64,
+            input_budget=2048,
+            output_budget=64,
         ),
     )
     return cut, plan, rows
@@ -246,7 +290,9 @@ class PairedSourceContractTests(unittest.TestCase):
             symlink = Path(directory) / "linked.json"
             symlink.symlink_to(path)
             with self.assertRaisesRegex(ValueError, "regular JSON input"):
-                read_pinned(symlink, hashlib.sha256(path.read_bytes()).hexdigest(), 1024)
+                read_pinned(
+                    symlink, hashlib.sha256(path.read_bytes()).hexdigest(), 1024
+                )
 
 
 if __name__ == "__main__":

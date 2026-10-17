@@ -10,31 +10,55 @@ SHA = "a" * 64
 
 def sample():
     rows = [
-        dict(id="train", family="f-train", partition="train", kind="new_fact",
-             source_digest="1" * 64, source_at="2026-10-13T01:00:00Z",
-             exposed_at="2026-10-14T01:00:00Z"),
-        dict(id="select", family="f-select", partition="select", kind="updated_fact",
-             source_digest="2" * 64, source_at="2026-10-13T01:00:00Z",
-             exposed_at="2026-10-14T01:00:00Z"),
+        dict(
+            id="train",
+            family="f-train",
+            partition="train",
+            kind="new_fact",
+            source_digest="1" * 64,
+            source_at="2026-10-13T01:00:00Z",
+            exposed_at="2026-10-14T01:00:00Z",
+        ),
+        dict(
+            id="select",
+            family="f-select",
+            partition="select",
+            kind="updated_fact",
+            source_digest="2" * 64,
+            source_at="2026-10-13T01:00:00Z",
+            exposed_at="2026-10-14T01:00:00Z",
+        ),
     ]
     for i, kind in enumerate(("new_fact", "updated_fact", "composition", "program")):
-        rows.append(dict(id=f"test-{i}", family=f"f-test-{i}", partition="test",
-                         kind=kind, source_digest=str(i + 3) * 64,
-                         source_at="2026-10-13T03:00:00Z",
-                         exposed_at="2026-10-15T00:00:00Z"))
-    return dict(schema="hepta.memory.prospective-source-cut.v1",
-                contains_answers=False, publisher_answer_oracle=False,
-                registered_at="2026-10-12T00:00:00Z",
-                frozen_at="2026-10-14T00:00:00Z",
-                policy_snapshot_sha256=SHA, knowledge_snapshot_sha256=SHA,
-                sources=rows)
+        rows.append(
+            dict(
+                id=f"test-{i}",
+                family=f"f-test-{i}",
+                partition="test",
+                kind=kind,
+                source_digest=str(i + 3) * 64,
+                source_at="2026-10-13T03:00:00Z",
+                exposed_at="2026-10-15T00:00:00Z",
+            )
+        )
+    return dict(
+        schema="hepta.memory.prospective-source-cut.v1",
+        contains_answers=False,
+        publisher_answer_oracle=False,
+        registered_at="2026-10-12T00:00:00Z",
+        frozen_at="2026-10-14T00:00:00Z",
+        policy_snapshot_sha256=SHA,
+        knowledge_snapshot_sha256=SHA,
+        sources=rows,
+    )
 
 
 class OriginalSourceCutTests(unittest.TestCase):
     def test_registered_not_certified(self):
         result = admission(sample())
-        self.assertEqual(result["partition_source_counts"],
-                         {"train": 1, "select": 1, "test": 4})
+        self.assertEqual(
+            result["partition_source_counts"], {"train": 1, "select": 1, "test": 4}
+        )
         self.assertFalse(result["source_lineage_independently_authenticated"])
         self.assertFalse(result["production_accepted"])
 

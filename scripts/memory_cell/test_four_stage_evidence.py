@@ -8,8 +8,16 @@ import tempfile
 import unittest
 
 from four_stage_evidence import (
-    ARMS, COST_FIELDS, EMPTY_SHA, PINNED, ROOT, break_even,
-    historical, prospective_guard, strict_json, total_cost,
+    ARMS,
+    COST_FIELDS,
+    EMPTY_SHA,
+    PINNED,
+    ROOT,
+    break_even,
+    historical,
+    prospective_guard,
+    strict_json,
+    total_cost,
 )
 
 SHA = "a" * 64
@@ -19,7 +27,9 @@ def future_fixture():
     kinds = ("new_fact", "updated_fact", "composition", "program")
     cases = [
         {
-            "id": f"case-{i}", "family": f"root-{i}", "kind": kind,
+            "id": f"case-{i}",
+            "family": f"root-{i}",
+            "kind": kind,
             "snapshot_frozen_at": "2026-10-13T00:00:00Z",
             "revealed_at": "2026-10-14T00:00:00Z",
             "candidate_pool_sha256": "e" * 64,
@@ -30,39 +40,51 @@ def future_fixture():
     ]
     plan = {
         "schema": "hepta.memory.four-stage-prospective-plan.v1",
-        "arms": list(ARMS), "cases": cases,
-        "contains_gold_answers": False, "answer_space_oracle": False,
+        "arms": list(ARMS),
+        "cases": cases,
+        "contains_gold_answers": False,
+        "answer_space_oracle": False,
         "frozen_execution": {
             "base_reader_sha256": "b" * 64,
             "reference_reader_sha256": "f" * 64,
             "prompt_template_sha256": "d" * 64,
             "tools_sha256": SHA,
-            "input_budget": 2048, "output_budget": 64,
+            "input_budget": 2048,
+            "output_budget": 64,
         },
     }
     rows = []
     for case in cases:
         for arm in ARMS:
-            rows.append({
-                "task_id": case["id"], "arm": arm,
-                "status": "succeeded",
-                "reader_sha256": "f" * 64 if arm.startswith("reference:") else "b" * 64,
-                "prompt_template_sha256": "d" * 64,
-                "tools_sha256": SHA,
-                "candidate_pool_sha256": "e" * 64,
-                "specialization_sha256": (
-                    "6" * 64 if arm == "base:learned_policy"
-                    else "7" * 64 if arm in ("base:knowledge", "base:knowledge_only")
-                    else EMPTY_SHA
-                ),
-                "evidence_sha256": EMPTY_SHA if arm in (
-                    "base:none", "base:knowledge_only", "reference:none"
-                ) else "c" * 64,
-                "input_budget": 2048, "output_budget": 64,
-                "input_tokens": 100, "output_tokens": 10,
-                "strict_task_success": False,
-                "complete_citation_chain": False,
-            })
+            rows.append(
+                {
+                    "task_id": case["id"],
+                    "arm": arm,
+                    "status": "succeeded",
+                    "reader_sha256": "f" * 64
+                    if arm.startswith("reference:")
+                    else "b" * 64,
+                    "prompt_template_sha256": "d" * 64,
+                    "tools_sha256": SHA,
+                    "candidate_pool_sha256": "e" * 64,
+                    "specialization_sha256": (
+                        "6" * 64
+                        if arm == "base:learned_policy"
+                        else "7" * 64
+                        if arm in ("base:knowledge", "base:knowledge_only")
+                        else EMPTY_SHA
+                    ),
+                    "evidence_sha256": EMPTY_SHA
+                    if arm in ("base:none", "base:knowledge_only", "reference:none")
+                    else "c" * 64,
+                    "input_budget": 2048,
+                    "output_budget": 64,
+                    "input_tokens": 100,
+                    "output_tokens": 10,
+                    "strict_task_success": False,
+                    "complete_citation_chain": False,
+                }
+            )
     return plan, rows
 
 
@@ -73,17 +95,28 @@ class OriginalPinnedEvidenceTests(unittest.TestCase):
         self.assertEqual(result["new_model_inferences"], 0)
         self.assertFalse(result["phase1_reader"]["reader_sufficiency_qualified"])
         self.assertEqual(
-            result["phase1_reader"]["real_original_reader_conditions"]
-            ["qwen-3b"]["strict_success"]["without_prerequisite"], 4
+            result["phase1_reader"]["real_original_reader_conditions"]["qwen-3b"][
+                "strict_success"
+            ]["without_prerequisite"],
+            4,
         )
         self.assertEqual(
-            result["phase2_organization"]["organized_additional_success_vs_complete_path"], 0
+            result["phase2_organization"][
+                "organized_additional_success_vs_complete_path"
+            ],
+            0,
         )
         self.assertEqual(
-            result["phase2_organization"]["organized_saved_input_tokens_vs_complete_path"], 573
+            result["phase2_organization"][
+                "organized_saved_input_tokens_vs_complete_path"
+            ],
+            573,
         )
         self.assertEqual(
-            result["phase3_parameters"]["heldout_development_task_answer_changes_per_head"], 0
+            result["phase3_parameters"][
+                "heldout_development_task_answer_changes_per_head"
+            ],
+            0,
         )
         self.assertIsNone(result["phase4_lifetime"]["complete_lifecycle_cost"])
         self.assertFalse(result["phase4_lifetime"]["production_accepted"])
@@ -164,7 +197,9 @@ class ProspectiveControlsTests(unittest.TestCase):
             row = next(x for x in rows if x["arm"] == "base:learned_policy")
             row[field] = 512 if field == "input_budget" else "9" * 64
             with self.subTest(field=field):
-                with self.assertRaisesRegex(ValueError, "frozen execution config drift"):
+                with self.assertRaisesRegex(
+                    ValueError, "frozen execution config drift"
+                ):
                     prospective_guard(plan, rows)
 
     def test_same_evidence_required_for_knowledge_gain(self):
@@ -268,8 +303,9 @@ class ProspectiveControlsTests(unittest.TestCase):
     def test_organized_always_measured_against_strong_hybrid(self):
         plan, rows = future_fixture()
         report = prospective_guard(plan, rows)
-        self.assertIn("base:organized__vs__base:retrieved",
-                      report["paired_descriptive"])
+        self.assertIn(
+            "base:organized__vs__base:retrieved", report["paired_descriptive"]
+        )
 
     def test_reader_weights_and_token_limits_frozen_for_entire_cohort(self):
         plan, rows = future_fixture()
@@ -291,8 +327,9 @@ class ProspectiveControlsTests(unittest.TestCase):
     def test_knowledge_only_also_compared_with_no_memory(self):
         plan, rows = future_fixture()
         report = prospective_guard(plan, rows)
-        self.assertIn("base:knowledge_only__vs__base:none",
-                      report["paired_descriptive"])
+        self.assertIn(
+            "base:knowledge_only__vs__base:none", report["paired_descriptive"]
+        )
 
 
 if __name__ == "__main__":

@@ -20,7 +20,11 @@ import time
 import zipfile
 
 from local_causal_reader import (
-    ABSTAIN, answer as source_chain, interpret_query, parse_event, timestamp
+    ABSTAIN,
+    answer as source_chain,
+    interpret_query,
+    parse_event,
+    timestamp,
 )
 from offline_event_reader_trial import ARCHIVE_SHA, ARMS, inputs, messages, write
 from offline_smol_reader import OriginalSmol, PROFILE, PINS, digest
@@ -68,7 +72,10 @@ def frozen_selection(case, arm, sources):
             source, query_scope=query["scope"], query_time=cutoff, revoked=()
         )
         source_sha.append(
-            dict(id=source_id, sha256=hashlib.sha256(source["content"].encode()).hexdigest())
+            dict(
+                id=source_id,
+                sha256=hashlib.sha256(source["content"].encode()).hexdigest(),
+            )
         )
         if revision is not None and event["revision"] <= revision:
             value = event["value"]
@@ -92,11 +99,7 @@ def frozen_selection(case, arm, sources):
 
 
 def strict_rank(scores, choices):
-    if (
-        len(scores) != len(choices)
-        or not choices
-        or len(set(choices)) != len(choices)
-    ):
+    if len(scores) != len(choices) or not choices or len(set(choices)) != len(choices):
         raise ValueError("incomplete or duplicate forced scoring")
     seen = set()
     for score in scores:
@@ -108,13 +111,20 @@ def strict_rank(scores, choices):
             raise ValueError("invalid original conditional log likelihood")
         if not 1 <= score["token_count"] <= MAX_CHOICE_TOKENS:
             raise ValueError("invalid forced-choice token count")
-    return sorted(choices, key=lambda v: (-next(s["mean_log_likelihood"] for s in scores if s["value"] == v), choices.index(v)))
+    return sorted(
+        choices,
+        key=lambda v: (
+            -next(s["mean_log_likelihood"] for s in scores if s["value"] == v),
+            choices.index(v),
+        ),
+    )
 
 
 def validate_raw_rows(plan, sources, raw):
     """Second-process provenance/option ranking check; no neural re-execution."""
     if (
-        len(plan["cases"]) != 8 or tuple(plan["arms"]) != ARMS
+        len(plan["cases"]) != 8
+        or tuple(plan["arms"]) != ARMS
         or len(raw) != 8 * len(ARMS)
     ):
         raise ValueError("original source-delivered task matrix incomplete")
@@ -122,15 +132,25 @@ def validate_raw_rows(plan, sources, raw):
     for case in plan["cases"]:
         for arm in ARMS:
             qid = case["query"]["identity"]
-            matching = [r for r in raw if r.get("question_id") == qid and r.get("arm") == arm]
+            matching = [
+                r for r in raw if r.get("question_id") == qid and r.get("arm") == arm
+            ]
             if len(matching) != 1 or (qid, arm) in observed:
                 raise ValueError("missing/duplicate actual reader attempt")
             observed.add((qid, arm))
             row = matching[0]
             control = frozen_selection(case, arm, sources)
-            for name in ("selected", "original_source_hashes", "evidence_only_candidates", "forced_choices", "selection_digest"):
+            for name in (
+                "selected",
+                "original_source_hashes",
+                "evidence_only_candidates",
+                "forced_choices",
+                "selection_digest",
+            ):
                 if row.get(name) != control[name]:
-                    raise ValueError("actual delivered evidence/answer-space tampered: " + name)
+                    raise ValueError(
+                        "actual delivered evidence/answer-space tampered: " + name
+                    )
             if row.get("status") not in ("succeeded", "failed"):
                 raise ValueError("unknown reader attempt status")
             if row.get("reader_profile") != PROFILE:
@@ -148,16 +168,31 @@ def validate_raw_rows(plan, sources, raw):
             else:
                 if row.get("chosen") is not None or row.get("scores"):
                     raise ValueError("failed attempt carried successful model scores")
-            if any(field in row for field in (
-                "expected", "target", "gold", "label_answer", "complete_source_chain",
-                "program_success", "strict_success",
-            )):
-                raise ValueError("postscore annotation leaked into original answer journal")
+            if any(
+                field in row
+                for field in (
+                    "expected",
+                    "target",
+                    "gold",
+                    "label_answer",
+                    "complete_source_chain",
+                    "program_success",
+                    "strict_success",
+                )
+            ):
+                raise ValueError(
+                    "postscore annotation leaked into original answer journal"
+                )
     if len(observed) != 48:
         raise ValueError("source-local reader census incomplete")
-    return {"original_model_attempts": 48, "paired_questions": 8,
-            "source_only_rank_replayed": True, "new_model_calls": 0,
-            "independent_source_families": 0, "production_accepted": False}
+    return {
+        "original_model_attempts": 48,
+        "paired_questions": 8,
+        "source_only_rank_replayed": True,
+        "new_model_calls": 0,
+        "independent_source_families": 0,
+        "production_accepted": False,
+    }
 
 
 def run(archive, reader_root, output, source_commit):
@@ -170,36 +205,41 @@ def run(archive, reader_root, output, source_commit):
     plan, sources, worker_bytes = inputs(archive)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
-    write(output / "preregistered.json", dict(
-        schema=SCHEMA,
-        generated_at=datetime.now(timezone.utc).isoformat(),
-        source_commit=source_commit,
-        source_archive_sha256=ARCHIVE_SHA,
-        original_model_artifact_id=11586991191,
-        model_files=PINS,
-        model_numeric_profile=PROFILE,
-        method="conditional mean token log-likelihood of delivered candidates and fixed refusal",
-        candidate_source="each_arm_delivered_original_event_values_only",
-        global_scope_answer_space_oracle=False,
-        no_hindsight_target_or_label_inference=True,
-        absent_and_lesioned_evidence_may_force_abstention=True,
-        original_48_matched_evidence_conditions=list(ARMS),
-        source_question_set_already_public=True,
-        human_sufficient_witnesses_certified=False,
-        real_project_program_experiments=False,
-        training_steps=0,
-        independent_future_roots=0,
-        production_accepted=False,
-        code_sha256={
-            path: sha_file(Path(__file__).with_name(path))
-            for path in (
-                "delivered_candidate_reader.py", "reader_candidate_capacity.py",
-                "local_causal_reader.py", "offline_event_reader_trial.py",
-                "offline_smol_reader.py",
-            )
-        },
-        worker_sha256=hashlib.sha256(worker_bytes).hexdigest(),
-    ))
+    write(
+        output / "preregistered.json",
+        dict(
+            schema=SCHEMA,
+            generated_at=datetime.now(timezone.utc).isoformat(),
+            source_commit=source_commit,
+            source_archive_sha256=ARCHIVE_SHA,
+            original_model_artifact_id=11586991191,
+            model_files=PINS,
+            model_numeric_profile=PROFILE,
+            method="conditional mean token log-likelihood of delivered candidates and fixed refusal",
+            candidate_source="each_arm_delivered_original_event_values_only",
+            global_scope_answer_space_oracle=False,
+            no_hindsight_target_or_label_inference=True,
+            absent_and_lesioned_evidence_may_force_abstention=True,
+            original_48_matched_evidence_conditions=list(ARMS),
+            source_question_set_already_public=True,
+            human_sufficient_witnesses_certified=False,
+            real_project_program_experiments=False,
+            training_steps=0,
+            independent_future_roots=0,
+            production_accepted=False,
+            code_sha256={
+                path: sha_file(Path(__file__).with_name(path))
+                for path in (
+                    "delivered_candidate_reader.py",
+                    "reader_candidate_capacity.py",
+                    "local_causal_reader.py",
+                    "offline_event_reader_trial.py",
+                    "offline_smol_reader.py",
+                )
+            },
+            worker_sha256=hashlib.sha256(worker_bytes).hexdigest(),
+        ),
+    )
     model = OriginalSmol(reader_root)
     started_model = time.perf_counter()
     raw = []
@@ -208,12 +248,21 @@ def run(archive, reader_root, output, source_commit):
             for arm in ARMS:
                 control = frozen_selection(case, arm, sources)
                 row = dict(
-                    question_id=case["query"]["identity"], kind=case["kind"], arm=arm,
-                    reader_identity=model.identity, reader_profile=PROFILE,
-                    **{k: control[k] for k in (
-                        "selected", "original_source_hashes", "evidence_only_candidates",
-                        "forced_choices", "selection_digest",
-                    )},
+                    question_id=case["query"]["identity"],
+                    kind=case["kind"],
+                    arm=arm,
+                    reader_identity=model.identity,
+                    reader_profile=PROFILE,
+                    **{
+                        k: control[k]
+                        for k in (
+                            "selected",
+                            "original_source_hashes",
+                            "evidence_only_candidates",
+                            "forced_choices",
+                            "selection_digest",
+                        )
+                    },
                 )
                 step = time.perf_counter()
                 try:
@@ -221,11 +270,16 @@ def run(archive, reader_root, output, source_commit):
                     prompt = model.tokenizer.render(request)
                     ids = model.tokenizer.encode(prompt)
                     if not 1 <= len(ids) <= MAX_INPUT_TOKENS:
-                        raise ValueError("original prompt budget exceeded, no truncation")
+                        raise ValueError(
+                            "original prompt budget exceeded, no truncation"
+                        )
                     with torch.inference_mode():
                         logits, cache = model.forward(ids)
                         scores = [
-                            {"value": value, **candidate_score(model, logits, cache, value)}
+                            {
+                                "value": value,
+                                **candidate_score(model, logits, cache, value),
+                            }
                             for value in control["forced_choices"]
                         ]
                     chosen = strict_rank(scores, control["forced_choices"])[0]
@@ -238,17 +292,31 @@ def run(archive, reader_root, output, source_commit):
                         chosen=chosen,
                     )
                 except Exception as error:
-                    row.update(status="failed", chosen=None, scores=[],
-                               error_type=type(error).__name__, error=str(error)[:512])
+                    row.update(
+                        status="failed",
+                        chosen=None,
+                        scores=[],
+                        error_type=type(error).__name__,
+                        error=str(error)[:512],
+                    )
                 row["model_seconds"] = time.perf_counter() - step
-                journal.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                journal.write(
+                    json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                )
                 journal.flush()
                 os.fsync(journal.fileno())
                 raw.append(row)
-                print(json.dumps({
-                    "attempt": len(raw), "planned": 48, "arm": arm,
-                    "status": row["status"],
-                }), flush=True)
+                print(
+                    json.dumps(
+                        {
+                            "attempt": len(raw),
+                            "planned": 48,
+                            "arm": arm,
+                            "status": row["status"],
+                        }
+                    ),
+                    flush=True,
+                )
     model.verify_frozen()
     original_inference_seconds = time.perf_counter() - started_model
     validated = validate_raw_rows(plan, sources, raw)
@@ -271,25 +339,37 @@ def run(archive, reader_root, output, source_commit):
         for arm in ARMS:
             row = next(r for r in raw if r["question_id"] == qid and r["arm"] == arm)
             closure = source_chain(case["query"], row["selected"], sources)
-            chain_value = closure["answer"].split(" ", 1)[0] if closure["status"] == "answered" else None
+            chain_value = (
+                closure["answer"].split(" ", 1)[0]
+                if closure["status"] == "answered"
+                else None
+            )
             choice = row["chosen"]
             source_complete = closure["status"] == "answered"
             score_correct = row["status"] == "succeeded" and choice == truth["expected"]
             # This is a typed source-closure check, NOT a human citation judgment,
             # generated explanation, or learned model contribution.
-            supported = bool(score_correct and source_complete and chain_value == choice)
+            supported = bool(
+                score_correct and source_complete and chain_value == choice
+            )
             procedure = None
             if case["kind"] == "procedure":
                 request = {
-                    "operation": "execute", "recipe": truth["procedure"],
-                    "supplied": choice if choice != ABSTAIN and choice is not None else "invalid_response",
+                    "operation": "execute",
+                    "recipe": truth["procedure"],
+                    "supplied": choice
+                    if choice != ABSTAIN and choice is not None
+                    else "invalid_response",
                 }
                 if len(json.dumps(request)) > 16384:
                     raise ValueError("registered original procedure request too large")
                 p = subprocess.run(
                     [sys.executable, "-I", "-S", str(worker)],
-                    input=json.dumps(request), text=True, capture_output=True,
-                    timeout=10, check=False,
+                    input=json.dumps(request),
+                    text=True,
+                    capture_output=True,
+                    timeout=10,
+                    check=False,
                 )
                 procedure = dict(
                     exit_code=p.returncode,
@@ -297,40 +377,60 @@ def run(archive, reader_root, output, source_commit):
                     stderr_sha256=hashlib.sha256(p.stderr.encode()).hexdigest(),
                 )
                 supported = supported and p.returncode == 0
-            private.append(dict(
-                question_id=qid, arm=arm, chosen=choice,
-                strict_candidate_correct=bool(score_correct),
-                typed_source_chain_complete=source_complete,
-                typed_chain_matched_chosen=bool(chain_value == choice),
-                supported_task_success=bool(supported),
-                verified_original_constrained_program=procedure,
-                **{k: v for k, v in row.items() if k in (
-                    "status", "model_seconds", "input_tokens", "evaluated_hypotheses"
-                )},
-            ))
+            private.append(
+                dict(
+                    question_id=qid,
+                    arm=arm,
+                    chosen=choice,
+                    strict_candidate_correct=bool(score_correct),
+                    typed_source_chain_complete=source_complete,
+                    typed_chain_matched_chosen=bool(chain_value == choice),
+                    supported_task_success=bool(supported),
+                    verified_original_constrained_program=procedure,
+                    **{
+                        k: v
+                        for k, v in row.items()
+                        if k
+                        in (
+                            "status",
+                            "model_seconds",
+                            "input_tokens",
+                            "evaluated_hypotheses",
+                        )
+                    },
+                )
+            )
     write(output / "postsealed-scored.json", private)
     for arm in ARMS:
         rows = [r for r in private if r["arm"] == arm]
         original_rows = [r for r in raw if r["arm"] == arm]
         by_arm[arm] = dict(
-            planned=8, actual_model_forwards=sum(r["status"] == "succeeded" for r in rows),
+            planned=8,
+            actual_model_forwards=sum(r["status"] == "succeeded" for r in rows),
             failed=sum(r["status"] == "failed" for r in rows),
             strict_candidate_correct=sum(r["strict_candidate_correct"] for r in rows),
-            typed_source_chain_complete=sum(r["typed_source_chain_complete"] for r in rows),
+            typed_source_chain_complete=sum(
+                r["typed_source_chain_complete"] for r in rows
+            ),
             supported_task_success=sum(r["supported_task_success"] for r in rows),
-            original_worker_calls=sum(r["verified_original_constrained_program"] is not None for r in rows),
+            original_worker_calls=sum(
+                r["verified_original_constrained_program"] is not None for r in rows
+            ),
             original_worker_success=sum(
-                r["verified_original_constrained_program"] is not None and
-                r["verified_original_constrained_program"]["exit_code"] == 0
+                r["verified_original_constrained_program"] is not None
+                and r["verified_original_constrained_program"]["exit_code"] == 0
                 for r in rows
             ),
-            evaluated_hypotheses=sum(r.get("evaluated_hypotheses", 0) for r in original_rows),
+            evaluated_hypotheses=sum(
+                r.get("evaluated_hypotheses", 0) for r in original_rows
+            ),
             prompt_tokens=sum(r.get("input_tokens", 0) for r in original_rows),
             model_seconds=sum(r["model_seconds"] for r in original_rows),
             refusals=sum(r["chosen"] == ABSTAIN for r in original_rows),
         )
     result = dict(
-        schema=SCHEMA, source_commit=source_commit,
+        schema=SCHEMA,
+        source_commit=source_commit,
         original_attempts=validated["original_model_attempts"],
         actual_original_reader_forward_attempts=sum(
             row["status"] == "succeeded" for row in raw
@@ -342,10 +442,19 @@ def run(archive, reader_root, output, source_commit):
         original_scored_journal_sha256=sha_file(output / "postsealed-scored.json"),
         reader_inference_seconds=original_inference_seconds,
         total_wall_seconds=time.perf_counter() - started,
-        by_arm=by_arm, original_source_archive_bytes=Path(archive).stat().st_size,
-        model_retained_bytes=sum((Path(reader_root) / file).stat().st_size for file in PINS),
-        unmeasured_lifecycle_costs=["paid CPU/GPU", "source indexing", "source retention",
-                                    "maintenance", "revocation", "production recovery"],
+        by_arm=by_arm,
+        original_source_archive_bytes=Path(archive).stat().st_size,
+        model_retained_bytes=sum(
+            (Path(reader_root) / file).stat().st_size for file in PINS
+        ),
+        unmeasured_lifecycle_costs=[
+            "paid CPU/GPU",
+            "source indexing",
+            "source retention",
+            "maintenance",
+            "revocation",
+            "production recovery",
+        ],
         complete_tco_usd=None,
         full_gold_candidate_pool_used=False,
         only_delivered_values_and_fixed_refusal=True,
@@ -360,7 +469,9 @@ def run(archive, reader_root, output, source_commit):
     )
     write(output / "summary.json", result)
     if any(row["status"] != "succeeded" for row in raw):
-        raise ValueError("original failed reader attempts retained; cannot promote census")
+        raise ValueError(
+            "original failed reader attempts retained; cannot promote census"
+        )
     return result
 
 

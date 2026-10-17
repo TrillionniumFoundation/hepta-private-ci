@@ -8,46 +8,85 @@ import tempfile
 import unittest
 
 from locomo_blind_sufficiency import (
-    ARMS, PLAN_SHA256, SOURCE_SHA256, SCHEMA, canonical,
-    audit_public_receipt, check_source_return, create, pinned_file, sha,
+    ARMS,
+    PLAN_SHA256,
+    SOURCE_SHA256,
+    SCHEMA,
+    canonical,
+    audit_public_receipt,
+    check_source_return,
+    create,
+    pinned_file,
+    sha,
 )
 
 
 def fixture():
     cases = [dict(qid=f"question-{i}", root_sha256=f"root-{i}") for i in range(8)]
-    plan = dict(schema="hepta.memory.locomo-four-evidence-regimes.v1",
-                sealed_inputs_sha256=SOURCE_SHA256,
-                fixed_cases=cases, dataset_previously_public=True,
-                no_answer_labels_opened_in_prepare=True,
-                publisher_witness_independent_sufficiency=False)
+    plan = dict(
+        schema="hepta.memory.locomo-four-evidence-regimes.v1",
+        sealed_inputs_sha256=SOURCE_SHA256,
+        fixed_cases=cases,
+        dataset_previously_public=True,
+        no_answer_labels_opened_in_prepare=True,
+        publisher_witness_independent_sufficiency=False,
+    )
     requests = []
     for case in cases:
         for arm in ARMS:
-            original = [dict(id=f"doc-{case['qid']}-{arm}-{i}",
-                             speaker="Alice", text="The café opens today.")
-                        for i in range(3 if arm in ("bm25_top3", "annotated_witness")
-                                       else (2 if arm == "witness_lesion" else 0))]
-            requests.append(dict(qid=case["qid"], root_sha256=case["root_sha256"],
-                                 question=f"Where is Alice {case['qid']}?", arm=arm,
-                                 sources=original,
-                                 source_ids=[row["id"] for row in original]))
-    sealed = dict(schema="hepta.memory.locomo-fixed-reader-private-input.v1",
-                  requests=requests)
+            original = [
+                dict(
+                    id=f"doc-{case['qid']}-{arm}-{i}",
+                    speaker="Alice",
+                    text="The café opens today.",
+                )
+                for i in range(
+                    3
+                    if arm in ("bm25_top3", "annotated_witness")
+                    else (2 if arm == "witness_lesion" else 0)
+                )
+            ]
+            requests.append(
+                dict(
+                    qid=case["qid"],
+                    root_sha256=case["root_sha256"],
+                    question=f"Where is Alice {case['qid']}?",
+                    arm=arm,
+                    sources=original,
+                    source_ids=[row["id"] for row in original],
+                )
+            )
+    sealed = dict(
+        schema="hepta.memory.locomo-fixed-reader-private-input.v1", requests=requests
+    )
     return plan, sealed
 
 
 def returned(packet, claimed):
-    return dict(schema=SCHEMA, phase="source-first-review", claimed_reviewer_id=claimed,
-                packet_sha256=sha(canonical(packet)),
-                rows=[dict(ticket_id=item["ticket_id"], verdict="unassessable",
-                           answer_from_sources=None, supporting_spans=[],
-                           contradictory_labels=[]) for item in packet["tickets"]])
+    return dict(
+        schema=SCHEMA,
+        phase="source-first-review",
+        claimed_reviewer_id=claimed,
+        packet_sha256=sha(canonical(packet)),
+        rows=[
+            dict(
+                ticket_id=item["ticket_id"],
+                verdict="unassessable",
+                answer_from_sources=None,
+                supporting_spans=[],
+                contradictory_labels=[],
+            )
+            for item in packet["tickets"]
+        ],
+    )
 
 
 class BlindSufficiencyTests(unittest.TestCase):
     def setUp(self):
         self.plan, self.sealed = fixture()
-        self.packet, self.private, self.receipt = create(self.plan, self.sealed, b"A" * 32)
+        self.packet, self.private, self.receipt = create(
+            self.plan, self.sealed, b"A" * 32
+        )
 
     def test_complete_32_ticket_blind_packet(self):
         self.assertEqual(len(self.packet["tickets"]), 32)
@@ -69,8 +108,10 @@ class BlindSufficiencyTests(unittest.TestCase):
     def test_secret_does_not_enter_public_packet_and_blinds_role(self):
         packet2, private2, receipt2 = create(self.plan, self.sealed, b"B" * 32)
         self.assertNotEqual(self.receipt["packet_sha256"], receipt2["packet_sha256"])
-        self.assertNotEqual(set(x["ticket_id"] for x in self.packet["tickets"]),
-                            set(x["ticket_id"] for x in packet2["tickets"]))
+        self.assertNotEqual(
+            set(x["ticket_id"] for x in self.packet["tickets"]),
+            set(x["ticket_id"] for x in packet2["tickets"]),
+        )
         self.assertFalse("A" * 32 in json.dumps(self.packet))
         self.assertNotIn("bm25_top3", json.dumps(self.packet))
         self.assertIn("bm25_top3", json.dumps(self.private))
@@ -88,7 +129,9 @@ class BlindSufficiencyTests(unittest.TestCase):
 
     def test_no_evidence_hidden_or_gold_field_denied(self):
         sealed = copy.deepcopy(self.sealed)
-        sealed["requests"][0]["sources"].append(dict(id="hidden", speaker="A", text="yes"))
+        sealed["requests"][0]["sources"].append(
+            dict(id="hidden", speaker="A", text="yes")
+        )
         sealed["requests"][0]["source_ids"].append("hidden")
         with self.assertRaisesRegex(ValueError, "no-evidence condition"):
             create(self.plan, sealed, b"A" * 32)
@@ -98,9 +141,12 @@ class BlindSufficiencyTests(unittest.TestCase):
             create(self.plan, sealed, b"A" * 32)
 
     def test_real_public_receipt_does_not_disclose_source_or_verdict(self):
-        path = Path(__file__).with_name("data") / "locomo-blind-source-first-20261016.json"
-        original = pinned_file(path,
-            "0157a1358fa28072d8e95b74b22bc708325821a259c54c5ac6309468e1ec500d")
+        path = (
+            Path(__file__).with_name("data") / "locomo-blind-source-first-20261016.json"
+        )
+        original = pinned_file(
+            path, "0157a1358fa28072d8e95b74b22bc708325821a259c54c5ac6309468e1ec500d"
+        )
         record = audit_public_receipt(original)
         self.assertEqual(record["decision"], "DENY_ALL")
         self.assertFalse(record["independent_sufficiency_certified"])
@@ -124,9 +170,14 @@ class BlindSufficiencyTests(unittest.TestCase):
             create(self.plan, sealed, b"A" * 32)
 
     def test_review_return_claims_are_never_human_authenticated(self):
-        report = check_source_return(self.packet, self.private,
-                                     [returned(self.packet, "reviewer.one"),
-                                      returned(self.packet, "reviewer.two")])
+        report = check_source_return(
+            self.packet,
+            self.private,
+            [
+                returned(self.packet, "reviewer.one"),
+                returned(self.packet, "reviewer.two"),
+            ],
+        )
         self.assertEqual(report["reviewed_ticket_rows"], 64)
         self.assertEqual(report["agreed_verdicts"], 32)
         self.assertFalse(report["reviewer_identities_externally_authenticated"])
@@ -135,9 +186,14 @@ class BlindSufficiencyTests(unittest.TestCase):
 
     def test_duplicate_reviewers_or_missing_ticket_denied(self):
         with self.assertRaisesRegex(ValueError, "identical identity"):
-            check_source_return(self.packet, self.private,
-                                [returned(self.packet, "same.person"),
-                                 returned(self.packet, "same.person")])
+            check_source_return(
+                self.packet,
+                self.private,
+                [
+                    returned(self.packet, "same.person"),
+                    returned(self.packet, "same.person"),
+                ],
+            )
         a = returned(self.packet, "reviewer.one")
         b = returned(self.packet, "reviewer.two")
         b["rows"].pop()
@@ -151,8 +207,18 @@ class BlindSufficiencyTests(unittest.TestCase):
     def test_quote_needs_source_byte_exactness(self):
         a = returned(self.packet, "reviewer.one")
         b = returned(self.packet, "reviewer.two")
-        row = next(x for x in a["rows"] if len(next(
-            t for t in self.packet["tickets"] if t["ticket_id"] == x["ticket_id"])["delivered_evidence"]) > 0)
+        row = next(
+            x
+            for x in a["rows"]
+            if len(
+                next(
+                    t
+                    for t in self.packet["tickets"]
+                    if t["ticket_id"] == x["ticket_id"]
+                )["delivered_evidence"]
+            )
+            > 0
+        )
         row["verdict"] = "sufficient"
         row["answer_from_sources"] = "café"
         row["supporting_spans"] = [dict(label="E1", start=4, end=9, quote="café")]
@@ -182,8 +248,11 @@ class BlindSufficiencyTests(unittest.TestCase):
         mapping = copy.deepcopy(self.private)
         mapping["packet_sha256"] = "0" * 64
         with self.assertRaisesRegex(ValueError, "private mapping"):
-            check_source_return(self.packet, mapping, [returned(self.packet, "one.two"),
-                                                          returned(self.packet, "two.one")])
+            check_source_return(
+                self.packet,
+                mapping,
+                [returned(self.packet, "one.two"), returned(self.packet, "two.one")],
+            )
 
     def test_regular_sha_pins_and_json_duplicate_fields(self):
         with tempfile.TemporaryDirectory() as root:

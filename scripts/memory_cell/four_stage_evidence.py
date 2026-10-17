@@ -37,16 +37,31 @@ PINNED = {
 EMPTY_SHA = hashlib.sha256(b"").hexdigest()
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 ARMS = (
-    "base:none", "base:retrieved", "base:sufficient", "base:lesion",
-    "reference:none", "reference:retrieved", "reference:sufficient",
-    "reference:lesion", "base:organized", "base:learned_policy",
-    "base:knowledge", "base:knowledge_only",
+    "base:none",
+    "base:retrieved",
+    "base:sufficient",
+    "base:lesion",
+    "reference:none",
+    "reference:retrieved",
+    "reference:sufficient",
+    "reference:lesion",
+    "base:organized",
+    "base:learned_policy",
+    "base:knowledge",
+    "base:knowledge_only",
 )
 TASK_KINDS = frozenset({"new_fact", "updated_fact", "composition", "program"})
 COST_FIELDS = (
-    "extraction", "index", "train", "source_storage", "artifact_storage",
-    "query_per_use", "maintenance_fixed", "maintenance_per_use",
-    "revocation", "recovery",
+    "extraction",
+    "index",
+    "train",
+    "source_storage",
+    "artifact_storage",
+    "query_per_use",
+    "maintenance_fixed",
+    "maintenance_per_use",
+    "revocation",
+    "recovery",
 )
 
 
@@ -104,22 +119,39 @@ def historical(root=ROOT):
         "historical qualification boundary drift",
     )
     s = strong["by_arm"]
-    require(len(s) == 9 and all(x["planned"] == 8 for x in s.values()), "nine-arm census drift")
-    for name in ("empty", "hybrid_k4", "selected_k", "single_hop", "entity_time", "organized"):
+    require(
+        len(s) == 9 and all(x["planned"] == 8 for x in s.values()),
+        "nine-arm census drift",
+    )
+    for name in (
+        "empty",
+        "hybrid_k4",
+        "selected_k",
+        "single_hop",
+        "entity_time",
+        "organized",
+    ):
         require(name in s, "strong baseline arm missing: " + name)
     require(
-        (s["empty"]["correct"], s["hybrid_k4"]["correct"], s["selected_k"]["correct"],
-         s["single_hop"]["correct"], s["entity_time"]["correct"], s["organized"]["correct"])
+        (
+            s["empty"]["correct"],
+            s["hybrid_k4"]["correct"],
+            s["selected_k"]["correct"],
+            s["single_hop"]["correct"],
+            s["entity_time"]["correct"],
+            s["organized"]["correct"],
+        )
         == (0, 3, 5, 4, 8, 8),
         "original model task-success receipts changed",
     )
     require(
         s["entity_time"]["correct_with_complete_declared_citations"] == 4
         and s["organized"]["correct_with_complete_declared_citations"] == 4
-        and strong["paired_effects"]["organized_vs_complete_path"] ==
-        {"wins": 0, "losses": 0, "ties": 8, "difference_eighths": 0}
-        and strong["organized_saved_input_tokens_vs_complete_path"] ==
-        s["entity_time"]["prompt_tokens"] - s["organized"]["prompt_tokens"] == 573,
+        and strong["paired_effects"]["organized_vs_complete_path"]
+        == {"wins": 0, "losses": 0, "ties": 8, "difference_eighths": 0}
+        and strong["organized_saved_input_tokens_vs_complete_path"]
+        == s["entity_time"]["prompt_tokens"] - s["organized"]["prompt_tokens"]
+        == 573,
         "source organization cannot gain fabricated successes/citations",
     )
     require(
@@ -132,42 +164,61 @@ def historical(root=ROOT):
     pairs = readers["model_pairs"]
     require(set(pairs) == {"qwen-3b", "smol-1.7b"}, "reference model census changed")
     outcome = {}
-    for model, expected in (("qwen-3b", (0, 3, 8, 8, 8, 4)),
-                            ("smol-1.7b", (0, 1, 2, 3, 3, 2))):
+    for model, expected in (
+        ("qwen-3b", (0, 3, 8, 8, 8, 4)),
+        ("smol-1.7b", (0, 1, 2, 3, 3, 2)),
+    ):
         rows = {r["arm"]: r for r in pairs[model]["arms"]}
-        require(len(rows) == 6 and all(r["attempts"] == 8 for r in rows.values()),
-                "reference evidence-arm census changed")
-        ordered = ("empty", "hybrid", "entity_time", "organized", "program_support",
-                   "without_prerequisite")
-        require(tuple(rows[a]["strict_correct"] for a in ordered) == expected,
-                "reference original success tally drift")
+        require(
+            len(rows) == 6 and all(r["attempts"] == 8 for r in rows.values()),
+            "reference evidence-arm census changed",
+        )
+        ordered = (
+            "empty",
+            "hybrid",
+            "entity_time",
+            "organized",
+            "program_support",
+            "without_prerequisite",
+        )
+        require(
+            tuple(rows[a]["strict_correct"] for a in ordered) == expected,
+            "reference original success tally drift",
+        )
         outcome[model] = {
             "strict_success": {a: rows[a]["strict_correct"] for a in ordered},
             "source_only_organized_tokens": rows["organized"]["input_tokens"],
             "citation_chain_organized": rows["organized"]["correct_with_full_chain"],
         }
     require(
-        organized["source_artifact"]["zip_sha256"] ==
-        "861e84719f26f48d1d1156bb39273ce706ae83cde47bafcd7f400c037edd871d"
+        organized["source_artifact"]["zip_sha256"]
+        == "861e84719f26f48d1d1156bb39273ce706ae83cde47bafcd7f400c037edd871d"
         and organized["audit"]["observed_rows"] == 48
-        and organized["limitations"]["decoder_is_deterministic_symbolic_not_llm"] is True
+        and organized["limitations"]["decoder_is_deterministic_symbolic_not_llm"]
+        is True
         and organized["limitations"]["all_questions_previously_exposed"] is True,
         "symbolic source-local experiment mislabelled",
     )
     contrast = organized["paired_contrasts"]["organized_vs_hybrid"]
     require(
-        contrast["strict_wins"] == contrast["strict_losses"] ==
-        contrast["citation_wins"] == contrast["citation_losses"] == 0
-        and organized["per_arm"]["hybrid"]["strict_success"] ==
-        organized["per_arm"]["organized"]["strict_success"] == 8
+        contrast["strict_wins"]
+        == contrast["strict_losses"]
+        == contrast["citation_wins"]
+        == contrast["citation_losses"]
+        == 0
+        and organized["per_arm"]["hybrid"]["strict_success"]
+        == organized["per_arm"]["organized"]["strict_success"]
+        == 8
         and organized["limitations"]["total_lifecycle_cost"] is None,
         "symbolic same-reader negative or unknown cost changed",
     )
     require(
         learned["schema"] == "hepta.memory-cell.stem-native-two-run-negative-gate.v1"
         and len(learned["runs"]) == 2
-        and all(r["status"] == "success" and r["logical_policy_attempts"] == 576
-                for r in learned["runs"])
+        and all(
+            r["status"] == "success" and r["logical_policy_attempts"] == 576
+            for r in learned["runs"]
+        )
         and learned["heldout_development_source_selection_wins_per_arm"] == 0
         and learned["heldout_development_answer_changes_per_arm"] == 0
         and learned["independently_authenticated_prospective_source_families"] == 0
@@ -183,7 +234,12 @@ def historical(root=ROOT):
         "new_learner_updates": 0,
         "original_receipt_git_blob_ids": {k: sha for k, (_, sha) in PINNED.items()},
         "phase1_reader": {
-            "evidence_regimes": ["empty", "hybrid", "program_support", "without_prerequisite"],
+            "evidence_regimes": [
+                "empty",
+                "hybrid",
+                "program_support",
+                "without_prerequisite",
+            ],
             "real_original_reader_conditions": outcome,
             "program_support_is_authored_oracle": True,
             "missing_premise_can_still_yield_correct_answer": True,
@@ -216,33 +272,45 @@ def historical(root=ROOT):
             "production_accepted": False,
         },
         "cannot_conclude": [
-            "new prospective Reader competence", "independent sufficiency",
-            "parameter memory superiority", "general executable program success",
-            "semantic citation entailment", "total cost break-even", "production acceptance",
+            "new prospective Reader competence",
+            "independent sufficiency",
+            "parameter memory superiority",
+            "general executable program success",
+            "semantic citation entailment",
+            "total cost break-even",
+            "production acceptance",
         ],
     }
 
 
 def _cost(value):
     if value is not None:
-        require(type(value) in (int, float) and math.isfinite(value) and
-                0 <= value < 1e15, "invalid finite cost")
+        require(
+            type(value) in (int, float) and math.isfinite(value) and 0 <= value < 1e15,
+            "invalid finite cost",
+        )
     return value
 
 
 def total_cost(components, queries):
     """USD per fixed retention horizon; storage and revocation cannot disappear."""
     require(type(queries) is int and 1 <= queries <= 1_000_000, "invalid query horizon")
-    require(isinstance(components, dict) and set(components) == set(COST_FIELDS),
-            "full cost component schema required")
+    require(
+        isinstance(components, dict) and set(components) == set(COST_FIELDS),
+        "full cost component schema required",
+    )
     for value in components.values():
         _cost(value)
     missing = [key for key in COST_FIELDS if components[key] is None]
-    fixed = sum(components[k] or 0 for k in COST_FIELDS
-                if k not in ("query_per_use", "maintenance_per_use"))
+    fixed = sum(
+        components[k] or 0
+        for k in COST_FIELDS
+        if k not in ("query_per_use", "maintenance_per_use")
+    )
     repeated = sum(components[k] or 0 for k in ("query_per_use", "maintenance_per_use"))
     return {
-        "queries": queries, "unit": "USD at one fixed retention horizon",
+        "queries": queries,
+        "unit": "USD at one fixed retention horizon",
         "known_terms_subtotal": fixed + queries * repeated,
         "missing": missing,
         "complete_total": fixed + queries * repeated if not missing else None,
@@ -274,8 +342,10 @@ def _utc(value):
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as err:
         raise ValueError("invalid UTC timestamp") from err
-    require(parsed.tzinfo is not None and parsed.utcoffset().total_seconds() == 0,
-            "real UTC timestamp required")
+    require(
+        parsed.tzinfo is not None and parsed.utcoffset().total_seconds() == 0,
+        "real UTC timestamp required",
+    )
     return parsed
 
 
@@ -286,8 +356,10 @@ def prospective_guard(plan, rows):
     independent reviewers, or program verifier. A positive toy fixture never
     becomes admissible production evidence.
     """
-    require(plan.get("schema") == "hepta.memory.four-stage-prospective-plan.v1",
-            "preregistered plan required")
+    require(
+        plan.get("schema") == "hepta.memory.four-stage-prospective-plan.v1",
+        "preregistered plan required",
+    )
     cases = plan.get("cases")
     require(isinstance(cases, list) and len(cases) > 0, "nonempty cohort required")
     require(plan.get("arms") == list(ARMS), "exact paired arm roster required")
@@ -295,127 +367,223 @@ def prospective_guard(plan, rows):
     require(plan.get("answer_space_oracle") is False, "candidate oracle forbidden")
     profile = plan.get("frozen_execution")
     required = {
-        "base_reader_sha256", "reference_reader_sha256",
-        "prompt_template_sha256", "tools_sha256",
-        "input_budget", "output_budget",
+        "base_reader_sha256",
+        "reference_reader_sha256",
+        "prompt_template_sha256",
+        "tools_sha256",
+        "input_budget",
+        "output_budget",
     }
-    require(isinstance(profile, dict) and set(profile) == required,
-            "frozen execution manifest required")
-    for field in ("base_reader_sha256", "reference_reader_sha256",
-                  "prompt_template_sha256", "tools_sha256"):
-        require(isinstance(profile[field], str) and SHA.fullmatch(profile[field]),
-                "frozen execution identity missing")
-    require(profile["base_reader_sha256"] != profile["reference_reader_sha256"],
-            "distinct reference reader required")
+    require(
+        isinstance(profile, dict) and set(profile) == required,
+        "frozen execution manifest required",
+    )
+    for field in (
+        "base_reader_sha256",
+        "reference_reader_sha256",
+        "prompt_template_sha256",
+        "tools_sha256",
+    ):
+        require(
+            isinstance(profile[field], str) and SHA.fullmatch(profile[field]),
+            "frozen execution identity missing",
+        )
+    require(
+        profile["base_reader_sha256"] != profile["reference_reader_sha256"],
+        "distinct reference reader required",
+    )
     for field in ("input_budget", "output_budget"):
-        require(type(profile[field]) is int and 0 < profile[field] <= 100_000,
-                "frozen bounded token ceilings required")
-    require(isinstance(rows, list) and len(rows) == len(cases) * len(ARMS),
-            "all planned real answers retained, including failures")
+        require(
+            type(profile[field]) is int and 0 < profile[field] <= 100_000,
+            "frozen bounded token ceilings required",
+        )
+    require(
+        isinstance(rows, list) and len(rows) == len(cases) * len(ARMS),
+        "all planned real answers retained, including failures",
+    )
     task_map = {}
     for c in cases:
         require(isinstance(c, dict), "case structure required")
-        require(set(("id", "family", "kind", "snapshot_frozen_at", "revealed_at",
-                     "candidate_pool_sha256", "policy_snapshot_sha256",
-                     "knowledge_snapshot_sha256")).issubset(c), "case identity missing")
-        require(c["id"] not in task_map and isinstance(c["family"], str)
-                and c["family"] and c["kind"] in TASK_KINDS,
-                "duplicate case or invalid task family/kind")
-        require(_utc(c["snapshot_frozen_at"]) < _utc(c["revealed_at"]),
-                "learning snapshot must freeze before unseen task")
-        require(isinstance(c["candidate_pool_sha256"], str) and
-                SHA.fullmatch(c["candidate_pool_sha256"]), "candidate source pin required")
+        require(
+            set(
+                (
+                    "id",
+                    "family",
+                    "kind",
+                    "snapshot_frozen_at",
+                    "revealed_at",
+                    "candidate_pool_sha256",
+                    "policy_snapshot_sha256",
+                    "knowledge_snapshot_sha256",
+                )
+            ).issubset(c),
+            "case identity missing",
+        )
+        require(
+            c["id"] not in task_map
+            and isinstance(c["family"], str)
+            and c["family"]
+            and c["kind"] in TASK_KINDS,
+            "duplicate case or invalid task family/kind",
+        )
+        require(
+            _utc(c["snapshot_frozen_at"]) < _utc(c["revealed_at"]),
+            "learning snapshot must freeze before unseen task",
+        )
+        require(
+            isinstance(c["candidate_pool_sha256"], str)
+            and SHA.fullmatch(c["candidate_pool_sha256"]),
+            "candidate source pin required",
+        )
         for field in ("policy_snapshot_sha256", "knowledge_snapshot_sha256"):
-            require(isinstance(c[field], str) and SHA.fullmatch(c[field]),
-                    "frozen parameter snapshot identity required")
+            require(
+                isinstance(c[field], str) and SHA.fullmatch(c[field]),
+                "frozen parameter snapshot identity required",
+            )
         task_map[c["id"]] = c
-    require({c["kind"] for c in cases} == TASK_KINDS,
-            "all four new/update/composition/program strata required")
+    require(
+        {c["kind"] for c in cases} == TASK_KINDS,
+        "all four new/update/composition/program strata required",
+    )
     row_map = {}
     for row in rows:
         require(isinstance(row, dict), "row structure required")
         key = (row.get("task_id"), row.get("arm"))
-        require(key not in row_map and key[0] in task_map and key[1] in ARMS,
-                "duplicate/unplanned attempt")
+        require(
+            key not in row_map and key[0] in task_map and key[1] in ARMS,
+            "duplicate/unplanned attempt",
+        )
         require(row.get("status") in ("succeeded", "failed"), "known attempt status")
-        for field in ("reader_sha256", "prompt_template_sha256", "tools_sha256",
-                      "candidate_pool_sha256", "evidence_sha256",
-                      "specialization_sha256"):
-            require(isinstance(row.get(field), str) and SHA.fullmatch(row[field]),
-                    "unbound inference identity: " + field)
-        for field in ("prompt_template_sha256", "tools_sha256",
-                      "input_budget", "output_budget"):
+        for field in (
+            "reader_sha256",
+            "prompt_template_sha256",
+            "tools_sha256",
+            "candidate_pool_sha256",
+            "evidence_sha256",
+            "specialization_sha256",
+        ):
+            require(
+                isinstance(row.get(field), str) and SHA.fullmatch(row[field]),
+                "unbound inference identity: " + field,
+            )
+        for field in (
+            "prompt_template_sha256",
+            "tools_sha256",
+            "input_budget",
+            "output_budget",
+        ):
             require(row[field] == profile[field], "frozen execution config drift")
-        tier = "reference_reader_sha256" if key[1].startswith("reference:") else "base_reader_sha256"
+        tier = (
+            "reference_reader_sha256"
+            if key[1].startswith("reference:")
+            else "base_reader_sha256"
+        )
         require(row["reader_sha256"] == profile[tier], "frozen reader identity drift")
-        require(row["candidate_pool_sha256"] == task_map[key[0]]["candidate_pool_sha256"],
-                "candidate pool changed after freeze")
+        require(
+            row["candidate_pool_sha256"] == task_map[key[0]]["candidate_pool_sha256"],
+            "candidate pool changed after freeze",
+        )
         for field in ("input_budget", "output_budget", "input_tokens", "output_tokens"):
-            require(type(row.get(field)) is int and 0 <= row[field] <= 100_000,
-                    "invalid model budget/actual usage")
-        require(0 < row["input_budget"] and 0 < row["output_budget"] and
-                row["input_tokens"] <= row["input_budget"] and
-                row["output_tokens"] <= row["output_budget"],
-                "token budget exceeded")
-        require(type(row.get("strict_task_success")) is bool and
-                type(row.get("complete_citation_chain")) is bool,
-                "full-denominator typed task/citation outcome required")
-        require(not row["complete_citation_chain"] or row["strict_task_success"],
-                "citation-qualified correctness requires success")
-        require(row["status"] != "failed" or not row["strict_task_success"],
-                "failed model call cannot be counted as success")
+            require(
+                type(row.get(field)) is int and 0 <= row[field] <= 100_000,
+                "invalid model budget/actual usage",
+            )
+        require(
+            0 < row["input_budget"]
+            and 0 < row["output_budget"]
+            and row["input_tokens"] <= row["input_budget"]
+            and row["output_tokens"] <= row["output_budget"],
+            "token budget exceeded",
+        )
+        require(
+            type(row.get("strict_task_success")) is bool
+            and type(row.get("complete_citation_chain")) is bool,
+            "full-denominator typed task/citation outcome required",
+        )
+        require(
+            not row["complete_citation_chain"] or row["strict_task_success"],
+            "citation-qualified correctness requires success",
+        )
+        require(
+            row["status"] != "failed" or not row["strict_task_success"],
+            "failed model call cannot be counted as success",
+        )
         if task_map[key[0]]["kind"] == "program" and row["strict_task_success"]:
-            require(row.get("program_exit_code") == 0 and
-                    isinstance(row.get("program_test_sha256"), str) and
-                    SHA.fullmatch(row["program_test_sha256"]),
-                    "actual program verifier required")
+            require(
+                row.get("program_exit_code") == 0
+                and isinstance(row.get("program_test_sha256"), str)
+                and SHA.fullmatch(row["program_test_sha256"]),
+                "actual program verifier required",
+            )
         row_map[key] = row
     require(len(row_map) == len(rows), "incomplete paired result matrix")
     paired = {}
-    by_arm = {a: {"planned": len(cases), "correct": 0, "cited": 0,
-                  "failed": 0} for a in ARMS}
+    by_arm = {
+        a: {"planned": len(cases), "correct": 0, "cited": 0, "failed": 0} for a in ARMS
+    }
     for c in cases:
         cid = c["id"]
         group = {a: row_map[(cid, a)] for a in ARMS}
         original = group["base:retrieved"]
         for arm, row in group.items():
-            require(row["prompt_template_sha256"] == original["prompt_template_sha256"]
-                    and row["tools_sha256"] == original["tools_sha256"]
-                    and (row["input_budget"], row["output_budget"]) ==
-                    (original["input_budget"], original["output_budget"]),
-                    "prompt, tools or budget mismatch")
-            require(row["reader_sha256"] == (
-                group["reference:none"]["reader_sha256"] if arm.startswith("reference:")
-                else original["reader_sha256"]), "reader identity drift")
+            require(
+                row["prompt_template_sha256"] == original["prompt_template_sha256"]
+                and row["tools_sha256"] == original["tools_sha256"]
+                and (row["input_budget"], row["output_budget"])
+                == (original["input_budget"], original["output_budget"]),
+                "prompt, tools or budget mismatch",
+            )
+            require(
+                row["reader_sha256"]
+                == (
+                    group["reference:none"]["reader_sha256"]
+                    if arm.startswith("reference:")
+                    else original["reader_sha256"]
+                ),
+                "reader identity drift",
+            )
             b = by_arm[arm]
             b["correct"] += row["strict_task_success"]
             b["cited"] += row["complete_citation_chain"]
             b["failed"] += row["status"] == "failed"
-        require(group["base:none"]["evidence_sha256"] == EMPTY_SHA
-                and group["reference:none"]["evidence_sha256"] == EMPTY_SHA
-                and group["base:knowledge_only"]["evidence_sha256"] == EMPTY_SHA,
-                "no-evidence or module-only access to raw context")
-        require(group["base:organized"]["evidence_sha256"] ==
-                group["base:knowledge"]["evidence_sha256"],
-                "knowledge gain must hold organized evidence constant")
-        require(group["base:organized"]["evidence_sha256"] ==
-                group["base:learned_policy"]["evidence_sha256"],
-                "read-policy gain must hold organized evidence constant")
-        require(group["reference:none"]["reader_sha256"] != original["reader_sha256"],
-                "reference reader must be independently identified")
+        require(
+            group["base:none"]["evidence_sha256"] == EMPTY_SHA
+            and group["reference:none"]["evidence_sha256"] == EMPTY_SHA
+            and group["base:knowledge_only"]["evidence_sha256"] == EMPTY_SHA,
+            "no-evidence or module-only access to raw context",
+        )
+        require(
+            group["base:organized"]["evidence_sha256"]
+            == group["base:knowledge"]["evidence_sha256"],
+            "knowledge gain must hold organized evidence constant",
+        )
+        require(
+            group["base:organized"]["evidence_sha256"]
+            == group["base:learned_policy"]["evidence_sha256"],
+            "read-policy gain must hold organized evidence constant",
+        )
+        require(
+            group["reference:none"]["reader_sha256"] != original["reader_sha256"],
+            "reference reader must be independently identified",
+        )
         for regime in ("none", "retrieved", "sufficient", "lesion"):
-            require(group["base:" + regime]["evidence_sha256"] ==
-                    group["reference:" + regime]["evidence_sha256"],
-                    "reference evidence parity required")
+            require(
+                group["base:" + regime]["evidence_sha256"]
+                == group["reference:" + regime]["evidence_sha256"],
+                "reference evidence parity required",
+            )
         for arm, row in group.items():
             specialization = (
-                c["policy_snapshot_sha256"] if arm == "base:learned_policy"
-                else c["knowledge_snapshot_sha256"] if arm in
-                ("base:knowledge", "base:knowledge_only")
+                c["policy_snapshot_sha256"]
+                if arm == "base:learned_policy"
+                else c["knowledge_snapshot_sha256"]
+                if arm in ("base:knowledge", "base:knowledge_only")
                 else EMPTY_SHA
             )
-            require(row["specialization_sha256"] == specialization,
-                    "frozen pre-reveal policy/knowledge snapshot mismatch")
+            require(
+                row["specialization_sha256"] == specialization,
+                "frozen pre-reveal policy/knowledge snapshot mismatch",
+            )
     for arm, baseline in (
         ("base:organized", "base:retrieved"),
         ("base:learned_policy", "base:organized"),
@@ -423,17 +591,27 @@ def prospective_guard(plan, rows):
         ("base:knowledge_only", "base:organized"),
         ("base:knowledge_only", "base:none"),
     ):
-        wins = sum(row_map[(c["id"], arm)]["strict_task_success"] and
-                   not row_map[(c["id"], baseline)]["strict_task_success"] for c in cases)
-        losses = sum(row_map[(c["id"], baseline)]["strict_task_success"] and
-                     not row_map[(c["id"], arm)]["strict_task_success"] for c in cases)
-        paired[arm + "__vs__" + baseline] = {"wins": wins, "losses": losses,
-                       "net_on_planned": (wins - losses) / len(cases)}
+        wins = sum(
+            row_map[(c["id"], arm)]["strict_task_success"]
+            and not row_map[(c["id"], baseline)]["strict_task_success"]
+            for c in cases
+        )
+        losses = sum(
+            row_map[(c["id"], baseline)]["strict_task_success"]
+            and not row_map[(c["id"], arm)]["strict_task_success"]
+            for c in cases
+        )
+        paired[arm + "__vs__" + baseline] = {
+            "wins": wins,
+            "losses": losses,
+            "net_on_planned": (wins - losses) / len(cases),
+        }
     return {
         "schema": "hepta.memory.four-stage-prospective-audit.v1",
         "recorded_tasks": len(cases),
         "recorded_families_not_independently_authenticated": len(
-            {c["family"] for c in cases}),
+            {c["family"] for c in cases}
+        ),
         "by_arm": by_arm,
         "paired_descriptive": paired,
         "journal_authenticity_certified": False,
@@ -450,16 +628,25 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     report = historical(args.root)
-    require(not args.output.exists() and not args.output.is_symlink(),
-            "immutable new audit destination required")
+    require(
+        not args.output.exists() and not args.output.is_symlink(),
+        "immutable new audit destination required",
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as f:
         json.dump(report, f, sort_keys=True, indent=2, allow_nan=False)
         f.write("\n")
         f.flush()
         os.fsync(f.fileno())
-    print(json.dumps({"admission": report["admission"],
-                      "new_model_inferences": 0, "output": str(args.output)}))
+    print(
+        json.dumps(
+            {
+                "admission": report["admission"],
+                "new_model_inferences": 0,
+                "output": str(args.output),
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

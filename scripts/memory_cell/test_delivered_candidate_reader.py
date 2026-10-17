@@ -7,25 +7,39 @@ import copy
 import json
 import unittest
 
-from delivered_candidate_reader import (
-    frozen_selection, strict_rank, validate_raw_rows
-)
+from delivered_candidate_reader import frozen_selection, strict_rank, validate_raw_rows
 from local_causal_reader import ABSTAIN, answer
 from offline_event_reader_trial import ARMS
 from offline_smol_reader import PROFILE
 
 
-def source(identity, entity, attribute, value, *,
-           scope="scope_a", revision=3, observed="2026-10-01T00:00:00Z",
-           supersedes=None):
+def source(
+    identity,
+    entity,
+    attribute,
+    value,
+    *,
+    scope="scope_a",
+    revision=3,
+    observed="2026-10-01T00:00:00Z",
+    supersedes=None,
+):
     payload = dict(
         schema="hepta.controlled-event.v1",
-        id=identity, entity=entity, attribute=attribute, value=value,
-        revision=revision, supersedes=supersedes if supersedes is not None else [],
+        id=identity,
+        entity=entity,
+        attribute=attribute,
+        value=value,
+        revision=revision,
+        supersedes=supersedes if supersedes is not None else [],
     )
     return dict(
-        identity=identity, root="root_a", scope=scope, session="session_a",
-        observed_at=observed, content=json.dumps(payload),
+        identity=identity,
+        root="root_a",
+        scope=scope,
+        session="session_a",
+        observed_at=observed,
+        content=json.dumps(payload),
     )
 
 
@@ -33,10 +47,13 @@ def pair():
     docs = {
         "first": source("first", "service_11111111", "component", "component_22222222"),
         "second": source("second", "component_22222222", "location", "site_33333333"),
-        "distractor": source("distractor", "component_99999999", "location", "site_77777777"),
+        "distractor": source(
+            "distractor", "component_99999999", "location", "site_77777777"
+        ),
     }
     q = dict(
-        identity="question-0", scope="scope_a",
+        identity="question-0",
+        scope="scope_a",
         observed_at="2026-10-02T00:00:00Z",
         content=(
             "For service_11111111 at logical revision 3, "
@@ -65,26 +82,33 @@ def sealed_fixture():
             control = frozen_selection(current, arm, sources)
             ranked = control["forced_choices"]
             scores = [
-                dict(value=v, mean_log_likelihood=-0.25 - (index * 0.1),
-                     token_count=1, log_likelihood=-0.25 - index * 0.1,
-                     token_digest="a" * 64)
+                dict(
+                    value=v,
+                    mean_log_likelihood=-0.25 - (index * 0.1),
+                    token_count=1,
+                    log_likelihood=-0.25 - index * 0.1,
+                    token_digest="a" * 64,
+                )
                 for index, v in enumerate(ranked)
             ]
-            rows.append(dict(
-                question_id=current["query"]["identity"],
-                arm=arm,
-                reader_identity="reader_a",
-                reader_profile=PROFILE,
-                status="succeeded",
-                selected=control["selected"],
-                original_source_hashes=control["original_source_hashes"],
-                evidence_only_candidates=control["evidence_only_candidates"],
-                forced_choices=ranked,
-                selection_digest=control["selection_digest"],
-                scores=scores,
-                chosen=strict_rank(scores, ranked)[0],
-                input_tokens=40, input_digest="a" * 64,
-            ))
+            rows.append(
+                dict(
+                    question_id=current["query"]["identity"],
+                    arm=arm,
+                    reader_identity="reader_a",
+                    reader_profile=PROFILE,
+                    status="succeeded",
+                    selected=control["selected"],
+                    original_source_hashes=control["original_source_hashes"],
+                    evidence_only_candidates=control["evidence_only_candidates"],
+                    forced_choices=ranked,
+                    selection_digest=control["selection_digest"],
+                    scores=scores,
+                    chosen=strict_rank(scores, ranked)[0],
+                    input_tokens=40,
+                    input_digest="a" * 64,
+                )
+            )
     return plan, sources, rows
 
 
@@ -116,11 +140,16 @@ class DeliveredCandidatesTests(unittest.TestCase):
         case, sources = pair()
         baseline = frozen_selection(case, "without_prerequisite", sources)
         sources["unseen"] = source(
-            "unseen", "service_11111111", "location", "site_aaaaaaaa",
+            "unseen",
+            "service_11111111",
+            "location",
+            "site_aaaaaaaa",
             observed="2999-01-01T00:00:00Z",
         )
         sources["first"]["content"] = "bad json"
-        self.assertEqual(frozen_selection(case, "without_prerequisite", sources), baseline)
+        self.assertEqual(
+            frozen_selection(case, "without_prerequisite", sources), baseline
+        )
 
     def test_selected_future_and_scope_mismatch_fail_closed(self):
         case, docs = pair()
@@ -162,7 +191,9 @@ class DeliveredCandidatesTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "invalid original controlled event"):
             frozen_selection(case, "hybrid", corrupt)
         corrupt = copy.deepcopy(sources)
-        corrupt["second"]["content"] = corrupt["second"]["content"][:-1] + ', "value": "site_ffffffff"}'
+        corrupt["second"]["content"] = (
+            corrupt["second"]["content"][:-1] + ', "value": "site_ffffffff"}'
+        )
         with self.assertRaisesRegex(ValueError, "duplicate"):
             frozen_selection(case, "hybrid", corrupt)
 
@@ -182,7 +213,9 @@ class DeliveredCandidatesTests(unittest.TestCase):
 
     def test_equal_likelihood_ties_are_precommitted_to_candidate_order(self):
         values = ["site_00000000", ABSTAIN]
-        scores = [dict(value=v, mean_log_likelihood=-1.0, token_count=1) for v in values]
+        scores = [
+            dict(value=v, mean_log_likelihood=-1.0, token_count=1) for v in values
+        ]
         self.assertEqual(strict_rank(scores, values), values)
 
     def test_old_authored_48_source_only_replay_mechanics(self):
@@ -194,8 +227,10 @@ class DeliveredCandidatesTests(unittest.TestCase):
 
     def test_original_journal_mutations_fail_closed(self):
         for mutant, expected in (
-            (lambda v: v[0].update(forced_choices=["site_badbad01", ABSTAIN]),
-             "answer-space tampered"),
+            (
+                lambda v: v[0].update(forced_choices=["site_badbad01", ABSTAIN]),
+                "answer-space tampered",
+            ),
             (lambda v: v[0].update(chosen="site_ffffffff"), "score/ranking tampering"),
             (lambda v: v[0].update(reader_profile="other"), "model profile"),
             (lambda v: v[0].update(expected="site_33333333"), "annotation leaked"),
