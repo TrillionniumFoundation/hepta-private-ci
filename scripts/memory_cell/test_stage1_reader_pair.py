@@ -43,7 +43,13 @@ def fake_rows(tier):
         "planned": 3,
         "successful": 2,
         "unavailable": 1,
-    }, [{"question": {"identity": "q-1"}, "family": "old-exposed-family", "phase": "capability"}]
+    }, [
+        {
+            "question": {"identity": "q-1"},
+            "family": "old-exposed-family",
+            "phase": "capability",
+        }
+    ]
 
 
 class PairedReaderTests(unittest.TestCase):
@@ -104,7 +110,9 @@ class PairedReaderTests(unittest.TestCase):
             (root / "SHA256SUMS").write_text(
                 hashlib.sha256(payload).hexdigest() + "  ./source.txt\n"
             )
-            self.assertEqual(verify_inventory(root)["source.txt"], hashlib.sha256(payload).hexdigest())
+            self.assertEqual(
+                verify_inventory(root)["source.txt"], hashlib.sha256(payload).hexdigest()
+            )
             (root / "source.txt").write_bytes(b"tampered")
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 verify_inventory(root)
