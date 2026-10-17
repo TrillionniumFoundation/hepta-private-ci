@@ -33,7 +33,7 @@ class IndependentByteCustodyTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.capture = self.root / "capture"
-        self.capture.mkdir()
+        self.capture.mkdir(mode=0o700)
         self.output = self.root / "observer-copy"
         self.manifest = synthetic_manifest()
         self.packet = synthetic_matrix()
@@ -343,6 +343,38 @@ class IndependentByteCustodyTests(unittest.TestCase):
                 self.inspect()
         self.assertFalse((self.output / "COMPLETE").exists())
         self.assertFalse((self.root / "orphaned-output" / "COMPLETE").exists())
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "Unix owner identity required")
+    def test_public_or_peer_writable_capture_directory_cannot_be_custodied(self):
+        for mode in (0o755, 0o770, 0o777):
+            with self.subTest(mode=oct(mode)):
+                self.capture.chmod(mode)
+                with self.assertRaisesRegex(InvalidEvidence, "private ownership"):
+                    self.inspect()
+                self.assertFalse(self.output.exists())
+        self.capture.chmod(0o700)
+        self.assertFalse(self.inspect()["production_activation_authorized"])
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "Unix owner identity required")
+    def test_capture_directory_becoming_public_while_copying_cannot_seal(self):
+        original_write = _write_exclusive
+        mutated = False
+
+        def relax_directory(fd, name, data):
+            nonlocal mutated
+            original_write(fd, name, data)
+            if not mutated:
+                mutated = True
+                self.capture.chmod(0o777)
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=relax_directory,
+        ):
+            with self.assertRaisesRegex(InvalidEvidence, "private ownership"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
 
 
 if __name__ == "__main__":

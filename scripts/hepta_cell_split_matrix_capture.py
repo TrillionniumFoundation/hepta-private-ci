@@ -48,8 +48,14 @@ def require_pinned_capture_root(directory_fd: int, output: Path) -> None:
         not stat.S_ISDIR(opened.st_mode)
         or not stat.S_ISDIR(named.st_mode)
         or (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino)
+        or opened.st_uid != os.geteuid()
+        or named.st_uid != os.geteuid()
+        or opened.st_mode & 0o077 != 0
+        or named.st_mode & 0o077 != 0
     ):
-        raise InvalidEvidence("capture directory identity changed")
+        raise InvalidEvidence(
+            "capture directory identity changed or private ownership mismatch"
+        )
 
 
 def create_capture_file(directory_fd: int, name: str):
