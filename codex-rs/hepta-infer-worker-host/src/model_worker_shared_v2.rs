@@ -920,7 +920,7 @@ mod tests {
                 worker.run_shared_neuron_features_batch_v2(
                     100,
                     "model.shared",
-                    vec![request.clone()]
+                    vec![request.clone()],
                 ),
                 Err(Error::ModelCapacity)
             );
@@ -932,11 +932,9 @@ mod tests {
                 worker.run_shared_neuron_features_batch_v2(
                     100,
                     "model.shared",
-                    vec![request.clone()]
+                    vec![request.clone()],
                 ),
                 Err(Error::IndeterminateLifecycle)
             );
         }
-    }
-
-}
+  }

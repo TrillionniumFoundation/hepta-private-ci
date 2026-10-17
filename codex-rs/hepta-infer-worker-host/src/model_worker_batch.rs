@@ -706,6 +706,4 @@ mod tests {
                 Err(Error::IndeterminateLifecycle)
             );
         }
-    }
-
-}
+  }
