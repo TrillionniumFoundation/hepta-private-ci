@@ -1,0 +1,9 @@
+# Future/OOD Reader and harness receipt gate
+
+This research-only increment adds two fail-closed boundaries for the shared Stem / per-Cell program.
+
+FutureOODReaderMatrixV1 requires at least two independent chronological future windows and one independent OOD source. Every candidate must execute exactly the four Reader arms (none, distractor, withheld, full) in every window. The matrix binds every arm to a pinned checkpoint receipt digest, source SHA-256, complete Git blob SHA-1, hidden evaluator gold, and identical calls, input tokens, FLOPs, memory, and latency budgets. It records retention, calibration, OOD, fallback, rollback, and deletion gates. A complete matrix remains SHADOW_ONLY with DENY_ALL authority and can only produce an advisory next-snapshot proposal.
+
+harness_receipt_adapter converts a report emitted by the registered hepta_sngr_reader_eval.py harness into PinnedCheckpointReceiptV1. It requires a stable pre/post checkpoint fingerprint, model/tokenizer/preprocessor/runtime/Reader/source/held-label/request identities, a loaded checkpoint observation, an independent future or OOD source, and model-hidden gold. Missing identities are retained as INCOMPLETE; they cannot be zero-filled or promoted. A local diagnostic evidence class remains REAL_MODEL_LOCAL_QUALIFICATION and cannot be renamed to REAL_SHADOW. Production selection authority and current-run mutation are rejected.
+
+The adapter and matrix do not load a model, train a Cell, score an answer, measure multimodal generation, solve a learned FBSDE, grant System2 authority, or claim 10T/100T equivalence. They are prerequisites for a later real run.
