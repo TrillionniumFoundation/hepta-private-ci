@@ -1452,6 +1452,26 @@ fn observe_event(
             }
             output.output.push_str(&delta.delta);
         }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item {
+                // A Responses API output_item.done can carry the entire text
+                // without any preceding text delta. Bind the real App Server
+                // connection before accepting that completed item as output.
+                // This is content observation, never terminality or authority.
+                adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                    .map_err(|error| format!("invalid App Server item witness: {error}"))?;
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("completed agent message exceeds output byte limit".to_string());
+                }
+                // Streaming deltas have already supplied this answer when
+                // present. Never count the completed item a second time.
+                if output.output.is_empty() {
+                    output.output.push_str(text);
+                }
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1510,3 +1530,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_observed_output_tests.rs"]
+mod observed_output_tests;
