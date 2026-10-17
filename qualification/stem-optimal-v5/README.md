@@ -46,10 +46,14 @@ constitute an independent original score receipt.
   two-sided exact McNemar and Holm adjustment over precisely three models.
   Also report the word baseline and own-Encoder centroid as descriptive
   controls, with original multi-class Brier and recorded process costs.
-- This experiment was selected **before reading V3 or V4 original heldout
-  publisher labels** in the V5 implementation. V3 and V4 use the same original
-  single publisher and *no proven future-time/source-disjoint windows*; p-values
-  are descriptive only, not prospective model promotion evidence.
+- The earlier V4 exploratory JavaScript baseline replay had **already opened
+  the original publisher TEST labels** and reported lexical 25/32 and 27/32
+  before V5 was authored. V5 froze its three cross-model contrasts before
+  the separate V3 pretrained-model correctness replay, but this is **not
+  preregistered label-blind confirmation**: the same-source 32-case cohort
+  was already partly inspected. All p-values are exploratory/descriptive,
+  irrespective of any nominal or Holm-corrected threshold. Independent new
+  publisher families and genuinely future-heldout windows are still required.
 
 `hepta-stem-original-paired-v5.yml` runs exact-head normal and `python -O`
 source regression on pull requests. A separate same-repo push job checks all
