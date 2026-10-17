@@ -81,6 +81,7 @@ pub use cell_split_lifecycle::CellSplitLifecycleStateV1;
 pub use cell_split_planner::CellSplitGovernedPlannerV1;
 pub use cell_split_planner::CellSplitPlannerContextV1;
 pub use cell_split_planner::CellSplitPlannerErrorV1;
+pub use cell_split_planner::CellSplitProposalPolicyDraftV1;
 pub use cell_split_planner::CellSplitProposalPolicyV1;
 pub use cell_split_planner::CellSplitTelemetryObservationV1;
 pub use cell_split_planner::CellSplitTelemetrySourceV1;
