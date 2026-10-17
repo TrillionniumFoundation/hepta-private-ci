@@ -17,9 +17,9 @@ def example_cost():
     }
 
 
-def item(name, parents, fi, fo, bi, bo, cost=1):
+def item(name, parents, fi, forward_out, bi, bo, cost=1):
     return {
-        "id": name, "parents": parents, "forward_in": fi, "forward_out": fo,
+        "id": name, "parents": parents, "forward_in": fi, "forward_out": forward_out,
         "backward_in": bi, "backward_out": bo,
         "forward_residual": 0, "backward_residual": 0, "cost": cost,
     }
