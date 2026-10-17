@@ -110,6 +110,7 @@ class StemTests(unittest.TestCase):
         self.assertEqual(out["cache_borrows"], 64 * 4 - 1)
         self.assertEqual(out["actual_head_calls"], 64 * 4)
         self.assertEqual(out["authority"], "DENY_ALL")
+        self.assertNotEqual(out["checksum"], 0)
 
 
 class NduTests(unittest.TestCase):
@@ -167,6 +168,13 @@ class NduTests(unittest.TestCase):
             with self.subTest(q=q):
                 with self.assertRaises(Denied):
                     certify_scalar_contraction(fixed_reward=F(1), q=q)
+
+    def test_float_contraction_and_discount_rejected(self):
+        with self.assertRaises(Denied):
+            certify_scalar_contraction(fixed_reward=F(1), q=0.5)
+        g, t = graph()
+        with self.assertRaises(Denied):
+            FiniteNdu(g, t, discount=0.5)
 
     def test_exhaustion_not_called_success(self):
         with self.assertRaises(Denied):

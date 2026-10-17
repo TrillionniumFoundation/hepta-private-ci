@@ -64,7 +64,7 @@ def review(*, gold: tuple[HeldCase, ...], arms: tuple[SealedArm, ...],
     digest(registered_source_digest)
     if not gold or len(gold) > 4096 or len({c.case_id for c in gold}) != len(gold):
         raise Denied("invalid held panel")
-    if any(not c.case_id or not c.source_root or not c.route_type or c.gold not in (0, 1) for c in gold):
+    if any(not c.case_id or not c.source_root or not c.route_type or (type(c.gold) is not int or c.gold not in (0, 1)) for c in gold):
         raise Denied("bad human labels/identities")
     if fit_roots & {c.source_root for c in gold}:
         raise Denied("correlated root leakage")

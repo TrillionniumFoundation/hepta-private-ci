@@ -1,7 +1,6 @@
 """Physical local CPU P0 pilot (real computation, deliberately toy model)."""
 from __future__ import annotations
 import argparse
-from dataclasses import asdict
 from fractions import Fraction as F
 import json
 import os
@@ -93,13 +92,10 @@ def main() -> None:
     data = json.dumps(receipt, sort_keys=True, indent=2, allow_nan=False).encode("utf-8")
     path = args.output_dir / "physical-shadow.json"
     fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
-    try:
-        with os.fdopen(fd, "wb") as out:
-            out.write(data)
-            out.flush()
-            os.fsync(out.fileno())
-    finally:
-        pass
+    with os.fdopen(fd, "wb") as out:
+        out.write(data)
+        out.flush()
+        os.fsync(out.fileno())
     print(json.dumps({"receipt_sha256": sha(data), "bytes": len(data),
                       "cells": [x["cell_count"] for x in receipt["stem_fleet"]],
                       "authority": "DENY_ALL", "promotion": "HOLD_NO_GO"}, sort_keys=True))

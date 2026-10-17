@@ -166,7 +166,7 @@ class FiniteNdu:
 
     def __init__(self, graph: dict[str, tuple[Choice, ...]], terminal: dict[str, Fraction],
                  *, discount: Fraction = Fraction(1), max_depth: int = 4):
-        if not Fraction(0) < discount <= 1 or not 1 <= max_depth <= 4:
+        if not isinstance(discount, Fraction) or not Fraction(0) < discount <= 1 or not 1 <= max_depth <= 4:
             raise Denied("invalid NDU profile")
         if len(graph) > 128 or len(terminal) > 128:
             raise Denied("unbounded NDU graph")
@@ -243,7 +243,10 @@ class ContractionCertificate:
 def certify_scalar_contraction(*, fixed_reward: Fraction, q: Fraction,
                                max_steps: int = 64, tolerance: Fraction = Fraction(1, 1 << 20)) -> ContractionCertificate:
     """Certified scalar map F(y)=reward+q*y; not global/coupled FBSDE well-posedness."""
-    if not Fraction(0) <= q < Fraction(3, 4) or not 1 <= max_steps <= 64 or tolerance <= 0:
+    if (not all(isinstance(x, Fraction) for x in (fixed_reward, q, tolerance))
+            or abs(fixed_reward) > 1_000_000 or q.denominator > 1_000_000
+            or not Fraction(0) <= q < Fraction(3, 4)
+            or not 1 <= max_steps <= 64 or tolerance <= 0):
         raise Denied("unqualified contraction")
     value = Fraction(0)
     for step in range(1, max_steps + 1):
@@ -296,7 +299,7 @@ def physical_shadow_bench(cell_count: int, repetitions: int = 16) -> dict[str, o
         t0 = time.perf_counter_ns()
         for head in heads:
             feat = bank.borrow(obs, time.monotonic_ns(), allowed=True)
-            checksum ^= head.evaluate(feat)
+            checksum = (checksum * 0x100000001B3 + (head.evaluate(feat) & ((1 << 64) - 1))) & ((1 << 64) - 1)
         samples.append(time.perf_counter_ns() - t0)
     return {"kind": "real_cpu_synthetic_model_mechanism_only",
             "cell_count": cell_count, "repetitions": repetitions,

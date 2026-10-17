@@ -49,7 +49,7 @@ def compile_reviewed_source(source: Path, output: Path) -> dict[str, object]:
         raise Denied("source bytes no longer match reviewed AOT kernel")
     if output.is_symlink() or not output.parent.exists() or output.exists():
         raise Denied("output must be new and non-symlinked")
-    if stat.S_IMODE(output.parent.stat().st_mode) & 0o077:
+    if output.parent.is_symlink() or stat.S_IMODE(output.parent.stat().st_mode) & 0o077:
         raise Denied("native output directory must be private")
     t0 = time.perf_counter_ns()
     subprocess.run(["gcc", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror", "-fPIC",

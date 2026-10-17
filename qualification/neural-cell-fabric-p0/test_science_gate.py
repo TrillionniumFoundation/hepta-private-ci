@@ -45,6 +45,11 @@ class GateTests(unittest.TestCase):
         with self.assertRaises(Denied):
             review(gold=GOLD, arms=fixture(), registered_source_digest=SOURCE, fit_roots=frozenset({"root1"}))
 
+    def test_boolean_gold_rejected(self):
+        bogus = (replace(GOLD[0], gold=True),) + GOLD[1:]
+        with self.assertRaises(Denied):
+            review(gold=bogus, arms=fixture(), registered_source_digest=SOURCE, fit_roots=frozenset())
+
     def test_missing_arm_rejected(self):
         with self.assertRaises(Denied):
             review(gold=GOLD, arms=fixture()[:-1], registered_source_digest=SOURCE, fit_roots=frozenset())
