@@ -208,6 +208,9 @@ class ActionIRV1:
         if len(set(caps)) != len(caps):
             raise ValueError("required_capabilities must be unique")
         object.__setattr__(self, "required_capabilities", caps)
+        op_caps = {op.capability_id for op in self.ops}
+        if not op_caps.issubset(set(caps)):
+            raise ValueError("every ActionIR op capability must be declared in required_capabilities")
         keys = [op.idempotency_key for op in self.ops]
         if len(set(keys)) != len(keys):
             raise ValueError("ActionIR idempotency keys must be unique")
@@ -241,6 +244,8 @@ class ActionIRV1:
 @dataclass(frozen=True)
 class FastPathCandidateV1:
     candidate_id: str
+    cell_id: str
+    app_identity: str
     action_ir_digest: str
     artifact_digest: str
     capability_manifest_digest: str
@@ -258,6 +263,8 @@ class FastPathCandidateV1:
 
     def __post_init__(self) -> None:
         _require_identifier(self.candidate_id, "candidate_id")
+        _require_identifier(self.cell_id, "cell_id")
+        _require_identifier(self.app_identity, "app_identity")
         for field in ("action_ir_digest", "artifact_digest", "capability_manifest_digest", "evidence_digest"):
             _require_digest(getattr(self, field), field)
         _require_identifier(self.authorization_version, "authorization_version")
@@ -286,6 +293,8 @@ class FastPathCandidateV1:
         return {
             "schema": SCHEMA_CANDIDATE,
             "candidate_id": self.candidate_id,
+            "cell_id": self.cell_id,
+            "app_identity": self.app_identity,
             "action_ir_digest": self.action_ir_digest,
             "artifact_digest": self.artifact_digest,
             "capability_manifest_digest": self.capability_manifest_digest,
@@ -395,6 +404,8 @@ def compile_shadow_candidate(
     evidence_digest = canonical_digest({"evidence": dict(evidence), "artifact_digest": artifact_digest})
     return FastPathCandidateV1(
         candidate_id=candidate_id,
+        cell_id=action_ir.cell_id,
+        app_identity=action_ir.app_identity,
         action_ir_digest=action_ir.digest,
         artifact_digest=artifact_digest,
         capability_manifest_digest=capability_manifest_digest,
