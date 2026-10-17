@@ -38,6 +38,7 @@ struct DiskCns {
     replay_old_readback: bool,
     stale_durable_sequence: bool,
     advanced_durable_sequence: bool,
+    advance_during_live_readback: bool,
 }
 
 impl DiskCns {
@@ -49,6 +50,7 @@ impl DiskCns {
             replay_old_readback: false,
             stale_durable_sequence: false,
             advanced_durable_sequence: false,
+            advance_during_live_readback: false,
         }
     }
     fn with_stale_sequence(mut self) -> Self {
@@ -57,6 +59,10 @@ impl DiskCns {
     }
     fn with_advanced_sequence(mut self) -> Self {
         self.advanced_durable_sequence = true;
+        self
+    }
+    fn with_revision_change_during_live(mut self) -> Self {
+        self.advance_during_live_readback = true;
         self
     }
     fn with_stale_readback(mut self) -> Self {
@@ -105,6 +111,13 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         challenge_nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error> {
         let observed = self.route();
+        // The independently retained runtime revision advances while the
+        // signed serving-route RPC is in flight, leaving the route bytes
+        // themselves unchanged. Source-only adversarial race injection.
+        if self.advance_during_live_readback {
+            self.advance_during_live_readback = false;
+            self.advanced_durable_sequence = true;
+        }
         let actual_nonce = if self.replay_old_readback {
             "00".repeat(32)
         } else {
@@ -513,6 +526,41 @@ fn original_signed_cns_receipt_behind_current_durable_frontier_cannot_be_replaye
         recovered.authorize_execute(&request),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
     ));
+}
+
+#[test]
+fn cns_frontier_advancing_during_signed_route_lookup_denies_old_original_effect() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let request = intent();
+    {
+        let mut original = owner(root.path(), ready.clone());
+        original
+            .commit_once(&request)
+            .expect("signed original CNS effect");
+    }
+
+    let racing = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        ready,
+    )
+    .with_revision_change_during_live();
+    let mut recovered =
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), racing)
+            .expect("frozen original CNS");
+    assert!(matches!(
+        recovered.read_committed(&request),
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
+    assert_eq!(recovered.port.route().generation, plan().child_generation);
+    assert!(
+        recovered
+            .port
+            .read_original_commit(&request.idempotency_key)
+            .expect("original signed record remains retained")
+            .is_some()
+    );
 }
 
 #[test]

@@ -49,6 +49,7 @@ struct DenyingWitness {
     deny_authority: bool,
     signed_history: Option<CellSplitCnsRuntimeCommitV1>,
     durable_sequence: u64,
+    advance_durable_sequence_after_read: bool,
 }
 
 impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
@@ -126,7 +127,12 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
     }
 
     fn current_durable_sequence(&mut self, _cns_id: &str) -> Result<u64, Self::Error> {
-        Ok(self.durable_sequence)
+        let observed = self.durable_sequence;
+        if self.advance_durable_sequence_after_read {
+            self.advance_durable_sequence_after_read = false;
+            self.durable_sequence += 1;
+        }
+        Ok(observed)
     }
 }
 
@@ -220,6 +226,7 @@ fn fixture(
             deny_authority,
             signed_history: None,
             durable_sequence: 1,
+            advance_durable_sequence_after_read: false,
         },
     )
     .expect("CNS runtime bridge");
@@ -366,6 +373,11 @@ fn direct_original_cns_receipt_refuses_replay_after_durable_frontier_advance() {
     assert!(
         port.verify_original_commit(&historical).is_ok(),
         "same original revision authenticates the historical record only"
+    );
+    port.witness.advance_durable_sequence_after_read = true;
+    assert!(
+        port.verify_original_commit(&historical).is_err(),
+        "CNS frontier drift between readbacks must fence stale original proof"
     );
     assert_eq!(
         runtime.topology_snapshot().expect("unchanged serving host"),
