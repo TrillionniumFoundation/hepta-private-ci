@@ -1,0 +1,105 @@
+name: hepta-stem-v27-original-128-qwen-paired-physical
+on:
+  push:
+    branches:
+      - research/stem-v27-original-128-qwen-physical-20261016
+    paths:
+      - 'qualification/stem-cell-v1/v27_*.py'
+      - 'qualification/stem-cell-v1/test_v27_*.py'
+      - 'qualification/stem-cell-v1/v21_original_plan_rebuilder.py'
+      - 'qualification/stem-cell-v1/test_v21_original_plan_rebuilder.py'
+      - 'qualification/stem-cell-v1/STEM_V27_ORIGINAL_PAIRED_QWEN.md'
+      - '.github/workflows/hepta-stem-v27-original-qwen-paired-cpu.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-stem-v27-original-reference-paired
+  cancel-in-progress: false
+jobs:
+  original-paired-reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed source-only original experiment contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v21_original_plan_rebuilder.py qualification/stem-cell-v1/v27_original_paired_prepare.py qualification/stem-cell-v1/v27_paired_source_review.py qualification/stem-cell-v1/test_v27_original_paired_host.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v21_original_plan_rebuilder.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v21_original_plan_rebuilder.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v27_original_paired_host.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v27_original_paired_host.py' -v
+      - name: Install pinned physical model and independent tokenizer dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input --disable-pip-version-check 'torch==2.6.0' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --no-input --disable-pip-version-check 'transformers==4.53.3' 'huggingface_hub==0.33.5' 'safetensors==0.5.3' 'tokenizers==0.21.2' 'hf_xet==1.1.5' 'regex==2024.11.6' 'packaging==25.0'
+          python -m pip check
+      - name: Genuine paired original 135M versus pinned Qwen3 on original 128 requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          export PYTHONPATH=qualification/stem-cell-v1
+          root="$(mktemp -d)"
+          trap 'rm -rf -- "$root"' EXIT
+          mkdir -m700 "$root/model-cache"
+          # The original LoCoMo corpus and archived 135M weights already exist
+          # in this historical, fixed GitHub Actions artifact. Never log bytes.
+          GH_TOKEN="${{ github.token }}" gh api \
+            "repos/$GITHUB_REPOSITORY/actions/artifacts/11586991191/zip" \
+            > "$root/original.zip"
+          python qualification/stem-cell-v1/v27_original_paired_prepare.py \
+            --zip "$root/original.zip" --private-root "$root/original"
+          python qualification/stem-cell-v1/v18_reference_material_stage.py \
+            --cache-dir "$root/model-cache" --model-dir "$root/qwen-model" \
+            --model-spec "$root/qwen-spec.json"
+          python qualification/stem-cell-v1/v16_literal_witness_reader.py run \
+            --source "$root/original/source-only.json" \
+            --bm25 "$root/original/bm25-routes.json" \
+            --plan "$root/original/v16-plan.json" \
+            --reader "$root/original/reader" \
+            --answers "$root/original/candidate-135m-answers.json"
+          python qualification/stem-cell-v1/v16_original_reader_recount.py \
+            --plan "$root/original/v16-plan.json" \
+            --answers "$root/original/candidate-135m-answers.json" \
+            --starts "$root/original/candidate-135m-answers.json.starts.jsonl" \
+            --reader "$root/original/reader" \
+            --output "$root/original/candidate-recount.json"
+          python qualification/stem-cell-v1/v17_reference_reader_physical.py \
+            --plan "$root/original/v16-plan.json" \
+            --source "$root/original/source-only.json" \
+            --bm25 "$root/original/bm25-routes.json" \
+            --model-dir "$root/qwen-model" \
+            --model-spec "$root/qwen-spec.json" \
+            --output "$root/original/qwen-128-answers.json"
+          python qualification/stem-cell-v1/v17_reference_independent_review.py \
+            --plan "$root/original/v16-plan.json" \
+            --source "$root/original/source-only.json" \
+            --bm25 "$root/original/bm25-routes.json" \
+            --model-dir "$root/qwen-model" \
+            --model-spec "$root/qwen-spec.json" \
+            --answers "$root/original/qwen-128-answers.json" \
+            --starts "$root/original/qwen-128-answers.json.starts.jsonl" \
+            --candidate "$root/original/candidate-135m-answers.json" \
+            --review-output "$root/original/qwen-byte-recount.json" \
+            --original-gold "$root/original/locomo.json" \
+            --gold-output "$root/original/paired-weak-gold.json"
+          python qualification/stem-cell-v1/v27_paired_source_review.py \
+            --plan "$root/original/v16-plan.json" \
+            --candidate "$root/original/candidate-135m-answers.json" \
+            --original-recount "$root/original/candidate-recount.json" \
+            --reference "$root/original/qwen-128-answers.json" \
+            --reference-recount "$root/original/qwen-byte-recount.json" \
+            --weak-gold "$root/original/paired-weak-gold.json" \
+            --original-gold "$root/original/locomo.json"
