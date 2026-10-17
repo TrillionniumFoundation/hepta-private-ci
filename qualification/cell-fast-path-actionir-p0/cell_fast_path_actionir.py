@@ -63,6 +63,7 @@ _FORBIDDEN_KEYS = frozenset(
         "syscall",
     }
 )
+_SHADOW_EVIDENCE_KEYS = frozenset({"lane", "source", "observation_digest", "build_id"})
 
 
 def _require_identifier(value: str, field: str) -> str:
@@ -119,6 +120,13 @@ def _json_value(value: Any, field: str, depth: int = 0) -> Any:
 def canonical_digest(value: Any) -> str:
     payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _shadow_evidence(value: Mapping[str, Any]) -> dict[str, Any]:
+    normalized = _json_value(dict(value), "evidence")
+    if not isinstance(normalized, dict) or not set(normalized).issubset(_SHADOW_EVIDENCE_KEYS):
+        raise ValueError("shadow evidence may contain only lane, source, observation_digest, and build_id")
+    return normalized
 
 
 @dataclass(frozen=True)
@@ -390,7 +398,7 @@ def compile_shadow_candidate(
 ) -> FastPathCandidateV1:
     """Derive a cache key and candidate metadata without compiling or executing code."""
 
-    _json_value(dict(evidence), "evidence")
+    evidence_value = _shadow_evidence(evidence)
     _require_digest(capability_manifest_digest, "capability_manifest_digest")
     artifact_digest = canonical_digest(
         {
@@ -401,7 +409,7 @@ def compile_shadow_candidate(
             "capability_manifest_digest": capability_manifest_digest,
         }
     )
-    evidence_digest = canonical_digest({"evidence": dict(evidence), "artifact_digest": artifact_digest})
+    evidence_digest = canonical_digest({"evidence": evidence_value, "artifact_digest": artifact_digest})
     return FastPathCandidateV1(
         candidate_id=candidate_id,
         cell_id=action_ir.cell_id,
