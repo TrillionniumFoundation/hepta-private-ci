@@ -21,6 +21,15 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[test]
+fn curated_zip_modes_reject_privileged_and_special_files_without_weaker_fallback() {
+    assert_eq!(safe_curated_zip_file_mode(0o100755), Ok(0o755));
+    assert_eq!(safe_curated_zip_file_mode(0o644), Ok(0o644));
+    for forbidden in [0o104755, 0o102755, 0o101755, 0o120777, 0o060600, 0o020600] {
+        assert!(safe_curated_zip_file_mode(forbidden).is_err(), "mode {forbidden:o}");
+    }
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;
