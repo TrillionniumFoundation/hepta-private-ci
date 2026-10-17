@@ -17,7 +17,10 @@ class ShardedNativeWorkflowTests(unittest.TestCase):
     def test_explicit_label_only_and_authorized_pr(self):
         self.assertIn("types: [labeled]", self.source)
         self.assertIn("github.event.pull_request.number == 2607", self.source)
-        self.assertIn("github.event.label.name == 'memory-cell-preserved-native'", self.source)
+        self.assertIn(
+            "github.event.label.name == 'memory-cell-preserved-native'",
+            self.source,
+        )
         self.assertNotIn("workflow_dispatch:", self.source)
         self.assertNotIn("contents: write", self.source)
 
