@@ -583,7 +583,10 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
 /// that the effect did not happen or dispatch the same effect a second time.
 #[test]
 fn original_effect_with_invalid_ack_is_ambiguous_until_signed_cold_reconcile() {
-    for corruption in [AckCorruption::InvalidSequence, AckCorruption::ForgedSignature] {
+    for corruption in [
+        AckCorruption::InvalidSequence,
+        AckCorruption::ForgedSignature,
+    ] {
         let root = private_tempdir();
         let observed = Rc::new(RefCell::new(Observed::default()));
         {
