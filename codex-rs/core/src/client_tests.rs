@@ -876,8 +876,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
         test_session_telemetry(),
         attempt,
         test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseEventProviderPolicy {
+            attempt: None,
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -929,8 +931,10 @@ async fn response_stream_records_last_model_feedback_ids() {
         test_session_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseEventProviderPolicy {
+            attempt: None,
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
@@ -1065,8 +1069,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         test_session_telemetry(),
         attempt,
         provider,
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
+        super::ResponseEventProviderPolicy {
+            attempt: None,
+            redact_errors: true,
+        },
         /*encoded_request_observer*/ None,
     );
     let error = stream
@@ -1249,8 +1255,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
         test_session_telemetry(),
         attempt,
         test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
+        super::ResponseEventProviderPolicy {
+            attempt: None,
+            redact_errors: false,
+        },
         /*encoded_request_observer*/ None,
     );
 
