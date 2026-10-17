@@ -459,9 +459,9 @@ pub struct CanonicalTerminalReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// An advisory outcome whose potentially large proof receipts are boxed
+/// once per run rather than copied per Cell. This grants no dispatch authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
-/// An advisory outcome whose potentially large, immutable proof receipts are
-/// boxed once per run, never copied per Cell. This grants no dispatch authority.
 pub enum CanonicalRunOutcomeV1 {
     Ready(Box<IntelligenceHostEnvelopeV1>),
     Abstained(Box<CanonicalTerminalReceiptV1>),
