@@ -123,6 +123,22 @@ impl CognitiveTestHost {
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
         )?;
 
+        // This cross-crate qualification runs the real embedded App Server,
+        // whose Exec Server needs the *actual* Codex CLI for child re-execs.
+        // A Rust test harness executable is not a substitute. Fail closed if
+        // the exact built binary was not supplied by the test owner.
+        let cli_path = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE")
+            .ok_or("missing HEPTA_COGNITIVE_TEST_CODEX_EXE for real App Server test")?;
+        let cli_path = PathBuf::from(cli_path);
+        if !cli_path.is_absolute() || !cli_path.is_file() {
+            return Err("real cognitive test Codex CLI must be an existing absolute file".into());
+        }
+        let cli_path = cli_path.canonicalize()?;
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(cli_path),
+            ..Arg0DispatchPaths::default()
+        };
+
         let cancellation = CancellationToken::new();
         let control = AgentdControlServer::bind(
             identity.control_socket.clone(),
@@ -133,7 +149,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
