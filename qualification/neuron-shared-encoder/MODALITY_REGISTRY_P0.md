@@ -73,10 +73,10 @@ forward quality, semantic alignment, generation, latency, or Cell efficacy.
       qualification/neuron-shared-encoder/test_registry_bridge.py
 
     python3 qualification/neuron-shared-encoder/test_modality_registry.py
-    # Ran 14 tests — OK
+    # Ran 15 tests — OK
 
     python3 qualification/neuron-shared-encoder/test_registry_bridge.py
-    # Ran 12 tests — OK
+    # Ran 13 tests — OK
 
 The change remains research-only, shadow-only and non-authorizing. It does not
 change main, model selection, final-use authority, decoder execution, or
