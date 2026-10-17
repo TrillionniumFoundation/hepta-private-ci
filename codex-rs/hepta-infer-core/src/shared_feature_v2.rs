@@ -22,7 +22,7 @@ const Q24_ABSOLUTE_LIMIT: i64 = 8 * (1 << 24);
 pub struct SharedFeatureIdentityV2 {
     pub principal_id: StableId,
     pub purpose_id: StableId,
-    /// Owner-attested isolation boundary beneath principal and purpose.
+    /// Caller-supplied isolation boundary; the owner must attest it at final use.
     pub scope_id: StableId,
     pub generation: Generation,
     pub authority_epoch: u64,
@@ -514,5 +514,11 @@ mod tests {
         assert_ne!(source.digest().expect("source"), changed.digest().expect("changed"));
         assert!(cache.get(2, &changed).expect("lookup").is_none());
         assert!(cache.get(2, &source).expect("lookup").is_some());
+        changed = source.clone();
+        changed.preprocessor_digest = Digest32::ZERO;
+        assert_eq!(changed.digest(), Err(SharedFeatureErrorV2::InvalidIdentity));
+        changed = source;
+        changed.source_frontier_digest = Digest32::ZERO;
+        assert_eq!(changed.digest(), Err(SharedFeatureErrorV2::InvalidIdentity));
     }
 }
