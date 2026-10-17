@@ -1,0 +1,80 @@
+name: Hepta borrowed Neuron batch native qualification (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/ext/hepta-memory/src/cognitive/**"
+      - "codex-rs/hepta-cell-roles/src/control_wal.rs"
+      - "codex-rs/hepta-context-compiler/src/lib.rs"
+      - ".github/workflows/hepta-borrowed-neuron-batch-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-borrowed-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-borrowed-head-proof:
+    name: Exact-head borrowed V1 parity, original signed Worker and denial
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Check out exact source, without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Reject changed source identity and missing original denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
+          grep -Fq 'pub fn require_original_control_v1()' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs
+          grep -Fq 'UnverifiedOriginalControl' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs
+          git diff --check
+          git diff --exit-code
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Require original Core and Worker formatting
+        run: cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
+      - name: Check full typed V1 Core regression suite
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-all.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib -- --nocapture
+      - name: Require both owned-versus-borrowed V1 digest and receipt cases
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-parity.json" --minimum-tests 2 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib borrowed_slice_ -- --nocapture --test-threads=1
+      - name: Require two independently signed Head Cells and reordered-reply denial
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-native-worker.json" --minimum-tests 2 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib borrowed_native_batch_ -- --nocapture --test-threads=1
+      - name: Preserve original signed Stem two-Cell native-batch regression
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-original-stem.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --nocapture --test-threads=1
+      - name: Exercise real non-test Control/CNS bootstrap denial
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-deny.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --test original_control_non_test_gate -- --nocapture --test-threads=1
+      - name: Verify non-test Worker library and strict all-target Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Require unchanged worktree
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+      - name: Retain actual original test-count evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-borrowed-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/borrowed-*.json
+          if-no-files-found: warn
+          retention-days: 30
