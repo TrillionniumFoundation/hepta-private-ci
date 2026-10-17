@@ -22,30 +22,48 @@ class ReaderSourceBoundary(unittest.TestCase):
         cls.rank_dir.mkdir()
         cls.public = public_fixture()
         cls.pubsha = graph.create_only(cls.public_dir / "public.json", cls.public)
-        cls.manifest = {"schema": graph.SCHEMA,
-                        "public_sha256": cls.pubsha,
-                        "private_sha256": "b" * 64,
-                        "source_sha256": graph.DATASET_SHA256,
-                        "family_count": 10, "question_count": 240,
-                        "labels_visible_to_worker": False,
-                        "production_accepted": False}
+        cls.manifest = {
+            "schema": graph.SCHEMA,
+            "public_sha256": cls.pubsha,
+            "private_sha256": "b" * 64,
+            "source_sha256": graph.DATASET_SHA256,
+            "family_count": 10,
+            "question_count": 240,
+            "labels_visible_to_worker": False,
+            "production_accepted": False,
+        }
         graph.create_only(cls.public_dir / "manifest.json", cls.manifest)
         rows = []
         for f in cls.public["families"]:
             selected = [d["id"] for d in f["sources"][:8]]
             for q in f["questions"]:
-                rows.append({"family": f["family"], "question_id": q["id"],
-                             "arms": dict.fromkeys(stem.ARMS, selected)})
-        cls.journal = {"schema": stem.SCHEMA,
-                       "source_sha256": graph.DATASET_SHA256,
-                       "public_sha256": cls.pubsha,
-                       "arms": list(stem.ARMS), "top_k": graph.TOP_K,
-                       "rows": rows, "cells": {}, "training_receipts": {}, "model": {}}
+                rows.append(
+                    {
+                        "family": f["family"],
+                        "question_id": q["id"],
+                        "arms": dict.fromkeys(stem.ARMS, selected),
+                    }
+                )
+        cls.journal = {
+            "schema": stem.SCHEMA,
+            "source_sha256": graph.DATASET_SHA256,
+            "public_sha256": cls.pubsha,
+            "arms": list(stem.ARMS),
+            "top_k": graph.TOP_K,
+            "rows": rows,
+            "cells": {},
+            "training_receipts": {},
+            "model": {},
+        }
         cls.digest = graph.create_only(cls.rank_dir / "predictions.json", cls.journal)
-        cls.seal = {"schema": stem.SCHEMA, "public_sha256": cls.pubsha,
-                    "predictions_sha256": cls.digest,
-                    "number_questions": 240, "labels_visible": False,
-                    "production_accepted": False}
+        cls.seal = {
+            "schema": stem.SCHEMA,
+            "public_sha256": cls.pubsha,
+            "predictions_sha256": cls.digest,
+            "number_questions": 240,
+            "labels_visible": False,
+            "production_accepted": False,
+        }
         graph.create_only(cls.rank_dir / "seal.json", cls.seal)
 
     @classmethod
@@ -57,23 +75,37 @@ class ReaderSourceBoundary(unittest.TestCase):
         self.assertEqual(len(rows), 50)
         self.assertEqual(len({r["question_id"] for r in rows}), 10)
         for r in rows:
-            self.assertEqual(set(r), {"family", "question_id", "arm", "question",
-                                      "evidence", "public_sha256"})
+            self.assertEqual(
+                set(r),
+                {
+                    "family",
+                    "question_id",
+                    "arm",
+                    "question",
+                    "evidence",
+                    "public_sha256",
+                },
+            )
             if r["arm"] == "empty":
                 self.assertEqual(r["evidence"], [])
             else:
                 self.assertEqual(len(r["evidence"]), 8)
-                self.assertEqual([e["label"] for e in r["evidence"]],
-                                 [f"E{i}" for i in range(1, 9)])
+                self.assertEqual(
+                    [e["label"] for e in r["evidence"]], [f"E{i}" for i in range(1, 9)]
+                )
 
     def test_unknown_candidate_source_denied(self):
         bad = copy.deepcopy(self.journal)
-        bad["rows"][0]["arms"]["trained_cell"] = ["D0:9999", *bad["rows"][0]["arms"]["trained_cell"][1:]]
+        bad["rows"][0]["arms"]["trained_cell"] = [
+            "D0:9999",
+            *bad["rows"][0]["arms"]["trained_cell"][1:],
+        ]
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp)
             digest = graph.create_only(path / "predictions.json", bad)
-            graph.create_only(path / "seal.json", {**self.seal,
-                        "predictions_sha256": digest})
+            graph.create_only(
+                path / "seal.json", {**self.seal, "predictions_sha256": digest}
+            )
             with self.assertRaisesRegex(ValueError, "source out"):
                 language.reader_inputs(self.public_dir, path)
 
@@ -83,17 +115,21 @@ class ReaderSourceBoundary(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp)
             digest = graph.create_only(path / "predictions.json", forged)
-            graph.create_only(path / "seal.json", {**self.seal,
-                        "predictions_sha256": digest})
+            graph.create_only(
+                path / "seal.json", {**self.seal, "predictions_sha256": digest}
+            )
             with self.assertRaisesRegex(ValueError, "foreign"):
                 language.reader_inputs(self.public_dir, path)
 
     def test_reader_seal_bitflip_denied(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp)
-            (path / "predictions.json").write_bytes((self.rank_dir / "predictions.json").read_bytes())
-            graph.create_only(path / "seal.json", {**self.seal,
-                        "predictions_sha256": "e" * 64})
+            (path / "predictions.json").write_bytes(
+                (self.rank_dir / "predictions.json").read_bytes()
+            )
+            graph.create_only(
+                path / "seal.json", {**self.seal, "predictions_sha256": "e" * 64}
+            )
             with self.assertRaisesRegex(ValueError, "unregistered"):
                 language.reader_inputs(self.public_dir, path)
 
@@ -109,8 +145,10 @@ class ReaderSourceBoundary(unittest.TestCase):
     def test_model_attempt_does_not_fake_oracle_evidence(self):
         rows, _ = language.reader_inputs(self.public_dir, self.rank_dir)
         self.assertTrue(all("answer" not in r and "gold" not in r for r in rows))
-        self.assertEqual(set(stem.READER_ARMS),
-                         {"empty", "temporal", "rrf", "trained_cell", "rrf_cell"})
+        self.assertEqual(
+            set(stem.READER_ARMS),
+            {"empty", "temporal", "rrf", "trained_cell", "rrf_cell"},
+        )
 
 
 if __name__ == "__main__":

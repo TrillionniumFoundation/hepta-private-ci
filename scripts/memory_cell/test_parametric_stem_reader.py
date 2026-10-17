@@ -63,47 +63,77 @@ class ParametricStemMechanics(unittest.TestCase):
         self.assertEqual(sha256(raw), sha256(cell.export()))
 
     def test_cell_is_not_parameter_only_reader(self):
-        query = ReadQuery(scope="conv-0", kind="semantic",
-                          encoder_identity=self.projection.identity,
-                          as_of=129, cue=tuple(float(v) for v in self.embeddings[0]))
+        query = ReadQuery(
+            scope="conv-0",
+            kind="semantic",
+            encoder_identity=self.projection.identity,
+            as_of=129,
+            cue=tuple(float(v) for v in self.embeddings[0]),
+        )
         result = self.child.read(query, revoked=frozenset())
         self.assertEqual(len(result), 64)
         self.assertTrue(np.isfinite(result).all())
         self.assertFalse(any(x in self.raw for x in (b"alpha beta", b"What did")))
-        self.assertNotEqual(tuple(result), tuple(self.parent.read(query, revoked=frozenset())))
+        self.assertNotEqual(
+            tuple(result), tuple(self.parent.read(query, revoked=frozenset()))
+        )
 
     def test_revoke_source_does_not_resurrect_weights(self):
         root = self.docs[1]["id"]
         with self.assertRaises(ValueError):
-            self.child.read(ReadQuery(
-                scope="conv-0", kind="semantic", encoder_identity=self.projection.identity,
-                as_of=129, cue=tuple(float(v) for v in self.embeddings[0])), revoked={root})
+            self.child.read(
+                ReadQuery(
+                    scope="conv-0",
+                    kind="semantic",
+                    encoder_identity=self.projection.identity,
+                    as_of=129,
+                    cue=tuple(float(v) for v in self.embeddings[0]),
+                ),
+                revoked={root},
+            )
         with self.assertRaises(ValueError):
-            AssociativeCell.restore(self.raw, expected_sha256=sha256(self.raw),
-                                    encoder_identity=self.projection.identity,
-                                    scope="conv-0", allowed_roots={d["id"] for d in self.docs},
-                                    revoked={root})
+            AssociativeCell.restore(
+                self.raw,
+                expected_sha256=sha256(self.raw),
+                encoder_identity=self.projection.identity,
+                scope="conv-0",
+                allowed_roots={d["id"] for d in self.docs},
+                revoked={root},
+            )
 
     def test_cross_scope_or_model_generation_denied(self):
         with self.assertRaises(ValueError):
-            AssociativeCell.restore(self.raw, expected_sha256=sha256(self.raw),
-                                    encoder_identity="wrong", scope="conv-0",
-                                    allowed_roots={d["id"] for d in self.docs}, revoked=set())
+            AssociativeCell.restore(
+                self.raw,
+                expected_sha256=sha256(self.raw),
+                encoder_identity="wrong",
+                scope="conv-0",
+                allowed_roots={d["id"] for d in self.docs},
+                revoked=set(),
+            )
         with self.assertRaises(ValueError):
-            AssociativeCell.restore(self.raw, expected_sha256=sha256(self.raw),
-                                    encoder_identity=self.projection.identity,
-                                    scope="conv-1", allowed_roots={d["id"] for d in self.docs},
-                                    revoked=set())
+            AssociativeCell.restore(
+                self.raw,
+                expected_sha256=sha256(self.raw),
+                encoder_identity=self.projection.identity,
+                scope="conv-1",
+                allowed_roots={d["id"] for d in self.docs},
+                revoked=set(),
+            )
 
     def test_tampered_tensor_or_digest_denied(self):
         tampered = json.loads(self.raw)
         tampered["state"]["up"][0][0] += 1
         raw = json.dumps(tampered).encode()
         with self.assertRaises(ValueError):
-            AssociativeCell.restore(raw, expected_sha256=sha256(self.raw),
-                                    encoder_identity=self.projection.identity,
-                                    scope="conv-0", allowed_roots={d["id"] for d in self.docs},
-                                    revoked=frozenset())
+            AssociativeCell.restore(
+                raw,
+                expected_sha256=sha256(self.raw),
+                encoder_identity=self.projection.identity,
+                scope="conv-0",
+                allowed_roots={d["id"] for d in self.docs},
+                revoked=frozenset(),
+            )
 
     def test_7_arm_equal_pool_and_wrong_split(self):
         rows, raw, receipt = stem.rank_section(self.section, self.projection)

@@ -14,7 +14,7 @@ class SourceOnlyPortfolioPolicy(unittest.TestCase):
     def test_predeclared_no_answer_text_feature(self):
         self.assertEqual(portfolio.query_class("When did Alice speak?"), "temporal")
         self.assertEqual(portfolio.query_class("Who likes blue pens?"), "general")
-        for query in ("", "   ", "hello\x00world", "caf\u00e9"):
+        for query in ("", "   ", "hello\x00world", "c\u0061f\u00e9"):
             with self.subTest(query=query), self.assertRaises(ValueError):
                 portfolio.query_class(query)
 
