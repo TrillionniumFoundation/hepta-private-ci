@@ -22,6 +22,7 @@ def fixture():
         'source_plan_sha256':source['source_plan_sha256'],
         'model_repo':core.REPO,'model_revision':core.REVISION,
         'actual_weight_sha256':core.WEIGHT_SHA,'model_precision':'fp32_cpu',
+        'actual_loaded_parameters':270_000_000,
         'native_width':768,'projected_width':384,'projection':core.PROJECTION,
         'prompt_name':'Classification',
         'initial_head_sha256':'a'*64,'trained_head_sha256':'b'*64,
@@ -75,6 +76,15 @@ class ReceiptTests(unittest.TestCase):
             with self.subTest(key=key),self.assertRaises(ValueError):
                 review.check_fourth(src,bad,g)
         bad=copy.deepcopy(r);bad['rows'][0]['label']=1
+        with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_real_text_tower_parameter_census_and_initial_tensor_parity(self):
+        src,r,g=fixture()
+        old=[{'initial_head_sha256':'a'*64} for _ in range(3)]
+        review.ensure_matched_initial_heads(old,r)
+        old[-1]['initial_head_sha256']='f'*64
+        with self.assertRaises(ValueError):review.ensure_matched_initial_heads(old,r)
+        bad=copy.deepcopy(r);bad['actual_loaded_parameters']=740_000_000
         with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
 
     def test_model_revision_weight_projection_and_optimizer_must_match(self):

@@ -119,6 +119,16 @@ def _load_text_encoder():
                                 model_kwargs={'torch_dtype': torch.float32}, device='cpu')
     model.eval()
     require(len(model) >= 1, 'no pretrained Transformer installed')
+    native = getattr(model[0], 'auto_model', None)
+    config = getattr(native, 'config', None)
+    require(config is not None and getattr(config, 'vision_config', 'missing') is None
+            and getattr(config, 'audio_config', 'missing') is None,
+            'optional vision/audio towers were not demonstrably disabled')
+    parameters = list(model.parameters())
+    count = sum(t.numel() for t in parameters)
+    require(200_000_000 <= count <= 350_000_000
+            and all(t.dtype == torch.float32 for t in parameters),
+            'not an authentic float32 text-only pretrained model')
     return model
 
 
@@ -196,6 +206,7 @@ def physical_run(source):
     torch.set_num_threads(2)
     begin, cpu = time.perf_counter(), time.process_time()
     model = _load_text_encoder()
+    actual_loaded_parameters = sum(p.numel() for p in model.parameters())
     load_wall = time.perf_counter()-begin
     fittexts = [r['text'] for r in source['train']]
     heldtexts = [r['text'] for r in source['heldout']]
@@ -213,7 +224,8 @@ def physical_run(source):
         'schema':SCHEMA, 'cohort':COHORT,'candidate':ARM,
         'source_plan_sha256':source['source_plan_sha256'],
         'model_repo':REPO,'model_revision':REVISION,'actual_weight_sha256':WEIGHT_SHA,
-        'model_precision':'fp32_cpu', 'native_width':768,'projected_width':384,
+        'model_precision':'fp32_cpu', 'actual_loaded_parameters':actual_loaded_parameters,
+        'native_width':768,'projected_width':384,
         'projection':PROJECTION,'prompt_name':'Classification',
         'initial_head_sha256':trained['initial_head_sha256'],
         'trained_head_sha256':trained['trained_head_sha256'],

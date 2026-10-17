@@ -18,7 +18,7 @@ sys.path.insert(0,str(core.ROOT / 'stem-optimal-v1'))
 ARMS = ('centroid','frozen_init','learned')
 FIELDS = {
     'schema','cohort','candidate','source_plan_sha256','model_repo','model_revision',
-    'actual_weight_sha256','model_precision','native_width','projected_width',
+    'actual_weight_sha256','model_precision','actual_loaded_parameters','native_width','projected_width',
     'projection','prompt_name','initial_head_sha256','trained_head_sha256',
     'head_parameters','optimizer_steps','rows','cost','fleet','future_windows',
     'human_verified_new_sources','ndu_task_utility_qualified',
@@ -48,6 +48,9 @@ def check_fourth(source, receipt, gold):
                  'wrong cohort or source digest')
     core.require((receipt['model_repo'],receipt['model_revision'],receipt['actual_weight_sha256'])
                  == (core.REPO, core.REVISION, core.WEIGHT_SHA), 'unpinned fourth model')
+    core.require(type(receipt['actual_loaded_parameters']) is int and
+                 200_000_000 <= receipt['actual_loaded_parameters'] <= 350_000_000,
+                 'unqualified text-only loaded parameter census')
     core.require(receipt['model_precision'] == 'fp32_cpu' and
                  receipt['native_width'] == 768 and receipt['projected_width'] == 384 and
                  receipt['projection'] == core.PROJECTION and
@@ -123,6 +126,15 @@ def check_fourth(source, receipt, gold):
                  'brier':values['brier_sum']/32} for arm,values in result.items()}
 
 
+def ensure_matched_initial_heads(old_runs, fourth):
+    core.require(type(old_runs) is list and len(old_runs) == 3 and
+                 all(type(r) is dict and 'initial_head_sha256' in r for r in old_runs),
+                 'missing incumbent initializer receipts')
+    digests={r['initial_head_sha256'] for r in old_runs}
+    core.require(len(digests) == 1 and fourth['initial_head_sha256'] in digests,
+                 'cross-version initial Head tensor mismatch; not equal Head baseline')
+
+
 def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     import stem_hard_charge_review_v3 as v3_review
     import stem_candidate_v1 as v1
@@ -131,6 +143,7 @@ def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     _,gold=v3_review.reconstruct(train_raw,test_raw,v1.ORIGINAL_SHA)
     core.check_source(source)
     fourth_result=check_fourth(source,fourth,gold)
+    ensure_matched_initial_heads(old_runs, fourth)
     return {'schema':'hepta.stem.original-four-model-postseal.v4',
             'cohort':core.COHORT,'source_sha256':source['source_plan_sha256'],
             'existing_original_three_model_scoring':incumbent,
