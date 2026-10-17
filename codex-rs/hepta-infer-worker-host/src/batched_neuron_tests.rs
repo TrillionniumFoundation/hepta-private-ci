@@ -3395,12 +3395,13 @@ fn execute_borrowed_native_two_cell_fixture(
         .expect("second independent signed original admission");
     let poll = worker.poll_and_execute(101).expect("one backend call");
     let observed_pointers = pointers.lock().unwrap().clone();
+    let metrics_count = metrics.0.lock().unwrap().len();
     (
         poll,
         observed_pointers,
         original_pointer,
         invocations.load(Ordering::SeqCst),
-        metrics.0.lock().unwrap().len(),
+        metrics_count,
     )
 }
 
