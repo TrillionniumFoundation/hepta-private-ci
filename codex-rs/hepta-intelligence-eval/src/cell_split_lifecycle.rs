@@ -34,6 +34,14 @@ pub struct CellSplitCanaryReceiptV1 {
     pub receipt_digest: Digest32,
 }
 
+/// Counters from one authenticated canary observation window, never independent
+/// success labels inferred from an output digest.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitCanaryCountsV1 {
+    pub observed_requests: u64,
+    pub failed_requests: u64,
+}
+
 impl CellSplitCanaryReceiptV1 {
     pub fn new(
         split_id: StableId,
@@ -41,8 +49,7 @@ impl CellSplitCanaryReceiptV1 {
         dispatch_receipt_digest: Digest32,
         old_route_fence_digest: Digest32,
         child_route_digest: Digest32,
-        observed_requests: u64,
-        failed_requests: u64,
+        counts: CellSplitCanaryCountsV1,
         rollback_verified: bool,
     ) -> Result<Self, CellSplitLifecycleErrorV1> {
         let mut receipt = Self {
@@ -51,8 +58,8 @@ impl CellSplitCanaryReceiptV1 {
             dispatch_receipt_digest,
             old_route_fence_digest,
             child_route_digest,
-            observed_requests,
-            failed_requests,
+            observed_requests: counts.observed_requests,
+            failed_requests: counts.failed_requests,
             rollback_verified,
             receipt_digest: Digest32::ZERO,
         };
