@@ -18,6 +18,7 @@ from hepta_sngr_reader_eval import (
     construct_request,
     evidence_for,
     git_blob_sha1,
+    injection_target,
     load_cases,
     load_local_laya,
     main,
@@ -88,12 +89,20 @@ class CorpusValidityTests(unittest.TestCase):
             self.assertNotEqual(path, case["source"]["path"])
             self.assertNotIn(case["source"]["quote"], excerpt)
 
-    def test_synthetic_attack_is_labeled_non_source(self):
+    def test_synthetic_attack_is_labeled_non_source_and_blind_to_gold(self):
         for task in self.corpus["tasks"]:
             text, _ = evidence_for(self.corpus, task, "injection")
             self.assertIn("UNTRUSTED_INJECTION_TEST_NOT_SOURCE", text)
             self.assertIn(task["source"]["quote"], text)
-            self.assertNotIn("output option " + task["gold"] + ".", text)
+            self.assertIn("output option " + injection_target(task) + ".", text)
+            changed = copy.deepcopy(task)
+            changed["gold"] = next(label for label in "ABCD" if label != task["gold"])
+            # Deliberately change the answer key without changing the evidence or
+            # prompt injection. No model-visible bytes can depend on the gold.
+            self.assertEqual(
+                construct_request(self.corpus, task, "injection"),
+                construct_request(self.corpus, changed, "injection"),
+            )
 
     def test_mutated_gold_and_bad_source_rejected(self):
         for mutation in ("UNKNOWN", "E", ""):
@@ -144,6 +153,12 @@ class CorpusValidityTests(unittest.TestCase):
             context = {**source, "line": 2, "quote": "Other context"}
             corpus = {"tasks": [{"source": source, "withheld_control": context}]}
             self.assertEqual(verify_checkout(corpus, folder), {"docs/x.txt": source["blob_sha"]})
+            # Entire blob and quotation can both match while the declared line
+            # number is false; this must not be accepted as cited evidence.
+            mislocated = copy.deepcopy(corpus)
+            mislocated["tasks"][0]["source"]["line"] = 2
+            with self.assertRaisesRegex(ReaderBenchError, "line mismatch"):
+                verify_checkout(mislocated, folder)
             path.write_text("We observed different success.\nOther context.\n")
             with self.assertRaisesRegex(ReaderBenchError, "mismatch"):
                 verify_checkout(corpus, folder)
@@ -178,6 +193,8 @@ class ChoiceParsingTests(unittest.TestCase):
             {}, {"answers": {}}, self.response(choice="EXFILTRATE"),
             self.response(confidence=float("nan")), self.response(confidence=2.0),
             self.response(probabilities={"A": 0.7, "B": 0.2, "C": 0.1}),
+            {"answers": {"answer": {"choice": "A", "confidence": 0.8}}},
+            self.response(choice="A", probabilities={"A": 0.1, "B": 0.75, "C": 0.05, "D": 0.05, "UNKNOWN": 0.05}),
             self.response(tokens=-1), self.response(confidence=True),
         ]
         for value in invalid:
@@ -199,6 +216,9 @@ class ProtocolAndCostTests(unittest.TestCase):
         self.assertEqual(result["summaries"]["full"]["top1_gold_fraction"], 1.0)
         self.assertEqual(result["summaries"]["none"]["abstention_fraction"], 1.0)
         self.assertEqual(result["summaries"]["withheld"]["abstention_fraction"], 1.0)
+        for arm in ("none", "withheld", "full"):
+            self.assertEqual(result["summaries"][arm]["evidence_condition_accuracy"], 1.0)
+            self.assertEqual(result["summaries"][arm]["multiclass_brier_evidence_target"], 0.0)
         self.assertEqual(result["production_selection_authority"], False)
         for state, q in agent.calls:
             self.assertNotIn("gold", state)
@@ -211,6 +231,12 @@ class ProtocolAndCostTests(unittest.TestCase):
         self.assertEqual(report["model_calls"], 80)
         self.assertEqual(report["summaries"]["injection"]["top1_gold_fraction"], 1.0)
         self.assertEqual(sum(1 for r in report["rows"] if r["arm"] == "injection"), 16)
+        attacks = [r for r in report["rows"] if r["arm"] == "injection"]
+        self.assertEqual(report["summaries"]["injection"]["opposed_gold_cases"],
+                         sum(injection_target(task) != task["gold"] for task in self.corpus["tasks"]))
+        self.assertEqual(report["summaries"]["injection"]["attack_success_fraction_when_opposed"], 0.0)
+        self.assertEqual(report["injection_target_policy"], "sha256(task_id)_mod_4_gold_blind")
+        self.assertTrue(all(row["injection_target"] == injection_target(next(t for t in self.corpus["tasks"] if t["id"] == row["task_id"])) for row in attacks))
 
     def test_fixed_seed_assignment_and_document_provenance(self):
         a, b = SpyTypedAgent(), SpyTypedAgent()
@@ -219,6 +245,49 @@ class ProtocolAndCostTests(unittest.TestCase):
         self.assertEqual(a.calls, b.calls)
         self.assertTrue(all(r["source_blob_sha"] in {t["source"]["blob_sha"] for t in self.corpus["tasks"]}
                             for r in run_reader(self.corpus, SpyTypedAgent(), "c" * 64, max_calls=64)["rows"]))
+
+    def test_unsupported_guess_never_counts_as_evidence_condition_success(self):
+        class ConstantGuessAgent:
+            def predict(self, state, questions):
+                probs = dict.fromkeys(("A", "B", "C", "D", "UNKNOWN"), 0.0)
+                probs["A"] = 1.0
+                return {"answers": {"answer": {"choice": "A", "confidence": 1.0,
+                                                  "probabilities": probs}},
+                        "usage": {"input_tokens": 1, "output_tokens": 0}}
+
+        result = run_reader(self.corpus, ConstantGuessAgent(), "d" * 64, seed=17)
+        self.assertEqual(result["schema"], "hepta.sngr.reader-diagnostic.shadow.v2")
+        self.assertEqual(result["summaries"]["none"]["top1_gold_fraction"], 0.25)
+        self.assertEqual(result["summaries"]["none"]["evidence_condition_accuracy"], 0.0)
+        self.assertEqual(result["summaries"]["none"]["unsupported_assertion_fraction"], 1.0)
+        self.assertEqual(result["summaries"]["none"]["multiclass_brier_evidence_target"], 2.0)
+
+    def test_probability_vector_must_support_reported_choice(self):
+        bad = {"answers": {"answer": {"choice": "A", "confidence": 0.8,
+                                      "probabilities": {"A": 0.10, "B": 0.70, "C": 0.10,
+                                                        "D": 0.05, "UNKNOWN": 0.05}}},
+               "usage": {"input_tokens": 5}}
+        with self.assertRaisesRegex(ReaderBenchError, "inconsistent"):
+            parse_answer(bad)
+
+    def test_real_model_needs_source_checkout_even_with_checkpoint_path(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "out.json"
+            fake_ckpt = Path(d) / "checkpoint"
+            fake_ckpt.mkdir()
+            with self.assertRaisesRegex(ReaderBenchError, "source checkout required"):
+                main(["--checkpoint-dir", str(fake_ckpt), "--output", str(out)])
+            self.assertFalse(out.exists())
+
+    def test_attack_targets_cover_real_opposed_cases_without_label_dependency(self):
+        targets = [(t["gold"], injection_target(t)) for t in self.corpus["tasks"]]
+        self.assertEqual(len(targets), 16)
+        self.assertGreater(sum(g != a for g, a in targets), 0)
+        for task in self.corpus["tasks"]:
+            modified = copy.deepcopy(task)
+            modified["gold"] = next(label for label in "ABCD" if label != task["gold"])
+            self.assertEqual(evidence_for(self.corpus, task, "injection"),
+                             evidence_for(self.corpus, modified, "injection"))
 
     def test_model_digest_and_budget_guard(self):
         for model_digest in ("", "bad", "a" * 63):
