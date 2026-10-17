@@ -42,12 +42,12 @@ evaluator and therefore verifies each registered Git blob, quoted line, and
 withheld control before a model request can be bound. This is still an input
 integrity check, not evidence that a model answered correctly.
 
-`ReaderRequestV1` contains only the evaluator-generated `state` and `questions`
-payloads accepted by the Reader API. It recursively rejects evaluator-only
-gold fields before a caller can pass the request to a model. The adapter does
-not invoke a model or score answers. The registered fixture still requires a
-real source checkout and the pinned local checkpoint before any efficacy claim
-could be made.
+`ReaderRequestV1` contains only the evaluator-generated `state` and
+`questions` payloads accepted by the Reader API. It recursively rejects
+evaluator-only gold fields before a caller can pass the request to a model. The
+adapter does not invoke a model or score answers. The registered fixture still
+requires a real source checkout and the pinned local checkpoint before any
+efficacy claim could be made.
 
 ## Prospective equal-budget transfer plan
 
@@ -83,3 +83,21 @@ This is still an experiment contract. It does not train a Cell, run a
 checkpoint, or prove a Stem winner, NDU efficacy, multimodal generation, or
 10T/100T equivalence. The real receipt must come from the pinned harness
 before any System2 or split decision is considered.
+
+## Immutable X/P/Y/Z OPE receipts
+
+`neuron_shared_encoder.ope_receipts` keeps model-visible context (X),
+logged policy/action/propensity/support (P), independently observed delayed
+outcome (Y), and resource/accounting (Z) as separate immutable receipts.
+`XYZEpisodeV1` binds them by episode and rejects gold-visible context,
+support mismatch, zero logged propensity, aliasing of policy/outcome
+principals, budget mismatch, and incomplete resource evidence.
+`estimate_ope` supports IPS/SNIPS/DR with ESS, delayed/censored counts,
+and research-only normal intervals. Default evidence is `REAL_SHADOW`;
+explicit smoke is `SYNTHETIC_SMOKE`; all estimates carry `DENY_ALL` and
+`model_efficacy_measured=False`.
+Z is currently an aggregate experiment budget binding. A future real
+checkpoint gate must provide componentized encoder, tower/projector,
+decoder, Cell/controller, state/cache, verification, and device receipts;
+this adapter never treats a scalar total as physical or model-capacity
+equivalence.
