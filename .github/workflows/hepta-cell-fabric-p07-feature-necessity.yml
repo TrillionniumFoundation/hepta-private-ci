@@ -1,0 +1,156 @@
+name: Hepta Neural Cell Fabric P0.7 dual-model feature necessity (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/hepta-neural-cell-fabric-p07-feature-necessity-20261017
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p07_feature_necessity.py'
+      - 'qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py'
+      - 'qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md'
+      - '.github/workflows/hepta-cell-fabric-p07-feature-necessity.yml'
+  pull_request:
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p07_feature_necessity.py'
+      - 'qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py'
+      - 'qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md'
+      - '.github/workflows/hepta-cell-fabric-p07-feature-necessity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-fabric-p07-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-head-tests:
+    name: Source-head 129+ tests and no original-material substitution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact source-head and pinned local numerical dependencies
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0
+      - name: Full inherited test matrix with mandatory original-material skips
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 -m py_compile p07_feature_necessity.py test_p07_feature_necessity.py
+          python3 -m unittest discover -q
+          python3 -O -m unittest discover -q
+          echo 'Original historical archives are intentionally ABSENT here: skips are not genuine historical results'
+
+  real-historical-dual-source:
+    name: Genuine original frozen features, two-process late-label and 31+11 lesions
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact source-head and private source/producer/reviewer directories
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p07-original"
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p07-producer"
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p07-reviewer"
+      - name: Download only public historical feature/source artifacts before producer
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 original_fetch.py --kind agnews --out "$RUNNER_TEMP/hepta-p07-original/agnews.zip"
+          python3 original_fetch.py --kind features --out "$RUNNER_TEMP/hepta-p07-original/hdcf-original-features.zip"
+          python3 original_fetch.py --kind public --out "$RUNNER_TEMP/hepta-p07-original/hdcf-original-public.zip"
+          echo 'AG News archive contains historical gold already: this is NOT independent blind custody'
+      - name: Freeze label-redacted real pretrained model inputs
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 p07_feature_necessity.py source \
+            --agnews "$RUNNER_TEMP/hepta-p07-original/agnews.zip" \
+            --bank "$RUNNER_TEMP/hepta-p07-original" \
+            --out "$RUNNER_TEMP/hepta-p07-producer/redacted.json"
+      - name: Train-only 2-model prototypes, LOOCV and prelabel lesions
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 p07_feature_necessity.py producer \
+            --source "$RUNNER_TEMP/hepta-p07-producer/redacted.json" \
+            --prelabel "$RUNNER_TEMP/hepta-p07-producer/prelabel.json" \
+            --seal "$RUNNER_TEMP/hepta-p07-producer/seal.json"
+      - name: Obtain BANKING77 target/trial archives strictly after the prelabel seal
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/hepta-p07-producer/seal.json"
+          python3 original_fetch.py --kind targets --out "$RUNNER_TEMP/hepta-p07-original/hdcf-original-targets.zip"
+          python3 original_fetch.py --kind trial --out "$RUNNER_TEMP/hepta-p07-original/hdcf-original-head-trial.zip"
+      - name: Independent numeric review and authentic history only after prelabel seal
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          AGNEWS_ORIGINAL_ARCHIVE: ${{ runner.temp }}/hepta-p07-original/agnews.zip
+          HDCF_ORIGINAL_ARCHIVE_DIR: ${{ runner.temp }}/hepta-p07-original
+          HEPTA_P07_AGNEWS: ${{ runner.temp }}/hepta-p07-original/agnews.zip
+          HEPTA_P07_BANK_DIR: ${{ runner.temp }}/hepta-p07-original
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -q
+          python3 -O -m unittest discover -q
+          python3 p07_feature_necessity.py review \
+            --agnews "$HEPTA_P07_AGNEWS" --bank "$HEPTA_P07_BANK_DIR" \
+            --source "$RUNNER_TEMP/hepta-p07-producer/redacted.json" \
+            --prelabel "$RUNNER_TEMP/hepta-p07-producer/prelabel.json" \
+            --seal "$RUNNER_TEMP/hepta-p07-producer/seal.json" \
+            --out "$RUNNER_TEMP/hepta-p07-reviewer/sanitized-aggregate.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ['RUNNER_TEMP'])/'hepta-p07-reviewer/sanitized-aggregate.json').read_text())
+          assert result['schema']=='hepta.cell-fabric.p07.dual-encoder-feature-necessity.v1'
+          assert result['distinct_encoders_and_label_spaces'] is True
+          assert result['new_pretrained_encoder_forwards']==0
+          a=result['tasks']['agnews_mmbert_384']
+          b=result['tasks']['banking77_modernbert_768']
+          assert (a['original_aligned_correct'],b['original_aligned_correct'])==(28,22)
+          assert (a['cyclic_at_least_aligned'],b['cyclic_at_least_aligned'])==(0,7)
+          assert a['within_cell_at_least_aligned']==b['within_cell_at_least_aligned']==0
+          assert a['source_text_overlap_audit']['exact_cross_split_normalized_text_duplicates']==0
+          assert b['source_text_overlap_audit']['exact_cross_split_normalized_text_duplicates']==0
+          assert not result['cell_split_learning_promotable'] and not result['native_execution_authorized']
+          assert result['authority']=='DENY_ALL' and result['disposition']=='HOLD_NO_GO'
+          print('HEPTA_P07_HISTORIC_SOURCE_BOUND_CAUSAL_ABLATIONS_PASS / DENY_ALL / NO_PROSPECTIVE_CLAIM')
+          PY
+      - name: Publish ONLY bounded anonymous aggregate; never source/weights/labels/predictions
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p07-original-dual-encoder-necessity-deny-all
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-p07-reviewer/sanitized-aggregate.json
