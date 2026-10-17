@@ -295,6 +295,7 @@ class ProjectorRegistryV1:
 
     def validate_tower_registry(self, registry: ModalityTowerRegistryV1) -> None:
         _require(registry.stem.stem_digest == self.stem.stem_digest, "tower registry Stem digest mismatch")
+        _require(registry.stem.to_dict() == self.stem.to_dict(), "tower and projector registries bind different Stem manifests")
         _require(registry.registry_digest == self.tower_registry_digest, "tower registry digest mismatch")
         for projector in self.projectors:
             tower = registry.tower_for(projector.modality)
@@ -355,6 +356,7 @@ def validate_multimodal_binding(
 ) -> None:
     """Validate both registries and their immutable Stem/tower binding."""
     _require(tower_registry.stem.stem_digest == projector_registry.stem.stem_digest, "registry Stem digests differ")
+    _require(tower_registry.stem.to_dict() == projector_registry.stem.to_dict(), "registry Stem manifests differ")
     projector_registry.validate_tower_registry(tower_registry)
 
 
