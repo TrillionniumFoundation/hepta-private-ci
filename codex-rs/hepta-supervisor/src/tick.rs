@@ -112,8 +112,15 @@ impl<D: ProcessDriver> Supervisor<D> {
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
+                slot.restart_attempt = self.config.restart_max_attempts;
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: slot.restart_attempt,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {

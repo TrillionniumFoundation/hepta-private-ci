@@ -1,6 +1,7 @@
 use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -50,7 +51,7 @@ impl Default for OutboxDispatchConfig {
 
 impl OutboxDispatchConfig {
     fn is_valid(&self) -> bool {
-        self.lease_ms > 0
+        self.lease_ms > 1
             && self.retry_delay_ms > 0
             && self.max_retry_delay_ms >= self.retry_delay_ms
             && (1..=64).contains(&self.max_attempts)
@@ -66,6 +67,8 @@ pub struct OutboxDispatchStats {
     pub sent: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
+    /// Requests whose acknowledgement is unknown and require owner reconciliation.
+    pub needs_reconciliation: u64,
     pub cancelled: bool,
 }
 
@@ -87,27 +90,72 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
     if !config.is_valid() {
         return Err(OutboxDispatchError::Invalid);
     }
-    let records = store
-        .claim_outbox(now_ms, config.lease_ms, config.claim_limit)
-        .await
-        .map_err(store_error)?;
-    let mut stats = OutboxDispatchStats {
-        claimed: records.len() as u64,
-        ..OutboxDispatchStats::default()
-    };
-    for record in records {
+    let started = Instant::now();
+    let mut stats = OutboxDispatchStats::default();
+    for _ in 0..config.claim_limit {
+        if cancel.is_cancelled() {
+            stats.cancelled = true;
+            break;
+        }
+        // Claim immediately before each send, so later messages observe any
+        // room fence committed while an earlier request was in flight.
+        let claimed_at_ms = dispatch_time_ms(started, now_ms)?;
+        let records = store
+            .claim_outbox(claimed_at_ms, config.lease_ms, /*limit*/ 1)
+            .await
+            .map_err(store_error)?;
+        let Some(record) = records.into_iter().next() else {
+            break;
+        };
+        stats.claimed += 1;
+        if record.attempts > config.max_attempts {
+            // A crash can leave the last permitted attempt in flight. Its
+            // reclaim preserves an unknown result without issuing another PUT.
+            store
+                .park_outbox_unresolved(
+                    &record.stable_txn_id,
+                    record.attempts,
+                    dispatch_time_ms(started, now_ms)?,
+                )
+                .await
+                .map_err(store_error)?;
+            stats.needs_reconciliation += 1;
+            continue;
+        }
+        let remaining_ms = record
+            .lease_until_ms
+            .ok_or(OutboxDispatchError::Store)?
+            .saturating_sub(dispatch_time_ms(started, now_ms)?);
         let result = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
                 stats.cancelled = true;
                 break;
             }
-            result = transport.send(&record) => result,
+            result = async {
+                if remaining_ms <= 1 {
+                    return Err(MatrixTransportError::Retryable);
+                }
+                // Leave one millisecond before owner lease expiry. A stalled
+                // SDK request cannot retain an attempt past the reclaim point.
+                tokio::time::timeout(
+                    Duration::from_millis(remaining_ms - 1),
+                    transport.send(&record),
+                )
+                .await
+                .unwrap_or(Err(MatrixTransportError::Retryable))
+            } => result,
         };
+        let completed_at_ms = dispatch_time_ms(started, now_ms)?;
         match result {
             Ok(event_id) => {
                 store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                    .mark_outbox_sent(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        &event_id,
+                        completed_at_ms,
+                    )
                     .await
                     .map_err(store_error)?;
                 stats.sent += 1;
@@ -115,23 +163,23 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Err(MatrixTransportError::Retryable) => {
                 if record.attempts >= config.max_attempts {
                     store
-                        .mark_outbox_permanent_failure(
+                        .park_outbox_unresolved(
                             &record.stable_txn_id,
                             record.attempts,
-                            now_ms,
+                            completed_at_ms,
                         )
                         .await
                         .map_err(store_error)?;
-                    stats.permanent_failure += 1;
+                    stats.needs_reconciliation += 1;
                 } else {
-                    let next_attempt_at_ms = now_ms
+                    let next_attempt_at_ms = completed_at_ms
                         .checked_add(retry_delay_ms(config, record.attempts)?)
                         .ok_or(OutboxDispatchError::Invalid)?;
                     store
                         .mark_outbox_retry(
                             &record.stable_txn_id,
                             record.attempts,
-                            now_ms,
+                            completed_at_ms,
                             next_attempt_at_ms,
                         )
                         .await
@@ -140,15 +188,41 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                 }
             }
             Err(MatrixTransportError::Permanent) => {
-                store
-                    .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
-                    .await
-                    .map_err(store_error)?;
-                stats.permanent_failure += 1;
+                if record.attempts > 1 {
+                    // A rejection of this request cannot disprove acceptance
+                    // of an earlier request whose acknowledgement was lost.
+                    store
+                        .park_outbox_unresolved(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            completed_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.needs_reconciliation += 1;
+                } else {
+                    store
+                        .mark_outbox_permanent_failure(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            completed_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.permanent_failure += 1;
+                }
             }
         }
     }
     Ok(stats)
+}
+
+fn dispatch_time_ms(started: Instant, now_ms: u64) -> Result<u64, OutboxDispatchError> {
+    let elapsed_ms =
+        u64::try_from(started.elapsed().as_millis()).map_err(|_| OutboxDispatchError::Invalid)?;
+    now_ms
+        .checked_add(elapsed_ms)
+        .ok_or(OutboxDispatchError::Invalid)
 }
 
 pub async fn run_outbox_sender<T: MatrixOutboundTransport + ?Sized>(

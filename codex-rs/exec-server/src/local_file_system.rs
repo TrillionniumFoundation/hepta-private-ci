@@ -310,6 +310,21 @@ impl ExecutorFileSystem for LocalFileSystem {
         ))
     }
 
+    #[cfg(not(target_os = "macos"))]
+    fn read_file_bounded_authorized<'a>(
+        &'a self,
+        _path: &'a PathUri,
+        _sandbox: &'a FileSystemSandboxContext,
+        _max_bytes: usize,
+    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
+        Box::pin(async {
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "bounded authorized file reads are unsupported",
+            ))
+        })
+    }
+
     fn read_file_stream<'a>(
         &'a self,
         path: &'a PathUri,
@@ -1734,3 +1749,7 @@ mod walk_tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, not(target_os = "macos")))]
+#[path = "local_file_system_unsupported_authorized_read_tests.rs"]
+mod unsupported_authorized_read_tests;

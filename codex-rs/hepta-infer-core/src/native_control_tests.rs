@@ -601,3 +601,160 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn native_incremental_slot_counter_replays_across_many_released_records() {
+    let location = path("native-incremental-slots");
+    {
+        let mut owner = DurableInferenceControl::open(&location, 512).unwrap();
+        for index in 0..128 {
+            let id = format!("released-{index}");
+            owner.reserve_native(request(&id), 1).unwrap();
+            assert_eq!(
+                owner
+                    .reserve_native(request(&format!("blocked-{index}")), 1)
+                    .unwrap_err()
+                    .to_string(),
+                Error::CapacityExceeded.to_string()
+            );
+            let released = owner
+                .stop_native_before_dispatch(&id, "proven-before-effect".to_string())
+                .unwrap();
+            assert_eq!(released.state, NativeReservationState::Released);
+        }
+        owner.reserve_native(request("active"), 1).unwrap();
+    }
+    {
+        let mut recovered = DurableInferenceControl::open(&location, 512).unwrap();
+        assert_eq!(
+            recovered
+                .reserve_native(request("fenced"), 1)
+                .unwrap_err()
+                .to_string(),
+            Error::CapacityExceeded.to_string()
+        );
+        recovered
+            .stop_native_before_dispatch("active", "proven-before-effect".to_string())
+            .unwrap();
+        recovered
+            .reserve_native(request("after-reopen"), 1)
+            .unwrap();
+    }
+    std::fs::remove_file(location).unwrap();
+}
+
+#[test]
+fn failed_native_append_preserves_counter_and_all_records() {
+    let location = path("failed-native-append");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("owner");
+    owner.reserve_native(request("target"), 2).expect("target");
+    owner
+        .reserve_native(request("unrelated"), 2)
+        .expect("unrelated");
+    owner
+        .submit(
+            100,
+            super::super::InferenceRequest {
+                request_id: "legacy".to_string(),
+                principal_id: "principal".to_string(),
+                model_digest: "1".repeat(64),
+                payload_digest: "2".repeat(64),
+                maximum_tokens: 128,
+                deadline_ms: 10_000,
+                semantic_digest: "3".repeat(64),
+            },
+        )
+        .expect("legacy record");
+    let native_before = owner.native.records.clone();
+    let legacy_before = owner.records.clone();
+    let limit_before = owner.native.maximum_in_flight;
+    let count_before = owner.native.in_flight_count;
+    let journal_bytes_before = owner.journal_bytes;
+    drop(owner);
+    let bytes_before = std::fs::read(&location).expect("committed bytes");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("reopen");
+
+    // Retain the real writer lock while forcing an actual write_all error.
+    // No filesystem permissions, production hook or lock protocol is changed.
+    let held_writer = std::mem::replace(
+        &mut owner.file,
+        std::fs::File::open(&location).expect("read-only append handle"),
+    );
+    assert!(matches!(
+        owner.stop_native_before_dispatch("target", "before effect".to_string()),
+        Err(Error::Io(_))
+    ));
+    assert!(owner.poisoned);
+    assert_eq!(owner.native.records, native_before);
+    assert_eq!(owner.records, legacy_before);
+    assert_eq!(owner.native.maximum_in_flight, limit_before);
+    assert_eq!(owner.native.in_flight_count, count_before);
+    assert_eq!(owner.journal_bytes, journal_bytes_before);
+    assert_eq!(
+        owner.reserve_native(request("after-failure"), 2),
+        Err(Error::WriterUnavailable)
+    );
+    assert!(matches!(
+        DurableInferenceControl::open(&location, 8),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(owner);
+    drop(held_writer);
+
+    assert_eq!(
+        std::fs::read(&location).expect("unchanged bytes"),
+        bytes_before
+    );
+    let recovered = DurableInferenceControl::open(&location, 8).expect("recover");
+    assert_eq!(recovered.native.records, native_before);
+    assert_eq!(recovered.records, legacy_before);
+    assert_eq!(recovered.native.maximum_in_flight, limit_before);
+    assert_eq!(recovered.native.in_flight_count, count_before);
+    drop(recovered);
+    std::fs::remove_file(location).expect("cleanup");
+}
+
+#[test]
+fn native_mutation_keeps_unrelated_record_storage() {
+    let location = path("native-no-unrelated-clone");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("owner");
+    start(&mut owner, "history");
+    let mut observed = output(NativeRunStatus::Completed, Some(1));
+    observed.output = "x".repeat(64 * 1024);
+    owner
+        .settle_native("history", observed)
+        .expect("terminal history");
+    owner
+        .reserve_native(request("target"), 1)
+        .expect("new target");
+    let history_before = owner.native_record("history").expect("history").clone();
+    let output_buffer = owner
+        .native_record("history")
+        .expect("history")
+        .observation
+        .as_ref()
+        .expect("observation")
+        .output
+        .as_ptr();
+
+    owner
+        .stop_native_before_dispatch("target", "before effect".to_string())
+        .expect("release target");
+    let history_after = owner.native_record("history").expect("unchanged history");
+    assert_eq!(history_after, &history_before);
+    assert_eq!(
+        history_after
+            .observation
+            .as_ref()
+            .expect("observation")
+            .output
+            .as_ptr(),
+        output_buffer,
+        "a mutation must not replace an unrelated live output allocation"
+    );
+    drop(owner);
+    let recovered = DurableInferenceControl::open(&location, 8).expect("reopen");
+    assert_eq!(recovered.native_record("history"), Some(&history_before));
+    drop(recovered);
+    std::fs::remove_file(location).expect("cleanup");
+}
