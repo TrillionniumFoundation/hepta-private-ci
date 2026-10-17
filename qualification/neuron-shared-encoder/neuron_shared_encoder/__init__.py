@@ -12,6 +12,8 @@ from .modality_registry import (
 )
 from .stem_qualification import (
     CheckpointRefV1,
+    SCHEMA_COMPONENT,
+    SCHEMA_RESOURCE,
     ComponentResourceBundleV1,
     ComponentResourceReceiptV1,
     MetricIntervalV1,
@@ -30,6 +32,8 @@ from .registry_bridge import (
 __all__ = [
     "BoundModalityEnvelopeV1",
     "CheckpointRefV1",
+    "SCHEMA_COMPONENT",
+    "SCHEMA_RESOURCE",
     "ComponentResourceBundleV1",
     "ComponentResourceReceiptV1",
     "BoundModalityRegistriesV1",
