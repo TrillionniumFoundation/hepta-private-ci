@@ -64,13 +64,17 @@ Each candidate must receive the same number of Reader calls across
 and energy receipts must stay under the matched caps. A `ProspectiveCaseV1`
 also binds the task, Reader arm, source split, Git blob SHA-1, request digest,
 manifest digest, model digest, held-label digest, and resident/active
-parameter counts. Missing, synthetic, historical, or model-gold-visible
-records cannot enter a transfer matrix. The plan is `SHADOW_ONLY`, has no
-selection authority, and cannot mutate the current run.
+parameter counts. P1 deliberately fixes one four-arm presentation per task;
+a future schema must add an explicit presentation index before repeated
+presentations can increase the call budget. Missing, synthetic, historical,
+or model-gold-visible records cannot enter a transfer matrix. The plan is
+`SHADOW_ONLY`, has no selection authority, and cannot mutate the current run.
 
-`build_system2_interval_gate()` consumes only caller-supplied intervals and
-fully charged `ResourceCostV1` receipts that have already passed independent
-real-shadow verification. It returns the existing #2672 `DENY_ALL` advisory:
+`build_system2_interval_gate()` first requires the complete validated case
+matrix and equal, bounded real-shadow resource receipts. It then consumes only
+caller-supplied intervals and fully charged `ResourceCostV1` receipts that
+have already passed independent real-shadow verification. It returns the
+existing #2672 `DENY_ALL` advisory:
 interval overlap is `NO_GO`, while strict unique interval dominance is only
 `ADVISORY_SELECT`. It does not generate a selection, efficacy, or promotion
 receipt and it cannot activate a Cell or mutate a snapshot.
