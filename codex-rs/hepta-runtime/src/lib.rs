@@ -50,6 +50,7 @@ use zeroize::Zeroizing;
 
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
+pub use topology_execution::RuntimeTopologyNativeCutoverReadbackV1;
 pub use topology_execution::RuntimeTopologyExecutionError;
 pub use topology_execution::RuntimeTopologyMigrationOwnerV1;
 pub use topology_execution::RuntimeTopologySnapshotV1;
@@ -144,6 +145,18 @@ impl HeptaRuntime {
     ) -> Result<RuntimeTopologyApplyReceiptV1> {
         self.organs
             .recover_governed_topology(authority, signed_grant, request)
+            .map_err(|error| anyhow::anyhow!("{error}"))
+    }
+
+    /// Observe the actual live route after a successful Final-use-governed
+    /// topology transition. This witness is intentionally process-local and
+    /// cannot substitute for a durable CNS cutover journal or remote receipt.
+    pub fn observe_governed_topology_cutover(
+        &self,
+        receipt: &RuntimeTopologyApplyReceiptV1,
+    ) -> Result<RuntimeTopologyNativeCutoverReadbackV1> {
+        self.organs
+            .observe_governed_topology_cutover(receipt)
             .map_err(|error| anyhow::anyhow!("{error}"))
     }
 
