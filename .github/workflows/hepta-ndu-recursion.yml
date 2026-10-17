@@ -61,7 +61,7 @@ jobs:
 
       - name: SNG-R affine and nonlinear FBSDE shadow regressions (no activation)
         run: |
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_shadow.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr*.py'
           python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_nonlinear_shadow.py'
           python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_learned_shadow.py'
 
