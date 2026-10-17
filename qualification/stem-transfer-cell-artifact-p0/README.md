@@ -27,6 +27,19 @@ gate requires independent Reader evidence, a future lower confidence bound
 above the baseline upper bound, bounded old-task degradation, calibration and
 OOD limits, complete fallback and rollback coverage, and zero deleted replay.
 
+`ModalityEnvelopeV1` is the boundary for text, image, audio, and video feature
+front ends. It binds raw input, feature, projector, and Stem digests, plus
+slot/time/region metadata, before any Cell sees a shared latent. It is an
+encoder-side contract; generation still requires separately qualified text,
+image, video, and audio decoders.
+
+`System2IntervalGateV1` is a budget-aware NDU/System2 admission shadow. It
+accepts an advisory candidate only when its utility lower bound minus the fully
+charged encoder/Cell/controller/verification/latency/memory/energy cost is
+strictly above every other feasible candidate's upper bound by the margin.
+Overlap, missing alternatives, incomplete evidence, and any attempted
+authority or efficacy claim return `NO_GO`/`DENY_ALL`.
+
 Run the deterministic contract tests with:
 
 ```bash
