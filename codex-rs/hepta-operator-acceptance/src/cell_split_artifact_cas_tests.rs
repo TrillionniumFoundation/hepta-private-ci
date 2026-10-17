@@ -478,7 +478,13 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
             backend,
         )
         .expect("signed CAS owner");
-        for _ in 0..5 {
+        // The coordinator makes two signed negative CAS preflights, Execute,
+        // post-effect readback, a predecessor read before migration, and two
+        // additional original-owner readbacks on cold reopen and retry.
+        // The original server must remain alive for ALL seven real RPCs;
+        // otherwise the test incorrectly treats its own dead fixture as a
+        // revoked CAS effect and loses the signed-readback recovery coverage.
+        for _ in 0..7 {
             let (mut stream, _) = listener.accept().expect("coordinator CAS call");
             service
                 .serve_connection(&mut stream)

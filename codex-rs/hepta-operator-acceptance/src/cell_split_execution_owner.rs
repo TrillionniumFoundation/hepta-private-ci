@@ -364,10 +364,11 @@ pub fn cell_split_execution_receipt_digest_v1(
 pub trait CellSplitExecutionPortV1 {
     type Error: std::fmt::Display;
 
-    /// Check original-owner readiness without dispatching an effect. Called
-    /// only before creating a new prepared intent, never during reconciliation.
-    /// Every port, including test fixtures, must explicitly implement this
-    /// method; no default allow-all readiness path is permitted.
+    /// Side-effect-free, nonce-bound negative observation of the original
+    /// owner. This must reject a committed effect for the exact intent; it
+    /// never dispatches, reserves, consumes Final-use or reconciles anything.
+    /// Both execution preparation and verified incomplete-status inspection
+    /// require this check. There is no default allow-all implementation.
     fn preflight_uncommitted(
         &mut self,
         intent: &CellSplitExecutionIntentV1,
@@ -665,9 +666,21 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// Even a negative answer must reauthenticate the frozen ledger and each
     /// committed original-owner effect. Otherwise an externally revoked
     /// predecessor or a corrupted pending frame could be reported as harmless
-    /// incompleteness without any live owner readback.
+    /// incompleteness without any live owner readback. A still-prepared intent
+    /// is ambiguous until the original owner is reconciled: it is never a
+    /// safe, verified false result.
     pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
+        // Locally absent next-step frames cannot prove original-owner absence.
+        self.probe_next_unprepared_original()?;
         self.verify_committed_prefix()?;
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
+        // A signed negative readback taken before slow predecessor RPCs can
+        // become stale. Recheck original next-owner absence before reporting
+        // a harmless incomplete state. This is diagnostic only, not an
+        // atomic multi-owner snapshot or a Final-use grant.
+        self.probe_next_unprepared_original()?;
         Ok(self.is_complete())
     }
 
@@ -677,11 +690,24 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn verified_transcript(
         &mut self,
     ) -> Result<Option<CellSplitExecutionTranscriptV1>, CellSplitExecutionErrorV1> {
+        // Refuse an unledgered original next-step effect in read-only exports.
+        self.probe_next_unprepared_original()?;
         // This same readback validates the frozen plan, complete receipt chain,
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
         let receipts = self.read_verified_prefix(true)?;
+        // A prepared step may already have changed the original external
+        // owner even when its local Commit frame is absent. The Operator's
+        // read-only transcript action must never collapse that unknown effect
+        // into benign incompleteness; only the execution owner may reconcile.
+        if self.pending {
+            return Err(CellSplitExecutionErrorV1::Ambiguous);
+        }
         if !self.is_complete() {
+            // Re-probe the exact original next owner after current signed
+            // predecessor verification. Never report an empty transcript
+            // if a next effect appeared during the preceding readbacks.
+            self.probe_next_unprepared_original()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
@@ -692,6 +718,29 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             receipts,
             transcript_digest: sha256(&payload),
         }))
+    }
+
+    /// An independently signed negative readback of the next unprepared
+    /// original effect. A missing endpoint must fail closed, not be reported
+    /// as a verified incomplete split. Do not probe a pending prepared intent:
+    /// its unknown outcome is reconciliation-only, regardless of readback.
+    /// This observation is non-authorizing and not an atomic multi-owner view.
+    fn probe_next_unprepared_original(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        if self.pending {
+            return Ok(());
+        }
+        let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
+            return Ok(());
+        };
+        let intent = make_intent(
+            &self.plan,
+            &self.plan_digest,
+            step,
+            &self.previous_receipt_digest,
+        );
+        self.port
+            .preflight_uncommitted(&intent)
+            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))
     }
 
     /// Read each committed predecessor back from the durable ledger and from
@@ -914,11 +963,21 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
-            // Owner readbacks are potentially slow. Selector/NDU membership
-            // may be withdrawn while the last predecessor is being verified.
-            // Revalidate again before writing the prepared intent. This
-            // remains only a read-only guard; actual effect owners enforce
-            // independent final-use at the physical commit boundary.
+            // The first negative owner readback is NOT a reservation: the
+            // original effect may appear while Selector/NDU admission and
+            // predecessor RPCs are in flight. Recheck the exact next original
+            // owner before writing the irreversible prepared intent. Never
+            // adopt an external effect absent from this local ledger.
+            self.port
+                .preflight_uncommitted(&intent)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // The second signed negative RPC may itself be slow or adversarial.
+            // Reverify frozen local frames and each committed original owner
+            // before writing. This is bounded lifecycle work, not a neuron tick.
+            self.verify_committed_prefix()?;
+            // Revalidate Selector/NDU after both potentially slow original
+            // checks. Final-use remains an independent physical-owner gate;
+            // these negative observations do NOT create an atomic commit.
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
@@ -926,21 +985,34 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             )?;
             self.pending = true;
         }
+        // The prepared intent is already fsynced. From this point onward,
+        // any RPC/transport failure may hide a committed original effect.
+        // Recovery must preserve the same intent and use read-only readback.
         let receipt = if pending {
             self.port
                 .reconcile(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
                 .ok_or(CellSplitExecutionErrorV1::Ambiguous)?
         } else {
             self.port
                 .execute(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?
         };
-        validate_receipt(&intent, &receipt)?;
-        self.trust.verify(&intent, &receipt)?;
+        // The prepared intent is durable and the original owner may already
+        // have committed. A malformed/forged ACK cannot prove non-execution:
+        // retain this key for read-only original-owner reconciliation.
+        validate_receipt(&intent, &receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.trust
+            .verify(&intent, &receipt)
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        // This is AFTER a durable prepared intent and an original effect
+        // response. A live confirmation RPC failure (including a bad/absent
+        // owner readback) cannot establish that the effect did not commit.
+        // Preserve the fixed intent and reconcile it; never issue Execute
+        // again just because current-state verification was unavailable.
         self.port
             .verify_committed(&intent, &receipt)
-            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         // An effect may finish after another owner revoked a predecessor or
         // replaced a frozen local frame. Before acknowledging the new step,
         // revalidate the original signed owner prefix and still-pending intent.
