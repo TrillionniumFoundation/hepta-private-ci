@@ -1,13 +1,8 @@
 name: MemoryCell stage-1 real reader capability
 on:
   pull_request:
-    paths:
-      - ".github/workflows/hepta-memory-stage1-real-readers.yml"
-      - "scripts/memory_cell/factorial_evidence_gate.py"
-      - "scripts/memory_cell/factorial_transcript_integrity.py"
-      - "scripts/memory_cell/FACTORIAL_TRANSCRIPT_LAB.md"
-      - "scripts/memory_cell/stage1_reader_pair.py"
-      - "scripts/memory_cell/test_stage1_reader_pair.py"
+    types: [labeled]
+  workflow_dispatch:
 permissions:
   contents: read
   actions: read
@@ -19,7 +14,8 @@ jobs:
     if: >-
       github.event.pull_request.number == 2607 &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017'
+      github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017' &&
+      github.event.label.name == 'memory-cell-preserved-native'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
