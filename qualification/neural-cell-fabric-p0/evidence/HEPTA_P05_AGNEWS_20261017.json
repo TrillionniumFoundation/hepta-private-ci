@@ -1,0 +1,87 @@
+{
+  "archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "authority": "DENY_ALL",
+  "brier": {
+    "gated": 0.5925344006794847,
+    "global_prior": 0.7801146193771626,
+    "linear": 0.6243880673831524,
+    "low_rank": 0.5013715819763659,
+    "route_prior": 0.7737268518518519,
+    "sparse_expert": 0.8909663935166835
+  },
+  "calibration_rows_unused": 32,
+  "cell_split_causal_gain_verified": false,
+  "correct": {
+    "gated": 22,
+    "global_prior": 8,
+    "linear": 18,
+    "low_rank": 21,
+    "route_prior": 8,
+    "sparse_expert": 13
+  },
+  "different_publisher_and_task_from_banking77": true,
+  "disposition": "HOLD_NO_GO",
+  "four_class_route_prior_train_only_dirichlet_alpha": 1,
+  "fresh_pretrained_forward_calls": 0,
+  "held_rows": 32,
+  "independent_blind_heldout_custody": false,
+  "inner_sha256": {
+    "hepta-public-study/dataset.jsonl": "50335a2214756c7a9e09fee9ac9ed27ab855ea98635bb0fab0998144165ffb2c",
+    "hepta-public-study/execution/frozen-features/features.safetensors": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+    "hepta-public-study/execution/frozen-features/manifest.json": "39f3f5c52863147bdd8b21f24e32098867277505f66ff3385a2e454e84d92910",
+    "hepta-public-study/execution/predictions.json": "88c9bb484f7e178686a4314f3c234bc6f4fd080057b0a5e80abcb785bc03edb9",
+    "hepta-public-study/execution/report.json": "0d9cfb537d9780bdccc3fab1607fe1e78bc9fa994c04280d3cf98eb89b44cbc4"
+  },
+  "multi_publisher_prospective_generalization_verified": false,
+  "new_pretrained_training": false,
+  "original_encoder_batch_forward_calls_from_receipt": 16,
+  "original_feature_rows": 128,
+  "original_labels_co_resident_with_producer_material": true,
+  "original_pretrained_features_real": true,
+  "original_run_id": 38546717991,
+  "paired": {
+    "gated": {
+      "frozen_untrained_head_correct": 2,
+      "losses_vs_route_prior": 1,
+      "nominal_posthoc_exact_p": 0.000518798828125,
+      "wins_vs_route_prior": 15
+    },
+    "linear": {
+      "frozen_untrained_head_correct": 2,
+      "losses_vs_route_prior": 2,
+      "nominal_posthoc_exact_p": 0.012939453125,
+      "wins_vs_route_prior": 12
+    },
+    "low_rank": {
+      "frozen_untrained_head_correct": 0,
+      "losses_vs_route_prior": 3,
+      "nominal_posthoc_exact_p": 0.004425048828125,
+      "wins_vs_route_prior": 16
+    },
+    "sparse_expert": {
+      "frozen_untrained_head_correct": 5,
+      "losses_vs_route_prior": 2,
+      "nominal_posthoc_exact_p": 0.1796875,
+      "wins_vs_route_prior": 7
+    }
+  },
+  "production_authorized": false,
+  "same_model_or_task_or_head_budget_as_modernbert_banking77": false,
+  "schema": "hepta.cell-fabric.p05.agnews-mmbert-original-posthoc.v1",
+  "system2_ndu_or_multimodal_generation_verified": false,
+  "train_cell_label_counts": {
+    "0": {
+      "0": 11,
+      "1": 7,
+      "2": 12,
+      "3": 2
+    },
+    "1": {
+      "0": 6,
+      "1": 7,
+      "2": 12,
+      "3": 7
+    }
+  },
+  "train_rows": 64
+}
