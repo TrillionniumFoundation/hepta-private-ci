@@ -5,11 +5,11 @@
 //! deterministic candidate checkpoint digest; it owns no source writer, model
 //! invocation, selector, trainer, promotion or topology authority.
 
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellManifestV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellStatusV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellTickInputV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellTickReceiptV1;
-use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 

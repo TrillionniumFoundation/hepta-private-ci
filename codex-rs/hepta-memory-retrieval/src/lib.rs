@@ -75,13 +75,13 @@ pub use generator::RetrievalGeneratorBatchV1;
 pub use generator::RetrievalGeneratorOwnerV1;
 pub use generator::RetrievalGeneratorReceiptV1;
 pub use generator::RetrievalSourceCompletenessV1;
-pub use memory_cell::MemoryCellRuntimeErrorV1;
-pub use memory_cell::MemoryCellShadowTickV1;
-pub use memory_cell::run_memory_cell_tick;
 pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
 pub use generator::recall_generated;
 pub use generator::recall_generated_with_engram;
+pub use memory_cell::MemoryCellRuntimeErrorV1;
+pub use memory_cell::MemoryCellShadowTickV1;
+pub use memory_cell::run_memory_cell_tick;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
