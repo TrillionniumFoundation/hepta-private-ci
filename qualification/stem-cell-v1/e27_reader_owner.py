@@ -126,9 +126,33 @@ def select_groups(rows, *, split, limit):
         if not 1 <= len(groups) <= 16:
             continue
         records.append({'group_id': root, 'evidence': info['evidence'], 'questions': groups})
-    records.sort(key=lambda g: g['group_id'])
     if len(records) < limit:
         raise ValueError('insufficient complete original publisher paragraphs')
+    if split == 'train':
+        # Source-only size order, frozen before any TRAIN or HELD outcome is
+        # consulted. Keep EACH original paragraph and every admitted question
+        # and candidate intact. Fit the unchanged Q/C caps in the contract,
+        # rather than choosing 48 hash-sorted high-fanout paragraphs and then
+        # incorrectly rejecting the model study as having no task support.
+        def public_encode_work(group):
+            questions = group['questions']
+            return 1 + len(questions) + sum(len(q['candidates']) for q in questions)
+
+        ordered = sorted(records, key=lambda g: (public_encode_work(g), g['group_id']))
+        chosen = []
+        q_count = candidate_count = 0
+        for group in ordered:
+            questions = len(group['questions'])
+            candidates = sum(len(q['candidates']) for q in group['questions'])
+            if q_count + questions > 288 or candidate_count + candidates > 1200:
+                continue
+            chosen.append(group)
+            q_count += questions
+            candidate_count += candidates
+            if len(chosen) == limit:
+                return chosen, len(records)
+        raise ValueError('not enough complete, label-blind TRAIN paragraphs within registered 288-question/1200-answer caps')
+    records.sort(key=lambda g: g['group_id'])
     return records[:limit], len(records)
 
 
