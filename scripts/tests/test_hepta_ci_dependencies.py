@@ -38,10 +38,12 @@ class GitFixtureCleanupTests(unittest.TestCase):
     def test_transient_directory_not_empty_retry_is_bounded(self):
         class TemporaryFixture:
             calls = 0
+
             def cleanup(self):
                 self.calls += 1
                 if self.calls < 3:
                     raise OSError(errno.ENOTEMPTY, "transient fixture directory")
+
         fixture = TemporaryFixture()
         cleanup_temp_git_fixture(fixture)
         self.assertEqual(fixture.calls, 3)
@@ -49,9 +51,11 @@ class GitFixtureCleanupTests(unittest.TestCase):
     def test_permanent_cleanup_failure_stays_failing(self):
         class TemporaryFixture:
             calls = 0
+
             def cleanup(self):
                 self.calls += 1
                 raise OSError(errno.ENOTEMPTY, "persistent failure")
+
         fixture = TemporaryFixture()
         with self.assertRaises(OSError):
             cleanup_temp_git_fixture(fixture)
@@ -60,9 +64,11 @@ class GitFixtureCleanupTests(unittest.TestCase):
     def test_unrelated_cleanup_error_never_retried(self):
         class TemporaryFixture:
             calls = 0
+
             def cleanup(self):
                 self.calls += 1
                 raise PermissionError(errno.EACCES, "unauthorized cleanup")
+
         fixture = TemporaryFixture()
         with self.assertRaises(PermissionError):
             cleanup_temp_git_fixture(fixture)
