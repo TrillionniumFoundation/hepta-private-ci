@@ -46,6 +46,9 @@ use codex_hepta_types::StableId;
 pub struct ProductSplitBindingV1 {
     pub split: CellSplitBindingV1,
     pub artifact_id: StableId,
+    /// Frozen predecessor Cell identity in the NDU selection; not necessarily
+    /// the process/writer ID held in the Supervisor handoff plan.
+    pub selected_predecessor_id: StableId,
     /// Candidate identity selected by the independent, signed NDU Selector.
     /// This is distinct from the CNS topology proposal/candidate IDs.
     pub selected_candidate_id: StableId,
@@ -98,6 +101,7 @@ impl ProductSplitBindingV1 {
             && !selector_evidence_digest.is_zero()
             && receipt.authority == AuthorityPosture::DENY_ALL
             && receipt.selection_id == self.selection_id
+            && receipt.predecessor_id == self.selected_predecessor_id
             && receipt.candidate_id == self.selected_candidate_id
             && receipt.predecessor_generation == plan.old_generation
             && receipt.candidate_generation == plan.new_generation
@@ -502,6 +506,7 @@ mod tests {
                 successor_route_digest: d(b"new-route"),
             },
             artifact_id: id("artifact:1"),
+            selected_predecessor_id: id("cell:parent"),
             selected_candidate_id: id("cell-candidate:1"),
             selection_id: id("selection:1"),
             cns_proposal_id: id("topology:1"),
@@ -559,6 +564,11 @@ mod tests {
             &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
         ));
         selector_receipt.candidate_artifact_digest = d(b"artifact");
+        selector_receipt.predecessor_id = id("foreign-parent");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.predecessor_id = id("cell:parent");
         assert!(!binding.validate_selection_receipt(
             &plan, &selector_receipt, d(b"unrelated-selection"), d(b"selector-signature"),
         ));
