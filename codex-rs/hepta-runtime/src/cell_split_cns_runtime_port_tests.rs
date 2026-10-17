@@ -342,7 +342,9 @@ fn direct_original_cns_receipt_refuses_replay_after_durable_frontier_advance() {
     let signer = SigningKey::from_bytes(&[42; 32]);
     let (runtime, plan, binding, intent, mut port) =
         fixture(false, true, signer.clone(), signer.clone());
-    let before = runtime.topology_snapshot().expect("original serving runtime");
+    let before = runtime
+        .topology_snapshot()
+        .expect("original serving runtime");
     // A synthetic historically signed record exercises verification ONLY;
     // this fixture never runs a physical cutover or creates Control Commit.
     let mut historical = CellSplitCnsRuntimeCommitV1 {
