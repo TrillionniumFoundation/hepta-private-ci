@@ -16,8 +16,10 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 use super::AgentdControlServer;
+use super::prepare_socket;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::AgentdError;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, Arc<AgentdState>)> {
     // Darwin sockaddr_un is short and TMPDIR can be deeply nested. Keep the
@@ -124,5 +126,52 @@ async fn retired_control_server_tolerates_an_already_removed_socket() -> anyhow:
         fs::symlink_metadata(&socket),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound
     ));
+    Ok(())
+}
+
+#[tokio::test]
+async fn preflight_rejects_live_control_listener() -> anyhow::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let socket = temp.path().join("live-agentd-control");
+    let _live = UnixListener::bind(&socket).await?;
+
+    assert!(
+        matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+        "a running control listener must retain exclusive ownership"
+    );
+    assert!(
+        socket.exists(),
+        "preflight must preserve the active rendezvous"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn preflight_preserves_unrelated_regular_file() -> anyhow::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let socket = temp.path().join("reserved-agentd-control");
+    std::fs::write(&socket, b"not a control socket")?;
+
+    assert!(
+        matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+        "a regular file cannot be reclaimed as a stale control socket"
+    );
+    assert_eq!(std::fs::read(&socket)?, b"not a control socket");
+    Ok(())
+}
+
+#[tokio::test]
+async fn preflight_reclaims_only_stale_socket_and_permits_exclusive_rebind() -> anyhow::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let socket = temp.path().join("stale-agentd-control");
+    let retired = UnixListener::bind(&socket).await?;
+    drop(retired);
+
+    prepare_socket(&socket).await?;
+    assert!(
+        !socket.exists(),
+        "only the abandoned socket may be unlinked"
+    );
+    let _rebound = UnixListener::bind(&socket).await?;
     Ok(())
 }
