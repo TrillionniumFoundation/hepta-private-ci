@@ -1,0 +1,204 @@
+name: Hepta HDSI G6 real LoCoMo full-coverage neural rerank (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g6-coverage-first-20261017]
+    paths:
+      - 'qualification/hdsi-g0g3/g6_*'
+      - 'qualification/hdsi-g0g3/test_g6_coverage.py'
+      - 'qualification/hdsi-g0g3/G6_*'
+      - '.github/workflows/hepta-hdsi-g6-original.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdsi-g0g3/g6_*'
+      - 'qualification/hdsi-g0g3/test_g6_coverage.py'
+      - 'qualification/hdsi-g0g3/G6_*'
+      - '.github/workflows/hepta-hdsi-g6-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hdsi-g6-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  STUDY: qualification/hdsi-g0g3
+
+jobs:
+  source-only-independent-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Exact HEAD, fail-closed source and independent model-free replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd "$STUDY"
+          python -m py_compile g6_coverage_source.py g6_coverage_model.py g6_independent_review.py g6_material_custody.py test_g6_coverage.py
+          python -S -m unittest -q test_g6_coverage.G6HermeticTests
+          python -O -S -m unittest -q test_g6_coverage.G6HermeticTests
+          python -m json.tool G6_LOCAL_ORIGINAL_SCOPED_REVIEW_20261017.json >/dev/null
+          cd ../..
+          git diff --check
+
+  sha-pinned-original-source-owner:
+    needs: source-only-independent-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g6-coverage-first-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Download genuine MiniLM/LoCoMo source and strip original HELD human gold
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g6-material"
+          python "$STUDY/g6_material_custody.py" --mode source_owner \
+            --archive "$RUNNER_TEMP/g6-original-locked.zip" \
+            --root "$RUNNER_TEMP/g6-material/model" \
+            --source "$RUNNER_TEMP/g6-material/public.json"
+          test ! -e "$RUNNER_TEMP/g6-material/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g6-material/model/reader"
+          (cd "$RUNNER_TEMP/g6-material" && sha256sum public.json > public.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g6-original-public-no-held-gold
+          path: ${{ runner.temp }}/g6-material/
+          if-no-files-found: error
+          retention-days: 1
+
+  genuine-pretrained-source-group-model:
+    needs: sha-pinned-original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g6-original-public-no-held-gold
+          path: ${{ runner.temp }}/g6-material
+      - name: Recheck source packet and install fixed real-model execution environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/g6-material" && sha256sum --check public.sha256)
+          test ! -e "$RUNNER_TEMP/g6-material/model/locomo.json"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+          python - <<'PY'
+          import torch,safetensors
+          assert torch.__version__.split('+')[0]=='2.6.0'
+          assert safetensors.__version__=='0.6.2'
+          PY
+      - name: Genuine frozen MiniLM encoder forwards and matched 100-step Cell Heads
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '1'
+          PYTHONHASHSEED: '0'
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/g6-material/model/locomo.json"
+          mkdir -p "$RUNNER_TEMP/g6-physical"
+          python "$STUDY/g6_coverage_model.py" \
+            --root "$RUNNER_TEMP/g6-material/model" \
+            --source "$RUNNER_TEMP/g6-material/public.json" \
+            --output "$RUNNER_TEMP/g6-physical/prelabel.json"
+          (cd "$RUNNER_TEMP/g6-physical" && sha256sum prelabel.json > prelabel.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g6-original-real-prelabel-no-gold
+          path: ${{ runner.temp }}/g6-physical/
+          if-no-files-found: error
+          retention-days: 1
+
+  independent-publisher-human-evidence-postseal:
+    needs: genuine-pretrained-source-group-model
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g6-original-public-no-held-gold
+          path: ${{ runner.temp }}/g6-material
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g6-original-real-prelabel-no-gold
+          path: ${{ runner.temp }}/g6-physical
+      - name: Reopen sealed source/predictions before touching original human labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/g6-material" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g6-physical" && sha256sum --check prelabel.sha256)
+      - name: Independently download SHA-pinned publisher truth; replay original BM25 and 96-case scores
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$STUDY/g6_material_custody.py" --mode reviewer \
+            --archive "$RUNNER_TEMP/g6-review-original.zip" \
+            --root "$RUNNER_TEMP/g6-review-private"
+          python "$STUDY/g6_independent_review.py" \
+            --original "$RUNNER_TEMP/g6-review-private/locomo.json" \
+            --source "$RUNNER_TEMP/g6-material/public.json" \
+            --predictions "$RUNNER_TEMP/g6-physical/prelabel.json" \
+            --output "$RUNNER_TEMP/g6-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ['RUNNER_TEMP'])/'g6-review.json').read_text())
+          assert x['denominator']==96 and x['original_publisher_sha_verified'] is True
+          assert x['model_free_independent_reconstruction'] is True
+          assert x['production_authorized'] is False and x['disposition']=='HOLD_NO_GO'
+          assert x['ndu_task_lift_verified'] is False
+          print('Measured historic evidence hit, not final answer utility or production admission')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g6-independent-original-human-evidence-aggregate-denyall
+          path: ${{ runner.temp }}/g6-review.json
+          if-no-files-found: error
+          retention-days: 7
