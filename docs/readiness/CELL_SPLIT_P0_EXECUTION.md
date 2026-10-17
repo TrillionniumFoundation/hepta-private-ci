@@ -54,7 +54,7 @@ readback even after it is complete.
 The independent codex-hepta-cell-split-executor crate implements
 ProductSplitNativeReadbackV1. Its construction requires the opaque
 VerifiedSelfEvolutionSelectionV1 token produced by independent NDU evaluation,
-selector-signature verification and role separation. The signed candidate ID,
+selector-signature verification and role separation. The signed predecessor Cell identity, candidate ID,
 artifact digest, predecessor/successor generations, frozen no-change baseline
 and exact selection digest must match the Supervisor's immutable binding. A
 plain selection checksum alone is NOT authorization. Only the binding digest
@@ -67,7 +67,9 @@ fresh trustworthy timestamp, monotonically nondecreasing across the bound
 operation; a bootstrap clock reading must not be reused for later Artifact
 CURRENT expiry checks. A native snapshot query against the predecessor State
 Owner is mandatory before Snapshotted can commit. Until that owner is really
-composed the bridge returns Indeterminate and refuses unsafe CAS/CNS writes. It connects the **real**
+composed the bridge returns Indeterminate and refuses unsafe CAS/CNS writes.
+
+The bridge connects the **real**
 LearningArtifactOwnerService::observe_cell_split_artifact_cas_v1 and
 HeptaRuntime::observe_governed_topology_cutover directly to the locked
 Supervisor CellSplitOwnerV1 native lookup trait. It keeps Agentd and Worker
@@ -105,12 +107,20 @@ The product host must supply actual adapters, using authorized preexisting owner
   added observe_cell_split_artifact_cas_v1 method reopens the actual native
   publication checkpoint, historical registry and payload; verifies the CURRENT
   signed registry and reads exact bytes before returning CellSplitArtifactCasReadbackV1.
-  Map its native_ack_digest/payload_digest/readback_digest/registry_head_digest
-  into ArtifactCasCommitted only after independent operation-ID, admission,
-  authority and frozen split binding checks. This bridge is NOT composed in a
-  product CellSplitNativeOwnerV1 implementation yet.
-- Child migration: old-state snapshot, idempotent new-state write, readback
-  of the new child state, cancellation and recovery for unknown external effects.
+  The product service additionally **requires an independently retained
+  signed current-head recovery floor**; without that floor it refuses to issue
+  a split CAS proof, even when local signed snapshots look consistent.
+  The service also binds the native ACK to the exactly one Register event
+  created by this publication, rather than a coincidentally matching artifact
+  from unrelated history. The bridge maps the authenticated native receipt
+  into the source-only CellSplitNativeOwnerV1 lookup implementation; no
+  production Artifact publication execution role is installed by the bridge.
+- Child migration: actual predecessor State Owner's durable snapshot must
+  be observed through lookup_predecessor_snapshot before Snapshotted advances.
+  The snapshot ACK and content digest are included in the Supervisor
+  observation commitment and must match the Migrated source-state digest.
+  The independent state Owner must still provide idempotent child-state write,
+  readback, cancellation and recovery for unknown effects.
 - CNS: the new HeptaRuntime::observe_governed_topology_cutover verifies
   that a real Final-use-guarded transition receipt equals the in-process
   runtime owner's last successful apply receipt, and that the live route still
@@ -139,11 +149,12 @@ physical power-loss test.
 Run when a matching Rust toolchain is available:
 
     cd codex-rs
-    cargo test -p codex-hepta-supervisor cell_split_owner
-    cargo test -p codex-hepta-learning-artifacts cell_split_cas_readback
-    cargo test -p codex-hepta-runtime governed_topology_requires_final_use
-    cargo test -p codex-hepta-cell-split-executor product_binding_requires
-    cargo clippy -p codex-hepta-supervisor --all-targets -- -D warnings
+    cargo test --locked -p codex-hepta-supervisor cell_split_owner
+    cargo test --locked -p codex-hepta-learning-artifacts cell_split_cas_readback
+    cargo test --locked -p codex-hepta-learning-artifacts named_owner_service_publishes
+    cargo test --locked -p codex-hepta-runtime governed_topology_requires_final_use
+    cargo test --locked -p codex-hepta-cell-split-executor
+    cargo clippy --locked -p codex-hepta-supervisor -p codex-hepta-learning-artifacts -p codex-hepta-runtime -p codex-hepta-cell-split-executor --all-targets -- -D warnings
     cargo fmt --all -- --check
 
 Before P0 can be accepted, demonstrate a *product* caller that wires the native
