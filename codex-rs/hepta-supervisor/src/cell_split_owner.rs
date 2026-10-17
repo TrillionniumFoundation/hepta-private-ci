@@ -76,6 +76,11 @@ pub enum CellSplitNativeEvidenceV1 {
         payload_digest: Digest32,
         readback_digest: Digest32,
         registry_head_digest: Digest32,
+        /// True authoritative predecessor state snapshot identity, distinct
+        /// from the model Artifact CAS payload.
+        source_snapshot_digest: Digest32,
+        /// Readback from the domain state owner that persisted that snapshot.
+        source_snapshot_ack: Digest32,
     },
     ChildMigrated {
         native_ack: Digest32,
@@ -206,10 +211,14 @@ impl CellSplitObservedReceiptV1 {
                 payload_digest,
                 readback_digest,
                 registry_head_digest,
+                source_snapshot_digest,
+                source_snapshot_ack,
                 ..
             } => *payload_digest == binding.selected_artifact_digest
                 && *readback_digest == *payload_digest
-                && !registry_head_digest.is_zero(),
+                && !registry_head_digest.is_zero()
+                && !source_snapshot_digest.is_zero()
+                && !source_snapshot_ack.is_zero(),
             CellSplitNativeEvidenceV1::ChildMigrated {
                 artifact_digest,
                 source_state_digest,
@@ -273,9 +282,17 @@ impl CellSplitObservedReceiptV1 {
                 payload_digest,
                 readback_digest,
                 registry_head_digest,
+                source_snapshot_digest,
+                source_snapshot_ack,
                 ..
             } => {
-                for d in [payload_digest, readback_digest, registry_head_digest] {
+                for d in [
+                    payload_digest,
+                    readback_digest,
+                    registry_head_digest,
+                    source_snapshot_digest,
+                    source_snapshot_ack,
+                ] {
                     bytes.extend_from_slice(d.as_array());
                 }
             }
@@ -537,9 +554,18 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         if let Some(previous) = &previous {
             let consecutive_state_matches = match (&previous.evidence, &observed.evidence) {
                 (
-                    CellSplitNativeEvidenceV1::ArtifactCasCommitted { payload_digest, .. },
-                    CellSplitNativeEvidenceV1::ChildMigrated { artifact_digest, .. },
-                ) => payload_digest == artifact_digest,
+                    CellSplitNativeEvidenceV1::ArtifactCasCommitted {
+                        payload_digest,
+                        source_snapshot_digest,
+                        ..
+                    },
+                    CellSplitNativeEvidenceV1::ChildMigrated {
+                        artifact_digest,
+                        source_state_digest,
+                        ..
+                    },
+                ) => payload_digest == artifact_digest
+                    && source_snapshot_digest == source_state_digest,
                 (
                     CellSplitNativeEvidenceV1::ChildMigrated { child_state_digest, .. },
                     CellSplitNativeEvidenceV1::ChildValidated { child_state_digest: validated, .. },
