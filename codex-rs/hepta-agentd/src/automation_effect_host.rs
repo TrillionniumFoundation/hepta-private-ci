@@ -14,9 +14,9 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectDispatchInput;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
-use codex_hepta_automation::AuthorizedEffectDispatchInput;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
