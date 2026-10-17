@@ -1,6 +1,9 @@
 name: GitHub Actions fleet audit and real-test fanout
 
 on:
+  push:
+    branches: [feat/gha-500-real-test-fleet-20261016]
+    paths: [.github/workflows/github-actions-fleet-500.yml]
   pull_request:
     paths:
       - scripts/github_actions_fleet_500.py
@@ -41,7 +44,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}
+  group: gh-fleet-${{ github.ref }}-${{ github.event_name }}-${{ inputs.mode || 'pilot' }}-${{ inputs.cohort || 'A' }}
   cancel-in-progress: false
 
 jobs:
@@ -83,7 +86,7 @@ jobs:
           retention-days: 7
 
   plan:
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout'
+    if: (github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout') || github.event_name == 'push'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
@@ -94,15 +97,15 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ inputs.source_sha || github.sha }}
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.source_sha || github.sha }}
           persist-credentials: false
       - name: Build non-overlapping manifest from actual unittest methods
         id: shards
         env:
-          COHORT: ${{ inputs.cohort }}
-          PER_COHORT: ${{ inputs.per_cohort }}
-          PINNED_SHA: ${{ inputs.source_sha }}
-          EXECUTE: ${{ inputs.execute }}
+          COHORT: ${{ github.event_name == 'push' && 'A' || inputs.cohort }}
+          PER_COHORT: ${{ github.event_name == 'push' && '8' || inputs.per_cohort }}
+          PINNED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.source_sha }}
+          EXECUTE: ${{ github.event_name == 'push' && 'true' || inputs.execute }}
         shell: bash
         run: |
           set -euo pipefail
@@ -127,7 +130,7 @@ jobs:
 
   real-test:
     needs: plan
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute && needs.plan.outputs.ready == 'true'
+    if: ((github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute) || github.event_name == 'push') && needs.plan.outputs.ready == 'true'
     name: ${{ matrix.case }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -138,11 +141,11 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ inputs.source_sha }}
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.source_sha }}
           persist-credentials: false
       - name: Assert exact source identity
         env:
-          PINNED_SHA: ${{ inputs.source_sha }}
+          PINNED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.source_sha }}
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$PINNED_SHA"
       - name: Execute one real unittest method
