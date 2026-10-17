@@ -17,6 +17,7 @@ def fixture():
          'model_revision':'c'*40,'actual_weight_sha256':'b'*64,
          'initial_head_sha256':'d'*64,'trained_head_sha256':'e'*64}
     report={'schema':reviewer.SCHEMA,'candidate':'granite47','profile':'auto_model',
+            'load_status':'complete',
             'source_plan_sha256':'a'*64,'original_model_revision':'c'*40,
             'original_weight_sha256':'b'*64,
             'original_initial_head_sha256':'d'*64,'observed_initial_head_sha256':'d'*64,
@@ -50,6 +51,36 @@ class NegativeOriginalLoaderTests(unittest.TestCase):
         result=reviewer.audit(report,old)
         self.assertTrue(result['all_original_baseline_replay_checks_pass'])
         self.assertEqual(result['score_status'],'DIAGNOSTIC_ONLY_NOT_FUTURE_OR_STEM_SELECTION')
+
+    def test_loader_failure_is_retained_without_forward_or_head_claims(self):
+        report,old=fixture()
+        report.update({
+            'load_status':'failed',
+            'load_failure_type':'NotImplementedError',
+            'load_failure_message':'Cannot copy out of meta tensor',
+            'observed_initial_head_sha256':'',
+            'initial_head_byte_equal':False,
+            'observed_trained_head_sha256':'',
+            'trained_head_byte_equal':False,
+            'original_encoder_sequences_paid':0,
+            'original_encoder_batches_paid':0,
+            'actual_encode_wall_seconds':0.0,
+            'actual_head_train_wall_seconds':0.0,
+            'total_elapsed_wall_seconds':1.0,
+            'total_elapsed_cpu_seconds':1.0,
+            'scientifically_fully_reproducible_same_head_and_base':False,
+        })
+        report['load_diagnostics'].update({
+            'error_messages':['NotImplementedError: Cannot copy out of meta tensor'],
+            'error_count':1,
+            'model_base_weights_complete':False,
+            'complete_model_resident_parameter_scalars':0,
+            'loader_class':'AutoModelForMaskedLM',
+            'base_model_class':'unavailable',
+        })
+        result=reviewer.audit(report,old)
+        self.assertEqual(result['score_status'],'LOADER_FAILURE_RETAINED_NO_GO')
+        self.assertFalse(result['all_original_baseline_replay_checks_pass'])
 
     def test_original_newly_initialized_mmbert_embedding_denied(self):
         report,old=fixture()
