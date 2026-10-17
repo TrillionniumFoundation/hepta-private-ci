@@ -34,6 +34,22 @@ pub struct CellSplitBindingV1 {
     pub successor_route_digest: Digest32,
 }
 
+impl CellSplitBindingV1 {
+    /// Fixed, domain-separated binding for the whole handoff.
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.supervisor.cell-split-binding.v1\0".to_vec();
+        push_id(&mut bytes, &self.operation_id);
+        for d in [
+            self.selected_artifact_digest,
+            self.predecessor_route_digest,
+            self.successor_route_digest,
+        ] {
+            bytes.extend_from_slice(d.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
 /// A typed readback from the authoritative external owner at one handoff
 /// stage. Native acknowledgment digests identify actual operation receipts;
 /// they are NOT a substitute for authenticating the owner that returned them.
@@ -113,6 +129,8 @@ pub struct CellSplitObservedReceiptV1 {
     pub old_generation: Generation,
     pub new_generation: Generation,
     pub authority_epoch: u64,
+    /// Binds early stages to the exact frozen artifact and routes.
+    pub binding_digest: Digest32,
     pub evidence: CellSplitNativeEvidenceV1,
 }
 
@@ -128,6 +146,7 @@ impl CellSplitObservedReceiptV1 {
             || self.old_generation != plan.old_generation
             || self.new_generation != plan.new_generation
             || self.authority_epoch != plan.authority_epoch
+            || self.binding_digest != binding.digest()
             || self.evidence.phase() != expected
             || self.evidence.native_ack().is_zero()
         {
@@ -192,6 +211,7 @@ impl CellSplitObservedReceiptV1 {
         bytes.extend_from_slice(&self.old_generation.get().to_be_bytes());
         bytes.extend_from_slice(&self.new_generation.get().to_be_bytes());
         bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
+        bytes.extend_from_slice(self.binding_digest.as_array());
         bytes.push(phase_tag(self.evidence.phase()));
         bytes.extend_from_slice(self.evidence.native_ack().as_array());
         match &self.evidence {
@@ -369,6 +389,10 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
     ) -> Result<WriterHandoffCheckpointV1, CellSplitOwnerErrorV1<N::Error>> {
         let checkpoint = self.journal.checkpoint().clone();
         if checkpoint.phase == WriterHandoffPhaseV1::Retired {
+            let observed = self.require_observation(&checkpoint.plan, checkpoint.phase)?;
+            if observed.evidence_digest() != checkpoint.evidence_digest {
+                return Err(CellSplitOwnerErrorV1::ObservationDrift);
+            }
             return Ok(checkpoint);
         }
         let Some(target) = next_phase(checkpoint.phase) else {
@@ -444,3 +468,7 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "cell_split_owner_tests.rs"]
+mod tests;
