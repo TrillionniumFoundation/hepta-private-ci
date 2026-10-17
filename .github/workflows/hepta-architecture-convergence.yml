@@ -333,6 +333,7 @@ jobs:
           # Two actual original-Control WAL negative tests: missing signed
           # CNS effect and vanished original WAL, both before external RPC.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-control-independent-observer-join.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib joined_cns_control_observer -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cns-orphan-control-readonly-join.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib orphan_control_cns_read_only_ -- --nocapture --test-threads=1
           # Eleven actual Unix-socket tests, including cross-Split same-Scope
           # rollback/fork and real WAL advancement. No in-memory-only witness.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-highwater-unix-rpc.json" --minimum-tests 13 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib cell_split_control_highwater_unix -- --nocapture

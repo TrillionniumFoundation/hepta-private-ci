@@ -1077,6 +1077,40 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "deterministic Unix postcheck directory-rebind fixture missing",
         )
 
+    def test_orphan_control_cns_join_does_not_gain_mutation_authority(self) -> None:
+        source = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        start = source.find("pub fn inspect_orphan_control_and_signed_cns_v1(")
+        end = source.find("fn live_runtime(", start)
+        self.assertGreater(start, 0, "read-only orphan join must exist")
+        self.assertGreater(end, start, "read-only join must be method-scoped")
+        observation = source[start:end]
+        for forbidden in (
+            "apply_governed_topology(",
+            "publish_cutover_with_external_effect(",
+            "publish_once(",
+            "take_admitted_successor(",
+            "persist_actual_runtime_receipt(",
+        ):
+            self.assertNotIn(
+                forbidden,
+                observation,
+                "orphan evidence must never invoke a mutation or Final-use owner",
+            )
+        for required in (
+            "inspect_original_pending_begin_v1(",
+            "verify_original_commit(",
+            "signed_route(",
+            "original Control orphan frontier drifted",
+            "original Control orphan changed during final CNS verification",
+        ):
+            self.assertIn(
+                required,
+                observation,
+                "original signed CNS and WAL evidence must be rechecked",
+            )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()

@@ -12,6 +12,7 @@
 
 use std::fmt;
 use std::io::Read as _;
+use std::path::Path;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
@@ -19,6 +20,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 #[cfg(test)]
 use codex_hepta_control_plane::NduPublicationLocalFrontierV1;
 use codex_hepta_control_plane::NduPublicationOwnerV1;
+use codex_hepta_control_plane::NduPublicationPendingBeginV1;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
@@ -28,6 +30,8 @@ use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
 use codex_hepta_plasticity::TopologyCandidateKindV2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_plasticity::TopologyCandidateV2;
 use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_types::AuthorityPosture;
@@ -146,6 +150,20 @@ pub fn cell_split_control_highwater_signing_bytes_v1(
     bytes.extend_from_slice(&(encoded.len() as u64).to_be_bytes());
     bytes.extend_from_slice(&encoded);
     Ok(bytes)
+}
+
+/// Read-only diagnostic from TWO independent original storage owners.
+/// The Control WAL is still orphaned: the presence of an authenticated CNS
+/// record and serving child does NOT resolve B, grant Final-use, append C,
+/// unlock Neuron CAS, or authorize a second physical cutover.
+///
+/// These fields are local evidence for a separate recovery authority, NOT
+/// a signed cross-owner transaction or a production activation receipt.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellSplitOrphanCnsReadOnlyObservationV1 {
+    pub original_pending_begin: NduPublicationPendingBeginV1,
+    pub original_cns_commit: CellSplitCnsRuntimeCommitV1,
+    pub signed_serving_route: CellSplitCnsLiveRouteV1,
 }
 
 /// The runtime itself owns dispatch and generation replacement. This adapter
@@ -398,6 +416,114 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             return Err("original Control WAL changed across signed CNS/Observer join".into());
         }
         Ok(())
+    }
+
+    /// Audit an unresolved ORIGINAL Control B against the current, signed CNS
+    /// runtime without creating a Control C or touching a live route. The
+    /// independently pinned predecessor and successor snapshots are required:
+    /// a caller's arbitrary digest cannot re-identify the original Begin.
+    ///
+    /// An orphan B is NEVER a completion/activation receipt, even if the
+    /// current CNS has an authentic matching original commit. The separate
+    /// recovery owner must still resolve the fsynced Control transaction,
+    /// independent rollback custody, Final-use and Supervisor fence.
+    ///
+    /// Recheck the same original WAL inode/bytes and original CNS revision
+    /// around each potentially slow signed RPC. This bounded double-collect
+    /// is NOT a distributed linearization point or an anti-rollback witness.
+    pub fn inspect_orphan_control_and_signed_cns_v1(
+        &mut self,
+        original_control_wal: &Path,
+        pinned_predecessor: &NduSnapshotRefV1,
+        pinned_successor: &NduSnapshotRefV1,
+        original_checkpoint: Digest32,
+    ) -> Result<CellSplitOrphanCnsReadOnlyObservationV1, String> {
+        pinned_predecessor
+            .validate()
+            .map_err(|error| format!("original predecessor snapshot invalid: {error}"))?;
+        pinned_successor
+            .validate()
+            .map_err(|error| format!("original successor snapshot invalid: {error}"))?;
+        if pinned_predecessor.snapshot_digest.to_string() != self.plan.ndu_snapshot_digest
+            || pinned_predecessor.generation.get() != self.plan.parent_generation
+            || pinned_successor.generation.get() != self.plan.child_generation
+            || pinned_predecessor.scope_id != pinned_successor.scope_id
+            || pinned_predecessor.owner_id != pinned_successor.owner_id
+            || pinned_predecessor.policy_digest != pinned_successor.policy_digest
+            || pinned_successor.route_fence <= pinned_predecessor.route_fence
+            || pinned_successor.revocation_epoch < pinned_predecessor.revocation_epoch
+        {
+            return Err("orphan Control lineage is not bound to frozen split".into());
+        }
+        let expected_parent = pinned_predecessor
+            .semantic_digest()
+            .map_err(|error| format!("cannot bind predecessor: {error}"))?;
+        let expected_child = pinned_successor
+            .semantic_digest()
+            .map_err(|error| format!("cannot bind successor: {error}"))?;
+        let pending = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            original_control_wal,
+            pinned_predecessor,
+            original_checkpoint,
+        )
+        .map_err(|error| format!("original Control orphan Begin unavailable: {error}"))?;
+        if pending.predecessor_semantic_digest != expected_parent
+            || pending.successor_semantic_digest != expected_child
+            || pending.previous_checkpoint != original_checkpoint
+            || pending.migrated_checkpoint.is_zero()
+        {
+            return Err("original orphan Begin differs from frozen Control handoff".into());
+        }
+
+        // A missing original durable CNS record is UNKNOWN, not a negative
+        // physical-effect ACK. Never replay a missing or ambiguous cutover.
+        let original = self
+            .witness
+            .read_original_commit(&self.intent.idempotency_key)
+            .map_err(|error| error.to_string())?
+            .ok_or("original CNS effect is unresolved; never replay")?;
+        self.verify_original_commit(&original)?;
+        let first = self.signed_route(&secure_cns_nonce()?)?;
+        if first.generation != self.plan.child_generation
+            || first.artifact_digest != self.plan.child_artifact_digest
+            || first.route_digest != self.binding.successor_route_digest
+            || first.route_fence_digest != self.plan.route_fence_digest
+        {
+            return Err("original CNS is not serving the authenticated child".into());
+        }
+        let during = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            original_control_wal,
+            pinned_predecessor,
+            original_checkpoint,
+        )
+        .map_err(|error| format!("Control orphan changed after signed CNS read: {error}"))?;
+        if pending != during {
+            return Err("original Control orphan frontier drifted during signed CNS read".into());
+        }
+        self.verify_original_commit(&original)?;
+        let current = self.signed_route(&secure_cns_nonce()?)?;
+        if current.generation != first.generation
+            || current.artifact_digest != first.artifact_digest
+            || current.route_digest != first.route_digest
+            || current.route_fence_digest != first.route_fence_digest
+            || current.authority_epoch != first.authority_epoch
+        {
+            return Err("CNS serving child changed between signed observations".into());
+        }
+        let final_control = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            original_control_wal,
+            pinned_predecessor,
+            original_checkpoint,
+        )
+        .map_err(|error| format!("Control orphan changed during final readback: {error}"))?;
+        if final_control != pending {
+            return Err("original Control orphan changed during final CNS verification".into());
+        }
+        Ok(CellSplitOrphanCnsReadOnlyObservationV1 {
+            original_pending_begin: pending,
+            original_cns_commit: original,
+            signed_serving_route: current,
+        })
     }
 
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {

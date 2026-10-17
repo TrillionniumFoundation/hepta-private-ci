@@ -337,6 +337,73 @@ fn independent_control_snapshot(plan: &CellSplitExecutionPlanV1) -> NduSnapshotR
     }
 }
 
+fn orphan_control_snapshots(
+    plan: &CellSplitExecutionPlanV1,
+) -> (NduSnapshotRefV1, NduSnapshotRefV1) {
+    let mut parent = independent_control_snapshot(plan);
+    parent.generation = Generation::new(plan.parent_generation).expect("parent generation");
+    let mut child = parent.clone();
+    child.generation = Generation::new(plan.child_generation).expect("child generation");
+    child.route_fence += 1;
+    (parent, child)
+}
+
+#[test]
+fn orphan_control_cns_read_only_requires_real_original_begin() {
+    let signer = SigningKey::from_bytes(&[42; 32]);
+    let (runtime, plan, _binding, _intent, mut port) =
+        fixture(false, true, signer.clone(), signer);
+    let before = runtime.topology_snapshot().expect("serving predecessor");
+    let root = tempfile::Builder::new()
+        .tempdir_in(std::env::temp_dir().canonicalize().expect("canonical temp root"))
+        .expect("private orphan audit root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private Control root");
+    let wal = root.path().join("no-original-begin.wal");
+    let (parent, child) = orphan_control_snapshots(&plan);
+    let control = NduPublicationOwnerV1::open_production(&wal, parent.clone(), Digest32::ZERO)
+        .expect("original fsynced Control G");
+    drop(control);
+
+    let original_wal = std::fs::read(&wal).expect("original immutable WAL");
+    let result = port.inspect_orphan_control_and_signed_cns_v1(
+        &wal,
+        &parent,
+        &child,
+        Digest32::ZERO,
+    );
+    assert!(
+        result.expect_err("no orphan B means no CNS evidence can qualify")
+            .contains("original Control orphan Begin unavailable")
+    );
+    assert!(port.witness.signed_history.is_none());
+    assert_eq!(std::fs::read(&wal).unwrap(), original_wal);
+    assert_eq!(runtime.topology_snapshot().unwrap(), before);
+}
+
+#[test]
+fn orphan_control_cns_read_only_rejects_unfrozen_successor_before_any_rpc() {
+    let signer = SigningKey::from_bytes(&[42; 32]);
+    let (runtime, plan, _binding, _intent, mut port) =
+        fixture(false, true, signer.clone(), signer);
+    let before = runtime.topology_snapshot().expect("serving predecessor");
+    let (parent, mut child) = orphan_control_snapshots(&plan);
+    // This is not the canonical generation from the selected Split plan.
+    child.generation = Generation::new(plan.child_generation + 1).expect("invalid child");
+    let result = port.inspect_orphan_control_and_signed_cns_v1(
+        std::path::Path::new("/nonexistent/never-open-original-control.wal"),
+        &parent,
+        &child,
+        Digest32::ZERO,
+    );
+    assert_eq!(
+        result.expect_err("unfrozen child cannot identify original Control B"),
+        "orphan Control lineage is not bound to frozen split"
+    );
+    assert!(port.witness.signed_history.is_none());
+    assert_eq!(runtime.topology_snapshot().unwrap(), before);
+}
+
 #[test]
 fn direct_original_cns_receipt_refuses_replay_after_durable_frontier_advance() {
     let signer = SigningKey::from_bytes(&[42; 32]);
