@@ -60,10 +60,9 @@ def source_question(doc):
 def _encode(projection, texts):
     rows = []
     for start in range(0, len(texts), 16):
-        rows.extend(projection.encode(texts[start:start + 16]))
+        rows.extend(projection.encode(texts[start : start + 16]))
     vectors = np.asarray(rows, dtype=np.float32)
-    if (vectors.shape != (len(texts), DIMENSION)
-            or not np.isfinite(vectors).all()):
+    if vectors.shape != (len(texts), DIMENSION) or not np.isfinite(vectors).all():
         raise ValueError("bad frozen Encoder feature readout")
     norms = np.linalg.norm(vectors, axis=1)
     if np.any(norms < 1e-7):
@@ -72,9 +71,12 @@ def _encode(projection, texts):
 
 
 def _rank(scores, docs):
-    return [docs[i]["id"] for i in sorted(
-        range(len(docs)), key=lambda i: (-float(scores[i]), docs[i]["id"])
-    )[:graph.TOP_K]]
+    return [
+        docs[i]["id"]
+        for i in sorted(
+            range(len(docs)), key=lambda i: (-float(scores[i]), docs[i]["id"])
+        )[: graph.TOP_K]
+    ]
 
 
 def _rrf(*rankings):
@@ -102,32 +104,60 @@ def train_section(section, projection):
     values = _encode(projection, [source_text(d) for d in docs])
     identity = projection.identity
     parent = AssociativeCell(DIMENSION, RANK, identity, family, "mixed", seed=SEED)
-    rows = [Experience(identity=d["id"], scope=family, family=family,
-                       root=d["id"], kind="semantic", encoder_identity=identity,
-                       observed_at=d["seq"], cue=tuple(map(float, cues[i])),
-                       value=tuple(map(float, values[i])))
-            for i, d in enumerate(docs)]
+    rows = [
+        Experience(
+            identity=d["id"],
+            scope=family,
+            family=family,
+            root=d["id"],
+            kind="semantic",
+            encoder_identity=identity,
+            observed_at=d["seq"],
+            cue=tuple(map(float, cues[i])),
+            value=tuple(map(float, values[i])),
+        )
+        for i, d in enumerate(docs)
+    ]
     roots = frozenset(d["id"] for d in docs)
-    cut = TrainingCut(scope=family, encoder_identity=identity,
-                      through=max(d["seq"] for d in docs), allowed_roots=roots,
-                      allowed_families=frozenset({family}), forbidden_roots=frozenset(),
-                      forbidden_families=frozenset(),
-                      admission_digest=sha256(graph.canonical({
-                          "scope": family, "roots": sorted(roots),
-                          "source_sha256": graph.DATASET_SHA256,
-                          "projection_identity": identity,
-                      })))
-    candidate, receipt = parent.propose_update(rows, cut, revoked=frozenset(),
-                                                steps=STEPS, lr=0.15)
-    if (candidate.roots != set(roots) or receipt["train_examples"] != len(docs)
-            or receipt["trainable_parameters"] != 2 * DIMENSION * RANK):
+    cut = TrainingCut(
+        scope=family,
+        encoder_identity=identity,
+        through=max(d["seq"] for d in docs),
+        allowed_roots=roots,
+        allowed_families=frozenset({family}),
+        forbidden_roots=frozenset(),
+        forbidden_families=frozenset(),
+        admission_digest=sha256(
+            graph.canonical(
+                {
+                    "scope": family,
+                    "roots": sorted(roots),
+                    "source_sha256": graph.DATASET_SHA256,
+                    "projection_identity": identity,
+                }
+            )
+        ),
+    )
+    candidate, receipt = parent.propose_update(
+        rows, cut, revoked=frozenset(), steps=STEPS, lr=0.15
+    )
+    if (
+        candidate.roots != set(roots)
+        or receipt["train_examples"] != len(docs)
+        or receipt["trainable_parameters"] != 2 * DIMENSION * RANK
+    ):
         raise ValueError("train cut missing required source root")
     # Explicit clean-process artifact roundtrip; no input values or raw source
     # strings are allowed in the weight artifact.
     raw = candidate.export()
     restored = AssociativeCell.restore(
-        raw, expected_sha256=sha256(raw), encoder_identity=identity,
-        scope=family, allowed_roots=set(roots), revoked=frozenset())
+        raw,
+        expected_sha256=sha256(raw),
+        encoder_identity=identity,
+        scope=family,
+        allowed_roots=set(roots),
+        revoked=frozenset(),
+    )
     return docs, values, parent, restored, raw, receipt
 
 
@@ -141,7 +171,9 @@ def rank_section(section, projection):
     for query, query_vector in zip(section["questions"], q_vectors):
         question = query["text"]
         # The explicit source pool is shared by all seven arms.
-        bm25 = graph.bm25_scores([d["speaker"] + ": " + d["text"] for d in docs], question)
+        bm25 = graph.bm25_scores(
+            [d["speaker"] + ": " + d["text"] for d in docs], question
+        )
         baseline, _ = graph.rank_arms(docs, question, family, existing_edges=edges)
         dense = _rank(values @ query_vector, docs)
         bm25_ids = _rank(bm25, docs)
@@ -149,30 +181,52 @@ def rank_section(section, projection):
         temporal_edges = tuple(e for e in edges if e[0] == "temporal")
         boosts = graph.propagated(bm25, temporal_edges)
         maximum = max(bm25, default=0.0)
-        temporal_scores = [(v / maximum if maximum else 0.0) + 0.92 * b
-                           for v, b in zip(bm25, boosts)]
+        temporal_scores = [
+            (v / maximum if maximum else 0.0) + 0.92 * b for v, b in zip(bm25, boosts)
+        ]
         temporal_full = _rank(temporal_scores, docs)
         temporal = baseline["temporal"]
-        if temporal_full[:graph.TOP_K] != temporal:
+        if temporal_full[: graph.TOP_K] != temporal:
             raise ValueError("temporal reexecution baseline drift")
         all_ids = [d["id"] for d in docs]
-        query_input = ReadQuery(scope=family, kind="semantic", encoder_identity=projection.identity,
-                                as_of=scope_clock, cue=tuple(map(float, query_vector)))
-        frozen_output = np.asarray(parent.read(query_input, revoked=frozenset()), dtype=np.float32)
-        trained_output = np.asarray(cell.read(query_input, revoked=frozenset()), dtype=np.float32)
+        query_input = ReadQuery(
+            scope=family,
+            kind="semantic",
+            encoder_identity=projection.identity,
+            as_of=scope_clock,
+            cue=tuple(map(float, query_vector)),
+        )
+        frozen_output = np.asarray(
+            parent.read(query_input, revoked=frozenset()), dtype=np.float32
+        )
+        trained_output = np.asarray(
+            cell.read(query_input, revoked=frozenset()), dtype=np.float32
+        )
         frozen_scores = values @ frozen_output
         trained_scores = values @ trained_output
         frozen_rank = _rank(frozen_scores, docs)
         param_rank = _rank(trained_scores, docs)
         rrf = _rrf(bm25_ids, dense_full, temporal_full)
         joint = _rrf(bm25_ids, dense_full, temporal_full, param_rank)
-        order = lambda scores: sorted(all_ids, key=lambda x: (-scores.get(x, 0), x))[:graph.TOP_K]
-        ranks = {"bm25": bm25_ids, "temporal": temporal, "dense": dense,
-                 "rrf": order(rrf), "frozen_cell": frozen_rank,
-                 "trained_cell": param_rank, "rrf_cell": order(joint)}
-        if set(ranks) != set(ARMS) or any(len(x) != graph.TOP_K for x in ranks.values()):
+        order = lambda scores: sorted(all_ids, key=lambda x: (-scores.get(x, 0), x))[
+            : graph.TOP_K
+        ]
+        ranks = {
+            "bm25": bm25_ids,
+            "temporal": temporal,
+            "dense": dense,
+            "rrf": order(rrf),
+            "frozen_cell": frozen_rank,
+            "trained_cell": param_rank,
+            "rrf_cell": order(joint),
+        }
+        if set(ranks) != set(ARMS) or any(
+            len(x) != graph.TOP_K for x in ranks.values()
+        ):
             raise ValueError("incomplete fixed-budget source readout")
-        scores_by_query.append({"family": family, "question_id": query["id"], "arms": ranks})
+        scores_by_query.append(
+            {"family": family, "question_id": query["id"], "arms": ranks}
+        )
     return scores_by_query, raw, receipt
 
 
@@ -188,19 +242,24 @@ def generate_predictions(public, encoder_dir):
         receipts[section["family"]] = receipt
     if len(rows) != 240 or len(artifacts) != 10:
         raise ValueError("source-only prediction census incomplete")
-    manifest = {"schema": SCHEMA, "source_sha256": graph.DATASET_SHA256,
-                "encoder_identity": encoder.identity,
-                "projected_identity": projection.identity,
-                "training_source_prefix_per_family": SOURCE_PER_FAMILY,
-                "head_rank": RANK, "head_dimension": DIMENSION,
-                "per_family_parameters": 2 * DIMENSION * RANK,
-                "per_family_SGD_steps": STEPS,
-                "frozen_encoder_calls": encoder.calls,
-                "frozen_encoded_texts": projection.encoded_texts,
-                "truncated_encoder_inputs": encoder.truncated_inputs,
-                "catalogue_required_for_parametric_readout": True,
-                "reader_calls": 0, "labels_visible": False,
-                "production_accepted": False}
+    manifest = {
+        "schema": SCHEMA,
+        "source_sha256": graph.DATASET_SHA256,
+        "encoder_identity": encoder.identity,
+        "projected_identity": projection.identity,
+        "training_source_prefix_per_family": SOURCE_PER_FAMILY,
+        "head_rank": RANK,
+        "head_dimension": DIMENSION,
+        "per_family_parameters": 2 * DIMENSION * RANK,
+        "per_family_SGD_steps": STEPS,
+        "frozen_encoder_calls": encoder.calls,
+        "frozen_encoded_texts": projection.encoded_texts,
+        "truncated_encoder_inputs": encoder.truncated_inputs,
+        "catalogue_required_for_parametric_readout": True,
+        "reader_calls": 0,
+        "labels_visible": False,
+        "production_accepted": False,
+    }
     return rows, artifacts, receipts, manifest
 
 
@@ -215,16 +274,29 @@ def run(public_dir, encoder_dir, output_dir):
     cells = {}
     for family, raw in sorted(artifacts.items()):
         cells[family] = graph.create_only(candidates / f"{family}.json", raw)
-    journal = {"schema": SCHEMA, "public_sha256": manifest["public_sha256"],
-               "source_sha256": graph.DATASET_SHA256, "arms": list(ARMS),
-               "top_k": graph.TOP_K, "rows": rows, "cells": cells,
-               "training_receipts": receipts, "model": model}
+    journal = {
+        "schema": SCHEMA,
+        "public_sha256": manifest["public_sha256"],
+        "source_sha256": graph.DATASET_SHA256,
+        "arms": list(ARMS),
+        "top_k": graph.TOP_K,
+        "rows": rows,
+        "cells": cells,
+        "training_receipts": receipts,
+        "model": model,
+    }
     journal_digest = graph.create_only(dest / "predictions.json", journal)
-    seal = {"schema": SCHEMA, "public_sha256": manifest["public_sha256"],
-            "predictions_sha256": journal_digest, "number_questions": len(rows),
-            "cells": cells, "model_identity": model["projected_identity"],
-            "seconds": time.perf_counter() - started, "labels_visible": False,
-            "production_accepted": False}
+    seal = {
+        "schema": SCHEMA,
+        "public_sha256": manifest["public_sha256"],
+        "predictions_sha256": journal_digest,
+        "number_questions": len(rows),
+        "cells": cells,
+        "model_identity": model["projected_identity"],
+        "seconds": time.perf_counter() - started,
+        "labels_visible": False,
+        "production_accepted": False,
+    }
     graph.create_only(dest / "seal.json", seal)
     return seal
 
@@ -236,27 +308,50 @@ def verified_run(public_dir, run_dir, encoder_dir):
     seal = graph.strict_load(graph.regular_bytes(root / "seal.json"))
     original_raw = graph.regular_bytes(root / "predictions.json", limit=8 * 1024 * 1024)
     journal = graph.strict_load(original_raw)
-    if (not isinstance(seal, dict)
-            or set(seal) != {"schema", "public_sha256", "predictions_sha256",
-                                "number_questions", "cells", "model_identity", "seconds",
-                                "labels_visible", "production_accepted"}
-            or seal["schema"] != SCHEMA or seal["public_sha256"] != m["public_sha256"]
-            or seal["predictions_sha256"] != graph.digest(original_raw)
-            or seal["number_questions"] != 240
-            or type(seal["seconds"]) not in (float, int)
-            or not math.isfinite(seal["seconds"]) or seal["seconds"] < 0
-            or seal["labels_visible"] is not False
-            or seal["production_accepted"] is not False):
+    if (
+        not isinstance(seal, dict)
+        or set(seal)
+        != {
+            "schema",
+            "public_sha256",
+            "predictions_sha256",
+            "number_questions",
+            "cells",
+            "model_identity",
+            "seconds",
+            "labels_visible",
+            "production_accepted",
+        }
+        or seal["schema"] != SCHEMA
+        or seal["public_sha256"] != m["public_sha256"]
+        or seal["predictions_sha256"] != graph.digest(original_raw)
+        or seal["number_questions"] != 240
+        or type(seal["seconds"]) not in (float, int)
+        or not math.isfinite(seal["seconds"])
+        or seal["seconds"] < 0
+        or seal["labels_visible"] is not False
+        or seal["production_accepted"] is not False
+    ):
         raise ValueError("untrusted source-only model receipt")
     rows, artifacts, receipts, model = generate_predictions(public, encoder_dir)
     checksums = {family: graph.digest(raw) for family, raw in artifacts.items()}
-    expected = {"schema": SCHEMA, "public_sha256": m["public_sha256"],
-                "source_sha256": graph.DATASET_SHA256, "arms": list(ARMS),
-                "top_k": graph.TOP_K, "rows": rows, "cells": checksums,
-                "training_receipts": receipts, "model": model}
-    if (journal != expected or graph.canonical(expected) != original_raw
-            or seal["cells"] != checksums
-            or seal["model_identity"] != model["projected_identity"]):
+    expected = {
+        "schema": SCHEMA,
+        "public_sha256": m["public_sha256"],
+        "source_sha256": graph.DATASET_SHA256,
+        "arms": list(ARMS),
+        "top_k": graph.TOP_K,
+        "rows": rows,
+        "cells": checksums,
+        "training_receipts": receipts,
+        "model": model,
+    }
+    if (
+        journal != expected
+        or graph.canonical(expected) != original_raw
+        or seal["cells"] != checksums
+        or seal["model_identity"] != model["projected_identity"]
+    ):
         raise ValueError("untrusted candidate or original inference mismatch")
     for family, raw in artifacts.items():
         if graph.regular_bytes(root / "cells" / f"{family}.json") != raw:
@@ -271,15 +366,23 @@ def review(prepared, run_dir, encoder_dir, target):
     if graph.digest(hidden_raw) != manifest["private_sha256"]:
         raise ValueError("original reference digest mismatch")
     original = graph.strict_load(hidden_raw)
-    if original.get("schema") != graph.SCHEMA or not isinstance(original.get("annotations"), dict):
+    if original.get("schema") != graph.SCHEMA or not isinstance(
+        original.get("annotations"), dict
+    ):
         raise ValueError("unregistered retrospective annotation input")
     found, totals = set(), {arm: Counter() for arm in ARMS}
     available = {g["family"]: {d["id"] for d in _pool(g)} for g in public["families"]}
     for row in journal["rows"]:
         label = original["annotations"].get(row["question_id"])
-        if not isinstance(label, dict) or set(label) != {"evidence", "unresolved_reference"}:
+        if not isinstance(label, dict) or set(label) != {
+            "evidence",
+            "unresolved_reference",
+        }:
             raise ValueError("missing or foreign source label")
-        if not isinstance(label["evidence"], list) or type(label["unresolved_reference"]) is not bool:
+        if (
+            not isinstance(label["evidence"], list)
+            or type(label["unresolved_reference"]) is not bool
+        ):
             raise ValueError("malformed source label")
         roots = set(label["evidence"])
         if not label["unresolved_reference"] and roots:
@@ -294,18 +397,25 @@ def review(prepared, run_dir, encoder_dir, target):
                 totals[arm]["unresolved_or_zero"] += 1
     if len(journal["rows"]) != 240 or len(found) != 238:
         raise ValueError("changed original full source evaluation denominator")
-    report = {"schema": SCHEMA, "source_sha256": graph.DATASET_SHA256,
-              "original_input_sha256": manifest["public_sha256"],
-              "original_model_journal_sha256": seal["predictions_sha256"],
-              "by_arm": {arm: dict(x) for arm, x in totals.items()},
-              "source_families": 10, "questions": 240, "canonical_references": len(found),
-              "genuine_frozen_encoder_used": True,
-              "native_transformers_numerical_parity": False,
-              "source_catalogue_required_for_all_parametric_readout": True,
-              "reader_executed": False, "semantic_answer_evaluated": False,
-              "prospective_source_families": False,
-              "full_lifecycle_cost_measured": False,
-              "statistical_superiority": False, "production_accepted": False}
+    report = {
+        "schema": SCHEMA,
+        "source_sha256": graph.DATASET_SHA256,
+        "original_input_sha256": manifest["public_sha256"],
+        "original_model_journal_sha256": seal["predictions_sha256"],
+        "by_arm": {arm: dict(x) for arm, x in totals.items()},
+        "source_families": 10,
+        "questions": 240,
+        "canonical_references": len(found),
+        "genuine_frozen_encoder_used": True,
+        "native_transformers_numerical_parity": False,
+        "source_catalogue_required_for_all_parametric_readout": True,
+        "reader_executed": False,
+        "semantic_answer_evaluated": False,
+        "prospective_source_families": False,
+        "full_lifecycle_cost_measured": False,
+        "statistical_superiority": False,
+        "production_accepted": False,
+    }
     graph.create_only(target, report)
     return report
 
@@ -317,7 +427,9 @@ def main(argv=None):
     elif len(args) == 5 and args[0] == "review":
         result = review(args[1], args[2], args[3], args[4])
     else:
-        raise SystemExit("run PUBLIC ENCODER NEW_RUN | review PREPARED RUN ENCODER NEW_REVIEW")
+        raise SystemExit(
+            "run PUBLIC ENCODER NEW_RUN | review PREPARED RUN ENCODER NEW_REVIEW"
+        )
     print(json.dumps(result, indent=2, sort_keys=True))
 
 
