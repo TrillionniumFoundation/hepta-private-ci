@@ -263,4 +263,16 @@ mod tests {
             .expect("client task should join")
             .expect("client should connect");
     }
+
+    #[test]
+    fn accept_path_authenticates_before_consuming_a_permit() {
+        let source = include_str!("control.rs");
+        let peer_check = source
+            .find("ensure_control_peer(&stream)")
+            .expect("accept path must authenticate the peer");
+        let permit = source
+            .find("try_acquire_owned")
+            .expect("accept path must retain the bounded permit");
+        assert!(peer_check < permit, "peer authentication must precede permit allocation");
+    }
 }
