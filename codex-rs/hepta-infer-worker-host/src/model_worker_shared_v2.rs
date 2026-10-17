@@ -917,7 +917,8 @@ mod tests {
         // 1024 resident + 16 physical shared input + 64 retained outputs
         // + 2 * (1544 - 48 per-row input/output) = exactly 4096 bytes.
         // 1545 per row breaches the cohort budget, though each row fits.
-        for (transient, permitted) in [(1544_u64, true), (1545_u64, false)] {
+        // A 47-byte report cannot cover the 48-byte logical Cell row.
+        for (transient, permitted) in [(1544_u64, true), (1545_u64, false), (47, false)] {
             let grant = super::super::ResourceGrant {
                 grant_id: "grant.shared".into(),
                 authority_epoch: 2,

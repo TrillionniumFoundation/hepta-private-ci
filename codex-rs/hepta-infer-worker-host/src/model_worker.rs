@@ -487,6 +487,10 @@ pub struct DriverNeuronFeatureObservation {
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     pub observed_memory_bytes: u64,
+    /// For a native Cell batch this report must cover at least the logical
+    /// Q24 input and both output buffers of this row. Shared physical inputs
+    /// are charged only once by the cohort admission floor. Extra scratch
+    /// is conservatively additive across rows; this is not measured peak RSS.
     pub transient_allocation_bytes: u64,
     pub queue_age_micros: u64,
     pub latency_micros: u64,
@@ -539,7 +543,7 @@ fn neuron_feature_memory_within_grant(
 ///
 /// The admission floor already counts every physical input allocation (one
 /// shared Arc for V2) and all simultaneously retained output vectors. Each
-/// row's transient report may include those same logical input/output bytes,
+/// row's transient report MUST include those logical input/output bytes,
 /// so subtract the row's input+output floor before charging its additional
 /// scratch to the cohort. This avoids multiplying a shared Arc by Cell count.
 /// Charge a higher reported selected-model resident peak above the loaded
@@ -568,7 +572,12 @@ fn neuron_batch_reported_memory_within_grant<'a>(
         observed_any = true;
         peak_reported_resident_bytes =
             peak_reported_resident_bytes.max(item.observed_memory_bytes);
-        let extra = item.transient_allocation_bytes.saturating_sub(row_floor_bytes);
+        // A driver reporting scratch-only bytes or an impossible Q24 floor
+        // cannot silently understate the physical cohort. Such telemetry
+        // must be corrected or rejected before returning a success.
+        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_floor_bytes) else {
+            return false;
+        };
         let Some(total) = additional_transient_bytes.checked_add(extra) else {
             return false;
         };

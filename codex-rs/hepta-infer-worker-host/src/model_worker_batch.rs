@@ -688,7 +688,9 @@ mod tests {
         // Each reported 2048 resident + 1025 transient row fits in 4096,
         // but two disjoint Q24 input/output floors and the two additional
         // scratch charges together exceed the physical cohort grant.
-        for (transient, permitted) in [(1024_u64, true), (1025_u64, false)] {
+        // A driver claiming only 63 bytes cannot even represent one
+        // 64-byte Q24 input/drive/prediction row and must also fail closed.
+        for (transient, permitted) in [(1024_u64, true), (1025_u64, false), (63, false)] {
             let mut worker = worker(BatchMock {
                 reported_transient_bytes: Some(transient),
                 ..BatchMock::default()
