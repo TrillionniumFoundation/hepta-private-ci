@@ -26,6 +26,16 @@ jobs:
           python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
           python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
           python -m compileall -q "$D"
+          # Original P5 uses P1 ``portfolio`` and P2 ``public_source``.
+          # Exercise the ACTUAL repository modules before heavyweight downloads.
+          python - <<'PY_SOURCE_IMPORT'
+          from online import old_model_loader
+          module=old_model_loader()
+          assert module.QwenReader is not None
+          assert module.Invalid.__module__.startswith('hepta_p8_locked_p1_portfolio_')
+          assert module.original_manifest.__module__.startswith('hepta_p8_locked_p2_public_source_')
+          print('P8 exact original P1/P2 loader import: PASS (no model loaded)')
+          PY_SOURCE_IMPORT
   original-source:
     needs: source-contract
     runs-on: ubuntu-24.04
