@@ -435,6 +435,8 @@ def build_shadow_receipt(
 ) -> FastPathRuntimeReceiptV1:
     """Record a non-executing observation of a candidate."""
 
+    if app_identity != candidate.app_identity:
+        raise ValueError("receipt app_identity must match candidate app_identity")
     return FastPathRuntimeReceiptV1(
         candidate_id=candidate.candidate_id,
         action_ir_digest=candidate.action_ir_digest,
