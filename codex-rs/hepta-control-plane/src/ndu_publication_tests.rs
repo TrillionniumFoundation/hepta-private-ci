@@ -741,6 +741,75 @@ fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
 
 #[cfg(unix)]
 #[test]
+fn original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine() {
+    // A prior hosted native run intermittently failed the precise orphan-B
+    // Indeterminate requirement. Exercise distinct real fsynced WAL inodes,
+    // not just repeat a cached observation of one in-memory owner.
+    for attempt in 0..32 {
+        let dir = private_control_dir();
+        let path = dir.path().join("repeated-orphan.wal");
+        let marker = dir.path().join("repeated-orphan.wal.owner-lock");
+        let predecessor = snapshot(3);
+        let successor = snapshot(4);
+        let migrated = Digest32::of_bytes(b"repeated-orphan-migration");
+        let mut external_calls = 0_usize;
+        {
+            let owner = NduPublicationOwnerV1::open_production(
+                &path,
+                predecessor.clone(),
+                Digest32::ZERO,
+            )
+            .expect("fsynced original Control genesis");
+            assert_eq!(
+                owner.publish_cutover_with_external_effect(
+                    &predecessor,
+                    Digest32::ZERO,
+                    successor.clone(),
+                    migrated,
+                    || -> Result<((), Vec<u8>), &'static str> {
+                        external_calls += 1;
+                        Err("original CNS effect outcome unknown")
+                    },
+                ),
+                Err(NduPublicationErrorV1::Indeterminate),
+            );
+            assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        }
+        assert_eq!(external_calls, 1, "attempt {attempt}: one external call");
+        let original_wal = std::fs::read(&path).expect("original fsynced WAL");
+        let original_marker = std::fs::read(&marker).expect("original owner marker");
+        assert_eq!(
+            original_wal.iter().filter(|&&byte| byte == b'\n').count(),
+            2,
+            "attempt {attempt}: one genesis and one original Begin"
+        );
+        let observed = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            &path,
+            &predecessor,
+            Digest32::ZERO,
+        )
+        .expect("read-only cold orphan inspection");
+        assert_eq!(observed.sequence, 2);
+        assert_eq!(observed.migrated_checkpoint, migrated);
+
+        for (frozen, checkpoint) in [
+            (predecessor.clone(), Digest32::ZERO),
+            (successor.clone(), migrated),
+        ] {
+            let reopened = NduPublicationOwnerV1::open_production(&path, frozen, checkpoint);
+            assert_eq!(
+                reopened.err(),
+                Some(NduPublicationErrorV1::Indeterminate),
+                "attempt {attempt}: never adopt an unresolved physical effect"
+            );
+        }
+        assert_eq!(std::fs::read(&path).unwrap(), original_wal);
+        assert_eq!(std::fs::read(&marker).unwrap(), original_marker);
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = private_control_dir();
     let path = dir.path().join("unknown-physical-effect.wal");
@@ -776,13 +845,22 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     }
     let recorded = std::fs::read(&path).expect("durable unresolved history");
     assert_eq!(
+        recorded.iter().filter(|&&byte| byte == b'\n').count(),
+        2,
+        "the original WAL must retain genesis and the fsynced orphan Begin"
+    );
+    assert_eq!(
         calls, 1,
         "the model/router must never replay an unknown effect"
     );
-    assert!(matches!(
-        NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
-        Err(NduPublicationErrorV1::Indeterminate)
-    ));
+    // The exact error is part of fail-closed recovery semantics. Include the
+    // actual hosted error in the assertion instead of admitting any failure.
+    let reopened = NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO);
+    assert_eq!(
+        reopened.err(),
+        Some(NduPublicationErrorV1::Indeterminate),
+        "an orphaned original Begin must not recover or change error class"
+    );
     assert_eq!(
         std::fs::read(&path).expect("journal preserved"),
         recorded,

@@ -332,7 +332,7 @@ class ScopeTests(unittest.TestCase):
         self.assertIn("control-ndu-sigkill-between-b-c.json", workflow)
         self.assertEqual(workflow.count(gate), 1)
         self.assertIn(
-            "--minimum-tests 2 -- cargo test --locked --manifest-path "
+            "--minimum-tests 3 -- cargo test --locked --manifest-path "
             "codex-rs/Cargo.toml -p codex-hepta-control-plane --lib "
             "original_pending_begin_inspector_",
             workflow,
