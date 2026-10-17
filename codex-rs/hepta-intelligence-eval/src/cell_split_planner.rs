@@ -32,8 +32,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::CellSplitAutomationErrorV1;
-use crate::CellSplitProposalSignalV1;
 use crate::CellSplitObservationClockV1;
+use crate::CellSplitProposalSignalV1;
 use crate::CellSplitProposalTriggerV1;
 
 const MAX_CHILD_COUNT_V1: u8 = 64;
