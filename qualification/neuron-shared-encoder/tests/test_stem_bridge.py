@@ -122,6 +122,8 @@ class StemBridgeTests(unittest.TestCase):
     def test_complete_receipt_cannot_hide_a_missing_field(self):
         with self.assertRaises(ContractError):
             receipt(stem_params=None)
+        with self.assertRaises(ContractError):
+            receipt(reader_citations=None)
 
     def test_transfer_matrix_rejects_budget_mismatch(self):
         with self.assertRaises(ContractError):
