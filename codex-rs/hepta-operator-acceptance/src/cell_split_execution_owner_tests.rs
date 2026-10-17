@@ -1251,14 +1251,8 @@ fn final_negative_rpc_cannot_return_healthy_incomplete_after_local_frame_mutatio
     for transcript in [false, true] {
         for (filename, expected) in [
             ("cell-split-frozen-plan.json", "frozen plan drift"),
-            (
-                "cell-split-owner-trust-pins.json",
-                "owner trust pins drift",
-            ),
-            (
-                "cell-split-00-prepared.json",
-                "unexpected successor frame; reopen required",
-            ),
+            ("cell-split-owner-trust-pins.json", "owner trust pins drift"),
+            ("cell-split-00-prepared.json", "unexpected successor frame; reopen required"),
         ] {
             let root = private_tempdir();
             let state = Rc::new(RefCell::new(Observed::default()));
