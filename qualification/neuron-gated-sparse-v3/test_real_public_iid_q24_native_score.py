@@ -333,11 +333,11 @@ class PublicQ24NativeScoreProtocolTests(unittest.TestCase):
             record=row()
             record["feature_q24"][0]=variant
             with self.assertRaises(Refused):
-                frozen_single_case_trace(record)
+                frozen_single_case_trace(record, task_id=0)
         record=row()
         record["feature_q24"].pop()
         with self.assertRaises(Refused):
-            frozen_single_case_trace(record)
+            frozen_single_case_trace(record, task_id=0)
 
     def test_real_cold_process_wall_percentiles_use_nearest_rank(self):
         values=[i*1000 for i in range(1,65)]
