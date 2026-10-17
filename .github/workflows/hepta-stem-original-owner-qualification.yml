@@ -66,8 +66,8 @@ jobs:
           # Exact original #2145 source blobs, not newly substituted owners.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "0b98be50294d12418b7b6e3228f3a6d650aaebda"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "5419836eb8a34ade87957bbd9daa422a83be0901"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "247c104edbda5a5c674f3f0c8bc4900e46d9b735"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "5d72e5dd1af861a661631b35c394d99604a0bdeb"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
           grep -Fq 'pub fn require_original_control_v1()' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs
@@ -105,6 +105,8 @@ jobs:
         run: cargo +1.95.0 fmt --package codex-hepta-infer-worker-host -- --check
       - name: Test genuine original/new source digests and borrowed Arc contracts
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
+      - name: Prove borrowed V1 digest/receipt parity and adversarial denial
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-borrowed-receipt.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib borrowed_slice_ -- --nocapture --test-threads=1
       - name: Strict inference-core Clippy without ignored warnings
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
       - name: Execute original Context Delivery provider-evidence regressions
