@@ -1,0 +1,36 @@
+name: hepta-stem-v12-original-reader-audit
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v12_public_audit.py"
+      - "qualification/stem-cell-v1/test_v12_disagreement_audit.py"
+      - "qualification/stem-cell-v1/STEM_V12_ORIGINAL_READER_NEGATIVE_20261015.json"
+      - ".github/workflows/hepta-stem-v12-original-reader-audit.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+jobs:
+  negative-evidence-source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and independently reject manipulated V12 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v12_public_audit.py qualification/stem-cell-v1/test_v12_disagreement_audit.py
+          python -m unittest -v qualification/stem-cell-v1/test_v12_disagreement_audit.py
+          python -O -m unittest -v qualification/stem-cell-v1/test_v12_disagreement_audit.py
+          python qualification/stem-cell-v1/v12_public_audit.py qualification/stem-cell-v1/STEM_V12_ORIGINAL_READER_NEGATIVE_20261015.json

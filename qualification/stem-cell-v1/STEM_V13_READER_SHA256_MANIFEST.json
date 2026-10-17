@@ -1,0 +1,59 @@
+{
+  "actual_reader_forward_calls_per_execution": 772,
+  "actual_reader_requests_per_execution": 32,
+  "bitwise_same_original_answer_text_and_token_ids": true,
+  "files": {
+    ".github/workflows/hepta-stem-v13-original-reader-negative.yml": {
+      "git_blob_sha1": "859e86370ffdde7ff93fb37294c67ddb35443418",
+      "sha256": "8513fed12f7e74fc7d5a27cb91aeaf90c2c020e424ed7a514d81dd91e69223d7",
+      "size_bytes": 2757
+    },
+    "qualification/stem-cell-v1/STEM_V13_ORIGINAL_READER_DIAGNOSTIC_20261015.md": {
+      "git_blob_sha1": "7589af6df2b1d6b40e0dc1be68483000502279df",
+      "sha256": "fd8018918c0c29339d7dfd9289ace96e435fcebec09db96c70827239b2383293",
+      "size_bytes": 6921
+    },
+    "qualification/stem-cell-v1/STEM_V13_ORIGINAL_READER_PANEL_20261015.json": {
+      "git_blob_sha1": "40b8e4bb8e1f6daae0657529adc2f5038c0ef82b",
+      "sha256": "52f915ab990a6bcb4d28c5bfe8a25a1cc1dc330c0af9b08bd411074ceab7b750",
+      "size_bytes": 1212
+    },
+    "qualification/stem-cell-v1/STEM_V13_READER_INDEPENDENT_RECOUNT_20261015.json": {
+      "git_blob_sha1": "437c81cdb4573c4fbb943422fb32500a143144d5",
+      "sha256": "f00d7e235aaf3fe907d56bb11e8855fac5047e4425776d5c6b4b056c5faf1f35",
+      "size_bytes": 968
+    },
+    "qualification/stem-cell-v1/test_v13_original_reader_followup.py": {
+      "git_blob_sha1": "617021bb57382135c82333e44cc585fb9a13436b",
+      "sha256": "f8490c63dd51c01b2560a3c5404c053ec559324b4c8e7691712c6e03902d5db2",
+      "size_bytes": 4949
+    },
+    "qualification/stem-cell-v1/test_v13_reader_public_gate.py": {
+      "git_blob_sha1": "f858ebf8cfb133fa23056049c3cae1512e331735",
+      "sha256": "c592fa9dec472cfc8ef87d843df5733b7e2baff83d2882ddfd62345d79d8572e",
+      "size_bytes": 3909
+    },
+    "qualification/stem-cell-v1/v13_original_reader_followup.py": {
+      "git_blob_sha1": "8076af37bc62263011163724a97451f06e7fe9c5",
+      "sha256": "e3838d7352495d2748a5d71a52f4174a53573217bfdd08f3900a725e954ea652",
+      "size_bytes": 13349
+    },
+    "qualification/stem-cell-v1/v13_reader_independent_review.py": {
+      "git_blob_sha1": "7f254c2b571f20015d3730f8daf530ad285d60e8",
+      "sha256": "5c3f2b036fc35c47eea57102812c0f524e0aaa088fc68c69d95881764ae8f84b",
+      "size_bytes": 9650
+    },
+    "qualification/stem-cell-v1/v13_reader_public_gate.py": {
+      "git_blob_sha1": "70961cbdc8223712e0503e50b0f7896f3a8eb64c",
+      "sha256": "01e66a7f13d5ed4aabcf58492706526a66d617502b9a37961edce5001f5eeb77",
+      "size_bytes": 3659
+    }
+  },
+  "independent_original_semantic_qa": null,
+  "local_tests_normal": 82,
+  "local_tests_optimized": 82,
+  "original_reader_executions": 2,
+  "production_authorized": false,
+  "research_status": "DRAFT_SHADOW_ONLY_DENY_ALL",
+  "schema": "hepta.stem.v13.original-reader-exact-tested-blobs.v1"
+}

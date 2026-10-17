@@ -1,0 +1,176 @@
+{
+  "archive_id": 11890616195,
+  "archive_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "full_lifecycle_cost_matched": false,
+  "hosted_ci_verified": false,
+  "limitations": [
+    "Retrospective 32 original held cases; three seeds reuse them.",
+    "True archived mmBERT feature reuse; no new Encoder forward.",
+    "Artificial first-32/full-64 training sequence; not a temporal deployment.",
+    "Old-task veto measures old TRAIN fit only, not independent retention.",
+    "Same optimizer steps and batch exposure, not equal active FLOPs or lifecycle.",
+    "Swapped/shuffled routes are offline lesions of the same split weights.",
+    "CPU is the measured fit loops only; excludes startup, feature creation and selection.",
+    "Independent NumPy forward replay is not independent gradient execution or host attestation.",
+    "Raw feature scale with this fixed SGD schedule exhibits unstable fitting; no optimality claim."
+  ],
+  "main_modified": false,
+  "max_numpy_probability_error": 9.56541793784016e-06,
+  "model": "jhu-clsp/mmBERT-small",
+  "model_revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+  "new_pretrained_encoder_forwards": 0,
+  "original_run_id": 38546717991,
+  "original_source_commit": "4133d6ac5bd3f8d4200c56fffb09e6aba004a084",
+  "producer_source_sha256": "7e325bf6a08216b1bb497ee3910682b4155705b56fd77534251a42f590112e86",
+  "production_authorized": false,
+  "prospective_efficacy_verified": false,
+  "replication": {
+    "41": {
+      "same_four_parameter_digests": true,
+      "same_held_probabilities": true,
+      "same_selection": true
+    },
+    "47": {
+      "same_four_parameter_digests": true,
+      "same_held_probabilities": true,
+      "same_selection": true
+    },
+    "53": {
+      "same_four_parameter_digests": true,
+      "same_held_probabilities": true,
+      "same_selection": true
+    }
+  },
+  "reviewer_source_sha256": "697f0d769d934f27bad9d2dde6d3db587db51ff41d88408a7d7e0f453f9f9694",
+  "router_train_counts": [
+    43,
+    21
+  ],
+  "run_prediction_sha256": [
+    "5bdf52f21a18c1e9d95aa05790a65f0d685fd21f8412a1d59195f5c6f5270401",
+    "d44440a324488e8004ce07f76917991b9be81fed68950957ec44f26edabab03a"
+  ],
+  "run_training_loop_cpu_ns": [
+    317554354,
+    311661007
+  ],
+  "same_parameter_digests": 12,
+  "same_prediction_rows": 576,
+  "schema": "hepta.stem.counterfactual-split.v14.executed-summary",
+  "scores": {
+    "41": {
+      "calibration_brier": {
+        "continued": 0.5589236406585425,
+        "frozen": 1.6875,
+        "split": 0.8187885831013886,
+        "wide": 1.4726665570096222
+      },
+      "held_correct": {
+        "continued": 21,
+        "frozen": 7,
+        "shuffled_route": 16,
+        "split": 17,
+        "swapped_route": 20,
+        "wide": 8
+      },
+      "old_train_brier": {
+        "continued": 1.008658507372115e-06,
+        "frozen": 1.5625,
+        "split": 0.634573467280723,
+        "wide": 1.0010330562315075
+      },
+      "optimizer_steps": 320,
+      "parameter_digests": {
+        "continued": "4def0a24cbfa5861141a9fa2f223ab9866114125dd345c18e09acf40a0e5edd3",
+        "frozen": "c18ad8238dd67639c673110bf20971c0857ef744d6dbb0f1434a80ccbcde7f1e",
+        "split": "1bfbb5229e66bd4096d967fa62da957764204ae3b4952142bd37d86333e394f1",
+        "wide": "cf60aea65bcca709c17df6e898326ac191cf29c5927dc265739bafce434829eb"
+      },
+      "resident_scalars": {
+        "continued": 1540,
+        "frozen": 1540,
+        "split": 3848,
+        "wide": 3878
+      },
+      "selected_research_candidate": "continued"
+    },
+    "47": {
+      "calibration_brier": {
+        "continued": 1.1875000288550894,
+        "frozen": 1.375,
+        "split": 0.4985594530520528,
+        "wide": 0.6333253500552145
+      },
+      "held_correct": {
+        "continued": 15,
+        "frozen": 8,
+        "shuffled_route": 26,
+        "split": 25,
+        "swapped_route": 25,
+        "wide": 20
+      },
+      "old_train_brier": {
+        "continued": 1.125001278470705,
+        "frozen": 1.5,
+        "split": 0.05874682243950372,
+        "wide": 0.34206646357495807
+      },
+      "optimizer_steps": 320,
+      "parameter_digests": {
+        "continued": "9bf1a68af2617ffe99011ae1a5faa4bfa7e4102e27c20f59e06976c601debb19",
+        "frozen": "37f546e7307e975dd644add2fec8a2de02883332ef762e2dedad66abcd8cc095",
+        "split": "0ce6e0c3c6d4cde526eeeaa512f1862ca253c1f780a2680db7042ce41a03993d",
+        "wide": "c6ba445e6adfbfe86edf6ccf8047d370eec3bd53d303aeef5ce5ce21e61bcb49"
+      },
+      "resident_scalars": {
+        "continued": 1540,
+        "frozen": 1540,
+        "split": 3848,
+        "wide": 3878
+      },
+      "selected_research_candidate": "split"
+    },
+    "53": {
+      "calibration_brier": {
+        "continued": 0.7002846671585494,
+        "frozen": 1.375,
+        "split": 0.8748316641998877,
+        "wide": 0.8468459380437536
+      },
+      "held_correct": {
+        "continued": 16,
+        "frozen": 8,
+        "shuffled_route": 18,
+        "split": 17,
+        "swapped_route": 23,
+        "wide": 15
+      },
+      "old_train_brier": {
+        "continued": 0.6247430992965,
+        "frozen": 1.25,
+        "split": 0.42152215886918226,
+        "wide": 0.7460730590879261
+      },
+      "optimizer_steps": 320,
+      "parameter_digests": {
+        "continued": "954f7846671c73a8dcf87fc6005dd09be0183ad9f4830aaac454b0c3d87bf7f8",
+        "frozen": "441f9f5cb759084b20e1d53336cd65920e94d9ae66a522b571dde1cafc052ce0",
+        "split": "6819840db40f21eae834be1fdc017096be64533586c4fb55ccc0411325f7ef82",
+        "wide": "fea163e7e373be75144f318984d84ff8a7c3ff8e58b7f5aef6ce2d52b123e955"
+      },
+      "resident_scalars": {
+        "continued": 1540,
+        "frozen": 1540,
+        "split": 3848,
+        "wide": 3878
+      },
+      "selected_research_candidate": "continued"
+    }
+  },
+  "tests": {
+    "compileall": true,
+    "normal_passed": 30,
+    "optimized_passed": 30,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "active_router_and_generation_authority_verified": false,
+  "all_sized_head_fleets_physically_allocated": true,
+  "authority_posture": "DENY_ALL",
+  "date_utc": "2026-10-16",
+  "frozen_canonical_model_selected": false,
+  "future_utility_gain_proven": false,
+  "historical_skill_gain_proven": false,
+  "host_counters_or_energy_independently_attested": false,
+  "independent_numpy_source_and_logits_replay": true,
+  "negative_findings": [
+    "Only two real trained Head weight value sets are repeated into the N physical slots; fleet does not have N learned skills.",
+    "p99 varies substantially even between independently run local CPU processes; no stable device SLA.",
+    "A Python/Numpy packed kernel benchmark excludes actual Encoder forward, original Worker scheduling, CAS, WAL, recovery, energy, and authentic source authorization.",
+    "Head weights are physically replicated, while four original features are reused as per-request immutable inputs.",
+    "The named 4,096 logical slots are not 4,096 independent Cell owners, concurrent requests or production-scoped authorities.",
+    "No independent prospective task or old-task retention result is provided."
+  ],
+  "new_independent_future_source_families": 0,
+  "new_original_encoder_forwards": 0,
+  "parent_head_sha": "4c878ed845482d759432930f7ddfaff9f5f82a56",
+  "per_size": {
+    "1024": {
+      "base_head_storage_bytes": 6307840,
+      "four_original_probe_scores_identical_across_independent_processes": true,
+      "individually_allocated_slots": 1024,
+      "preselected_cached_head_storage_bytes": 197120,
+      "replicas": [
+        {
+          "p95_ns": {
+            "active32_loop": 240045.84999999963,
+            "active32_packed": 113337.64999999997,
+            "all_loop": 6576316.749999998,
+            "all_packed": 1238249.1499999994
+          },
+          "p99_ns": {
+            "active32_loop": 624820.0900000003,
+            "active32_packed": 2254425.160000004,
+            "all_loop": 12912013.630000021,
+            "all_packed": 2247401.530000001
+          },
+          "process_cpu_ns": {
+            "active32_loop": 13253705,
+            "active32_packed": 9754337,
+            "all_loop": 599283610,
+            "all_packed": 61761616
+          },
+          "replica": "A",
+          "source_report_sha256": "1d42ed60e0c6ec77b5df78b63521ebee106988a06c0e5ae5182d8d207b953622",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 108044
+        },
+        {
+          "p95_ns": {
+            "active32_loop": 241170.59999999998,
+            "active32_packed": 33845.74999999989,
+            "all_loop": 5776685.599999997,
+            "all_packed": 689578.2999999998
+          },
+          "p99_ns": {
+            "active32_loop": 656147.860000001,
+            "active32_packed": 117497.14000000004,
+            "all_loop": 6721378.610000001,
+            "all_packed": 1744526.8800000027
+          },
+          "process_cpu_ns": {
+            "active32_loop": 13123421,
+            "active32_packed": 3029527,
+            "all_loop": 364606594,
+            "all_packed": 54812749
+          },
+          "replica": "B",
+          "source_report_sha256": "47e7efa27633000e5a70b491cd43405cb50d1548605627e64065655876a578c5",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 108132
+        }
+      ],
+      "total_head_storage_bytes": 6504960,
+      "unique_trained_weight_value_sets": 2
+    },
+    "256": {
+      "base_head_storage_bytes": 1576960,
+      "four_original_probe_scores_identical_across_independent_processes": true,
+      "individually_allocated_slots": 256,
+      "preselected_cached_head_storage_bytes": 197120,
+      "replicas": [
+        {
+          "p95_ns": {
+            "active32_loop": 384757.59999999934,
+            "active32_packed": 22341.55,
+            "all_loop": 1215063.4999999995,
+            "all_packed": 239720.7499999997
+          },
+          "p99_ns": {
+            "active32_loop": 1197018.6400000018,
+            "active32_packed": 49593.95000000001,
+            "all_loop": 2863432.19,
+            "all_packed": 552770.3900000012
+          },
+          "process_cpu_ns": {
+            "active32_loop": 16022031,
+            "active32_packed": 2091072,
+            "all_loop": 91277193,
+            "all_packed": 12505149
+          },
+          "replica": "A",
+          "source_report_sha256": "957ce6b05fd4717de9ea4f03d49666828ef5778b90f86c804a0351487894dbce",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 103244
+        },
+        {
+          "p95_ns": {
+            "active32_loop": 194158.64999999997,
+            "active32_packed": 33770.44999999994,
+            "all_loop": 1876361.049999997,
+            "all_packed": 305369.39999999985
+          },
+          "p99_ns": {
+            "active32_loop": 424629.1200000002,
+            "active32_packed": 304804.6200000002,
+            "all_loop": 3663848.1500000013,
+            "all_packed": 578055.0800000003
+          },
+          "process_cpu_ns": {
+            "active32_loop": 12220210,
+            "active32_packed": 6722989,
+            "all_loop": 106737117,
+            "all_packed": 14561027
+          },
+          "replica": "B",
+          "source_report_sha256": "7e7008c97b63b3d199c8cf33fb271d22c30a6fd6b88cbd5a9b1aab2f13eef86f",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 103076
+        }
+      ],
+      "total_head_storage_bytes": 1774080,
+      "unique_trained_weight_value_sets": 2
+    },
+    "4096": {
+      "base_head_storage_bytes": 25231360,
+      "four_original_probe_scores_identical_across_independent_processes": true,
+      "individually_allocated_slots": 4096,
+      "preselected_cached_head_storage_bytes": 197120,
+      "replicas": [
+        {
+          "p95_ns": {
+            "active32_loop": 475288.1999999999,
+            "active32_packed": 204104.9999999999,
+            "all_loop": 27149045.599999987,
+            "all_packed": 5696049.899999994
+          },
+          "p99_ns": {
+            "active32_loop": 2092807.4900000007,
+            "active32_packed": 1363803.0600000045,
+            "all_loop": 33680602.21000001,
+            "all_packed": 15695693.10000002
+          },
+          "process_cpu_ns": {
+            "active32_loop": 19424558,
+            "active32_packed": 14097553,
+            "all_loop": 1859522144,
+            "all_packed": 372656675
+          },
+          "replica": "A",
+          "source_report_sha256": "733467473353034e8573042b62b1c6f9b7f5ce13e120501a9234650895022aa7",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 126572
+        },
+        {
+          "p95_ns": {
+            "active32_loop": 166805.15,
+            "active32_packed": 62897.849999999955,
+            "all_loop": 17592171.999999993,
+            "all_packed": 3046111.3999999994
+          },
+          "p99_ns": {
+            "active32_loop": 645433.9300000009,
+            "active32_packed": 268751.02000000014,
+            "all_loop": 19441880.89,
+            "all_packed": 4656954.860000004
+          },
+          "process_cpu_ns": {
+            "active32_loop": 13127719,
+            "active32_packed": 3976427,
+            "all_loop": 1460830393,
+            "all_packed": 222029171
+          },
+          "replica": "B",
+          "source_report_sha256": "0a126f584c2d0871df5894826f3864ffa054709dfcc11044fa91acb31c0aadfc",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 126592
+        }
+      ],
+      "total_head_storage_bytes": 25428480,
+      "unique_trained_weight_value_sets": 2
+    },
+    "64": {
+      "base_head_storage_bytes": 394240,
+      "four_original_probe_scores_identical_across_independent_processes": true,
+      "individually_allocated_slots": 64,
+      "preselected_cached_head_storage_bytes": 197120,
+      "replicas": [
+        {
+          "p95_ns": {
+            "active32_loop": 126146.14999999988,
+            "active32_packed": 21508.849999999995,
+            "all_loop": 233680.29999999987,
+            "all_packed": 23914.65
+          },
+          "p99_ns": {
+            "active32_loop": 193915.92000000025,
+            "active32_packed": 90702.99000000003,
+            "all_loop": 320913.23000000016,
+            "all_packed": 52531.17000000005
+          },
+          "process_cpu_ns": {
+            "active32_loop": 8661966,
+            "active32_packed": 1641919,
+            "all_loop": 16908043,
+            "all_packed": 2424613
+          },
+          "replica": "A",
+          "source_report_sha256": "c52d2196c1e12d82dceb8da97f544aa93932600f6071eb70ead58165d682b45b",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 101964
+        },
+        {
+          "p95_ns": {
+            "active32_loop": 154785.5999999998,
+            "active32_packed": 18881.449999999997,
+            "all_loop": 337249.9999999997,
+            "all_packed": 37609.84999999999
+          },
+          "p99_ns": {
+            "active32_loop": 394665.7900000005,
+            "active32_packed": 96317.40000000029,
+            "all_loop": 775437.0400000011,
+            "all_packed": 57019.740000000034
+          },
+          "process_cpu_ns": {
+            "active32_loop": 9344699,
+            "active32_packed": 4959992,
+            "all_loop": 20951375,
+            "all_packed": 2734885
+          },
+          "replica": "B",
+          "source_report_sha256": "d269d315691e2268a77f06f69dd163962b2b8243eecf4e0252ee31211cb44c9f",
+          "timed_rounds": 128,
+          "whole_process_maxrss_kib": 101944
+        }
+      ],
+      "total_head_storage_bytes": 591360,
+      "unique_trained_weight_value_sets": 2
+    }
+  },
+  "preselected_active_heads": 32,
+  "production_authorized": false,
+  "profile_repeat_count": 2,
+  "real_original_train_observation_count": 4,
+  "real_trained_distinct_head_value_sets": 2,
+  "schema": "hepta.stem.v23.actual-original-feature-physical-head-scale.research",
+  "scientific_promotion_authorized": false,
+  "source_features_sha256": "e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490",
+  "source_model_file_sha256": "4dc71c47b4ec297ce65a221adabd8ad7888cdd1c1ce2f67a7aee3986d4a1433e",
+  "source_original_artifact_id": 11890616195,
+  "source_original_artifact_zip_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "source_repo": "TrillionniumFoundation/hepta-private-ci",
+  "target_device_host_attestation": false,
+  "timed_samples_per_kernel_profile_per_size_and_replica": 128,
+  "whole_worker_executions": 0
+}

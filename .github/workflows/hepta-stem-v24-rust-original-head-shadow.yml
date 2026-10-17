@@ -1,0 +1,128 @@
+name: hepta-stem-v24-rust-original-head-shadow-deny-all
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/native_v24_packed_head.rs"
+      - "qualification/stem-cell-v1/*v24_rust_original*.py"
+      - "qualification/stem-cell-v1/STEM_V24_*"
+      - ".github/workflows/hepta-stem-v24-rust-original-head-shadow.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/native_v24_packed_head.rs"
+      - "qualification/stem-cell-v1/*v24_rust_original*.py"
+      - "qualification/stem-cell-v1/STEM_V24_*"
+      - ".github/workflows/hepta-stem-v24-rust-original-head-shadow.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  rust-shadow-not-authority:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact SHA and bounded numerical dependencies
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 cryptography==46.0.4
+      - name: Compile and execute real Rust safety and numerical unit tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 --test -C opt-level=2 native_v24_packed_head.rs -o "$RUNNER_TEMP/v24-native-rust-tests"
+          "$RUNNER_TEMP/v24-native-rust-tests" --test-threads=1
+          python -m unittest -v test_v24_original_rust_handoff.SourceOnly
+          python -O -m unittest -v test_v24_original_rust_handoff.SourceOnly
+          python -m py_compile v24_rust_original_handoff.py v24_rust_original_review.py test_v24_original_rust_handoff.py
+      - name: Acquire the original frozen mmBERT archive only on push or dispatch
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11890616195/zip" > "$RUNNER_TEMP/v24-original.zip"
+          echo "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  $RUNNER_TEMP/v24-original.zip" | sha256sum --check
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install packaging==25.0
+      - name: Actual archived FP32 model to native Rust CPU, independent NumPy original replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 -C opt-level=3 native_v24_packed_head.rs -o "$RUNNER_TEMP/v24-native-rust"
+          python stem_counterfactual_split_v14.py prepare \
+            --archive "$RUNNER_TEMP/v24-original.zip" \
+            --out "$RUNNER_TEMP/v24-original-input" \
+            --labels-out "$RUNNER_TEMP/v24-held-labels-private.json"
+          rm -f "$RUNNER_TEMP/v24-held-labels-private.json"
+          python stem_stable_router_v15.py \
+            --inputs "$RUNNER_TEMP/v24-original-input" \
+            --output "$RUNNER_TEMP/v24-v15"
+          python stem_specialization_v16.py \
+            --inputs "$RUNNER_TEMP/v24-original-input" --v15 "$RUNNER_TEMP/v24-v15" \
+            --output "$RUNNER_TEMP/v24-v16"
+          export HEPTA_V24_ORIGINAL_INPUTS="$RUNNER_TEMP/v24-original-input"
+          export HEPTA_V24_ORIGINAL_V15="$RUNNER_TEMP/v24-v15"
+          export HEPTA_V24_ORIGINAL_V16="$RUNNER_TEMP/v24-v16"
+          python -m unittest -v test_v24_original_rust_handoff
+          python -O -m unittest -v test_v24_original_rust_handoff
+          python v24_rust_original_handoff.py \
+            --inputs "$HEPTA_V24_ORIGINAL_INPUTS" --v15 "$HEPTA_V24_ORIGINAL_V15" \
+            --v16 "$HEPTA_V24_ORIGINAL_V16" --output "$RUNNER_TEMP/v24-private"
+          for n in 64 256 1024 4096; do
+            "$RUNNER_TEMP/v24-native-rust" \
+              "$RUNNER_TEMP/v24-private/frame-${n}.bin" \
+              "$RUNNER_TEMP/v24-private/rust-logits-${n}.bin" \
+              "$RUNNER_TEMP/v24-private/rust-report-${n}.json"
+          done
+          python v24_rust_original_review.py \
+            --inputs "$HEPTA_V24_ORIGINAL_INPUTS" --v15 "$HEPTA_V24_ORIGINAL_V15" \
+            --v16 "$HEPTA_V24_ORIGINAL_V16" --root "$RUNNER_TEMP/v24-private" \
+            --output "$RUNNER_TEMP/v24-sanitized-original-rust-review.json"
+          python - "$RUNNER_TEMP/v24-sanitized-original-rust-review.json" <<'PY_HOLD'
+          import json,sys
+          with open(sys.argv[1], encoding="utf-8") as f: value=json.load(f)
+          if not (value.get("native_rust_binary_execution_verified_by_numeric_replay") is True
+              and value.get("authority_posture")=="DENY_ALL"
+              and value.get("production_authorized") is False
+              and value.get("rust_worker_trait_integrated") is False
+              and value.get("new_future_sources") == 0
+              and set(value.get("sizes",{}))=={"64","256","1024","4096"}):
+              raise SystemExit("original Rust numerical probe is not a production promotion")
+          PY_HOLD
+      - name: Upload ONLY sanitized native numerical receipt (no private binary tensors)
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v24-native-original-rust-shadow-${{ github.sha }}
+          path: ${{ runner.temp }}/v24-sanitized-original-rust-review.json
+          if-no-files-found: error
+      - name: Require unchanged tracked source
+        run: git diff --exit-code && git diff --cached --exit-code

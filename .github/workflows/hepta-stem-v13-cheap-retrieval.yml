@@ -1,0 +1,47 @@
+name: hepta-stem-v13-original-cheap-retrieval-no-go
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v13_cheap_retrieval.py"
+      - "qualification/stem-cell-v1/v13_independent_reviewer.py"
+      - "qualification/stem-cell-v1/v13_retrieval_cost.py"
+      - "qualification/stem-cell-v1/v13_public_gate.py"
+      - "qualification/stem-cell-v1/test_stem_v13_cheap_retrieval.py"
+      - "qualification/stem-cell-v1/test_v13_public_gate.py"
+      - "qualification/stem-cell-v1/STEM_V13_*"
+      - ".github/workflows/hepta-stem-v13-cheap-retrieval.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-denial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run source-only exact-HEAD contract tests without model substitutes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v13_cheap_retrieval.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_public_gate.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v13_cheap_retrieval.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_public_gate.py' -v
+          python -m compileall -q qualification/stem-cell-v1/stem_v13_cheap_retrieval.py qualification/stem-cell-v1/v13_independent_reviewer.py qualification/stem-cell-v1/v13_retrieval_cost.py qualification/stem-cell-v1/v13_public_gate.py
+      - name: Independently refuse positive research/production admission from sanitized receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python qualification/stem-cell-v1/v13_public_gate.py \
+            --report qualification/stem-cell-v1/STEM_V13_CHEAP_RETRIEVAL_20261015.json \
+            --review qualification/stem-cell-v1/STEM_V13_INDEPENDENT_RECOUNT_20261015.json
+          git diff --quiet && git diff --cached --quiet

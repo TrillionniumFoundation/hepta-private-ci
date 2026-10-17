@@ -1,0 +1,403 @@
+name: hepta-stem-counterfactual-split-v14
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
+      - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - "qualification/stem-cell-v1/*stable_router_v15*.py"
+      - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
+      - "qualification/stem-cell-v1/*specialization_v16*.py"
+      - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
+      - "qualification/stem-cell-v1/*identity_alignment_v17*.py"
+      - "qualification/stem-cell-v1/STEM_V17_IDENTITY_ALIGNMENT*"
+      - "qualification/stem-cell-v1/*v18_*"
+      - "qualification/stem-cell-v1/STEM_V18_*"
+      - "qualification/stem-cell-v1/*v19_*"
+      - "qualification/stem-cell-v1/STEM_V19_*"
+      - "qualification/stem-cell-v1/*v20_*"
+      - "qualification/stem-cell-v1/STEM_V20_*"
+      - "qualification/stem-cell-v1/*v21_*"
+      - "qualification/stem-cell-v1/STEM_V21_*"
+      - "qualification/stem-cell-v1/*v22_*"
+      - "qualification/stem-cell-v1/STEM_V22_*"
+      - "qualification/stem-cell-v1/*v23_original_feature_batch_cost*.py"
+      - "qualification/stem-cell-v1/v23_original_feature_cpu_summary.py"
+      - "qualification/stem-cell-v1/STEM_V23_*"
+      - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/*counterfactual_split_v14*.py"
+      - "qualification/stem-cell-v1/STEM_V14_COUNTERFACTUAL*"
+      - "qualification/stem-cell-v1/*stable_router_v15*.py"
+      - "qualification/stem-cell-v1/STEM_V15_STABLE_ROUTER*"
+      - "qualification/stem-cell-v1/*specialization_v16*.py"
+      - "qualification/stem-cell-v1/STEM_V16_SPECIALIZATION*"
+      - "qualification/stem-cell-v1/*identity_alignment_v17*.py"
+      - "qualification/stem-cell-v1/STEM_V17_IDENTITY_ALIGNMENT*"
+      - "qualification/stem-cell-v1/*v18_*"
+      - "qualification/stem-cell-v1/STEM_V18_*"
+      - "qualification/stem-cell-v1/*v19_*"
+      - "qualification/stem-cell-v1/STEM_V19_*"
+      - "qualification/stem-cell-v1/*v20_*"
+      - "qualification/stem-cell-v1/STEM_V20_*"
+      - "qualification/stem-cell-v1/*v21_*"
+      - "qualification/stem-cell-v1/STEM_V21_*"
+      - "qualification/stem-cell-v1/*v22_*"
+      - "qualification/stem-cell-v1/STEM_V22_*"
+      - "qualification/stem-cell-v1/*v23_original_feature_batch_cost*.py"
+      - "qualification/stem-cell-v1/v23_original_feature_cpu_summary.py"
+      - "qualification/stem-cell-v1/STEM_V23_*"
+      - ".github/workflows/hepta-stem-counterfactual-split-v14.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event_name }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-and-original-archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Verify exact checkout and install CPU numerical runtime
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 cryptography==46.0.4
+      - name: Mechanism-only tests without original publisher data
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest -v test_stem_counterfactual_split_v14.Mechanism
+          python -O -m unittest -v test_stem_counterfactual_split_v14.Mechanism
+          python -m unittest -v test_stem_stable_router_v15.Mechanism
+          python -O -m unittest -v test_stem_stable_router_v15.Mechanism
+          python -m unittest -v test_stem_specialization_v16.Mechanism
+          python -O -m unittest -v test_stem_specialization_v16.Mechanism
+          python -m py_compile stem_stable_router_v15.py stem_stable_router_v15_review.py test_stem_stable_router_v15.py
+          python -m py_compile stem_specialization_v16.py stem_specialization_v16_review.py test_stem_specialization_v16.py
+          python -m unittest -v test_stem_identity_alignment_v17.Mechanism
+          python -O -m unittest -v test_stem_identity_alignment_v17.Mechanism
+          python -m py_compile stem_identity_alignment_v17.py stem_identity_alignment_v17_review.py test_stem_identity_alignment_v17.py
+          python -m py_compile stem_counterfactual_split_v14.py stem_counterfactual_split_v14_review.py test_stem_counterfactual_split_v14.py
+          python -m unittest -v test_v18_source_first_uncertainty.Mechanism test_v18_future_source_intake.Gate test_v18_public_negative_gate.Gate test_v19_replay_equivalence_gate.SourceOnly
+          python -O -m unittest -v test_v18_source_first_uncertainty.Mechanism test_v18_future_source_intake.Gate test_v18_public_negative_gate.Gate test_v19_replay_equivalence_gate.SourceOnly
+          python -m py_compile v18_source_first_uncertainty.py test_v18_source_first_uncertainty.py v18_future_source_intake.py test_v18_future_source_intake.py v18_public_negative_gate.py test_v18_public_negative_gate.py v19_replay_equivalence_gate.py test_v19_replay_equivalence_gate.py
+          python v18_public_negative_gate.py --result STEM_V18_SOURCE_FIRST_20261016.json --hold STEM_V18_FUTURE_SOURCE_HOLD_20261016.json --meter STEM_V18_READONLY_REPLAY_METER_20261016.json
+          python -m unittest -v test_v20_original_material_challenge.SourceOnly
+          python -O -m unittest -v test_v20_original_material_challenge.SourceOnly
+          python -m py_compile v20_original_material_challenge.py test_v20_original_material_challenge.py
+          python -m unittest -v test_v21_prospective_cost_gate.SourceOnly
+          python -O -m unittest -v test_v21_prospective_cost_gate.SourceOnly
+          python -m py_compile v21_prospective_cost_gate.py test_v21_prospective_cost_gate.py
+          python -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -O -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -m py_compile v22_case_bound_cost_witness.py test_v22_case_bound_cost_witness.py
+          python -m unittest -v test_v23_original_feature_batch_cost.Mechanism
+          python -O -m unittest -v test_v23_original_feature_batch_cost.Mechanism
+          python -m py_compile v23_original_feature_batch_cost.py v23_original_feature_batch_cost_review.py v23_original_feature_cpu_summary.py test_v23_original_feature_batch_cost.py
+          python v22_case_bound_cost_witness.py --protocol STEM_V22_FROZEN_CASE_COST_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --out "$RUNNER_TEMP/v22-pr-hold.json"
+          python v21_prospective_cost_gate.py --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json --output "$RUNNER_TEMP/v21-pr-hold.json"
+          python v20_original_material_challenge.py --retrospective STEM_V18_SOURCE_FIRST_20261016.json --output "$RUNNER_TEMP/v20-pr-HOLD.json"
+      - name: Retrieve only the immutable original Actions archive
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11890616195/zip" > "$RUNNER_TEMP/v14-original.zip"
+          echo "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  $RUNNER_TEMP/v14-original.zip" | sha256sum --check
+      - name: Original-feature training and separate NumPy original-label replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V14_ORIGINAL_ZIP="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_stem_counterfactual_split_v14
+          python -O -m unittest -v test_stem_counterfactual_split_v14
+          python stem_counterfactual_split_v14.py prepare --archive "$HEPTA_V14_ORIGINAL_ZIP" --out "$RUNNER_TEMP/v14-input" --labels-out "$RUNNER_TEMP/v14-labels.json"
+          python stem_counterfactual_split_v14.py train --inputs "$RUNNER_TEMP/v14-input" --out "$RUNNER_TEMP/v14-candidates"
+          python stem_counterfactual_split_v14_review.py --archive "$HEPTA_V14_ORIGINAL_ZIP" --inputs "$RUNNER_TEMP/v14-input" --candidates "$RUNNER_TEMP/v14-candidates" --output "$RUNNER_TEMP/v14-sanitized-review.json"
+      - name: Upload only aggregate numeric review, never source rows or tensors
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v14-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v14-sanitized-review.json
+          if-no-files-found: error
+      - name: V15 actual TRAIN-only fitting and independent unscored blind replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V14_ORIGINAL_ZIP="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_stem_stable_router_v15
+          python -O -m unittest -v test_stem_stable_router_v15
+          python stem_stable_router_v15.py --inputs "$RUNNER_TEMP/v14-input" --output "$RUNNER_TEMP/v15-candidates"
+          python stem_stable_router_v15_review.py --inputs "$RUNNER_TEMP/v14-input" --candidates "$RUNNER_TEMP/v15-candidates" --output "$RUNNER_TEMP/v15-sanitized-review.json"
+      - name: Upload only V15 aggregate review, no features or blind probabilities
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v15-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v15-sanitized-review.json
+          if-no-files-found: error
+      - name: V16 actual source-bound specialist routing and independent NumPy reviewer
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V16_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V16_V15="$RUNNER_TEMP/v15-candidates"
+          python -m unittest -v test_stem_specialization_v16
+          python -O -m unittest -v test_stem_specialization_v16
+          python stem_specialization_v16.py --inputs "$HEPTA_V16_INPUTS" --v15 "$HEPTA_V16_V15" --output "$RUNNER_TEMP/v16-candidates"
+          python stem_specialization_v16_review.py --inputs "$HEPTA_V16_INPUTS" --v15 "$HEPTA_V16_V15" --candidate "$RUNNER_TEMP/v16-candidates" --output "$RUNNER_TEMP/v16-sanitized-review.json"
+      - name: Upload only V16 sanitized aggregate no raw/held/model tensors
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v16-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v16-sanitized-review.json
+          if-no-files-found: error
+      - name: V17 original expert identity alignment and independent numeric replay
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V17_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V17_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V17_V16="$RUNNER_TEMP/v16-candidates"
+          rm -f "$RUNNER_TEMP/v14-labels.json"
+          python -m unittest -v test_stem_identity_alignment_v17
+          python -O -m unittest -v test_stem_identity_alignment_v17
+          python stem_identity_alignment_v17.py --inputs "$HEPTA_V17_INPUTS" --v15 "$HEPTA_V17_V15" --v16 "$HEPTA_V17_V16" --output "$RUNNER_TEMP/v17-candidates"
+          python stem_identity_alignment_v17_review.py --inputs "$HEPTA_V17_INPUTS" --v15 "$HEPTA_V17_V15" --v16 "$HEPTA_V17_V16" --v17 "$RUNNER_TEMP/v17-candidates" --out "$RUNNER_TEMP/v17-sanitized-review.json"
+      - name: Upload only V17 source-bound aggregate, no feature or per-case prediction
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v17-sanitized-review-${{ github.sha }}
+          path: ${{ runner.temp }}/v17-sanitized-review.json
+          if-no-files-found: error
+      - name: V18 actual independent frozen-source retrospective recomputation
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V18_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V18_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V18_V16="$RUNNER_TEMP/v16-candidates"
+          export HEPTA_V18_V17="$RUNNER_TEMP/v17-candidates"
+          python -m unittest -v test_v18_source_first_uncertainty test_v18_future_source_intake test_v18_public_negative_gate test_v19_replay_equivalence_gate
+          python -O -m unittest -v test_v18_source_first_uncertainty test_v18_future_source_intake test_v18_public_negative_gate test_v19_replay_equivalence_gate
+          python v18_source_first_uncertainty.py --inputs "$HEPTA_V18_INPUTS" --v15 "$HEPTA_V18_V15" --v16 "$HEPTA_V18_V16" --v17 "$HEPTA_V18_V17" --output "$RUNNER_TEMP/v18-replayed.json"
+          python v18_future_source_intake.py --retrospective "$RUNNER_TEMP/v18-replayed.json" --out "$RUNNER_TEMP/v18-future-HOLD.json"
+          python v19_replay_equivalence_gate.py --inputs "$HEPTA_V18_INPUTS" --v15 "$HEPTA_V18_V15" --v16 "$HEPTA_V18_V16" --v17 "$HEPTA_V18_V17" --historical STEM_V18_SOURCE_FIRST_20261016.json --historical-hold STEM_V18_FUTURE_SOURCE_HOLD_20261016.json --out "$RUNNER_TEMP/v19-sanitized-original-replay.json"
+      - name: Upload only sanitized V18/V19 numerical and HOLD receipts
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-v19-original-replay-hold-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/v18-replayed.json
+            ${{ runner.temp }}/v18-future-HOLD.json
+            ${{ runner.temp }}/v19-sanitized-original-replay.json
+          if-no-files-found: error
+      - name: V20 material source custody and real frozen model re-forward tests
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V20_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V20_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V20_V16="$RUNNER_TEMP/v16-candidates"
+          export HEPTA_V20_ARCHIVE="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_v20_original_material_challenge
+          python -O -m unittest -v test_v20_original_material_challenge
+          python v20_original_material_challenge.py --retrospective STEM_V18_SOURCE_FIRST_20261016.json --output "$RUNNER_TEMP/v20-original-HOLD.json"
+          python - "$RUNNER_TEMP/v20-original-HOLD.json" <<'PY_EXPECT_HOLD'
+          import json,sys
+          result=json.load(open(sys.argv[1],encoding="utf-8"))
+          if (result.get("decision") != "HOLD_NO_REAL_SIGNED_POST_FREEZE_MATERIAL"
+              or result.get("production_authorized") is not False
+              or result.get("scientific_promotion_authorized") is not False
+              or result.get("new_signed_future_roots") != 0):
+              raise SystemExit("research V20 original HOLD not qualified")
+          PY_EXPECT_HOLD
+      - name: Upload only sanitized V20 actual missing-future-source HOLD
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v20-original-source-material-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v20-original-HOLD.json
+          if-no-files-found: error
+      - name: V21 frozen prospective protocol, real archived Heads and independent-cost intake
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V20_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V20_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V20_V16="$RUNNER_TEMP/v16-candidates"
+          export HEPTA_V20_ARCHIVE="$RUNNER_TEMP/v14-original.zip"
+          python -m unittest -v test_v21_prospective_cost_gate
+          python -O -m unittest -v test_v21_prospective_cost_gate
+          python v21_prospective_cost_gate.py \
+            --protocol STEM_V21_FROZEN_PROSPECTIVE_PROTOCOL_20261016.json \
+            --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json \
+            --output "$RUNNER_TEMP/v21-prospective-HOLD.json"
+          python - "$RUNNER_TEMP/v21-prospective-HOLD.json" <<'PY_ENFORCE_V21'
+          import json,sys
+          with open(sys.argv[1], encoding="utf-8") as f: receipt=json.load(f)
+          if not (receipt.get("decision") == "HOLD_NO_INDEPENDENT_FUTURE_AND_HOST_EVIDENCE"
+                  and receipt.get("new_signed_source_families") == 0
+                  and receipt.get("qualified_future_windows") == 0
+                  and receipt.get("science_authorized") is False
+                  and receipt.get("production_authorized") is False
+                  and receipt.get("authority_posture") == "DENY_ALL"):
+              raise SystemExit("V21 scientific or production admission erroneously opened")
+          PY_ENFORCE_V21
+      - name: Upload only V21 frozen-protocol HOLD, no source packets or keys
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v21-prospective-source-and-host-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v21-prospective-HOLD.json
+          if-no-files-found: error
+      - name: V22 source-first per-request signed cost and no-future intake
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python -O -m unittest -v test_v22_case_bound_cost_witness.SourceOnly
+          python v22_case_bound_cost_witness.py \
+            --protocol STEM_V22_FROZEN_CASE_COST_PROTOCOL_20261016.json \
+            --v20-hold STEM_V20_ORIGINAL_SOURCE_HOLD_20261016.json \
+            --out "$RUNNER_TEMP/v22-case-cost-HOLD.json"
+          python - "$RUNNER_TEMP/v22-case-cost-HOLD.json" <<'PY_V22_HOLD'
+          import json,sys
+          receipt=json.load(open(sys.argv[1],encoding="utf-8"))
+          if not (receipt.get("decision") == "HOLD_MISSING_ORIGINAL_CASE_BOUND_HOST_EVIDENCE"
+                  and receipt.get("new_signed_source_families") == 0
+                  and receipt.get("qualified_future_windows") == 0
+                  and receipt.get("production_authorized") is False
+                  and receipt.get("scientific_promotion_authorized") is False
+                  and receipt.get("authority_posture") == "DENY_ALL"):
+              raise SystemExit("V22 must fail closed with no real future source")
+          PY_V22_HOLD
+      - name: Upload only V22 descriptive HOLD, never source/cost packets or keys
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v22-case-bound-host-HOLD-${{ github.sha }}
+          path: ${{ runner.temp }}/v22-case-cost-HOLD.json
+          if-no-files-found: error
+      - name: V23 physical original-feature CPU fleets and two independent read-only reviews
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          OMP_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          export HEPTA_V23_ORIGINAL_INPUTS="$RUNNER_TEMP/v14-input"
+          export HEPTA_V23_ORIGINAL_V15="$RUNNER_TEMP/v15-candidates"
+          export HEPTA_V23_ORIGINAL_V16="$RUNNER_TEMP/v16-candidates"
+          for replica in A B; do
+            for n in 64 256 1024 4096; do
+              python v23_original_feature_batch_cost.py \
+                --inputs "$HEPTA_V23_ORIGINAL_INPUTS" \
+                --v15 "$HEPTA_V23_ORIGINAL_V15" \
+                --v16 "$HEPTA_V23_ORIGINAL_V16" \
+                --cells "$n" --rounds 128 --out "$RUNNER_TEMP/v23-${replica}-${n}.json"
+            done
+            python v23_original_feature_batch_cost_review.py \
+              --inputs "$HEPTA_V23_ORIGINAL_INPUTS" \
+              --v15 "$HEPTA_V23_ORIGINAL_V15" \
+              --v16 "$HEPTA_V23_ORIGINAL_V16" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-64.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-256.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-1024.json" \
+              --receipt "$RUNNER_TEMP/v23-${replica}-4096.json" \
+              --out "$RUNNER_TEMP/v23-${replica}-independent-review.json"
+          done
+          python v23_original_feature_cpu_summary.py \
+            --evidence "$RUNNER_TEMP" --out "$RUNNER_TEMP/v23-sanitized-summary.json"
+          for n in 64 256 1024 4096; do
+            export "HEPTA_V23_RECEIPT_${n}=$RUNNER_TEMP/v23-A-${n}.json"
+          done
+          export HEPTA_V23_RUN_SUMMARY="$RUNNER_TEMP/v23-sanitized-summary.json"
+          python -m unittest -v test_v23_original_feature_batch_cost
+          python -O -m unittest -v test_v23_original_feature_batch_cost
+          python - "$RUNNER_TEMP/v23-sanitized-summary.json" <<'PY_V23_NO_GO'
+          import json,sys
+          r=json.load(open(sys.argv[1],encoding="utf-8"))
+          if not (r.get("authority_posture")=="DENY_ALL"
+                  and r.get("scientific_promotion_authorized") is False
+                  and r.get("production_authorized") is False
+                  and r.get("independent_numpy_source_and_logits_replay") is True
+                  and r.get("target_device_host_attestation") is False
+                  and r.get("new_independent_future_source_families")==0
+                  and set(r.get("per_size",{}))=={"64","256","1024","4096"}):
+              raise SystemExit("V23 source-only CPU mechanism cannot authorize Cell promotion")
+          PY_V23_NO_GO
+      - name: Upload only V23 sanitized CPU summary, no original model/features
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v23-original-feature-packed-cpu-summary-${{ github.sha }}
+          path: ${{ runner.temp }}/v23-sanitized-summary.json
+          if-no-files-found: error
+      - name: Require clean tracked source
+        run: git diff --exit-code && git diff --cached --exit-code

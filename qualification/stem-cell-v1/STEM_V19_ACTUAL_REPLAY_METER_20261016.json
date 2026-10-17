@@ -1,0 +1,36 @@
+{
+  "device": "local-isolated-Linux-process-not-user-target-host",
+  "end_to_end_serving_cost_included": false,
+  "independent_future_source_roots": 0,
+  "new_encoder_forwards": 0,
+  "processes": [
+    {
+      "exit_code": 0,
+      "linux_wait4_peak_rss_kib": 105572,
+      "linux_wait4_system_cpu_s": 0.14743199999999998,
+      "linux_wait4_user_cpu_s": 1.464663,
+      "major_faults": 0,
+      "output_sha256": "b3c1d75e286c9d9cd41ade49f4719e4cf4434f51d7cbeccc22735f380bf02ed4",
+      "run_index": 0,
+      "wall_ns": 1616083446
+    },
+    {
+      "exit_code": 0,
+      "linux_wait4_peak_rss_kib": 105624,
+      "linux_wait4_system_cpu_s": 0.290369,
+      "linux_wait4_user_cpu_s": 1.976076,
+      "major_faults": 0,
+      "output_sha256": "b3c1d75e286c9d9cd41ade49f4719e4cf4434f51d7cbeccc22735f380bf02ed4",
+      "run_index": 1,
+      "wall_ns": 2282012570
+    }
+  ],
+  "production_authorized": false,
+  "reused_historical_calibration_cases": 32,
+  "schema": "hepta.stem.v19.actual-replay-meter",
+  "scientific_promotion_authorized": false,
+  "signatures_of_original_source_provided": false,
+  "signed_final_use": false,
+  "source_original_sha256": "0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7",
+  "two_process_output_sha_identical": true
+}

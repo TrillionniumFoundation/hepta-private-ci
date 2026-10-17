@@ -1,0 +1,72 @@
+name: hepta-stem-v9-original-pretrained-negative
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v9_original_continual.py"
+      - "qualification/stem-cell-v1/v9_*.py"
+      - "qualification/stem-cell-v1/test_stem_v9_original_continual.py"
+      - "qualification/stem-cell-v1/test_v9*.py"
+      - "qualification/stem-cell-v1/STEM_V9_*"
+      - ".github/workflows/hepta-stem-v9-original-pretrained-negative.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+    paths:
+      - "qualification/stem-cell-v1/stem_v9_original_continual.py"
+      - "qualification/stem-cell-v1/v9_*.py"
+      - "qualification/stem-cell-v1/test_stem_v9_original_continual.py"
+      - "qualification/stem-cell-v1/test_v9*.py"
+      - "qualification/stem-cell-v1/STEM_V9_*"
+      - ".github/workflows/hepta-stem-v9-original-pretrained-negative.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  research-source-and-negative-gate:
+    name: Source-only immutable NO-GO evidence (no pretrained execution)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Compile and reject false-promoting public outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q qualification/stem-cell-v1/stem_v9_original_continual.py qualification/stem-cell-v1/v9_independent_original_audit.py qualification/stem-cell-v1/v9_train_retention_replay.py qualification/stem-cell-v1/v9_public_negative_gate.py
+          python qualification/stem-cell-v1/v9_public_negative_gate.py
+      - name: Run all V9 adversarial source tests normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v9_original_continual.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v9*.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v9_original_continual.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v9*.py' -v
+      - name: Explicitly keep publication non-authorizing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('qualification/stem-cell-v1')
+          names = ['STEM_V9_PHYSICAL_RECEIPT_20261015.json',
+                   'STEM_V9_POSTSEAL_WEAK_SCORES_20261015.json',
+                   'STEM_V9_TRAIN_DIAGNOSTIC_20261015.json',
+                   'STEM_V9_INDEPENDENT_AUDIT_20261015.json']
+          data = [json.loads((root/n).read_bytes()) for n in names]
+          assert all(x.get('production_authorized') is False for x in data)
+          assert data[0]['stem_winner_verified'] is False
+          assert data[1]['independent_human_task_success'] is None
+          assert data[2]['original_V6_retention_blocker_closed'] is False
+          assert data[3]['task_success_or_model_superiority_qualified'] is False
+          print('V9 read-only source gate: DENY_ALL; no archived model tensors loaded')
+          PY
+      - name: Ensure testing did not change source checkout
+        run: git diff --exit-code && git status --porcelain

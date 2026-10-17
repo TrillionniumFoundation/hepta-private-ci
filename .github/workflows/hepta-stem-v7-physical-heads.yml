@@ -1,0 +1,77 @@
+name: hepta-stem-v7-physical-heads
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/stem_v7_physical_heads.py"
+      - "qualification/stem-cell-v1/test_stem_v7_physical_heads.py"
+      - "qualification/stem-cell-v1/STEM_V7_PHYSICAL_HEADS_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V7_HEAD_FLEET_READOUT.md"
+      - ".github/workflows/hepta-stem-v7-physical-heads.yml"
+  push:
+    branches:
+      - "research/stem-differentiation-v7-20261015"
+    paths:
+      - "qualification/stem-cell-v1/stem_v7_physical_heads.py"
+      - "qualification/stem-cell-v1/test_stem_v7_physical_heads.py"
+      - "qualification/stem-cell-v1/STEM_V7_PHYSICAL_HEADS_20261015.json"
+      - "qualification/stem-cell-v1/STEM_V7_HEAD_FLEET_READOUT.md"
+      - ".github/workflows/hepta-stem-v7-physical-heads.yml"
+
+concurrency:
+  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  physical-synthetic-heads-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact CPU PyTorch
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python -m pip install numpy==2.3.5
+      - name: Physical 64-Head mechanism and negative tests
+        run: |
+          git rev-parse HEAD > "$RUNNER_TEMP/source-head.txt"
+          python -m pip freeze > "$RUNNER_TEMP/pip-freeze.txt"
+          PYTHONPATH=qualification/stem-cell-v1 python -m unittest -v qualification/stem-cell-v1/test_stem_v7_physical_heads.py
+          PYTHONPATH=qualification/stem-cell-v1 python -O -m unittest -v qualification/stem-cell-v1/test_stem_v7_physical_heads.py
+      - name: Four actual isolated Torch CPU resident bank runs
+        run: |
+          python qualification/stem-cell-v1/stem_v7_physical_heads.py --output "$RUNNER_TEMP/v7-physical.json"
+          PYTHONPATH=qualification/stem-cell-v1 python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from stem_v7_physical_heads import SIZE_LEVELS, validate_physical_receipt
+          source = Path("qualification/stem-cell-v1/stem_v7_physical_heads.py")
+          observed = json.loads(Path(__import__("os").environ["RUNNER_TEMP"], "v7-physical.json").read_text())
+          assert [row["size"] for row in observed["rows"]] == list(SIZE_LEVELS)
+          for row in observed["rows"]:
+              validate_physical_receipt(row, expected_script_sha256=hashlib.sha256(source.read_bytes()).hexdigest())
+          assert observed["physical_pretrained_encoder"] is False
+          assert observed["independent_task_quality"] is None
+          assert observed["production_authorized"] is False
+          PY
+      - name: Store real hosted data only (no model source or labels)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v7-hosted-physical-heads
+          path: |
+            ${{ runner.temp }}/v7-physical.json
+            ${{ runner.temp }}/source-head.txt
+            ${{ runner.temp }}/pip-freeze.txt
+          if-no-files-found: warn
