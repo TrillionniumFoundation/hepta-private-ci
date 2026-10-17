@@ -14,26 +14,45 @@ class SourceOnlyPortfolioPolicy(unittest.TestCase):
     def test_predeclared_no_answer_text_feature(self):
         self.assertEqual(portfolio.query_class("When did Alice speak?"), "temporal")
         self.assertEqual(portfolio.query_class("Who likes blue pens?"), "general")
-        for query in ("", "   ", "hello\x00world", "ca" "f\u00e9"):
+        for query in ("", "   ", "hello\x00world", "caf\u00e9"):
             with self.subTest(query=query), self.assertRaises(ValueError):
                 portfolio.query_class(query)
 
     def test_laplace_smoothing_and_conservative_margin(self):
-        rows = [{"query_class": "general", "eligible": True,
-                 "values": dict.fromkeys(portfolio.CANDIDATES, 1)}] * 18
+        rows = [
+            {
+                "query_class": "general",
+                "eligible": True,
+                "values": dict.fromkeys(portfolio.CANDIDATES, 1),
+            }
+        ] * 18
         arm, info = portfolio.fit(rows, "general")
         self.assertEqual(arm, "temporal")
         self.assertEqual(info["reason"], "no_credible_gain")
-        self.assertEqual(portfolio.fit(rows[:15], "general")[1]["reason"],
-                         "insufficient_training_support")
+        self.assertEqual(
+            portfolio.fit(rows[:15], "general")[1]["reason"],
+            "insufficient_training_support",
+        )
 
     def test_training_cannot_consume_future_family(self):
         outcomes = {k: 0 for k in portfolio.CANDIDATES}
-        train = [{"family": "conv-0", "query_class": "general",
-                  "eligible": True, "values": {**outcomes, "typed_split": 1}}
-                 for _ in range(60)]
-        heldout = [{"family": "conv-1", "query_class": "general",
-                    "eligible": True, "values": dict.fromkeys(portfolio.CANDIDATES, 1)}]
+        train = [
+            {
+                "family": "conv-0",
+                "query_class": "general",
+                "eligible": True,
+                "values": {**outcomes, "typed_split": 1},
+            }
+            for _ in range(60)
+        ]
+        heldout = [
+            {
+                "family": "conv-1",
+                "query_class": "general",
+                "eligible": True,
+                "values": dict.fromkeys(portfolio.CANDIDATES, 1),
+            }
+        ]
         arm, _ = portfolio.fit(train, "general")
         heldout[0]["values"]["typed_split"] = 0
         self.assertEqual(arm, portfolio.fit(train, "general")[0])
@@ -67,8 +86,10 @@ class OriginalReplayGate(unittest.TestCase):
         self.assertEqual(r["planned_question_count"], 240)
         self.assertEqual(r["paired_question_count"], 240)
         self.assertEqual(set(r["by_family"]), {f"conv-{i}" for i in range(10)})
-        self.assertEqual(r["totals"]["wins"] - r["totals"]["losses"],
-                         r["totals"]["policy_complete"] - r["totals"]["temporal_complete"])
+        self.assertEqual(
+            r["totals"]["wins"] - r["totals"]["losses"],
+            r["totals"]["policy_complete"] - r["totals"]["temporal_complete"],
+        )
         self.assertEqual(r["disposition"], "retain_temporal_deny_topology_growth")
         self.assertFalse(r["autonomous_cell_split_authorized"])
         self.assertFalse(r["final_use_authorized"])
@@ -80,8 +101,12 @@ class OriginalReplayGate(unittest.TestCase):
         for family, fold in self.report["by_family"].items():
             self.assertEqual(fold["counts"]["planned"], 24, family)
             self.assertEqual(fold["counts"].get("unscorable", 0), 0)
-            self.assertEqual(sum(fold["counts"].get("selected_" + k, 0)
-                                 for k in portfolio.CANDIDATES), 24)
+            self.assertEqual(
+                sum(
+                    fold["counts"].get("selected_" + k, 0) for k in portfolio.CANDIDATES
+                ),
+                24,
+            )
 
     def test_unsealed_or_tampered_training_artifact_rejected(self):
         bogus = self.root / "unsealed"

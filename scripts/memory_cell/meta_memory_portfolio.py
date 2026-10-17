@@ -33,7 +33,9 @@ def query_class(question):
     """Pre-registered source-visible feature; never examine target/source labels."""
     if not isinstance(question, str) or not graph.ascii_ok(question):
         raise ValueError("invalid source-visible question")
-    return "temporal" if TEMPORAL_WORDS.intersection(graph.words(question)) else "general"
+    return (
+        "temporal" if TEMPORAL_WORDS.intersection(graph.words(question)) else "general"
+    )
 
 
 def _private(prepared, manifest):
@@ -41,7 +43,11 @@ def _private(prepared, manifest):
     if graph.digest(raw) != manifest["private_sha256"]:
         raise ValueError("original private input digest mismatch")
     val = graph.strict_load(raw)
-    if not isinstance(val, dict) or set(val) != {"schema", "annotations"} or val["schema"] != graph.SCHEMA:
+    if (
+        not isinstance(val, dict)
+        or set(val) != {"schema", "annotations"}
+        or val["schema"] != graph.SCHEMA
+    ):
         raise ValueError("unknown original private source schema")
     return val["annotations"]
 
@@ -49,8 +55,11 @@ def _private(prepared, manifest):
 def _rows(public, journal, annotations):
     """Collect a reviewer-only full-information retrospective outcome table."""
     sources = {g["family"]: {d["id"] for d in g["sources"]} for g in public["families"]}
-    questions = {(g["family"], q["id"]): q["text"]
-                 for g in public["families"] for q in g["questions"]}
+    questions = {
+        (g["family"], q["id"]): q["text"]
+        for g in public["families"]
+        for q in g["questions"]
+    }
     expected = {qid for _, qid in questions}
     if not isinstance(annotations, dict) or set(annotations) != expected:
         raise ValueError("incomplete source questions or hidden annotations")
@@ -61,28 +70,49 @@ def _rows(public, journal, annotations):
     for item in journal["rows"]:
         family, qid = item["family"], item["question_id"]
         key = (family, qid)
-        if key not in questions or key in seen or set(item) != {"family", "question_id", "arms"}:
+        if (
+            key not in questions
+            or key in seen
+            or set(item) != {"family", "question_id", "arms"}
+        ):
             raise ValueError("ambiguous retrospective question identity")
         seen.add(key)
         a = annotations[qid]
-        if (not isinstance(a, dict) or set(a) != {"evidence", "unresolved_reference"}
-                or type(a["unresolved_reference"]) is not bool
-                or not isinstance(a["evidence"], list)
-                or any(not isinstance(s, str) or not re.fullmatch(r"D\d+:\d+", s)
-                       for s in a["evidence"])):
+        if (
+            not isinstance(a, dict)
+            or set(a) != {"evidence", "unresolved_reference"}
+            or type(a["unresolved_reference"]) is not bool
+            or not isinstance(a["evidence"], list)
+            or any(
+                not isinstance(s, str) or not re.fullmatch(r"D\d+:\d+", s)
+                for s in a["evidence"]
+            )
+        ):
             raise ValueError("untrusted original reference envelope")
         refs = set(a["evidence"])
         eligible = not a["unresolved_reference"] and bool(refs)
         if set(item["arms"]) != set(meta.ARMS):
             raise ValueError("incomplete candidate set")
         for arm, docs in item["arms"].items():
-            if (not isinstance(docs, list) or len(docs) != graph.TOP_K
-                    or len(set(docs)) != graph.TOP_K or not set(docs) <= sources[family]):
+            if (
+                not isinstance(docs, list)
+                or len(docs) != graph.TOP_K
+                or len(set(docs)) != graph.TOP_K
+                or not set(docs) <= sources[family]
+            ):
                 raise ValueError("unadmitted source in candidate read")
-        results = {arm: int(refs.issubset(set(item["arms"][arm]))) if eligible else None
-                   for arm in CANDIDATES}
-        records.append({"family": family, "query_class": query_class(questions[key]),
-                        "eligible": eligible, "values": results})
+        results = {
+            arm: int(refs.issubset(set(item["arms"][arm]))) if eligible else None
+            for arm in CANDIDATES
+        }
+        records.append(
+            {
+                "family": family,
+                "query_class": query_class(questions[key]),
+                "eligible": eligible,
+                "values": results,
+            }
+        )
     if seen != set(questions):
         raise ValueError("incomplete sealed question census")
     return records
@@ -98,7 +128,10 @@ def fit(train, query_kind):
         raise ValueError("unregistered policy class or empty training set")
     seen = [r for r in train if r["eligible"] and r["query_class"] == query_kind]
     if len(seen) < MIN_TRAIN_SAMPLES:
-        return BASELINE, {"support": len(seen), "reason": "insufficient_training_support"}
+        return BASELINE, {
+            "support": len(seen),
+            "reason": "insufficient_training_support",
+        }
     estimated = {
         arm: (PRIOR + sum(r["values"][arm] for r in seen)) / (2 * PRIOR + len(seen))
         for arm in CANDIDATES
@@ -107,8 +140,11 @@ def fit(train, query_kind):
     best = max(CANDIDATES, key=lambda arm: (estimated[arm], -CANDIDATES.index(arm)))
     expected_delta = estimated[best] - estimated[BASELINE]
     selected = best if expected_delta >= MIN_PREDICTED_GAIN else BASELINE
-    return selected, {"support": len(seen), "predicted_gain": round(expected_delta, 8),
-                      "reason": "margin_passed" if selected != BASELINE else "no_credible_gain"}
+    return selected, {
+        "support": len(seen),
+        "predicted_gain": round(expected_delta, 8),
+        "reason": "margin_passed" if selected != BASELINE else "no_credible_gain",
+    }
 
 
 def evaluate_folds(records):
@@ -141,12 +177,18 @@ def evaluate_folds(records):
         if fold["scored"] + fold["unscorable"] != 24:
             raise ValueError("silently filtered original questions")
         outcomes.update(fold)
-        folds[heldout] = {"counts": dict(fold), "policy": {
-            kind: {"selected": policy[kind][0], **policy[kind][1]}
-            for kind in ("temporal", "general")}}
-    if (outcomes["planned"] != 240
-            or outcomes["wins"] - outcomes["losses"] !=
-            outcomes["policy_complete"] - outcomes["temporal_complete"]):
+        folds[heldout] = {
+            "counts": dict(fold),
+            "policy": {
+                kind: {"selected": policy[kind][0], **policy[kind][1]}
+                for kind in ("temporal", "general")
+            },
+        }
+    if (
+        outcomes["planned"] != 240
+        or outcomes["wins"] - outcomes["losses"]
+        != outcomes["policy_complete"] - outcomes["temporal_complete"]
+    ):
         raise ValueError("changed original reference or incomplete paired results")
     return folds, outcomes
 
@@ -172,10 +214,14 @@ def review(prepared_dir, sealed_dir, output_path):
         "source_dataset_sha256": graph.DATASET_SHA256,
         "public_sha256": manifest["public_sha256"],
         "seven_arm_journal_sha256": graph.digest(journal_bytes),
-        "family_count": len(folds), "paired_question_count": total["scored"],
-        "planned_question_count": total["planned"], "unscorable_count": total["unscorable"],
-        "by_family": folds, "totals": dict(total),
-        "exact_baseline": BASELINE, "policy_candidate_arms": list(CANDIDATES),
+        "family_count": len(folds),
+        "paired_question_count": total["scored"],
+        "planned_question_count": total["planned"],
+        "unscorable_count": total["unscorable"],
+        "by_family": folds,
+        "totals": dict(total),
+        "exact_baseline": BASELINE,
+        "policy_candidate_arms": list(CANDIDATES),
         "trained_parameters_in_production": 0,
         "offline_full_information_folds": True,
         "test_family_label_visible_to_its_policy_fit": False,
@@ -196,7 +242,9 @@ def review(prepared_dir, sealed_dir, output_path):
 def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 4 or args[0] != "review":
-        raise SystemExit("review ORIGINAL_PREPARED SEALED_SEVEN_ARM_RUN NEW_PORTFOLIO_REPORT")
+        raise SystemExit(
+            "review ORIGINAL_PREPARED SEALED_SEVEN_ARM_RUN NEW_PORTFOLIO_REPORT"
+        )
     print(json.dumps(review(args[1], args[2], args[3]), indent=2, sort_keys=True))
 
 
