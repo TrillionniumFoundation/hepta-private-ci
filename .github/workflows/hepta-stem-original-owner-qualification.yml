@@ -64,9 +64,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           # Exact original #2145 source blobs, not newly substituted owners.
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "0b98be50294d12418b7b6e3228f3a6d650aaebda"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "9fe42424b3fd63a91705ddb42559f29c69bd1c89"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "5419836eb8a34ade87957bbd9daa422a83be0901"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
@@ -119,6 +119,8 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_
       - name: Verify two typed Stem Cells invoke exactly one native Worker batch
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts
+      - name: Verify new borrowed backend pointer identity and reordered output rejection
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-borrowed-original-batch.json" --minimum-tests 2 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib borrowed_native_batch_ -- --nocapture --test-threads=1
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Verify Neuron external signed-NDU gate Rust formatting
