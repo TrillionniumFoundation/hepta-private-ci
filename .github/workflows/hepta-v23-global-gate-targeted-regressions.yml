@@ -1,0 +1,97 @@
+name: hepta-v23-global-gate-targeted-regressions
+
+on:
+  pull_request:
+    paths:
+      - scripts/tests/test_hepta_ci_dependencies.py
+      - codex-rs/hepta-fleet/src/authority_port.rs
+      - codex-rs/hepta-fleet/src/registry_tests.rs
+      - codex-rs/hepta-automation/src/migration_convergence_tests.rs
+      - codex-rs/hepta-memory/src/cognitive_schema_tests.rs
+      - codex-rs/hepta-evidence/src/authbus_outbox_tests.rs
+      - codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs
+      - codex-rs/git-utils/src/git_process_tests.rs
+      - .github/workflows/hepta-v23-global-gate-targeted-regressions.yml
+  push:
+    branches:
+      - research/stem-v23-global-ci-guard-repairs-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-git-fixture-and-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exactly checked-out HEAD
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - uses: astral-sh/setup-uv@v6
+      - name: Run actual formatter and all impact-selection fixture assertions
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format --check scripts/tests/test_hepta_ci_dependencies.py
+          python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies
+      - name: Fail closed on insecure fixture regression
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path("scripts/tests/test_hepta_ci_dependencies.py").read_text()
+          assert "errno.ENOTEMPTY" in source
+          assert "raise" in source
+          assert 'self.git("config", "gc.auto", "0")' in source
+          assert 'self.git("config", "maintenance.auto", "false")' in source
+          source = Path("codex-rs/hepta-automation/src/migration_convergence_tests.rs").read_text()
+          assert ".connect(\"sqlite::memory:\")" not in source
+          source = Path("codex-rs/hepta-memory/src/cognitive_schema_tests.rs").read_text()
+          assert ".connect(\"sqlite::memory:\")" not in source
+          assert "open_durable_evidence_pool" in source
+          print("CI regressions preserved, no old SQLite direct connect")
+          PY
+
+  original-native-test-fixtures:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact PR source identity
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git rev-parse HEAD
+          if ("$(git rev-parse HEAD)" -ne "$env:SOURCE_SHA") { exit 1 }
+        shell: pwsh
+      - name: Exercise canonical durable SQLite migrations and original actor bounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-automation --lib migration_convergence_tests::
+          cargo test --locked -p codex-hepta-memory --lib cognitive_schema_tests::
+          cargo test --locked -p codex-hepta-evidence --lib bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
+      - name: Exercise scoped Fleet, Supervisor and descendant tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-fleet --lib authority_port::tests
+          cargo test --locked -p codex-hepta-fleet --lib workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths
+          cargo test --locked -p codex-hepta-supervisor --test restart_budget_recovery
+          cargo test --locked -p codex-git-utils --lib timed_out_git_wrapper_does_not_leave_child_process_running
