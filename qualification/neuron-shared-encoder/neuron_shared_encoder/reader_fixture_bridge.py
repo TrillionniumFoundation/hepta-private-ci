@@ -20,6 +20,7 @@ from typing import Any
 
 
 ARM_NAMES = ("none", "distractor", "withheld", "full")
+REGISTERED_FROZEN_CASE_SHA256 = "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89"
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _FORBIDDEN_KEYS = frozenset({
     "gold", "canonical_gold", "gold_answer", "evaluator_gold",
@@ -77,8 +78,8 @@ def load_reader_evaluator(repo_root: Path, *, script_path: Path | None = None) -
         raise ReaderFixtureError("unexpected Reader fixture schema")
     if tuple(getattr(module, "ARM_NAMES", ())) != ARM_NAMES:
         raise ReaderFixtureError("Reader arm order changed; review the bridge contract")
-    if not isinstance(getattr(module, "FROZEN_CASE_SHA256", None), str) or not _SHA256.fullmatch(module.FROZEN_CASE_SHA256):
-        raise ReaderFixtureError("Reader evaluator has no registered frozen manifest digest")
+    if getattr(module, "FROZEN_CASE_SHA256", None) != REGISTERED_FROZEN_CASE_SHA256:
+        raise ReaderFixtureError("Reader evaluator is not the registered frozen manifest version")
     for symbol in ("load_cases", "evidence_for", "construct_request"):
         if not callable(getattr(module, symbol, None)):
             raise ReaderFixtureError(f"Reader evaluator is missing {symbol}()")
@@ -200,6 +201,7 @@ def build_four_condition_requests(repo_root: Path, task_id: str | None = None) -
 
 __all__ = [
     "ARM_NAMES",
+    "REGISTERED_FROZEN_CASE_SHA256",
     "ReaderFixtureError",
     "ReaderRequestV1",
     "build_four_condition_requests",
