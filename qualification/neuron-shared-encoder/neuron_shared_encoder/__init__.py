@@ -2,6 +2,7 @@
 
 from .modality_registry import (
     BoundModalityRegistriesV1,
+    MAX_MULTIMODAL_WIDTH,
     ModalityTowerRegistryV1,
     ModalityTowerSpecV1,
     ProjectorRegistryV1,
@@ -37,6 +38,7 @@ __all__ = [
     "ComponentResourceBundleV1",
     "ComponentResourceReceiptV1",
     "BoundModalityRegistriesV1",
+    "MAX_MULTIMODAL_WIDTH",
     "MetricIntervalV1",
     "ModalityTowerRegistryV1",
     "ModalityTowerSpecV1",
