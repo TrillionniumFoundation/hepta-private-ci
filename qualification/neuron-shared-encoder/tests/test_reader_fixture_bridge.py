@@ -21,6 +21,7 @@ from neuron_shared_encoder.reader_fixture_bridge import (  # noqa: E402
     build_four_condition_requests,
     build_request,
     load_reader_evaluator,
+    verify_registered_checkout,
 )
 
 
@@ -102,6 +103,26 @@ class ReaderFixtureBridgeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(ReaderFixtureError):
                 load_reader_evaluator(Path(directory))
+
+    def test_missing_source_verifier_fails_closed(self):
+        evaluator = """
+SCHEMA = 'hepta.sngr.reader-evidence-fixture.v1'
+ARM_NAMES = ('none', 'distractor', 'withheld', 'full')
+FROZEN_CASE_SHA256 = 'eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89'
+def load_cases(path):
+    return {'manifest_sha256': FROZEN_CASE_SHA256, 'tasks': [{'id': 'task_reader_a'}]}
+def evidence_for(corpus, case, arm):
+    return 'evidence', 'docs/source.md'
+def construct_request(corpus, case, arm):
+    return ({'repository_source': 'docs/source.md', 'source_excerpt_untrusted': 'evidence'}, {})
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "scripts").mkdir()
+            (root / "scripts" / "hepta_sngr_reader_eval.py").write_text(evaluator, encoding="utf-8")
+            (root / "scripts" / "hepta_sngr_reader_cases.json").write_text("{}\n", encoding="utf-8")
+            with self.assertRaises(ReaderFixtureError):
+                verify_registered_checkout(root)
 
     def test_registered_fake_evaluator_is_only_protocol_smoke(self):
         evaluator = textwrap.dedent(
