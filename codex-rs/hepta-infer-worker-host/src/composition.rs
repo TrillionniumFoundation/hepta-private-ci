@@ -63,6 +63,30 @@ impl CompositionManifestV1 {
         self.head().validate()
     }
 
+
+    pub fn from_model_manifest(
+        manifest: &crate::model_worker::ModelManifest,
+        cell_id: String,
+        normalization_digest: String,
+        head_digest: String,
+        private_memory_bytes: u64,
+    ) -> Self {
+        Self {
+            cell_id,
+            encoder_digest: manifest.model_digest.clone(),
+            weights_digest: manifest.weights_digest.clone(),
+            tokenizer_digest: manifest.tokenizer_digest.clone(),
+            preprocessor_digest: manifest.preprocessor_digest.clone(),
+            normalization_digest,
+            quantization_digest: manifest.quantization_digest.clone(),
+            runtime_digest: manifest.runtime_digest.clone(),
+            device_digest: manifest.device_digest.clone(),
+            head_digest,
+            private_memory_bytes,
+            maximum_tokens: manifest.maximum_tokens,
+        }
+    }
+
     pub fn key(&self) -> CompositionKey {
         CompositionKey {
             encoder_digest: self.encoder_digest.clone(),
