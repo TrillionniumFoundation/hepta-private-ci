@@ -79,6 +79,14 @@ pub struct CellSplitProposalSignalV1 {
     signal_digest: Digest32,
 }
 
+/// A single owner-bound telemetry position. Grouped to prevent accidental
+/// reversal or independent inference of event sequence and observation time.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitObservationClockV1 {
+    pub sequence: u64,
+    pub observed_at_micros: u64,
+}
+
 impl CellSplitProposalSignalV1 {
     pub fn new(
         parent_cell_id: StableId,
@@ -87,15 +95,14 @@ impl CellSplitProposalSignalV1 {
         trigger: CellSplitProposalTriggerV1,
         trigger_evidence_digest: Digest32,
         policy_digest: Digest32,
-        observation_sequence: u64,
-        observed_at_micros: u64,
+        clock: CellSplitObservationClockV1,
     ) -> Result<Self, CellSplitAutomationErrorV1> {
         if parent_cell_id.as_str().is_empty()
             || parent_bundle_digest.is_zero()
             || trigger_evidence_digest.is_zero()
             || policy_digest.is_zero()
-            || observation_sequence == 0
-            || observed_at_micros == 0
+            || clock.sequence == 0
+            || clock.observed_at_micros == 0
         {
             return Err(CellSplitAutomationErrorV1::InvalidProposalSignal);
         }
@@ -106,8 +113,8 @@ impl CellSplitProposalSignalV1 {
             trigger,
             trigger_evidence_digest,
             policy_digest,
-            observation_sequence,
-            observed_at_micros,
+            observation_sequence: clock.sequence,
+            observed_at_micros: clock.observed_at_micros,
             signal_digest: Digest32::ZERO,
         };
         signal.signal_digest = signal.digest();
@@ -1810,8 +1817,10 @@ mod tests {
             CellSplitProposalTriggerV1::TaskCoverageOpportunity,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         CellSplitProposalSourceV1
@@ -1961,8 +1970,10 @@ mod tests {
             CellSplitProposalTriggerV1::ResourcePressure,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         assert_eq!(
