@@ -60,6 +60,70 @@ class MatchedHeadTests(unittest.TestCase):
         y,new_cost=mh.project_bank(b)
         self.assertTrue(np.array_equal(x,y));self.assertEqual(cost,new_cost)
 
+    def test_registered_seed_override_must_fail_before_fit(self):
+        panel, bank, fit = synthetic()
+        with self.assertRaisesRegex(gate.Denied, "unregistered random-seed override"):
+            mh.train_one(panel, bank, fit, seed=panel["budget"]["head_seed"] + 1)
+
+    def test_independent_reviewer_rejects_forged_initialization_with_real_sgd(self):
+        p,b,l=synthetic()
+        original=mh.new_head
+        def rogue_init(torch, seed):
+            head=original(torch, seed)
+            with torch.no_grad():
+                head[0].weight[0,0] += 0.125
+            return head
+        with mock.patch.object(mh, "new_head", side_effect=rogue_init):
+            compromised=mh.train_one(p,b,l)
+        # 40 *genuine* SGD updates begin from a manipulated weight. Every
+        # producer-supplied weight hash and prediction remains internally valid.
+        with self.assertRaisesRegex(gate.Denied, "nonfrozen Head starting parameters"):
+            review.independent_replay(p,b,l,compromised)
+
+    def test_independent_reviewer_rejects_changed_random_seed_receipt(self):
+        p,b,l=synthetic()
+        product=mh.train_one(p,b,l)
+        product["receipt"]["seed"] += 1
+        with self.assertRaises(gate.Denied):
+            review.independent_replay(p,b,l,product)
+
+    def test_independent_reviewer_rejects_wrong_run_identity_or_training_budget(self):
+        for name,value in (("model","laya421"), ("revision","f"*40),
+                           ("learning_rate",0.01), ("initialization","other"),
+                           ("has_calibration_labels",True), ("seed",99),
+                           ("fit_train_cpu_ns_self_reported",-1),
+                           ("producer_model_origin_authenticated",True)):
+            with self.subTest(name=name):
+                p,b,l=synthetic()
+                product=mh.train_one(p,b,l)
+                product["receipt"][name]=value
+                with self.assertRaises(gate.Denied):
+                    review.independent_replay(p,b,l,product)
+
+    def test_same_seed_has_bitwise_identical_initial_arrays_across_model_families(self):
+        p,b,l=synthetic()
+        x=mh.train_one(p,b,l)
+        repo,rev,_,_=gate.MODELS["laya421"]
+        b["model"]="laya421";b["repo"]=repo;b["revision"]=rev
+        y=mh.train_one(p,b,l)
+        self.assertEqual(x["receipt"]["initial_head_sha256"],
+                         y["receipt"]["initial_head_sha256"])
+        for key in x["initial_head_tensors"]:
+            np.testing.assert_array_equal(x["initial_head_tensors"][key],
+                                          y["initial_head_tensors"][key])
+        self.assertEqual(review.independent_replay(p,b,l,y)["disposition"],"HOLD_NO_GO")
+
+    def test_pcg64_initial_weight_oracle_is_sha_frozen(self):
+        # Independent known-byte canary for the registered research initializer;
+        # changes in NumPy or the tensor order cannot silently become a new baseline.
+        self.assertEqual(mh.INITIALIZATION, "hepta.stem.head-init.pcg64-f32.v2")
+        self.assertEqual(mh.tensor_digest(mh.initial_head_arrays(41)),
+                         "72236efb02d5da0b23ded8442bb2f68a7d2768ee53b1bb1ba089a0c8dc97f16f")
+        self.assertEqual(mh.tensor_digest(mh.initial_head_arrays(47)),
+                         "b5787d214c277443daf6adb2d7c5aa2e13901927b561ad62a9c44d6206fb36a7")
+        self.assertNotEqual(mh.tensor_digest(mh.initial_head_arrays(41)),
+                            mh.tensor_digest(mh.initial_head_arrays(42)))
+
     def test_reordered_input_rejected(self):
         p,b,l=synthetic();b["rows"][0],b["rows"][1]=b["rows"][1],b["rows"][0]
         with self.assertRaises(gate.Denied): mh.validate_bank(p,b)
