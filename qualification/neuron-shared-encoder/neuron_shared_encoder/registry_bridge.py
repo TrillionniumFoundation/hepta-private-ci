@@ -125,6 +125,19 @@ def bind_envelope_to_registry(
     package. The expected fields are the ModalityEnvelopeV1 fields.
     """
 
+    for field in (
+        "modality",
+        "stem_digest",
+        "raw_digest",
+        "feature_digest",
+        "projector_digest",
+        "latent_width",
+        "slots",
+        "temporal_span_ms",
+        "region_count",
+        "readonly",
+    ):
+        _require(hasattr(envelope, field), f"envelope is missing {field}")
     binding = bind_modality_registries(stem, towers, projectors)
     modality = envelope.modality
     tower = towers.tower_for(modality)
