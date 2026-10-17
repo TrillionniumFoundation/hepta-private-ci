@@ -438,7 +438,7 @@ fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<()
     Ok(())
 }
 
-fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {
+pub(crate) fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
