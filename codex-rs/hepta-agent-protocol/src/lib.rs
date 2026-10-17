@@ -336,9 +336,9 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::AutomationExecuteEffect {
-                intent,
+                intent: Box::new(intent),
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -649,9 +649,11 @@ pub enum AgentdMethod {
         overlap: AutomationOverlapPolicy,
     },
     AutomationExecuteEffect {
-        intent: AuthorizedEffectIntent,
+        // Box only the large typed in-memory witnesses. Serde preserves their
+        // original nested wire objects without changing the control schema.
+        intent: Box<AuthorizedEffectIntent>,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -1214,6 +1216,20 @@ mod tests {
             .iter()
             .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
             .collect::<String>();
+        // The in-memory boxing must not add wrappers or change the signed
+        // Final-use grant, method tag, field names or canonical JSON values.
+        let original_wire_shape = serde_json::json!({
+            "schema_version": AGENTD_CONTROL_SCHEMA_VERSION,
+            "request_id": 11,
+            "spawn_generation": 3,
+            "method": {
+                "type": "automation_execute_effect",
+                "intent": &intent,
+                "wire_payload_hex": &wire_payload_hex,
+                "signed_grant": &signed_grant,
+                "command_id": "effect-command",
+            },
+        });
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
@@ -1223,6 +1239,11 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&bytes).expect("effect wire JSON"),
+            original_wire_shape,
+            "boxing must not change the original bounded Agentd JSON protocol",
+        );
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
