@@ -1460,8 +1460,15 @@ fn observe_event(
                 // without any preceding text delta. Bind the real App Server
                 // connection before accepting that completed item as output.
                 // This is content observation, never terminality or authority.
-                adapt_observed_event(&binding.intent, &binding.turn_id, observed)
-                    .map_err(|error| format!("invalid App Server item witness: {error}"))?;
+                let unexpected_terminal = adapt_observed_event(
+                    &binding.intent,
+                    &binding.turn_id,
+                    observed,
+                )
+                .map_err(|error| format!("invalid App Server item witness: {error}"))?;
+                if unexpected_terminal.is_some() {
+                    return Err("item/completed unexpectedly produced a terminal receipt".to_string());
+                }
                 if text.len() > MAX_OUTPUT_BYTES {
                     return Err("completed agent message exceeds output byte limit".to_string());
                 }
