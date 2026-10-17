@@ -2,7 +2,7 @@ name: Hepta original same-Encoder centroid calibration V7 (DENY_ALL)
 
 on:
   push:
-    branches: [research/stem-original-encoder-centroid-v7-20261017]
+    branches: [research/stem-original-physical-centroid-v7-20261017]
     paths:
       - 'qualification/stem-optimal-v7/**'
       - '.github/workflows/hepta-stem-original-encoder-centroid-v7.yml'
@@ -56,7 +56,7 @@ jobs:
 
   original-source-owner:
     needs: source-only-numeric-tests
-    if: github.event_name == 'push' && github.ref_name == 'research/stem-original-encoder-centroid-v7-20261017'
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-original-physical-centroid-v7-20261017'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
