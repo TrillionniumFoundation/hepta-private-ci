@@ -2,8 +2,9 @@
 //!
 //! The planner is not an effect owner. Each dequeued item is independently
 //! checked against the loaded model and a fresh kernel-authority signed,
-//! one-shot final-use grant. The existing real model driver runs each item.
-//! This batches admission and shared storage, not GPU execution kernels.
+//! one-shot final-use grant. One compatible native batch runs under the
+//! original effect owner; no sequential backend fallback or new authority.
+//! An explicitly borrowed backend can reuse the original immutable Q24 Arc.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -912,16 +913,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     Ok((token, pending.binding.clone()))
                 })
                 .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
-            // All signed bindings were checked before the group claim. Move
-            // each owned request exactly once instead of cloning its identity
-            // strings and rebuilding a second request just for final-use.
+            // All original signed bindings were checked before the group
+            // claim. Pass each metadata-only V1 request with its original
+            // immutable shared Q24 Arc. A genuinely borrowed backend receives
+            // the same allocation without per-Cell re-materialization.
+            // The existing V1 backend gets an owned copy only if required.
             let requests = items
                 .iter_mut()
                 .map(|(_, pending)| {
                     let pending = pending.take().ok_or(BatchWorkerErrorV1::NoAdmission)?;
-                    let mut request = pending.request;
-                    request.feature_vector_q24 = pending.feature.as_slice().to_vec();
-                    Ok(request)
+                    Ok((pending.request, pending.feature))
                 })
                 .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
             // Re-read every original Scope/fence before and after the single
