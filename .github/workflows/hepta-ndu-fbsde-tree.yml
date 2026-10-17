@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-ndu-fbsde-tree-\${{ github.ref }}
+  group: hepta-ndu-fbsde-tree-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout exact source
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
       - name: Run tree contract tests
         run: python3 -m unittest discover -v -s qualification/ndu-fbsde-tree-p0 -p 'test_*.py'
@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile \\
-            qualification/ndu-fbsde-tree-p0/ndu_fbsde_tree.py \\
+          python3 -m py_compile \
+            qualification/ndu-fbsde-tree-p0/ndu_fbsde_tree.py \
             qualification/ndu-fbsde-tree-p0/test_ndu_fbsde_tree.py
           git diff --check
