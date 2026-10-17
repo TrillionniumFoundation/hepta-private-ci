@@ -143,4 +143,29 @@ class SourceTests(unittest.TestCase):
                                                   'private_test_labels_sha256':v.sha(b'{}\n')})
 
 
+    def test_exact_original_stage_pin_and_label_order_regression(self):
+        """Prevent a green synthetic CI hiding a missing original E3 source checkout.
+
+        The original source is absent on V27's research-only tree, so hosted
+        provenance comes from immutable original source blobs, after route seal.
+        """
+        workflow = (Path(__file__).resolve().parents[2] / '.github' / 'workflows' /
+                    'hepta-stem-v27-late-label-replay.yml').read_text()
+        original = 'b8b2f10fe38506972301e77e3836729a90200673'
+        contract = 'bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a'
+        stage = '3ca8f55ed6b7143729258e4a1e53693614460950'
+        self.assertIn('ORIGINAL_E3_SHA=' + original, workflow)
+        self.assertIn('git hash-object', workflow)
+        self.assertIn(contract, workflow)
+        self.assertIn(stage, workflow)
+        self.assertIn('GH_TOKEN: ${{ github.token }}', workflow)
+        self.assertNotIn('python experiments/shared_stem_cell/e3_scienceqa_stage.py', workflow)
+        self.assertLess(workflow.index('v27_conditional_vision_replay.py seal'),
+                        workflow.index('e3_scienceqa_contract.py?ref='))
+        self.assertLess(workflow.index('e3_scienceqa_stage.py?ref='),
+                        workflow.index('v27_conditional_vision_replay.py review'))
+        self.assertLess(workflow.index('sha256sum --check "$RUNNER_TEMP/plan.sha256"'),
+                        workflow.index('e3_scienceqa_contract.py?ref='))
+
+
 if __name__=='__main__':unittest.main()

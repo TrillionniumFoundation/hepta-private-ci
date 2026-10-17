@@ -72,14 +72,30 @@ jobs:
             --archive "$RUNNER_TEMP/original-e3.zip" \
             --plan "$RUNNER_TEMP/privately-sealed-plan.json"
           sha256sum "$RUNNER_TEMP/privately-sealed-plan.json" > "$RUNNER_TEMP/plan.sha256"
-      - name: Re-acquire immutable original ScienceQA-IMG source after route seal
+      - name: Re-acquire pinned original E3 source stager ONLY after route seal
         shell: bash
         env:
           HF_HUB_DISABLE_TELEMETRY: "1"
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          umask 077
+          test -s "$RUNNER_TEMP/privately-sealed-plan.json"
+          sha256sum --check "$RUNNER_TEMP/plan.sha256"
+          # This V27 branch does NOT contain experiments/shared_stem_cell.
+          # Recover ONLY the original E3 stager and contract, pinned to the exact
+          # source commit that physically produced the archived 64-case scores.
+          # Do not merge an unrelated model execution or source-owner tree.
+          ORIGINAL_E3_SHA=b8b2f10fe38506972301e77e3836729a90200673
+          ORIGINAL_STAGE_DIR="$RUNNER_TEMP/original-e3-source-stage"
+          mkdir -m 700 "$ORIGINAL_STAGE_DIR"
+          gh api "repos/$GITHUB_REPOSITORY/contents/experiments/shared_stem_cell/e3_scienceqa_contract.py?ref=$ORIGINAL_E3_SHA" --jq '.content' | base64 --decode > "$ORIGINAL_STAGE_DIR/e3_scienceqa_contract.py"
+          test "$(git hash-object "$ORIGINAL_STAGE_DIR/e3_scienceqa_contract.py")" = bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a
+          gh api "repos/$GITHUB_REPOSITORY/contents/experiments/shared_stem_cell/e3_scienceqa_stage.py?ref=$ORIGINAL_E3_SHA" --jq '.content' | base64 --decode > "$ORIGINAL_STAGE_DIR/e3_scienceqa_stage.py"
+          test "$(git hash-object "$ORIGINAL_STAGE_DIR/e3_scienceqa_stage.py")" = 3ca8f55ed6b7143729258e4a1e53693614460950
+          chmod 0400 "$ORIGINAL_STAGE_DIR"/*.py
           python -m pip install --disable-pip-version-check 'datasets==3.6.0' 'huggingface_hub==0.36.0' 'Pillow==11.3.0' 'pyarrow==21.0.0'
-          python experiments/shared_stem_cell/e3_scienceqa_stage.py --output "$RUNNER_TEMP/e3-late-label-source"
+          python "$ORIGINAL_STAGE_DIR/e3_scienceqa_stage.py" --output "$RUNNER_TEMP/e3-late-label-source"
           echo "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202  $RUNNER_TEMP/e3-late-label-source/inputs/sources.jsonl" | sha256sum -c -
       - name: Enforce private route readback, all-eight-arm original independent labels, sanitized HOLD
         shell: bash

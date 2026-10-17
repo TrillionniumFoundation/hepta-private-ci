@@ -66,6 +66,29 @@ reported statistics are descriptive and do not establish model superiority.
   forged original reviewer, untrusted authorization, duplicate entries,
   canonical JSONL and create-only evidence handling.
 
+## Original E3 source ownership and hosted-source recovery
+
+The V27 research branch intentionally does **not** inherit the original
+`experiments/shared_stem_cell` tree. The first submitted hosted workflow invoked
+`experiments/shared_stem_cell/e3_scienceqa_stage.py` as though it existed locally;
+this was a **source-location error**, not a successful original-label replay.
+
+The follow-up workflow retrieves exactly two original Python sources **after**
+the pre-label route is sealed and fsynced, through GitHub Contents pinned to
+original E3 commit `b8b2f10fe38506972301e77e3836729a90200673`:
+
+- `e3_scienceqa_contract.py`, Git blob `bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a`;
+- `e3_scienceqa_stage.py`, Git blob `3ca8f55ed6b7143729258e4a1e53693614460950`.
+
+For **both** sources, the hosted workflow rejects differing physical downloaded
+bytes by recomputing `git hash-object` before invoking the stage. Fetch failure,
+missing original files, changed source hash, missing label material, or any of
+the existing original source/label seal failures is a hard stop. Nothing is
+silently substituted from `main`, generated fixture rows, a newer E3 workflow,
+or an unpinned package. This does not by itself prove the original provenance,
+that host permissions will permit archive retrieval, or that the real replay
+has succeeded; exact-HEAD terminal evidence remains mandatory.
+
 ## Ordered steps and rejection rules
 
 1. Run source-only tests and freeze an exact Git SHA. On same-repo branch push,
