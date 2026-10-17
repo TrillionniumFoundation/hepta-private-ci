@@ -225,6 +225,19 @@ class ScopeTests(unittest.TestCase):
             gate.index("control-ndu-atomic-owner.json"),
             gate.index("control-ndu-process-exit-between-b-c.json"),
         )
+        # The original suite exercises real process exit/SIGKILL under OS
+        # file locks. Do not race its 33 native cases within one test binary.
+        # WriterUnavailable from overlapping fork windows is NOT permission
+        # to change orphan-B Indeterminate semantics or retry the effect.
+        owner_line = next(
+            line for line in gate.splitlines() if "control-ndu-atomic-owner.json" in line
+        )
+        self.assertIn("--minimum-tests 33", owner_line)
+        self.assertIn(
+            "--lib ndu_publication -- --nocapture --test-threads=1",
+            owner_line,
+        )
+
 
     def test_neuron_original_effect_non_test_denial_gate(self):
         # A public callback cannot be an independent Control/Evidence owner.
