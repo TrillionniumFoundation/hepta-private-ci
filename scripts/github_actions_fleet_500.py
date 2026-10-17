@@ -12,13 +12,13 @@ import argparse
 import ast
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
 import sys
 
 MAX_PER_COHORT = 250
+SUPPORTED_DIRECT_COUNTS = frozenset({8, 16, 32, 64, 128, 250})
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
@@ -102,6 +102,24 @@ def plan(test_ids: list[str], cohort: str, per_cohort: int) -> dict:
     }
 
 
+def select_direct_case(result: dict, index: int) -> str:
+    """Fail closed when a static direct matrix and source-derived plan disagree."""
+    count = result["per_cohort"]
+    if count not in SUPPORTED_DIRECT_COUNTS:
+        raise ValueError("direct fanout allows only 8,16,32,64,128,250 jobs per cohort")
+    if not result["full_two_cohort_ready"]:
+        raise ValueError("insufficient real test methods for both cohorts")
+    if not isinstance(index, int) or isinstance(index, bool) or not 0 <= index < count:
+        raise ValueError("direct shard index out of bounds")
+    cases = result["matrix"]["include"]
+    if len(cases) != count:
+        raise ValueError("source plan/matrix length mismatch")
+    case = cases[index]["case"]
+    if not case or "\n" in case or "\r" in case:
+        raise ValueError("unsafe test identifier")
+    return case
+
+
 def _git_head(root: Path) -> str:
     return subprocess.check_output(
         ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
@@ -121,6 +139,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Require explicit SHA pin and full two-cohort readiness",
     )
+    parser.add_argument("--case-index", type=int, default=None)
     parser.add_argument("--github-output", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args(argv)
@@ -143,6 +162,10 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError(
                 f"not enough unique unittest methods: {result['available_tests']} < {2 * args.per_cohort}"
             )
+        if args.case_index is not None:
+            if not args.execute:
+                raise ValueError("direct shard selection requires --execute")
+            result["selected_case"] = select_direct_case(result, args.case_index)
         if args.receipt:
             args.receipt.parent.mkdir(parents=True, exist_ok=True)
             args.receipt.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
@@ -154,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
                 out.write(f"ready={str(result['full_two_cohort_ready']).lower()}\n")
                 out.write(f"count={result['selected_count']}\n")
                 out.write(f"manifest_sha256={result['manifest_sha256']}\n")
+                if args.case_index is not None:
+                    out.write(f"case={result['selected_case']}\n")
         print(
             json.dumps(
                 {k: v for k, v in result.items() if k != "matrix"}, sort_keys=True

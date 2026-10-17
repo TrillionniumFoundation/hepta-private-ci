@@ -18,9 +18,9 @@ Runners. It does not cancel existing CI or bypass required checks.
 The public hepta-private-ci main commit
 f8c9419df6ddeb36ff8b522a50219981fb8d9345 contained 76 Python test
 files under scripts/, with 903 AST-defined test_* methods before adding
-fleet tests. After adding sixteen planner/audit and org-peak regressions, 919 statically
+fleet tests. After adding nineteen planner, direct-fanout and org-peak regressions, 922 statically
 recognizable unittest.TestCase methods were available in the local
-source-only scan. Not all 909 were independently run. The planner selects
+source-only scan. Not all 922 were independently run. The planner selects
 500 different method identifiers, not 500 fake sleeps or build duplicates.
 
 Workflow runs are not jobs: GitHub can report a queued workflow with zero
@@ -58,6 +58,27 @@ Org administrators can verify subscription, billing and organization-level
 runner utilization in GitHub Settings and Insights -> Actions usage metrics.
 An ordinary per-repository GITHUB_TOKEN cannot prove these org settings.
 
+## No head-of-line planning Runner for real fanout
+
+With \`execute=true\`, the real-test job uses a static GitHub-readable
+matrix of 8/16/32/64/128/250 shard indexes; it has **no** \`needs: plan\`.
+GitHub can enqueue the real jobs immediately, rather than making the
+entire parallel wave wait for a single Ubuntu planning job to start.
+An explicit \`runner\` choice selects \`ubuntu-24.04\` or
+\`ubuntu-24.04-arm\`, allowing controlled OS-pool qualification.
+
+Each job independently checks out and verifies the same complete source SHA,
+selects one immutable real method through \`--execute --case-index\`, and
+actually runs that method using Python unittest with original project
+environment. Unsupported direct sizes, a wrong/missing SHA, an absent test,
+a mismatched cohort or a bad index fail closed; preview still uses a cheap
+\`execute=false\` planning job to compare manifest hashes.
+
+The direct job set remains 250 per cohort (not 500 in one matrix) because
+GitHub has a 256-entry matrix limit. Neither job count nor workflow queued
+state demonstrates actual 500 Runner concurrency; use the organization
+interval-overlap audit for that.
+
 ## Preview, pilot and full dispatch
 
 1. Merge/activate the workflow on the default branch. Choose one complete
@@ -66,7 +87,7 @@ An ordinary per-repository GITHUB_TOKEN cannot prove these org settings.
    execute=false. Repeat for cohort=B. Both jobs merely compute artifact
    plans, with 250 distinct tests each. The full manifest SHA256 must match
    between cohorts. The source SHA must match too.
-3. Run a cheap, pinned per_cohort=2..8 pilot on each cohort and check every
+3. Run a cheap, pinned per_cohort=8 pilot on each cohort and check every
    Job log for successful real Python unittest completion before increasing.
 4. After verifying quota, budget, pilot success, runner-pool availability
    and useful work, run both cohort A and cohort B with the same SHA S,
@@ -124,3 +145,15 @@ than one day. A bounded 103-run sample found 58 zero-job records and
 45 with jobs, with no API failures. It is incorrect to interpret all
 443 queued workflows as runnable Jobs or platform capacity demand.
 The sampled historical zero-job records were left untouched.
+
+## Verified lower bound from live Pocket4 org measurement
+
+A separate authenticated read-only organization snapshot from
+2026-10-17T04:33:10Z through 04:33:32Z covered 30 visible active
+repositories, 18 in-progress workflow runs and 224 Job records.
+Seventy-nine in-progress Job records were seen non-atomically; execution
+interval overlap *proved at least 80 genuinely concurrent Jobs*
+at 04:33:10Z. All read paths returned complete without API errors.
+This does **not** establish a maximum available concurrent capacity,
+does **not** establish a 500-job peak, and does **not** include every
+recently completed workflow.

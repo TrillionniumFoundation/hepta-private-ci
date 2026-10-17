@@ -7,7 +7,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from scripts.github_actions_fleet_500 import collect_tests, plan
+from scripts.github_actions_fleet_500 import (
+    SUPPORTED_DIRECT_COUNTS,
+    collect_tests,
+    plan,
+    select_direct_case,
+)
 from scripts.github_actions_runner_audit import summarize
 
 
@@ -83,6 +88,39 @@ class Examples(unittest.TestCase):
                 plan([], batch, size)
         with self.assertRaises(ValueError):
             plan(["same", "same"], "A", 1)
+
+    def test_direct_matrix_indexes_exact_unique_testcases_for_every_ramp(self):
+        cases = [f"scripts.example.Tests.test_{index:04d}" for index in range(520)]
+        for count in sorted(SUPPORTED_DIRECT_COUNTS):
+            with self.subTest(count=count):
+                a = plan(cases, "A", count)
+                b = plan(cases, "B", count)
+                actual_a = {select_direct_case(a, i) for i in range(count)}
+                actual_b = {select_direct_case(b, i) for i in range(count)}
+                self.assertEqual(len(actual_a), count)
+                self.assertEqual(len(actual_b), count)
+                self.assertTrue(actual_a.isdisjoint(actual_b))
+                self.assertEqual(actual_a | actual_b, set(cases[: 2 * count]))
+
+    def test_direct_index_and_unsupported_counts_fail_closed(self):
+        cases = [f"scripts.example.T.test_{i}" for i in range(520)]
+        good = plan(cases, "A", 16)
+        for index in (-1, 16, True, "0", 1.5):
+            with self.subTest(index=index), self.assertRaises(ValueError):
+                select_direct_case(good, index)
+        with self.assertRaises(ValueError):
+            select_direct_case(plan(cases, "A", 12), 0)
+        with self.assertRaises(ValueError):
+            select_direct_case(plan(cases[:6], "B", 8), 0)
+
+    def test_direct_workflow_has_no_preflight_runner_dependency(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text()
+        direct = workflow.split("\n  real-test:\n", 1)[1]
+        self.assertNotIn("    needs: plan", direct)
+        self.assertIn("matrix.shard", direct)
+        self.assertIn("fromJSON(", direct)
+        self.assertIn("--case-index", direct)
 
 
 class TestFleetAudit(unittest.TestCase):

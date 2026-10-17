@@ -24,10 +24,16 @@ on:
         default: A
         options: [A, B]
       per_cohort:
-        description: Unique real test methods per cohort, 1 to 250
+        description: Direct test shards; supported 8, 16, 32, 64, 128, 250
         type: number
         required: true
         default: 250
+      runner:
+        description: Hosted runner pool for real test execution
+        type: choice
+        required: true
+        default: ubuntu-24.04
+        options: [ubuntu-24.04, ubuntu-24.04-arm]
       source_sha:
         description: Exact 40-hex commit SHA; REQUIRED when execute=true
         type: string
@@ -43,7 +49,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}
+  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}-${{ inputs.runner || 'default' }}
   cancel-in-progress: false
   queue: max
 
@@ -86,7 +92,7 @@ jobs:
           retention-days: 7
 
   plan:
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout'
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && !inputs.execute
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
@@ -129,31 +135,49 @@ jobs:
           retention-days: 7
 
   real-test:
-    needs: plan
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute && needs.plan.outputs.ready == 'true'
-    name: ${{ matrix.case }}
-    runs-on: ubuntu-24.04
+    # No planning-runner prerequisite; matrix is available at dispatch time.
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute
+    name: cohort-${{ inputs.cohort }}-shard-${{ matrix.shard }}
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
       max-parallel: 250
-      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+      matrix:
+        shard: >-
+          ${{ fromJSON(
+          inputs.per_cohort == 250 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249]' ||
+          inputs.per_cohort == 128 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127]' ||
+          inputs.per_cohort == 64 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63]' ||
+          inputs.per_cohort == 32 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]' ||
+          inputs.per_cohort == 16 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]' ||
+          inputs.per_cohort == 8 && '[0,1,2,3,4,5,6,7]' ||
+          '[0]'
+          ) }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.source_sha }}
           persist-credentials: false
-      - name: Assert exact source identity
-        env:
-          PINNED_SHA: ${{ inputs.source_sha }}
+      - name: Pin source identity and resolve assigned real unittest
+        id: selected
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "$PINNED_SHA"
+        env:
+          COHORT: ${{ inputs.cohort }}
+          PER_COHORT: ${{ inputs.per_cohort }}
+          SHARD_INDEX: ${{ matrix.shard }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$PINNED_SHA"
+          test "$(git rev-parse HEAD)" = "$PINNED_SHA"
+          python3 scripts/github_actions_fleet_500.py             --root . --cohort "$COHORT" --per-cohort "$PER_COHORT"             --expected-sha "$PINNED_SHA" --execute --case-index "$SHARD_INDEX"             --github-output "$GITHUB_OUTPUT" --receipt "$RUNNER_TEMP/real-shard.json"
       - name: Execute one real unittest method
         env:
-          TEST_CASE: ${{ matrix.case }}
+          TEST_CASE: ${{ steps.selected.outputs.case }}
           PYTHONDONTWRITEBYTECODE: "1"
         shell: bash
         run: |
           set -euo pipefail
-          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH="$GITHUB_WORKSPACE/scripts" python3 -m unittest -v "$TEST_CASE"
-
+          test -n "$TEST_CASE"
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH="$GITHUB_WORKSPACE/scripts"             python3 -m unittest -v "$TEST_CASE"
