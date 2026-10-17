@@ -74,6 +74,20 @@ class IndependentByteCustodyTests(unittest.TestCase):
             (self.capture / f"{name}.stdout.log").write_bytes(b"stdout test\n")
             (self.capture / f"{name}.stderr.log").write_bytes(b"stderr test\n")
 
+    def replace_identical_inode(self, filename):
+        """Replace a captured path without changing any of its bytes."""
+        path = self.capture / filename
+        replacement = self.capture / f".replacement-{filename}"
+        with path.open("rb") as original:
+            prior = os.fstat(original.fileno())
+            replacement.write_bytes(original.read())
+            os.replace(replacement, path)
+            current = path.stat()
+            self.assertNotEqual(
+                (prior.st_dev, prior.st_ino),
+                (current.st_dev, current.st_ino),
+            )
+
     def inspect(self, *, destination=None, **overrides):
         pins = {
             "source_sha": self.manifest["source_sha"],
@@ -247,6 +261,45 @@ class IndependentByteCustodyTests(unittest.TestCase):
             side_effect=write_and_tamper,
         ):
             with self.assertRaisesRegex(InvalidEvidence, "changed during custody"):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
+    def test_identical_bytes_replaced_inode_during_copy_cannot_seal(self):
+        original_write = _write_exclusive
+        changed = False
+
+        def write_and_replace(fd, name, data):
+            nonlocal changed
+            original_write(fd, name, data)
+            if not changed:
+                changed = True
+                self.replace_identical_inode("manifest.json")
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(
+                InvalidEvidence, "inode replaced during custody"
+            ):
+                self.inspect()
+        self.assertFalse((self.output / "COMPLETE").exists())
+
+    def test_identical_bytes_replaced_after_ledger_cannot_seal(self):
+        original_write = _write_exclusive
+
+        def write_and_replace(fd, name, data):
+            original_write(fd, name, data)
+            if name == "custody-ledger.json":
+                self.replace_identical_inode("64-no_split.json")
+
+        with patch(
+            "hepta_cell_split_evidence_observer._write_exclusive",
+            side_effect=write_and_replace,
+        ):
+            with self.assertRaisesRegex(
+                InvalidEvidence, "inode replaced during custody"
+            ):
                 self.inspect()
         self.assertFalse((self.output / "COMPLETE").exists())
 
