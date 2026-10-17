@@ -1,6 +1,10 @@
 name: Future OOD and harness receipt contracts
 
 on:
+  pull_request:
+    paths:
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-future-ood-harness-contract.yml"
   workflow_call:
   workflow_dispatch:
 
