@@ -10,12 +10,12 @@ use std::collections::BTreeSet;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::hnmf::ppm;
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractGenerationV1;
 use crate::hnmf::ContractIdV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::ModalityKindV1;
+use crate::hnmf::ppm;
 use crate::hnmf_learning::EngramPopulationV1;
 use crate::hnmf_learning::PlasticityBatchV1;
 use crate::hnmf_learning::TopologyOperationV1;
@@ -220,8 +220,6 @@ impl MemoryCellTickReceiptV1 {
         Ok(())
     }
 }
-
-
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
