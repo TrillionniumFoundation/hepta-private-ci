@@ -1,0 +1,47 @@
+name: Hepta Stem V7 same-Encoder centroid source checks (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-centroid-source-v7-20261017]
+    paths:
+      - 'qualification/stem-optimal-v7/**'
+      - '.github/workflows/hepta-stem-centroid-source-v7.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v7/**'
+      - '.github/workflows/hepta-stem-centroid-source-v7.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-stem-v7-source-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V7: qualification/stem-optimal-v7
+  PYTHONPATH: qualification/stem-optimal-v7:qualification/stem-optimal-v6:qualification/stem-optimal-v3:qualification/stem-optimal-v1
+jobs:
+  source-numerical-adversarial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Only numerical test dependencies; do not acquire pretrained weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+      - name: Real Torch CPU / independent NumPy/safetensors synthetic-feature contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile "$V7/encoder_centroid_v7.py" "$V7/independent_encoder_centroid_v7.py" "$V7/test_encoder_centroid_v7.py"
+          python -m unittest discover -s "$V7" -p 'test_encoder_centroid_v7.py' -v
+          python -O -m unittest discover -s "$V7" -p 'test_encoder_centroid_v7.py' -v
