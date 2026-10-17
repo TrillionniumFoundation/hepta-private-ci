@@ -317,7 +317,9 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertIn("--minimum-tests 5", gate)
 
-    def test_original_control_orphan_begin_readonly_gate_runs_before_owner_effects(self):
+    def test_original_control_orphan_begin_readonly_gate_runs_before_owner_effects(
+        self,
+    ):
         scope = select(["codex-rs/hepta-control-plane/src/ndu_publication.rs"])
         self.assertTrue(scope["native"])
         self.assertTrue(scope["lifecycle"])
@@ -339,12 +341,17 @@ class ScopeTests(unittest.TestCase):
             workflow.index(gate),
             workflow.index("control-ndu-atomic-owner.json"),
         )
-        # Exact source-head rustfmt must fail BEFORE the expensive native
-        # canary Cargo build, without weakening either original command.
-        self.assertLess(
-            workflow.index("      - name: Early locked CellSplit Control/CNS Rustfmt preflight"),
-            workflow.index("      - name: Early CellSplit canary and evaluator compile regression"),
+        # Keep the original format and product (non-cfg(test)) gates before
+        # expensive native canary work without weakening any CI command.
+        fmt_step = "      - name: Early locked CellSplit Control/CNS Rustfmt preflight"
+        canary_step = "      - name: Early CellSplit canary and evaluator compile regression"
+        product_step = (
+            "      - name: Early original Control WAL recovery observer non-test compile"
         )
+        for step in (fmt_step, product_step, canary_step):
+            self.assertEqual(workflow.count(step), 1)
+        self.assertLess(workflow.index(fmt_step), workflow.index(product_step))
+        self.assertLess(workflow.index(product_step), workflow.index(canary_step))
         product = "control-wal-forensic-product-build.json"
         self.assertEqual(workflow.count(product), 1)
         self.assertIn(
@@ -352,14 +359,7 @@ class ScopeTests(unittest.TestCase):
             "codex-rs/Cargo.toml -p codex-hepta-control-plane --lib",
             workflow,
         )
-        self.assertLess(
-            workflow.index("      - name: Early locked CellSplit Control/CNS Rustfmt preflight"),
-            workflow.index(product),
-        )
-        self.assertLess(
-            workflow.index(product),
-            workflow.index("      - name: Early CellSplit canary and evaluator compile regression"),
-        )
+        self.assertLess(workflow.index(product), workflow.index(canary_step))
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
