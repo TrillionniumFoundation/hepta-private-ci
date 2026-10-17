@@ -102,3 +102,52 @@ Every result remains: `production_accepted=false`,
 `statistical_superiority=false`, `independent_semantic_judge=false`,
 `trained_memory_content=false`, `learned_graph_topology=false`.
 An inconclusive or negative result is a valid output and prevents promotion.
+
+## Observed original-source local research result, 2026-10-17
+
+A subsequent **actual** source-only, postseal diagnostic used the already pinned
+GitHub original-input artifact `11586991191` and PR #2486 public artifact
+`12056496280`, source SHA `79fa87e9...be4`. All 10 original dialogue
+groups (5,804 admitted messages; 240 questions) were processed; 238 had
+scoreable canonical reference IDs and 224/238 had all reference sources within
+the admitted corpus. The worker saw *only public files*. Its predictions were
+sealed before the separately reconstructed original reference annotations
+were opened. The public input and manifest matched the upstream archived
+bytes exactly. A local compatibility port of the existing graph-causal source
+code gave **0/240** exact ranking mismatches on all three frozen baseline arms
+(BM25, temporal, fixed graph) versus upstream sealed predictions. This port is
+not a substitute for exact-source hosted CI; the local processes did not use
+physical host isolation.
+
+| Complete reference source IDs in final Top-8 | Questions / 238 |
+| --- | ---: |
+| BM25 | 107 |
+| Fixed temporal graph | **136** |
+| Fixed temporal + lexical graph | 134 |
+| Trained shared 4-parameter gate | 119 |
+| Two trained typed children, 4 parameters total | 121 |
+| Swapped type route | 118 |
+| Rewired typed lesion | 105 |
+
+Paired typed-split vs temporal: **2 gained / 17 lost / 219 tied**.
+Paired typed-split vs shared: **2 gained / 0 lost / 236 tied**.
+Typed-split was worse than temporal in nine of ten original dialogue groups,
+and tied in one. The small advantage over this source-only shared gate does
+not establish superiority over an appropriate matched model or stronger RAG.
+
+The new source-only model journal SHA256 is
+`2340a46f6c7477de11a43721bdd3572926c9e9a38327cbe6a604fa46272d6800`;
+the local replay review SHA256 is
+`faf849ce3d0218bf53c11a02a0fdf216f91b467e4ff2020e4f63d7876c621398`.
+The observed original-run process wall was about 13.94 seconds and peak RSS
+109,296 KiB on that local host; neither is a complete lifecycle TCO.
+The immutable sanitized receipt is
+`META_EVOLUTION_SOURCE_OBSERVATION_20261017.json`.
+No raw original conversations, answers, model weights or private labels were
+committed.
+
+**Decision: retain fixed temporal graph; deny candidate promotion.**
+These are source-ID diagnostics only. Model language generations: 0; learned
+source content: none; trained topology endpoints: none; independent source
+families, semantic citations, future-time transfer and full cost: unproven.
+Production acceptance and superiority remain false.
