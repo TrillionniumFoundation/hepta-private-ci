@@ -2094,8 +2094,10 @@ mod tests {
         let mut owner = CellSplitInMemoryJournalOwnerV1::default();
         // Simulate an unknown result after a successful canary, leaving only
         // the durable Retained frontier as recoverable evidence.
-        let mut failed = Executor::default();
-        failed.evaluate_disposition = CellSplitEvaluationDispositionV1::EligibleForCanary;
+        let mut failed = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            ..Executor::default()
+        };
         let mut journal = CellSplitLifecycleJournalV1::proposed(&split).unwrap();
         journal.record_proposal(proposal.proposal_digest).unwrap();
         let evaluation = failed.evaluate(&split).unwrap();

@@ -828,7 +828,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         };
         // One non-retryable cohort: never publish only the terminal members.
         if results.len() != requests.len()
-            || results.iter().any(|item| !item.observation.terminal_observed)
+            || results
+                .iter()
+                .any(|item| !item.observation.terminal_observed)
         {
             self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
