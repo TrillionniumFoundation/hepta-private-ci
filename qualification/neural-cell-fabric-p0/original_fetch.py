@@ -16,6 +16,7 @@ import urllib.request
 
 REPO = 'TrillionniumFoundation/hepta-private-ci'
 ARTIFACTS = {
+    'agnews': (11890616195, '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7'),
     'features': (12083071509, '3d8d6b7bed80f1f5efb1a17fd1df94208bef4239e5bbbbcd29e63262fb6e025d'),
     'trial': (12083091720, '8bd2d2ba3b2de9f2fe1b99042b471c016d78f90c8305d7d82c91bf1a23138bed'),
     'targets': (12080419743, '140191b7915923b51a447c9cabc43d6dbba96060ae4dee90716f1fd2539821fb'),

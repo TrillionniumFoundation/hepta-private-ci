@@ -1,0 +1,97 @@
+name: Hepta Neural Cell Fabric P0.5 second publisher (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - "research/hepta-neural-cell-fabric-p05-agnews-20261017"
+    paths:
+      - "qualification/neural-cell-fabric-p0/agnews_crossfamily.py"
+      - "qualification/neural-cell-fabric-p0/test_agnews_crossfamily.py"
+      - "qualification/neural-cell-fabric-p0/original_fetch.py"
+      - "qualification/neural-cell-fabric-p0/AGNEWS_CROSS_FAMILY_P05.md"
+      - ".github/workflows/hepta-cell-fabric-p05-agnews.yml"
+  pull_request:
+    paths:
+      - "qualification/neural-cell-fabric-p0/agnews_crossfamily.py"
+      - "qualification/neural-cell-fabric-p0/test_agnews_crossfamily.py"
+      - "qualification/neural-cell-fabric-p0/original_fetch.py"
+      - "qualification/neural-cell-fabric-p0/AGNEWS_CROSS_FAMILY_P05.md"
+      - ".github/workflows/hepta-cell-fabric-p05-agnews.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-agnews-shadows:
+    name: AG News source-only negative tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify candidate SHA and source-only controls
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m unittest -q test_agnews_crossfamily test_original_fetch
+          python3 -O -m unittest -q test_agnews_crossfamily test_original_fetch
+
+  true-original-agnews-retrospective:
+    name: AG News / mmBERT original artifact and four-arm independent recount
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Create private original evidence location
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p05-agnews"
+      - name: Get only original completed source-locked AG News artifact
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 original_fetch.py --kind agnews --out "$RUNNER_TEMP/hepta-p05-agnews/agnews-original.zip"
+      - name: Recount original four-arm probabilities without retraining or label claims
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          AGNEWS_ORIGINAL_ARCHIVE: ${{ runner.temp }}/hepta-p05-agnews/agnews-original.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest -q test_agnews_crossfamily test_original_fetch
+          python3 -O -m unittest -q test_agnews_crossfamily test_original_fetch
+          python3 agnews_crossfamily.py --archive "$AGNEWS_ORIGINAL_ARCHIVE" --output "$RUNNER_TEMP/hepta-p05-agnews/report.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          r = json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'hepta-p05-agnews/report.json').read_text())
+          assert r['original_pretrained_features_real'] and r['original_feature_rows']==128
+          assert r['train_rows']==64 and r['held_rows']==32 and r['calibration_rows_unused']==32
+          assert r['correct']['gated']==22 and r['correct']['route_prior']==8
+          assert r['paired']['gated']['wins_vs_route_prior']==15
+          assert r['paired']['gated']['losses_vs_route_prior']==1
+          assert not r['independent_blind_heldout_custody']
+          assert not r['cell_split_causal_gain_verified']
+          assert r['disposition']=='HOLD_NO_GO' and r['authority']=='DENY_ALL'
+          print('REAL_ORIGINAL_AGNEWS_POSTHOC / NO_GO / DENY_ALL')
+          PY
+      - name: Export sanitized original aggregate only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p05-agnews-posthoc-deny-all
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-p05-agnews/report.json
