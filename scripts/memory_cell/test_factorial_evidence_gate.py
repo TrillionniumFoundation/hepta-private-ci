@@ -90,6 +90,31 @@ class FactorialAuditTest(unittest.TestCase):
         self.assertFalse(report["production_qualified"])
         self.assertTrue(report["diagnosis"]["learning_candidate_rejected"])
 
+    def test_reject_unrepresented_prospective_task_family(self):
+        plan, rows = fixture()
+        plan["cases"][3]["task"] = "new_fact"
+        # Observation digests bind the changed registration, not a stale plan.
+        for row in rows:
+            row["plan_sha256"] = sha(plan)
+        with self.assertRaisesRegex(ValueError, "every preregistered task family"):
+            analyze(plan, rows)
+
+    def test_reject_unchanged_premise_ablation_payload(self):
+        plan, rows = fixture()
+        for row in rows:
+            if row["condition"] == "ablated":
+                row["source_digest"] = digest("sourceoracle")
+        with self.assertRaisesRegex(ValueError, "payload collision"):
+            analyze(plan, rows)
+
+    def test_reject_oracle_that_is_actually_empty(self):
+        plan, rows = fixture()
+        for row in rows:
+            if row["condition"] == "oracle":
+                row["source_digest"] = digest("sourcenone")
+        with self.assertRaisesRegex(ValueError, "payload collision"):
+            analyze(plan, rows)
+
     def test_reject_missing_arm(self):
         plan, rows = fixture()
         with self.assertRaisesRegex(ValueError, "incomplete matrix"):
