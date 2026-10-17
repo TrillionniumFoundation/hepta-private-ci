@@ -33,6 +33,7 @@ use codex_hepta_types::StableId;
 
 use crate::CellSplitAutomationErrorV1;
 use crate::CellSplitProposalSignalV1;
+use crate::CellSplitObservationClockV1;
 use crate::CellSplitProposalTriggerV1;
 
 const MAX_CHILD_COUNT_V1: u8 = 64;
@@ -391,8 +392,10 @@ pub fn cell_split_signal_from_telemetry_v1(
         trigger,
         telemetry.content_digest(),
         policy.policy_digest(),
-        telemetry.observation_sequence,
-        telemetry.observed_at_micros,
+        CellSplitObservationClockV1 {
+            observation_sequence: telemetry.observation_sequence,
+            observed_at_micros: telemetry.observed_at_micros,
+        },
     )
     .map_err(CellSplitPlannerErrorV1::Signal)
 }
