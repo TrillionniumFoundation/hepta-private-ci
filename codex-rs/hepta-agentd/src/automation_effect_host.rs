@@ -261,13 +261,13 @@ impl AgentdAutomationEffectHost {
                 &self.authority,
                 &mut driver,
                 AuthorizedEffectDispatchInput {
-                    intent: intent,
-                    wire_payload: wire_payload,
+                    intent,
+                    wire_payload,
                     fence: &fence,
-                    signed_grant: signed_grant,
+                    signed_grant,
                     expected_binding: &binding,
-                    command_id: command_id,
-                    now_ms: now_ms,
+                    command_id,
+                    now_ms,
                 },
             )
             .await
