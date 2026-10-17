@@ -20,7 +20,8 @@ from typing import Any
 SCHEMA_CHECKPOINT = "hepta.stem.checkpoint-ref.v1"
 SCHEMA_SPLIT = "hepta.stem.source-disjoint-split.v1"
 SCHEMA_METRIC = "hepta.stem.metric-interval.v1"
-SCHEMA_RESOURCE = "hepta.stem.component-resource-receipt.v1"
+SCHEMA_COMPONENT = "hepta.stem.component-resource.v1"
+SCHEMA_RESOURCE = "hepta.stem.component-resource-bundle.v1"
 SCHEMA_RUN = "hepta.stem.qualification-run.v1"
 SCHEMA_RECEIPT = SCHEMA_RUN
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -247,7 +248,7 @@ class ComponentResourceReceiptV1:
         _require(self.complete, "incomplete component receipts cannot qualify")
 
     def to_dict(self) -> dict[str, Any]:
-        return {**asdict(self), "schema": "hepta.stem.component-resource.v1"}
+        return {**asdict(self), "schema": SCHEMA_COMPONENT}
 
 
 @dataclass(frozen=True)
@@ -262,6 +263,7 @@ class ComponentResourceBundleV1:
     p95_latency_ms: float
     p99_latency_ms: float
     energy_mj: float
+    peak_memory_bytes: float
     batch_size: int
     warmup_steps: int
     measured_steps: int
@@ -287,11 +289,12 @@ class ComponentResourceBundleV1:
             ("p95_latency_ms", self.p95_latency_ms),
             ("p99_latency_ms", self.p99_latency_ms),
             ("energy_mj", self.energy_mj),
+            ("peak_memory_bytes", self.peak_memory_bytes),
             ("cache_hit_rate", self.cache_hit_rate),
         ):
             _finite(name, value)
         _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "bundle latency quantiles must be ordered")
-        _require(self.p95_latency_ms > 0 and self.energy_mj > 0, "bundle resources must be positive")
+        _require(self.p95_latency_ms > 0 and self.energy_mj > 0 and self.peak_memory_bytes > 0, "bundle resources must be positive")
         _require(0.0 <= self.cache_hit_rate <= 1.0, "cache_hit_rate must be in [0, 1]")
         for name, value in (("batch_size", self.batch_size), ("warmup_steps", self.warmup_steps), ("measured_steps", self.measured_steps), ("repetitions", self.repetitions)):
             _integer(name, value, minimum=1)
@@ -319,6 +322,7 @@ class ComponentResourceBundleV1:
             "p95_latency_ms": self.p95_latency_ms,
             "p99_latency_ms": self.p99_latency_ms,
             "energy_mj": self.energy_mj,
+            "peak_memory_bytes": self.peak_memory_bytes,
             "batch_size": self.batch_size,
             "warmup_steps": self.warmup_steps,
             "measured_steps": self.measured_steps,
@@ -497,6 +501,7 @@ def qualify_from_receipt(
 
 __all__ = [
     "CheckpointRefV1",
+    "SCHEMA_COMPONENT",
     "ComponentResourceBundleV1",
     "ComponentResourceReceiptV1",
     "MetricIntervalV1",
