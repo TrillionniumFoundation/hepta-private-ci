@@ -3,8 +3,8 @@ use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 
 use super::{
-    MemoryCellManifestV1, MemoryCellRoleV1, MemoryCellStatusV1, MemoryCellTickInputV1,
-    MemoryCellSplitProposalV1, MemoryCellTickReceiptV1, MAX_MEMORY_CELL_STATE_BYTES,
+    MemoryCellManifestV1, MemoryCellRoleV1, MemoryCellSplitProposalV1, MemoryCellStatusV1,
+    MemoryCellTickInputV1, MemoryCellTickReceiptV1, MAX_MEMORY_CELL_STATE_BYTES,
 };
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractGenerationV1;
@@ -22,15 +22,17 @@ use crate::hnmf_learning::TopologyResourceDeltaV1;
 use crate::hnmf_learning::TopologyTypedNodesEdgesV1;
 
 fn id(value: &str) -> ContractIdV1 {
-    ContractIdV1::new(value).expect("valid id")
+    ContractIdV1::new(value).unwrap_or_else(|error| panic!("valid id: {error:?}"))
 }
 
 fn digest(value: &str) -> ContractDigestV1 {
-    ContractDigestV1::from_digest(Digest32::of_bytes(value.as_bytes())).expect("valid digest")
+    ContractDigestV1::from_digest(Digest32::of_bytes(value.as_bytes()))
+        .unwrap_or_else(|error| panic!("valid digest: {error:?}"))
 }
 
 fn generation(value: u64) -> ContractGenerationV1 {
-    ContractGenerationV1::new(value).expect("valid generation")
+    ContractGenerationV1::new(value)
+        .unwrap_or_else(|error| panic!("valid generation: {error:?}"))
 }
 
 fn valid_manifest() -> MemoryCellManifestV1 {
@@ -97,7 +99,7 @@ fn valid_receipt() -> MemoryCellTickReceiptV1 {
 
 #[test]
 fn manifest_accepts_bounded_projection_identity() {
-    valid_manifest().validate().expect("manifest is valid");
+    assert!(valid_manifest().validate().is_ok());
 }
 
 #[test]
@@ -123,7 +125,7 @@ fn manifest_rejects_self_parent_and_zero_state_budget() {
 
 #[test]
 fn tick_input_requires_progress_and_budget() {
-    valid_tick_input().validate().expect("tick input is valid");
+    assert!(valid_tick_input().validate().is_ok());
 
     let mut input = valid_tick_input();
     input.logical_sequence = 0;
@@ -142,7 +144,7 @@ fn tick_input_requires_progress_and_budget() {
 
 #[test]
 fn receipt_binds_selected_output_and_rejects_invalid_abstain() {
-    valid_receipt().validate().expect("receipt is valid");
+    assert!(valid_receipt().validate().is_ok());
 
     let mut receipt = valid_receipt();
     receipt.recall_packet_digest = None;
@@ -162,7 +164,6 @@ fn receipt_binds_selected_output_and_rejects_invalid_abstain() {
         ))
     ));
 }
-
 
 fn valid_split() -> MemoryCellSplitProposalV1 {
     let topology = TopologyProposalV1 {
