@@ -27,17 +27,25 @@ ALLOWED_WORKERS = frozenset({8, 16, 32})
 
 
 def select_cases(root: Path, cohort: str, worker_count: int, worker_index: int) -> dict:
-    """Split one of A/B's disjoint, sorted 250-test cohorts into real worker tasks."""
+    """Partition canonical A, B, or the ALL union without duplicate methods."""
+    if cohort not in {"A", "B", "ALL"}:
+        raise ValueError("cohort must be A, B or ALL")
     if type(worker_count) is not int or worker_count not in ALLOWED_WORKERS:
         raise ValueError("worker count must be 8, 16 or 32")
     if type(worker_index) is not int or not 0 <= worker_index < worker_count:
         raise ValueError("worker index out of range")
-    selected = plan(collect_tests(root), cohort, 250)
-    if not selected["slice_ready"] or selected["selected_count"] != 250:
+    tests = collect_tests(root)
+    selected_a = plan(tests, "A", 250)
+    selected_b = plan(tests, "B", 250)
+    if not selected_a["slice_ready"] or not selected_b["slice_ready"]:
         raise ValueError("source tree must have >=500 distinct static unittest cases")
-    cases = [x["case"] for x in selected["matrix"]["include"]]
-    if len(cases) != len(set(cases)):
-        raise ValueError("duplicate real case in source plan")
+    if selected_a["manifest_sha256"] != selected_b["manifest_sha256"]:
+        raise ValueError("A/B source manifest mismatch")
+    a = [x["case"] for x in selected_a["matrix"]["include"]]
+    b = [x["case"] for x in selected_b["matrix"]["include"]]
+    if len(a) != 250 or len(b) != 250 or len(set(a + b)) != 500:
+        raise ValueError("A/B inventory is incomplete or overlapping")
+    cases = a if cohort == "A" else b if cohort == "B" else a + b
     subset = cases[worker_index::worker_count]
     if not subset:
         raise ValueError("empty real worker shard")
@@ -45,9 +53,9 @@ def select_cases(root: Path, cohort: str, worker_count: int, worker_index: int) 
         "worker_count": worker_count,
         "worker_index": worker_index,
         "cohort": cohort,
-        "all_case_count": 250,
+        "all_case_count": len(cases),
         "selected_cases": subset,
-        "manifest_sha256": selected["manifest_sha256"],
+        "manifest_sha256": selected_a["manifest_sha256"],
         "case_set_sha256": hashlib.sha256("\n".join(subset).encode()).hexdigest(),
     }
 
@@ -195,7 +203,7 @@ def run_cases(
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--root", type=Path, default=Path.cwd())
-    p.add_argument("--cohort", choices=("A", "B"), required=True)
+    p.add_argument("--cohort", choices=("A", "B", "ALL"), required=True)
     p.add_argument("--workers", type=int, required=True)
     p.add_argument("--worker-index", type=int, required=True)
     p.add_argument("--expected-sha", required=True)

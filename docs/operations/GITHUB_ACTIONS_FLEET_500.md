@@ -223,3 +223,20 @@ time, queue latency, actual CPU-time throughput and failure evidence*.
 The original 2×250 and org-wide overlap-proof code remain available and
 unchanged. This packed workflow has no secrets or elevated permissions and
 cannot write to the repository.
+
+## Single-run ALL 500-case packed throughput mode
+
+The separately validated 16 + 16 worker runs each completed 250 real cases,
+but their runner admissions were staggered. To avoid a second cohort dispatch,
+the packed workflow now accepts cohort=ALL as well as A/B. A single
+16-worker GitHub matrix partitions exactly the disjoint canonical A+B union
+of 500 real unittest identifiers (31-32 unique cases per worker); 8 and 32
+worker controls remain available. Source SHA pinning, independent subprocess
+execution, per-case atomic receipts, timeout and source-mutation rejection
+are the same as the existing successful A/B packed baseline.
+
+ALL is an opt-in throughput comparison, not a claim of 500 simultaneously
+running hosted Runners. The original 2x250, 16+16 packed runs, and their
+proven 500 unique passing case IDs and SHA256 manifests remain immutable.
+Compare actual start/finish timestamps and download/checkout errors of the
+single ALL run against the prior two dispatches on equivalent source tests.

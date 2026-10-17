@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       cohort:
-        description: Distinct half (A or B) of 500 source-ordered Python unittests
+        description: A/B half (250 tests) or ALL 500 real tests in one run
         type: choice
         required: true
         default: A
-        options: [A, B]
+        options: [A, B, ALL]
       workers:
         description: Real hosted workers to share this 250-test cohort
         type: choice

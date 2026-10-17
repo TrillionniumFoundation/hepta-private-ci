@@ -52,6 +52,56 @@ class PackedPartitionTests(unittest.TestCase):
             self.assertEqual(len(all_cases), 500)
             self.assertEqual(len(set(all_cases)), 500)
 
+    def test_all_cohort_is_exact_original_A_B_union_for_each_worker_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "scripts").mkdir()
+            (root / "scripts" / "test_mass.py").write_text(
+                "import unittest\nclass Many(unittest.TestCase):\n"
+                + "".join(f"    def test_{i:04d}(self): pass\n" for i in range(540))
+            )
+            all_tests = collect_tests(root)
+            expected_a = {
+                entry["case"]
+                for entry in plan(all_tests, "A", 250)["matrix"]["include"]
+            }
+            expected_b = {
+                entry["case"]
+                for entry in plan(all_tests, "B", 250)["matrix"]["include"]
+            }
+            self.assertEqual(len(expected_a), 250)
+            self.assertEqual(len(expected_b), 250)
+            self.assertTrue(expected_a.isdisjoint(expected_b))
+            for workers in (8, 16, 32):
+                with self.subTest(workers=workers):
+                    union = set()
+                    fingerprints = set()
+                    for index in range(workers):
+                        shard = select_cases(root, "ALL", workers, index)
+                        self.assertEqual(shard["all_case_count"], 500)
+                        self.assertEqual(shard["cohort"], "ALL")
+                        self.assertIn(
+                            len(shard["selected_cases"]),
+                            (500 // workers, 500 // workers + 1),
+                        )
+                        self.assertFalse(union.intersection(shard["selected_cases"]))
+                        union.update(shard["selected_cases"])
+                        fingerprints.add(shard["manifest_sha256"])
+                    self.assertEqual(union, expected_a | expected_b)
+                    self.assertEqual(len(fingerprints), 1)
+
+    def test_all_cohort_invalid_or_insufficient_source_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "scripts").mkdir()
+            (root / "scripts" / "test_mass.py").write_text(
+                "import unittest\nclass Many(unittest.TestCase):\n"
+                + "".join(f"    def test_{i:04d}(self): pass\n" for i in range(499))
+            )
+            for cohort in ("A", "B", "ALL", "INVALID"):
+                with self.subTest(cohort=cohort), self.assertRaises(ValueError):
+                    select_cases(root, cohort, 16, 0)
+
     def test_invalid_workers_and_worker_index_do_not_create_empty_shards(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -98,6 +148,7 @@ class PackedPartitionTests(unittest.TestCase):
         self.assertIn("--expected-sha", real)
         self.assertIn("--execute", real)
         self.assertIn("matrix.worker", real)
+        self.assertIn("options: [A, B, ALL]", text)
         self.assertIn("fail-fast: false", real)
         self.assertIn("if: always()", real)
         self.assertNotIn("    needs:", real)
