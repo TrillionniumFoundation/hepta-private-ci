@@ -292,3 +292,25 @@ async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
 #[cfg(all(test, unix))]
 #[path = "control_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn preflight_rejects_live_control_listener() -> Result<(), Box<dyn std::error::Error>> {
+        let temp = tempfile::tempdir()?;
+        let socket = temp.path().join("live-agentd-control");
+        let _live = UnixListener::bind(&socket).await?;
+
+        assert!(
+            matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+            "a running control listener must retain exclusive ownership"
+        );
+        assert!(
+            socket.exists(),
+            "preflight must preserve the active rendezvous"
+        );
+        Ok(())
+    }
+}
