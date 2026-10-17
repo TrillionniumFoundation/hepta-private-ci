@@ -3436,10 +3436,12 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     assert_eq!(worker.pending(), 2);
     let refused = worker.poll_and_execute(102).unwrap();
     assert_eq!(refused.outcomes.len(), 2);
-    assert!(refused
-        .outcomes
-        .iter()
-        .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
+    assert!(
+        refused
+            .outcomes
+            .iter()
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker)))
+    );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(worker.pending(), 0);
     drop(worker);
