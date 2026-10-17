@@ -76,6 +76,16 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
+    secure_read_with_snapshot(path, max_bytes).map(|(bytes, _)| bytes)
+}
+
+/// Read and retain the original open file's metadata from the same verified
+/// descriptor. A second pathname lookup cannot prove which inode supplied
+/// bytes during a concurrent replacement.
+pub(crate) fn secure_read_with_snapshot(
+    path: &Path,
+    max_bytes: usize,
+) -> Result<(Vec<u8>, std::fs::Metadata), AcceptanceError> {
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(unix)]
@@ -111,7 +121,7 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
     {
         return Err(invalid("input artifact changed while it was read"));
     }
-    Ok(bytes)
+    Ok((bytes, before))
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
@@ -156,6 +166,15 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
 }
 
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
+    write_private_new_with_snapshot(path, bytes).map(|_| ())
+}
+
+/// Return the exact newly fsynced writer-FD identity; callers must not
+/// derive an original creation receipt from a subsequent pathname lookup.
+pub(crate) fn write_private_new_with_snapshot(
+    path: &Path,
+    bytes: &[u8],
+) -> Result<std::fs::Metadata, AcceptanceError> {
     let parent = path
         .parent()
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
@@ -202,7 +221,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
         return Err(invalid("sidecar parent changed during durable write"));
     }
     File::open(parent)?.sync_all()?;
-    Ok(())
+    Ok(fd_after)
 }
 
 pub(crate) fn write_private_atomic_replace(
