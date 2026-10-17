@@ -3260,7 +3260,6 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
 
-
 /// An opt-in native backend receives each original immutable shared Q24 buffer
 /// as a borrowed slice. This is a deterministic test driver, NOT a pretrained
 /// model or a production signer/Control owner.
