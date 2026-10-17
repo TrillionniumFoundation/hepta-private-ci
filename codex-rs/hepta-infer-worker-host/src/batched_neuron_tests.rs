@@ -3259,3 +3259,191 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     )));
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
+
+/// An opt-in native backend receives each original immutable shared Q24 buffer
+/// as a borrowed slice. This is a deterministic test driver, NOT a pretrained
+/// model or a production signer/Control owner.
+#[derive(Clone)]
+struct BorrowedNativeTestDriver {
+    invocations: Arc<std::sync::atomic::AtomicUsize>,
+    received_pointers: Arc<Mutex<Vec<usize>>>,
+    reorder_outputs: bool,
+}
+
+impl ModelDriver for BorrowedNativeTestDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for BorrowedNativeTestDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        Driver.run_neuron_features(handle, request)
+    }
+
+    fn supports_neuron_feature_borrowed_batch(&self, _handle: &DriverModelHandle) -> bool {
+        true
+    }
+
+    fn run_neuron_features_borrowed_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        requests: &[crate::model_worker::BorrowedNeuronFeatureRequestV1<'_>],
+    ) -> Result<Vec<crate::model_worker::DriverNeuronFeatureBatchObservationV1>, Error> {
+        if requests.len() != 2
+            || requests.iter().any(|view| {
+                !view.request.feature_vector_q24.is_empty()
+                    || view.feature_vector_q24 != [0, 1 << 24].as_slice()
+            })
+        {
+            return Err(Error::FeatureContract);
+        }
+        self.invocations.fetch_add(1, Ordering::SeqCst);
+        self.received_pointers.lock().unwrap().extend(
+            requests
+                .iter()
+                .map(|view| view.feature_vector_q24.as_ptr() as usize),
+        );
+        let mut observed = requests
+            .iter()
+            .map(
+                |view| crate::model_worker::DriverNeuronFeatureBatchObservationV1 {
+                    request_id: view.request.authorization.request_id.clone(),
+                    input_digest: view.request.input_digest.clone(),
+                    observation: DriverNeuronFeatureObservation {
+                        terminal_observed: true,
+                        succeeded: true,
+                        encoder_digest: view.request.encoder_digest.clone(),
+                        head_digest: view.request.head_digest.clone(),
+                        drive_q24: vec![1 << 24; view.request.expected_output_width],
+                        prediction_q24: vec![0; view.request.expected_output_width],
+                        observed_memory_bytes: 1024,
+                        transient_allocation_bytes: 2048,
+                        queue_age_micros: 8,
+                        latency_micros: 13,
+                    },
+                },
+            )
+            .collect::<Vec<_>>();
+        if self.reorder_outputs {
+            observed.reverse();
+        }
+        Ok(observed)
+    }
+}
+
+fn execute_borrowed_native_two_cell_fixture(
+    reorder_outputs: bool,
+) -> (BatchWorkerPollV1, Vec<usize>, usize, usize, usize) {
+    let (model, mut first, key) = fixture_request();
+    let shared = SharedFeatureBufferV1::from_vec(std::mem::take(&mut first.feature_vector_q24))
+        .expect("bounded immutable Q24 allocation");
+    let original_pointer = shared.as_slice().as_ptr() as usize;
+    // Two genuinely separate Head identities must share one Stem allocation
+    // without sharing original Final-use identities or request digests.
+    let mut second = second_request(&first);
+    second.head_digest = digest(b"second-specialized-head").to_string();
+    let second_payload =
+        canonical_neuron_feature_payload_digest_with_slice(&second, shared.as_slice());
+    second.authorization.payload_digest = second_payload.clone();
+    second.authorization.lease_payload_digest = second_payload;
+    let first_binding =
+        neuron_batch_final_use_binding_with_slice_v1("worker-one", &key, &first, shared.as_slice())
+            .expect("original signed feature identity");
+    let second_binding = neuron_batch_final_use_binding_with_slice_v1(
+        "worker-one",
+        &key,
+        &second,
+        shared.as_slice(),
+    )
+    .expect("independent second original signed identity");
+
+    let signer = SigningKey::from_bytes(&[89; 32]);
+    let directory = tempfile::tempdir().unwrap();
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let pointers = Arc::new(Mutex::new(Vec::new()));
+    let metrics = Arc::new(CapturedMetrics::default());
+    let driver = BorrowedNativeTestDriver {
+        invocations: invocations.clone(),
+        received_pointers: pointers.clone(),
+        reorder_outputs,
+    };
+    let mut worker = runner_with_driver(&signer, directory.path(), model, driver, 2)
+        .with_metric_sink(metrics.clone());
+    worker
+        .enqueue_shared_features(
+            100,
+            "model".into(),
+            first,
+            shared.clone(),
+            key.clone(),
+            signed_member(&signer, first_binding, "borrowed-member-1", 23),
+        )
+        .expect("first independent signed original admission");
+    worker
+        .enqueue_shared_features(
+            100,
+            "model".into(),
+            second,
+            shared,
+            key,
+            signed_member(&signer, second_binding, "borrowed-member-2", 24),
+        )
+        .expect("second independent signed original admission");
+    let poll = worker.poll_and_execute(101).expect("one backend call");
+    let observed_pointers = pointers.lock().unwrap().clone();
+    let metrics_count = metrics.0.lock().unwrap().len();
+    (
+        poll,
+        observed_pointers,
+        original_pointer,
+        invocations.load(Ordering::SeqCst),
+        metrics_count,
+    )
+}
+
+#[test]
+fn borrowed_native_batch_shares_exact_q24_arc_across_signed_cells() {
+    let (poll, received, original, calls, metrics) =
+        execute_borrowed_native_two_cell_fixture(false);
+    assert_eq!(received, vec![original, original]);
+    assert_eq!(calls, 1);
+    assert_eq!(metrics, 6);
+    assert_eq!(poll.pending, 0);
+    assert_eq!(poll.outcomes.len(), 2);
+    assert!(poll.outcomes.iter().all(|row| matches!(
+        &row.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert_ne!(
+        poll.outcomes[0].result.as_ref().unwrap().head_digest,
+        poll.outcomes[1].result.as_ref().unwrap().head_digest
+    );
+}
+
+#[test]
+fn borrowed_native_batch_reordered_backend_output_never_publishes_success() {
+    let (poll, received, original, calls, _metrics) =
+        execute_borrowed_native_two_cell_fixture(true);
+    assert_eq!(received, vec![original, original]);
+    assert_eq!(calls, 1);
+    assert_eq!(poll.pending, 0);
+    assert_eq!(poll.outcomes.len(), 2);
+    assert!(poll.outcomes.iter().all(|row| row.result.is_err()));
+}

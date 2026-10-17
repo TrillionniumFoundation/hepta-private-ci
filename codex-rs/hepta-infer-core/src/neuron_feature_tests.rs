@@ -105,3 +105,69 @@ fn non_success_status_cannot_smuggle_numerical_output() {
     ));
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
 }
+
+#[test]
+fn borrowed_slice_exactly_matches_owned_v1_receipt_without_feature_vec() {
+    let owned = request();
+    let frozen = owned.feature_vector_q24.clone();
+    let mut metadata = owned.clone();
+    metadata.feature_vector_q24.clear();
+
+    let original = checked(build_neuron_feature_receipt_v1(
+        &owned,
+        runtime(),
+        observation(),
+    ));
+    let borrowed = checked(build_neuron_feature_receipt_from_slice_v1(
+        &metadata,
+        &frozen,
+        runtime(),
+        observation(),
+    ));
+    assert_eq!(borrowed, original);
+    assert_eq!(
+        checked(neuron_feature_request_digest_from_slice_v1(
+            &metadata, &frozen
+        )),
+        checked(neuron_feature_request_digest_v1(&owned))
+    );
+    checked(verify_neuron_feature_receipt_from_slice_v1(
+        &metadata, &frozen, &borrowed,
+    ));
+    assert!(!borrowed.authority.grants_any());
+}
+
+#[test]
+fn borrowed_slice_rejects_dual_payload_and_cannot_verify_changed_features() {
+    let owned = request();
+    let frozen = owned.feature_vector_q24.clone();
+    let altered = vec![Q / 4, -Q / 8 + 1];
+    assert_eq!(
+        neuron_feature_request_digest_from_slice_v1(&owned, &altered),
+        Err(NeuronFeatureContractError::RuntimeBindingMismatch)
+    );
+    let mut metadata = owned.clone();
+    metadata.feature_vector_q24.clear();
+    assert_eq!(
+        neuron_feature_request_digest_from_slice_v1(&metadata, &[]),
+        Err(NeuronFeatureContractError::FeatureLimit)
+    );
+    assert_eq!(
+        neuron_feature_request_digest_from_slice_v1(&metadata, &[H + 1]),
+        Err(NeuronFeatureContractError::FeatureLimit)
+    );
+    assert_eq!(
+        neuron_feature_request_digest_from_slice_v1(&metadata, &vec![0; MAX_FEATURES + 1]),
+        Err(NeuronFeatureContractError::FeatureLimit)
+    );
+    let valid = checked(build_neuron_feature_receipt_from_slice_v1(
+        &metadata,
+        &frozen,
+        runtime(),
+        observation(),
+    ));
+    assert_eq!(
+        verify_neuron_feature_receipt_from_slice_v1(&metadata, &altered, &valid),
+        Err(NeuronFeatureContractError::RuntimeBindingMismatch)
+    );
+}

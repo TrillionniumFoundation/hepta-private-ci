@@ -105,7 +105,17 @@ impl StdError for NeuronFeatureContractError {}
 pub fn neuron_feature_request_digest_v1(
     request: &NeuronFeatureRequestV1,
 ) -> Result<Digest32, NeuronFeatureContractError> {
-    validate_request(request)?;
+    neuron_feature_request_digest_from_slice_v1(request, &request.feature_vector_q24)
+}
+
+/// Compute exactly the existing V1 request digest from immutable borrowed Q24.
+/// The request's owned vector may be empty (metadata-only), but if it is
+/// present it must match the supplied view. No wire/protocol hash is changed.
+pub fn neuron_feature_request_digest_from_slice_v1(
+    request: &NeuronFeatureRequestV1,
+    features_q24: &[i64],
+) -> Result<Digest32, NeuronFeatureContractError> {
+    validate_request_with_slice(request, features_q24)?;
     let mut bytes = b"hepta.inference.neuron-feature-request.v1".to_vec();
     push_id(&mut bytes, &request.request_id)?;
     bytes.extend_from_slice(&request.generation.get().to_be_bytes());
@@ -118,7 +128,7 @@ pub fn neuron_feature_request_digest_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    push_q24(&mut bytes, &request.feature_vector_q24)?;
+    push_q24(&mut bytes, features_q24)?;
     bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -128,7 +138,24 @@ pub fn build_neuron_feature_receipt_v1(
     runtime_tuple: NeuronModelRuntimeTupleV1,
     observation: NeuronFeatureObservationV1,
 ) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
-    let request_digest = neuron_feature_request_digest_v1(request)?;
+    build_neuron_feature_receipt_from_slice_v1(
+        request,
+        &request.feature_vector_q24,
+        runtime_tuple,
+        observation,
+    )
+}
+
+/// Original receipt contents and digest, computed from the frozen metadata
+/// and a separately owned immutable Q24 slice. No per-Cell Vec materialization
+/// is required inside the inference owner.
+pub fn build_neuron_feature_receipt_from_slice_v1(
+    request: &NeuronFeatureRequestV1,
+    features_q24: &[i64],
+    runtime_tuple: NeuronModelRuntimeTupleV1,
+    observation: NeuronFeatureObservationV1,
+) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
+    let request_digest = neuron_feature_request_digest_from_slice_v1(request, features_q24)?;
     validate_runtime_tuple(request, &runtime_tuple)?;
     validate_observation(request, &observation)?;
     let runtime_tuple_digest = digest_runtime_tuple(&runtime_tuple)?;
@@ -151,7 +178,7 @@ pub fn build_neuron_feature_receipt_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = digest_receipt(&receipt)?;
-    verify_neuron_feature_receipt_v1(request, &receipt)?;
+    verify_neuron_feature_receipt_from_slice_v1(request, features_q24, &receipt)?;
     Ok(receipt)
 }
 
@@ -159,10 +186,21 @@ pub fn verify_neuron_feature_receipt_v1(
     request: &NeuronFeatureRequestV1,
     receipt: &NeuronFeatureReceiptV1,
 ) -> Result<(), NeuronFeatureContractError> {
+    verify_neuron_feature_receipt_from_slice_v1(request, &request.feature_vector_q24, receipt)
+}
+
+/// Verify the unchanged V1 receipt, including its original source bytes,
+/// without manufacturing an owned Q24 vector for each logical Cell.
+pub fn verify_neuron_feature_receipt_from_slice_v1(
+    request: &NeuronFeatureRequestV1,
+    features_q24: &[i64],
+    receipt: &NeuronFeatureReceiptV1,
+) -> Result<(), NeuronFeatureContractError> {
     if receipt.authority.grants_any() {
         return Err(NeuronFeatureContractError::AuthorityGranted);
     }
-    if receipt.request_digest != neuron_feature_request_digest_v1(request)? {
+    if receipt.request_digest != neuron_feature_request_digest_from_slice_v1(request, features_q24)?
+    {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     validate_runtime_tuple(request, &receipt.runtime_tuple)?;
@@ -191,7 +229,15 @@ pub fn verify_neuron_feature_receipt_v1(
     Ok(())
 }
 
-fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatureContractError> {
+fn validate_request_with_slice(
+    request: &NeuronFeatureRequestV1,
+    features_q24: &[i64],
+) -> Result<(), NeuronFeatureContractError> {
+    if !request.feature_vector_q24.is_empty()
+        && request.feature_vector_q24.as_slice() != features_q24
+    {
+        return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
+    }
     for (name, digest) in [
         ("encoder", request.encoder_digest),
         ("head", request.head_digest),
@@ -202,14 +248,11 @@ fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatur
             return Err(NeuronFeatureContractError::EmptyDigest(name));
         }
     }
-    if request.feature_vector_q24.is_empty()
-        || request.feature_vector_q24.len() > MAX_FEATURES
+    if features_q24.is_empty()
+        || features_q24.len() > MAX_FEATURES
         || request.expected_output_width == 0
         || request.expected_output_width > MAX_FEATURES
-        || request
-            .feature_vector_q24
-            .iter()
-            .any(|value| !(-H..=H).contains(value))
+        || features_q24.iter().any(|value| !(-H..=H).contains(value))
     {
         return Err(NeuronFeatureContractError::FeatureLimit);
     }

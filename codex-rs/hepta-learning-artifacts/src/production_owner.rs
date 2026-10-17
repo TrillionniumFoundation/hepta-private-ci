@@ -437,8 +437,8 @@ impl ArtifactCasOwnerV1 {
             &self.signature_latency
         };
         histogram.observe(latency, result.is_ok());
-        if let Some(sink) = &self.metrics {
-            if sink
+        if let Some(sink) = &self.metrics
+            && sink
                 .record(PhaseMetricEventV1 {
                     scope_digest: scope,
                     operation_digest: operation,
@@ -447,9 +447,8 @@ impl ArtifactCasOwnerV1 {
                     succeeded: result.is_ok(),
                 })
                 .is_err()
-            {
-                self.failed_metric_records.fetch_add(1, Ordering::Release);
-            }
+        {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
         }
         result
     }
@@ -799,7 +798,7 @@ impl StateCheckpointOwnerV1 {
             return Err(ProductionOwnerError::StateConflict(cell_id));
         }
         let sequence = LogicalSequence::new(
-            u64::try_from(history.map_or(0, |history| history.len()))
+            u64::try_from(history.map_or(0, Vec::len))
                 .map_err(|_| ProductionOwnerError::InvalidSequence)?
                 .checked_add(1)
                 .ok_or(ProductionOwnerError::InvalidSequence)?,
@@ -937,10 +936,7 @@ impl StateCheckpointOwnerV1 {
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateTombstoneReceiptV1, ProductionOwnerError> {
         if reason_digest.is_zero()
-            || !self
-                .entries
-                .get(&cell_id)
-                .is_some_and(|history| !history.is_empty())
+            || self.entries.get(&cell_id).is_none_or(Vec::is_empty)
         {
             return Err(ProductionOwnerError::StateNotFound(cell_id));
         }

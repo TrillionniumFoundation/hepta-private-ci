@@ -312,7 +312,7 @@ jobs:
           # Exact original owner bytes must survive both source HEAD and base
           # merge. A current unrelated PR cannot silently replace the signed
           # physical executor with a fixture-only or alternate implementation.
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "0b98be50294d12418b7b6e3228f3a6d650aaebda"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
           # Strict original batch/Core compilation, including all new Arc
           # sharing negative tests. No --allow or ignored Clippy warnings.
@@ -334,6 +334,10 @@ jobs:
           # The original NativeTestDriver counts one backend invocation,
           # not one physical pretrained Encoder forward or serving authority.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/typed-stem-original-physical-batch.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --nocapture --test-threads=1
+          # Keep original signed Final-use and Evidence: borrowed Q24 slices
+          # are pointer-identical at ONE native test-backend dispatch; a swapped
+          # reply must never produce a successful terminal receipt.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/borrowed-native-batch.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib borrowed_native_batch_ -- --nocapture --test-threads=1
           # The separately public typed preview never grants authority; its
           # private borrowed Arc/source identity checks also run as real Rust.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/typed-stem-shared-preview-negative.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib stem_original_batch_preview::tests:: -- --nocapture --test-threads=1
