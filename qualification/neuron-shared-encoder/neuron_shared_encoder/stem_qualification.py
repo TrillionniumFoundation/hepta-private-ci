@@ -22,6 +22,7 @@ SCHEMA_SPLIT = "hepta.stem.source-disjoint-split.v1"
 SCHEMA_METRIC = "hepta.stem.metric-interval.v1"
 SCHEMA_RESOURCE = "hepta.stem.component-resource-receipt.v1"
 SCHEMA_RUN = "hepta.stem.qualification-run.v1"
+SCHEMA_RECEIPT = SCHEMA_RUN
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _IDENT = re.compile(r"^[a-z0-9][a-z0-9._/-]{0,127}$")
 
@@ -382,6 +383,7 @@ def qualify_from_receipt(
     receipt: Any,
     *,
     run_id: str,
+    candidate_id: str,
     checkpoint: CheckpointRefV1,
     source_split: SourceDisjointSplitV1,
     tower_registry_digest: str,
@@ -404,9 +406,10 @@ def qualify_from_receipt(
     _require(not getattr(receipt, "model_input_gold_visible", True), "bridge receipt exposes model-visible gold")
     _require(getattr(receipt, "stem_digest", None) == checkpoint.stem_digest, "bridge receipt Stem mismatch")
     _require(getattr(receipt, "source_digest", None) == source_split.eval_source_digest, "bridge receipt source mismatch")
+    _identifier("candidate_id", candidate_id)
     return StemQualificationRunV1(
         run_id=run_id,
-        candidate_id=receipt.task_id,
+        candidate_id=candidate_id,
         stem_digest=checkpoint.stem_digest,
         stem_generation=checkpoint.generation,
         checkpoint=checkpoint,
