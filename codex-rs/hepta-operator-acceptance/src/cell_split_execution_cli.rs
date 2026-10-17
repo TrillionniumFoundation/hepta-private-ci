@@ -217,7 +217,7 @@ where
 
 /// Final independent selection check for an effectful completion response.
 /// Transcript-only export is historical and always non-authorizing; it
-    /// does not silently claim that an existing candidate is still selectable.
+/// does not silently claim that an existing candidate is still selectable.
 fn require_fresh_completion_admission_v1<F>(
     action: &str,
     verified_complete: bool,
@@ -345,31 +345,19 @@ mod tests {
         };
         let denied =
             require_fresh_completion_admission_v1("advance", true, Some(&plan), &mut revoked);
-        assert!(
-            denied.expect_err("withdrawn selection").contains("revoked")
-        );
+        assert!(denied.expect_err("withdrawn selection").contains("revoked"));
         assert_eq!(checks, 1);
         let mut unexpected = |_: &CellSplitExecutionPlanV1| -> Result<(), String> {
             panic!("incomplete or transcript-only status cannot re-admit")
         };
-        assert!(
-            !require_fresh_completion_admission_v1(
-                "advance",
-                false,
-                Some(&plan),
-                &mut unexpected,
-            )
-            .expect("incomplete remains incomplete")
-        );
-        assert!(
-            require_fresh_completion_admission_v1(
-                "transcript",
-                true,
-                None,
-                &mut unexpected,
-            )
-            .expect("historical transcript is never a final-use grant")
-        );
+        let incomplete =
+            require_fresh_completion_admission_v1("advance", false, Some(&plan), &mut unexpected)
+                .expect("incomplete remains incomplete");
+        assert!(!incomplete);
+        let historical =
+            require_fresh_completion_admission_v1("transcript", true, None, &mut unexpected)
+                .expect("historical transcript is never a final-use grant");
+        assert!(historical);
         assert!(
             require_fresh_completion_admission_v1("advance", true, None, &mut unexpected)
                 .is_err(),
