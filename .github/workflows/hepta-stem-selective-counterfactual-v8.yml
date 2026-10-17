@@ -1,0 +1,181 @@
+name: Hepta Stem V8 selective cached-Encoder counterfactual (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-selective-counterfactual-v8-20261017]
+    paths:
+      - 'qualification/stem-optimal-v8/**'
+      - '.github/workflows/hepta-stem-selective-counterfactual-v8.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v8/**'
+      - '.github/workflows/hepta-stem-selective-counterfactual-v8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-selective-v8-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V8: qualification/stem-optimal-v8
+  V5: qualification/stem-optimal-v5
+  V1: qualification/stem-optimal-v1
+  PYTHONPATH: qualification/stem-optimal-v8:qualification/stem-optimal-v5:qualification/stem-optimal-v3:qualification/stem-optimal-v4:qualification/stem-optimal-v1
+
+jobs:
+  source-only-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run strict no-gold source tests on exact reviewed branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$V8/selective_route_v8.py" "$V8/independent_selective_review_v8.py" "$V8/test_selective_v8.py"
+          python -m unittest discover -s "$V8" -p 'test_selective_v8.py' -v
+          python -O -m unittest discover -s "$V8" -p 'test_selective_v8.py' -v
+
+  original-no-gold-policy:
+    needs: source-only-negative-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-selective-counterfactual-v8-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Open all six exact original V3/V4 Actions ZIPs without test gold
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python "$V5/download_original_zip_v5.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v8-original" \
+            --role source_v3 --role source_v4 --role granite47 \
+            --role granite97 --role mmbert140 --role cheap_v4
+      - name: Reuse previously paid real-model predictions on exactly 8 label-free low-margin cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v8-out"
+          python "$V8/selective_route_v8.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --zip-dir "$RUNNER_TEMP/v8-original" \
+            --output "$RUNNER_TEMP/v8-out/route-v8.json"
+          (cd "$RUNNER_TEMP/v8-out" && sha256sum route-v8.json > route-v8.sha256)
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'v8-out/route-v8.json').read_text())
+          assert len(r['selected_case_ids']) == 8 and len(r['rows']) == 32
+          assert r['evidence']['actual_new_encoder_sequence_forwards'] == 0
+          assert r['evidence']['measured_heldout_encoder_savings'] is False
+          assert r['authority'] == 'DENY_ALL' and r['production_authorized'] is False
+          print('Counterfactual historical routing: eight eligible, zero newly paid Encoders')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v8-prelabel-original-route-denyall
+          path: |
+            ${{ runner.temp }}/v8-out/route-v8.json
+            ${{ runner.temp }}/v8-out/route-v8.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independently-review-old-publisher:
+    needs: original-no-gold-policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v8-prelabel-original-route-denyall
+          path: ${{ runner.temp }}/v8-route
+      - name: Independently obtain source and all six immutable original evidence ZIPs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v8-route" && sha256sum --check route-v8.sha256)
+          python "$V5/download_original_zip_v5.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v8-original" \
+            --role source_v3 --role source_v4 --role granite47 \
+            --role granite97 --role mmbert140 --role cheap_v4
+          mkdir -p "$RUNNER_TEMP/v8-publisher"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'v8-publisher'
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          locked={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                  'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for split in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'hepta-original-selective-v8'}),timeout=35) as response:
+                  if response.geturl() != url:
+                      raise ValueError('unexpected original publisher redirect')
+                  raw=response.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=locked[split]:
+                  raise ValueError('publisher original source bytes changed')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+      - name: Reconstruct routing independently, then reopen original labels and report exploratory quality only
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(awk '{print $1}' "$RUNNER_TEMP/v8-route/route-v8.sha256")"
+          python "$V8/independent_selective_review_v8.py" \
+            --manifest "$V5/ORIGINAL_PAIR_V5.json" \
+            --zip-dir "$RUNNER_TEMP/v8-original" \
+            --route "$RUNNER_TEMP/v8-route/route-v8.json" --route-sha256 "$expected" \
+            --train "$RUNNER_TEMP/v8-publisher/train.csv" \
+            --test "$RUNNER_TEMP/v8-publisher/test.csv" \
+            --materials "$V1/MODEL_MATERIALS.json" \
+            --output "$RUNNER_TEMP/v8-review.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'v8-review.json').read_text())
+          assert r['authority']=='DENY_ALL' and r['disposition']=='HOLD_NO_GO'
+          assert r['selected_count']==8 and r['heldout_n']==32
+          assert r['physical_neural_compute_savings_proven'] is False
+          assert r['prospective_future_windows']==0
+          assert r['stem_winner_verified'] is False and r['production_authorized'] is False
+          print('Independent historical quality, no actual compute-saving authorization')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v8-independent-retrospective-review-denyall
+          path: ${{ runner.temp }}/v8-review.json
+          if-no-files-found: error
+          retention-days: 7
