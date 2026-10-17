@@ -50,9 +50,9 @@ use zeroize::Zeroizing;
 
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
-pub use topology_execution::RuntimeTopologyNativeCutoverReadbackV1;
 pub use topology_execution::RuntimeTopologyExecutionError;
 pub use topology_execution::RuntimeTopologyMigrationOwnerV1;
+pub use topology_execution::RuntimeTopologyNativeCutoverReadbackV1;
 pub use topology_execution::RuntimeTopologySnapshotV1;
 pub use topology_execution::RuntimeTopologySuccessorV1;
 pub use topology_execution::runtime_topology_final_use_binding_v1;

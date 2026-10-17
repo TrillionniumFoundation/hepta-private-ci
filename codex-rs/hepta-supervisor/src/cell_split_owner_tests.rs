@@ -128,33 +128,29 @@ impl FilesystemNative {
                 outbox_watermark: 42,
                 unknown_effects: 0,
             },
-            WriterHandoffPhaseV1::OldWriterFenced => {
-                CellSplitNativeEvidenceV1::OldWriterFenced {
-                    native_ack: ack,
-                    observed_generation: plan.old_generation,
-                }
-            }
+            WriterHandoffPhaseV1::OldWriterFenced => CellSplitNativeEvidenceV1::OldWriterFenced {
+                native_ack: ack,
+                observed_generation: plan.old_generation,
+            },
             WriterHandoffPhaseV1::Snapshotted => {
                 let readback = digest(&fs::read(self.root.join("cas-artifact"))?);
                 CellSplitNativeEvidenceV1::ArtifactCasCommitted {
                     native_ack: ack,
                     payload_digest: artifact,
-                    readback_digest: if self.bad_cas { digest(b"wrong") } else { readback },
+                    readback_digest: if self.bad_cas {
+                        digest(b"wrong")
+                    } else {
+                        readback
+                    },
                     registry_head_digest: digest(b"native-registry-head"),
-                    source_snapshot_digest: digest(
-                        &fs::read(self.root.join("source-snapshot"))?,
-                    ),
-                    source_snapshot_ack: digest(
-                        &fs::read(self.root.join("source-snapshot-ack"))?,
-                    ),
+                    source_snapshot_digest: digest(&fs::read(self.root.join("source-snapshot"))?),
+                    source_snapshot_ack: digest(&fs::read(self.root.join("source-snapshot-ack"))?),
                 }
             }
             WriterHandoffPhaseV1::Migrated => CellSplitNativeEvidenceV1::ChildMigrated {
                 native_ack: ack,
                 artifact_digest: artifact,
-                source_state_digest: digest(
-                    &fs::read(self.root.join("source-snapshot"))?,
-                ),
+                source_state_digest: digest(&fs::read(self.root.join("source-snapshot"))?),
                 child_state_digest: digest(&fs::read(self.root.join("child-state"))?),
             },
             WriterHandoffPhaseV1::Validated => CellSplitNativeEvidenceV1::ChildValidated {
@@ -166,12 +162,10 @@ impl FilesystemNative {
                     digest(&fs::read(self.root.join("child-state"))?)
                 },
             },
-            WriterHandoffPhaseV1::NewWriterFenced => {
-                CellSplitNativeEvidenceV1::NewWriterFenced {
-                    native_ack: ack,
-                    observed_generation: plan.new_generation,
-                }
-            }
+            WriterHandoffPhaseV1::NewWriterFenced => CellSplitNativeEvidenceV1::NewWriterFenced {
+                native_ack: ack,
+                observed_generation: plan.new_generation,
+            },
             WriterHandoffPhaseV1::RoutePublished => {
                 let route = digest(&fs::read(self.root.join("cns-route"))?);
                 CellSplitNativeEvidenceV1::CnsRouteCutover {
@@ -195,7 +189,10 @@ impl FilesystemNative {
                 }
             }
             WriterHandoffPhaseV1::Prepared | WriterHandoffPhaseV1::Quarantined => {
-                return Err(io::Error::new(io::ErrorKind::InvalidInput, "not executable"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "not executable",
+                ));
             }
         };
         Ok(CellSplitObservedReceiptV1 {
@@ -333,8 +330,15 @@ fn native_effect_preceding_journal_append_is_reused_without_second_execution() {
     let root = TempDir::new().expect("temp");
     let mut native = FilesystemNative::open(&root);
     let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
-    native.execute(&plan(), WriterHandoffPhaseV1::AdmissionStopped).expect("native effect");
-    assert_eq!(advance(&mut journal, &mut native).expect("recover native effect").revision, 2);
+    native
+        .execute(&plan(), WriterHandoffPhaseV1::AdmissionStopped)
+        .expect("native effect");
+    assert_eq!(
+        advance(&mut journal, &mut native)
+            .expect("recover native effect")
+            .revision,
+        2
+    );
     assert_eq!(native.execute_count, 1);
 }
 
@@ -357,7 +361,10 @@ fn indeterminate_and_missing_acknowledged_receipts_stop_execution() {
         Err(CellSplitOwnerErrorV1::ObservationMissing)
     ));
     assert_eq!(native.execute_count, 1);
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::AdmissionStopped);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::AdmissionStopped
+    );
 }
 
 #[test]
@@ -371,7 +378,10 @@ fn frozen_binding_drift_prevents_route_and_artifact_progress() {
         advance(&mut journal, &mut native),
         Err(CellSplitOwnerErrorV1::InvalidObservation)
     ));
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::AdmissionStopped);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::AdmissionStopped
+    );
     assert_eq!(native.execute_count, 1);
 }
 
@@ -388,7 +398,10 @@ fn cas_readback_and_migration_state_mismatch_fail_closed() {
         advance(&mut journal, &mut native),
         Err(CellSplitOwnerErrorV1::InvalidObservation)
     ));
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::OldWriterFenced);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::OldWriterFenced
+    );
     native.bad_cas = false;
     advance(&mut journal, &mut native).expect("recover committed CAS without reexecute");
     advance(&mut journal, &mut native).expect("migrate");
@@ -413,7 +426,10 @@ fn cns_wrong_generation_does_not_publish_route_in_ledger() {
         advance(&mut journal, &mut native),
         Err(CellSplitOwnerErrorV1::InvalidObservation)
     ));
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::NewWriterFenced);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::NewWriterFenced
+    );
     native.bad_route = false;
     advance(&mut journal, &mut native).expect("native route observed, recover without replay");
     assert_eq!(native.execute_count, 8);
@@ -435,7 +451,10 @@ fn incomplete_native_cas_intent_remains_indeterminate_without_retry() {
         Err(CellSplitOwnerErrorV1::Indeterminate)
     ));
     assert_eq!(native.execute_count, count);
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::OldWriterFenced);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::OldWriterFenced
+    );
 }
 
 #[test]
@@ -446,13 +465,19 @@ fn corrupted_committed_cas_readback_blocks_child_migration() {
     for _ in 0..4 {
         advance(&mut journal, &mut native).expect("through committed CAS");
     }
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::Snapshotted
+    );
     fs::write(native.root.join("cas-artifact"), b"tampered-object").expect("corrupt fixture");
     assert!(matches!(
         advance(&mut journal, &mut native),
         Err(CellSplitOwnerErrorV1::InvalidObservation)
     ));
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::Snapshotted
+    );
     assert_eq!(native.execute_count, 4);
 }
 
@@ -547,14 +572,20 @@ fn predecessor_snapshot_tamper_after_ack_blocks_child_migration() {
     for _ in 0..4 {
         advance(&mut journal, &mut native).expect("through native source snapshot");
     }
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::Snapshotted
+    );
     fs::write(native.root.join("source-snapshot"), b"changed-state")
         .expect("simulate source snapshot modification");
     assert!(matches!(
         advance(&mut journal, &mut native),
         Err(CellSplitOwnerErrorV1::ObservationDrift)
     ));
-    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::Snapshotted
+    );
     assert!(!native.root.join("child-state").exists());
 }
 
@@ -636,27 +667,30 @@ fn tampered_durable_history_fails_before_any_new_native_effect() {
         .expect("sync corruption fixture");
     assert!(matches!(
         advance(&mut journal, &mut native),
-        Err(CellSplitOwnerErrorV1::Journal(WriterHandoffErrorV1::Corrupt))
+        Err(CellSplitOwnerErrorV1::Journal(
+            WriterHandoffErrorV1::Corrupt
+        ))
     ));
     assert_eq!(journal.checkpoint(), &head);
     assert_eq!(native.execute_count, effects);
     assert!(!native.stage(WriterHandoffPhaseV1::Drained).exists());
 }
-
 #[test]
 fn externally_retained_minimum_rejects_old_complete_journal_backup() {
     let root = TempDir::new().expect("temp");
     let mut native = FilesystemNative::open(&root);
-    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan())
-        .expect("create journal");
+    let mut journal =
+        DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create journal");
     let prepared = journal.checkpoint().clone();
-    let old_backup = fs::read(root.path().join("split-journal"))
-        .expect("capture old complete journal prefix");
+    let old_backup =
+        fs::read(root.path().join("split-journal")).expect("capture old complete journal prefix");
     advance(&mut journal, &mut native).expect("native admission close");
     let acknowledged = journal.checkpoint().clone();
-    journal.require_acknowledged_floor_v1(&prepared)
+    journal
+        .require_acknowledged_floor_v1(&prepared)
         .expect("prepared minimum is in chain");
-    journal.require_acknowledged_floor_v1(&acknowledged)
+    journal
+        .require_acknowledged_floor_v1(&acknowledged)
         .expect("latest acknowledged minimum is in chain");
     let effects = native.execute_count;
     drop(journal);

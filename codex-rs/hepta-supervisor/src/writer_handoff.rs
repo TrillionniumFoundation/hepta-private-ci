@@ -371,11 +371,8 @@ impl DurableWriterHandoffJournalV1 {
         }
         self.file.seek(SeekFrom::Start(0))?;
         let mut bytes = Vec::new();
-        Read::take(&mut self.file, self.durable_length + 1)
-            .read_to_end(&mut bytes)?;
-        if bytes.len() as u64 != self.durable_length
-            || !bytes.starts_with(MAGIC)
-        {
+        Read::take(&mut self.file, self.durable_length + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 != self.durable_length || !bytes.starts_with(MAGIC) {
             return Err(WriterHandoffErrorV1::Corrupt);
         }
 
@@ -395,9 +392,7 @@ impl DurableWriterHandoffJournalV1 {
             validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
             if chain
                 .iter()
-                .any(|earlier: &WriterHandoffCheckpointV1| {
-                    earlier.phase == checkpoint.phase
-                })
+                .any(|earlier: &WriterHandoffCheckpointV1| earlier.phase == checkpoint.phase)
             {
                 return Err(WriterHandoffErrorV1::Corrupt);
             }
@@ -410,7 +405,6 @@ impl DurableWriterHandoffJournalV1 {
         }
         Ok(chain)
     }
-
 
     /// Return the exact evidence for every previously acknowledged phase.
     /// The current journal is re-validated from its immutable on-disk chain,

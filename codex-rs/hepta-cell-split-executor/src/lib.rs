@@ -259,9 +259,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         other: O,
         current_time: u64,
     ) -> Result<Self, ProductSplitNativeErrorV1<O::Error>> {
-        if current_time == 0
-            || !binding.validate_selection(&plan, selection)
-        {
+        if current_time == 0 || !binding.validate_selection(&plan, selection) {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         Ok(Self {
@@ -314,8 +312,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         // bridge must never accept its receipt as an in-order split cutover
         // before the exact successor writer-fence is durably acknowledged.
         let checkpoint = journal.checkpoint();
-        if checkpoint.plan != self.plan
-            || checkpoint.phase != WriterHandoffPhaseV1::NewWriterFenced
+        if checkpoint.plan != self.plan || checkpoint.phase != WriterHandoffPhaseV1::NewWriterFenced
         {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
@@ -355,10 +352,8 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         journal: &mut DurableWriterHandoffJournalV1,
         externally_retained_minimum: &WriterHandoffCheckpointV1,
         now: u64,
-    ) -> Result<
-        WriterHandoffCheckpointV1,
-        CellSplitOwnerErrorV1<ProductSplitNativeErrorV1<O::Error>>,
-    > {
+    ) -> Result<WriterHandoffCheckpointV1, CellSplitOwnerErrorV1<ProductSplitNativeErrorV1<O::Error>>>
+    {
         self.advance_current_time(now)
             .map_err(CellSplitOwnerErrorV1::Native)?;
         journal
@@ -452,13 +447,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
             }
             _ => return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch),
         };
-        CellSplitObservedReceiptV1::bind_observed_native(
-            &self.plan,
-            &self.binding.split,
-            evidence,
-        )
-        .map(CellSplitLookupV1::Observed)
-        .ok_or(ProductSplitNativeErrorV1::InvalidNativeReadback)
+        CellSplitObservedReceiptV1::bind_observed_native(&self.plan, &self.binding.split, evidence)
+            .map(CellSplitLookupV1::Observed)
+            .ok_or(ProductSplitNativeErrorV1::InvalidNativeReadback)
     }
 }
 
@@ -472,9 +463,7 @@ impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1
         plan: &WriterHandoffPlanV1,
         phase: WriterHandoffPhaseV1,
     ) -> Result<CellSplitLookupV1, Self::Error> {
-        if plan != &self.plan
-            || !self.binding.validate_selection(&self.plan, self.selection)
-        {
+        if plan != &self.plan || !self.binding.validate_selection(&self.plan, self.selection) {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         match phase {
@@ -496,9 +485,7 @@ impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1
         plan: &WriterHandoffPlanV1,
         phase: WriterHandoffPhaseV1,
     ) -> Result<(), Self::Error> {
-        if plan != &self.plan
-            || !self.binding.validate_selection(&self.plan, self.selection)
-        {
+        if plan != &self.plan || !self.binding.validate_selection(&self.plan, self.selection) {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         match phase {
@@ -538,10 +525,8 @@ mod tests {
             domain_id: id("scope:1"),
             source_writer: id("cell:parent"),
             target_writer: id("cell:child"),
-            old_generation: Generation::new(1)
-                .unwrap_or_else(|_| unreachable!("constant")),
-            new_generation: Generation::new(2)
-                .unwrap_or_else(|_| unreachable!("constant")),
+            old_generation: Generation::new(1).unwrap_or_else(|_| unreachable!("constant")),
+            new_generation: Generation::new(2).unwrap_or_else(|_| unreachable!("constant")),
             authority_epoch: 1,
             migration_plan_digest: d(b"migration"),
             schema_digest: d(b"schema"),
@@ -611,53 +596,86 @@ mod tests {
             authority: AuthorityPosture::DENY_ALL,
         };
         assert!(binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.no_change_baseline_digest = Digest32::ZERO;
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.no_change_baseline_digest = d(b"frozen-no-change");
         selector_receipt.no_change_baseline_id = id("alternative-baseline");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.no_change_baseline_id = id("no-change:1");
         selector_receipt.no_change_baseline_digest = d(b"other-baseline-bytes");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.no_change_baseline_digest = d(b"frozen-no-change");
         selector_receipt.objective_digest = d(b"unrelated-objective");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.objective_digest = d(b"objective");
         selector_receipt.predecessor_artifact_digest = d(b"foreign-parent-model");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.predecessor_artifact_digest = d(b"predecessor-model");
         selector_receipt.frozen_plan_digest = d(b"unrelated-evaluation-plan");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.frozen_plan_digest = d(b"frozen-plan");
         selector_receipt.candidate_artifact_digest = d(b"other-artifact");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.candidate_artifact_digest = d(b"artifact");
         selector_receipt.predecessor_id = id("foreign-parent");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            d(b"selector-signature"),
         ));
         selector_receipt.predecessor_id = id("cell:parent");
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"unrelated-selection"), d(b"selector-signature"),
+            &plan,
+            &selector_receipt,
+            d(b"unrelated-selection"),
+            d(b"selector-signature"),
         ));
         assert!(!binding.validate_selection_receipt(
-            &plan, &selector_receipt, d(b"selection"), Digest32::ZERO,
+            &plan,
+            &selector_receipt,
+            d(b"selection"),
+            Digest32::ZERO,
         ));
         binding.cns_final_use_request_digest = Digest32::ZERO;
         assert!(!binding.validate(&plan));

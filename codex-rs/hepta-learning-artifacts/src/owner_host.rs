@@ -963,9 +963,8 @@ impl LearningArtifactOwnerHost {
         // The historical checkpoint must really contain the exact registered
         // artifact. This prevents unrelated committed operations from serving
         // as a synthetic Split CAS receipt.
-        let predecessor = self.recover_registry_by_head(
-            checkpoint.expected_registry_predecessor_head,
-        )?;
+        let predecessor =
+            self.recover_registry_by_head(checkpoint.expected_registry_predecessor_head)?;
         if predecessor.manifest(artifact_id).is_some() {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
@@ -985,13 +984,10 @@ impl LearningArtifactOwnerHost {
         let registration = after
             .last()
             .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
-        let expected_event_id = StableId::new(format!(
-            "artifact-publication:{}",
-            checkpoint.intent_digest,
-        ))
-        .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
-        if registration.predecessor_chain_digest
-                != predecessor.snapshot().head_digest
+        let expected_event_id =
+            StableId::new(format!("artifact-publication:{}", checkpoint.intent_digest,))
+                .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
+        if registration.predecessor_chain_digest != predecessor.snapshot().head_digest
             || registration.chain_digest != registry_receipt.head_digest
             || !matches!(
                 &registration.event,
@@ -1019,15 +1015,11 @@ impl LearningArtifactOwnerHost {
         if current_manifest != original_manifest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        let path = self.root.join("payloads").join(format!(
-            "{}-{}.bin",
-            artifact_id, expected_content_digest
-        ));
-        let bytes = read_candidate_payload(
-            File::open(&path)?,
-            current.registry(),
-            artifact_id,
-        )?;
+        let path = self
+            .root
+            .join("payloads")
+            .join(format!("{}-{}.bin", artifact_id, expected_content_digest));
+        let bytes = read_candidate_payload(File::open(&path)?, current.registry(), artifact_id)?;
         let readback_digest = Digest32::of_bytes(&bytes);
         if readback_digest != expected_content_digest {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
@@ -2067,18 +2059,12 @@ mod tests {
         )
         .fixture("native artifact owner");
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
-        let (registry, mut transaction) =
-            deterministic_publication(&owner, &withdrawals, 20);
+        let (registry, mut transaction) = deterministic_publication(&owner, &withdrawals, 20);
         let operation = id("process-operation");
         let artifact = id("candidate");
         let payload_digest = digest("payload");
         assert!(matches!(
-            owner.observe_cell_split_artifact_cas_v1(
-                &operation,
-                &artifact,
-                payload_digest,
-                20,
-            ),
+            owner.observe_cell_split_artifact_cas_v1(&operation, &artifact, payload_digest, 20,),
             Err(ArtifactOwnerHostError::Indeterminate)
         ));
 
@@ -2101,12 +2087,7 @@ mod tests {
         // A signed current head without the acknowledged native transaction
         // is still not an execution receipt.
         assert!(matches!(
-            owner.observe_cell_split_artifact_cas_v1(
-                &operation,
-                &artifact,
-                payload_digest,
-                20,
-            ),
+            owner.observe_cell_split_artifact_cas_v1(&operation, &artifact, payload_digest, 20,),
             Err(ArtifactOwnerHostError::Indeterminate)
         ));
         owner
@@ -2114,16 +2095,14 @@ mod tests {
             .fixture("durable owner acknowledgement");
 
         let observed = owner
-            .observe_cell_split_artifact_cas_v1(
-                &operation,
-                &artifact,
-                payload_digest,
-                21,
-            )
+            .observe_cell_split_artifact_cas_v1(&operation, &artifact, payload_digest, 21)
             .fixture("native CAS observed from exact signed registry and bytes");
         assert_eq!(observed.payload_digest, payload_digest);
         assert_eq!(observed.readback_digest, payload_digest);
-        assert_eq!(observed.registry_head_digest, registry.snapshot().head_digest);
+        assert_eq!(
+            observed.registry_head_digest,
+            registry.snapshot().head_digest
+        );
         assert!(!observed.native_ack_digest.is_zero());
         assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
 
@@ -2137,19 +2116,16 @@ mod tests {
             Err(ArtifactOwnerHostError::CheckpointMismatch)
         ));
 
-        let payload_path = directory.0.join("payloads").join(format!(
-            "{}-{}.bin",
-            artifact, payload_digest
-        ));
+        let payload_path = directory
+            .0
+            .join("payloads")
+            .join(format!("{}-{}.bin", artifact, payload_digest));
         fs::write(payload_path, b"tampered").fixture("tamper native payload");
-        assert!(owner
-            .observe_cell_split_artifact_cas_v1(
-                &operation,
-                &artifact,
-                payload_digest,
-                21,
-            )
-            .is_err());
+        assert!(
+            owner
+                .observe_cell_split_artifact_cas_v1(&operation, &artifact, payload_digest, 21,)
+                .is_err()
+        );
     }
 
     #[test]

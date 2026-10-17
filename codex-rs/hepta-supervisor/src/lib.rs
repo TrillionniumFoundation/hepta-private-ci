@@ -46,6 +46,13 @@ pub use authority_signer::load_signing_key_from_fd;
 pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 pub use authority_signer::sign_request;
+pub use cell_split_owner::CellSplitBindingV1;
+pub use cell_split_owner::CellSplitLookupV1;
+pub use cell_split_owner::CellSplitNativeEvidenceV1;
+pub use cell_split_owner::CellSplitNativeOwnerV1;
+pub use cell_split_owner::CellSplitObservedReceiptV1;
+pub use cell_split_owner::CellSplitOwnerErrorV1;
+pub use cell_split_owner::CellSplitOwnerV1;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
@@ -176,13 +183,6 @@ pub use writer_handoff::WriterHandoffCheckpointV1;
 pub use writer_handoff::WriterHandoffErrorV1;
 pub use writer_handoff::WriterHandoffPhaseV1;
 pub use writer_handoff::WriterHandoffPlanV1;
-pub use cell_split_owner::CellSplitBindingV1;
-pub use cell_split_owner::CellSplitLookupV1;
-pub use cell_split_owner::CellSplitNativeEvidenceV1;
-pub use cell_split_owner::CellSplitNativeOwnerV1;
-pub use cell_split_owner::CellSplitObservedReceiptV1;
-pub use cell_split_owner::CellSplitOwnerErrorV1;
-pub use cell_split_owner::CellSplitOwnerV1;
 
 #[cfg(unix)]
 pub use unix::UnixManagedProcess;

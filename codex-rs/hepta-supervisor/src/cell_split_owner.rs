@@ -207,10 +207,13 @@ impl CellSplitObservedReceiptV1 {
         }
         match &self.evidence {
             CellSplitNativeEvidenceV1::AdmissionStopped { .. } => true,
-            CellSplitNativeEvidenceV1::Drained { unknown_effects, .. } => *unknown_effects == 0,
-            CellSplitNativeEvidenceV1::OldWriterFenced { observed_generation, .. } => {
-                *observed_generation == plan.old_generation
-            }
+            CellSplitNativeEvidenceV1::Drained {
+                unknown_effects, ..
+            } => *unknown_effects == 0,
+            CellSplitNativeEvidenceV1::OldWriterFenced {
+                observed_generation,
+                ..
+            } => *observed_generation == plan.old_generation,
             CellSplitNativeEvidenceV1::ArtifactCasCommitted {
                 payload_digest,
                 readback_digest,
@@ -218,44 +221,55 @@ impl CellSplitObservedReceiptV1 {
                 source_snapshot_digest,
                 source_snapshot_ack,
                 ..
-            } => *payload_digest == binding.selected_artifact_digest
-                && *readback_digest == *payload_digest
-                && !registry_head_digest.is_zero()
-                && !source_snapshot_digest.is_zero()
-                && !source_snapshot_ack.is_zero(),
+            } => {
+                *payload_digest == binding.selected_artifact_digest
+                    && *readback_digest == *payload_digest
+                    && !registry_head_digest.is_zero()
+                    && !source_snapshot_digest.is_zero()
+                    && !source_snapshot_ack.is_zero()
+            }
             CellSplitNativeEvidenceV1::ChildMigrated {
                 artifact_digest,
                 source_state_digest,
                 child_state_digest,
                 ..
-            } => *artifact_digest == binding.selected_artifact_digest
-                && !source_state_digest.is_zero()
-                && !child_state_digest.is_zero(),
+            } => {
+                *artifact_digest == binding.selected_artifact_digest
+                    && !source_state_digest.is_zero()
+                    && !child_state_digest.is_zero()
+            }
             CellSplitNativeEvidenceV1::ChildValidated {
                 artifact_digest,
                 child_state_digest,
                 ..
-            } => *artifact_digest == binding.selected_artifact_digest
-                && !child_state_digest.is_zero(),
-            CellSplitNativeEvidenceV1::NewWriterFenced { observed_generation, .. } => {
-                *observed_generation == plan.new_generation
+            } => {
+                *artifact_digest == binding.selected_artifact_digest
+                    && !child_state_digest.is_zero()
             }
+            CellSplitNativeEvidenceV1::NewWriterFenced {
+                observed_generation,
+                ..
+            } => *observed_generation == plan.new_generation,
             CellSplitNativeEvidenceV1::CnsRouteCutover {
                 predecessor_digest,
                 successor_digest,
                 observed_generation,
                 ..
-            } => *predecessor_digest == binding.predecessor_route_digest
-                && *successor_digest == binding.successor_route_digest
-                && *observed_generation == plan.new_generation,
+            } => {
+                *predecessor_digest == binding.predecessor_route_digest
+                    && *successor_digest == binding.successor_route_digest
+                    && *observed_generation == plan.new_generation
+            }
             CellSplitNativeEvidenceV1::Retired {
                 retired_generation,
                 active_generation,
                 active_route_digest,
                 ..
-            } => *retired_generation == plan.old_generation
-                && *active_generation == plan.new_generation
-                && *active_route_digest == binding.successor_route_digest,
+            } => {
+                *retired_generation == plan.old_generation
+                    && *active_generation == plan.new_generation
+                    && *active_route_digest == binding.successor_route_digest
+            }
         }
     }
 
@@ -274,12 +288,22 @@ impl CellSplitObservedReceiptV1 {
         bytes.extend_from_slice(self.evidence.native_ack().as_array());
         match &self.evidence {
             CellSplitNativeEvidenceV1::AdmissionStopped { .. } => {}
-            CellSplitNativeEvidenceV1::Drained { outbox_watermark, unknown_effects, .. } => {
+            CellSplitNativeEvidenceV1::Drained {
+                outbox_watermark,
+                unknown_effects,
+                ..
+            } => {
                 bytes.extend_from_slice(&outbox_watermark.to_be_bytes());
                 bytes.extend_from_slice(&unknown_effects.to_be_bytes());
             }
-            CellSplitNativeEvidenceV1::OldWriterFenced { observed_generation, .. }
-            | CellSplitNativeEvidenceV1::NewWriterFenced { observed_generation, .. } => {
+            CellSplitNativeEvidenceV1::OldWriterFenced {
+                observed_generation,
+                ..
+            }
+            | CellSplitNativeEvidenceV1::NewWriterFenced {
+                observed_generation,
+                ..
+            } => {
                 bytes.extend_from_slice(&observed_generation.get().to_be_bytes());
             }
             CellSplitNativeEvidenceV1::ArtifactCasCommitted {
@@ -485,7 +509,11 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         {
             return Err(CellSplitOwnerErrorV1::InvalidBinding);
         }
-        Ok(Self { journal, native, binding })
+        Ok(Self {
+            journal,
+            native,
+            binding,
+        })
     }
 
     /// Advance no more than one phase. A stopped or crashed caller can reopen
@@ -520,17 +548,19 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         if checkpoint.phase == WriterHandoffPhaseV1::Retired {
             return Ok(checkpoint);
         }
-        let target = next_phase(checkpoint.phase)
-            .ok_or(CellSplitOwnerErrorV1::Quarantined)?;
+        let target = next_phase(checkpoint.phase).ok_or(CellSplitOwnerErrorV1::Quarantined)?;
 
         // Never perform a second mutation when the native owner is uncertain.
-        let observed = match self.native.lookup(&checkpoint.plan, target)
+        let observed = match self
+            .native
+            .lookup(&checkpoint.plan, target)
             .map_err(CellSplitOwnerErrorV1::Native)?
         {
             CellSplitLookupV1::Observed(value) => value,
             CellSplitLookupV1::Indeterminate => return Err(CellSplitOwnerErrorV1::Indeterminate),
             CellSplitLookupV1::Absent => {
-                self.native.execute(&checkpoint.plan, target)
+                self.native
+                    .execute(&checkpoint.plan, target)
                     .map_err(CellSplitOwnerErrorV1::Native)?;
                 self.require_observation(&checkpoint.plan, target)?
             }
@@ -551,11 +581,18 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
                         source_state_digest,
                         ..
                     },
-                ) => payload_digest == artifact_digest
-                    && source_snapshot_digest == source_state_digest,
+                ) => {
+                    payload_digest == artifact_digest
+                        && source_snapshot_digest == source_state_digest
+                }
                 (
-                    CellSplitNativeEvidenceV1::ChildMigrated { child_state_digest, .. },
-                    CellSplitNativeEvidenceV1::ChildValidated { child_state_digest: validated, .. },
+                    CellSplitNativeEvidenceV1::ChildMigrated {
+                        child_state_digest, ..
+                    },
+                    CellSplitNativeEvidenceV1::ChildValidated {
+                        child_state_digest: validated,
+                        ..
+                    },
                 ) => child_state_digest == validated,
                 _ => true,
             };
@@ -564,15 +601,19 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
             }
         }
         let outbox_watermark = match &observed.evidence {
-            CellSplitNativeEvidenceV1::Drained { outbox_watermark, .. } => Some(*outbox_watermark),
+            CellSplitNativeEvidenceV1::Drained {
+                outbox_watermark, ..
+            } => Some(*outbox_watermark),
             _ => None,
         };
-        self.journal.advance(WriterHandoffAdvanceV1 {
-            phase: target,
-            evidence_digest: observed.evidence_digest(),
-            outbox_watermark,
-            unknown_effect_count: 0,
-        }).map_err(Into::into)
+        self.journal
+            .advance(WriterHandoffAdvanceV1 {
+                phase: target,
+                evidence_digest: observed.evidence_digest(),
+                outbox_watermark,
+                unknown_effect_count: 0,
+            })
+            .map_err(Into::into)
     }
 
     fn require_observation(
@@ -580,9 +621,16 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         plan: &WriterHandoffPlanV1,
         phase: WriterHandoffPhaseV1,
     ) -> Result<CellSplitObservedReceiptV1, CellSplitOwnerErrorV1<N::Error>> {
-        match self.native.lookup(plan, phase).map_err(CellSplitOwnerErrorV1::Native)? {
+        match self
+            .native
+            .lookup(plan, phase)
+            .map_err(CellSplitOwnerErrorV1::Native)?
+        {
             CellSplitLookupV1::Observed(observation)
-                if observation.validate(plan, &self.binding, phase) => Ok(observation),
+                if observation.validate(plan, &self.binding, phase) =>
+            {
+                Ok(observation)
+            }
             CellSplitLookupV1::Observed(_) => Err(CellSplitOwnerErrorV1::InvalidObservation),
             CellSplitLookupV1::Absent => Err(CellSplitOwnerErrorV1::ObservationMissing),
             CellSplitLookupV1::Indeterminate => Err(CellSplitOwnerErrorV1::Indeterminate),

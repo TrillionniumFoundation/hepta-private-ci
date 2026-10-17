@@ -14,7 +14,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactOwnerHostError;
-use crate::CellSplitArtifactCasReadbackV1;
 use crate::ArtifactOwnerPublicationCheckpointV1;
 use crate::ArtifactOwnerTrustV1;
 use crate::ArtifactPublicationError;
@@ -22,6 +21,7 @@ use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationReceiptV1;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
+use crate::CellSplitArtifactCasReadbackV1;
 use crate::DatasetWithdrawalRegistry;
 use crate::LearningArtifactOwnerHost;
 use crate::RegistryHeadRequirementV1;
@@ -151,9 +151,10 @@ impl LearningArtifactOwnerService {
             .recover_publication(operation_id)?
             .ok_or(ArtifactOwnerHostError::Indeterminate)?;
         if checkpoint.checkpoint.withdrawal_scope_digest
-                != self.withdrawal_registry.scope_digest().ok_or(
-                    LearningArtifactOwnerServiceError::WithdrawalFrontierConflict,
-                )?
+            != self
+                .withdrawal_registry
+                .scope_digest()
+                .ok_or(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict)?
             || checkpoint.checkpoint.withdrawal_head_digest
                 != self.withdrawal_registry.head_digest()
         {

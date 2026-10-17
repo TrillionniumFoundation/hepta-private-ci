@@ -474,7 +474,10 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
         .observe_governed_topology_cutover(&receipt)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     assert_eq!(native.observed_generation, Generation::new(2)?);
-    assert_eq!(native.successor_hierarchy_digest, successor_snapshot.hierarchy_digest());
+    assert_eq!(
+        native.successor_hierarchy_digest,
+        successor_snapshot.hierarchy_digest()
+    );
     assert_eq!(native.handoff_plan_digest, receipt.handoff_plan_digest);
     assert!(!native.native_ack_digest.is_zero());
     assert_eq!(native.authority, AuthorityPosture::DENY_ALL);
