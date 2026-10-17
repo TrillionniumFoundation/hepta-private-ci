@@ -297,7 +297,188 @@ def analyze(plan, rows):
             "knowledge": knowledge <= organized,
         },
     }
+    # Raw success labels are not an independent semantic or execution audit.
+    # These pairwise diagnostics show what the registered observations imply
+    # WITHOUT turning a positive contrast into a production admission.
+    contrasts = {
+        "frozen_oracle_vs_empty": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "none"),
+            ("hybrid_rag", "frozen", "oracle"),
+        ),
+        "frozen_oracle_vs_hybrid": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            ("hybrid_rag", "frozen", "oracle"),
+        ),
+        "frozen_oracle_vs_ablation": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "ablated"),
+            ("hybrid_rag", "frozen", "oracle"),
+        ),
+        "reference_capacity_same_oracle": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "oracle"),
+            ("hybrid_rag", "reference", "oracle"),
+        ),
+        "organized_vs_hybrid": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            ("event_graph", "frozen", "hybrid"),
+        ),
+        "learned_policy_vs_organized": paired_task_outcomes(
+            by_key, cases, ("event_graph", "frozen", "hybrid"),
+            ("learned_read", "frozen", "hybrid"),
+        ),
+        "learned_policy_vs_hybrid": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            ("learned_read", "frozen", "hybrid"),
+        ),
+        "knowledge_vs_organized": paired_task_outcomes(
+            by_key, cases, ("event_graph", "frozen", "hybrid"),
+            ("knowledge", "frozen", "hybrid"),
+        ),
+        "knowledge_vs_hybrid": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            ("knowledge", "frozen", "hybrid"),
+        ),
+        "knowledge_only_vs_empty": paired_task_outcomes(
+            by_key, cases, ("hybrid_rag", "frozen", "none"),
+            ("knowledge_only", "frozen", "none"),
+        ),
+    }
+    out["paired_task_diagnostics"] = contrasts
+    out["four_stage_disposition"] = four_stage_disposition(
+        out, contrasts, rows
+    )
     return out
+
+
+def paired_task_outcomes(by_key, cases, control, candidate):
+    """Report true paired outcomes rather than aggregate means alone.
+
+    `root` is only an author-declared grouping. No confidence or external
+    source-family independence can be inferred from these counts.
+    """
+    def blank():
+        return dict(planned=0, wins=0, losses=0, both_success=0, both_fail=0)
+
+    total = blank()
+    by_kind, by_root = {}, {}
+    diagnostics_delta = 0
+    recovery_wins = recovery_losses = 0
+    control_tokens = candidate_tokens = 0
+    matched_evidence = 0
+    for case in cases.values():
+        cid, root, kind = case["id"], case["root"], case["task"]
+        a = by_key[(cid, control[0], control[2], control[1])]
+        b = by_key[(cid, candidate[0], candidate[2], candidate[1])]
+        if b["source_digest"] == a["source_digest"]:
+            matched_evidence += 1
+        if b["success"] and not a["success"]:
+            category = "wins"
+        elif a["success"] and not b["success"]:
+            category = "losses"
+        elif a["success"]:
+            category = "both_success"
+        else:
+            category = "both_fail"
+        for bucket in (total, by_kind.setdefault(kind, blank()), by_root.setdefault(root, blank())):
+            bucket["planned"] += 1
+            bucket[category] += 1
+        diagnostics_delta += b["diagnostic_count"] - a["diagnostic_count"]
+        recovery_wins += b["recovery_success"] and not a["recovery_success"]
+        recovery_losses += a["recovery_success"] and not b["recovery_success"]
+        control_tokens += a["tokens"]
+        candidate_tokens += b["tokens"]
+
+    def effect(bucket):
+        return dict(
+            **bucket,
+            net_task_success_delta=(bucket["wins"] - bucket["losses"]) / bucket["planned"],
+        )
+
+    return dict(
+        control=dict(zip(("arm", "reader", "condition"), control)),
+        candidate=dict(zip(("arm", "reader", "condition"), candidate)),
+        **effect(total),
+        by_kind={key: effect(value) for key, value in sorted(by_kind.items())},
+        by_root={key: effect(value) for key, value in sorted(by_root.items())},
+        evidence_bytes_identity_matched_cases=matched_evidence,
+        diagnostic_count_delta=diagnostics_delta,
+        recovery_wins=int(recovery_wins),
+        recovery_losses=int(recovery_losses),
+        original_input_output_token_sum_delta=candidate_tokens - control_tokens,
+        statistical_superiority_established=False,
+        executable_receipts_independently_authenticated=False,
+    )
+
+
+def four_stage_disposition(report, pairs, rows):
+    """Causal experiment order: capability -> organization -> learning -> lifetime."""
+    a = report["arms"]["hybrid_rag"]["frozen"]
+    oracle = a["oracle"]["success_rate"]
+    hybrid = a["hybrid"]["success_rate"]
+    reference = report["arms"]["hybrid_rag"]["reference"]["oracle"]["success_rate"]
+    if oracle < 1:
+        reader_next = "audit_sufficiency_prompt_representation_and_reader_errors"
+    elif hybrid < oracle:
+        reader_next = "investigate_retrieval_selection_distractors_and_packing"
+    else:
+        reader_next = "validate_on_independent_blinded_project_families"
+    organized = pairs["organized_vs_hybrid"]
+    learning = {}
+    for name, prefix in (("learned_read", "learned_policy"), ("knowledge", "knowledge")):
+        vs_organized = pairs[prefix + "_vs_organized"]
+        vs_hybrid = pairs[prefix + "_vs_hybrid"]
+        learning[name] = dict(
+            paired_vs_strong_rag=vs_hybrid["net_task_success_delta"],
+            paired_vs_organized=vs_organized["net_task_success_delta"],
+            rejected_on_observed_tasks=(
+                vs_hybrid["net_task_success_delta"] <= 0
+                or vs_organized["net_task_success_delta"] <= 0
+            ),
+            # Source-before-task training and independent future exposure are
+            # not authenticated by a user's assertion in this JSON document.
+            parameter_learning_admitted=False,
+        )
+    unknown_costs = sorted(
+        key for key in COST_KEYS if any(row["cost"][key] is None for row in rows)
+    )
+    return dict(
+        stage_1_reader=dict(
+            frozen_oracle_success_rate=oracle,
+            reference_oracle_success_rate=reference,
+            ordinary_hybrid_success_rate=hybrid,
+            reference_only_gain_is_reader_capacity=True,
+            claimed_full_evidence_human_certified=False,
+            missing_premise_necessity_human_certified=False,
+            next_priority=reader_next,
+            reader_capability_independently_established=False,
+        ),
+        stage_2_nonparametric=dict(
+            observed_organized_minus_hybrid=organized["net_task_success_delta"],
+            paired_organization_wins=organized["wins"],
+            paired_organization_losses=organized["losses"],
+            no_task_gain_on_this_cohort=organized["wins"] == organized["losses"],
+            eligible_strong_rag_control=True,
+            independent_organization_superiority_established=False,
+        ),
+        stage_3_parametric=dict(
+            candidates=learning,
+            knowledge_only_vs_empty_task_delta=pairs[
+                "knowledge_only_vs_empty"
+            ]["net_task_success_delta"],
+            prospective_training_freeze_authenticated=False,
+            independent_heldout_gain_established=False,
+        ),
+        stage_4_lifetime=dict(
+            missing_cost_fields=unknown_costs,
+            per_observation_cost_totals_not_amortized_lifecycle=True,
+            shared_write_cost_allocation_authenticated=False,
+            retained_raw_source_storage_in_cost_model="raw_storage" in COST_KEYS,
+            maintenance_revocation_recovery_observed_in_production=False,
+            measured_query_reuse_break_even=None,
+            independently_observed_future_windows=0,
+            production_accepted=False,
+        ),
+        protocol_regressions_are_not_fresh_model_or_program_executions=True,
+    )
 
 
 def main():
