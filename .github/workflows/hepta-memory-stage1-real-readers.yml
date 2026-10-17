@@ -2,20 +2,19 @@ name: MemoryCell stage-1 real reader capability
 on:
   pull_request:
     types: [labeled]
-  workflow_dispatch:
 permissions:
   contents: read
   actions: read
 concurrency:
   group: memory-stage1-real-reader-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   reader:
     if: >-
       github.event.pull_request.number == 2607 &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.head_ref == 'codex/memory-four-stage-premise-integrity-20261017' &&
-      github.event.label.name == 'memory-cell-preserved-native'
+      github.event.label.name == 'memory-cell-legacy-full-reader-only'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
