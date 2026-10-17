@@ -1060,7 +1060,7 @@ impl StateCheckpointOwnerV1 {
             || self
                 .entries
                 .get(&cell_id)
-                .is_none_or(|history| history.is_empty())
+                .is_none_or(Vec::is_empty)
         {
             return Err(ProductionOwnerError::StateNotFound(cell_id));
         }
@@ -2171,7 +2171,7 @@ mod tests {
         owner
             .commit(
                 id("operation.chain.2"),
-                cell.clone(),
+                cell,
                 generation,
                 schema,
                 first.state_digest,
