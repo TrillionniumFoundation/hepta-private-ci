@@ -265,6 +265,8 @@ def bind_modality_registries(
     a model or certify semantic alignment, generation quality, or efficacy.
     """
 
+    for field in ("stem_digest", "hidden_width", "modality_projectors", "current_generation"):
+        _require(hasattr(stem, field), f"Stem is missing {field}")
     _require(stem.stem_digest == towers.stem_digest == projectors.stem_digest, "registry/Stem digest mismatch")
     stem_generation = getattr(stem, "current_generation", None)
     _require(type(stem_generation) is int, "Stem must declare current_generation")
