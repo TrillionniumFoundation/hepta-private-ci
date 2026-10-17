@@ -239,7 +239,9 @@ def analyze(plan, rows):
         )
     require(
         by_key[(next(iter(cases)), "hybrid_rag", "none", "frozen")]["reader_revision"]
-        != by_key[(next(iter(cases)), "hybrid_rag", "none", "reference")]["reader_revision"],
+        != by_key[(next(iter(cases)), "hybrid_rag", "none", "reference")][
+            "reader_revision"
+        ],
         "frozen and reference reader must be distinct immutable revisions",
     )
     for cid in cases:
@@ -331,43 +333,63 @@ def analyze(plan, rows):
     # WITHOUT turning a positive contrast into a production admission.
     contrasts = {
         "frozen_oracle_vs_empty": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "none"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "none"),
             ("hybrid_rag", "frozen", "oracle"),
         ),
         "frozen_oracle_vs_hybrid": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "hybrid"),
             ("hybrid_rag", "frozen", "oracle"),
         ),
         "frozen_oracle_vs_ablation": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "ablated"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "ablated"),
             ("hybrid_rag", "frozen", "oracle"),
         ),
         "reference_capacity_same_oracle": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "oracle"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "oracle"),
             ("hybrid_rag", "reference", "oracle"),
         ),
         "organized_vs_hybrid": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "hybrid"),
             ("event_graph", "frozen", "hybrid"),
         ),
         "learned_policy_vs_organized": paired_task_outcomes(
-            by_key, cases, ("event_graph", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("event_graph", "frozen", "hybrid"),
             ("learned_read", "frozen", "hybrid"),
         ),
         "learned_policy_vs_hybrid": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "hybrid"),
             ("learned_read", "frozen", "hybrid"),
         ),
         "knowledge_vs_organized": paired_task_outcomes(
-            by_key, cases, ("event_graph", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("event_graph", "frozen", "hybrid"),
             ("knowledge", "frozen", "hybrid"),
         ),
         "knowledge_vs_hybrid": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "hybrid"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "hybrid"),
             ("knowledge", "frozen", "hybrid"),
         ),
         "knowledge_only_vs_empty": paired_task_outcomes(
-            by_key, cases, ("hybrid_rag", "frozen", "none"),
+            by_key,
+            cases,
+            ("hybrid_rag", "frozen", "none"),
             ("knowledge_only", "frozen", "none"),
         ),
     }
@@ -505,9 +527,9 @@ def four_stage_disposition(report, pairs, rows):
         ),
         stage_3_parametric=dict(
             candidates=learning,
-            knowledge_only_vs_empty_task_delta=pairs[
-                "knowledge_only_vs_empty"
-            ]["net_task_success_delta"],
+            knowledge_only_vs_empty_task_delta=pairs["knowledge_only_vs_empty"][
+                "net_task_success_delta"
+            ],
             knowledge_only_original_body_absence_authenticated=False,
             prospective_training_freeze_authenticated=False,
             independent_heldout_gain_established=False,

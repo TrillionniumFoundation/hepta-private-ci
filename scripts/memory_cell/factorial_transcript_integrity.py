@@ -28,8 +28,10 @@ def text_sha(value):
 
 
 def hex64(value):
-    return isinstance(value, str) and len(value) == 64 and all(
-        char in "0123456789abcdef" for char in value
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
     )
 
 
@@ -97,9 +99,7 @@ def audit(plan, observations, transcripts):
     result = analyze(plan, observations)
     require(isinstance(transcripts, list), "original transcript list required")
     cases = {case["id"]: case for case in plan["cases"]}
-    admitted = {
-        cid: validate_case_sources(case) for cid, case in cases.items()
-    }
+    admitted = {cid: validate_case_sources(case) for cid, case in cases.items()}
     expected = {
         (cid, arm, condition, reader)
         for cid in cases
@@ -107,17 +107,11 @@ def audit(plan, observations, transcripts):
         for condition in CONDITIONS
         for reader in READERS
     }
-    by_row = {
-        (r["id"], r["arm"], r["condition"], r["reader"]): r
-        for r in observations
-    }
+    by_row = {(r["id"], r["arm"], r["condition"], r["reader"]): r for r in observations}
     traced = {}
     for record in transcripts:
         require(isinstance(record, dict), "original transcript entry required")
-        key = tuple(
-            record.get(name)
-            for name in ("id", "arm", "condition", "reader")
-        )
+        key = tuple(record.get(name) for name in ("id", "arm", "condition", "reader"))
         require(
             key in expected and key not in traced,
             "unexpected or duplicate raw transcript",
@@ -173,10 +167,7 @@ def audit(plan, observations, transcripts):
             len(premise) == 1,
             "oracle lacks one unique frozen prerequisite",
         )
-        remaining = [
-            source for source in original
-            if source["id"] != premise[0]["id"]
-        ]
+        remaining = [source for source in original if source["id"] != premise[0]["id"]]
         for reader in READERS:
             for arm in ARMS:
                 if arm != "knowledge_only":

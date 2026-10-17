@@ -37,21 +37,25 @@ def fake_rows(tier):
         else:
             row["f1"] = None
         rows[("q-1", arm)] = row
-    return rows, {
-        "inventory_digest": tier,
-        "revision": tier,
-        "planned": 3,
-        "successful": 2,
-        "unavailable": 1,
-    }, {
-        "cases": [
-            {
-                "question": {"identity": "q-1"},
-                "family": "old-exposed-family",
-                "phase": "capability",
-            }
-        ]
-    }
+    return (
+        rows,
+        {
+            "inventory_digest": tier,
+            "revision": tier,
+            "planned": 3,
+            "successful": 2,
+            "unavailable": 1,
+        },
+        {
+            "cases": [
+                {
+                    "question": {"identity": "q-1"},
+                    "family": "old-exposed-family",
+                    "phase": "capability",
+                }
+            ]
+        },
+    )
 
 
 class PairedReaderTests(unittest.TestCase):

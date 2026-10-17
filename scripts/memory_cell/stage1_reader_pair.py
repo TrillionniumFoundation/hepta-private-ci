@@ -117,8 +117,7 @@ def records_from_run(root, *, tier, expected_source):
     )
     insist(
         stage["inventory_sha256"] == digest((root / "inventory.json").read_bytes())
-        and stage["publisher_sha256"]
-        == digest((root / "publisher.json").read_bytes()),
+        and stage["publisher_sha256"] == digest((root / "publisher.json").read_bytes()),
         "model publisher/staging pin drift",
     )
     insist(
@@ -184,18 +183,22 @@ def records_from_run(root, *, tier, expected_source):
         len(plan["cases"]) == 8 and set(by_key) == expected,
         "incomplete frozen eight-question condition matrix",
     )
-    return by_key, {
-        "revision": stage["revision"],
-        "inventory_digest": model["inventory_digest"],
-        "stage_file_bytes": stage["model_file_bytes"],
-        "stage_seconds": stage["seconds"],
-        "planned": len(entries),
-        "successful": sum(r["status"] == "succeeded" for r in scored),
-        "unavailable": sum(r["status"] == "unavailable" for r in scored),
-        "failed": sum(r["status"] == "failed" for r in scored),
-        "original_answer_journal_sha256": digest(raw_bytes),
-        "manifest_files_verified": len(inventory),
-    }, plan
+    return (
+        by_key,
+        {
+            "revision": stage["revision"],
+            "inventory_digest": model["inventory_digest"],
+            "stage_file_bytes": stage["model_file_bytes"],
+            "stage_seconds": stage["seconds"],
+            "planned": len(entries),
+            "successful": sum(r["status"] == "succeeded" for r in scored),
+            "unavailable": sum(r["status"] == "unavailable" for r in scored),
+            "failed": sum(r["status"] == "failed" for r in scored),
+            "original_answer_journal_sha256": digest(raw_bytes),
+            "manifest_files_verified": len(inventory),
+        },
+        plan,
+    )
 
 
 def pair(root, source):

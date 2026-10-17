@@ -47,7 +47,8 @@ def example():
                             r["arm"],
                             r["condition"],
                             r["reader"],
-                        ) == (cid, arm, condition, reader)
+                        )
+                        == (cid, arm, condition, reader)
                     )
                     row.update(
                         source_digest=sha(evidence),
@@ -106,7 +107,7 @@ class OriginalTranscriptGateTests(unittest.TestCase):
                 transcript["delivered_evidence"] = [
                     {
                         "id": "premise",
-                        "text": f'unique prerequisite for {transcript["id"]}',
+                        "text": f"unique prerequisite for {transcript['id']}",
                     }
                 ]
                 row = next(
@@ -138,15 +139,13 @@ class OriginalTranscriptGateTests(unittest.TestCase):
             target["delivered_evidence"] = [
                 {
                     "id": "other",
-                    "text": f'unrelated old context for {target["id"]}',
+                    "text": f"unrelated old context for {target['id']}",
                 }
             ]
             row = next(
                 r
                 for r in rows
-                if all(
-                    r[k] == target[k] for k in ("id", "arm", "reader", "condition")
-                )
+                if all(r[k] == target[k] for k in ("id", "arm", "reader", "condition"))
             )
             row["source_digest"] = sha(target["delivered_evidence"])
         with self.assertRaisesRegex(ValueError, "no-evidence / parametric-only"):
