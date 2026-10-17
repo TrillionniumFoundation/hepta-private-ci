@@ -70,9 +70,9 @@ pub struct SharedTerminalModelV1 {
 /// Native consumer configuration, supplied by the existing owner composition.
 /// Caller identity is not inferred from Memory prose or a supplied model payload.
 pub struct AgentdSharedReplayHostV1 {
-    source: Arc<CognitiveStore>,
-    consumer: FederationConsumerAccess,
-    purpose: SharedExperiencePurposeV1,
+    pub(super) source: Arc<CognitiveStore>,
+    pub(super) consumer: FederationConsumerAccess,
+    pub(super) purpose: SharedExperiencePurposeV1,
 }
 
 impl AgentdSharedReplayHostV1 {

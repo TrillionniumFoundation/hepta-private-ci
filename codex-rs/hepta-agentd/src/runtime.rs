@@ -26,6 +26,9 @@ use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
 
+#[path = "memory_runtime_bootstrap.rs"]
+mod memory_bootstrap;
+
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
@@ -35,9 +38,14 @@ const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
 
-pub async fn run(
+pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    run_composed(config, arg0_paths, /*memory_bootstrap*/ None).await
+}
+
+async fn run_composed(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
+    mut memory_bootstrap: Option<memory_bootstrap::MemoryRuntimeBootstrapV1>,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
@@ -195,7 +203,7 @@ pub async fn run(
         }
     };
     // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
+    // degraded CognitiveRuntime state. The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
@@ -237,8 +245,14 @@ pub async fn run(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    if let Some(bootstrap) = memory_bootstrap.as_mut() {
+        // Restore cannot reuse a selected cache without current source, trust,
+        // citation, fleet and registry checks. No control or app task exists yet.
+        bootstrap.preflight(&state).await?;
+    }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
+    let memory_ready = memory_bootstrap::startup_readiness_gate_v1();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
@@ -249,6 +263,12 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(mut bootstrap) = memory_bootstrap {
+            // The memory factory remains gated while any startup registration
+            // can still fail. Its already-queued requests cannot run early.
+            bootstrap.preflight(&state).await?;
+            bootstrap.attach(&mut tasks, memory_ready.clone())?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",
@@ -307,6 +327,13 @@ pub async fn run(
         tasks.shutdown().await;
         return Err(error);
     }
+    if let Err(error) = state.refresh_generation() {
+        tasks.shutdown().await;
+        return Err(error);
+    }
+    // Release only after all registrations and a final process fence. Every
+    // memory request still needs current owners and independent final-use proof.
+    memory_ready.cancel();
     tasks
         .run_until(async move {
             shutdown_signal().await?;

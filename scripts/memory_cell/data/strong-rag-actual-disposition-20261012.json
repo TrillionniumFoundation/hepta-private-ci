@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.memorycell.strong-rag.actual-disposition.v1",
+  "source_commit": "6304b451268c73f3d1a605985226b102df841bbf",
+  "workflow_run": 38224780900,
+  "source_archive": {
+    "zip_sha256": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "verified_members": 35,
+    "artifact_id": 11669174727
+  },
+  "model_archive": {
+    "zip_sha256": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+    "verified_members": 43,
+    "artifact_id": 11743043427
+  },
+  "independent_replay_archive": {
+    "zip_sha256": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071",
+    "verified_members": 8,
+    "artifact_id": 11748040166
+  },
+  "completed_real_calls": {
+    "calibration": 40,
+    "evaluation": 72,
+    "total": 112
+  },
+  "calibration": {
+    "frozen_k": 1,
+    "by_k": {
+      "k1": {
+        "strict_success": 4,
+        "prompt_tokens": 4045
+      },
+      "k2": {
+        "strict_success": 4,
+        "prompt_tokens": 6328
+      },
+      "k3": {
+        "strict_success": 4,
+        "prompt_tokens": 8698
+      },
+      "k4": {
+        "strict_success": 4,
+        "prompt_tokens": 10970
+      },
+      "k6": {
+        "strict_success": 2,
+        "prompt_tokens": 15708
+      }
+    },
+    "leave_one_out_counts": {
+      "1": 7,
+      "2": 1,
+      "3": 0,
+      "4": 0,
+      "6": 0
+    },
+    "stable_to_one_case_removal": false
+  },
+  "evaluation": {
+    "selected_k": {
+      "strict_correct": 5,
+      "correct_with_full_program_declared_citation": 3,
+      "input_tokens": 3961,
+      "output_tokens": 101,
+      "reader_seconds": 62.51,
+      "support_delivered": 3
+    },
+    "hybrid_k4": {
+      "strict_correct": 3,
+      "correct_with_full_program_declared_citation": 1,
+      "input_tokens": 10806,
+      "output_tokens": 104,
+      "reader_seconds": 136.044,
+      "support_delivered": 8
+    },
+    "hybrid_k6": {
+      "strict_correct": 2,
+      "correct_with_full_program_declared_citation": 0,
+      "input_tokens": 15463,
+      "output_tokens": 103,
+      "reader_seconds": 194.104,
+      "support_delivered": 8
+    },
+    "hybrid_k4_reversed": {
+      "strict_correct": 3,
+      "correct_with_full_program_declared_citation": 1,
+      "input_tokens": 10806,
+      "output_tokens": 105,
+      "reader_seconds": 135.831,
+      "support_delivered": 8
+    },
+    "single_hop": {
+      "strict_correct": 4,
+      "correct_with_full_program_declared_citation": 4,
+      "input_tokens": 4575,
+      "output_tokens": 90,
+      "reader_seconds": 66.037,
+      "support_delivered": 4
+    },
+    "entity_time": {
+      "strict_correct": 8,
+      "correct_with_full_program_declared_citation": 4,
+      "input_tokens": 5752,
+      "output_tokens": 105,
+      "reader_seconds": 79.196,
+      "support_delivered": 8
+    },
+    "organized": {
+      "strict_correct": 8,
+      "correct_with_full_program_declared_citation": 4,
+      "input_tokens": 5179,
+      "output_tokens": 105,
+      "reader_seconds": 73.517,
+      "support_delivered": 8
+    },
+    "program_support": {
+      "strict_correct": 8,
+      "correct_with_full_program_declared_citation": 4,
+      "input_tokens": 5179,
+      "output_tokens": 105,
+      "reader_seconds": 73.115,
+      "support_delivered": 8
+    },
+    "empty": {
+      "strict_correct": 0,
+      "correct_with_full_program_declared_citation": 0,
+      "input_tokens": 1630,
+      "output_tokens": 60,
+      "reader_seconds": 36.139,
+      "support_delivered": 0
+    }
+  },
+  "paired_effects": {
+    "selected_minus_hybrid4": {
+      "wins": 2,
+      "losses": 0,
+      "ties": 6,
+      "observed_delta": 0.25
+    },
+    "entity_time_minus_single_hop": {
+      "wins": 4,
+      "losses": 0,
+      "ties": 4,
+      "observed_delta": 0.5
+    },
+    "organized_minus_entity_time": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 8,
+      "observed_delta": 0.0
+    },
+    "organized_minus_selected": {
+      "wins": 3,
+      "losses": 0,
+      "ties": 5,
+      "observed_delta": 0.375
+    }
+  },
+  "identical_prompt_pairs": 39,
+  "original_source_families_independently_sampled": 0,
+  "independent_semantic_citation_adjudication": false,
+  "longitudinal_evidence": false,
+  "graph_incremental_task_advantage_over_full_path_filter": false,
+  "learned_parameter_advantage_established": false,
+  "lifecycle_cost_qualified": false,
+  "decision": "NO_GO_PARAMETRIC_OR_PRODUCTION; retain simple full-path filter and fixed reader as next independent baseline",
+  "production_accepted": false
+}

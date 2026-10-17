@@ -1,0 +1,137 @@
+name: MemoryCell exact public project Git source bytes
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json"
+      - "scripts/memory_cell/project_pr_family_bytes.py"
+      - "scripts/memory_cell/test_project_pr_family_bytes.py"
+      - ".github/workflows/hepta-memory-project-family-bytes.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-object-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Run focused immutable-object regression suite
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-family-verification
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_project_pr_family_*.py' -v \
+            2>&1 | tee /tmp/memory-family-verification/tests.log
+      - name: Strict syntax, Ruff and exact formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 -m compileall -q \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py
+          uv run --frozen --project scripts ruff check --select F401,F821,F841 \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py \
+            scripts/memory_cell/test_project_pr_family_extension.py \
+            scripts/memory_cell/test_project_pr_family_bytes.py \
+            2>&1 | tee /tmp/memory-family-verification/lint.log
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py \
+            scripts/memory_cell/test_project_pr_family_extension.py \
+            scripts/memory_cell/test_project_pr_family_bytes.py \
+            2>&1 | tee /tmp/memory-family-verification/format.log
+      - name: Verify exact Git commit and 32 original file objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          manifest=scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json
+          previous=scripts/memory_cell/data/real-project-pr-source-cut-20261012.json
+          sha256sum "$manifest" > /tmp/memory-family-verification/manifest.sha256
+          python3 scripts/memory_cell/project_pr_family_bytes.py \
+            "$manifest" "$previous" /tmp/memory-family-staged-originals \
+            --source-sha256 "$(sha256sum "$manifest" | cut -d ' ' -f1)" \
+            2>&1 | tee /tmp/memory-family-verification/original-git-proof.log
+          cp /tmp/memory-family-staged-originals/READY.json \
+            /tmp/memory-family-verification/source-ready.json
+          cp /tmp/memory-family-staged-originals/inventory.json \
+            /tmp/memory-family-verification/source-inventory.json
+          cp /tmp/memory-family-staged-originals/readback.json \
+            /tmp/memory-family-verification/offline-reopen.json
+          # Reopen the registered Latin-1 Git blob as raw bytes, not UTF-8 text.
+          # This is a source-only receipt. Never export the third-party blob.
+          python3 - <<'PYBINARY'
+          from pathlib import Path
+          import hashlib
+          import json
+          source_oid = 'a772b57bdd5aa26fbedd07cb057b9006239e784e'
+          source_head = '707fd96fabc462d710b129e54dbbbb71b51fcd5e'
+          source_path = 'tests/testdata/encoding/iso-8859-1.ts'
+          root = Path('/tmp/memory-family-staged-originals')
+          inv = json.loads((root / 'inventory.json').read_text())
+          ready = json.loads((root / 'READY.json').read_text())
+          rows = inv['originals']
+          matching = [r for r in rows if (
+              r['project'] == 'denoland/deno' and r['partition'] == 'evaluation'
+              and r['head_sha'] == source_head and r['path'] == source_path
+              and r['blob_sha'] == source_oid
+          )]
+          if len(rows) != 32 or len(matching) != 1 or ready['original_files_verified'] != 32:
+              raise ValueError('incomplete original-source READY and binary census')
+          path = root / 'blobs' / (source_oid + '.blob')
+          if path.is_symlink() or not path.is_file():
+              raise ValueError('missing regular original binary blob')
+          raw = path.read_bytes()
+          source_git_sha = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          source_sha256 = hashlib.sha256(raw).hexdigest()
+          if source_git_sha != source_oid or source_sha256 != matching[0]['byte_sha256']:
+              raise ValueError('original Latin-1 Git blob changed')
+          try:
+              raw.decode('utf-8', 'strict')
+          except UnicodeDecodeError:
+              pass
+          else:
+              raise ValueError('original Latin-1 source silently normalized to UTF-8')
+          proof = {
+              'schema': 'hepta.memorycell.source-extension.latin1-binary-proof.v1',
+              'source_manifest_sha256': inv['source_manifest_sha256'],
+              'original_files_verified': len(rows),
+              'source_project': 'denoland/deno',
+              'source_head': source_head,
+              'source_path': source_path,
+              'original_git_blob_sha1': source_git_sha,
+              'original_raw_sha256': source_sha256,
+              'original_raw_byte_count': len(raw),
+              'non_utf8_bytes_verified': True,
+              'model_calls': 0,
+              'human_semantic_adjudication': False,
+              'production_accepted': False,
+          }
+          Path('/tmp/memory-family-verification/latin1-original-proof.json').write_text(
+              json.dumps(proof, sort_keys=True, indent=2) + '\n'
+          )
+          PYBINARY
+          # Do not redistribute third-party source bytes as CI artifacts.
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Preserve original-source success and failure evidence only
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/memory-family-verification/tested-commit.txt
+          (cd /tmp/memory-family-verification && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-public-project-original-git-hashes
+          path: /tmp/memory-family-verification
+          if-no-files-found: error

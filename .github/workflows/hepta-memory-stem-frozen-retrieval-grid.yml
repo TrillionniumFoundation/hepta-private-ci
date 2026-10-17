@@ -1,0 +1,115 @@
+name: MemoryCell frozen source-recall RRF grid
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_frozen_retrieval_grid.py"
+      - "scripts/memory_cell/stem_frozen_retrieval_grid_trial.py"
+      - "scripts/memory_cell/test_stem_frozen_retrieval_grid.py"
+      - "scripts/memory_cell/stem_root_diversity.py"
+      - "scripts/memory_cell/test_stem_root_diversity.py"
+      - "scripts/memory_cell/stem_session_diversity.py"
+      - "scripts/memory_cell/test_stem_session_diversity.py"
+      - ".github/workflows/hepta-memory-stem-frozen-retrieval-grid.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-frozen-retrieval-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-retrieval-grid:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pure fail-closed native cohort and TRAIN-only selection tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-retrieval-grid
+          git rev-parse HEAD > /tmp/stem-retrieval-grid/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-retrieval-grid/tested-tree.txt
+          python3 -m unittest -v test_stem_frozen_retrieval_grid test_stem_root_diversity test_stem_session_diversity 2>&1 | tee /tmp/stem-retrieval-grid/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_frozen_retrieval_grid.py scripts/memory_cell/stem_frozen_retrieval_grid_trial.py scripts/memory_cell/stem_root_diversity.py scripts/memory_cell/test_stem_root_diversity.py scripts/memory_cell/stem_session_diversity.py scripts/memory_cell/test_stem_session_diversity.py
+      - name: Fixed original frozen Encoder only
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/frozen-retrieval-python
+          /tmp/frozen-retrieval-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/frozen-retrieval-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/frozen-retrieval-python/bin/pip freeze > /tmp/stem-retrieval-grid/environment.txt
+      - name: Download two existing byte-pinned artifacts (no model training)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-strict-original.zip
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 /tmp/stem-strict-original.zip | sha256sum -c -
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Validate bounded original source archive and retrieval model inventory
+        run: |
+          set -euo pipefail
+          /tmp/frozen-retrieval-python/bin/python - <<'PY'
+          import tarfile
+          from pathlib import PurePosixPath, Path
+          from native import digest
+          from pretrained import file_inventory
+          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) > 10000 or sum(m.size for m in members) > 2*1024**3:
+                  raise ValueError('bounded native staging members required')
+              for item in members:
+                  name = PurePosixPath(item.name)
+                  if (name.is_absolute() or '..' in name.parts
+                          or not name.parts or name.parts[0] != 'memory-inputs'
+                          or not (item.isfile() or item.isdir())):
+                      raise ValueError('unsafe original source input')
+              archive.extractall('/tmp', members=members, filter='data')
+          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('original frozen retriever identity drift')
+          PY
+      - name: Replay original 80 query/pool identities and fixed TRAIN-only RRF grid
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stem-retrieval-grid/resources.txt \
+            /tmp/frozen-retrieval-python/bin/python scripts/memory_cell/stem_frozen_retrieval_grid_trial.py \
+            --strict-zip /tmp/stem-strict-original.zip \
+            --staged /tmp/memory-inputs \
+            --out /tmp/stem-retrieval-grid/receipts \
+            2>&1 | tee /tmp/stem-retrieval-grid/execution.log
+      - name: Preserve complete audit source, errors and SHA256 manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-retrieval-grid/source
+          cp scripts/memory_cell/stem_frozen_retrieval_grid.py /tmp/stem-retrieval-grid/source/
+          cp scripts/memory_cell/stem_frozen_retrieval_grid_trial.py /tmp/stem-retrieval-grid/source/
+          cp scripts/memory_cell/test_stem_frozen_retrieval_grid.py /tmp/stem-retrieval-grid/source/
+          cp scripts/memory_cell/stem_root_diversity.py scripts/memory_cell/test_stem_root_diversity.py /tmp/stem-retrieval-grid/source/
+          cp scripts/memory_cell/stem_session_diversity.py scripts/memory_cell/test_stem_session_diversity.py /tmp/stem-retrieval-grid/source/
+          cp .github/workflows/hepta-memory-stem-frozen-retrieval-grid.yml /tmp/stem-retrieval-grid/source/
+          (cd /tmp/stem-retrieval-grid && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-frozen-retrieval-grid
+          path: /tmp/stem-retrieval-grid
+          if-no-files-found: error

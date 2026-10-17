@@ -1,0 +1,72 @@
+name: MemoryCell immutable historical source-write disposition
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/source_write_retrospective.py
+      - scripts/memory_cell/test_source_write_retrospective.py
+      - .github/workflows/hepta-memory-source-retrospective.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pinned-original-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      EXPECTED_ZIP: 4dab11e3ceb297e8160fa342982ff68d93d86c98537b83925db857c4f0e8958c
+      GENERATOR: 2c6dae45782b1ba07ba9af237f01bdecc0c5640b
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Fetch exact already-completed model artifact, not new generated results
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-source-retrospective
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11689893524/zip > /tmp/memory-source-retrospective/original.zip
+      - name: Execute invariants and independently replay existing raw records
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p test_source_write_retrospective.py -v 2>&1 | tee /tmp/memory-source-retrospective/tests.log
+          python3 scripts/memory_cell/source_write_retrospective.py \
+            /tmp/memory-source-retrospective/original.zip \
+            /tmp/memory-source-retrospective/report.json \
+            --artifact-sha256 "$EXPECTED_ZIP" \
+            --generating-commit "$GENERATOR" 2>&1 | tee /tmp/memory-source-retrospective/replay.log
+          sha256sum /tmp/memory-source-retrospective/report.json > /tmp/memory-source-retrospective/report.sha256
+      - name: Preserve reproducible verifier code without redistributing original answers
+        if: always()
+        run: |
+          set -euo pipefail
+          cp scripts/memory_cell/source_write_retrospective.py scripts/memory_cell/test_source_write_retrospective.py /tmp/memory-source-retrospective/
+          git rev-parse HEAD > /tmp/memory-source-retrospective/checker-commit.txt
+          rm -f /tmp/memory-source-retrospective/original.zip
+          (cd /tmp/memory-source-retrospective && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-write-retrospective
+          path: /tmp/memory-source-retrospective
+          if-no-files-found: error
+  unchanged-repository-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Maintain complete required formatting gate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE"

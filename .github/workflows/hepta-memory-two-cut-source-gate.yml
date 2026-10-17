@@ -1,0 +1,59 @@
+name: MemoryCell two-cut original Git source gate
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/project_two_cut_source_gate.py"
+      - "scripts/memory_cell/test_project_two_cut_source_gate.py"
+      - "scripts/memory_cell/data/two-cut-verified-original-source-disposition-20261013.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_TWO_CUT_SOURCE_DISPOSITION_20261013.md"
+      - ".github/workflows/hepta-memory-two-cut-source-gate.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-two-cut-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download only three immutable original source artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-two-cut /tmp/hepta-two-cut-receipt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779111741/zip > /tmp/hepta-two-cut/four.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip > /tmp/hepta-two-cut/six.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip > /tmp/hepta-two-cut/reopen.zip
+          sha256sum /tmp/hepta-two-cut/{four,six,reopen}.zip > /tmp/hepta-two-cut-receipt/source-zip-sha256.txt
+      - name: Test original Git SHA binding and independent source cuts
+        env:
+          HEPTA_FOUR_PROJECT_ZIP: /tmp/hepta-two-cut/four.zip
+          HEPTA_SIX_PROJECT_ZIP: /tmp/hepta-two-cut/six.zip
+          HEPTA_SIX_REOPEN_ZIP: /tmp/hepta-two-cut/reopen.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_two_cut_source_gate.py' -v 2>&1 | tee /tmp/hepta-two-cut-receipt/tests.log
+          python3 scripts/memory_cell/project_two_cut_source_gate.py \
+            "$HEPTA_FOUR_PROJECT_ZIP" "$HEPTA_SIX_PROJECT_ZIP" "$HEPTA_SIX_REOPEN_ZIP" \
+            --output /tmp/hepta-two-cut-receipt/receipt.json
+          cmp scripts/memory_cell/data/two-cut-verified-original-source-disposition-20261013.json \
+            /tmp/hepta-two-cut-receipt/receipt.json
+          git rev-parse HEAD > /tmp/hepta-two-cut-receipt/auditor-source-commit.txt
+          (cd /tmp/hepta-two-cut-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-two-cut-original-byte-census
+          path: /tmp/hepta-two-cut-receipt
+          if-no-files-found: warn

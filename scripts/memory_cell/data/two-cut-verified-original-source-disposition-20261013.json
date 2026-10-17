@@ -1,0 +1,87 @@
+{
+  "candidate_memory_promoted": false,
+  "independent_human_semantic_precision": null,
+  "original_cuts_differ_and_must_not_be_treated_as_joint_blinded_trial": true,
+  "original_model_inference_in_this_audit": 0,
+  "original_project_census": {
+    "astral-sh/ruff": {
+      "cohort": "four-project",
+      "original_bytes": 3479267,
+      "original_file_bindings": 19,
+      "partition": "evaluation"
+    },
+    "denoland/deno": {
+      "cohort": "six-project",
+      "original_bytes": 68999,
+      "original_file_bindings": 6,
+      "partition": "evaluation"
+    },
+    "kubernetes/kubernetes": {
+      "cohort": "four-project",
+      "original_bytes": 1457100,
+      "original_file_bindings": 22,
+      "partition": "selection"
+    },
+    "numpy/numpy": {
+      "cohort": "four-project",
+      "original_bytes": 1481432,
+      "original_file_bindings": 29,
+      "partition": "evaluation"
+    },
+    "pandas-dev/pandas": {
+      "cohort": "six-project",
+      "original_bytes": 80309,
+      "original_file_bindings": 1,
+      "partition": "train"
+    },
+    "prometheus/prometheus": {
+      "cohort": "six-project",
+      "original_bytes": 368755,
+      "original_file_bindings": 7,
+      "partition": "selection"
+    },
+    "python/cpython": {
+      "cohort": "six-project",
+      "original_bytes": 196275,
+      "original_file_bindings": 4,
+      "partition": "evaluation"
+    },
+    "rust-lang/rust": {
+      "cohort": "four-project",
+      "original_bytes": 85305,
+      "original_file_bindings": 10,
+      "partition": "train"
+    },
+    "scikit-learn/scikit-learn": {
+      "cohort": "six-project",
+      "original_bytes": 767705,
+      "original_file_bindings": 10,
+      "partition": "evaluation"
+    },
+    "tokio-rs/tokio": {
+      "cohort": "six-project",
+      "original_bytes": 76417,
+      "original_file_bindings": 4,
+      "partition": "train"
+    }
+  },
+  "original_project_repositories": 10,
+  "original_zip_sha256": {
+    "four_projects": "0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3",
+    "independent_six_reopen": "59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36",
+    "six_projects": "a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4"
+  },
+  "production_accepted": false,
+  "project_partition_counts": {
+    "evaluation": 5,
+    "selection": 2,
+    "train": 3
+  },
+  "qualified_independent_human_reviews": 0,
+  "research_disposition": "SOURCE_BYTES_VERIFIED_ONLY: seal a new nonoverlapping task/review population under an independent owner before a new reader comparison",
+  "schema": "hepta.memorycell.two-cut-byte-source-disposition.v1",
+  "statistical_independence_established": false,
+  "training_on_unreviewed_proposals_qualified": false,
+  "verified_original_file_bindings": 112,
+  "verified_original_source_bytes": 8061564
+}

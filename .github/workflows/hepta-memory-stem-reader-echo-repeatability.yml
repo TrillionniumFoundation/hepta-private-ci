@@ -1,0 +1,69 @@
+name: MemoryCell strict Reader echo repeatability
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_reader_echo_repeatability.py"
+      - "scripts/memory_cell/test_stem_reader_echo_repeatability.py"
+      - ".github/workflows/hepta-memory-stem-reader-echo-repeatability.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-reader-echo-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  read-only-citation-and-echo-diagnostic:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: No-model negative and identity-bound tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-reader-echo
+          git rev-parse HEAD > /tmp/stem-reader-echo/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-reader-echo/auditor-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_reader_echo_repeatability.py scripts/memory_cell/test_stem_reader_echo_repeatability.py
+          python3 -m unittest -v test_stem_reader_echo_repeatability 2>&1 | tee /tmp/stem-reader-echo/tests.log
+      - name: Download and verify both originally completed STRICT runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-strict-675970bb.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11726530850/zip > /tmp/stem-strict-d0f69d7.zip
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 /tmp/stem-strict-675970bb.zip \
+            07b0f15ec150cc9817db6bfc9b4bae1e2c06a5296ca2ba3c4c7895da18b99e2f /tmp/stem-strict-d0f69d7.zip | sha256sum -c -
+      - name: Audit every original Reader request, 32 actual question controls
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_reader_echo_repeatability.py \
+            --earlier /tmp/stem-strict-675970bb.zip \
+            --later /tmp/stem-strict-d0f69d7.zip \
+            --output /tmp/stem-reader-echo/two-strict-runs.json \
+            2>&1 | tee /tmp/stem-reader-echo/audit.log
+      - name: Preserve source and complete audit on success or failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-reader-echo/source
+          cp scripts/memory_cell/stem_reader_echo_repeatability.py /tmp/stem-reader-echo/source/
+          cp scripts/memory_cell/test_stem_reader_echo_repeatability.py /tmp/stem-reader-echo/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-reader-echo/source/
+          cp .github/workflows/hepta-memory-stem-reader-echo-repeatability.yml /tmp/stem-reader-echo/source/
+          (cd /tmp/stem-reader-echo && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-strict-reader-echo
+          path: /tmp/stem-reader-echo
+          if-no-files-found: error

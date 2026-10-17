@@ -1,0 +1,113 @@
+name: MemoryCell locked Qwen2 PEFT loss smoke
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/source_completion_loss.py
+      - scripts/memory_cell/test_source_completion_hf.py
+      - scripts/memory_cell/test_source_completion_loss.py
+      - scripts/memory_cell/test_source_completion_writer.py
+      - scripts/memory_cell/source_binding_margin.py
+      - scripts/memory_cell/test_source_binding_margin.py
+      - scripts/memory_cell/source_loss_admission.py
+      - scripts/memory_cell/test_source_loss_admission.py
+      - scripts/memory_cell/test_source_margin_sparse_admission.py
+      - .github/workflows/hepta-memory-source-qwen-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  locked-conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify frozen dependency artifact before any installation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-source-qwen-smoke
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/memory-source-qwen-smoke/dependencies.zip
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import zipfile
+          root = Path('/tmp/memory-source-qwen-smoke')
+          raw = (root / 'dependencies.zip').read_bytes()
+          assert 0 < len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile(root / 'dependencies.zip') as archive:
+              assert len(archive.infolist()) <= 512
+              text = archive.read('environment.txt')
+          assert 0 < len(text) < 64 * 1024
+          (root / 'expected-environment.txt').write_bytes(text)
+          PY
+      - name: Install exact existing CPU research dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/memory-source-qwen-smoke/env
+          /tmp/memory-source-qwen-smoke/env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/memory-source-qwen-smoke/env/bin/pip install -r /tmp/memory-source-qwen-smoke/expected-environment.txt
+          /tmp/memory-source-qwen-smoke/env/bin/pip freeze > /tmp/memory-source-qwen-smoke/environment.txt
+          diff -u /tmp/memory-source-qwen-smoke/expected-environment.txt /tmp/memory-source-qwen-smoke/environment.txt
+      - name: Run actual Qwen2ForCausalLM and PEFT numerical gradient parity
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-source-qwen-smoke/parity-resources.txt \
+            /tmp/memory-source-qwen-smoke/env/bin/python -m unittest discover \
+              -s scripts/memory_cell -p 'test_source_completion_hf.py' -v \
+              2>&1 | tee /tmp/memory-source-qwen-smoke/qwen-peft-parity.log
+      - name: Run the full inherited source writer and task regression suite
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-source-qwen-smoke/regression-resources.txt \
+            /tmp/memory-source-qwen-smoke/env/bin/python -m unittest discover \
+              -s scripts/memory_cell -p 'test_*.py' -v \
+              2>&1 | tee /tmp/memory-source-qwen-smoke/regressions.log
+      - name: Preserve exact source, dependency pins and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-source-qwen-smoke/source
+          cp scripts/memory_cell/source_completion_loss.py \
+            scripts/memory_cell/test_source_completion_hf.py \
+            scripts/memory_cell/source_binding_margin.py \
+            scripts/memory_cell/test_source_binding_margin.py \
+            scripts/memory_cell/source_loss_admission.py \
+            scripts/memory_cell/test_source_margin_sparse_admission.py \
+            /tmp/memory-source-qwen-smoke/source/
+          git rev-parse HEAD > /tmp/memory-source-qwen-smoke/tested-commit.txt
+          printf '%s\n' 'Tiny random Qwen2+PEFT numerical conformance only. No source pretrained model or answer-quality evidence.' \
+            > /tmp/memory-source-qwen-smoke/claim-boundary.txt
+          python3 - <<'PYHASH'
+          from pathlib import Path
+          import hashlib
+          root = Path('/tmp/memory-source-qwen-smoke')
+          paths = sorted([*root.glob('*.txt'), *root.glob('*.log'), *root.glob('source/*')])
+          with (root / 'SHA256SUMS').open('w') as stream:
+              for path in paths:
+                  stream.write(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root)}\n")
+          PYHASH
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-qwen-loss-conformance
+          path: |
+            /tmp/memory-source-qwen-smoke/source/
+            /tmp/memory-source-qwen-smoke/*.txt
+            /tmp/memory-source-qwen-smoke/*.log
+            /tmp/memory-source-qwen-smoke/SHA256SUMS
+          if-no-files-found: error

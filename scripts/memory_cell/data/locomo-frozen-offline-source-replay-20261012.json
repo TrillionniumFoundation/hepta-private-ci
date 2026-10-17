@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.memorycell.locomo-frozen-independent-source-only-summary.v1",
+  "date": "2026-10-12",
+  "provenance_status": "local_external_reproduction_from_hosted_publish_artifact_NOT_hosted_evaluate_success",
+  "source_commit": "fcc24ad653700ad5f47f09350cf7815242dc5de8",
+  "hosted_run_id": 38206328621,
+  "original_artifact_ids": {
+    "public": 11728164433,
+    "selection_targets": 11728632417,
+    "evaluation_targets": 11728856834
+  },
+  "sha256": {
+    "original_published_locomo": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "public_population": "f53ee0986825f30ec4503b1698639e230832d1c05351c689cb55ebdc4f01d6de",
+    "original_public_histories": "b42a90e01df2eb8d2da8a77e6218dc1124b7c19005f52d23ef8c1acd0aeed5cc",
+    "github_public_artifact_zip": "51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37",
+    "github_selection_artifact_zip": "ba8e2282034c5bb51fe319e8909e11d028619f85dfbbce5a6fff78284f9f220c",
+    "github_evaluation_artifact_zip": "d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978",
+    "original_480_decisions": "0c80477394abadce7cfd192404ac2531c571e14a9dabdefb371633c1ae3aec89",
+    "sealed_selection_policy": "9713c6aa4107a72a97a3c43fa434db2bc9d15803d1ba606a12b1fbdfe5cb1339",
+    "heldout_retrieval_report": "3c447f91294fc66eaa0bbb7446f0700a10b54a27edec9a505fa652d8c1ee837f"
+  },
+  "source_census": {
+    "document_turns": 5882,
+    "source_family_proxies": 10,
+    "train_families": 6,
+    "selection_families": 2,
+    "evaluation_families": 2,
+    "train_questions": 48,
+    "selection_questions": 16,
+    "evaluation_questions": 16,
+    "label_blind_retrieval_decisions": 480,
+    "arms": [
+      "lexical_k2",
+      "lexical_k4",
+      "lexical_k8",
+      "recent_k2",
+      "recent_k4",
+      "recent_k8"
+    ]
+  },
+  "phase_separation": "separate command invocations: retrieve public only; select selection-targets only; evaluate heldout-targets only after sealed policy",
+  "selection_frozen_arm": "lexical_k8",
+  "selection": {
+    "eligible": 10,
+    "unknown_or_unanswerable": 6,
+    "source_support_complete": {
+      "lexical_k2": 1,
+      "lexical_k4": 2,
+      "lexical_k8": 4,
+      "recent_k2": 0,
+      "recent_k4": 0,
+      "recent_k8": 0
+    }
+  },
+  "evaluation": {
+    "eligible": 13,
+    "unknown_or_unanswerable": 3,
+    "source_support_complete": {
+      "lexical_k2": 4,
+      "lexical_k4": 8,
+      "lexical_k8": 9,
+      "recent_k2": 0,
+      "recent_k4": 0,
+      "recent_k8": 0
+    },
+    "selected_original_source_bytes": {
+      "lexical_k2": 4681,
+      "lexical_k4": 8636,
+      "lexical_k8": 17085,
+      "recent_k2": 4776,
+      "recent_k4": 10128,
+      "recent_k8": 18936
+    },
+    "selected_k8_by_family": [
+      {
+        "eligible": 7,
+        "covered": 4
+      },
+      {
+        "eligible": 6,
+        "covered": 5
+      }
+    ],
+    "planned_denominator": 16,
+    "missing_outcome_lower": 0.5625,
+    "missing_outcome_upper": 0.75
+  },
+  "confidence_intervals": false,
+  "model_answers_generated": 0,
+  "independent_future_source_families": 0,
+  "human_authenticity_review": false,
+  "semantic_citation_precision": null,
+  "production_accepted": false
+}

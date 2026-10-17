@@ -311,3 +311,13 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod memory_training;
+pub use memory_training::FrozenMemoryTrainingV1;
+pub use memory_training::MemoryTensorCandidateV1;
+pub use memory_training::MemoryTrainingError;
+pub use memory_training::MemoryTrainingObservationV1;
+pub use memory_training::MemoryTrainingProfileV1;
+pub use memory_training::MemoryTrainingSourceV1;
+pub use memory_training::finish_memory_training_from_owner_v1;
+pub use memory_training::freeze_memory_training_from_owner_v1;

@@ -1,0 +1,65 @@
+{
+  "answers_with_delivered_citation_label": 14,
+  "exact_zip_sha256": {
+    "plan": "66bc69310096b0226e90a8503df9d8d29645766066bbcf6acda7fd32241fb2b0",
+    "reader": "14dc63bfb0e25b8b15f7b48ba8e1afd4cef4d13f8617d08d28a533baa7a202a0",
+    "score": "cb753cd17db2b06027393175097d5a74b3fdfba459698f14d243d6ec14642698"
+  },
+  "frozen_reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "generating_commit": "2db775a9b423f5d53c2ec1cf69d4e67da02e35bd",
+  "independent_semantic_citation_judgement": false,
+  "matched_public_family_proxies": 2,
+  "new_independently_admitted_source_families": 0,
+  "original_generated_tokens": 675,
+  "original_input_tokens": 3427,
+  "original_matched_f1": {
+    "lexical_k4": {
+      "baseline_token_f1": 0.17208258098192508,
+      "descriptive_delta": 0.09229361521110929,
+      "paired_losses": 5,
+      "paired_ties": 3,
+      "paired_wins": 8,
+      "privileged_token_f1": 0.2643761961930344
+    },
+    "lexical_k8": {
+      "baseline_token_f1": 0.11148190095003518,
+      "descriptive_delta": 0.1528942952429992,
+      "paired_losses": 3,
+      "paired_ties": 3,
+      "paired_wins": 10,
+      "privileged_token_f1": 0.2643761961930344
+    }
+  },
+  "original_model_calls": 16,
+  "parameter_memory_gain_established": false,
+  "production_accepted": false,
+  "publisher_privileged_support_visible_effect": {
+    "k4_already_had_publisher_support": {
+      "lexical_f1": 0.20413421589842137,
+      "privileged_f1": 0.17842449447752556,
+      "questions": 8
+    },
+    "k4_missing_publisher_support": {
+      "lexical_f1": 0.024049513704686117,
+      "privileged_f1": 0.3605246366536689,
+      "questions": 5
+    }
+  },
+  "publisher_source_selection_is_privileged": true,
+  "refusal_shapes_by_mode": {
+    "publisher_refusal_support": {
+      "mixed_refusal_and_extra_text": 2,
+      "no_canonical_refusal": 0,
+      "strict_refusal": 1
+    },
+    "publisher_support": {
+      "mixed_refusal_and_extra_text": 3,
+      "no_canonical_refusal": 10,
+      "strict_refusal": 0
+    }
+  },
+  "research_disposition": "NO_GO: diagnose frozen reader/format and source sufficiency on new independently reviewed histories before training",
+  "schema": "hepta.locomo.publisher-support-postrun.v1",
+  "source_run": 38353622487,
+  "sum_original_reader_seconds": 201.529
+}

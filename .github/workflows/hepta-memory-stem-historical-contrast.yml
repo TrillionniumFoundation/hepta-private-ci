@@ -1,0 +1,71 @@
+name: MemoryCell pinned historical native contrast
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_archive_contrast.py"
+      - "scripts/memory_cell/test_stem_archive_contrast.py"
+      - "scripts/memory_cell/stem_audit_reader_condition.py"
+      - "scripts/memory_cell/test_stem_audit_reader_condition.py"
+      - ".github/workflows/hepta-memory-stem-historical-contrast.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-historical-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-historical-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Synthetic fail-closed paired census regression tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-historical
+          git rev-parse HEAD > /tmp/stem-historical/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-historical/auditing-tree.txt
+          python3 -m unittest -v test_stem_archive_contrast test_stem_audit_reader_condition 2>&1 | tee /tmp/stem-historical/tests.log
+      - name: Fetch both immutable historical results and check transport pins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11688435110/zip > /tmp/stem-e9c8f9c.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11687561401/zip > /tmp/stem-306c2c8.zip
+          printf '%s  %s\n' \
+            3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909 /tmp/stem-e9c8f9c.zip \
+            2f15aa0a6c4900b2cf19cc03051f2727c58c9c04c1d993eda6486e019d0d0014 /tmp/stem-306c2c8.zip | sha256sum -c -
+      - name: Independently reconcile full 576-attempt matrices and 80 candidate pools
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_archive_contrast.py \
+            --original /tmp/stem-e9c8f9c.zip \
+            --legacy /tmp/stem-306c2c8.zip \
+            --output /tmp/stem-historical/original-vs-earlier-full-run.json \
+            2>&1 | tee /tmp/stem-historical/accounting.log
+      - name: Preserve exact audit source, logs and SHA256SUMS
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-historical/source
+          cp scripts/memory_cell/stem_archive_contrast.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/test_stem_archive_contrast.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/stem_audit_reader_condition.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/test_stem_audit_reader_condition.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-historical/source/
+          cp .github/workflows/hepta-memory-stem-historical-contrast.yml /tmp/stem-historical/source/
+          (cd /tmp/stem-historical && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-historical-contrast
+          path: /tmp/stem-historical
+          if-no-files-found: error

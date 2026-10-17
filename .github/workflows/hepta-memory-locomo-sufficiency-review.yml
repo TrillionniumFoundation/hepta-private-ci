@@ -1,0 +1,122 @@
+name: MemoryCell LoCoMo source-first sufficiency reviewer packet
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/locomo_sufficiency_worklist.py"
+      - "scripts/memory_cell/test_locomo_sufficiency_worklist.py"
+      - ".github/workflows/hepta-memory-locomo-sufficiency-review.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_SUFFICIENCY_REVIEW.md"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-locomo-review-packet-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-first-review-packets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test immutable input and non-adjudication contracts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/locomo_sufficiency_worklist.py \
+            scripts/memory_cell/test_locomo_sufficiency_worklist.py
+          PYTHONPATH=scripts/memory_cell python3 -m unittest discover \
+            -s scripts/memory_cell -p 'test_locomo_sufficiency_worklist.py' -v
+      - name: Download only source, label-blind retrieval and original model journal
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-worklist-input
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip \
+            > /tmp/locomo-worklist-input/public.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip \
+            > /tmp/locomo-worklist-input/decisions.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip \
+            > /tmp/locomo-worklist-input/reader.zip
+          # Gold/target artifacts are deliberately not fetched or mounted.
+      - name: Seal evidence-sufficiency and answer-entailment worklists separately
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/locomo_sufficiency_worklist.py \
+            /tmp/locomo-worklist-input/public.zip \
+            /tmp/locomo-worklist-input/decisions.zip \
+            /tmp/locomo-worklist-input/reader.zip \
+            /tmp/locomo-unreviewed-worklists \
+            > /tmp/locomo-worklist-manifest.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/locomo-unreviewed-worklists')
+          source = json.loads((root/'sufficiency-only.json').read_bytes())
+          answers = json.loads((root/'answer-and-citation.json').read_bytes())
+          pins = json.loads((root/'manifest.json').read_bytes())
+          assert len(source['review_cases']) == len(answers['review_cases']) == 32
+          assert pins['source_sufficiency_decisions'] == 0
+          assert pins['answer_citation_review_decisions'] == 0
+          assert pins['training_permitted'] is False
+          assert pins['production_accepted'] is False
+          assert source['model_answers_in_this_worklist'] is False
+          assert all('unedited_reader_answer' not in row for row in source['review_cases'])
+          assert all(row['reviewer_identity'] is None for row in answers['review_cases'])
+          PY
+          git rev-parse HEAD > /tmp/locomo-unreviewed-worklists/auditor-source-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: locomo-source-only-sufficiency-unreviewed-${{ github.sha }}
+          path: /tmp/locomo-unreviewed-worklists/sufficiency-only.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: locomo-answer-citation-unreviewed-${{ github.sha }}
+          path: /tmp/locomo-unreviewed-worklists/answer-and-citation.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-review-source-pins-${{ github.sha }}
+          path: |
+            /tmp/locomo-unreviewed-worklists/manifest.json
+            /tmp/locomo-unreviewed-worklists/SHA256SUMS
+            /tmp/locomo-unreviewed-worklists/auditor-source-commit.txt
+            /tmp/locomo-worklist-manifest.log
+          if-no-files-found: warn
+
+  # Produce official Ruff formatting fixes as an artifact; never write to the branch.
+  format-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Format source with the repository's pinned Ruff toolchain
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format \
+            scripts/memory_cell/locomo_sufficiency_worklist.py \
+            scripts/memory_cell/test_locomo_sufficiency_worklist.py
+          mkdir -p /tmp/locomo-source-format
+          cp scripts/memory_cell/locomo_sufficiency_worklist.py \
+            scripts/memory_cell/test_locomo_sufficiency_worklist.py \
+            /tmp/locomo-source-format/
+          git rev-parse HEAD > /tmp/locomo-source-format/tested-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-reviewed-ruff-source-${{ github.sha }}
+          path: /tmp/locomo-source-format
+          if-no-files-found: warn

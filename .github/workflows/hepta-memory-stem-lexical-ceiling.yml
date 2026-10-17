@@ -1,0 +1,95 @@
+name: MemoryCell immutable native lexical ceiling
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_lexical_audit.py"
+      - "scripts/memory_cell/test_stem_lexical_audit.py"
+      - ".github/workflows/hepta-memory-stem-lexical-ceiling.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-lexical-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-source-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned code and five isolated FTS5 regression tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-lexical
+          git rev-parse HEAD > /tmp/stem-lexical/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-lexical/auditing-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_lexical_audit.py scripts/memory_cell/test_stem_lexical_audit.py
+          python3 -m unittest -v test_stem_lexical_audit 2>&1 | tee /tmp/stem-lexical/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/stem-lexical
+      - name: Extract only pinned original LoCoMo input; no model loading
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import tarfile
+          from pathlib import Path
+          source = Path('/tmp/stem-lexical/memory-inputs.tar.gz')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 512*1024**2:
+              raise ValueError('missing or unbounded source archive')
+          with tarfile.open(source, 'r:gz') as archive:
+              matches = [m for m in archive.getmembers()
+                         if m.name == 'memory-inputs/locomo.json']
+              if len(matches) != 1 or not matches[0].isfile() or not 0 < matches[0].size <= 16*1024**2:
+                  raise ValueError('original LoCoMo member missing or unsafe')
+              with archive.extractfile(matches[0]) as handle:
+                  payload = handle.read(16*1024**2 + 1)
+          if hashlib.sha256(payload).hexdigest() != '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4':
+              raise ValueError('LoCoMo original source digest drift')
+          Path('/tmp/stem-lexical/locomo-original.json').write_bytes(payload)
+          PY
+      - name: Read exact completed strict as-of matrix artifact with external pin
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693742153/zip > /tmp/stem-lexical/strict-completed.zip
+          printf '%s  %s\n' 3bc5f45670b9cbb5fc22d1cbff5b96866443400ea42781072b9fd66ad5ea19c8 /tmp/stem-lexical/strict-completed.zip | sha256sum -c -
+      - name: Reconcile all original eligible indexes and frozen lexical ranks
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_lexical_audit.py \
+            --artifact /tmp/stem-lexical/strict-completed.zip \
+            --locomo /tmp/stem-lexical/locomo-original.json \
+            --output /tmp/stem-lexical/lexical-ceiling.json 2>&1 | tee /tmp/stem-lexical/analysis.log
+      - name: Retain exact auditor source and complete failure logs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-lexical/source
+          cp scripts/memory_cell/stem_lexical_audit.py /tmp/stem-lexical/source/
+          cp scripts/memory_cell/test_stem_lexical_audit.py /tmp/stem-lexical/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-lexical/source/
+          cp .github/workflows/hepta-memory-stem-lexical-ceiling.yml /tmp/stem-lexical/source/
+          # Retain the hash of large original inputs without reuploading their bytes.
+          sha256sum /tmp/stem-lexical/strict-completed.zip /tmp/stem-lexical/locomo-original.json > /tmp/stem-lexical/pinned-inputs.txt 2>/dev/null || true
+          rm -f /tmp/stem-lexical/strict-completed.zip /tmp/stem-lexical/locomo-original.json /tmp/stem-lexical/memory-inputs.tar.gz
+          (cd /tmp/stem-lexical && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-immutable-lexical-ceiling
+          path: /tmp/stem-lexical
+          if-no-files-found: error

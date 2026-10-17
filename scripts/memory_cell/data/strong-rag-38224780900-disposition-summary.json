@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.memory-cell.real-strong-rag-disposition.v1",
+  "generating_run_id": 38224780900,
+  "source_commit": "6304b451268c73f3d1a605985226b102df841bbf",
+  "source_type": "previously exposed authored development tasks",
+  "source_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "artifact_sha256": {
+    "original": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+    "reader": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+    "independent_replay": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071"
+  },
+  "verified_manifest_members": {
+    "original": 35,
+    "reader": 43,
+    "independent_replay": 8
+  },
+  "model": {
+    "name": "Qwen/Qwen2.5-3B-Instruct",
+    "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+    "trainable_parameters": 0
+  },
+  "calibration": {
+    "actual_generations": 40,
+    "selected_k": 1,
+    "scores": {
+      "k1": 4,
+      "k2": 4,
+      "k3": 4,
+      "k4": 4,
+      "k6": 2
+    },
+    "selected_on_equal_accuracy_by_lower_input_tokens": true,
+    "leave_one_out_k_choices": {
+      "1": 7,
+      "2": 1
+    },
+    "stable_to_one_case_omission": false
+  },
+  "evaluation": {
+    "actual_generations": 72,
+    "questions": 8,
+    "by_arm": {
+      "selected_k": {
+        "strict_correct": 5,
+        "complete_chain_cited": 3,
+        "input_tokens": 3961
+      },
+      "hybrid_k4": {
+        "strict_correct": 3,
+        "complete_chain_cited": 1,
+        "input_tokens": 10806
+      },
+      "hybrid_k6": {
+        "strict_correct": 2,
+        "complete_chain_cited": 0,
+        "input_tokens": 15463
+      },
+      "hybrid_k4_reversed": {
+        "strict_correct": 3,
+        "complete_chain_cited": 1,
+        "input_tokens": 10806
+      },
+      "single_hop": {
+        "strict_correct": 4,
+        "complete_chain_cited": 4,
+        "input_tokens": 4575
+      },
+      "entity_time": {
+        "strict_correct": 8,
+        "complete_chain_cited": 4,
+        "input_tokens": 5752
+      },
+      "organized": {
+        "strict_correct": 8,
+        "complete_chain_cited": 4,
+        "input_tokens": 5179
+      },
+      "program_support": {
+        "strict_correct": 8,
+        "complete_chain_cited": 4,
+        "input_tokens": 5179
+      },
+      "empty": {
+        "strict_correct": 0,
+        "complete_chain_cited": 0,
+        "input_tokens": 1630
+      }
+    },
+    "paired_task_outcomes": {
+      "calibrated_vs_hybrid_k4": {
+        "wins": 2,
+        "losses": 0,
+        "ties": 6
+      },
+      "full_path_vs_single_hop": {
+        "wins": 4,
+        "losses": 0,
+        "ties": 4
+      },
+      "organized_vs_full_path": {
+        "wins": 0,
+        "losses": 0,
+        "ties": 8
+      }
+    },
+    "calibrated_correct_missing_program_support": 2,
+    "organized_saved_input_tokens_vs_entity_time": 573,
+    "same_input_prompt_pairs": 39,
+    "same_input_answer_disagreements": 0
+  },
+  "independent_replay": {
+    "job_conclusion": "success",
+    "model_calls_replayed": 112,
+    "semantic_judgement": false
+  },
+  "admission": {
+    "prospective_independent_source_families": 0,
+    "human_certified_source_sufficiency": false,
+    "independent_semantic_citation_99pct": false,
+    "parametric_memory_gain_established": false,
+    "production_lifecycle_cost_established": false,
+    "memory_cell_training_promotion_qualified": false,
+    "production_accepted": false
+  }
+}
