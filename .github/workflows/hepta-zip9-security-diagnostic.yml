@@ -45,7 +45,7 @@ jobs:
           cargo --version
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
-          toolchain: "1.96.0"
+          components: rustfmt
       - name: Generate real secure ZIP Cargo.lock using Cargo resolver
         shell: bash
         run: |
@@ -53,7 +53,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/hepta-zip9"
           cargo update --manifest-path codex-rs/Cargo.toml -p zip --precise 9.0.4
           git diff --binary -- codex-rs/Cargo.lock > "$RUNNER_TEMP/hepta-zip9/Cargo.lock.patch"
-          test -s "$RUNNER_TEMP/hepta-zip9/Cargo.lock.patch"
+          # After the reviewed authentic Cargo.lock has been committed, a
+          # fresh resolver run must produce precisely zero changes.
+          git diff --exit-code -- codex-rs/Cargo.lock
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --no-deps > "$RUNNER_TEMP/hepta-zip9/metadata.json"
       - name: Compile the actual upgraded ZIP consumer with the generated lock
         shell: bash
@@ -77,7 +79,7 @@ jobs:
           path: ${{ runner.temp }}/hepta-zip9/Cargo.lock.patch
           if-no-files-found: warn
           retention-days: 14
-      - name: Fail closed until generated locked graph is committed
+      - name: Fail closed on any uncommitted resolver or source drift
         if: always()
         shell: bash
         run: |
