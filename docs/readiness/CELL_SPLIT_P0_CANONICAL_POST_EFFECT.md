@@ -46,3 +46,25 @@ Keep DRAFT / DENY_ALL until the canonical P0 source-head and merge tests,
 B4, global blocking CI, independently signed original effects and target-host
 crash/power-loss gates all succeed. Do **not** merge or activate the separate
 Supervisor readback seam in #2621/#2663 as a second production executor.
+
+## Canonical Control ancestry and final operator readback
+
+The original canonical Control WAL orphan inspector branch PR #2642
+(`f4a688592a0102f82dfe086b2b2c9f7c5224e89f`) is adopted as a **second Git parent** of the
+post-effect fix. The merge retains the same original Supervisor/CNS/Artifact
+owners and the independent immutable Control actor; its orphan-`Begin`
+readback remains **read-only** and cannot invent Control Commit, unfreeze a
+physical owner, or authorize a new Execute.
+
+The legacy operator CLI was also hardened: a four-owner `verified_complete`
+readback is not permission to return `complete=true` if the current NDU
+selection was withdrawn during that last RPC. The final status callback is
+read-only, has no promotion authority and cannot replace native Final-use.
+Transcript-mode output is historical, `production_activation_authorized=false`.
+Both the original execution-owner and CLI code remain blocked from production
+physical CellSplit.
+
+Added a focused `post_readback_selection_withdrawal_cannot_report_completed_split`
+regression and updated exact-head expectations. The Control orphan inspector
+tests observed green at the original #2642 SHA do not automatically qualify
+this merged source SHA.

@@ -77,6 +77,7 @@ pub use module_runtime::RuntimeTopologySnapshotV1;
 pub use ndu_publication::NduPublicationErrorV1;
 pub use ndu_publication::NduPublicationLocalFrontierV1;
 pub use ndu_publication::NduPublicationOwnerV1;
+pub use ndu_publication::NduPublicationPendingBeginV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
