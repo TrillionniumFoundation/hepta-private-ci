@@ -213,7 +213,9 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         workflow = (
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text()
-        marker = "      - name: Verify GitHub prospective merge ref matches this exact candidate\n"
+        marker = (
+            "      - name: Verify GitHub prospective merge ref matches this exact candidate\\n"
+        )
         shell = textwrap.dedent(
             workflow.split(marker, 1)[1]
             .split("      - name:", 1)[0]
@@ -228,7 +230,9 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             gh.write_text(
                 "#!/bin/sh\n"
                 'test "$1" = api || exit 91\n'
-                'test "$2" = repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/main || exit 92\n'
+                'test "$2" = '
+                "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/main "
+                "|| exit 92\\n"
                 'printf "advanced-main\\n"\n'
             )
             gh.chmod(0o700)
@@ -256,6 +260,7 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             self.assertIn("stale-event-base", result.stderr)
             self.assertIn("advanced-main", result.stderr)
             self.assertFalse((root / "github_env").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
