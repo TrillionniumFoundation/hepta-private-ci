@@ -94,6 +94,35 @@ def audit(source, stage):
               prior=={"filename":name,"sha256":actual,"size":count},"original independent checksum mismatch")
         observed.append({"filename":name,"sha256":actual,"size":count})
     check([a["filename"] for a in observed]==sorted(seen),"file order drift")
+    # Recheck the *whole* staged directory at the second-process boundary.
+    # A verified primary checksum alone is insufficient: a late-added
+    # tokenizer/config/weight sibling might be consumed by a model loader.
+    # The Hub local-dir transfer cache is not a model input and may exist, but
+    # its directory entries must still be ordinary (never links/devices).
+    needed_dirs = {"."}
+    for name in seen:
+        parts=name.split("/")
+        for i in range(1,len(parts)):
+            needed_dirs.add("/".join(parts[:i]))
+    count=0
+    for path in root.rglob("*"):
+        count+=1
+        check(count <= 4096, "unbounded staged file/directory count")
+        relative=path.relative_to(root).as_posix()
+        check(not path.is_symlink(), "late-added symlink or symlink directory")
+        check(path.is_dir() or path.is_file(), "staged special file rejected")
+        if relative == ".cache" or relative.startswith(".cache/huggingface"):
+            # Reject unrelated hidden paths even within the cache root.
+            if relative != ".cache":
+                check(relative==".cache/huggingface" or
+                      relative.startswith(".cache/huggingface/"),
+                      "unregistered cache path")
+            continue
+        if path.is_dir():
+            check(relative in needed_dirs, "late-added unregistered directory")
+        else:
+            check(relative in seen and path.is_file(),
+                  "late-added unregistered model/tokenizer/config bytes")
     return {"schema":REVIEW,"model":source.get("model"),"repo":source.get("repo"),
             "revision":source.get("revision"),"file_count":len(observed),
             "total_bytes_rehashed":sum(a["size"] for a in observed),
