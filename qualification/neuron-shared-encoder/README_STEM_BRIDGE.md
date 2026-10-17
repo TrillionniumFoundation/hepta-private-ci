@@ -25,3 +25,21 @@ result from a real checkpoint.
 The bridge is intended to be stacked with the existing qualification harness
 from PR #1496 when that research line is available. It does not replace the
 harness's FeatureKey/cache admission or its native Worker/Selector gates.
+
+## Frozen Reader fixture adapter
+
+`neuron_shared_encoder.reader_fixture_bridge` delegates the four-condition
+Reader protocol directly to `scripts/hepta_sngr_reader_eval.py`. It calls that
+script's `load_cases`, `evidence_for`, and `construct_request` functions rather
+than reimplementing evidence strings. The adapter checks the registered
+manifest digest, exact arm order (`none`, `distractor`, `withheld`, `full`),
+source identity, and model-request shape. A missing script, missing manifest,
+changed schema, or evaluator error is `ReaderFixtureError`; there is no
+synthetic fallback.
+
+`ReaderRequestV1` contains only the evaluator-generated `state` and `questions`
+payloads accepted by the Reader API. It recursively rejects evaluator-only
+gold fields before a caller can pass the request to a model. The adapter does
+not invoke a model or score answers. The registered fixture still requires a
+real source checkout and the pinned local checkpoint before any efficacy claim
+could be made.
