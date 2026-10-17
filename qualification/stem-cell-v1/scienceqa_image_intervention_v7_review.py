@@ -53,6 +53,31 @@ def parse(raw):
     except (ValueError, OverflowError, UnicodeError, TypeError) as exc:
         raise ReviewError('invalid, duplicate or nonfinite original JSON') from exc
 
+def verify_prelabel_seal(seal_path, producer_path, producer_bytes):
+    """Reject changed producer bytes after the pre-label SHA was written.
+
+    The seal is same-owner historical data, not an issuer signature, ACL or
+    independent host attestation. The reviewer independently rehashes bytes.
+    """
+    import re
+    import stat
+    seal_path = Path(seal_path)
+    producer_path = Path(producer_path)
+    need(not seal_path.is_symlink() and seal_path.is_file() and
+         seal_path.stat().st_size <= 512 and seal_path.stat().st_size > 0 and
+         stat.S_ISREG(seal_path.stat().st_mode) and seal_path.stat().st_nlink == 1,
+         'unsafe or missing original pre-label seal')
+    try:
+        raw = seal_path.read_bytes().decode('ascii', 'strict').strip()
+    except UnicodeError as error:
+        raise ReviewError('invalid pre-label seal encoding') from error
+    items = raw.split('  ', 1)
+    need(len(items) == 2 and re.fullmatch(r'[0-9a-f]{64}', items[0]) is not None and
+         items[1] == str(producer_path) and
+         items[0] == sha(producer_bytes),
+         'producer changed or source not bound to original pre-label digest')
+    return items[0]
+
 def top1(values):
     need(type(values) is list and len(values)==4 and
          all(type(v) in (int,float) and math.isfinite(v) and 0<=v<=1 for v in values) and
@@ -200,7 +225,7 @@ def main():
     from scienceqa_independent_rejudge_v5 import read_archive
     p=argparse.ArgumentParser()
     for key in ('sources','source-sha256','heldout-labels','heldout-labels-sha256',
-                'original-archive','producer','output'):
+                'original-archive','producer','producer-seal','output'):
         p.add_argument('--'+key,required=True)
     a=p.parse_args()
     need(a.source_sha256==SOURCE_SHA and a.heldout_labels_sha256==HELD_SHA,
@@ -212,7 +237,9 @@ def main():
     producer=Path(a.producer)
     need(producer.is_file() and not producer.is_symlink() and
          0<producer.stat().st_size<=200_000,'missing or oversize source-free producer seal')
-    result=review(parse(producer.read_bytes()),source,labels,read_archive(Path(a.original_archive)))
+    producer_bytes = producer.read_bytes()
+    verify_prelabel_seal(Path(a.producer_seal), producer, producer_bytes)
+    result=review(parse(producer_bytes),source,labels,read_archive(Path(a.original_archive)))
     target=Path(a.output)
     need(not target.exists() and not target.is_symlink(),'create-only independent review')
     with target.open('xb') as handle:
