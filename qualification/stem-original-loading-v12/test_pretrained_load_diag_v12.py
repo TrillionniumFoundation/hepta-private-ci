@@ -13,6 +13,15 @@ import pretrained_load_diag_v12 as d
 
 
 class LoaderSafetyTests(unittest.TestCase):
+    def test_loader_failure_metadata_is_explicit_and_incomplete(self):
+        data=d.failed_loading_info(
+            RuntimeError('meta tensor'), loader_class='AutoModelForMaskedLM',
+            base_model_class='unavailable')
+        self.assertFalse(data['model_base_weights_complete'])
+        self.assertEqual(data['error_count'],1)
+        self.assertEqual(data['complete_model_resident_parameter_scalars'],0)
+        self.assertEqual(data['loader_class'],'AutoModelForMaskedLM')
+
     def test_empty_full_base_loader_metadata(self):
         data=d.loading_info({'missing_keys':[], 'unexpected_keys':[],
                              'mismatched_keys':[], 'error_msgs':[]})
