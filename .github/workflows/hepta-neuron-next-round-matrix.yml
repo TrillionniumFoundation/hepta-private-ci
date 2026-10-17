@@ -50,22 +50,33 @@ jobs:
       TRANSFORMERS_OFFLINE: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked source identity
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==26.3
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==26.3 cryptography==46.0.4
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Record actual source and environment
         run: |
           git rev-parse HEAD > "$RUNNER_TEMP/stem-source.txt"
           python -m pip freeze > "$RUNNER_TEMP/stem-environment.txt"
-      - name: Execute complete focused suite without skips
+      - name: Execute exhaustive source-only suite and declare original-material obligations
         shell: bash
         run: |
           set -euo pipefail
-          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
+          python qualification/stem-cell-v1/stem_source_suite_v22.py \
+            --repo-root . --receipt "$RUNNER_TEMP/stem-source-suite.json" \
+            2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
           python -m compileall -q qualification/stem-cell-v1
       - name: Retain exact-run source test observations
         if: always()
@@ -76,6 +87,7 @@ jobs:
             ${{ runner.temp }}/stem-source.txt
             ${{ runner.temp }}/stem-environment.txt
             ${{ runner.temp }}/stem-regression.log
+            ${{ runner.temp }}/stem-source-suite.json
           if-no-files-found: error
 
   hf-profile-compatibility:
