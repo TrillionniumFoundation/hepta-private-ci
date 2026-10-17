@@ -50,3 +50,46 @@ The demo emits labeled **synthetic analytic fixtures**, never real-model perform
 4. Prove or bound interface/global errors on the supported operating domain; measure real compute, throughput, latency, memory, failure/abstention and longitudinal external outcomes before capability claims.
 
 These fixture tests establish only arithmetic correctness and selected failure semantics of this narrowly specified experimental algorithm.
+
+## Next tranche: Rust affine reference and nonlinear-terminal comparison
+
+The authority-free Rust shadow reference in `codex-rs/hepta-ndu/src/sngr_affine_shadow.rs`
+implements the scalar affine characteristic using correct backward continuation
+fields, forward shooting, independently checked terminal/interface/forward
+residuals, and a deliberately incorrect terminal-reset negative control.
+Its synthetic digest is not an independent outcome or selection receipt.
+The regression suite also links the manufactured affine diffusion sensitivity
+to the **existing** native centered covariance solver (`Z Sigma = B`),
+including a rate-per-second covariance profile, without changing that solver.
+
+The non-affine terminal fixture in `scripts/hepta_sngr_nonlinear_shadow.py` uses
+
+```text
+dX = U dt, dU = 0, U_T = slope*tanh(X_T) + intercept
+V(t,x) = slope*tanh(x + (T-t)*V(t,x)) + intercept.
+```
+
+The entire horizon is restricted to `|slope|*T < 0.95`, so the explicit
+Picard iteration is a contraction in the declared profile. Other cases
+**fail closed rather than being declared unsolvable**. It counts each
+`tanh` oracle evaluation and has a strict shared per-arm evaluation ceiling.
+A segmented continuation arm, single-interval reference, and an intentionally
+wrong terminal-reset arm use the same budget ceiling but report **actual**
+oracle calls separately. They are *not* equal actual-compute arms.
+
+Reproduction:
+
+```bash
+python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_shadow.py'
+python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_nonlinear_shadow.py'
+python3 scripts/hepta_sngr_nonlinear_shadow.py --demo
+python3 scripts/hepta_sngr_nonlinear_shadow.py --sweep
+cd codex-rs && just test --locked -p codex-hepta-ndu
+```
+
+On the author's Python environment the combined Python suite had 30 passing
+tests, including 24 deterministic heterogeneous synthetic cases. This is
+local source/fixture evidence, not a checked GitHub CI receipt, Rust build,
+real Laya training, real task uplift, stochastic solver convergence or a
+multimodal generation claim. An actual *equal work* Bellman vs NDU
+comparison and held-out independent task outcomes remain open gates.
