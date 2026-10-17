@@ -1,0 +1,178 @@
+name: Hepta Stem V29 minimal route, physical frozen DINO CPU (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v28_physical_lazy_vision.py"
+      - "qualification/stem-cell-v1/v29_route_only.py"
+      - "qualification/stem-cell-v1/v29_physical_lazy_vision.py"
+      - "qualification/stem-cell-v1/test_v28_physical_lazy_vision.py"
+      - "qualification/stem-cell-v1/test_v29_route_only.py"
+      - "qualification/stem-cell-v1/STEM_V29_MINIMAL_ROUTE_20261017.md"
+      - ".github/workflows/hepta-stem-v29-model-route-only.yml"
+  push:
+    branches:
+      - research/stem-v29-model-route-only-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v29-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact-head standalone adversarial tests (no pretrained/model claim)
+        working-directory: qualification/stem-cell-v1
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          python -m py_compile v28_physical_lazy_vision.py v29_route_only.py v29_physical_lazy_vision.py test_v28_physical_lazy_vision.py test_v29_route_only.py
+          python -m unittest -v test_v28_physical_lazy_vision test_v29_route_only
+          python -O -m unittest -v test_v28_physical_lazy_vision test_v29_route_only
+
+  original-physical-lazy-vision:
+    # Research weights and publisher bytes are acquired on push only, never on PR.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v29-model-route-only-20261017' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Freeze original V27 label-blind route before any model/media access
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXACT_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$RUNNER_TEMP/original-e3.zip"
+          echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $RUNNER_TEMP/original-e3.zip" | sha256sum -c -
+          python qualification/stem-cell-v1/v27_conditional_vision_replay.py seal \
+            --archive "$RUNNER_TEMP/original-e3.zip" --plan "$RUNNER_TEMP/private-v29-full-plan.json"
+          echo "c8f3f3d03ef9bdc9722d1197aaa807d901a4d5cda2e6c40d20f8ddcf7d2b8ad2  $RUNNER_TEMP/private-v29-full-plan.json" | sha256sum -c -
+          # Publish a strictly reduced, label-free AND image-output-free plan.
+          # The physical model never receives precomputed image predictions.
+          python qualification/stem-cell-v1/v29_route_only.py \
+            --full-plan "$RUNNER_TEMP/private-v29-full-plan.json" \
+            --output "$RUNNER_TEMP/v29-model-only-route.json"
+          echo "d8a555bef8f95680cd35a16cf3dbe7f8e9ab717fe626e4dc82e6fd61538773a6  $RUNNER_TEMP/v29-model-only-route.json" | sha256sum -c -
+          rm -f "$RUNNER_TEMP/private-v29-full-plan.json"
+          # The scorer archive and its historical target digest are NOT inputs
+          # to the real model process; only precommitted route identity survives.
+          rm -f "$RUNNER_TEMP/original-e3.zip"
+      - name: Obtain byte-exact original model/source and target-isolated E3 stager
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test -f "$RUNNER_TEMP/v29-model-only-route.json"
+          test ! -e "$RUNNER_TEMP/private-v29-full-plan.json"
+          mkdir -m 700 "$RUNNER_TEMP/verified-e3-modules"
+          fetch_pinned () {
+            local commit="$1" source_path="$2" expected_blob="$3"
+            local destination="$RUNNER_TEMP/verified-e3-modules/${source_path##*/}"
+            gh api "repos/$GITHUB_REPOSITORY/contents/$source_path?ref=$commit" --jq '.content' | base64 --decode > "$destination"
+            test "$(git hash-object "$destination")" = "$expected_blob"
+            chmod 0400 "$destination"
+          }
+          # Historical actual DINO loader, validated snapshot owner and E3 contract.
+          fetch_pinned b8b2f10fe38506972301e77e3836729a90200673 experiments/shared_stem_cell/e3_scienceqa_contract.py bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a
+          fetch_pinned b8b2f10fe38506972301e77e3836729a90200673 experiments/shared_stem_cell/e3_granite_dino_real.py b99c99d8e13a4d1899a0597d7733753fb3ce092a
+          fetch_pinned b8b2f10fe38506972301e77e3836729a90200673 experiments/shared_stem_cell/execution.py 733da82a4bbbde1b256dfd1dbe4c05832dcd4856
+          # Later reviewed source-target split; never invoke TEST callback in predictor mode.
+          fetch_pinned 751ab11dcb7ff3c20d895c698633e7b2d5ada2b8 experiments/shared_stem_cell/e3_scienceqa_stage.py 7fa6adc26a76dfcc644c748259a4a8ca8d04f99e
+          fetch_pinned 751ab11dcb7ff3c20d895c698633e7b2d5ada2b8 experiments/shared_stem_cell/e3_source_target_partition.py 904347ca0a4a49c28dedea6cac1b9bb6d1142fe4
+      - name: Stage original ScienceQA source without TEST labels or TEST target hash
+        shell: bash
+        env:
+          HF_HOME: ${{ runner.temp }}/v29-publisher-source-hf
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+        run: |
+          set -euo pipefail
+          umask 077
+          python -m pip install --only-binary=:all: 'datasets==3.6.0' 'huggingface-hub==0.35.3' 'pyarrow==19.0.1' 'Pillow==11.3.0'
+          python "$RUNNER_TEMP/verified-e3-modules/e3_scienceqa_stage.py" \
+            --predictor-source-only --output "$RUNNER_TEMP/v29-public-predictor-source"
+          echo "a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202  $RUNNER_TEMP/v29-public-predictor-source/inputs/sources.jsonl" | sha256sum -c -
+          echo "e8506bc65f96501b6b2fa4e4ae04c094c2b6b17b353de528a051136569e2849e  $RUNNER_TEMP/v29-public-predictor-source/inputs/fit_labels.jsonl" | sha256sum -c -
+          test ! -e "$RUNNER_TEMP/v29-public-predictor-source/private_labels"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          doc=json.loads((Path(os.environ['RUNNER_TEMP'])/'v29-public-predictor-source/source-seals.json').read_text())
+          assert doc['private_test_labels_sha256'] is None
+          assert doc['production_accepted'] is False
+          assert doc['source_sha256']=='a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202'
+          PY
+          rm -rf "$HF_HOME"
+      - name: Load real SHA-pinned DINO weights once and execute ABBA 64-vs-21 CPU arms
+        shell: bash
+        env:
+          HF_HOME: ${{ runner.temp }}/v29-model-hf
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/v29-public-predictor-source/private_labels"
+          test ! -e "$RUNNER_TEMP/original-e3.zip"
+          test ! -e "$RUNNER_TEMP/private-v29-full-plan.json"
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'numpy==2.3.5' 'transformers==4.57.1' 'safetensors==0.7.0' \
+            'huggingface-hub==0.35.3' 'tokenizers==0.22.1' 'Pillow==11.3.0'
+          python -m pip check
+          export PYTHONPATH="qualification/stem-cell-v1:$RUNNER_TEMP/verified-e3-modules"
+          python qualification/stem-cell-v1/v29_physical_lazy_vision.py \
+            --plan "$RUNNER_TEMP/v29-model-only-route.json" \
+            --source-dir "$RUNNER_TEMP/v29-public-predictor-source" \
+            --weights-dir "$RUNNER_TEMP/v29-model-weights-create-only" \
+            --output "$RUNNER_TEMP/v29-physical-descriptive-HOLD.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'v29-physical-descriptive-HOLD.json').read_text())
+          assert [r['items'] for r in d['arm_traces']]==[64,21,21,64]
+          assert [r['batches'] for r in d['arm_traces']]==[8,3,3,8]
+          assert d['actual_pretrained_vision_forward'] is True
+          assert d['frozen_route_plan_sha256'] == 'd8a555bef8f95680cd35a16cf3dbe7f8e9ab717fe626e4dc82e6fd61538773a6'
+          assert d['route_model_inputs_restricted_to_source_and_trigger'] is True
+          assert d['physical_end_to_end_savings_proven'] is False
+          assert d['authority']=='DENY_ALL' and d['production_authorized'] is False
+          print('Real frozen DINO-only CPU forward comparison; no Cell selection')
+          PY
+      - name: Publish descriptive aggregate only; never source, plan, weights or labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v29-minimal-route-physical-vision-hold-${{ github.sha }}
+          path: ${{ runner.temp }}/v29-physical-descriptive-HOLD.json
+          if-no-files-found: error
+          retention-days: 7
