@@ -576,7 +576,10 @@ fn neuron_batch_reported_memory_within_grant<'a>(
         // A report smaller than the row's actual output Vec footprint
         // cannot be used to justify physical execution. Keep all extra
         // gating/scratch allocations even when source bytes are shared.
-        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_output_bytes) else {
+        let Some(extra) = item
+            .transient_allocation_bytes
+            .checked_sub(row_output_bytes)
+        else {
             return false;
         };
         let Some(total) = additional_transient_bytes.checked_add(extra) else {

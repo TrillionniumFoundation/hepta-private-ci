@@ -558,7 +558,9 @@ fn other_loaded_model_residency_is_charged_on_single_cell_execution() {
     let mut second = manifest();
     second.model_id = "model.2".into();
     second.model_digest = "9".repeat(64);
-    worker.load_model(100, second).expect("other resident model");
+    worker
+        .load_model(100, second)
+        .expect("other resident model");
     // The selected model reports 1024 resident + 2048 transient, but the
     // other loaded model plus source input pushes the total above 4096.
     assert_eq!(
