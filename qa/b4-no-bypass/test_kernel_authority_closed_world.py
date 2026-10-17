@@ -1098,17 +1098,17 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 observation,
                 "orphan evidence must never invoke a mutation or Final-use owner",
             )
-        for required in (
-            "inspect_original_pending_begin_v1(",
-            "verify_original_commit(",
-            "signed_route(",
-            "original Control orphan frontier drifted",
-            "original Control orphan changed during final CNS verification",
+        # Lexical code strips comments and string literals deliberately.
+        # Count genuine original-owner calls, not diagnostic message text.
+        for required, minimum in (
+            ("inspect_original_pending_begin_v1(", 3),
+            ("verify_original_commit(", 2),
+            ("signed_route(", 2),
         ):
-            self.assertIn(
-                required,
-                observation,
-                "original signed CNS and WAL evidence must be rechecked",
+            self.assertGreaterEqual(
+                observation.count(required),
+                minimum,
+                "the original WAL, signed CNS record and live route need replay",
             )
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
