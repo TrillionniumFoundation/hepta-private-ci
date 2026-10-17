@@ -35,13 +35,13 @@ jobs:
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py source_bytes.py review_bytes.py test_source_bytes.py physical_forward.py test_physical_forward.py runtime_compat.py test_runtime_compat.py
-          python -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward
+          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py source_bytes.py review_bytes.py test_source_bytes.py physical_forward.py test_physical_forward.py runtime_snapshot.py test_runtime_snapshot.py runtime_compat.py test_runtime_compat.py
+          python -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward test_runtime_snapshot
       - name: Optimized-mode source and physical-byte guards
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -O -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward
+          python -O -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward test_runtime_snapshot
       - name: Reject promotion and arbitrary code execution
         run: |
           set -euo pipefail
@@ -209,6 +209,7 @@ jobs:
           from pathlib import Path
           model = os.environ["STEM_MODEL"]
           doc = json.loads((Path(os.environ["RUNNER_TEMP"]) / ("hepta-forward-"+model+".json")).read_text())
+          assert doc["isolated_allowlist_runtime_snapshot_verified"] is True
           assert doc["real_forward_on_fixed_unlabeled_probe"] is True
           assert doc["output"]["original_cpu_base_forward_calls"] == 1
           assert doc["output"]["actual_tensor_values_loaded"] > 0
