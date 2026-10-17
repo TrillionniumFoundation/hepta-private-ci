@@ -37,6 +37,11 @@ source identity, and model-request shape. A missing script, missing manifest,
 changed schema, or evaluator error is `ReaderFixtureError`; there is no
 synthetic fallback.
 
+`verify_registered_checkout()` delegates the source-byte check to the same
+evaluator and therefore verifies each registered Git blob, quoted line, and
+withheld control before a model request can be bound. This is still an input
+integrity check, not evidence that a model answered correctly.
+
 `ReaderRequestV1` contains only the evaluator-generated `state` and `questions`
 payloads accepted by the Reader API. It recursively rejects evaluator-only
 gold fields before a caller can pass the request to a model. The adapter does
