@@ -140,6 +140,7 @@ impl LearningArtifactOwnerService {
         expected_content_digest: Digest32,
         now: u64,
     ) -> Result<CellSplitArtifactCasReadbackV1, LearningArtifactOwnerServiceError> {
+        self.host.require_cell_split_anti_rollback_floor_v1(now)?;
         if let Some(blocked) = &self.recovery_required {
             return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
                 blocked.clone(),
