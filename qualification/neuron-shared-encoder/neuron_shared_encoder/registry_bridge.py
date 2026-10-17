@@ -93,7 +93,7 @@ class BoundModalityEnvelopeV1:
             _digest(name, value)
         _identifier("tower_id", self.tower_id)
         _identifier("projector_id", self.projector_id)
-        _integer("latent_width", self.latent_width, minimum=1, maximum=8192)
+        _integer("latent_width", self.latent_width, minimum=1, maximum=2048)
         _integer("slots", self.slots, minimum=1, maximum=256)
         _integer("region_count", self.region_count, minimum=0, maximum=4096)
         if self.temporal_span_ms is not None:
