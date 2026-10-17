@@ -2697,3 +2697,132 @@ fn oversized_owner_directory_fails_before_writing_frozen_plan() {
     assert!(!root.path().join("cell-split-frozen-plan.json").exists());
     assert_eq!(state.borrow().executions, 0);
 }
+
+#[test]
+fn post_effect_selector_revocation_keeps_every_original_owner_reconcile_only() {
+    // Repeat at CAS, state migration, CNS route and Supervisor generation.
+    // Signed native success is insufficient if current selection was
+    // withdrawn before the coordinator fsyncs its own committed receipt.
+    for completed in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("one original execution owner");
+        for _ in 0..completed {
+            owner.advance().expect("signed frozen predecessor");
+        }
+        let mut checks = 0_usize;
+        let outcome = owner.advance_with_admission(|| {
+            checks += 1;
+            if checks == 3 {
+                Err("NDU/Selector withdrawn after original signed effect".to_string())
+            } else {
+                Ok(())
+            }
+        });
+        assert!(
+            matches!(outcome, Err(CellSplitExecutionErrorV1::Ambiguous)),
+            "post-effect withdrawal must be ambiguous, not safely retryable"
+        );
+        assert_eq!(
+            checks, 3,
+            "two admission gates before Prepare and one post-effect gate"
+        );
+        assert_eq!(state.borrow().executions, completed + 1);
+        assert_eq!(owner.completed_steps(), completed);
+        let prepared = root
+            .path()
+            .join(format!("cell-split-{completed:02}-prepared.json"));
+        let committed = root
+            .path()
+            .join(format!("cell-split-{completed:02}-committed.json"));
+        assert!(prepared.is_file(), "preserve original idempotency key");
+        assert!(!committed.exists(), "never seal a withdrawn split");
+        assert!(matches!(
+            owner.advance_with_admission(|| Err("selection still withdrawn".to_string())),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(state.borrow().executions, completed + 1);
+        drop(owner);
+
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("recover only the original prepared effect");
+        assert!(matches!(
+            recovered.advance_with_admission(|| Err("independent admission denied".to_string())),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert!(prepared.is_file());
+        assert!(!committed.exists());
+        assert_eq!(recovered.completed_steps(), completed);
+        assert_eq!(
+            state.borrow().executions,
+            completed + 1,
+            "cold recovery must never duplicate the physical effect"
+        );
+    }
+}
+
+#[test]
+fn selector_withdrawal_during_post_effect_owner_readback_blocks_commit() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let selected = Rc::new(RefCell::new(true));
+    let mut port = FixturePort::new(state.clone());
+    port.revoke_selection_on_readback = Some((selected.clone(), 1));
+    let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+        .expect("frozen original owner");
+
+    let mut checks = 0;
+    let outcome = owner.advance_with_admission(|| {
+        checks += 1;
+        if *selected.borrow() {
+            Ok(())
+        } else {
+            Err("Selector withdrew during native receipt verification".to_string())
+        }
+    });
+    assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Ambiguous)));
+    assert_eq!(checks, 3);
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").is_file());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+}
+
+#[test]
+fn post_effect_admission_callback_cannot_replace_frozen_owner_identity() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("one original effect owner");
+    let frozen_pins = root.path().join("cell-split-owner-trust-pins.json");
+    let mut checks = 0;
+    let outcome = owner.advance_with_admission(|| {
+        checks += 1;
+        if checks == 3 {
+            fs::write(&frozen_pins, b"{}").expect("adversarial trust substitution");
+        }
+        Ok(())
+    });
+    assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Ambiguous)));
+    assert_eq!(checks, 3);
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").is_file());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+}

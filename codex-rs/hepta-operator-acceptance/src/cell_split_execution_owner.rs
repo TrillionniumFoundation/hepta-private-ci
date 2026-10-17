@@ -1109,6 +1109,24 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // local final readback, receipt serialization or fsynced Commit fails.
         self.verify_committed_prefix()
             .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // An independently selected split can be withdrawn while the real
+        // CAS/migration/CNS/Supervisor owner performs its physical effect and
+        // signed readback. Recheck CURRENT Selector/NDU admission *after* the
+        // original effect, before sealing a local success. Do not translate a
+        // post-effect denial into an ordinary preflight failure: execution may
+        // already be durable. The fsynced prepared intent must remain the sole
+        // idempotency key and recovery must reconcile, never execute again.
+        revalidate().map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // A slow or compromised admission callback could also replace the
+        // original frozen plan, trust pins, pending intent or predecessor
+        // frames. Check the write-once local history after that callback.
+        // This cannot make Final-use atomic with an external effect; the
+        // native owner must still fence its own commit and generation.
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
         let committed_bytes =
             canonical_json(&receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         let committed_path = frame_path(&self.root, self.cursor, "committed");
