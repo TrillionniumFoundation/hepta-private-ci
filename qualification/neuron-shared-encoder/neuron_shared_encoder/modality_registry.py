@@ -216,6 +216,7 @@ class ModalityTowerRegistryV1:
         _require(not self.selection_authority, "tower registry cannot select a production tower")
         _require(not self.current_run_mutation, "tower registry cannot mutate the current run")
         _require(tuple(self.stem.modality_projectors) == tuple(sorted(self.stem.modality_projectors)), "Stem projector IDs must be sorted")
+        _require(set(self.stem.modality_projectors) == set(SUPPORTED_MODALITIES), "Stem manifest must declare all four modality projector IDs")
         _require(len(self.towers) == len(SUPPORTED_MODALITIES), "multimodal registry requires all four modality towers")
         modalities = tuple(tower.modality for tower in self.towers)
         _require(len(set(modalities)) == len(modalities), "tower modalities must be unique")
