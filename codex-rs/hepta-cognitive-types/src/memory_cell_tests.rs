@@ -14,17 +14,15 @@ use crate::hnmf::ModalityKindV1;
 use crate::hnmf_learning::EngramPopulationV1;
 
 fn id(value: &str) -> ContractIdV1 {
-    ContractIdV1::new(value).unwrap_or_else(|error| panic!("valid id: {error:?}"))
+    ContractIdV1::new(value).expect("valid id")
 }
 
 fn digest(value: &str) -> ContractDigestV1 {
-    ContractDigestV1::from_digest(Digest32::of_bytes(value.as_bytes()))
-        .unwrap_or_else(|error| panic!("valid digest: {error:?}"))
+    ContractDigestV1::from_digest(Digest32::of_bytes(value.as_bytes())).expect("valid digest")
 }
 
 fn generation(value: u64) -> ContractGenerationV1 {
-    ContractGenerationV1::new(value)
-        .unwrap_or_else(|error| panic!("valid generation: {error:?}"))
+    ContractGenerationV1::new(value).expect("valid generation")
 }
 
 fn valid_manifest() -> MemoryCellManifestV1 {
@@ -91,7 +89,7 @@ fn valid_receipt() -> MemoryCellTickReceiptV1 {
 
 #[test]
 fn manifest_accepts_bounded_projection_identity() {
-    assert!(valid_manifest().validate().is_ok());
+    valid_manifest().validate().expect("manifest is valid");
 }
 
 #[test]
@@ -117,7 +115,7 @@ fn manifest_rejects_self_parent_and_zero_state_budget() {
 
 #[test]
 fn tick_input_requires_progress_and_budget() {
-    assert!(valid_tick_input().validate().is_ok());
+    valid_tick_input().validate().expect("tick input is valid");
 
     let mut input = valid_tick_input();
     input.logical_sequence = 0;
@@ -136,7 +134,7 @@ fn tick_input_requires_progress_and_budget() {
 
 #[test]
 fn receipt_binds_selected_output_and_rejects_invalid_abstain() {
-    assert!(valid_receipt().validate().is_ok());
+    valid_receipt().validate().expect("receipt is valid");
 
     let mut receipt = valid_receipt();
     receipt.recall_packet_digest = None;

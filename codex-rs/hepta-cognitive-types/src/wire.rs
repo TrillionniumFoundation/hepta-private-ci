@@ -16,9 +16,6 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use crate::hnmf::CrossModalBindingV1;
-use crate::memory_cell::MemoryCellManifestV1;
-use crate::memory_cell::MemoryCellTickInputV1;
-use crate::memory_cell::MemoryCellTickReceiptV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::MemoryEventV1;
 use crate::hnmf::ModalitySpanRefV1;
@@ -31,6 +28,9 @@ use crate::hnmf_learning::RecallPacketV1;
 use crate::hnmf_learning::ReplaySelectionReceiptV1;
 use crate::hnmf_learning::SynapseV1;
 use crate::hnmf_learning::TopologyProposalV1;
+use crate::memory_cell::MemoryCellManifestV1;
+use crate::memory_cell::MemoryCellTickInputV1;
+use crate::memory_cell::MemoryCellTickReceiptV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
