@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from portfolio import Invalid, POLICIES, digest as p1_digest, manifest, run
-from physical_online import SCHEMA, ACTION_MAX, strict, validate_source, make_prompt, parse_answer
+from physical_online import SCHEMA, ACTION_MAX, strict, validate_source, make_prompt, parse_answer, prompt_seed, READER_PROFILE
 from public_source import SCHEMA as SOURCE_SCHEMA, encoded, new_json, sha
 
 
@@ -129,6 +129,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
     identity=completed['physical_model_identity']
     if type(identity) is not dict or identity.get('repo') != MODEL_REPO or identity.get('revision') != MODEL_REV or identity.get('actual_pretrained_model_loaded') is not True:
         raise Invalid('unregistered pretrained Reader identity')
+    if identity.get('runtime') != READER_PROFILE:
+        raise Invalid('wrong frozen thinking/decoding research profile')
     if any(type(identity.get(k)) is not str or len(identity[k]) != 64 or
            any(ch not in '0123456789abcdef' for ch in identity[k])
            for k in ('weights_sha256','tokenizer_sha256')):
@@ -160,8 +162,9 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         check_output(r)
         if r['source_kind'] != 'original_physical' or r['policy'] != 'train':
             raise Invalid('synthetic training Reader output')
-        if r['prompt_sha256'] != sha(encoded(make_prompt(train_by_id[r['task_id']]['text'],r['action']))):
-            raise Invalid('original TRAIN model prompt was substituted')
+        original_prompt = make_prompt(train_by_id[r['task_id']]['text'], r['action'])
+        if r['prompt_sha256'] != sha(encoded(original_prompt)) or r['sampling_seed'] != prompt_seed(original_prompt):
+            raise Invalid('original TRAIN model prompt/sampling seed was substituted')
         recalculated.append({'task_id':r['task_id'],
           'bucket':next(x['bucket'] for x in train['rows'] if x['task_id']==r['task_id']),
           'group':next(x['group'] for x in train['rows'] if x['task_id']==r['task_id']),
@@ -175,8 +178,9 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         check_output(r)
         if r['source_kind'] != 'original_physical' or r['task_id'] not in names:
             raise Invalid('replayed/synthetic/unknown physical Reader')
-        if r['prompt_sha256'] != sha(encoded(make_prompt(names[r['task_id']]['text'],r['action']))):
-            raise Invalid('original requested prompt was substituted')
+        original_prompt = make_prompt(names[r['task_id']]['text'], r['action'])
+        if r['prompt_sha256'] != sha(encoded(original_prompt)) or r['sampling_seed'] != prompt_seed(original_prompt):
+            raise Invalid('original held model prompt/sampling seed was substituted')
     journal(journal_path,frozen_sha,train_log,served)
     training_tokens=sum(x['input_tokens']+x['output_tokens'] for x in train_log)
     training_cpu=sum(x['measured_cpu_seconds'] for x in train_log)
@@ -198,6 +202,9 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
         losses=sum(not int(r['predicted_class']==labels[r['task_id']]['label']) and
                 int(direct[r['task_id']]['predicted_class']==labels[r['task_id']]['label']) for r in rows)
         scores.append({'policy':policy,'correct':correct,'of':len(rows),
+            'thinking_segment_tokens':sum(r['thinking_segment_tokens'] for r in rows),
+            'thinking_mode_requests':sum(r['thinking_mode'] for r in rows),
+            'unfinished_thinking_requests':sum(r['thinking_mode'] and not r['thinking_complete'] for r in rows),
             'actual_full_input_and_output_tokens':counted,
             'actual_token_difference_vs_independently_executed_direct':direct_delta,
             'actual_cpu_seconds':round(cpu,9), 'actual_wall_seconds':round(wall,9),
@@ -235,7 +242,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
 def check_output(r: Any) -> None:
     allowed={'task_id','policy','action','prompt_sha256','input_token_ids_sha256',
        'output_token_ids_sha256','input_tokens','output_tokens','answer','answer_sha256',
-       'predicted_class','measured_cpu_seconds','measured_wall_seconds','source_kind'}
+       'predicted_class','measured_cpu_seconds','measured_wall_seconds','source_kind',
+       'thinking_mode','thinking_segment_tokens','thinking_complete','sampling_seed'}
     if type(r) is not dict or set(r) != allowed or r['action'] not in ACTION_MAX:
         raise Invalid('original physical output schema invalid')
     if (type(r['input_tokens']) is not int or not 1 <= r['input_tokens'] <= 768 or
@@ -246,6 +254,18 @@ def check_output(r: Any) -> None:
         r['predicted_class'] != parse_answer(r['answer']) or
         r['answer_sha256'] != sha(r['answer'].encode())):
         raise Invalid('tampered physical model answer')
+    if (type(r['thinking_mode']) is not bool or r['thinking_mode'] != (r['action'] == 'reason') or
+        type(r['thinking_complete']) is not bool or
+        type(r['thinking_segment_tokens']) is not int or
+        not 0 <= r['thinking_segment_tokens'] <= r['output_tokens'] or
+        type(r['sampling_seed']) is not int or not 0 <= r['sampling_seed'] <= 2**32-1):
+        raise Invalid('invalid Qwen3 thinking token/seed record')
+    if r['action'] == 'reason':
+        if r['thinking_segment_tokens'] < 1 or (not r['thinking_complete'] and
+             (r['answer'] or r['predicted_class'] is not None)):
+            raise Invalid('truncated thinking presented as final prediction')
+    elif r['thinking_complete'] or r['thinking_segment_tokens'] != 0:
+        raise Invalid('nonthinking action carries fake thought')
     for k in ('prompt_sha256','input_token_ids_sha256','output_token_ids_sha256'):
         if type(r[k]) is not str or len(r[k]) != 64 or any(ch not in '0123456789abcdef' for ch in r[k]):
             raise Invalid('tampered model token digest')

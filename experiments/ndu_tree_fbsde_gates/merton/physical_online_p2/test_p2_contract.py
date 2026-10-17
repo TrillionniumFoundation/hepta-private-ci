@@ -14,7 +14,7 @@ from portfolio import Invalid, POLICIES
 from public_source import SCHEMA as SRC, split_original, encoded, sha, new_json
 from physical_online import (ACTION_MAX, MODEL_REPO, MODEL_REV, MODEL_WEIGHTS_SHA256,
     MODEL_TOKENIZER_SHA256, assert_original_checkpoint_hashes, run_online,
-    validate_source, parse_answer, make_prompt)
+    validate_source, parse_answer, make_prompt, prompt_seed, final_after_thinking, READER_PROFILE, QwenReader)
 from physical_review import review
 
 
@@ -24,7 +24,7 @@ class MockReader:
     physical=True
     identity={'repo':MODEL_REPO,'revision':MODEL_REV,
        'weights_sha256':MODEL_WEIGHTS_SHA256,'tokenizer_sha256':MODEL_TOKENIZER_SHA256,
-       'actual_pretrained_model_loaded':True,'runtime':'FAKE CONTRACT TEST NOT PHYSICAL'}
+       'actual_pretrained_model_loaded':True,'runtime':READER_PROFILE}
     load_cpu=0.01;load_wall=0.01
     def __init__(self):
         self.identity=copy.deepcopy(type(self).identity)
@@ -33,10 +33,13 @@ class MockReader:
         self.calls.append((sha(article.encode()),action))
         prompt=make_prompt(article,action)
         result='FINAL=0' if action=='direct' else 'FINAL=1' if action=='reason' else 'FINAL=2'
+        mode = action == 'reason'
         return {'prompt_sha256':sha(encoded(prompt)),
           'input_token_ids_sha256':sha(encoded([4,5])),
           'output_token_ids_sha256':sha(encoded([6,7])),
           'input_tokens':40,'output_tokens':3,'answer':result,
+          'thinking_mode':mode, 'thinking_segment_tokens':1 if mode else 0,
+          'thinking_complete':mode, 'sampling_seed':prompt_seed(prompt),
           'answer_sha256':sha(result.encode()),'predicted_class':parse_answer(result)}
 
 
@@ -73,6 +76,128 @@ class PhysicalContractTests(unittest.TestCase):
         plan=json.loads((out/'frozen-plan.json').read_text())
         summary=review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
         return out,plan,completed,summary
+
+    def test_real_reader_infer_invokes_explicit_qwen3_thinking_switch(self):
+        from contextlib import nullcontext
+        class T:
+            long = 'long'
+            def manual_seed(self, seed):self.seed = seed
+            def inference_mode(self):return nullcontext()
+            def tensor(self, ids, dtype):return ids
+        class Tokenizer:
+            eos_token_id=0
+            def apply_chat_template(self, messages, tokenize, add_generation_prompt, enable_thinking):
+                self.thinking=enable_thinking
+                return [42,43]
+            def decode(self, ids, skip_special_tokens=True):
+                assert skip_special_tokens
+                return 'FINAL=1' if ids==[9] else ''
+        class Model:
+            def __init__(self,tok):self.tok=tok;self.kwargs=[]
+            def generate(self, ids, **kwargs):
+                self.kwargs.append(kwargs)
+                class Output:
+                    def __init__(self, ids):self.ids=ids
+                    def tolist(self):return self.ids
+                generated = [7,151668,9] if self.tok.thinking else [9]
+                return [Output(ids[0] + generated)]
+        r=object.__new__(QwenReader)
+        r.tok=Tokenizer();r.torch=T();r.model=Model(r.tok)
+        article='An ordinary public news item about a business development.'
+        direct=r.infer(article,'direct')
+        self.assertFalse(direct['thinking_mode'])
+        self.assertEqual(direct['thinking_segment_tokens'],0)
+        self.assertEqual(direct['answer'],'FINAL=1')
+        reasoning=r.infer(article,'reason')
+        self.assertTrue(reasoning['thinking_mode'])
+        self.assertTrue(reasoning['thinking_complete'])
+        self.assertEqual(reasoning['thinking_segment_tokens'],2)
+        self.assertEqual(reasoning['output_tokens'],3)
+        self.assertEqual(reasoning['answer'],'FINAL=1')
+        self.assertNotIn('think',reasoning['answer'])
+        self.assertEqual(r.model.kwargs[0]['max_new_tokens'],12)
+        self.assertEqual(r.model.kwargs[1]['max_new_tokens'],96)
+        self.assertTrue(r.model.kwargs[1]['do_sample'])
+        self.assertEqual(r.model.kwargs[1]['temperature'],0.6)
+        self.assertEqual(direct['sampling_seed'],reasoning['sampling_seed'])
+
+    def test_real_reader_truncated_thought_uses_no_final_class(self):
+        from contextlib import nullcontext
+        class T:
+            long=1
+            def manual_seed(self, value):pass
+            def inference_mode(self):return nullcontext()
+            def tensor(self, values, dtype):return values
+        class Tok:
+            eos_token_id=0
+            def apply_chat_template(self, messages, tokenize, add_generation_prompt, enable_thinking):return [1,2]
+            def decode(self, tokens, skip_special_tokens=True):return 'FINAL=1'
+        class Model:
+            def generate(self, ids, **kwargs):
+                class Output:
+                    def tolist(self):return [1,2,7,8,9]
+                return [Output()]
+        r=object.__new__(QwenReader)
+        r.tok=Tok();r.model=Model();r.torch=T()
+        o=r.infer('Another public news article describing sports and finance.','reason')
+        self.assertEqual(o['thinking_segment_tokens'],3)
+        self.assertEqual(o['answer'],'')
+        self.assertIsNone(o['predicted_class'])
+        self.assertFalse(o['thinking_complete'])
+
+    def test_new_p3_protocol_does_not_alias_p2_artifacts(self):
+        from physical_online import SCHEMA
+        self.assertEqual(SCHEMA,'hepta.ndu-merton.p3.true-thinking-on-policy.v1')
+
+    def test_no_thinking_and_thinking_use_same_user_prompt(self):
+        article = 'A sufficiently long public news article about current business and weather.'
+        self.assertEqual(make_prompt(article, 'direct'), make_prompt(article, 'reason'))
+        self.assertEqual(prompt_seed(make_prompt(article,'direct')),
+                         prompt_seed(make_prompt(article,'reason')))
+
+    def test_thought_is_never_exposed_to_postseal_answer(self):
+        class FakeTokenizer:
+            def decode(self, span, skip_special_tokens=True):
+                return {5:'PRIVATE_THOUGHT', 7:'FINAL=1'}.get(span[-1], '')
+        text, count, ended = final_after_thinking(FakeTokenizer(), [5,151668,7], 'reason')
+        self.assertEqual((text,count,ended), ('FINAL=1',2,True))
+        self.assertNotIn('PRIVATE_THOUGHT',text)
+
+    def test_truncated_thinking_not_scored_as_final(self):
+        class FakeTokenizer:
+            def decode(self, span, skip_special_tokens=True):
+                return 'FINAL=1'
+        self.assertEqual(final_after_thinking(FakeTokenizer(),[17,18,19],'reason'), ('',3,False))
+
+    def test_reasoning_closer_in_non_thinking_action_is_refused(self):
+        class FakeTokenizer:
+            def decode(self, span, skip_special_tokens=True):
+                return 'FINAL=1'
+        with self.assertRaises(Invalid):
+            final_after_thinking(FakeTokenizer(),[151668,5],'direct')
+
+    def test_duplicate_thinking_closer_refused(self):
+        class FakeTokenizer:
+            def decode(self, span, skip_special_tokens=True):
+                return 'FINAL=1'
+        with self.assertRaises(Invalid):
+            final_after_thinking(FakeTokenizer(),[5,151668,6,151668,7],'reason')
+
+    def test_forged_reasoning_meter_refused_by_postseal(self):
+        out,plan,completed,summary=self.run_complete()
+        rec=next(r for r in completed['actual_policy_trace'] if r['action']=='reason')
+        rec['thinking_segment_tokens']=rec['output_tokens']+1
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_forged_sampling_seed_rejected_even_after_seal(self):
+        out,plan,completed,summary=self.run_complete()
+        rec=completed['actual_policy_trace'][0]
+        rec['sampling_seed']=(rec['sampling_seed']+1) % (2**32)
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
 
     def test_original_checkpoint_sha256_pins(self):
         assert_original_checkpoint_hashes(MODEL_WEIGHTS_SHA256,MODEL_TOKENIZER_SHA256)
@@ -140,7 +265,10 @@ class PhysicalContractTests(unittest.TestCase):
             self.assertTrue(row['cold_start_calibration_fee_shared_not_summable'])
             self.assertLessEqual(Fraction(row['illustrative_single_arm_cold_start_net_tokens_only']),
                                  Fraction(row['external_correct_minus_FULL_serving_token_tariff']))
-        self.assertIn('FAKE CONTRACT',str(summary['model_identity']))
+        # This fixture deliberately SPOOFS the same metadata as a real model.
+        # A self-issued model identity cannot establish independent attestation.
+        self.assertEqual(summary['model_identity']['runtime'], READER_PROFILE)
+        self.assertFalse(summary['independent_hardware_attestation'])
         self.assertTrue(out.joinpath('frozen-plan.json').exists())
 
     def test_no_reader_output_shortcut_or_policy_cache(self):
