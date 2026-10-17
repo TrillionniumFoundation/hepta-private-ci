@@ -110,6 +110,11 @@ impl CellHeadManifest {
         }
         Ok(())
     }
+
+
+    pub fn private_memory_bytes(&self) -> u64 {
+        self.private_memory_bytes
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -180,6 +185,15 @@ impl SharedEncoderPool {
             encoders: BTreeMap::new(),
             cells: BTreeMap::new(),
         })
+    }
+
+
+    pub fn attach_manifest(
+        &mut self,
+        manifest: CompositionManifestV1,
+    ) -> Result<CompositionReceipt, CompositionError> {
+        manifest.validate()?;
+        self.attach_cell(manifest.key(), manifest.head(), manifest.private_memory_bytes())
     }
 
     pub fn attach_cell(
