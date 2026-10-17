@@ -139,7 +139,10 @@ pub fn decide_group_continuation_v1(
         .ok_or(GroupSystem2Error::MissingAbstainCandidate)?;
 
     let mut best_non_abstain: Option<(&GroupContinuationCandidateV1, i64)> = None;
-    for candidate in candidates.iter().filter(|candidate| candidate.legal && !candidate.abstain) {
+    for candidate in candidates
+        .iter()
+        .filter(|candidate| candidate.legal && !candidate.abstain)
+    {
         let net = candidate_net_value(candidate)?;
         let replace = match best_non_abstain {
             None => true,
@@ -205,7 +208,10 @@ fn validate_trace(
     for (name, digest) in [
         ("input_digest", trace.input_digest),
         ("route_digest", trace.route_digest),
-        ("complete_candidate_set_digest", trace.complete_candidate_set_digest),
+        (
+            "complete_candidate_set_digest",
+            trace.complete_candidate_set_digest,
+        ),
         ("behavior_digest", trace.behavior_digest),
         ("terminal_outcome_digest", trace.terminal_outcome_digest),
     ] {
