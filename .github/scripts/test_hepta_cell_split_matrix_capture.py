@@ -610,6 +610,5 @@ result.parent.chmod(0o777)
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
 
 
-
 if __name__ == "__main__":
     unittest.main()

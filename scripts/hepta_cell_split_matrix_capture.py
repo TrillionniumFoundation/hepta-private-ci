@@ -316,7 +316,8 @@ def execute_matrix(
                             )
                         except (OSError, subprocess.TimeoutExpired) as error:
                             raise InvalidEvidence(
-                                f"{scope}/{mode}: workload unavailable or timed out: {error}"
+                                f"{scope}/{mode}: workload unavailable or "
+                                f"timed out: {error}"
                             ) from error
                 require_pinned_capture_root(directory_fd, output)
                 if result.returncode != 0:

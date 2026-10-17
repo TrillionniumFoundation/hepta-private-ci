@@ -57,7 +57,8 @@ def _directory_identity(directory_fd: int, path: Path) -> None:
         or named.st_mode & 0o077 != 0
     ):
         raise InvalidEvidence(
-            f"{path.name}: pinned directory identity changed or private ownership mismatch"
+            f"{path.name}: pinned directory identity changed "
+            "or private ownership mismatch"
         )
 
 

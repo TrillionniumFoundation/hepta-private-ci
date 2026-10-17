@@ -376,6 +376,5 @@ class IndependentByteCustodyTests(unittest.TestCase):
         self.assertFalse((self.output / "COMPLETE").exists())
 
 
-
 if __name__ == "__main__":
     unittest.main()
