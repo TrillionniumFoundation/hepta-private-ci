@@ -43,8 +43,15 @@ readback even after it is complete.
 The generic CellSplitNativeOwnerV1 trait is **not** a production implementation.
 The product host must supply actual adapters, using authorized preexisting owners:
 
-- Artifact CAS: create-only object write, parent-directory durability, registry
-  head/withdrawal verification, exact byte readback and native append receipt.
+- Artifact CAS: reuse LearningArtifactOwnerHost::ensure_payload_durable,
+  ensure_registry_durable, ensure_witness_durable and acknowledge. The newly
+  added observe_cell_split_artifact_cas_v1 method reopens the actual native
+  publication checkpoint, historical registry and payload; verifies the CURRENT
+  signed registry and reads exact bytes before returning CellSplitArtifactCasReadbackV1.
+  Map its native_ack_digest/payload_digest/readback_digest/registry_head_digest
+  into ArtifactCasCommitted only after independent operation-ID, admission,
+  authority and frozen split binding checks. This bridge is NOT composed in a
+  product CellSplitNativeOwnerV1 implementation yet.
 - Child migration: old-state snapshot, idempotent new-state write, readback
   of the new child state, cancellation and recovery for unknown external effects.
 - CNS: native compare-and-swap route/generation cutover, then authoritative
@@ -71,6 +78,7 @@ Run when a matching Rust toolchain is available:
 
     cd codex-rs
     cargo test -p codex-hepta-supervisor cell_split_owner
+    cargo test -p codex-hepta-learning-artifacts cell_split_cas_readback
     cargo clippy -p codex-hepta-supervisor --all-targets -- -D warnings
     cargo fmt --all -- --check
 
