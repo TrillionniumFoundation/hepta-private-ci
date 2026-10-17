@@ -149,6 +149,7 @@ pub struct CellSplitProposalPolicyV1 {
 }
 
 impl CellSplitProposalPolicyV1 {
+    #[expect(clippy::too_many_arguments, reason = "stable atomic policy artifact")]
     pub fn new(
         policy_id: StableId,
         proposer_id: StableId,

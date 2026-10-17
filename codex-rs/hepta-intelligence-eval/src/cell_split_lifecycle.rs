@@ -35,6 +35,7 @@ pub struct CellSplitCanaryReceiptV1 {
 }
 
 impl CellSplitCanaryReceiptV1 {
+    #[expect(clippy::too_many_arguments, reason = "stable atomic canary receipt")]
     pub fn new(
         split_id: StableId,
         candidate_generation: Generation,

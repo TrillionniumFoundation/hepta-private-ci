@@ -19,6 +19,11 @@ on:
       - "codex-rs/hepta-cell-roles/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-memory/**"
+      # Transitive real signed-owner Clippy consumers must not skip native CI
+      # when changed in isolation; they failed on the exact 2026-10-17 runner.
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/config/**"
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-evidence/**"
@@ -110,6 +115,18 @@ jobs:
       - name: Install pinned Rust 1.95.0
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Check exact original reverse-consumer Rust formatting
+        run: |
+          cargo +1.95.0 fmt --package codex-hepta-intelligence-eval --package codex-hepta-memory-extension --package codex-config -- --check
+      - name: Require eleven real Cell Split automation regression tests
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-p0-cell-split-automation.json" --minimum-tests 11 -- cargo +1.95.0 test --locked -p codex-hepta-intelligence-eval --lib cell_split_automation::tests:: -- --test-threads=1
+      - name: Require eleven real Cognitive memory extension regressions
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-p0-cognitive-extension.json" --minimum-tests 11 -- cargo +1.95.0 test --locked -p codex-hepta-memory-extension --lib cognitive::tests:: -- --test-threads=1
+      - name: Strict transitive original-owner Clippy on all targeted packages
+        run: |
+          cargo +1.95.0 clippy --locked -p codex-hepta-intelligence-eval -p codex-hepta-memory-extension -p codex-config --all-targets -- -D warnings
       - name: Verify old and integrated Stem Core Rust formatting
         run: cargo +1.95.0 fmt --package codex-hepta-infer-core -- --check
       - name: Require original signed Worker Rust formatting

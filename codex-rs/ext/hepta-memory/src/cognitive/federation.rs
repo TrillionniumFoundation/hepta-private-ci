@@ -861,11 +861,6 @@ fn federation_source_binding(
     ))
 }
 
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
-}
 
 fn final_use_capability_window_current(
     revalidation_started_at: i64,

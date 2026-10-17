@@ -245,6 +245,10 @@ pub mod thread_config_loader_server {
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with ThreadConfigLoaderServer.
+    // The generated async_trait expansion creates a must-use Future AND adds
+    // a redundant must-use attribute. Scope the Clippy compatibility to this
+    // generated trait; no serving or authorization behavior is changed.
+    #[allow(clippy::double_must_use)]
     #[async_trait]
     pub trait ThreadConfigLoader: std::marker::Send + std::marker::Sync + 'static {
         async fn load(
