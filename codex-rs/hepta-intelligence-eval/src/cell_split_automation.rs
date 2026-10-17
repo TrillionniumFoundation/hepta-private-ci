@@ -80,6 +80,7 @@ pub struct CellSplitProposalSignalV1 {
 }
 
 impl CellSplitProposalSignalV1 {
+    #[expect(clippy::too_many_arguments, reason = "atomic signed proposal identity")]
     pub fn new(
         parent_cell_id: StableId,
         parent_generation: Generation,
@@ -261,14 +262,13 @@ impl CellSplitAutomationJournalOwnerV1 for CellSplitInMemoryJournalOwnerV1 {
                 "journal replay does not match commit".to_string(),
             ));
         }
-        if let Some(previous) = self.journals.get(&journal.split_id) {
-            if previous.events.len() > journal.events.len()
+        if self.journals.get(&journal.split_id).is_some_and(|previous| {
+            previous.events.len() > journal.events.len()
                 || previous.events != journal.events[..previous.events.len()]
-            {
-                return Err(CellSplitAutomationErrorV1::Store(
-                    "journal append regressed or rewrote history".to_string(),
-                ));
-            }
+        }) {
+            return Err(CellSplitAutomationErrorV1::Store(
+                "journal append regressed or rewrote history".to_string(),
+            ));
         }
         self.journals
             .insert(journal.split_id.clone(), journal.clone());
@@ -365,12 +365,12 @@ impl CellSplitLearningLedgerJournalOwnerV1 {
                 let records = self.ledger.records().map_err(learning_ledger_error)?;
                 let persisted = records
                     .iter()
-                    .filter(|record| &record.split_id == &journal.split_id)
+                    .filter(|record| record.split_id == journal.split_id)
                     .filter_map(|record| {
                         (!record.role_qualification_payload.is_empty())
                             .then_some(record.role_qualification_payload.as_slice())
                     })
-                    .last();
+                    .next_back();
                 if persisted != Some(payload) {
                     return Err(CellSplitAutomationErrorV1::Store(
                         "role qualification payload differs on idempotent retry".to_string(),
@@ -721,7 +721,7 @@ impl CellSplitTaskFlowJournalOwnerV1 {
     ) -> Result<(), CellSplitAutomationErrorV1> {
         let payload = evidence
             .encode_bounded()
-            .map_err(|message| CellSplitAutomationErrorV1::Binding(message))?;
+            .map_err(CellSplitAutomationErrorV1::Binding)?;
         self.commit_async_with_role_qualification_payload(journal, &payload, now_ms)
             .await
     }
@@ -1216,7 +1216,7 @@ fn hex_encode(bytes: &[u8]) -> String {
 }
 
 fn hex_decode(value: &str) -> Result<Vec<u8>, CellSplitAutomationErrorV1> {
-    if value.len() % 2 != 0 {
+    if !value.len().is_multiple_of(2) {
         return Err(CellSplitAutomationErrorV1::TaskFlow(
             "role qualification payload is not even-length hex".to_string(),
         ));
