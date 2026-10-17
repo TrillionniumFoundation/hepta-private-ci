@@ -1933,6 +1933,44 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
     assert_eq!(event_count("B"), 1, "one durable pre-effect Begin");
     assert_eq!(event_count("C"), 0, "no post-SIGKILL Commit");
 
+    // The separate Control process was killed *after* the original Begin
+    // was fsynced. The forensic port may describe that original uncertainty,
+    // but cannot adopt the external test marker as a signed CNS Commit.
+    let marker_path = wal.with_file_name("sigkill-original-control.wal.owner-lock");
+    let original_marker = std::fs::read(&marker_path).expect("original pinned writer marker");
+    let inspected = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+        &wal,
+        &snapshot(3),
+        Digest32::ZERO,
+    )
+    .expect("read-only original Control Begin after real SIGKILL");
+    assert_eq!(inspected.predecessor_semantic_digest, snapshot(3).semantic_digest().unwrap());
+    assert_eq!(inspected.successor_semantic_digest, snapshot(4).semantic_digest().unwrap());
+    assert_eq!(inspected.previous_checkpoint, Digest32::ZERO);
+    assert_eq!(
+        inspected.migrated_checkpoint,
+        Digest32::of_bytes(b"migrated-sigkill-fixture")
+    );
+    assert_eq!(inspected.sequence, 2, "one Genesis plus one fsynced Begin");
+    assert_eq!(inspected.wal_bytes, original_bytes.len() as u64);
+    assert!(!inspected.head.is_zero());
+    assert_eq!(
+        std::fs::read(&wal).expect("original WAL after read-only inspection"),
+        original_bytes,
+    );
+    assert_eq!(
+        std::fs::read(&marker_path).expect("original marker after inspection"),
+        original_marker,
+    );
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            &wal,
+            &snapshot(4),
+            Digest32::of_bytes(b"migrated-sigkill-fixture"),
+        ),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+
     for (frozen, checkpoint) in [
         (snapshot(3), Digest32::ZERO),
         (snapshot(4), Digest32::of_bytes(b"migrated-sigkill-fixture")),
