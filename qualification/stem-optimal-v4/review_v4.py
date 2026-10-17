@@ -135,11 +135,41 @@ def ensure_matched_initial_heads(old_runs, fourth):
                  'cross-version initial Head tensor mismatch; not equal Head baseline')
 
 
+def quarantine_unqualified_mmbert(incumbent):
+    """Keep the original score audit but never rank a randomly initialized stem.
+
+    V3 run 39002204047, original mmBERT job 117331622649 warns that
+    embeddings.tok_embeddings.weight is newly initialized.  This static
+    negative observation is NOT a new model loader certificate.  All original
+    V3 artifacts remain immutable and can be reopened separately.
+    """
+    import copy
+    core.require(type(incumbent) is dict and type(incumbent.get('models')) is dict
+                 and set(incumbent['models']) == {'granite47', 'granite97', 'mmbert140'},
+                 'three original source-bound model records required before exclusion')
+    out = copy.deepcopy(incumbent)
+    out['models'].pop('mmbert140')
+    out['disqualified_comparator'] = {
+        'candidate': 'mmbert140',
+        'reason_code': 'ORIGINAL_PRETRAINED_TOKEN_EMBEDDING_NOT_LOADED',
+        'original_run_id': 39002204047,
+        'original_job_id': 117331622649,
+        'job_warning_independently_fetched_in_this_workflow': False,
+        'original_prediction_bytes_preserved_in_v3_artifact': True,
+        'descriptive_score_eligible': False,
+        'pretrained_model_qualified': False,
+    }
+    out['eligible_descriptive_baselines'] = ['granite47', 'granite97']
+    out['all_checkpoint_parameters_independently_qualified'] = False
+    return out
+
+
 def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     import stem_hard_charge_review_v3 as v3_review
     import stem_candidate_v1 as v1
     # Independently reconstruct the complete roster, both truth files and v3 controls.
     incumbent = v3_review._review(train_raw,test_raw,source,old_runs,materials)
+    incumbent = quarantine_unqualified_mmbert(incumbent)
     _,gold=v3_review.reconstruct(train_raw,test_raw,v1.ORIGINAL_SHA)
     core.check_source(source)
     fourth_result=check_fourth(source,fourth,gold)

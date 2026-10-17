@@ -67,6 +67,22 @@ class ReceiptTests(unittest.TestCase):
         self.assertEqual(out['learned']['correct'],8)
         self.assertGreater(out['learned']['brier'],0)
 
+    def test_quarantine_mmbert_original_random_init_even_if_high_score(self):
+        # Model load SUCCESS is not sufficient: historical V3 logged a fresh
+        # randomly initialized token embedding.  Never show that candidate as
+        # a qualified pretrained Stem regardless of its scored accuracy.
+        original = {'models': {'granite47': {'score': 0},
+                               'granite97': {'score': 0},
+                               'mmbert140': {'score': 32}}}
+        out = review.quarantine_unqualified_mmbert(original)
+        self.assertEqual(set(out['models']), {'granite47', 'granite97'})
+        self.assertNotIn('score', out['disqualified_comparator'])
+        self.assertEqual(out['disqualified_comparator']['pretrained_model_qualified'], False)
+        self.assertEqual(original['models']['mmbert140']['score'], 32)
+        self.assertFalse(out['all_checkpoint_parameters_independently_qualified'])
+        with self.assertRaises(ValueError):
+            review.quarantine_unqualified_mmbert({'models': {'granite47': {}, 'granite97': {}}})
+
     def test_denied_authority_and_outcome_leak(self):
         src,r,g=fixture()
         for key,value in [('authority','ALLOW'),('production_authorized',True),

@@ -10,6 +10,21 @@ Frozen base is the research-only V3 hard-charge BANKING77 cohort and the V1 thre
 2. **Equal-Head but *not* equal-representation/cost intervention**: The 768D native EmbeddingGemma representation is deterministically projected to 384D by `(x[0]+x[1])/2`, `(x[2]+x[3])/2`, etc., then L2 normalized. This is a deliberately lossy **research bridge**, not an EmbeddingGemma officially trained 384D Matryoshka representation. The preexisting V1 `4 × 6,914` gated Head is trained for exactly 100 Adam updates (seed 17, LR .006) using the *same* 64 FIT / 32 heldout V3 question identities as the three baseline models. The center-score, frozen Head and learned Head are all reported; 32 cases on one publisher cannot select a stem.
 3. **Physical Head fleet, bounded cheap System 2 baseline**: On one real frozen EmbeddingGemma feature, allocate each of 4,096 Head tensors (28,319,744 FP32 scalars), run a measured batch with exactly 32 active Heads, record Head-only batch p95/p99, RSS and nullable energy/end-to-end p99. Separately, `system2_v4.py` implements exact rational finite-horizon, fully bounded Bellman candidate selection on pre-boundary forecasts with explicit stop and resource budget. It is not a trained NDU, FBSDE or evidence of reasoning lift.
 
+## Original mmBERT140 comparator denial (observed V3 physical failure)
+
+The original V3 mmBERT job `117331622649` on run `39002204047` completed
+successfully but logged that `embeddings.tok_embeddings.weight` was **newly
+initialized**, not loaded from original pretrained bytes. As a result, a V3
+receipt SHA and genuine 96 forward sequence count are **not** proof of an intact
+pretrained 140M model. V4 retains the complete historical V3 review and
+prediction ZIPs, but the V4 reviewer **strips mmBERT from eligible descriptive
+pretrained comparisons** and emits a fixed `ORIGINAL_PRETRAINED_TOKEN_EMBEDDING_NOT_LOADED`
+quarantine with the exact run/job IDs. This is source-bound to an independently
+fetched job log in this research analysis, **not** a new issuer-signed model
+integrity certificate checked on the scoring runner. A future repaired loader
+must independently prove every required tensor and preserve original model/label
+isolation; no silent checkpoint swap or retconned score is allowed.
+
 ## Strict evidence custody and nonclaims
 
 The hosted workflow first downloads immutable publisher CSV bytes and verifies both source SHAs, exports an unlabelled heldout source roster, then runs 4 original pretrained CPU jobs on the SAME roster. It seals source and output digests, then an independent later job **re-downloads the original source** before scoring. It reuses the original three-model V3 reviewer unchanged and audits the fourth model with `review_v4.py`; missing/synthetic/queued model jobs are not marked successful. Model issuer signatures, human-independent provenance, full GPU energy, simultaneous 4096 requests, future data families, Head learned skill lift, actual Cell Split, stochastic NDU/FBSDE and multimodal decoding are **not provided**.
