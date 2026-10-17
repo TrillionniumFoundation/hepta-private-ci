@@ -344,6 +344,73 @@ impl DurableWriterHandoffJournalV1 {
         &self.checkpoint
     }
 
+    /// Re-read the entire bounded fsync-backed chain under this journal's
+    /// exclusive writer lock. Each returned evidence digest is the EXACT
+    /// originally acknowledged native receipt for that phase, not a fresh
+    /// caller-supplied replacement. The checkpoint format is unchanged.
+    ///
+    /// A later Cell Split phase must compare the latest authenticated native
+    /// readback of *every* earlier effect to these immutable historical cuts.
+    /// Checking only the current phase would allow a past CAS/state receipt
+    /// to drift after the journal moved on.
+    ///
+    /// This does not authenticate the separately owned native stores and
+    /// cannot defend against restoring this journal together with its own
+    /// local witness. Product recovery must still supply recover_at_least
+    /// with an independently retained checkpoint minimum.
+    pub fn acknowledged_evidence_chain_v1(
+        &mut self,
+    ) -> Result<Vec<(WriterHandoffPhaseV1, Digest32)>, WriterHandoffErrorV1> {
+        if self.poisoned {
+            return Err(WriterHandoffErrorV1::Poisoned);
+        }
+        if self.file.metadata()?.len() != self.durable_length
+            || self.durable_length > MAX_JOURNAL_BYTES
+        {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        self.file.seek(SeekFrom::Start(0))?;
+        let mut bytes = Vec::new();
+        Read::take(&mut self.file, self.durable_length + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() as u64 != self.durable_length
+            || !bytes.starts_with(MAGIC)
+        {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+
+        let mut previous: Option<WriterHandoffCheckpointV1> = None;
+        let mut chain = Vec::new();
+        let mut cursor = MAGIC.len();
+        while cursor < bytes.len() {
+            let relative_newline = bytes[cursor..]
+                .iter()
+                .position(|byte| *byte == b'\n')
+                .ok_or(WriterHandoffErrorV1::Corrupt)?;
+            let end = cursor + relative_newline;
+            if end == cursor || end - cursor > MAX_RECORD_BYTES {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
+            let checkpoint = decode_checkpoint(&bytes[cursor..end])?;
+            validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
+            if chain
+                .iter()
+                .any(|(phase, _): &(WriterHandoffPhaseV1, Digest32)| {
+                    *phase == checkpoint.phase
+                })
+            {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
+            chain.push((checkpoint.phase, checkpoint.evidence_digest));
+            previous = Some(checkpoint);
+            cursor = end + 1;
+        }
+        if previous.as_ref() != Some(&self.checkpoint) {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        Ok(chain)
+    }
+
     /// Persist one observed handoff phase. Exact retries of the currently
     /// committed checkpoint are idempotent and never append another record.
     pub fn advance(
