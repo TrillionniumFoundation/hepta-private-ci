@@ -15,6 +15,8 @@
 
 #![forbid(unsafe_code)]
 
+use codex_hepta_intelligence_eval::SelfEvolutionSelectionReceiptV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_learning_artifacts::ArtifactOwnerHostError;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceError;
@@ -31,6 +33,7 @@ use codex_hepta_supervisor::DurableWriterHandoffJournalV1;
 use codex_hepta_supervisor::WriterHandoffCheckpointV1;
 use codex_hepta_supervisor::WriterHandoffPhaseV1;
 use codex_hepta_supervisor::WriterHandoffPlanV1;
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -42,6 +45,10 @@ use codex_hepta_types::StableId;
 pub struct ProductSplitBindingV1 {
     pub split: CellSplitBindingV1,
     pub artifact_id: StableId,
+    /// Candidate identity selected by the independent, signed NDU Selector.
+    /// This is distinct from the CNS topology proposal/candidate IDs.
+    pub selected_candidate_id: StableId,
+    pub selection_id: StableId,
     pub cns_proposal_id: StableId,
     pub cns_candidate_id: StableId,
     pub cns_handoff_digest: Digest32,
@@ -54,12 +61,54 @@ impl ProductSplitBindingV1 {
     pub fn validate(&self, plan: &WriterHandoffPlanV1) -> bool {
         self.split.operation_id == plan.operation_id
             && !self.split.selected_artifact_digest.is_zero()
+            && !self.split.selection_digest.is_zero()
             && !self.split.predecessor_route_digest.is_zero()
             && !self.split.successor_route_digest.is_zero()
             && self.split.predecessor_route_digest != self.split.successor_route_digest
             && !self.cns_handoff_digest.is_zero()
             && !self.cns_final_use_request_digest.is_zero()
             && plan.validate().is_ok()
+    }
+
+    /// Only the independently verified opaque selection token can pass this
+    /// check at the product bridge construction boundary. For testable policy
+    /// purity the private helper consumes its signed receipt projection too.
+    fn validate_selection(
+        &self,
+        plan: &WriterHandoffPlanV1,
+        selected: &VerifiedSelfEvolutionSelectionV1,
+    ) -> bool {
+        self.validate_selection_receipt(
+            plan,
+            selected.receipt(),
+            selected.selection_digest(),
+            selected.selector_evidence_digest(),
+        )
+    }
+
+    fn validate_selection_receipt(
+        &self,
+        plan: &WriterHandoffPlanV1,
+        receipt: &SelfEvolutionSelectionReceiptV1,
+        selection_digest: Digest32,
+        selector_evidence_digest: Digest32,
+    ) -> bool {
+        self.validate(plan)
+            && !selector_evidence_digest.is_zero()
+            && receipt.authority == AuthorityPosture::DENY_ALL
+            && receipt.selection_id == self.selection_id
+            && receipt.candidate_id == self.selected_candidate_id
+            && receipt.predecessor_generation == plan.old_generation
+            && receipt.candidate_generation == plan.new_generation
+            && receipt.candidate_artifact_digest == self.split.selected_artifact_digest
+            && selection_digest == self.split.selection_digest
+            && !receipt.objective_digest.is_zero()
+            && !receipt.no_change_baseline_digest.is_zero()
+            && !receipt.dataset_digest.is_zero()
+            && !receipt.ledger_head_digest.is_zero()
+            && !receipt.evaluation_evidence_digest.is_zero()
+            && !receipt.evaluation_authentication_digest.is_zero()
+            && !receipt.frozen_plan_digest.is_zero()
     }
 
     fn validate_cutover(
@@ -124,6 +173,8 @@ pub struct ProductSplitNativeReadbackV1<'a, O: ExternalCellSplitNativeOwnerV1> {
     binding: ProductSplitBindingV1,
     artifact: &'a LearningArtifactOwnerService,
     runtime: &'a HeptaRuntime,
+    /// Opaque independent selection, retained throughout the operation.
+    selection: &'a VerifiedSelfEvolutionSelectionV1,
     other: O,
     current_time: u64,
     cutover: Option<RuntimeTopologyApplyReceiptV1>,
@@ -135,10 +186,13 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         binding: ProductSplitBindingV1,
         artifact: &'a LearningArtifactOwnerService,
         runtime: &'a HeptaRuntime,
+        selection: &'a VerifiedSelfEvolutionSelectionV1,
         other: O,
         current_time: u64,
     ) -> Result<Self, ProductSplitNativeErrorV1<O::Error>> {
-        if current_time == 0 || !binding.validate(&plan) {
+        if current_time == 0
+            || !binding.validate_selection(&plan, selection)
+        {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         Ok(Self {
@@ -146,6 +200,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
             binding,
             artifact,
             runtime,
+            selection,
             other,
             current_time,
             cutover: None,
@@ -175,7 +230,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         &mut self,
         applied: RuntimeTopologyApplyReceiptV1,
     ) -> Result<(), ProductSplitNativeErrorV1<O::Error>> {
-        if !self.binding.validate_cutover(&self.plan, &applied) {
+        if !self.binding.validate_selection(&self.plan, self.selection)
+            || !self.binding.validate_cutover(&self.plan, &applied)
+        {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         self.runtime
@@ -201,6 +258,11 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         WriterHandoffCheckpointV1,
         CellSplitOwnerErrorV1<ProductSplitNativeErrorV1<O::Error>>,
     > {
+        if !self.binding.validate_selection(&self.plan, self.selection) {
+            return Err(CellSplitOwnerErrorV1::Native(
+                ProductSplitNativeErrorV1::PlanOrBindingMismatch,
+            ));
+        }
         let binding = self.binding.split.clone();
         let mut coordinator = CellSplitOwnerV1::new(journal, self, binding)?;
         coordinator.advance_once()
@@ -288,7 +350,9 @@ impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1
         plan: &WriterHandoffPlanV1,
         phase: WriterHandoffPhaseV1,
     ) -> Result<CellSplitLookupV1, Self::Error> {
-        if plan != &self.plan {
+        if plan != &self.plan
+            || !self.binding.validate_selection(&self.plan, self.selection)
+        {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         match phase {
@@ -310,7 +374,9 @@ impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1
         plan: &WriterHandoffPlanV1,
         phase: WriterHandoffPhaseV1,
     ) -> Result<(), Self::Error> {
-        if plan != &self.plan {
+        if plan != &self.plan
+            || !self.binding.validate_selection(&self.plan, self.selection)
+        {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
         match phase {
@@ -363,10 +429,13 @@ mod tests {
             split: CellSplitBindingV1 {
                 operation_id: plan.operation_id.clone(),
                 selected_artifact_digest: d(b"artifact"),
+                selection_digest: d(b"selection"),
                 predecessor_route_digest: d(b"old-route"),
                 successor_route_digest: d(b"new-route"),
             },
             artifact_id: id("artifact:1"),
+            selected_candidate_id: id("cell-candidate:1"),
+            selection_id: id("selection:1"),
             cns_proposal_id: id("topology:1"),
             cns_candidate_id: id("candidate:1"),
             cns_handoff_digest: d(b"runtime-handoff"),
