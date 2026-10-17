@@ -2142,7 +2142,7 @@ fn post_effect_committed_frame_collision_is_ambiguous_and_never_reexecuted() {
     assert!(root.path().join("cell-split-00-prepared.json").is_file());
     assert_eq!(
         fs::read(&conflicting_frame).expect("injected collision evidence"),
-        b"{}"
+        b"{}".to_vec()
     );
     assert!(owner.advance().is_err(), "collision cannot trigger re-execute");
     assert_eq!(state.borrow().executions, 1);
