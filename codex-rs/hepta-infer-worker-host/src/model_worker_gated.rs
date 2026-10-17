@@ -1048,6 +1048,11 @@ mod tests {
         assert_eq!(results[1].drive_q24, vec![Q24]);
         assert_eq!(results[0].prediction_q24, vec![-Q24 / 4]);
         assert_eq!(results[1].prediction_q24, vec![-Q24 / 4]);
+        assert_eq!(
+            results[0].normalizer_digest,
+            Digest32::of_bytes(b"normalizer")
+        );
+        assert_eq!(results[0].normalizer_digest, results[1].normalizer_digest);
         assert_ne!(results[0].observation_digest, results[1].observation_digest);
         assert!(!results[0].authority.grants_any());
         assert_eq!(worker.driver.batch_calls(), 1);
