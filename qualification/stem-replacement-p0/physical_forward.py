@@ -7,6 +7,7 @@ Ettin's legacy .bin is opened ONLY by torch.load(weights_only=True), never pickl
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 import hashlib
 import json
 import math
@@ -65,7 +66,7 @@ def checked_receipt(receipt, stage, expected_model):
 
 def safe_state_inventory(model, weights, torch):
     """Refuse all unknown tensor types, omitted, added or dimension-drifted keys."""
-    require(type(weights) in (dict,) and 0 < len(weights) < 8192,
+    require(type(weights) in (dict, OrderedDict) and 0 < len(weights) < 8192,
             "Ettin must be a bounded, plain weights-only tensor mapping")
     expected = model.state_dict()
     require(set(weights) == set(expected), "checkpoint/model named-tensor mismatch")
