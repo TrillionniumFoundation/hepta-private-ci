@@ -115,6 +115,17 @@ def build(source_paths, output):
             'cases':30,'logical_requests':120,'authority':'DENY_ALL'}
 
 
+def load_pinned_qwen453(model_class, model_dir, precision):
+    """Transformers 4.53.3 needs torch_dtype, not model-constructor dtype.
+
+    The original native Qwen3 loader uses verified local safetensors and no
+    remote code. This narrow factory must never fall back to mock weights.
+    """
+    return model_class.from_pretrained(
+        model_dir, local_files_only=True, trust_remote_code=False,
+        use_safetensors=True, torch_dtype=precision).eval()
+
+
 def run(source_paths, plan_path, model_dir, model_spec_path, output_path):
     p=validate(source_paths,plan_path)
     from v19_qwen_material import verify_snapshot
@@ -126,9 +137,7 @@ def run(source_paths, plan_path, model_dir, model_spec_path, output_path):
     torch.set_num_threads(2)
     tokenizer=AutoTokenizer.from_pretrained(model_dir,local_files_only=True,
                                              trust_remote_code=False,use_fast=True)
-    model=AutoModelForCausalLM.from_pretrained(model_dir,local_files_only=True,
-                                             trust_remote_code=False,
-                                             use_safetensors=True,dtype=torch.float32).eval()
+    model=load_pinned_qwen453(AutoModelForCausalLM,model_dir,torch.float32)
     if verify_snapshot(model_dir,model_spec)!=material_sha:
         raise ValueError('reference model changed while loading')
     tokenized={}
