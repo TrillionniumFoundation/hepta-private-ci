@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       # The real native Worker test embeds Agentd's cross-crate App Server.
       - "codex-rs/hepta-agentd/src/test_support.rs"
+      # The exact binary used by the real App Server E2E is a CI input.
+      - "codex-rs/cli/**"
       - ".github/workflows/hepta-neuron-shared-q24-owner-ci.yml"
   workflow_dispatch:
 
@@ -41,11 +43,11 @@ jobs:
           git diff --check
           rustc --version
           cargo --version
-      - name: Check formatting on both owners
+      - name: Check formatting on Core, Worker, Agentd and real Codex CLI
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-cli -- --check
       - name: Check every native target
         shell: bash
         run: |
