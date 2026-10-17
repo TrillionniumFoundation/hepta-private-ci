@@ -59,6 +59,7 @@ pub use cell_split_automation::CellSplitAutomationOutcomeV1;
 pub use cell_split_automation::CellSplitInMemoryJournalOwnerV1;
 pub use cell_split_automation::CellSplitLearningLedgerJournalOwnerV1;
 pub use cell_split_automation::CellSplitProposalReceiptV1;
+pub use cell_split_automation::CellSplitObservationClockV1;
 pub use cell_split_automation::CellSplitProposalSignalV1;
 pub use cell_split_automation::CellSplitProposalSourceV1;
 pub use cell_split_automation::CellSplitProposalTriggerV1;
