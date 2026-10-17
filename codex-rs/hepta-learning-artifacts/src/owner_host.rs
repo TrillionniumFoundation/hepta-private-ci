@@ -953,6 +953,38 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
         let historical = self.recover_registry_by_head(registry_receipt.head_digest)?;
+        let before = predecessor.records();
+        let after = historical.records();
+        // Only a single exact Register transition created by this operation
+        // can be used as evidence that *this* publication produced the pin.
+        // Matching payload bytes in some unrelated later snapshot is not a
+        // native publication receipt for this split.
+        let Some(new_length) = before.len().checked_add(1) else {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        };
+        if after.len() != new_length || after.get(..before.len()) != Some(before) {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let registration = after
+            .last()
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let expected_event_id = StableId::new(format!(
+            "artifact-publication:{}",
+            checkpoint.intent_digest,
+        ))
+        .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
+        if registration.predecessor_chain_digest
+                != predecessor.snapshot().head_digest
+            || registration.chain_digest != registry_receipt.head_digest
+            || !matches!(
+                &registration.event,
+                ArtifactEvent::Register { event_id, manifest }
+                    if event_id == &expected_event_id
+                        && &manifest.artifact_id == artifact_id
+            )
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
         let original_manifest = historical
             .manifest(artifact_id)
             .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
@@ -991,6 +1023,9 @@ impl LearningArtifactOwnerHost {
         push_id(&mut data, artifact_id);
         for digest in [
             checkpoint.state_digest,
+            checkpoint.intent_digest,
+            registration.event_digest,
+            registration.chain_digest,
             registry_receipt.head_digest,
             registry_receipt.file_digest,
             witness_receipt.witness_digest,
