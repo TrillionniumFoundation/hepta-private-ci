@@ -34,6 +34,14 @@ pub struct CellSplitCanaryReceiptV1 {
     pub receipt_digest: Digest32,
 }
 
+/// Measured canary sample and recovery disposition from one evaluation window.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitCanarySampleV1 {
+    pub observed_requests: u64,
+    pub failed_requests: u64,
+    pub rollback_verified: bool,
+}
+
 impl CellSplitCanaryReceiptV1 {
     pub fn new(
         split_id: StableId,
@@ -41,10 +49,13 @@ impl CellSplitCanaryReceiptV1 {
         dispatch_receipt_digest: Digest32,
         old_route_fence_digest: Digest32,
         child_route_digest: Digest32,
-        observed_requests: u64,
-        failed_requests: u64,
-        rollback_verified: bool,
+        sample: CellSplitCanarySampleV1,
     ) -> Result<Self, CellSplitLifecycleErrorV1> {
+        let CellSplitCanarySampleV1 {
+            observed_requests,
+            failed_requests,
+            rollback_verified,
+        } = sample;
         let mut receipt = Self {
             split_id,
             candidate_generation,
