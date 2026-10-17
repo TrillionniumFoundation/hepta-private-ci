@@ -207,14 +207,12 @@ class ScopeTests(unittest.TestCase):
         # regressions. POSIX locks can be temporarily inherited across fork
         # before CLOEXEC. Run the SAME full suite serially, without skipping
         # any of the 30 observed native cases or relaxing orphan recovery.
-        original_owner = next(
-            line for line in gate.splitlines()
-            if "control-ndu-atomic-owner.json" in line
-        )
-        self.assertIn("--minimum-tests 30", original_owner)
+        owner_key = "control-ndu-atomic-owner.json"
+        owner_line = next(line for line in gate.splitlines() if owner_key in line)
+        self.assertIn("--minimum-tests 30", owner_line)
         self.assertIn(
             "--lib ndu_publication -- --nocapture --test-threads=1",
-            original_owner,
+            owner_line,
         )
 
 
