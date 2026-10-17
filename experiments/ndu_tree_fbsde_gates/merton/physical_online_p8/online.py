@@ -139,12 +139,65 @@ def random_seed(prompt:list[dict])->int:
 
 
 def old_model_loader():
-    loc=Path(__file__).resolve().parents[1]/'physical_online_p2'/'physical_online.py'
-    spec=importlib.util.spec_from_file_location('p5_qwen_locked',loc)
-    if not spec or not spec.loader:raise ValueError('original P5 Qwen source missing')
+    """Load the exact in-tree P1/P2 Qwen adapter without module-name hijacking.
+
+    P8 and P9 both have their own policy modules. The historical P2 worker
+    imports bare ``portfolio`` and ``public_source``; a PYTHONPATH-only repair
+    would incorrectly bind P9's portfolio if it is already in sys.modules.
+    Scope those TWO legacy names to the original P2 module only, and preserve
+    the process-wide Python imports for every other consumer.
+
+    This resolves original source imports only. It does not load pretrained
+    weights, infer a task result, or grant runtime/production authority.
+    """
+    import builtins
     import sys
-    obj=importlib.util.module_from_spec(spec);sys.modules[spec.name]=obj;spec.loader.exec_module(obj)
-    return obj
+
+    root=Path(__file__).resolve().parents[1]
+    p1=root/'token_portfolio_p1'/'portfolio.py'
+    p2_source=root/'physical_online_p2'/'public_source.py'
+    p2_worker=root/'physical_online_p2'/'physical_online.py'
+
+    def locked_module(role, path, aliases=None):
+        if not path.is_file() or path.is_symlink():
+            raise ValueError('original locked P1/P2 source unavailable: '+role)
+        name='hepta_p8_locked_'+role+'_'+hashlib.sha256(str(path).encode()).hexdigest()[:16]
+        cached=sys.modules.get(name)
+        if cached is not None:
+            if getattr(cached, '__file__', None)!=str(path):
+                raise ValueError('original locked source module identity collision')
+            return cached
+        spec=importlib.util.spec_from_file_location(name,path)
+        if spec is None or spec.loader is None:
+            raise ValueError('original P1/P2 source loader unavailable: '+role)
+        module=importlib.util.module_from_spec(spec)
+        if aliases:
+            original_import=builtins.__import__
+            def scoped_import(module_name, globals=None, locals=None, fromlist=(), level=0):
+                if level==0 and module_name in aliases:
+                    return aliases[module_name]
+                return original_import(module_name,globals,locals,fromlist,level)
+            private_builtins=dict(vars(builtins))
+            private_builtins['__import__']=scoped_import
+            module.__dict__['__builtins__']=private_builtins
+        sys.modules[name]=module
+        try:
+            spec.loader.exec_module(module)
+        except BaseException:
+            sys.modules.pop(name,None)
+            raise
+        return module
+
+    p1_module=locked_module('p1_portfolio',p1)
+    p2_source_module=locked_module('p2_public_source',p2_source)
+    p5=locked_module('p5_original_qwen',p2_worker,
+                     {'portfolio':p1_module,'public_source':p2_source_module})
+    if (getattr(p5,'MODEL_REPO',None)!='Qwen/Qwen3-0.6B' or
+        getattr(p5,'MODEL_REV',None)!='16706fc57485378d4ffaf54139b29ccc66ae08fa' or
+        getattr(p5,'MODEL_WEIGHTS_SHA256',None)!='f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b' or
+        getattr(p5,'MODEL_TOKENIZER_SHA256',None)!='aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4'):
+        raise ValueError('original P5 model source profile drift')
+    return p5
 
 class QwenReader:
     physical=True

@@ -26,6 +26,19 @@ jobs:
           python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
           python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
           python -m compileall -q "$D"
+          # P9 imports its own ``portfolio`` before loading original P5.
+          # Prove that the P1/P2 loader does not reuse or overwrite P9 policy.
+          python - <<'PY_SOURCE_IMPORT'
+          import portfolio
+          from runner import P8
+          original=portfolio
+          p5=P8.old_model_loader()
+          assert portfolio is original
+          assert p5.Invalid is not getattr(original,'Invalid',None)
+          assert p5.Invalid.__module__.startswith('hepta_p8_locked_p1_portfolio_')
+          assert p5.original_manifest.__module__.startswith('hepta_p8_locked_p2_public_source_')
+          print('P9/P8/P5 isolated original import: PASS (no model loaded)')
+          PY_SOURCE_IMPORT
       - name: P8 original predecessor tests remain unchanged and passing
         run: |
           set -euo pipefail
