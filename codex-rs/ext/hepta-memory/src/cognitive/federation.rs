@@ -861,7 +861,6 @@ fn federation_source_binding(
     ))
 }
 
-
 fn final_use_capability_window_current(
     revalidation_started_at: i64,
     final_use_now: i64,

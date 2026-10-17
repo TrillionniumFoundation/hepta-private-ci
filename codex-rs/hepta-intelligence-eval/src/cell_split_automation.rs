@@ -262,10 +262,14 @@ impl CellSplitAutomationJournalOwnerV1 for CellSplitInMemoryJournalOwnerV1 {
                 "journal replay does not match commit".to_string(),
             ));
         }
-        if self.journals.get(&journal.split_id).is_some_and(|previous| {
-            previous.events.len() > journal.events.len()
-                || previous.events != journal.events[..previous.events.len()]
-        }) {
+        if self
+            .journals
+            .get(&journal.split_id)
+            .is_some_and(|previous| {
+                previous.events.len() > journal.events.len()
+                    || previous.events != journal.events[..previous.events.len()]
+            })
+        {
             return Err(CellSplitAutomationErrorV1::Store(
                 "journal append regressed or rewrote history".to_string(),
             ));
