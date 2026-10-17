@@ -119,6 +119,13 @@ jobs:
         shell: bash
         run: cargo fmt --all -- --check
 
+      - name: Strict original owner and adapter Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+
       - name: Revalidate actual v1 Automation migration before heavyweight owner build
         shell: bash
         run: |
@@ -185,13 +192,6 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/automation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation
-
-      - name: Strict original owner and adapter Clippy
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets -- -D warnings
 
       - name: Retain exact-head native test receipts
         if: always()
