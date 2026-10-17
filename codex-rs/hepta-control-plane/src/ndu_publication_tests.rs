@@ -625,6 +625,188 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 
 #[cfg(unix)]
 #[test]
+fn original_pending_begin_inspector_reads_only_fsynced_wal_after_crash() {
+    let dir = private_control_dir();
+    let path = dir.path().join("observed-orphan.wal");
+    let original = snapshot(3);
+    let successor = snapshot(4);
+    let migrated = Digest32::of_bytes(b"orphan-migrated-checkpoint");
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original durable Control owner");
+    let effect = owner.publish_cutover_with_external_effect(
+        &original,
+        Digest32::ZERO,
+        successor.clone(),
+        migrated,
+        || -> Result<((), Vec<u8>), &'static str> {
+            Err("CNS effect is ambiguous after durable Begin")
+        },
+    );
+    assert_eq!(effect, Err(NduPublicationErrorV1::Indeterminate));
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::WriterUnavailable)
+    ));
+    drop(owner);
+    let wal_before = std::fs::read(&path).expect("immutable original WAL");
+    let marker = path.with_file_name("observed-orphan.wal.owner-lock");
+    let marker_before = std::fs::read(&marker).expect("original owner marker");
+    let observed =
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO)
+            .expect("read-only recovery observation of the original pending Begin");
+    assert_eq!(
+        observed.predecessor_semantic_digest,
+        original.semantic_digest().unwrap()
+    );
+    assert_eq!(
+        observed.successor_semantic_digest,
+        successor.semantic_digest().unwrap()
+    );
+    assert_eq!(observed.previous_checkpoint, Digest32::ZERO);
+    assert_eq!(observed.migrated_checkpoint, migrated);
+    assert_eq!(observed.sequence, 2, "genesis plus fsynced Begin only");
+    assert_eq!(observed.wal_bytes, wal_before.len() as u64);
+    assert!(!observed.head.is_zero());
+    assert_eq!(
+        observed,
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,)
+            .expect("second read from exactly the same original history")
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), wal_before);
+    assert_eq!(std::fs::read(&marker).unwrap(), marker_before);
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ),
+        "observation cannot resolve quarantine or mint Control Commit"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix() {
+    use std::io::Write as _;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("pending-probe-denial.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original Control WAL genesis");
+    drop(owner);
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::Stale)
+    ));
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original re-open");
+    let _ = owner.publish_cutover_with_external_effect(
+        &original,
+        Digest32::ZERO,
+        snapshot(4),
+        Digest32::of_bytes(b"orphan"),
+        || -> Result<((), Vec<u8>), &'static str> { Err("missing original CNS receipt") },
+    );
+    drop(owner);
+    assert!(
+        matches!(
+            NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+                &path,
+                &snapshot(8),
+                Digest32::ZERO,
+            ),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ),
+        "wrong frozen predecessor cannot describe a pending Begin"
+    );
+
+    // Corrupt the first history row, leaving the actual last Begin in place.
+    // A last-hash-only probe would falsely accept this tampered prefix.
+    let mut wal = std::fs::read(&path).expect("durable WAL");
+    assert!(wal.len() > 300, "genesis and Begin");
+    wal[1] ^= 1;
+    let mut original_fd = std::fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .expect("test-only original inode tamper");
+    original_fd
+        .write_all(&wal)
+        .expect("overwrite original inode");
+    original_fd.sync_all().expect("fsync original tamper");
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(&path, &original, Digest32::ZERO,),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine() {
+    // A prior hosted native run intermittently failed the precise orphan-B
+    // Indeterminate requirement. Exercise distinct real fsynced WAL inodes,
+    // not just repeat a cached observation of one in-memory owner.
+    for attempt in 0..32 {
+        let dir = private_control_dir();
+        let path = dir.path().join("repeated-orphan.wal");
+        let marker = dir.path().join("repeated-orphan.wal.owner-lock");
+        let predecessor = snapshot(3);
+        let successor = snapshot(4);
+        let migrated = Digest32::of_bytes(b"repeated-orphan-migration");
+        let mut external_calls = 0_usize;
+        {
+            let owner =
+                NduPublicationOwnerV1::open_production(&path, predecessor.clone(), Digest32::ZERO)
+                    .expect("fsynced original Control genesis");
+            assert_eq!(
+                owner.publish_cutover_with_external_effect(
+                    &predecessor,
+                    Digest32::ZERO,
+                    successor.clone(),
+                    migrated,
+                    || -> Result<((), Vec<u8>), &'static str> {
+                        external_calls += 1;
+                        Err("original CNS effect outcome unknown")
+                    },
+                ),
+                Err(NduPublicationErrorV1::Indeterminate),
+            );
+            assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        }
+        assert_eq!(external_calls, 1, "attempt {attempt}: one external call");
+        let original_wal = std::fs::read(&path).expect("original fsynced WAL");
+        let original_marker = std::fs::read(&marker).expect("original owner marker");
+        assert_eq!(
+            original_wal.iter().filter(|&&byte| byte == b'\n').count(),
+            2,
+            "attempt {attempt}: one genesis and one original Begin"
+        );
+        let observed = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            &path,
+            &predecessor,
+            Digest32::ZERO,
+        )
+        .expect("read-only cold orphan inspection");
+        assert_eq!(observed.sequence, 2);
+        assert_eq!(observed.migrated_checkpoint, migrated);
+
+        for (frozen, checkpoint) in [
+            (predecessor.clone(), Digest32::ZERO),
+            (successor.clone(), migrated),
+        ] {
+            let reopened = NduPublicationOwnerV1::open_production(&path, frozen, checkpoint);
+            assert_eq!(
+                reopened.err(),
+                Some(NduPublicationErrorV1::Indeterminate),
+                "attempt {attempt}: never adopt an unresolved physical effect"
+            );
+        }
+        assert_eq!(std::fs::read(&path).unwrap(), original_wal);
+        assert_eq!(std::fs::read(&marker).unwrap(), original_marker);
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = private_control_dir();
     let path = dir.path().join("unknown-physical-effect.wal");
@@ -662,21 +844,19 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     assert_eq!(
         recorded.iter().filter(|&&byte| byte == b'\n').count(),
         2,
-        "the original WAL must retain exactly genesis and fsynced orphan Begin"
+        "the original WAL must retain genesis and the fsynced orphan Begin"
     );
     assert_eq!(
         calls, 1,
         "the model/router must never replay an unknown effect"
     );
-    // Report the exact cold-reopen error from a real hosted Rust runner.
-    // Checking .err() is equivalent to requiring the identical Result
-    // variant; neither a wrong failure nor an accidental healthy reopen
-    // can silently pass this original fail-closed regression.
+    // The exact error is part of fail-closed recovery semantics. Include the
+    // actual hosted error in the assertion instead of admitting any failure.
     let reopened = NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO);
     assert_eq!(
         reopened.err(),
         Some(NduPublicationErrorV1::Indeterminate),
-        "an orphaned fsynced original Begin must remain unrecoverable"
+        "an orphaned original Begin must not recover or change error class"
     );
     assert_eq!(
         std::fs::read(&path).expect("journal preserved"),
@@ -1827,6 +2007,50 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
     assert_eq!(event_count("G"), 1, "one original Genesis");
     assert_eq!(event_count("B"), 1, "one durable pre-effect Begin");
     assert_eq!(event_count("C"), 0, "no post-SIGKILL Commit");
+
+    // The separate Control process was killed *after* the original Begin
+    // was fsynced. The forensic port may describe that original uncertainty,
+    // but cannot adopt the external test marker as a signed CNS Commit.
+    let marker_path = wal.with_file_name("sigkill-original-control.wal.owner-lock");
+    let original_marker = std::fs::read(&marker_path).expect("original pinned writer marker");
+    let inspected = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+        &wal,
+        &snapshot(3),
+        Digest32::ZERO,
+    )
+    .expect("read-only original Control Begin after real SIGKILL");
+    assert_eq!(
+        inspected.predecessor_semantic_digest,
+        snapshot(3).semantic_digest().unwrap()
+    );
+    assert_eq!(
+        inspected.successor_semantic_digest,
+        snapshot(4).semantic_digest().unwrap()
+    );
+    assert_eq!(inspected.previous_checkpoint, Digest32::ZERO);
+    assert_eq!(
+        inspected.migrated_checkpoint,
+        Digest32::of_bytes(b"migrated-sigkill-fixture")
+    );
+    assert_eq!(inspected.sequence, 2, "one Genesis plus one fsynced Begin");
+    assert_eq!(inspected.wal_bytes, original_bytes.len() as u64);
+    assert!(!inspected.head.is_zero());
+    assert_eq!(
+        std::fs::read(&wal).expect("original WAL after read-only inspection"),
+        original_bytes,
+    );
+    assert_eq!(
+        std::fs::read(&marker_path).expect("original marker after inspection"),
+        original_marker,
+    );
+    assert!(matches!(
+        NduPublicationOwnerV1::inspect_original_pending_begin_v1(
+            &wal,
+            &snapshot(4),
+            Digest32::of_bytes(b"migrated-sigkill-fixture"),
+        ),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
 
     for (frozen, checkpoint) in [
         (snapshot(3), Digest32::ZERO),
