@@ -29,7 +29,9 @@ class RealEvidenceGateTests(unittest.TestCase):
         self.assertEqual(result["independent_program_worker_reexecutions"], 24)
         self.assertEqual(result["stage1"]["ablation_answer_removed"], 4)
         self.assertEqual(result["stage1"]["qwen_organized_success"], 8)
-        self.assertEqual(result["stage2"]["organized_extra_correct_over_entity_time"], 0)
+        self.assertEqual(
+            result["stage2"]["organized_extra_correct_over_entity_time"], 0
+        )
         self.assertFalse(result["production_accepted"])
 
     @unittest.skipUnless(ARCHIVES, "the five original model ZIPs are not mounted")
