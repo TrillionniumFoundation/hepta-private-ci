@@ -1,0 +1,102 @@
+name: GitHub Actions packed real-test throughput
+
+on:
+  pull_request:
+    paths:
+      - scripts/github_actions_packed_ci.py
+      - scripts/test_github_actions_packed_ci.py
+      - .github/workflows/github-actions-fleet-packed.yml
+  workflow_dispatch:
+    inputs:
+      cohort:
+        description: A/B half (250 tests) or ALL 500 real tests in one run
+        type: choice
+        required: true
+        default: A
+        options: [A, B, ALL]
+      workers:
+        description: Real hosted workers to share this 250-test cohort
+        type: choice
+        required: true
+        default: '16'
+        options: ['8', '16', '32']
+      runner:
+        description: GitHub-hosted runner pool
+        type: choice
+        required: true
+        default: ubuntu-24.04-arm
+        options: [ubuntu-24.04-arm, ubuntu-24.04]
+      source_sha:
+        description: Exact full 40-hex immutable source commit
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: packed-realtests-${{ github.ref }}-${{ github.event_name }}-${{ inputs.cohort || 'selftest' }}-${{ inputs.workers || 'none' }}-${{ inputs.source_sha || github.sha }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  selftest:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Exercise real-case receipts and strict cohort partition checks
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_packed_ci
+
+  packed-real-test:
+    if: github.event_name == 'workflow_dispatch'
+    name: packed-${{ inputs.cohort }}-worker-${{ matrix.worker }}
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 32
+      matrix:
+        worker: >-
+          ${{ fromJSON(
+            inputs.workers == '8' && '[0,1,2,3,4,5,6,7]' ||
+            inputs.workers == '16' && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]' ||
+            '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]'
+          ) }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run unique source-pinned unittest methods with per-case receipts
+        shell: bash
+        env:
+          COHORT: ${{ inputs.cohort }}
+          WORKERS: ${{ inputs.workers }}
+          WORKER_INDEX: ${{ matrix.worker }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+          PYTHONPATH: ${{ github.workspace }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 scripts/github_actions_packed_ci.py \
+            --root "$GITHUB_WORKSPACE" \
+            --cohort "$COHORT" \
+            --workers "$WORKERS" \
+            --worker-index "$WORKER_INDEX" \
+            --expected-sha "$PINNED_SHA" \
+            --receipt "$RUNNER_TEMP/packed-result.json" \
+            --timeout-seconds 120 \
+            --execute
+      - name: Retain each real case result even when an individual case fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: packed-${{ github.run_id }}-${{ inputs.cohort }}-${{ matrix.worker }}
+          path: ${{ runner.temp }}/packed-result.json
+          retention-days: 14
+          if-no-files-found: error
+
