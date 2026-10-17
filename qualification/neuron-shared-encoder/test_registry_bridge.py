@@ -172,6 +172,11 @@ class RegistryBridgeTests(unittest.TestCase):
                 supports_regions=False,
             )
 
+    def test_bound_producer_identifier_must_be_stable(self) -> None:
+        bound = bind_envelope_to_registry(envelope("text"), STEM, TOWERS, PROJECTORS)
+        with self.assertRaises(RegistryError):
+            replace(bound, tower_id="bad producer id").__post_init__()
+
     def test_authority_cannot_be_smuggled_into_bound_envelope(self) -> None:
         with self.assertRaises(RegistryError):
             BoundModalityEnvelopeV1(
