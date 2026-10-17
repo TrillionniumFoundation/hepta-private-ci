@@ -5,6 +5,7 @@ This planner is intentionally source-only: it does not import candidate code or
 pretend that a syntactically discovered test has passed. Execute with unittest
 on a pinned source SHA; missing/failed tests remain failures.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,7 +31,9 @@ def _base_name(node: ast.expr) -> str:
     return ""
 
 
-def _subclass_of_testcase(name: str, classes: dict[str, ast.ClassDef], visited: frozenset[str] = frozenset()) -> bool:
+def _subclass_of_testcase(
+    name: str, classes: dict[str, ast.ClassDef], visited: frozenset[str] = frozenset()
+) -> bool:
     if name in visited or name not in classes:
         return False
     seen = visited | {name}
@@ -57,14 +60,18 @@ def collect_tests(root: Path) -> list[str]:
             raise ValueError(f"invalid test module path: {relative}")
         module = ".".join(relative.with_suffix("").parts)
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-        classes = {node.name: node for node in tree.body if isinstance(node, ast.ClassDef)}
+        classes = {
+            node.name: node for node in tree.body if isinstance(node, ast.ClassDef)
+        }
         for cls in classes.values():
             if not _subclass_of_testcase(cls.name, classes):
                 continue
             for method in cls.body:
-                if (isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
-                        and method.name.startswith("test_")
-                        and IDENTIFIER_RE.fullmatch(method.name)):
+                if (
+                    isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and method.name.startswith("test_")
+                    and IDENTIFIER_RE.fullmatch(method.name)
+                ):
                     selected.add(f"{module}.{cls.name}.{method.name}")
     return sorted(selected)
 
@@ -72,14 +79,18 @@ def collect_tests(root: Path) -> list[str]:
 def plan(test_ids: list[str], cohort: str, per_cohort: int) -> dict:
     if cohort not in {"A", "B"}:
         raise ValueError("cohort must be A or B")
-    if not isinstance(per_cohort, int) or isinstance(per_cohort, bool) or not 1 <= per_cohort <= MAX_PER_COHORT:
+    if (
+        not isinstance(per_cohort, int)
+        or isinstance(per_cohort, bool)
+        or not 1 <= per_cohort <= MAX_PER_COHORT
+    ):
         raise ValueError("per_cohort must be an integer from 1 to 250")
     if len(test_ids) != len(set(test_ids)):
         raise ValueError("duplicate test identifiers are forbidden")
     fingerprint = hashlib.sha256("\n".join(test_ids).encode()).hexdigest()
     enough = len(test_ids) >= 2 * per_cohort
-    offset = (0 if cohort == "A" else per_cohort)
-    cases = test_ids[offset:offset + per_cohort] if enough else []
+    offset = 0 if cohort == "A" else per_cohort
+    cases = test_ids[offset : offset + per_cohort] if enough else []
     return {
         "cohort": cohort,
         "per_cohort": per_cohort,
@@ -102,8 +113,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--cohort", choices=["A", "B"], required=True)
     parser.add_argument("--per-cohort", type=int, default=250)
-    parser.add_argument("--expected-sha", default="", help="Exact checked-out 40-digit source SHA")
-    parser.add_argument("--execute", action="store_true", help="Require explicit SHA pin and full two-cohort readiness")
+    parser.add_argument(
+        "--expected-sha", default="", help="Exact checked-out 40-digit source SHA"
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Require explicit SHA pin and full two-cohort readiness",
+    )
     parser.add_argument("--github-output", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args(argv)
@@ -115,23 +132,33 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError("expected SHA must be a complete 40-hex git commit")
             actual = _git_head(root)
             if actual != expected:
-                raise ValueError(f"checked-out SHA {actual} does not match pinned {expected}")
+                raise ValueError(
+                    f"checked-out SHA {actual} does not match pinned {expected}"
+                )
         if args.execute and not args.expected_sha:
             raise ValueError("execution requires --expected-sha (same pin for A and B)")
         result = plan(collect_tests(root), args.cohort, args.per_cohort)
         result["source_sha"] = _git_head(root) if (root / ".git").exists() else None
         if args.execute and not result["full_two_cohort_ready"]:
-            raise ValueError(f"not enough unique unittest methods: {result['available_tests']} < {2 * args.per_cohort}")
+            raise ValueError(
+                f"not enough unique unittest methods: {result['available_tests']} < {2 * args.per_cohort}"
+            )
         if args.receipt:
             args.receipt.parent.mkdir(parents=True, exist_ok=True)
             args.receipt.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         if args.github_output:
             with args.github_output.open("a", encoding="utf-8") as out:
-                out.write(f"matrix={json.dumps(result['matrix'], separators=(',', ':'))}\n")
+                out.write(
+                    f"matrix={json.dumps(result['matrix'], separators=(',', ':'))}\n"
+                )
                 out.write(f"ready={str(result['full_two_cohort_ready']).lower()}\n")
                 out.write(f"count={result['selected_count']}\n")
                 out.write(f"manifest_sha256={result['manifest_sha256']}\n")
-        print(json.dumps({k: v for k, v in result.items() if k != "matrix"}, sort_keys=True))
+        print(
+            json.dumps(
+                {k: v for k, v in result.items() if k != "matrix"}, sort_keys=True
+            )
+        )
         return 0
     except (ValueError, OSError, SyntaxError, subprocess.CalledProcessError) as exc:
         print(f"fleet-plan: {exc}", file=sys.stderr)
@@ -140,4 +167,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

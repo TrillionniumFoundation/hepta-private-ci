@@ -1,4 +1,5 @@
 """Regression checks for real, non-overlapping Actions fleet shards and bounded audit."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -24,7 +25,9 @@ class TestFleetPlanner(unittest.TestCase):
         return file
 
     def test_static_collection_only_picks_testcase_inheritance(self):
-        self.write("test_example.py", '''
+        self.write(
+            "test_example.py",
+            """
 import unittest
 raise RuntimeError("planning MUST NOT import this file")
 class Helper:
@@ -36,18 +39,26 @@ class Real(Base):
     async def test_second(self): pass
 class Else:
     def test_not_selected(self): pass
-''')
+""",
+        )
         actual = collect_tests(self.root)
-        self.assertEqual(actual, [
-            "scripts.test_example.Real.test_first",
-            "scripts.test_example.Real.test_second",
-        ])
+        self.assertEqual(
+            actual,
+            [
+                "scripts.test_example.Real.test_first",
+                "scripts.test_example.Real.test_second",
+            ],
+        )
 
     def test_two_cohorts_exactly_partition_500_unique_real_methods(self):
-        self.write("tests/test_samples.py", '''
+        self.write(
+            "tests/test_samples.py",
+            """
 import unittest
 class Examples(unittest.TestCase):
-''' + "".join(f"    def test_{i:03d}(self): pass\n" for i in range(520)))
+"""
+            + "".join(f"    def test_{i:03d}(self): pass\n" for i in range(520)),
+        )
         tests = collect_tests(self.root)
         self.assertEqual(len(tests), 520)
         a, b = plan(tests, "A", 250), plan(tests, "B", 250)
@@ -77,29 +88,67 @@ class Examples(unittest.TestCase):
 class TestFleetAudit(unittest.TestCase):
     def test_distinguish_run_backlog_from_actual_running_jobs(self):
         now = datetime(2026, 10, 16, tzinfo=timezone.utc)
-        active = {"id": 3, "status": "in_progress", "created_at": "2026-10-16T00:00:00Z", "html_url": "https://example.invalid/3"}
-        queued = {"id": 4, "status": "queued", "created_at": "2026-10-16T00:00:00Z", "html_url": "https://example.invalid/4"}
-        old = {"id": 2, "status": "queued", "created_at": "2026-09-18T00:00:00Z", "html_url": "https://example.invalid/2"}
+        active = {
+            "id": 3,
+            "status": "in_progress",
+            "created_at": "2026-10-16T00:00:00Z",
+            "html_url": "https://example.invalid/3",
+        }
+        queued = {
+            "id": 4,
+            "status": "queued",
+            "created_at": "2026-10-16T00:00:00Z",
+            "html_url": "https://example.invalid/4",
+        }
+        old = {
+            "id": 2,
+            "status": "queued",
+            "created_at": "2026-09-18T00:00:00Z",
+            "html_url": "https://example.invalid/2",
+        }
+
         def query(path, params):
             if path.endswith("/runs"):
                 if "created" in params:
                     return {"total_count": 300, "workflow_runs": [old]}
                 status = params["status"]
-                values = {"in_progress": (1, [active]), "queued": (500, [queued]), "pending": (20, []),
-                          "waiting": (0, []), "completed": (1000, [{"conclusion": "cancelled"}, {"conclusion": "success"}])}
+                values = {
+                    "in_progress": (1, [active]),
+                    "queued": (500, [queued]),
+                    "pending": (20, []),
+                    "waiting": (0, []),
+                    "completed": (
+                        1000,
+                        [{"conclusion": "cancelled"}, {"conclusion": "success"}],
+                    ),
+                }
                 count, runs = values[status]
                 return {"total_count": count, "workflow_runs": runs}
             if path.endswith("/3/jobs"):
-                return {"total_count": 2, "jobs": [
-                    {"status": "in_progress", "labels": ["ubuntu-24.04"],
-                     "created_at": "2026-10-16T00:01:00Z", "started_at": "2026-10-16T00:02:00Z"},
-                    {"status": "completed", "labels": ["ubuntu-24.04"],
-                     "created_at": "2026-10-16T00:01:00Z", "started_at": "2026-10-16T00:01:30Z"},
-                ]}
+                return {
+                    "total_count": 2,
+                    "jobs": [
+                        {
+                            "status": "in_progress",
+                            "labels": ["ubuntu-24.04"],
+                            "created_at": "2026-10-16T00:01:00Z",
+                            "started_at": "2026-10-16T00:02:00Z",
+                        },
+                        {
+                            "status": "completed",
+                            "labels": ["ubuntu-24.04"],
+                            "created_at": "2026-10-16T00:01:00Z",
+                            "started_at": "2026-10-16T00:01:30Z",
+                        },
+                    ],
+                }
             return {"total_count": 0, "jobs": []}
+
         result = summarize("TrillionniumFoundation/hepta-private-ci", query, now=now)
         self.assertEqual(result["workflow_run_counts"]["queued"], 500)
-        self.assertEqual(result["job_observation"]["currently_running_jobs_lower_bound"], 1)
+        self.assertEqual(
+            result["job_observation"]["currently_running_jobs_lower_bound"], 1
+        )
         self.assertEqual(result["old_queued_runs"]["provider_reported_count"], 300)
         self.assertEqual(result["old_queued_runs"]["old_without_jobs_in_sample"], 1)
         self.assertTrue(result["job_observation"]["sampled_all_in_progress_runs"])
@@ -112,15 +161,34 @@ class TestFleetAudit(unittest.TestCase):
                 status = params["status"]
                 if "created" in params:
                     return {"total_count": 0, "workflow_runs": []}
-                runs = [{"id": 1, "status": "in_progress", "created_at": "2026-10-16T00:00:00Z"}] if status == "in_progress" else []
-                return {"total_count": 200 if status == "in_progress" else 0, "workflow_runs": runs}
-            return {"total_count": 1, "jobs": [{"status": "in_progress", "labels": ["self-hosted"]}]}
+                runs = (
+                    [
+                        {
+                            "id": 1,
+                            "status": "in_progress",
+                            "created_at": "2026-10-16T00:00:00Z",
+                        }
+                    ]
+                    if status == "in_progress"
+                    else []
+                )
+                return {
+                    "total_count": 200 if status == "in_progress" else 0,
+                    "workflow_runs": runs,
+                }
+            return {
+                "total_count": 1,
+                "jobs": [{"status": "in_progress", "labels": ["self-hosted"]}],
+            }
+
         r = summarize("owner/repo", query, max_active_runs=1, max_queued_runs=0)
         self.assertEqual(r["job_observation"]["currently_running_jobs_lower_bound"], 1)
         self.assertFalse(r["job_observation"]["sampled_all_in_progress_runs"])
-        self.assertEqual(r["job_observation"]["running_job_runner_types_lower_bound"]["self-hosted"], 1)
+        self.assertEqual(
+            r["job_observation"]["running_job_runner_types_lower_bound"]["self-hosted"],
+            1,
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-
