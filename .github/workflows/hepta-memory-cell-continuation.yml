@@ -11,6 +11,7 @@ on:
       - "codex-rs/hepta-intelligence-eval/**"
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: memory-cell-continuation-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -51,7 +52,25 @@ jobs:
           python3 -m venv /tmp/mcell-python
           /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Stage SHA-pinned historical matched-Reader artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # This is the original immutable authored same-Reader artifact, not new model inference.
+          # The tests independently verify its source/answer chain; never substitute a fixture.
+          archive=/tmp/mcell-matched-structured-original.zip
+          curl --fail --show-error --silent --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/12038816070/zip" \
+            --output "${archive}"
+          printf '%s  %s\n' \
+            '861e84719f26f48d1d1156bb39273ce706ae83cde47bafcd7f400c037edd871d' \
+            "${archive}" | sha256sum --check --strict
       - name: Native adapters and leakage/ablation tests
+        env:
+          HEPTA_MATCHED_RAG_ARCHIVE: /tmp/mcell-matched-structured-original.zip
         run: /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
       - name: Stage public pinned model and data inputs
         env:
