@@ -614,12 +614,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// has no native batch backend. Actual execution revalidates every grant,
     /// current model and resource fence independently of this advisory flag.
     pub(crate) fn can_run_neuron_feature_batch(&self, model_id: &str) -> bool {
-        self.models
-            .get(model_id)
-            .is_some_and(|loaded| {
-                self.driver.supports_neuron_feature_borrowed_batch(&loaded.handle)
-                    || self.driver.supports_neuron_feature_batch(&loaded.handle)
-            })
+        self.models.get(model_id).is_some_and(|loaded| {
+            self.driver
+                .supports_neuron_feature_borrowed_batch(&loaded.handle)
+                || self.driver.supports_neuron_feature_batch(&loaded.handle)
+        })
     }
 
     pub(crate) fn run_neuron_features(
@@ -734,11 +733,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // The original signed request remains borrowed through receipt
         // construction. Do not copy its Q24 vector just to hash the V1 input.
         let observed = self.run_neuron_features(now_ms, model_id, &request)?;
-        feature_receipt_from_observation_with_slice(
-            &request,
-            &request.feature_vector_q24,
-            observed,
-        )
+        feature_receipt_from_observation_with_slice(&request, &request.feature_vector_q24, observed)
     }
 
     /// No sequential fallback: a multi-request group must be handled by a
@@ -824,7 +819,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                     feature_vector_q24: shared.as_slice(),
                 })
                 .collect::<Vec<_>>();
-            self.driver.run_neuron_features_borrowed_batch(&handle, &views)
+            self.driver
+                .run_neuron_features_borrowed_batch(&handle, &views)
         } else {
             // Only the original V1 backend ABI needs one owned feature
             // vector per member. The borrowed backend needs none.
@@ -836,7 +832,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                     owned
                 })
                 .collect::<Vec<_>>();
-            self.driver.run_neuron_features_batch(&handle, &legacy_requests)
+            self.driver
+                .run_neuron_features_batch(&handle, &legacy_requests)
         };
         // An unknown backend outcome must never be replayed. Retire all active
         // markers before checking the result or projecting any typed receipt.

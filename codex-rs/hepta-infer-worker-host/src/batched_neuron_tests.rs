@@ -3315,28 +3315,31 @@ impl NeuronFeatureDriver for BorrowedNativeTestDriver {
             return Err(Error::FeatureContract);
         }
         self.invocations.fetch_add(1, Ordering::SeqCst);
-        self.received_pointers
-            .lock()
-            .unwrap()
-            .extend(requests.iter().map(|view| view.feature_vector_q24.as_ptr() as usize));
+        self.received_pointers.lock().unwrap().extend(
+            requests
+                .iter()
+                .map(|view| view.feature_vector_q24.as_ptr() as usize),
+        );
         let mut observed = requests
             .iter()
-            .map(|view| crate::model_worker::DriverNeuronFeatureBatchObservationV1 {
-                request_id: view.request.authorization.request_id.clone(),
-                input_digest: view.request.input_digest.clone(),
-                observation: DriverNeuronFeatureObservation {
-                    terminal_observed: true,
-                    succeeded: true,
-                    encoder_digest: view.request.encoder_digest.clone(),
-                    head_digest: view.request.head_digest.clone(),
-                    drive_q24: vec![1 << 24; view.request.expected_output_width],
-                    prediction_q24: vec![0; view.request.expected_output_width],
-                    observed_memory_bytes: 1024,
-                    transient_allocation_bytes: 2048,
-                    queue_age_micros: 8,
-                    latency_micros: 13,
+            .map(
+                |view| crate::model_worker::DriverNeuronFeatureBatchObservationV1 {
+                    request_id: view.request.authorization.request_id.clone(),
+                    input_digest: view.request.input_digest.clone(),
+                    observation: DriverNeuronFeatureObservation {
+                        terminal_observed: true,
+                        succeeded: true,
+                        encoder_digest: view.request.encoder_digest.clone(),
+                        head_digest: view.request.head_digest.clone(),
+                        drive_q24: vec![1 << 24; view.request.expected_output_width],
+                        prediction_q24: vec![0; view.request.expected_output_width],
+                        observed_memory_bytes: 1024,
+                        transient_allocation_bytes: 2048,
+                        queue_age_micros: 8,
+                        latency_micros: 13,
+                    },
                 },
-            })
+            )
             .collect::<Vec<_>>();
         if self.reorder_outputs {
             observed.reverse();
@@ -3363,9 +3366,13 @@ fn execute_borrowed_native_two_cell_fixture(
     let first_binding =
         neuron_batch_final_use_binding_with_slice_v1("worker-one", &key, &first, shared.as_slice())
             .expect("original signed feature identity");
-    let second_binding =
-        neuron_batch_final_use_binding_with_slice_v1("worker-one", &key, &second, shared.as_slice())
-            .expect("independent second original signed identity");
+    let second_binding = neuron_batch_final_use_binding_with_slice_v1(
+        "worker-one",
+        &key,
+        &second,
+        shared.as_slice(),
+    )
+    .expect("independent second original signed identity");
 
     let signer = SigningKey::from_bytes(&[89; 32]);
     let directory = tempfile::tempdir().unwrap();

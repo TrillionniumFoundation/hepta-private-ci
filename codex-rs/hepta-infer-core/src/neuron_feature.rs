@@ -199,7 +199,8 @@ pub fn verify_neuron_feature_receipt_from_slice_v1(
     if receipt.authority.grants_any() {
         return Err(NeuronFeatureContractError::AuthorityGranted);
     }
-    if receipt.request_digest != neuron_feature_request_digest_from_slice_v1(request, features_q24)? {
+    if receipt.request_digest != neuron_feature_request_digest_from_slice_v1(request, features_q24)?
+    {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     validate_runtime_tuple(request, &receipt.runtime_tuple)?;
