@@ -68,7 +68,9 @@ jobs:
           git fetch --no-tags --depth=1 origin refs/heads/research/e3-required-physical-score-pr-20261015
           test "$(git rev-parse FETCH_HEAD)" = '2dc43da7d9bf343acc871219ddce44d0e14d8911'
           mkdir -p "$RUNNER_TEMP/stem-v7/original-code"
-          for file in e3_scienceqa_contract.py e3_scienceqa_stage.py e3_granite_dino_real.py execution.py; do
+          for file in e3_scienceqa_contract.py e3_scienceqa_stage.py e3_granite_dino_real.py execution.py \
+            multimodal_saved_tie_recovery_v18.py multimodal_meta_integrity_v14.py \
+            multimodal_exact_tied_alias_v11.py multimodal_native_pool_v7.py; do
             git show "FETCH_HEAD:experiments/shared_stem_cell/$file" > "$RUNNER_TEMP/stem-v7/original-code/$file"
           done
           python - <<'PY'
@@ -80,6 +82,10 @@ jobs:
             'e3_scienceqa_stage.py':'3ca8f55ed6b7143729258e4a1e53693614460950',
             'e3_granite_dino_real.py':'b99c99d8e13a4d1899a0597d7733753fb3ce092a',
             'execution.py':'733da82a4bbbde1b256dfd1dbe4c05832dcd4856',
+            'multimodal_saved_tie_recovery_v18.py':'27839fbeb9402e8afeb1f2a23288006146757a53',
+            'multimodal_meta_integrity_v14.py':'d562d7e5c518a1f194c0f026968e8d64e996c527',
+            'multimodal_exact_tied_alias_v11.py':'f4ec7f415c6dc3f51a965c603eb96339d908413c',
+            'multimodal_native_pool_v7.py':'b3d54cec40c82d51457925f2a2113566cd8f1c6c',
           }
           for name,sha in expected.items():
             assert subprocess.check_output(['git','hash-object',str(root/name)]).decode().strip()==sha,name
