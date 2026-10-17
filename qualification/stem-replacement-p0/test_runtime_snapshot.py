@@ -78,6 +78,5 @@ class RuntimeSnapshotTests(unittest.TestCase):
             with runtime_snapshot.isolated_verified_runtime(receipt, stage):
                 self.fail("missing source weight was accepted")
 
-
 if __name__ == "__main__":
     unittest.main()
