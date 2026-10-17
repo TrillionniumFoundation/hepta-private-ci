@@ -26,7 +26,10 @@ registry_bridge.py defines:
 
 The registry binds tower and preprocessor digests, hidden widths, quantization,
 streaming/temporal/region capabilities, projector kind, slot budget,
-zero-gate initialization and source-bound status. The envelope bridge adds
+zero-gate initialization and source-bound status. The multimodal registry width
+ceiling is 2048, matching the existing envelope ABI; a larger text-only Stem
+must use a separate adapter contract before it can claim multimodal binding. The
+envelope bridge adds
 projector digest equality, Stem-width equality, slot-budget checks and
 modality capability checks before a feature envelope can be treated as
 compatible with the shared Stem.
