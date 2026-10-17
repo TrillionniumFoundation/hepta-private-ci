@@ -946,6 +946,12 @@ impl LearningArtifactOwnerHost {
         // The historical checkpoint must really contain the exact registered
         // artifact. This prevents unrelated committed operations from serving
         // as a synthetic Split CAS receipt.
+        let predecessor = self.recover_registry_by_head(
+            checkpoint.expected_registry_predecessor_head,
+        )?;
+        if predecessor.manifest(artifact_id).is_some() {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
         let historical = self.recover_registry_by_head(registry_receipt.head_digest)?;
         let original_manifest = historical
             .manifest(artifact_id)
