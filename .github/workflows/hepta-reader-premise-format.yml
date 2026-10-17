@@ -1,0 +1,289 @@
+name: Hepta original Reader premise-format audit (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-reader-capacity-20261017]
+    paths:
+      - 'scripts/memory_cell/reader_premise_format.py'
+      - 'scripts/memory_cell/test_reader_premise_format.py'
+      - 'codex-rs/hepta-intelligence-eval/READER_PREMISE_FORMAT_20261017.md'
+      - '.github/workflows/hepta-reader-premise-format.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-reader-premise-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU model dependencies and 17 source tests
+        run: |
+          set -euo pipefail
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+          mkdir -p /tmp/reader-premise-preflight
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_premise_format.py -v \
+            2>&1 | tee /tmp/reader-premise-preflight/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage
+      - name: Verify original LoCoMo and export source-only + Reader-only artifacts
+        run: |
+          set -euo pipefail
+          mkdir /tmp/reader-premise-original /tmp/reader-premise-model
+          tar -C /tmp/reader-premise-original -xzf /tmp/original-stage/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/reader-premise-original/memory-inputs/locomo.json | cut -d' ' -f1)" = \
+            '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/reader-premise-original/memory-inputs/locomo.json /tmp/reader-premise-prepared \
+            > /tmp/reader-premise-preflight/prepare.json
+          mkdir /tmp/reader-premise-public
+          cp /tmp/reader-premise-prepared/{public,manifest}.json /tmp/reader-premise-public/
+          test ! -e /tmp/reader-premise-public/private.json
+          tar -C /tmp/reader-premise-model -xzf /tmp/original-stage/memory-inputs.tar.gz \
+            memory-inputs/reader/model.safetensors memory-inputs/reader/config.json \
+            memory-inputs/reader/generation_config.json memory-inputs/reader/merges.txt \
+            memory-inputs/reader/special_tokens_map.json memory-inputs/reader/tokenizer.json \
+            memory-inputs/reader/tokenizer_config.json memory-inputs/reader/vocab.json
+          mkdir /tmp/reader-premise-weights-only
+          mv /tmp/reader-premise-model/memory-inputs/reader/* /tmp/reader-premise-weights-only/
+          (cd /tmp/reader-premise-weights-only && find . -maxdepth 1 -type f \
+            ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 -c 'from reader_weight_transport import verify_reader_transport;verify_reader_transport("/tmp/reader-premise-weights-only")'
+          test "$(find /tmp/reader-premise-weights-only -maxdepth 1 -type f | wc -l)" -eq 9
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-public-only
+          path: /tmp/reader-premise-public/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-original-reader-weights-only
+          path: /tmp/reader-premise-weights-only/
+          if-no-files-found: error
+      - name: Exact original preflight hashes
+        if: always()
+        run: |
+          mkdir -p /tmp/reader-premise-preflight
+          git rev-parse HEAD > /tmp/reader-premise-preflight/head.txt
+          (cd /tmp/reader-premise-preflight && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-source-tests-not-acceptance
+          path: /tmp/reader-premise-preflight/
+          if-no-files-found: error
+
+  original-stem-source-ranking:
+    needs: source-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install actual frozen MiniLM CPU environment
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-public-only
+          path: /tmp/premise-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage
+      - name: Execute original Encoder weights and scoped Cell SGD
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/premise-public/private.json
+          mkdir /tmp/premise-encoder /tmp/premise-ranking-receipts
+          tar -C /tmp/premise-encoder -xzf /tmp/original-stage/memory-inputs.tar.gz memory-inputs/encoder
+          /usr/bin/time -v -o /tmp/premise-ranking-receipts/resources.txt \
+            python3 scripts/memory_cell/parametric_stem_reader.py run \
+              /tmp/premise-public /tmp/premise-encoder/memory-inputs/encoder /tmp/premise-rank \
+            > /tmp/premise-ranking-receipts/run.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-original-sealed-rank
+          path: /tmp/premise-rank/
+          if-no-files-found: error
+
+  publisher-premise-preparation:
+    needs: original-stem-source-ranking
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install original Reader input contract requirements
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-public-only
+          path: /tmp/premise-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-sealed-rank
+          path: /tmp/premise-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage
+      - name: Use publisher source IDs only and export strict plan
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-original
+          tar -C /tmp/premise-original -xzf /tmp/original-stage/memory-inputs.tar.gz memory-inputs/locomo.json
+          python3 scripts/memory_cell/reader_premise_format.py prepare \
+            /tmp/premise-public /tmp/premise-rank \
+            /tmp/premise-original/memory-inputs/locomo.json /tmp/premise-plan \
+            > /tmp/premise-plan-run.json
+          test "$(find /tmp/premise-plan -type f | wc -l)" -eq 2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-only-plan-no-answer-labels
+          path: /tmp/premise-plan/
+          if-no-files-found: error
+
+  physically-isolated-frozen-reader:
+    needs: publisher-premise-preparation
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install original Reader
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-only-plan-no-answer-labels
+          path: /tmp/premise-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-reader-weights-only
+          path: /tmp/premise-reader
+      - name: Forty original pretrained generations (no publisher corpus)
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/premise-plan/private.json
+          test ! -e /tmp/premise-reader/locomo.json
+          mkdir /tmp/premise-model-receipts
+          /usr/bin/time -v -o /tmp/premise-model-receipts/resources.txt \
+            python3 scripts/memory_cell/reader_premise_format.py run \
+              /tmp/premise-plan /tmp/premise-reader /tmp/premise-unscored-reader \
+            > /tmp/premise-model-receipts/run.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: premise-original-unscored-40-reader
+          path: /tmp/premise-unscored-reader/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-original-run-resources-not-acceptance
+          path: /tmp/premise-model-receipts/
+          if-no-files-found: error
+
+  independent-postseal-model-and-source-review:
+    needs: physically-isolated-frozen-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install identical original model environment
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-public-only
+          path: /tmp/premise-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-sealed-rank
+          path: /tmp/premise-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-only-plan-no-answer-labels
+          path: /tmp/premise-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-unscored-40-reader
+          path: /tmp/premise-unscored-reader
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: premise-original-reader-weights-only
+          path: /tmp/premise-reader
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage
+      - name: Reconstruct source, regenerate plan and rerun original Reader before gold scoring
+        run: |
+          set -euo pipefail
+          mkdir /tmp/premise-original /tmp/premise-final-receipts
+          tar -C /tmp/premise-original -xzf /tmp/original-stage/memory-inputs.tar.gz \
+            memory-inputs/locomo.json memory-inputs/encoder
+          # Separately execute the original frozen Encoder, SGD and all seven
+          # source-ranked controls before consuming publisher answer strings.
+          python3 -c 'import parametric_stem_reader as s;s.verified_run("/tmp/premise-public", "/tmp/premise-rank", "/tmp/premise-original/memory-inputs/encoder")'
+          python3 scripts/memory_cell/reader_premise_format.py review \
+            /tmp/premise-public /tmp/premise-rank \
+            /tmp/premise-original/memory-inputs/locomo.json \
+            /tmp/premise-plan /tmp/premise-unscored-reader /tmp/premise-reader \
+            /tmp/premise-final-receipts/report.json > /tmp/premise-final-receipts/summary.json
+          git rev-parse HEAD > /tmp/premise-final-receipts/head.txt
+          (cd /tmp/premise-final-receipts && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premise-original-postseal-verified-not-acceptance
+          path: /tmp/premise-final-receipts/
+          if-no-files-found: error
