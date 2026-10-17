@@ -1,0 +1,329 @@
+name: Hepta HDSI G8 full-corpus preference calibration (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g8-coverage-calibration-20261017]
+    paths:
+      - 'qualification/hdsi-g0g3/g8_*'
+      - 'qualification/hdsi-g0g3/test_g8.py'
+      - 'qualification/hdsi-g0g3/G8_*'
+      - '.github/workflows/hepta-hdsi-g8-original.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdsi-g0g3/g8_*'
+      - 'qualification/hdsi-g0g3/test_g8.py'
+      - 'qualification/hdsi-g0g3/G8_*'
+      - '.github/workflows/hepta-hdsi-g8-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hdsi-g8-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  STUDY: qualification/hdsi-g0g3
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Exact HEAD source-only adversarial admission (Torch absent)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cd "$STUDY"
+          python -m py_compile g8_source.py g8_policy.py g8_root.py g8_assemble.py g8_paid.py g8_review.py g8_custody.py test_g8.py
+          python -S -m unittest -q test_g8.G8SourceOnlyTests
+          python -O -S -m unittest -q test_g8.G8SourceOnlyTests
+          python -m json.tool G8_LOCAL_INDEPENDENT_REVIEW_20261017.json >/dev/null
+          cd ../..
+          git diff --check
+
+  original-source-owner:
+    needs: source-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g8-coverage-calibration-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: SHA-pin original historical source and remove all HELD gold
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/g8-source"
+          python "$STUDY/g8_custody.py" --mode source_owner \
+            --archive "$RUNNER_TEMP/g8-original.zip" \
+            --root "$RUNNER_TEMP/g8-source/model" \
+            --source "$RUNNER_TEMP/g8-source/public.json"
+          test ! -e "$RUNNER_TEMP/g8-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g8-source/model/reader"
+          (cd "$RUNNER_TEMP/g8-source" && sha256sum public.json > public.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g8-original-model-only-source
+          path: ${{ runner.temp }}/g8-source/
+          if-no-files-found: error
+          retention-days: 1
+
+  genuine-full-train:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-original-model-only-source
+          path: ${{ runner.temp }}/g8-source
+      - name: Admit original label-free model inputs before model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          (cd "$RUNNER_TEMP/g8-source" && sha256sum --check public.sha256)
+          test ! -e "$RUNNER_TEMP/g8-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g8-source/model/reader"
+          cd "$STUDY"
+          python -S -m unittest -q test_g8.G8SourceOnlyTests
+      - name: Install pinned CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+      - name: Six genuine source-disjoint original MiniLM TRAIN runs
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g8-train"
+          for source_root in conv-26 conv-30 conv-41 conv-42 conv-43 conv-44; do
+            python "$STUDY/g8_root.py" --model-only "$RUNNER_TEMP/g8-source/model" \
+              --source "$RUNNER_TEMP/g8-source/public.json" \
+              --root "$source_root" --output "$RUNNER_TEMP/g8-train/${source_root}.json"
+          done
+          (cd "$RUNNER_TEMP/g8-train" && sha256sum *.json > originals.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g8-six-real-train-root-receipts
+          path: ${{ runner.temp }}/g8-train/
+          if-no-files-found: error
+          retention-days: 1
+
+  label-blind-independent-assembly:
+    needs: genuine-full-train
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-original-model-only-source
+          path: ${{ runner.temp }}/g8-source
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-six-real-train-root-receipts
+          path: ${{ runner.temp }}/g8-train
+      - name: Recount six real roots without Torch, freeze NDU/Bellman plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          (cd "$RUNNER_TEMP/g8-source" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g8-train" && sha256sum --check originals.sha256)
+          mkdir -p "$RUNNER_TEMP/g8-assembled"
+          python "$STUDY/g8_assemble.py" \
+            --source "$RUNNER_TEMP/g8-source/public.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-26.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-30.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-41.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-42.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-43.json" \
+            --receipt "$RUNNER_TEMP/g8-train/conv-44.json" \
+            --output "$RUNNER_TEMP/g8-assembled/assembled.json"
+          (cd "$RUNNER_TEMP/g8-assembled" && sha256sum assembled.json > assembled.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g8-frozen-prelabel-controller
+          path: ${{ runner.temp }}/g8-assembled/
+          if-no-files-found: error
+          retention-days: 1
+
+  paid-genuine-model-continuations:
+    needs: label-blind-independent-assembly
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-original-model-only-source
+          path: ${{ runner.temp }}/g8-source
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-frozen-prelabel-controller
+          path: ${{ runner.temp }}/g8-assembled
+      - name: Verify source and prelabel plan before original paid execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/g8-source" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g8-assembled" && sha256sum --check assembled.sha256)
+          test ! -e "$RUNNER_TEMP/g8-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g8-source/model/reader"
+      - name: Install pinned original Torch CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+      - name: Original paid fixed-8 control and guarded NDU on-policy calls
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g8-paid"
+          python "$STUDY/g8_paid.py" \
+            --model-only "$RUNNER_TEMP/g8-source/model" \
+            --source "$RUNNER_TEMP/g8-source/public.json" \
+            --training "$RUNNER_TEMP/g8-assembled/assembled.json" \
+            --output "$RUNNER_TEMP/g8-paid/paid.json"
+          (cd "$RUNNER_TEMP/g8-paid" && sha256sum paid.json > paid.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g8-genuinely-paid-prelabel-output
+          path: ${{ runner.temp }}/g8-paid/
+          if-no-files-found: error
+          retention-days: 1
+
+  separately-scored-original-human-evidence:
+    needs: paid-genuine-model-continuations
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-original-model-only-source
+          path: ${{ runner.temp }}/g8-source
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-six-real-train-root-receipts
+          path: ${{ runner.temp }}/g8-train
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-frozen-prelabel-controller
+          path: ${{ runner.temp }}/g8-assembled
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g8-genuinely-paid-prelabel-output
+          path: ${{ runner.temp }}/g8-paid
+      - name: Validate every sealed original model/plan artifact before HELD gold retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          (cd "$RUNNER_TEMP/g8-source" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g8-train" && sha256sum --check originals.sha256)
+          (cd "$RUNNER_TEMP/g8-assembled" && sha256sum --check assembled.sha256)
+          (cd "$RUNNER_TEMP/g8-paid" && sha256sum --check paid.sha256)
+      - name: New independent source-owned publisher GOLD download
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g8-gold"
+          python "$STUDY/g8_custody.py" --mode reviewer \
+            --archive "$RUNNER_TEMP/g8-gold-original.zip" \
+            --root "$RUNNER_TEMP/g8-gold/source"
+          test -f "$RUNNER_TEMP/g8-gold/source/locomo.json"
+      - name: Independently verify original human labels and arithmetic, no model imported
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g8-review"
+          python -S "$STUDY/g8_review.py" \
+            --original "$RUNNER_TEMP/g8-gold/source/locomo.json" \
+            --source "$RUNNER_TEMP/g8-source/public.json" \
+            --training "$RUNNER_TEMP/g8-assembled/assembled.json" \
+            --paid "$RUNNER_TEMP/g8-paid/paid.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-26.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-30.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-41.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-42.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-43.json" \
+            --root-receipt "$RUNNER_TEMP/g8-train/conv-44.json" \
+            --output "$RUNNER_TEMP/g8-review/review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'g8-review/review.json').read_bytes())
+          assert r['schema']=='hepta.hdsi.g8.independent-human-replay.v1'
+          assert r['historically_public_not_prospective'] is True
+          assert r['arms']['ndu']==r['arms']['bellman']
+          assert r['arms']['ndu']['hit_at_5']==r['arms']['bm25']['hit_at_5']
+          assert r['production_authorized'] is False and r['disposition']=='HOLD_NO_GO'
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g8-independently-reviewed-historical-human-denyall
+          path: ${{ runner.temp }}/g8-review/review.json
+          if-no-files-found: error
+          retention-days: 7

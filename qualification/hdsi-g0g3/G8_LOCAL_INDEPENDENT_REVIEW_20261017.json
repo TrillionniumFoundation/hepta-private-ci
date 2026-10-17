@@ -1,0 +1,97 @@
+{
+  "all_train_original_gold_reachable": true,
+  "arms": {
+    "bellman": {
+      "hit_at_10": 56,
+      "hit_at_5": 48,
+      "net_utility": 336000,
+      "paid_rerank": 0,
+      "stopped": 0,
+      "submitted": 96
+    },
+    "bm25": {
+      "hit_at_10": 56,
+      "hit_at_5": 48,
+      "net_utility": 336000,
+      "paid_rerank": 0,
+      "stopped": 0,
+      "submitted": 96
+    },
+    "fixed": {
+      "hit_at_10": 60,
+      "hit_at_5": 48,
+      "net_utility": 307200,
+      "paid_rerank": 32,
+      "stopped": 0,
+      "submitted": 96
+    },
+    "ndu": {
+      "hit_at_10": 56,
+      "hit_at_5": 48,
+      "net_utility": 336000,
+      "paid_rerank": 0,
+      "stopped": 0,
+      "submitted": 96
+    }
+  },
+  "automatic_Cell_split_authorized": false,
+  "bounded_real_model_training_cost_attested": false,
+  "disposition": "HOLD_NO_GO",
+  "future_source_generalization_verified": false,
+  "held_historical_original_questions": 96,
+  "historically_public_not_prospective": true,
+  "natural_language_answer_correctness_verified": false,
+  "net_NDU_over_matched_Bellman": 0,
+  "original_publisher_sha_verified": true,
+  "paid_original_model_batches": 74,
+  "paid_original_model_sequences": 1147,
+  "paired_vs_bm25": {
+    "fixed": {
+      "harms": 2,
+      "rescues": 2,
+      "ties": 92
+    },
+    "ndu": {
+      "harms": 0,
+      "rescues": 0,
+      "ties": 96
+    }
+  },
+  "production_authorized": false,
+  "qualified_paid_band_count": 0,
+  "qualified_stop_band_count": 0,
+  "schema": "hepta.hdsi.g8.independent-human-replay.v1",
+  "source_families_held": 4,
+  "source_families_train": 6,
+  "source_root_results": {
+    "conv-47": {
+      "bellman": 10,
+      "bm25": 10,
+      "fixed": 11,
+      "ndu": 10
+    },
+    "conv-48": {
+      "bellman": 10,
+      "bm25": 10,
+      "fixed": 10,
+      "ndu": 10
+    },
+    "conv-49": {
+      "bellman": 17,
+      "bm25": 17,
+      "fixed": 17,
+      "ndu": 17
+    },
+    "conv-50": {
+      "bellman": 11,
+      "bm25": 11,
+      "fixed": 10,
+      "ndu": 11
+    }
+  },
+  "train_full_corpus_original_questions": 144,
+  "train_original_model_batches": 175,
+  "train_original_model_sequences": 2759,
+  "training_bm25_hit5": 77,
+  "training_rrf_hit5": 86
+}
