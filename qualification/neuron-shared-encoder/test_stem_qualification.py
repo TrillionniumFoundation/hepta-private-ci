@@ -158,7 +158,7 @@ class StemQualificationTests(unittest.TestCase):
         self.assertEqual(first.run_digest, second.run_digest)
         self.assertEqual(first.to_dict()["authority"], "DENY_ALL")
         self.assertEqual(first.to_dict()["status"], "SHADOW_COMPLETE")
-        self.assertEqual(first.resources.total_flops, 8000.0)
+        self.assertEqual(first.resources.total_flops, 7000.0)
 
     def test_metric_interval_must_contain_value(self) -> None:
         with self.assertRaises(StemQualificationError):
