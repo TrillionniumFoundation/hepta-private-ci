@@ -38,6 +38,32 @@ retained authenticated minimum checkpoint. The coordinator re-reads the last
 ACKed native phase before any new effect, and validates the terminal retirement
 readback even after it is complete.
 
+## Native readback bridge (separate crate)
+
+The independent codex-hepta-cell-split-executor crate implements
+ProductSplitNativeReadbackV1. It connects the **real**
+LearningArtifactOwnerService::observe_cell_split_artifact_cas_v1 and
+HeptaRuntime::observe_governed_topology_cutover directly to the locked
+Supervisor CellSplitOwnerV1 native lookup trait. It keeps Agentd and Worker
+free of new direct Supervisor/Runtime dependency edges.
+
+It binds the exact Artifact publication operation and payload, and separately
+binds the CNS proposal/candidate, its native handoff digest and the Final-use
+request digest. A current signed Artifact registry is mandatory. CNS readback
+requires the *same live Runtime owner's* previous successful Final-use apply
+receipt and actual current graph re-read. No route receipt can survive a process
+restart by assertion alone.
+
+This adapter **intentionally refuses** to execute native Artifact/CNS
+side effects. Those effects require their original idempotent publication
+service and independently authorized Final-use route owner. Unknown native
+effects yield Indeterminate; a missing receipt is never treated as a conclusive
+negative result. Other stages must be supplied by separate real domain owners,
+not by an implicit default allow or a digest oracle.
+
+Accordingly, this integration is a **partial native readback composition**,
+NOT the required full production Cell Split executor.
+
 ## Product wiring still required
 
 The generic CellSplitNativeOwnerV1 trait is **not** a production implementation.
@@ -85,6 +111,7 @@ Run when a matching Rust toolchain is available:
     cargo test -p codex-hepta-supervisor cell_split_owner
     cargo test -p codex-hepta-learning-artifacts cell_split_cas_readback
     cargo test -p codex-hepta-runtime governed_topology_requires_final_use
+    cargo test -p codex-hepta-cell-split-executor product_binding_requires
     cargo clippy -p codex-hepta-supervisor --all-targets -- -D warnings
     cargo fmt --all -- --check
 
