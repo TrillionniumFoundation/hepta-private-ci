@@ -1086,6 +1086,16 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertGreater(start, 0, "read-only orphan join must exist")
         self.assertGreater(end, start, "read-only join must be method-scoped")
         observation = source[start:end]
+        self.assertIn(
+            "pub posture: NonAuthorizingPosture,",
+            source,
+            "successful forensic diagnostics must carry a sealed no-authority type",
+        )
+        self.assertIn(
+            "posture: NonAuthorizingPosture::DENY_ALL,",
+            observation,
+            "the only successful forensic result must deny all effect authority",
+        )
         for forbidden in (
             "apply_governed_topology(",
             "publish_cutover_with_external_effect(",

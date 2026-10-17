@@ -35,6 +35,7 @@ use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
+use codex_hepta_types::NonAuthorizingPosture;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use sha2::Digest as _;
@@ -161,6 +162,8 @@ pub fn cell_split_control_highwater_signing_bytes_v1(
 /// a signed cross-owner transaction or a production activation receipt.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitOrphanCnsReadOnlyObservationV1 {
+    /// A sealed foundational type that cannot carry execution authority.
+    pub posture: NonAuthorizingPosture,
     pub original_pending_begin: NduPublicationPendingBeginV1,
     pub original_cns_commit: CellSplitCnsRuntimeCommitV1,
     pub signed_serving_route: CellSplitCnsLiveRouteV1,
@@ -520,6 +523,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             return Err("original Control orphan changed during final CNS verification".into());
         }
         Ok(CellSplitOrphanCnsReadOnlyObservationV1 {
+            posture: NonAuthorizingPosture::DENY_ALL,
             original_pending_begin: pending,
             original_cns_commit: original,
             signed_serving_route: current,
