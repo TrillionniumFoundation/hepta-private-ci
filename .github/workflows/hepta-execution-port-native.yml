@@ -117,6 +117,12 @@ jobs:
         shell: bash
         run: cargo fmt --all -- --check
 
+      - name: Revalidate actual v1 Automation migration before heavyweight owner build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/migration.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation -E 'test(v1_store_migrates_atomically_to_dispatch_outcome_schema)'
+
       - name: Count backend-neutral intent contract tests
         shell: bash
         run: |
