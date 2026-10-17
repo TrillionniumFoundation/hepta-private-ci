@@ -53,7 +53,10 @@ def verify_inventory(root):
     root = Path(root)
     insist(root.is_dir() and not root.is_symlink(), "missing original artifact")
     sha_file = root / "SHA256SUMS"
-    insist(sha_file.is_file() and not sha_file.is_symlink(), "missing artifact hash inventory")
+    insist(
+        sha_file.is_file() and not sha_file.is_symlink(),
+        "missing artifact hash inventory",
+    )
     declared = {}
     for line in sha_file.read_text().splitlines():
         entry = re.fullmatch(r"([0-9a-f]{64})  (?:\./)?(.+)", line)
@@ -119,7 +122,8 @@ def records_from_run(root, *, tier, expected_source):
         registration["source_commit"] == expected_source
         and registration["tier"] == tier
         and registration["stage_sha256"] == digest((root / "stage.json").read_bytes())
-        and registration["input_pins"] == PINS | {"inventory": stage["inventory_sha256"]}
+        and registration["input_pins"]
+        == PINS | {"inventory": stage["inventory_sha256"]}
         and registration["optimization_permitted"] is False
         and registration["production_accepted"] is False
         and execution["tested_commit"] == expected_source
@@ -135,10 +139,16 @@ def records_from_run(root, *, tier, expected_source):
     )
     raw = root / "run/diagnostic/execution/raw-answers.jsonl"
     raw_bytes = raw.read_bytes()
-    insist(raw_bytes.endswith(b"\n") and len(raw_bytes) <= MAX_FILE, "truncated original answer journal")
+    insist(
+        raw_bytes.endswith(b"\n") and len(raw_bytes) <= MAX_FILE,
+        "truncated original answer journal",
+    )
     entries = [json.loads(line) for line in raw_bytes.splitlines()]
     scored = read_json(root / "run/diagnostic/execution/scored-answers.json")
-    insist(isinstance(scored, list) and len(scored) == len(entries), "missing scored attempts")
+    insist(
+        isinstance(scored, list) and len(scored) == len(entries),
+        "missing scored attempts",
+    )
     by_key = {}
     for original, row in zip(entries, scored, strict=True):
         key = (row["question_id"], row["arm"])
@@ -186,7 +196,10 @@ def records_from_run(root, *, tier, expected_source):
 
 
 def pair(root, source):
-    insist(re.fullmatch(r"[0-9a-f]{40}", source) is not None, "exact generating head required")
+    insist(
+        re.fullmatch(r"[0-9a-f]{40}", source) is not None,
+        "exact generating head required",
+    )
     data, meta, plan_identity = {}, {}, None
     for tier in TIERS:
         rows, info, plan = records_from_run(
@@ -202,11 +215,16 @@ def pair(root, source):
             for case in plan["cases"]
         ]
         if plan_identity is not None:
-            insist(plan_identity == plan_identity_current, "question/source-family drift")
+            insist(
+                plan_identity == plan_identity_current, "question/source-family drift"
+            )
         plan_identity = plan_identity_current
     left, right = (data[tier] for tier in TIERS)
     insist(set(left) == set(right), "incomplete or different paired population")
-    insist(meta[TIERS[0]]["inventory_digest"] != meta[TIERS[1]]["inventory_digest"], "reader revision reused")
+    insist(
+        meta[TIERS[0]]["inventory_digest"] != meta[TIERS[1]]["inventory_digest"],
+        "reader revision reused",
+    )
     comparisons = []
     known_delta = 0.0
     paired = 0
@@ -236,7 +254,9 @@ def pair(root, source):
             )
             comparison["delivered_source_equal"] = True
             comparison["evidence_sha256"] = digest(
-                json.dumps(aa["delivered_evidence"], ensure_ascii=False, sort_keys=True).encode()
+                json.dumps(
+                    aa["delivered_evidence"], ensure_ascii=False, sort_keys=True
+                ).encode()
             )
             comparison["frozen_answer_sha256"] = digest(a["answer"].encode())
             comparison["reference_answer_sha256"] = digest(b["answer"].encode())
@@ -276,7 +296,9 @@ def main():
     args = parser.parse_args()
     report = pair(args.root, args.source)
     insist(not args.output.exists(), "refuse to overwrite original paired report")
-    args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
+    args.output.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
+    )
 
 
 if __name__ == "__main__":
