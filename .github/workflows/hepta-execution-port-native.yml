@@ -6,6 +6,12 @@ on:
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-codex-adapter/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/core/src/client.rs"
+      - "codex-rs/core/src/client_tests.rs"
+      - "codex-rs/core/src/client_provider_policy_tests.rs"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/hepta-memory/**"
       - ".github/workflows/hepta-execution-port-native.yml"
   workflow_dispatch:
 
@@ -145,6 +151,18 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/full.json" --minimum-tests 10 -- just test --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host
+
+      - name: Test context delivery and revocation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/context.json" --minimum-tests 1 -- just test --locked -p codex-hepta-context-compiler
+
+      - name: Test Codex provider response stream and terminal semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/provider-stream.json" --minimum-tests 1 -- just test --locked -p codex-core -E 'test(client::provider_policy_tests) | test(client::tests)'
 
       - name: Strict original owner and adapter Clippy
         working-directory: codex-rs
