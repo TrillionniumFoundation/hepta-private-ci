@@ -43,13 +43,15 @@ def fake_rows(tier):
         "planned": 3,
         "successful": 2,
         "unavailable": 1,
-    }, [
-        {
-            "question": {"identity": "q-1"},
-            "family": "old-exposed-family",
-            "phase": "capability",
-        }
-    ]
+    }, {
+        "cases": [
+            {
+                "question": {"identity": "q-1"},
+                "family": "old-exposed-family",
+                "phase": "capability",
+            }
+        ]
+    }
 
 
 class PairedReaderTests(unittest.TestCase):
