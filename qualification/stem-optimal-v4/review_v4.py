@@ -164,6 +164,63 @@ def quarantine_unqualified_mmbert(incumbent):
     return out
 
 
+# Precommitted finite sensitivity *reporting* grid, never fitted on heldout gold.
+# A heldout-optimal temperature is NOT selected or used by a producer.
+TEMPERATURES = (1.0, 0.25, 0.0625, 0.015625)
+
+
+def postseal_centroid_temperature_sensitivity(old_runs, gold):
+    """Test a cheap zero-Head-SGD alternative after all model predictions seal.
+
+    Temperature cannot be selected from these same heldout labels and then
+    reported as externally calibrated efficacy. Return the entire fixed grid.
+    The original V3 score vectors/provenance are separately checked by the V3
+    independent reviewer before this diagnostic is called.
+    """
+    core.require(type(old_runs) is list and len(old_runs) == 3 and
+                 type(gold) is dict and len(gold) == 32, 'original panel incomplete')
+    result = {}
+    for run in old_runs:
+        name = run.get('candidate')
+        if name == 'mmbert140':
+            continue  # known original randomly initialized checkpoint
+        core.require(name in ('granite47', 'granite97') and name not in result,
+                     'unregistered cheap-control candidate')
+        rows = run['rows']
+        core.require(type(rows) is list and len(rows) == 32 and
+                     {r['case_id'] for r in rows} == set(gold), 'cheap-control case identity')
+        measures = {}
+        for temperature in TEMPERATURES:
+            total, correct = 0.0, 0
+            for row in rows:
+                y = gold[row['case_id']]
+                p = row['scores']['centroid']
+                core.require(type(y) is int and 0 <= y < 4 and
+                             type(p) is list and len(p) == 4 and
+                             all(type(v) in (float, int) and math.isfinite(v)
+                                 and 0 <= v <= 1 for v in p) and
+                             abs(sum(p) - 1) < 1e-5,
+                             'unbound or invalid original centroid probabilities')
+                # Stable softmax(log(p) / T), preserves argmax for every T>0.
+                logits = [math.log(max(float(v), 1e-300))/temperature for v in p]
+                pivot = max(logits)
+                w = [math.exp(v-pivot) for v in logits]
+                z = sum(w)
+                q = [v/z for v in w]
+                correct += int(max(range(4), key=q.__getitem__) == y)
+                total += sum((q[i]-float(i == y))**2 for i in range(4))
+            measures[str(temperature)] = {'correct':correct,'n':32,
+                                          'mean_multiclass_brier':total/32}
+        result[name] = measures
+    core.require(set(result) == {'granite47','granite97'}, 'both valid cheap controls missing')
+    return {'temperatures_fixed_in_advance':list(TEMPERATURES),
+            'heldout_temperature_selected':False,
+            'train_only_calibrated':False,
+            'additional_head_sgd_steps':0,
+            'postseal_diagnostic_not_model_qualification':True,
+            'models':result}
+
+
 def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     import stem_hard_charge_review_v3 as v3_review
     import stem_candidate_v1 as v1
@@ -171,12 +228,14 @@ def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     incumbent = v3_review._review(train_raw,test_raw,source,old_runs,materials)
     incumbent = quarantine_unqualified_mmbert(incumbent)
     _,gold=v3_review.reconstruct(train_raw,test_raw,v1.ORIGINAL_SHA)
+    sensitivity = postseal_centroid_temperature_sensitivity(old_runs, gold)
     core.check_source(source)
     fourth_result=check_fourth(source,fourth,gold)
     ensure_matched_initial_heads(old_runs, fourth)
     return {'schema':'hepta.stem.original-four-model-postseal.v4',
             'cohort':core.COHORT,'source_sha256':source['source_plan_sha256'],
             'existing_original_three_model_scoring':incumbent,
+            'postseal_zero_sgd_centroid_temperature_sensitivity':sensitivity,
             'fourth_model':{'id':core.ARM,'source':'original_pretrained_embeddinggemma2',
                             'descriptive_scores':fourth_result,
                             'matched_training_budget_only':True,

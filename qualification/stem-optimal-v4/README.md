@@ -25,6 +25,17 @@ integrity certificate checked on the scoring runner. A future repaired loader
 must independently prove every required tensor and preserve original model/label
 isolation; no silent checkpoint swap or retconned score is allowed.
 
+## Fixed postseal zero-SGD centroid-temperature sensitivity
+
+The independent reviewer adds a **complete fixed 1, 1/4, 1/16, 1/64**
+centroid temperature sweep for the two eligible historical Granite arms, all
+using the sealed original centroid probabilities. The diagnostic is computed
+**only after reopening original publisher TEST labels** and cannot select a
+winning temperature from those same labels. It **does not** claim a train-only
+calibrated baseline, future task utility, nor use heldout information in any
+model producer. A future true competitor must train its calibrator on fit/cal
+only and freeze it before independent heldout labels are observed.
+
 ## Strict evidence custody and nonclaims
 
 The hosted workflow first downloads immutable publisher CSV bytes and verifies both source SHAs, exports an unlabelled heldout source roster, then runs 4 original pretrained CPU jobs on the SAME roster. It seals source and output digests, then an independent later job **re-downloads the original source** before scoring. It reuses the original three-model V3 reviewer unchanged and audits the fourth model with `review_v4.py`; missing/synthetic/queued model jobs are not marked successful. Model issuer signatures, human-independent provenance, full GPU energy, simultaneous 4096 requests, future data families, Head learned skill lift, actual Cell Split, stochastic NDU/FBSDE and multimodal decoding are **not provided**.

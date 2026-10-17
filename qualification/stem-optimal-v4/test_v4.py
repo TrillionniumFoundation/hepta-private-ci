@@ -83,6 +83,23 @@ class ReceiptTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             review.quarantine_unqualified_mmbert({'models': {'granite47': {}, 'granite97': {}}})
 
+    def test_fixed_temperature_control_never_optimizes_on_heldout(self):
+        src,r,g=fixture()
+        old=[{'candidate':name,'rows':copy.deepcopy(r['rows'])}
+             for name in ('granite47','granite97','mmbert140')]
+        sensitivity=review.postseal_centroid_temperature_sensitivity(old,g)
+        self.assertEqual(set(sensitivity['models']),{'granite47','granite97'})
+        self.assertFalse(sensitivity['heldout_temperature_selected'])
+        self.assertFalse(sensitivity['train_only_calibrated'])
+        self.assertEqual(sensitivity['additional_head_sgd_steps'],0)
+        self.assertEqual(len(sensitivity['temperatures_fixed_in_advance']),4)
+        for measures in sensitivity['models'].values():
+            self.assertEqual(set(v['correct'] for v in measures.values()),{8})
+            self.assertEqual(measures['1.0']['n'],32)
+        old[0]['rows'][0]['scores']['centroid']=[1.0,1.0,0.0,0.0]
+        with self.assertRaises(ValueError):
+            review.postseal_centroid_temperature_sensitivity(old,g)
+
     def test_denied_authority_and_outcome_leak(self):
         src,r,g=fixture()
         for key,value in [('authority','ALLOW'),('production_authorized',True),
