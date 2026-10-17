@@ -6,6 +6,8 @@ on:
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-codex-adapter/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
       - "codex-rs/hepta-context-compiler/**"
       - "codex-rs/core/src/client.rs"
       - "codex-rs/core/src/client_tests.rs"
@@ -163,6 +165,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/provider-stream.json" --minimum-tests 1 -- just test --locked -p codex-core -E 'test(client::provider_policy_tests) | test(client::tests)'
+
+      - name: Test native TaskFlow authorized effects and circuit contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/automation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation
 
       - name: Strict original owner and adapter Clippy
         working-directory: codex-rs
