@@ -2362,11 +2362,14 @@ fn byte_identical_frame_replacement_during_effect_never_acknowledges_or_reexecut
     let mut owner =
         CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
     *replace.borrow_mut() = Some(root.path().join("cell-split-00-prepared.json"));
+    // The original signed external effect may already have executed when its
+    // final live readback detects an inode substitution. Once Prepare is
+    // durable, classify the outcome as Ambiguous, never as safe non-execution.
+    // A read-only transcript may still report Invalid; this mutating path
+    // must keep the same idempotency key pending for owner reconciliation.
     assert!(matches!(
         owner.advance(),
-        Err(CellSplitExecutionErrorV1::Invalid(
-            "original local split frame identity changed"
-        ))
+        Err(CellSplitExecutionErrorV1::Ambiguous)
     ));
     assert_eq!(state.borrow().executions, 1);
     assert_eq!(owner.completed_steps(), 0);
