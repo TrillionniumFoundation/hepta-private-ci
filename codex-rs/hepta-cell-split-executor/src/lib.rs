@@ -25,6 +25,10 @@ use codex_hepta_supervisor::CellSplitLookupV1;
 use codex_hepta_supervisor::CellSplitNativeEvidenceV1;
 use codex_hepta_supervisor::CellSplitNativeOwnerV1;
 use codex_hepta_supervisor::CellSplitObservedReceiptV1;
+use codex_hepta_supervisor::CellSplitOwnerErrorV1;
+use codex_hepta_supervisor::CellSplitOwnerV1;
+use codex_hepta_supervisor::DurableWriterHandoffJournalV1;
+use codex_hepta_supervisor::WriterHandoffCheckpointV1;
 use codex_hepta_supervisor::WriterHandoffPhaseV1;
 use codex_hepta_supervisor::WriterHandoffPlanV1;
 use codex_hepta_types::Digest32;
@@ -182,6 +186,24 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
         }
         self.cutover = Some(applied);
         Ok(())
+    }
+
+    /// Advance one already independently admitted split phase using the
+    /// Supervisor's exclusive fsync-backed journal and these actual native
+    /// readback owners. No loop, selection, retry after unknown effects or
+    /// hidden deployment action occurs here. Missing product authority must
+    /// be enforced by each native effect owner and before constructing this
+    /// bridge.
+    pub fn advance_receipt_gated_phase(
+        &mut self,
+        journal: &mut DurableWriterHandoffJournalV1,
+    ) -> Result<
+        WriterHandoffCheckpointV1,
+        CellSplitOwnerErrorV1<ProductSplitNativeErrorV1<O::Error>>,
+    > {
+        let binding = self.binding.split.clone();
+        let mut coordinator = CellSplitOwnerV1::new(journal, self, binding)?;
+        coordinator.advance_once()
     }
 
     /// The two native receipt paths implemented here *always* return either
