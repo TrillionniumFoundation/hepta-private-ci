@@ -49,6 +49,7 @@ fn binding() -> CellSplitBindingV1 {
     CellSplitBindingV1 {
         operation_id: plan().operation_id,
         selected_artifact_digest: digest(b"artifact"),
+        selection_digest: digest(b"independent-selection"),
         predecessor_route_digest: digest(b"route-v1"),
         successor_route_digest: digest(b"route-v2"),
     }
