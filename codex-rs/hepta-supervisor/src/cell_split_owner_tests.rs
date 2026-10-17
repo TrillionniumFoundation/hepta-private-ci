@@ -82,6 +82,7 @@ struct FilesystemNative {
     bad_child: bool,
     bad_route: bool,
     drift: bool,
+    historical_ack_drift: Option<WriterHandoffPhaseV1>,
     execute_count: usize,
 }
 
@@ -97,6 +98,7 @@ impl FilesystemNative {
             bad_child: false,
             bad_route: false,
             drift: false,
+            historical_ack_drift: None,
             execute_count: 0,
         }
     }
@@ -245,7 +247,12 @@ impl CellSplitNativeOwnerV1 for FilesystemNative {
         if bytes != Self::marker(plan, phase) {
             return Ok(CellSplitLookupV1::Indeterminate);
         }
-        self.observed(plan, phase, digest(&bytes))
+        let acknowledged = if self.historical_ack_drift == Some(phase) {
+            digest(b"new-but-misleading-native-ack")
+        } else {
+            digest(&bytes)
+        };
+        self.observed(plan, phase, acknowledged)
             .map(CellSplitLookupV1::Observed)
     }
 
@@ -548,4 +555,51 @@ fn predecessor_snapshot_tamper_after_ack_blocks_child_migration() {
     ));
     assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
     assert!(!native.root.join("child-state").exists());
+}
+
+#[test]
+fn historical_drain_ack_drift_blocks_retirement_after_route_publication() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..8 {
+        advance(&mut journal, &mut native).expect("through route cutover");
+    }
+    let expected = journal.checkpoint().clone();
+    let effects = native.execute_count;
+    drop(journal);
+    journal = DurableWriterHandoffJournalV1::recover_at_least(file(&root), &expected)
+        .expect("reopen exact acknowledged chain");
+
+    // The native owner still presents a correctly typed Drain receipt, but
+    // its ACK was replaced after the Supervisor journal moved past Drained.
+    // Only full historical journal comparison catches this drift.
+    native.historical_ack_drift = Some(WriterHandoffPhaseV1::Drained);
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::ObservationDrift)
+    ));
+    assert_eq!(journal.checkpoint(), &expected);
+    assert_eq!(native.execute_count, effects);
+    assert!(!native.stage(WriterHandoffPhaseV1::Retired).exists());
+}
+
+#[test]
+fn historical_child_migration_drift_blocks_late_retirement() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..8 {
+        advance(&mut journal, &mut native).expect("through route cutover");
+    }
+    let expected = journal.checkpoint().clone();
+    let effects = native.execute_count;
+    native.historical_ack_drift = Some(WriterHandoffPhaseV1::Migrated);
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::ObservationDrift)
+    ));
+    assert_eq!(journal.checkpoint(), &expected);
+    assert_eq!(native.execute_count, effects);
+    assert!(!native.stage(WriterHandoffPhaseV1::Retired).exists());
 }
