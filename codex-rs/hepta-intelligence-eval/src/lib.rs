@@ -71,6 +71,7 @@ pub use cell_split_evaluation::CellSplitEvaluationRequestV1;
 pub use cell_split_evaluation::CellSplitLongHorizonEvaluationReceiptV1;
 pub use cell_split_evaluation::cell_split_bound_estimand_digest_v1;
 pub use cell_split_evaluation::evaluate_cell_split_long_horizon_v1;
+pub use cell_split_lifecycle::CellSplitCanaryCountsV1;
 pub use cell_split_lifecycle::CellSplitCanaryReceiptV1;
 pub use cell_split_lifecycle::CellSplitEvaluationDispositionV1;
 pub use cell_split_lifecycle::CellSplitLifecycleErrorV1;
