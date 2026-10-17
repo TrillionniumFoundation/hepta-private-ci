@@ -132,6 +132,13 @@ test("bridge rejects pointer, socket, and final-use fields", () => {
       /forbidden field/,
       key,
     );
+    assert.throws(
+      () => createAuthorityFreeAgentdBridge(fakePort()).submitProposal(
+        proposal({ [key]: "forbidden" }),
+      ),
+      /forbidden field/,
+      `top-level ${key}`,
+    );
   }
 });
 
@@ -178,6 +185,23 @@ test("bridge rejects digest, action, receipt, and authority mismatches", () => {
         }),
       ).readRuntime({ moduleId: "runtime.agentd", expectedGeneration: 4 }),
     /cannot advertise authority/,
+  );
+  assert.throws(
+    () =>
+      createAuthorityFreeAgentdBridge(
+        fakePort({
+          submitProposal: (value) => ({
+            scopeId: value.scopeId,
+            operationId: value.operationId,
+            payloadDigest: value.payloadDigest,
+            status: "accepted",
+            observedResourceRevision: 8,
+            observedBodyGeneration: 4,
+            observedAuthorityEpoch: 12,
+          }),
+        }),
+      ).submitProposal(proposal()),
+    /regressed resource revision/,
   );
 });
 
