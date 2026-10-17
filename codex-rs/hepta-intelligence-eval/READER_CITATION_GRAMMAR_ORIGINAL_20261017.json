@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.reader-citation-grammar-original-observation.v1",
+  "recorded_date": "2026-10-17",
+  "source": "original LoCoMo, ten authored correlated dialogues",
+  "source_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "original_publisher_oracle_plan_sha256": "d71f38bdc0667b465ed23fcfd3e7e057547e5ea48c18e3c27345ab4a15f6a5bc",
+  "fixed_citation_protocol_plan_sha256": "30d20bb21bb35e5e1cd03655347392546a0d28863f527b2475da1edbd132ac19",
+  "original_generation_journal_sha256": "1871486ea95af3f03f2d5bfd99be2d97871d0d745cdc7382f5252f08af1cce07",
+  "independent_original_reader_postseal_review_sha256": "e0d6caed068541f437135f1c6db61b83edcdd3f3dc7b0278c2cce3a3cf2e176b",
+  "exact_legacy_lines_original_token_journal_match": true,
+  "planned_original_model_generations": 40,
+  "original_completed": 40,
+  "independently_replayed_original_calls": 40,
+  "distinct_historical_questions": 10,
+  "scorable_string_answers_per_arm": 8,
+  "original_model": "pinned offline SmolLM2-135M FP32",
+  "registered_reader_identity": "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c",
+  "generation_max_new_tokens": 48,
+  "identical_question_and_evidence_per_arm": true,
+  "same_decoding_budget": true,
+  "equal_input_token_budget": false,
+  "original_worker_received_answer_labels": false,
+  "by_arm": {
+    "legacy_lines": {
+      "valid_citation_bearing_outputs": 2,
+      "scorable": 8,
+      "mean_token_f1": 0.14739722289594953,
+      "input_tokens": 1858,
+      "generated_tokens": 309,
+      "hit_ceiling": 3
+    },
+    "citation_first": {
+      "valid_citation_bearing_outputs": 4,
+      "scorable": 8,
+      "mean_token_f1": 0.18586048454469506,
+      "input_tokens": 1909,
+      "generated_tokens": 307,
+      "hit_ceiling": 2
+    },
+    "citation_last": {
+      "valid_citation_bearing_outputs": 4,
+      "scorable": 8,
+      "mean_token_f1": 0.19695992432060544,
+      "input_tokens": 1859,
+      "generated_tokens": 334,
+      "hit_ceiling": 3
+    },
+    "two_field": {
+      "valid_citation_bearing_outputs": 0,
+      "scorable": 8,
+      "mean_token_f1": 0.1358536045997346,
+      "input_tokens": 2009,
+      "generated_tokens": 312,
+      "hit_ceiling": 2
+    }
+  },
+  "paired_token_f1_vs_legacy": {
+    "citation_first": {
+      "scorable_pairs": 8,
+      "gained": 1,
+      "lost": 1,
+      "tied": 6,
+      "mean_delta": 0.03846326164874552
+    },
+    "citation_last": {
+      "scorable_pairs": 8,
+      "gained": 1,
+      "lost": 2,
+      "tied": 5,
+      "mean_delta": 0.049562701424655894
+    },
+    "two_field": {
+      "scorable_pairs": 8,
+      "gained": 1,
+      "lost": 2,
+      "tied": 5,
+      "mean_delta": -0.011543618296214926
+    }
+  },
+  "resource_note": "Original worker wall 89.16s and max RSS 1,075,088 KiB; independent replay worker wall 88.79s and max RSS 1,077,356 KiB on the local CPU host. Neither includes full lifecycle acquisition, indexing, network, model startup integration, source retention or disposal costs.",
+  "semantic_reference_sufficiency_independently_certified": false,
+  "citation_entailment_independently_verified": false,
+  "evidence_labels_do_not_establish_semantic_correctness": true,
+  "original_reader_HF_BF16_parity_verified": false,
+  "prospective_external_source_families": 0,
+  "statistical_superiority": false,
+  "production_accepted": false,
+  "final_use_allowed": false,
+  "disposition": "research_only_no_production_promotion_until_reader_grounding_and_independent_citation_judgment"
+}
