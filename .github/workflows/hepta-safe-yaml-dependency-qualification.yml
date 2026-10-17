@@ -1,0 +1,55 @@
+name: Hepta Pure-Rust YAML Dependency Qualification
+
+on:
+  push:
+    branches:
+      - security/remove-unsafe-libyaml-20261012
+  pull_request:
+    paths:
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - .github/workflows/hepta-safe-yaml-dependency-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  locked-yaml-migration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.95
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Resolve maintained YAML compatibility dependency without altering CI policy
+        run: cargo +1.95.0 metadata --format-version 1 > /dev/null
+      - name: Capture exact Cargo lockfile delta for reviewed follow-up commit
+        if: always()
+        run: |
+          echo HEPTA_YAML_LOCK_DIFF_BEGIN
+          git diff --no-ext-diff --unified=3 -- Cargo.lock
+          echo HEPTA_YAML_LOCK_DIFF_END
+      - name: Require safe YAML lock graph to exclude archived parser
+        run: |
+          if grep -q '^name = "unsafe-libyaml"$' Cargo.lock; then
+            echo "::error::unsafe-libyaml remains in Cargo.lock; migration incomplete"
+            exit 1
+          fi
+          if grep -q '^name = "serde_yaml"$' Cargo.lock; then
+            echo "::error::archived serde_yaml remains in Cargo.lock; migration incomplete"
+            exit 1
+          fi
+          grep -q '^name = "noyalib-serde-yaml"$' Cargo.lock
+      - name: Real typed YAML frontend, plugin and migration compile
+        run: |
+          cargo +1.95.0 check --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension
+      - name: Execute typed Skill frontmatter YAML compatibility regressions
+        run: cargo +1.95.0 test --locked -p codex-skills --lib parser::tests -- --nocapture
+      - name: Exact Rust format
+        run: cargo +1.95.0 fmt --all -- --check

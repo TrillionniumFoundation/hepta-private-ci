@@ -117,3 +117,37 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+
+#[test]
+fn safe_yaml_compat_preserves_literal_scalar_types_in_skill_frontmatter() {
+    // Regression fixtures for the archived serde_yaml 0.9 compatibility
+    // surface. The maintained parser must not turn a quoted-looking name
+    // into an integer or drop YAML 1.2 literal text such as NO.
+    let parsed = parse_skill_frontmatter_metadata(
+        "---\nname: 0123\ndescription: NO\nmetadata:\n  short-description: Build and test\n---\n",
+        || "fallback".to_string(),
+    )
+    .expect("legacy scalar parsing must preserve literal Skill fields");
+    assert_eq!(parsed.name, "0123");
+    assert_eq!(parsed.description, "NO");
+    assert_eq!(parsed.short_description.as_deref(), Some("Build and test"));
+}
+
+#[test]
+fn safe_yaml_compat_fails_closed_on_duplicate_security_relevant_metadata() {
+    let duplicated_name =
+        "---\nname: first\nname: second\ndescription: Demo skill\n---\n";
+    assert!(
+        parse_skill_frontmatter_metadata(duplicated_name, || "fallback".to_string()).is_err(),
+        "duplicate Skill identity must not silently select one value",
+    );
+
+    let duplicated_description =
+        "---\nname: real\ndescription: allowed\ndescription: overridden\n---\n";
+    assert!(
+        parse_skill_frontmatter_metadata(duplicated_description, || "fallback".to_string())
+            .is_err(),
+        "duplicate Skill description must not shadow its preceding value",
+    );
+}
