@@ -464,3 +464,55 @@ fn supervisor_result_fences_track_receipt_gated_cutover() {
         .expect("new generation result accepted");
     assert!(journal.checkpoint().validate_result_fence(&old).is_err());
 }
+
+#[test]
+fn cas_changed_after_child_bootstrap_blocks_live_route_cutover() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..7 {
+        advance(&mut journal, &mut native).expect("through successor fence");
+    }
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::NewWriterFenced
+    );
+    let count = native.execute_count;
+    fs::write(native.root.join("cas-artifact"), b"post-migration-tamper")
+        .expect("simulate later source modification");
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::InvalidObservation)
+    ));
+    assert_eq!(native.execute_count, count);
+    assert!(!native.root.join("cns-route").exists());
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::NewWriterFenced
+    );
+}
+
+#[test]
+fn missing_current_artifact_authority_blocks_retirement() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..8 {
+        advance(&mut journal, &mut native).expect("through route cutover");
+    }
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::RoutePublished
+    );
+    let count = native.execute_count;
+    native.indeterminate = Some(WriterHandoffPhaseV1::Snapshotted);
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::Indeterminate)
+    ));
+    assert_eq!(native.execute_count, count);
+    assert_eq!(
+        journal.checkpoint().phase,
+        WriterHandoffPhaseV1::RoutePublished
+    );
+}
