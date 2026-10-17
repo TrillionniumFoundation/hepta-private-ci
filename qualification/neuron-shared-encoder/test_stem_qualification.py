@@ -20,6 +20,8 @@ from neuron_shared_encoder.stem_qualification import (  # noqa: E402
     MetricIntervalV1,
     SourceDisjointSplitV1,
     StemQualificationError,
+    SCHEMA_COMPONENT,
+    SCHEMA_RESOURCE,
     StemQualificationRunV1,
     qualify_from_receipt,
 )
@@ -60,23 +62,36 @@ SPLIT = SourceDisjointSplitV1(
     dedupe_report_digest=digest("dedupe-report"),
     train_count=1000,
     eval_count=400,
+    future_count=300,
+    ood_count=250,
     overlap_count=0,
     source_family_count=2,
     future_window_count=2,
 )
 
 
-def metric(metric_id: str = "quality") -> MetricIntervalV1:
+def metric(
+    metric_id: str = "eval_quality",
+    source_digest: str | None = None,
+    sample_count: int = 400,
+) -> MetricIntervalV1:
     return MetricIntervalV1(
         metric_id=metric_id,
         value=0.80,
         lcb=0.76,
         ucb=0.84,
-        sample_count=400,
+        sample_count=sample_count,
         confidence_level=0.95,
         evaluator_digest=digest("evaluator"),
-        heldout_source_digest=SPLIT.eval_source_digest,
+        heldout_source_digest=source_digest or SPLIT.eval_source_digest,
     )
+
+
+QUALIFY_METRICS = (
+    metric("eval_quality", SPLIT.eval_source_digest, 400),
+    metric("future_quality", SPLIT.future_source_digest, 300),
+    metric("ood_risk", SPLIT.ood_source_digest, 250),
+)
 
 
 def component(kind: str) -> ComponentResourceReceiptV1:
@@ -120,6 +135,7 @@ def bundle() -> ComponentResourceBundleV1:
         p95_latency_ms=16.0,
         p99_latency_ms=24.0,
         energy_mj=8.0,
+        peak_memory_bytes=50000.0,
         batch_size=4,
         warmup_steps=2,
         measured_steps=10,
@@ -132,6 +148,7 @@ def run() -> StemQualificationRunV1:
     return StemQualificationRunV1(
         run_id="run-421m-v1",
         candidate_id="stem-421m",
+        task_id="task-1",
         stem_digest=CHECKPOINT.stem_digest,
         stem_generation=CHECKPOINT.generation,
         checkpoint=CHECKPOINT,
@@ -146,7 +163,7 @@ def run() -> StemQualificationRunV1:
         budget_digest=digest("budget"),
         cost_profile_digest=digest("cost-profile"),
         evidence_manifest_digest=digest("evidence-manifest"),
-        metrics=(metric(),),
+        metrics=QUALIFY_METRICS,
         resources=bundle(),
     )
 
@@ -158,7 +175,10 @@ class StemQualificationTests(unittest.TestCase):
         self.assertEqual(first.run_digest, second.run_digest)
         self.assertEqual(first.to_dict()["authority"], "DENY_ALL")
         self.assertEqual(first.to_dict()["status"], "SHADOW_COMPLETE")
+        self.assertEqual(first.to_dict()["task_id"], "task-1")
         self.assertEqual(first.resources.total_flops, 7000.0)
+        self.assertEqual(first.resources.to_dict()["schema"], SCHEMA_RESOURCE)
+        self.assertEqual(component("device").to_dict()["schema"], SCHEMA_COMPONENT)
 
     def test_metric_interval_must_contain_value(self) -> None:
         with self.assertRaises(StemQualificationError):
@@ -171,6 +191,16 @@ class StemQualificationTests(unittest.TestCase):
     def test_train_and_eval_source_must_differ(self) -> None:
         with self.assertRaises(StemQualificationError):
             replace(SPLIT, eval_source_digest=SPLIT.train_source_digest)
+
+    def test_source_policy_requires_multiple_families_and_future_windows(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(SPLIT, source_family_count=1)
+        with self.assertRaises(StemQualificationError):
+            replace(SPLIT, future_window_count=1)
+
+    def test_all_quality_cohorts_are_required(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(run(), metrics=(metric(),))
 
     def test_component_quantiles_must_be_ordered(self) -> None:
         with self.assertRaises(StemQualificationError):
@@ -242,10 +272,47 @@ class StemQualificationTests(unittest.TestCase):
             budget_digest=digest("budget"),
             cost_profile_digest=digest("cost-profile"),
             evidence_manifest_digest=digest("evidence-manifest"),
-            metrics=(metric(),),
+            metrics=QUALIFY_METRICS,
             resources=bundle(),
         )
         self.assertEqual(result.candidate_id, "stem-421m")
+
+    def test_adapter_rejects_mismatched_supplied_budget(self) -> None:
+        legacy = SimpleNamespace(
+            receipt_status="COMPLETE",
+            evidence_class="REAL_SHADOW",
+            independent_new_source=True,
+            model_input_gold_visible=False,
+            task_id="task-1",
+            budget_digest=digest("budget"),
+            model_digest=CHECKPOINT.checkpoint_digest,
+            stem_digest=CHECKPOINT.stem_digest,
+            source_digest=SPLIT.eval_source_digest,
+        )
+        with self.assertRaises(StemQualificationError):
+            qualify_from_receipt(
+                legacy,
+                run_id="run-upgrade",
+                candidate_id="stem-421m",
+                task_id="task-1",
+                checkpoint=CHECKPOINT,
+                source_split=SPLIT,
+                expected_budget_digest=digest("budget"),
+                expected_cases_digest=digest("cases"),
+                expected_cost_profile_digest=digest("cost-profile"),
+                registry_stem_digest=CHECKPOINT.stem_digest,
+                registry_generation=CHECKPOINT.generation,
+                tower_registry_digest=digest("tower-registry"),
+                projector_registry_digest=digest("projector-registry"),
+                objective_digest=digest("objective"),
+                evaluation_plan_digest=digest("plan"),
+                cases_digest=digest("cases"),
+                budget_digest=digest("other-budget"),
+                cost_profile_digest=digest("cost-profile"),
+                evidence_manifest_digest=digest("evidence-manifest"),
+                metrics=QUALIFY_METRICS,
+                resources=bundle(),
+            )
 
     def test_incomplete_bridge_receipt_is_rejected(self) -> None:
         legacy = SimpleNamespace(
