@@ -41,6 +41,7 @@ pub struct CellHeadV1 {
 }
 
 impl CellHeadV1 {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         cell_id: StableId,
         generation: Generation,
@@ -188,12 +189,13 @@ impl CellHeadV1 {
         if uncertainty_q24 < 0 {
             return Err(CellHeadError::OutputRangeViolation);
         }
-        let action_logits_q24 = Arc::from(scores[..self.action_width].to_vec().into_boxed_slice());
+        let action_logits_q24: Arc<[i64]> =
+            Arc::from(scores[..self.action_width].to_vec().into_boxed_slice());
         let abstain = uncertainty_q24 > self.abstain_threshold_q24;
         let action_digest = canonical_cell_head_action_digest_v1(
             self,
             batch,
-            &action_logits_q24,
+            action_logits_q24.as_ref(),
             value_q24,
             uncertainty_q24,
             abstain,
@@ -249,6 +251,7 @@ impl fmt::Display for CellHeadError {
 impl StdError for CellHeadError {}
 
 /// Canonical digest of the immutable Cell head definition.
+#[allow(clippy::too_many_arguments)]
 pub fn canonical_cell_head_digest_v1(
     cell_id: &StableId,
     generation: Generation,
