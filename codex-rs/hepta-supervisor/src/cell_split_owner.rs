@@ -129,6 +129,8 @@ pub struct CellSplitObservedReceiptV1 {
     pub old_generation: Generation,
     pub new_generation: Generation,
     pub authority_epoch: u64,
+    /// Commits to the full handoff plan including schema/migration/rollback.
+    pub handoff_plan_digest: Digest32,
     /// Binds early stages to the exact frozen artifact and routes.
     pub binding_digest: Digest32,
     pub evidence: CellSplitNativeEvidenceV1,
@@ -146,6 +148,7 @@ impl CellSplitObservedReceiptV1 {
             || self.old_generation != plan.old_generation
             || self.new_generation != plan.new_generation
             || self.authority_epoch != plan.authority_epoch
+            || self.handoff_plan_digest != handoff_plan_digest(plan)
             || self.binding_digest != binding.digest()
             || self.evidence.phase() != expected
             || self.evidence.native_ack().is_zero()
@@ -211,6 +214,7 @@ impl CellSplitObservedReceiptV1 {
         bytes.extend_from_slice(&self.old_generation.get().to_be_bytes());
         bytes.extend_from_slice(&self.new_generation.get().to_be_bytes());
         bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
+        bytes.extend_from_slice(self.handoff_plan_digest.as_array());
         bytes.extend_from_slice(self.binding_digest.as_array());
         bytes.push(phase_tag(self.evidence.phase()));
         bytes.extend_from_slice(self.evidence.native_ack().as_array());
@@ -261,6 +265,29 @@ impl CellSplitObservedReceiptV1 {
         }
         Digest32::of_bytes(&bytes)
     }
+}
+
+fn handoff_plan_digest(plan: &WriterHandoffPlanV1) -> Digest32 {
+    let mut bytes = b"hepta.supervisor.cell-split-handoff-plan.v1\0".to_vec();
+    for id in [
+        &plan.operation_id,
+        &plan.domain_id,
+        &plan.source_writer,
+        &plan.target_writer,
+    ] {
+        push_id(&mut bytes, id);
+    }
+    bytes.extend_from_slice(&plan.old_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&plan.new_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&plan.authority_epoch.to_be_bytes());
+    for digest in [
+        plan.migration_plan_digest,
+        plan.schema_digest,
+        plan.rollback_predecessor_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
