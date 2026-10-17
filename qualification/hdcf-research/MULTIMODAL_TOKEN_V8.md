@@ -48,7 +48,7 @@ python3 -m unittest -v test_multimodal_token_bridge_v8
 python3 -O -m unittest -v test_multimodal_token_bridge_v8
 ```
 
-All fixture token arrays and control labels in these tests are synthetic. The integration test runs the **actual existing `physical_bank.train` CPU scalar SGD** on converted fixture vectors but **does not** execute a pretrained model. Reproducing V8 without the parent trainer is useful for contract checks only and must not be reported as an integrated physical trial.
+All fixture token arrays and control labels in these tests are synthetic. The first integration test runs the **actual existing `physical_bank.train` CPU scalar SGD** on converted fixture vectors; a second integration test runs the actual *conversion, CPU fitting, and blind review* as separate operating-system processes, verifies 0600 create-only output, and rejects swapped target identity. Neither executes a pretrained model. Reproducing V8 without the parent trainer is useful for contract checks only and must not be reported as an integrated physical trial.
 
 For an authentic original case-feature export produced and SHA-reverified **outside** the repo:
 

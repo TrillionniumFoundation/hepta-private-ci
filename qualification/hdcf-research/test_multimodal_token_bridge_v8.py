@@ -1,6 +1,11 @@
 """Hermetic adversarial tests. All tensors here are synthetic, never pretrained."""
 import copy
 import hashlib
+import json
+import os
+import stat
+import subprocess
+import tempfile
 import sys
 import unittest
 from pathlib import Path
@@ -105,6 +110,64 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(result['head_params_per_arm'], 2 * (WIDTH + 1))
         self.assertEqual(len(result['predictions']['split']), 4)
         self.assertEqual(len(result['predictions']['shared_one_touch']), 4)
+
+    def test_genuine_two_process_cpu_head_and_separate_blind_review(self):
+        # Full original-code integration runs only in the stacked GitHub worktree.
+        # These are synthetic fixture tokens and labels, NOT original model data.
+        try:
+            import physical_cli  # noqa: F401
+        except ImportError:
+            self.skipTest('parent physical_cli.py not in isolated slice')
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            original_input = root / 'unreviewed-multimodal.json'
+            converted = root / 'q24-bank.json'
+            sealed = root / 'sealed-heads.json'
+            private = root / 'blind-labels.json'
+            result = root / 'independent-review.json'
+            original_input.write_text(json.dumps(self.bank))
+            bridge = str(Path(__file__).resolve().with_name('multimodal_token_bridge_v8.py'))
+            cli = str(Path(__file__).resolve().with_name('physical_cli.py'))
+
+            def process(*args, succeed=True):
+                child = subprocess.run([sys.executable, *args], capture_output=True,
+                                       text=True, check=False, timeout=35)
+                self.assertEqual(child.returncode == 0, succeed, child.stderr)
+                return child
+
+            process(bridge, '--features', str(original_input), '--out', str(converted))
+            self.assertEqual(stat.S_IMODE(os.stat(converted).st_mode), 0o600)
+            body = json.loads(converted.read_text())
+            self.assertTrue(all('target' not in row for row in body['held']))
+            process(bridge, '--features', str(original_input), '--out', str(converted),
+                    succeed=False)  # No silent overwrite of existing evidence.
+            process(cli, 'train', '--features', str(converted), '--out', str(sealed),
+                    '--steps', '16')
+            trained = json.loads(sealed.read_text())
+            self.assertTrue(trained['heads_actually_trained'])
+            self.assertEqual(trained['encoder_forward_count'], 0)
+            self.assertFalse(trained['held_labels_present_in_training'])
+
+            # Reviewer-only target material is created AFTER the sealed trial.
+            labels = {'schema': 'hepta.hdcf.blind-targets.v1',
+                      'bundle_digest': trained['bundle_digest'],
+                      'targets': [
+                          {'id': r['id'], 'family': r['family'], 'type': r['type'],
+                           'target': int(r['id'].split('-')[-1]) % 2}
+                          for r in self.bank['held']
+                      ]}
+            private.write_text(json.dumps(labels))
+            process(cli, 'review', '--predictions', str(sealed),
+                    '--targets', str(private), '--out', str(result))
+            review = json.loads(result.read_text())
+            self.assertEqual(review['results']['split']['n'], 4)
+            self.assertFalse(review['production_authorized'])
+            self.assertFalse(review['independent_source_authenticated'])
+            labels['bundle_digest'] = mark('spoofed-target-identity')
+            private.write_text(json.dumps(labels))
+            process(cli, 'review', '--predictions', str(sealed),
+                    '--targets', str(private), '--out', str(root / 'denied-review.json'),
+                    succeed=False)
 
     def test_wrong_topology(self):
         self.denied(lambda b: b['producer'].__setitem__('topology', 'shared_and_certified'))
