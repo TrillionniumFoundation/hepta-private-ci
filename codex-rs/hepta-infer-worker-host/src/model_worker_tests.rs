@@ -6,6 +6,7 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     fail_feature_driver: bool,
+    reported_feature_transient_bytes: Option<u64>,
     invalid_handle: bool,
     fail_unload: bool,
     loaded: usize,
@@ -76,7 +77,7 @@ impl NeuronFeatureDriver for Driver {
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
-                transient_allocation_bytes: 2_048,
+                transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
                 queue_age_micros: 11,
                 latency_micros: 17,
             });
@@ -93,7 +94,7 @@ impl NeuronFeatureDriver for Driver {
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
             observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -517,4 +518,55 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn reported_neuron_transient_overgrant_and_overflow_fence_worker_after_dispatch() {
+    // 1024 resident + 3072 transient exactly meets the 4096-byte grant.
+    let mut exact = InferenceWorker::new(
+        100,
+        "worker.exact-budget".into(),
+        3,
+        grant(),
+        Driver {
+            reported_feature_transient_bytes: Some(3_072),
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    exact.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        exact
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("exact budget")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert!(!exact.poisoned);
+
+    for transient in [3_073, u64::MAX] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.over-budget".into(),
+            3,
+            grant(),
+            Driver {
+                reported_feature_transient_bytes: Some(transient),
+                ..Driver::default()
+            },
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ModelCapacity)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
 }
