@@ -115,6 +115,7 @@ fn manifest() -> ModelManifest {
         weights_digest: "3".repeat(64),
         tokenizer_digest: "4".repeat(64),
         preprocessor_digest: "5".repeat(64),
+        normalizer_digest: "9".repeat(64),
         quantization_digest: "6".repeat(64),
         runtime_digest: "7".repeat(64),
         device_digest: "8".repeat(64),

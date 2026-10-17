@@ -9,21 +9,21 @@
 
 use std::collections::BTreeSet;
 
-use super::DriverModelHandle;
-use super::DriverNeuronFeatureObservation;
-use super::Error;
-use super::ExecutionStatus;
-use super::InferenceWorker;
-use super::MAX_ACTIVE_REQUESTS;
-use super::ModelDriver;
-use super::NeuronFeatureDriver;
-use super::NeuronFeatureExecutionObservation;
-use super::NeuronFeatureRequest;
 use super::canonical_neuron_feature_payload_digest;
 use super::validate_identity;
 use super::validate_neuron_feature_output;
 use super::validate_neuron_feature_request;
 use super::validate_request;
+use super::DriverModelHandle;
+use super::DriverNeuronFeatureObservation;
+use super::Error;
+use super::ExecutionStatus;
+use super::InferenceWorker;
+use super::ModelDriver;
+use super::NeuronFeatureDriver;
+use super::NeuronFeatureExecutionObservation;
+use super::NeuronFeatureRequest;
+use super::MAX_ACTIVE_REQUESTS;
 
 /// Each batch row binds the exact request ID AND payload identity; without
 /// these fields two same-head/same-width requests could be silently swapped.
@@ -406,6 +406,7 @@ mod tests {
                     weights_digest: "3".repeat(64),
                     tokenizer_digest: "4".repeat(64),
                     preprocessor_digest: "5".repeat(64),
+                    normalizer_digest: "9".repeat(64),
                     quantization_digest: "6".repeat(64),
                     runtime_digest: "7".repeat(64),
                     device_digest: "8".repeat(64),
@@ -456,11 +457,9 @@ mod tests {
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].request_id, "request.1");
         assert_eq!(results[1].head_digest, "c".repeat(64));
-        assert!(
-            results
-                .iter()
-                .all(|r| r.status == ExecutionStatus::Succeeded)
-        );
+        assert!(results
+            .iter()
+            .all(|r| r.status == ExecutionStatus::Succeeded));
         assert_eq!(worker.driver.batches, 1);
         assert_eq!(worker.driver.single_calls, 0);
         assert!(worker.active_requests.is_empty());
