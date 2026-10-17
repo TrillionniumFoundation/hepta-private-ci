@@ -69,7 +69,8 @@ jobs:
           set -euo pipefail
           umask 077
           test ! -e "$RUNNER_TEMP/original-targets.zip"
-          test ! -e "$RUNNER_TEMP/hdcf-original-beans-test.parquet"
+          test ! -e "$RUNNER_TEMP/original-beans-test.parquet"
+          test ! -e "$RUNNER_TEMP/original-beans-train.parquet"
           python3 organ_query_binding_v12.py train \
             --source-zip "$HDCF_V12_SOURCE_ZIP" \
             --features-zip "$HDCF_V12_FEATURE_ZIP" \
