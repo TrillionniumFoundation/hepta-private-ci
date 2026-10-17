@@ -147,6 +147,31 @@ class TestPhysicalInterventionMechanics(unittest.TestCase):
                     audit,'ORIGINAL_SHA',candidate['original_prediction_sha256']):
                 with self.assertRaises(audit.ReviewError):audit.review(bad,rows,held,archive)
 
+    def test_prelabel_seal_rejects_tamper_and_substituted_file(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as root:
+            producer=Path(root)/'sealed-interventions.json'
+            seal=Path(root)/'prelabel.sha256'
+            original=b'{"source":"prelabel-only","authority":"DENY_ALL"}\\n'
+            producer.write_bytes(original)
+            seal.write_text(audit.sha(original)+'  '+str(producer)+'\\n',encoding='ascii')
+            self.assertEqual(audit.verify_prelabel_seal(seal,producer,original),
+                             audit.sha(original))
+            for content in ('0'*64+'  '+str(producer)+'\\n',
+                            audit.sha(original)+'  '+str(producer)+'-wrong\\n',
+                            audit.sha(original)+' *'+str(producer)+'\\n'):
+                seal.write_text(content,encoding='ascii')
+                with self.assertRaises(audit.ReviewError):
+                    audit.verify_prelabel_seal(seal,producer,original)
+            seal.write_text(audit.sha(original)+'  '+str(producer)+'\\n',encoding='ascii')
+            with self.assertRaises(audit.ReviewError):
+                audit.verify_prelabel_seal(seal,producer,original+b'drift')
+            link=Path(root)/'link.sha256'
+            link.symlink_to(seal)
+            with self.assertRaises(audit.ReviewError):
+                audit.verify_prelabel_seal(link,producer,original)
+
     def test_reject_fake_review_or_nonfinite(self):
         with self.assertRaises(audit.ReviewError):audit.parse(b'{"a":1,"a":2}')
         with self.assertRaises(audit.ReviewError):audit.parse(b'{"a":1e999}')
