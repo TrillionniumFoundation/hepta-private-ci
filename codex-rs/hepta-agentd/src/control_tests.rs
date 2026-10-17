@@ -17,9 +17,9 @@ use tokio_util::sync::CancellationToken;
 
 use super::AgentdControlServer;
 use super::prepare_socket;
+use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
-use crate::AgentdError;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, Arc<AgentdState>)> {
     // Darwin sockaddr_un is short and TMPDIR can be deeply nested. Keep the
