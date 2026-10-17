@@ -27,6 +27,28 @@ PROFILES={'granite47':('auto_model',),'granite97':('auto_model',),
           'mmbert140':('auto_model','full_mlm')}
 
 
+class LoaderFailure(RuntimeError):
+    """A physical loader failure retained as a diagnostic receipt."""
+
+    def __init__(self, message, *, diagnostics, loader_class, base_model_class):
+        super().__init__(message)
+        self.diagnostics = diagnostics
+        self.loader_class = loader_class
+        self.base_model_class = base_model_class
+
+
+def failed_loading_info(error, *, loader_class, base_model_class):
+    message = f'{type(error).__name__}: {str(error)[:240]}'
+    return {
+        'missing_keys': [], 'missing_key_count': 0,
+        'unexpected_key_count': 0, 'mismatched_keys': [],
+        'mismatched_key_count': 0, 'error_messages': [message],
+        'error_count': 1, 'model_base_weights_complete': False,
+        'complete_model_resident_parameter_scalars': 0,
+        'loader_class': loader_class, 'base_model_class': base_model_class,
+    }
+
+
 def need(ok,why):
     if not ok: raise ValueError(why)
 
@@ -75,15 +97,36 @@ def load_pinned(spec, profile):
     tokenizer=AutoTokenizer.from_pretrained(str(path),trust_remote_code=False,
                                              local_files_only=True)
     target=AutoModelForMaskedLM if profile=='full_mlm' else AutoModel
-    loaded, info=target.from_pretrained(str(path),local_files_only=True,
-        trust_remote_code=False,use_safetensors=True,torch_dtype=torch.float32,
-        output_loading_info=True)
-    loaded.eval().to('cpu')
-    base=loaded.base_model if profile=='full_mlm' else loaded
-    need(base is not None and callable(base),'invalid original base Encoder')
+    try:
+        loaded, info=target.from_pretrained(str(path),local_files_only=True,
+            trust_remote_code=False,use_safetensors=True,torch_dtype=torch.float32,
+            output_loading_info=True)
+    except Exception as error:
+        raise LoaderFailure(
+            'original model loader raised before a resident module was available',
+            diagnostics=failed_loading_info(
+                error, loader_class=target.__name__, base_model_class='unavailable'),
+            loader_class=target.__name__, base_model_class='unavailable') from error
     result=loading_info(info)
+    base=loaded.base_model if profile=='full_mlm' else loaded
+    base_name=type(base).__name__ if base is not None else 'unavailable'
+    try:
+        loaded.eval().to('cpu')
+    except Exception as error:
+        result['error_messages']=(result['error_messages']+
+                                   [f'{type(error).__name__}: {str(error)[:240]}'])[:10]
+        result['error_count']+=1
+        result['model_base_weights_complete']=False
+        result['complete_model_resident_parameter_scalars']=0
+        result['base_model_class']=base_name
+        result['loader_class']=type(loaded).__name__
+        raise LoaderFailure(
+            'original model could not be materialized on the CPU device',
+            diagnostics=result, loader_class=type(loaded).__name__,
+            base_model_class=base_name) from error
+    need(base is not None and callable(base),'invalid original base Encoder')
     result['complete_model_resident_parameter_scalars']=sum(p.numel() for p in loaded.parameters())
-    result['base_model_class']=type(base).__name__
+    result['base_model_class']=base_name
     result['loader_class']=type(loaded).__name__
     # The loaded MLM owner must remain alive for resident full-model accounting.
     return tokenizer, base, loaded, result
@@ -111,7 +154,44 @@ def diagnose(source,cheap,model_runs,materials,*,candidate,profile):
     torch.set_num_threads(2)
     start_wall=time.perf_counter();start_cpu=time.process_time()
     t=time.perf_counter()
-    tokenizer,model,resident,loader=load_pinned(materials['candidates'][candidate],profile)
+    try:
+        tokenizer,model,resident,loader=load_pinned(materials['candidates'][candidate],profile)
+    except LoaderFailure as failure:
+        load_wall=max(time.perf_counter()-t,1e-9)
+        total_wall=max(time.perf_counter()-start_wall,load_wall)
+        total_cpu=max(time.process_time()-start_cpu,1e-9)
+        return {'schema':SCHEMA,'candidate':candidate,'profile':profile,
+            'source_plan_sha256':route.SOURCE_SHA,
+            'original_model_revision':original['model_revision'],
+            'original_weight_sha256':original['actual_weight_sha256'],
+            'load_status':'failed',
+            'load_failure_type':type(failure.__cause__ or failure).__name__,
+            'load_failure_message':str(failure)[:240],
+            'load_diagnostics':failure.diagnostics,
+            'original_initial_head_sha256':original['initial_head_sha256'],
+            'observed_initial_head_sha256':'',
+            'initial_head_byte_equal':False,
+            'original_trained_head_sha256':original['trained_head_sha256'],
+            'observed_trained_head_sha256':'',
+            'trained_head_byte_equal':False,
+            'selected_case_count':len(selected),
+            'original_encoder_sequences_paid':0,
+            'original_encoder_batches_paid':0,
+            'historical_original_probability_max_abs_drift':{
+                'frozen_init':0.0,'centroid':0.0,'learned':0.0},
+            'model_load_wall_seconds':load_wall,
+            'actual_encode_wall_seconds':0.0,
+            'actual_head_train_wall_seconds':0.0,
+            'total_elapsed_wall_seconds':total_wall,
+            'total_elapsed_cpu_seconds':total_cpu,
+            'self_reported_peak_rss_bytes':max(
+                int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024),1),
+            'scientifically_fully_reproducible_same_head_and_base':False,
+            'retrospective_test_labels_previously_exposed':True,
+            'same_host_full_lifecycle_cost_verified':False,
+            'stem_winner_verified':False,'ndu_benefit_verified':False,
+            'production_authorized':False,'cell_split_authorized':False,
+            'disposition':'HOLD_NO_GO','authority':'DENY_ALL'}
     load_wall=time.perf_counter()-t
     t=time.perf_counter()
     fit,fit_batches=owner._encode([r['text'] for r in source['train']],tokenizer,model)
@@ -133,7 +213,7 @@ def diagnose(source,cheap,model_runs,materials,*,candidate,profile):
     valid=(loader['model_base_weights_complete'] and initial_equal and learned_equal and
            all(v<=5e-4 for v in drift.values()))
     return {'schema':SCHEMA,'candidate':candidate,'profile':profile,
-        'source_plan_sha256':route.SOURCE_SHA,
+        'source_plan_sha256':route.SOURCE_SHA,'load_status':'complete',
         'original_model_revision':original['model_revision'],
         'original_weight_sha256':original['actual_weight_sha256'],
         'load_diagnostics':loader,
