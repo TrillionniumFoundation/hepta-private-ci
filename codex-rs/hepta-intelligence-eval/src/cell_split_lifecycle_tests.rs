@@ -16,8 +16,10 @@ fn canary_receipt_binds_dispatch_fence_generation_and_rollback() {
         digest(1),
         digest(2),
         digest(3),
-        10,
-        0,
+        CellSplitCanaryCountsV1 {
+            observed_requests: 10,
+            failed_requests: 0,
+        },
         true,
     )
     .expect("receipt");
@@ -39,8 +41,10 @@ fn canary_rejects_failed_count_above_observed() {
             digest(1),
             digest(2),
             digest(3),
-            1,
-            2,
+            CellSplitCanaryCountsV1 {
+                observed_requests: 1,
+                failed_requests: 2,
+            },
             false,
         ),
         Err(CellSplitLifecycleErrorV1::InvalidEvidence)
@@ -56,8 +60,10 @@ fn zero_observation_canary_cannot_qualify_retention() {
             digest(1),
             digest(2),
             digest(3),
-            0,
-            0,
+            CellSplitCanaryCountsV1 {
+                observed_requests: 0,
+                failed_requests: 0,
+            },
             true,
         ),
         Err(CellSplitLifecycleErrorV1::InvalidEvidence)
@@ -71,8 +77,10 @@ fn zero_observation_canary_cannot_qualify_retention() {
         digest(1),
         digest(2),
         digest(3),
-        1,
-        0,
+        CellSplitCanaryCountsV1 {
+            observed_requests: 1,
+            failed_requests: 0,
+        },
         true,
     )
     .expect("valid starting receipt");
@@ -93,8 +101,10 @@ fn digest_consistent_but_invalid_canary_must_not_pass_retention() {
         digest(1),
         digest(2),
         digest(3),
-        10,
-        0,
+        CellSplitCanaryCountsV1 {
+            observed_requests: 10,
+            failed_requests: 0,
+        },
         true,
     )
     .expect("valid baseline");
