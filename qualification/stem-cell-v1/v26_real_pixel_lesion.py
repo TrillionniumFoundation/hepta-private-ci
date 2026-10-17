@@ -130,6 +130,8 @@ def black_image(raw):
         if im.format not in ('JPEG','PNG') or im.width * im.height > 4_194_304:
             raise Invalid('invalid original image before black-pixel lesion')
         im.load()
+        if im.convert('RGB').getbbox() is None:
+            raise Invalid('original pixel image is already black; no actual lesion')
         out = Image.new('RGB', im.size, (0,0,0))
         data = io.BytesIO(); out.save(data, format='PNG')
         return data.getvalue()
@@ -249,7 +251,7 @@ def main():
         sealed={'schema':SCHEMA,'source_sha256':SOURCE_SHA,'original_archive_sha256':ARCHIVE_SHA,
                 'original_prediction_sha256':PRED_SHA,'original_fit_label_sha256':FIT_SHA,
                 'original_held_label_sha256':HELD_SHA,'route_threshold':THRESHOLD,'visual_route_arm':'bridge_image_only',
-                'selected_test_count':len(route),'unselected_test_pixels_never_loaded_before_seal':True,
+                'selected_test_count':len(route),'unselected_test_images_not_forwarded_by_dino_before_seal':True,
                 'training':{k:fit_cond[k] for k in ('organ_fitted_bridge_sha256','gate_sha256','private_cell_head_parameters','cell_optimizer_updates')},
                 'text_cost':text_receipt,'training_image_cost':cost_tc,
                 'conditional_test_image_cost':cost_selected,
