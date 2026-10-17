@@ -44,13 +44,13 @@ jobs:
           from neuron_shared_encoder.reader_fixture_bridge import (
               ARM_NAMES,
               build_four_condition_requests,
-              load_registered_corpus,
+              verify_registered_checkout,
           )
-          _, corpus = load_registered_corpus(Path("."))
+          corpus, source_digests = verify_registered_checkout(Path("."))
           requests = build_four_condition_requests(Path("."), corpus["tasks"][0]["id"])
           assert tuple(request.arm for request in requests) == ARM_NAMES
           assert all("gold" not in request.to_model_payload()[0] for request in requests)
-          print(f"bound {len(corpus['tasks'])} frozen Reader tasks across {len(ARM_NAMES)} arms")
+          print(f"verified {len(source_digests)} source blobs; bound {len(corpus['tasks'])} frozen Reader tasks across {len(ARM_NAMES)} arms")
           PY
 
       - name: Compile bridge and inspect whitespace
