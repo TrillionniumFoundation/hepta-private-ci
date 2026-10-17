@@ -1,0 +1,223 @@
+name: Hepta Stem original train-only lexical calibration V6 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-trainonly-calibration-v6-20261017]
+    paths:
+      - 'qualification/stem-optimal-v6/**'
+      - '.github/workflows/hepta-stem-trainonly-calibration-v6.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v6/**'
+      - '.github/workflows/hepta-stem-trainonly-calibration-v6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-stem-trainonly-v6-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V6_DIR: qualification/stem-optimal-v6
+  V5_DIR: qualification/stem-optimal-v5
+  PYTHONPATH: qualification/stem-optimal-v6:qualification/stem-optimal-v5:qualification/stem-optimal-v4:qualification/stem-optimal-v3:qualification/stem-optimal-v1
+
+jobs:
+  source-only-adversarial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact-head source and adversarial 11+11 tests (synthetic cases only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$V6_DIR/calibrated_lexical_v6.py" "$V6_DIR/independent_calibration_review_v6.py" "$V6_DIR/test_calibrated_lexical_v6.py"
+          python -m unittest discover -s "$V6_DIR" -p 'test_*.py' -v
+          python -O -m unittest discover -s "$V6_DIR" -p 'test_*.py' -v
+
+  original-source-owner:
+    needs: source-only-adversarial
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-trainonly-calibration-v6-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Byte-attest original V4 source and V4 cheap controls (original GitHub ZIP)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/v6-source" "$RUNNER_TEMP/v6-zips"
+          python "$V5_DIR/download_original_zip_v5.py" \
+            --manifest "$V5_DIR/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v6-zips" --role source_v4 --role cheap_v4
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as old
+          import calibrated_lexical_v6 as v6
+          root = Path(os.environ['RUNNER_TEMP'])
+          lock = json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())['artifacts']
+          source = old.locked_json(root / 'v6-zips/source_v4.zip', lock, 'source_v4')
+          old.locked_json(root / 'v6-zips/cheap_v4.zip', lock, 'cheap_v4')
+          v6.validate_source(source)
+          dest = root / 'v6-source/source.json'
+          dest.write_bytes(v6.canonical(source) + b'\n')
+          print('Original source from V4 physically verified:', v6.digest(dest.read_bytes()))
+          PY
+          (cd "$RUNNER_TEMP/v6-source" && sha256sum source.json > source.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v6-original-64-fit-32-unlabeled
+          path: |
+            ${{ runner.temp }}/v6-source/source.json
+            ${{ runner.temp }}/v6-source/source.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-trainonly-lexical-producer:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v6-original-64-fit-32-unlabeled
+          path: ${{ runner.temp }}/v6-source
+      - name: Calculate fixed-grid 4-fold calibration using only original TRAIN labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v6-source" && sha256sum --check source.sha256)
+          mkdir -p "$RUNNER_TEMP/v6-predictions"
+          python "$V6_DIR/calibrated_lexical_v6.py" \
+            --source "$RUNNER_TEMP/v6-source/source.json" \
+            --output "$RUNNER_TEMP/v6-predictions/calibrated-receipt.json"
+          (cd "$RUNNER_TEMP/v6-predictions" && sha256sum calibrated-receipt.json > calibrated-receipt.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v6-calibrated-original-predictions-denyall
+          path: |
+            ${{ runner.temp }}/v6-predictions/calibrated-receipt.json
+            ${{ runner.temp }}/v6-predictions/calibrated-receipt.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-original-label-review:
+    needs: original-trainonly-lexical-producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v6-original-64-fit-32-unlabeled
+          path: ${{ runner.temp }}/v6-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v6-calibrated-original-predictions-denyall
+          path: ${{ runner.temp }}/v6-predictions
+      - name: Read original V4 cheap ZIP and publisher raw test labels after sealed producer output
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v6-source" && sha256sum --check source.sha256)
+          (cd "$RUNNER_TEMP/v6-predictions" && sha256sum --check calibrated-receipt.sha256)
+          mkdir -p "$RUNNER_TEMP/v6-zips" "$RUNNER_TEMP/v6-labels"
+          python "$V5_DIR/download_original_zip_v5.py" \
+            --manifest "$V5_DIR/ORIGINAL_PAIR_V5.json" \
+            --output-dir "$RUNNER_TEMP/v6-zips" --role cheap_v4
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'v6-labels'
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          known={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                 'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for split in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-stem-v6-late-original-label'}),timeout=35) as response:
+                  if response.geturl()!=url:
+                      raise SystemExit('unregistered publisher redirect')
+                  raw=response.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=known[split]:
+                  raise SystemExit('original source byte or label substitution')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import paired_review_v5 as older
+          root=Path(os.environ['RUNNER_TEMP'])
+          lock=json.loads(Path('qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json').read_text())['artifacts']
+          receipt=older.locked_json(root/'v6-zips/cheap_v4.zip',lock,'cheap_v4')
+          (root/'v6-labels/fixed-v4.json').write_bytes(older.canonical(receipt)+b'\n')
+          PY
+      - name: Independently replay every fold/calibrated prediction and original publisher label
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$V6_DIR/independent_calibration_review_v6.py" \
+            --train "$RUNNER_TEMP/v6-labels/train.csv" \
+            --test "$RUNNER_TEMP/v6-labels/test.csv" \
+            --source "$RUNNER_TEMP/v6-source/source.json" \
+            --receipt "$RUNNER_TEMP/v6-predictions/calibrated-receipt.json" \
+            --original-v4 "$RUNNER_TEMP/v6-labels/fixed-v4.json" \
+            --output "$RUNNER_TEMP/v6-independent-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ['RUNNER_TEMP'])/'v6-independent-review.json').read_text())
+          assert result['publisher_original_sha_verified'] is True
+          assert result['independent_train_only_calibration_replay'] is True
+          assert result['prior_publisher_test_labels_already_inspected'] is True
+          assert result['source_independent_families'] == 1 and result['future_windows'] == 0
+          assert result['authority'] == 'DENY_ALL' and result['disposition'] == 'HOLD_NO_GO'
+          assert result['production_authorized'] is False and result['stem_winner_verified'] is False
+          print('Original publisher train-only lexical calibration reviewed; no model promotion')
+          for arm,score in result['calibration'].items():
+              print(arm,score['fit_cv_temperature'],score['correct'],score['mean_multiclass_brier'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v6-original-trainonly-independent-score-denyall
+          path: ${{ runner.temp }}/v6-independent-review.json
+          retention-days: 7
+          if-no-files-found: error
