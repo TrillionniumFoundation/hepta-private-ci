@@ -135,10 +135,10 @@ fn binds_head_and_runtime_receipts_into_replayable_evidence() {
 fn evidence_fences_authority_calibration_and_receipt_integrity() {
     let head = head();
     let mut runtime = runtime_output();
-    runtime.signal.authority = AuthorityPosture::ALLOW;
+    runtime.signal.model_runtime_digest = Digest32::ZERO;
     assert_eq!(
         bind_cell_evidence_v1(&head, &output(&head), &runtime),
-        Err(CellEvidenceError::AuthorityViolation)
+        Err(CellEvidenceError::EmptyDigest("model runtime binding"))
     );
 
     let mut runtime = runtime_output();
