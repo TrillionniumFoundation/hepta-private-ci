@@ -246,7 +246,7 @@ class StemQualificationTests(unittest.TestCase):
         with self.assertRaises(StemQualificationError):
             replace(run(), model_input_gold_visible=True)
 
-    def test_legacy_point_receipt_cannot_be_silently_promoted(self) -> None:
+    def test_complete_bridge_receipt_requires_explicit_external_evidence(self) -> None:
         legacy = SimpleNamespace(
             receipt_status="COMPLETE",
             evidence_class="REAL_SHADOW",
