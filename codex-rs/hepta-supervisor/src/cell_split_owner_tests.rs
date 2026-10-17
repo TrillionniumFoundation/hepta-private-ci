@@ -549,3 +549,39 @@ fn predecessor_snapshot_tamper_after_ack_blocks_child_migration() {
     assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
     assert!(!native.root.join("child-state").exists());
 }
+
+#[test]
+fn cell_split_fence_readback_must_match_durable_checkpoint() {
+    let handoff = plan();
+    let selected = binding();
+    let observed = CellSplitObservedReceiptV1::bind_observed_native(
+        &handoff,
+        &selected,
+        CellSplitNativeEvidenceV1::NewWriterFenced {
+            native_ack: digest(b"real-fence-owner-ack-fixture"),
+            observed_generation: handoff.new_generation,
+        },
+    )
+    .expect("native fixture receipt");
+    let checkpoint = WriterHandoffCheckpointV1 {
+        plan: handoff.clone(),
+        revision: 8,
+        phase: WriterHandoffPhaseV1::NewWriterFenced,
+        outbox_watermark: Some(42),
+        unknown_effect_count: 0,
+        evidence_digest: observed.evidence_digest(),
+        previous_receipt_digest: digest(b"previous-commit"),
+        receipt_digest: digest(b"journal-commit"),
+    };
+    assert!(observed.matches_durable_checkpoint(&checkpoint, &selected));
+
+    let mut stale = checkpoint.clone();
+    stale.evidence_digest = digest(b"unrelated-fence");
+    assert!(!observed.matches_durable_checkpoint(&stale, &selected));
+    stale = checkpoint.clone();
+    stale.phase = WriterHandoffPhaseV1::RoutePublished;
+    assert!(!observed.matches_durable_checkpoint(&stale, &selected));
+    stale = checkpoint;
+    stale.plan.domain_id = id("other-scope");
+    assert!(!observed.matches_durable_checkpoint(&stale, &selected));
+}
