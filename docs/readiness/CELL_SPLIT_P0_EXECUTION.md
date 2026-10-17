@@ -60,6 +60,11 @@ requires the *same live Runtime owner's* previous successful Final-use apply
 receipt and actual current graph re-read. No route receipt can survive a process
 restart by assertion alone.
 
+ProductSplitNativeReadbackV1::advance_receipt_gated_phase is the
+single-step source composition into the real fsync-backed Supervisor
+DurableWriterHandoffJournalV1. It uses the same validated, immutable
+CellSplitBindingV1 rather than bypassing CellSplitOwnerV1.
+
 This adapter **intentionally refuses** to execute native Artifact/CNS
 side effects. Those effects require their original idempotent publication
 service and independently authorized Final-use route owner. Unknown native
