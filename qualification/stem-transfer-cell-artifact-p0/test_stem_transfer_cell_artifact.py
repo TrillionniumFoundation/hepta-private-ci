@@ -5,9 +5,13 @@ from stem_transfer_cell_artifact import (
     ARM_ORDER,
     CellArtifactV1,
     ContractError,
+    ModalityEnvelopeV1,
     ParameterLedgerV1,
+    ResourceCostV1,
     SplitGateV1,
     StemManifestV1,
+    System2CandidateV1,
+    System2IntervalGateV1,
     TransferCaseV1,
     TransferMatrixV1,
     build_four_condition_plan,
@@ -176,6 +180,44 @@ class ContractTests(unittest.TestCase):
                 fallback_cell_id=PARENT.cell_id,
             )
             SplitProposalV1(PARENT, child, gate, "accept_next_snapshot", "bad")
+
+    def test_modality_envelope_binds_raw_feature_and_projector(self):
+        envelope = ModalityEnvelopeV1("video", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 64, temporal_span_ms=1000)
+        self.assertTrue(envelope.readonly)
+        with self.assertRaises(ContractError):
+            ModalityEnvelopeV1("audio", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 64)
+
+    def test_modality_envelope_rejects_mutable_or_invalid_region_metadata(self):
+        with self.assertRaises(ContractError):
+            ModalityEnvelopeV1("text", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, region_count=1)
+        with self.assertRaises(ContractError):
+            ModalityEnvelopeV1("text", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, readonly=False)
+
+    def _system2_cost(self, scale):
+        return ResourceCostV1(10 * scale, 5 * scale, 2 * scale, 1 * scale, 1 * scale, 1 * scale, 1 * scale)
+
+    def test_system2_interval_gate_requires_unique_dominance(self):
+        candidates = (
+            System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), 100, 101, self._system2_cost(1), digest("evidence-a")),
+            System2CandidateV1("cell.b", STEM.stem_digest, digest("objective"), 70, 71, self._system2_cost(1), digest("evidence-b")),
+        )
+        advisory = System2IntervalGateV1(candidates).advisory()
+        self.assertEqual(advisory["decision"], "ADVISORY_SELECT")
+        self.assertEqual(advisory["candidate_id"], "cell.a")
+        self.assertEqual(advisory["evaluator_authority"], "DENY_ALL")
+
+    def test_system2_interval_overlap_is_no_go(self):
+        candidates = (
+            System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), 100, 110, self._system2_cost(1), digest("evidence-a")),
+            System2CandidateV1("cell.b", STEM.stem_digest, digest("objective"), 100, 110, self._system2_cost(1), digest("evidence-b")),
+        )
+        self.assertEqual(System2IntervalGateV1(candidates).advisory()["decision"], "NO_GO")
+
+    def test_system2_cost_is_fully_charged(self):
+        cost = self._system2_cost(1)
+        self.assertEqual(cost.total_units, 21)
+        with self.assertRaises(ContractError):
+            System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), 1, 2, cost, digest("evidence"), model_efficacy_measured=True)
 
 
 if __name__ == "__main__":
