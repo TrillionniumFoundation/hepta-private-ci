@@ -96,6 +96,114 @@ def verify_inventory(root):
     return declared
 
 
+
+def verify_frozen_shard_attempts(plan, conditions, identity, original_rows, scored):
+    """Reject reordered, rewritten, or false-success original Reader attempts.
+
+    This is a pre-label structural gate. Independent semantic judgment and real
+    model attestation remain unavailable, even when every original byte agrees.
+    """
+    insist(
+        isinstance(plan, dict)
+        and isinstance(plan.get("cases"), list)
+        and len(plan["cases"]) == 2
+        and isinstance(conditions, list)
+        and len(conditions) == 4
+        and len(set(conditions)) == 4,
+        "bounded preregistered shard required",
+    )
+    insist(
+        isinstance(original_rows, list)
+        and isinstance(scored, list)
+        and len(original_rows) == len(scored) == 8,
+        "incomplete original shard population",
+    )
+    expected = [
+        (case["question"]["identity"], arm)
+        for case in plan["cases"]
+        for arm in conditions
+    ]
+    insist(len(set(expected)) == len(expected), "repeated question/condition slot")
+    for index, (original, row) in enumerate(zip(original_rows, scored, strict=True)):
+        insist(
+            isinstance(original, dict)
+            and isinstance(row, dict)
+            and (row.get("question_id"), row.get("arm")) == expected[index]
+            and (original.get("question_id"), original.get("arm")) == expected[index]
+            and {
+                key: value
+                for key, value in row.items()
+                if key not in ALLOWED_SCORING
+            }
+            == original,
+            "raw/scored answer or frozen slot order changed",
+        )
+        case = plan["cases"][index // len(conditions)]
+        condition = case["conditions"][expected[index][1]]
+        insist(
+            row.get("family") == case["family"]
+            and row.get("phase") == case["phase"]
+            and row.get("status") in ("succeeded", "failed", "unavailable"),
+            "task family, phase or original status drift",
+        )
+        if condition.get("status") == "unavailable":
+            insist(row["status"] == "unavailable", "unavailable oracle fabricated")
+        if row["status"] == "succeeded":
+            receipt = row.get("receipt")
+            insist(isinstance(receipt, dict), "successful call without receipt")
+            answer = row.get("answer")
+            insist(
+                isinstance(answer, str)
+                and bool(answer.strip())
+                and type(row.get("f1")) in (int, float)
+                and math.isfinite(row["f1"])
+                and 0 <= row["f1"] <= 1
+                and row.get("exact_match") in (0, 0.0, 1, 1.0),
+                "successful call with missing original answer or score",
+            )
+            insist(
+                receipt.get("reader_identity") == identity["model_digest"]
+                and receipt.get("trainable_parameters") == 0
+                and receipt.get("answer_postprocessed") is False
+                and receipt.get("delivered_evidence")
+                == condition["delivered_evidence"],
+                "reader weights, output or actual delivered source mismatch",
+            )
+            insist(
+                type(receipt.get("input_tokens")) is int
+                and 0 < receipt["input_tokens"] <= condition["token_limit"]
+                and type(receipt.get("generated_tokens")) is int
+                and 0 < receipt["generated_tokens"] <= 64
+                and type(receipt.get("seconds")) in (int, float)
+                and math.isfinite(receipt["seconds"])
+                and 0 < receipt["seconds"] < 86400,
+                "unbounded, negative or nonfinite Reader resource receipt",
+            )
+            for name in ("input_ids_digest", "generated_ids_digest"):
+                value = receipt.get(name)
+                insist(
+                    isinstance(value, str)
+                    and re.fullmatch(r"[0-9a-f]{64}", value) is not None,
+                    "missing original model prompt/output token digest",
+                )
+        else:
+            insist(
+                "answer" not in row
+                and "receipt" not in row
+                and row.get("f1") is None
+                and row.get("exact_match") is None,
+                "failed or unavailable generation supplied a fabricated answer",
+            )
+    return {
+        "planned": len(expected),
+        "succeeded": sum(row["status"] == "succeeded" for row in scored),
+        "failed": sum(row["status"] == "failed" for row in scored),
+        "unavailable": sum(row["status"] == "unavailable" for row in scored),
+        "semantic_sufficiency_certified": False,
+        "production_accepted": False,
+    }
+
+
 def records_from_run(root, *, tier, expected_source):
     inventory = verify_inventory(root)
     insist(
