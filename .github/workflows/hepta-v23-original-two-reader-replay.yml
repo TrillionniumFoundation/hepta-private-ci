@@ -1,0 +1,85 @@
+name: Hepta V23 original two-Reader sanitized replay (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/stem-v23-dual-reader-evidence-20261016
+    paths:
+      - "research/hepta_v23_reader/**"
+      - ".github/workflows/hepta-v23-original-two-reader-replay.yml"
+  pull_request:
+    paths:
+      - "research/hepta_v23_reader/**"
+      - ".github/workflows/hepta-v23-original-two-reader-replay.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-v23-dual-reader-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify source-only science and anti-forgery contract
+        shell: bash
+        env:
+          PYTHONPATH: research/hepta_v23_reader
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -S -m unittest discover -s research/hepta_v23_reader -p 'test_*.py' -v
+          python -O -S -m unittest discover -s research/hepta_v23_reader -p 'test_*.py' -v
+          python -m compileall -q research/hepta_v23_reader
+          test ! -e research/hepta_v23_reader/private-answers.json
+          test ! -e research/hepta_v23_reader/original-locomo.json
+          git diff --exit-code
+
+  original-artifact-readonly-replay:
+    if: github.event_name == 'push'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Download ONLY completed original physical run artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v22-two-readers-after-qwen-loader-fix-38986155653
+          run-id: 38986155653
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/v23-original-members
+      - name: Replay exact SHA-pinned sanitized original member bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -S research/hepta_v23_reader/dual_reader_artifact_replay.py \
+            --members-dir "$RUNNER_TEMP/v23-original-members" \
+            --output "$RUNNER_TEMP/v23-original-recount.json"
+          python -S - "$RUNNER_TEMP/v23-original-recount.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          actual=json.loads(Path(sys.argv[1]).read_text())
+          pinned=json.loads(Path('research/hepta_v23_reader/V23_ORIGINAL_DUAL_READER_REPLAY_20261016.json').read_text())
+          if actual!=pinned or actual['decision']!='HOLD_NO_GO' or actual['production_authorized'] is not False:
+              raise ValueError('original SHA-bound physical numeric replay differed from frozen NO-GO')
+          if actual['original_qwen_model_forwards']!=1970 or actual['original_135m_model_forwards']!=1777:
+              raise ValueError('original physical forward census mismatch')
+          PY
