@@ -1,0 +1,91 @@
+name: hepta-hdcf-reviewer-source-v7
+
+on:
+  push:
+    branches:
+      - research/hdcf-publisher-target-revalidation-20261016
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-reviewer-source-v7.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-reviewer-source-v7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hdcf-target-v7-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-only-signed-nobody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: hdcf
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: upstream
+          ref: 758205d3de23ccbf76649b1446c271101dc917b0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run offline adversarial tests normal and -O
+        working-directory: hdcf/qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile held_target_source_revalidation.py modernbert_feature_bridge.py test_held_target_source_revalidation.py
+          python3 -m unittest -v test_held_target_source_revalidation test_modernbert_feature_bridge
+          python3 -O -m unittest -v test_held_target_source_revalidation test_modernbert_feature_bridge
+      - name: Original source-only fixture setup; no pretrained weights
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/public" "$RUNNER_TEMP/private"
+          python3 hdcf/qualification/hdcf-research/modernbert_feature_bridge.py stage \
+            --upstream-checkout upstream \
+            --root "$RUNNER_TEMP/staged-source" \
+            --out-public "$RUNNER_TEMP/public/public.json" \
+            --out-private "$RUNNER_TEMP/private/targets.json"
+      - name: Independent reviewer re-acquires immutable publisher CSV bytes
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/reviewer-original"
+          for split in train test; do
+            curl --fail --silent --show-error --location --retry 2 \
+              "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/$split.csv" \
+              -o "$RUNNER_TEMP/reviewer-original/$split.csv"
+          done
+          printf '%s  %s\n' 'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b' \
+            "$RUNNER_TEMP/reviewer-original/train.csv" | sha256sum --check
+          printf '%s  %s\n' 'd12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d' \
+            "$RUNNER_TEMP/reviewer-original/test.csv" | sha256sum --check
+          python3 hdcf/qualification/hdcf-research/held_target_source_revalidation.py \
+            --public "$RUNNER_TEMP/public/public.json" \
+            --private "$RUNNER_TEMP/private/targets.json" \
+            --train "$RUNNER_TEMP/reviewer-original/train.csv" \
+            --test "$RUNNER_TEMP/reviewer-original/test.csv" \
+            --out "$RUNNER_TEMP/target-revalidation.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          row=json.loads((Path(os.environ['RUNNER_TEMP'])/'target-revalidation.json').read_text())
+          assert row['all_96_original_case_ids_and_fit_targets_match'] is True
+          assert row['all_32_blind_binary_targets_reconstructed_from_original_4class'] is True
+          assert row['publisher_signature_independently_verified'] is False
+          assert row['production_authorized'] is False
+          print({'source_sample_recount': 96, 'target_case_recount': 32, 'DENY_ALL': True})
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hdcf-v7-source-only-target-review
+          retention-days: 14
+          if-no-files-found: ignore
+          path: ${{ runner.temp }}/target-revalidation.json

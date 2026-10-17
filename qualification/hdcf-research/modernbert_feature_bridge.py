@@ -266,7 +266,8 @@ def produce_original(pub, backend, *, clock=time, exact_original_source=False):
     return out,receipt
 
 
-def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, expected_seed=7347, expected_lr=0.05, exact_original_source=False):
+def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, expected_seed=7347, expected_lr=0.05,
+                    exact_original_source=False, publisher_train_csv=None, publisher_test_csv=None):
     validate_public(pub, exact_original_source=exact_original_source)
     _require(type(priv) is dict and set(priv)=={'schema','input_id','source_revision','stage_digest',
              'source_material_sha256','original_code_sha','public_content_digest','targets','original_four_class_labels_not_exported',
@@ -280,6 +281,19 @@ def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, ex
              priv['binary_target_definition']=='original_label_mod_2' and
              priv['original_four_class_labels_not_exported'] is True,
              'blind source-owner identity mismatch')
+    # The private label artifact is not itself a publisher-authenticated target.
+    # Only the independent final reviewer may read the original pinned source;
+    # the Model Producer and CPU CellBank never receive these CSV bytes.
+    target_source_receipt = None
+    if exact_original_source:
+        _require(type(publisher_train_csv) is bytes and type(publisher_test_csv) is bytes,
+                 'independent reviewer requires original publisher CSV bytes')
+        from held_target_source_revalidation import verify_publisher_held_targets
+        target_source_receipt = verify_publisher_held_targets(
+            pub, priv, publisher_train_csv, publisher_test_csv)
+    else:
+        _require(publisher_train_csv is None and publisher_test_csv is None,
+                 'mock review may not launder publisher source provenance')
     validate_bundle(bundle)
     _require([r['id'] for r in bundle['fit']]==[r['id'] for r in pub['fit']] and
              [r['id'] for r in bundle['held']]==[r['id'] for r in pub['heldout']] and
@@ -333,6 +347,8 @@ def review_original(pub, priv, bundle, receipt, trial, *, expected_steps=256, ex
             'paired_science_gate':{k:v for k,v in paired.items() if k not in ('independent_replay','score')},
             'pretrained_publisher_signature_independently_verified':False,
             'original_labels_independent_of_public_source':False,
+            'publisher_held_source_revalidation':target_source_receipt,
+            'held_targets_recomputed_from_original_publisher_source':target_source_receipt is not None,
             'out_of_publisher_future_window_verified':False,
             'end_to_end_tco_verified':False,
             'production_authorized':False}
@@ -350,6 +366,8 @@ def main():
     review=sp.add_parser('review');review.add_argument('--public',required=True)
     review.add_argument('--private',required=True);review.add_argument('--features',required=True)
     review.add_argument('--feature-receipt',required=True);review.add_argument('--trial',required=True)
+    # These never enter the producer/train subcommands or their environments.
+    review.add_argument('--publisher-train',required=True);review.add_argument('--publisher-test',required=True)
     review.add_argument('--out',required=True)
     args=ap.parse_args()
     try:
@@ -380,8 +398,13 @@ def main():
             bundle,receipt=produce_original(read_document(args.public),backend,exact_original_source=True)
             write_once(args.out_features,bundle);write_once(args.out_receipt,receipt)
         else:
+            from public_source_recount import _read_file
+            publisher_train = _read_file(args.publisher_train, 2_000_000)
+            publisher_test = _read_file(args.publisher_test, 2_000_000)
             out=review_original(read_document(args.public),read_document(args.private),
-                 read_document(args.features),read_document(args.feature_receipt),read_document(args.trial),exact_original_source=True)
+                 read_document(args.features),read_document(args.feature_receipt),read_document(args.trial),
+                 exact_original_source=True, publisher_train_csv=publisher_train,
+                 publisher_test_csv=publisher_test)
             write_once(args.out,out)
     except (Denied,OSError,ValueError) as exc:
         ap.exit(2,f'DENY_ALL: {type(exc).__name__}: {exc}\n')
