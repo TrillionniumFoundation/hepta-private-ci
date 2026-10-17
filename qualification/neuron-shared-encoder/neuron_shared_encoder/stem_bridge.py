@@ -147,37 +147,54 @@ class QualificationReceiptV1:
     stem_digest: str
     source_digest: str
     budget_digest: str
-    quality: float
-    flops: float
-    memory_bytes: float
-    latency_ms: float
-    risk: float
-    stem_params: int
-    projector_params: int
-    resident_cell_params: int
-    active_cell_params: int
-    state_params: int
-    cache_params: int
-    logical_cells: int
-    active_cells: int
+    quality: float | None
+    flops: float | None
+    memory_bytes: float | None
+    latency_ms: float | None
+    risk: float | None
+    stem_params: int | None
+    projector_params: int | None
+    resident_cell_params: int | None
+    active_cell_params: int | None
+    state_params: int | None
+    cache_params: int | None
+    logical_cells: int | None
+    active_cells: int | None
     evidence_class: str
     independent_new_source: bool
     reader_citations: int
     model_input_gold_visible: bool = False
     feature_key: FeatureKeyV1 | None = None
+    receipt_status: str = "COMPLETE"
+    missing_fields: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         _identifier("task_id", self.task_id)
         _bounded("modality", self.modality, 64)
         for name, value in (("stem_digest", self.stem_digest), ("source_digest", self.source_digest), ("budget_digest", self.budget_digest)):
             _digest(name, value)
+        if self.receipt_status not in {"COMPLETE", "INCOMPLETE"}:
+            raise ContractError("unknown receipt status")
+        if tuple(sorted(set(self.missing_fields))) != self.missing_fields:
+            raise ContractError("missing_fields must be sorted and unique")
+        numeric_names = ("quality", "flops", "memory_bytes", "latency_ms", "risk", "stem_params", "projector_params", "resident_cell_params", "active_cell_params", "state_params", "cache_params", "logical_cells", "active_cells")
+        actual_missing = tuple(name for name in numeric_names if getattr(self, name) is None)
+        if tuple(sorted(actual_missing)) != self.missing_fields:
+            raise ContractError("missing_fields must exactly describe absent receipt values")
+        if self.receipt_status == "COMPLETE" and actual_missing:
+            raise ContractError("complete receipt cannot contain missing fields")
+        if self.receipt_status == "INCOMPLETE" and not actual_missing:
+            raise ContractError("incomplete receipt must identify missing fields")
         for name, value in (("quality", self.quality), ("flops", self.flops), ("memory_bytes", self.memory_bytes), ("latency_ms", self.latency_ms), ("risk", self.risk)):
-            if value < 0:
+            if value is not None and value < 0:
                 raise ContractError(f"{name} must be non-negative")
         for name in ("stem_params", "projector_params", "resident_cell_params", "active_cell_params", "state_params", "cache_params", "logical_cells", "active_cells", "reader_citations"):
-            if not isinstance(getattr(self, name), int) or getattr(self, name) < 0:
+            value = getattr(self, name)
+            if value is not None and (not isinstance(value, int) or value < 0):
                 raise ContractError(f"{name} must be a non-negative integer")
-        if self.active_cell_params > self.resident_cell_params or self.active_cells > self.logical_cells:
+        if self.active_cell_params is not None and self.resident_cell_params is not None and self.active_cell_params > self.resident_cell_params:
+            raise ContractError("active resource counts exceed resident/logical counts")
+        if self.active_cells is not None and self.logical_cells is not None and self.active_cells > self.logical_cells:
             raise ContractError("active resource counts exceed resident/logical counts")
         if self.evidence_class not in {"REAL_SHADOW", "SYNTHETIC_SMOKE", "HISTORICAL_REPLAY"}:
             raise ContractError("unknown evidence class")
@@ -190,9 +207,13 @@ class QualificationReceiptV1:
                 raise ContractError("feature key does not match receipt identity")
 
     def to_transfer_case(self) -> Any:
+        if self.receipt_status != "COMPLETE":
+            raise ContractError("incomplete receipt cannot become a transfer case")
         return TransferCaseV1(self.task_id, self.modality, self.stem_digest, self.source_digest, self.quality, self.flops, self.memory_bytes, self.latency_ms, self.risk)
 
     def to_ledger(self) -> Any:
+        if self.receipt_status != "COMPLETE":
+            raise ContractError("incomplete receipt cannot become a parameter ledger")
         return ParameterLedgerV1(self.stem_params, self.projector_params, self.resident_cell_params, self.active_cell_params, self.state_params, self.cache_params, self.logical_cells, self.active_cells)
 
 
@@ -219,29 +240,40 @@ class ReaderGateReceiptV1:
     evidence_class: str
     independent_new_source: bool
     reader_sufficient: bool
-    citation_coverage: float
-    future_lcb: float
-    baseline_ucb: float
-    old_task_degradation: float
-    ece: float
-    ood_false_acceptance: float
-    fallback_coverage: float
-    rollback_recovery: float
-    deleted_replay: int
+    citation_coverage: float | None
+    future_lcb: float | None
+    baseline_ucb: float | None
+    old_task_degradation: float | None
+    ece: float | None
+    ood_false_acceptance: float | None
+    fallback_coverage: float | None
+    rollback_recovery: float | None
+    deleted_replay: int | None
     model_input_gold_visible: bool = False
+    missing_fields: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if self.evidence_class not in {"REAL_SHADOW", "SYNTHETIC_SMOKE", "HISTORICAL_REPLAY"}:
+        if self.evidence_class not in {"REAL_SHADOW", "SYNTHETIC_SMOKE", "HISTORICAL_REPLAY", "INCOMPLETE"}:
             raise ContractError("unknown Reader evidence class")
         if not self.independent_new_source or self.model_input_gold_visible:
             raise ContractError("Reader evidence identity is not admissible")
+        numeric_names = ("citation_coverage", "future_lcb", "baseline_ucb", "old_task_degradation", "ece", "ood_false_acceptance", "fallback_coverage", "rollback_recovery", "deleted_replay")
+        actual_missing = tuple(name for name in numeric_names if getattr(self, name) is None)
+        if tuple(sorted(set(self.missing_fields))) != self.missing_fields or tuple(sorted(actual_missing)) != self.missing_fields:
+            raise ContractError("missing_fields must exactly describe absent Reader values")
+        if self.evidence_class == "INCOMPLETE" and not actual_missing:
+            raise ContractError("incomplete Reader evidence must identify missing fields")
+        if self.evidence_class != "INCOMPLETE" and actual_missing:
+            raise ContractError("non-incomplete Reader evidence cannot contain missing fields")
         for name, value in (("citation_coverage", self.citation_coverage), ("future_lcb", self.future_lcb), ("baseline_ucb", self.baseline_ucb), ("old_task_degradation", self.old_task_degradation), ("ece", self.ece), ("ood_false_acceptance", self.ood_false_acceptance), ("fallback_coverage", self.fallback_coverage), ("rollback_recovery", self.rollback_recovery)):
-            if value < 0:
+            if value is not None and value < 0:
                 raise ContractError(f"{name} must be non-negative")
-        if self.deleted_replay < 0:
+        if self.deleted_replay is not None and self.deleted_replay < 0:
             raise ContractError("deleted_replay must be non-negative")
 
     def to_split_gate(self) -> Any:
+        if self.evidence_class == "INCOMPLETE" or self.missing_fields:
+            raise ContractError("incomplete Reader evidence cannot become a split gate")
         sufficient = self.reader_sufficient and self.citation_coverage == 1.0 and self.evidence_class == "REAL_SHADOW"
         return SplitGateV1(
             future_lcb=self.future_lcb,
