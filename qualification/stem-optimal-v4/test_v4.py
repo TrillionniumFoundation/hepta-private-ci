@@ -39,6 +39,7 @@ def fixture():
         'prompt_name':'Classification',
         'initial_head_sha256':'a'*64,'trained_head_sha256':'b'*64,
         'head_parameters':27656,'optimizer_steps':100,
+        'fit_feature_witness_sha256':'e'*64,
         'rows':[{'case_id':r['case_id'],'source_sha256':r['source_sha256'],
                  'scores':{a:list(probabilities) for a in review.ARMS}} for r in held],
         'cost':{'physical_encoder_sequences':96,'physical_encoder_forward_batches':6,

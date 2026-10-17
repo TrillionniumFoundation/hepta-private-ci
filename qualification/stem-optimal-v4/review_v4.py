@@ -22,6 +22,7 @@ FIELDS = {
     'native_width','projected_width',
     'projection','prompt_name','initial_head_sha256','trained_head_sha256',
     'head_parameters','optimizer_steps','rows','cost','fleet','train_only_centroid',
+    'fit_feature_witness_sha256',
     'future_windows',
     'human_verified_new_sources','ndu_task_utility_qualified',
     'cell_split_authorized','production_authorized','authority','disposition'
@@ -119,6 +120,10 @@ def check_fourth(source, receipt, gold):
                      all(c in '0123456789abcdef' for c in value), 'head digest invalid')
     core.require(receipt['initial_head_sha256'] != receipt['trained_head_sha256'],
                  'no trained head state')
+    witness_hash = receipt['fit_feature_witness_sha256']
+    core.require(type(witness_hash) is str and len(witness_hash) == 64
+                 and all(ch in '0123456789abcdef' for ch in witness_hash),
+                 'missing original FIT-only features witness digest')
     core.require(receipt['authority'] == 'DENY_ALL' and
                  receipt['disposition'] == 'HOLD_NO_GO' and
                  receipt['future_windows'] == 0 and receipt['human_verified_new_sources'] == 0 and
@@ -334,7 +339,8 @@ def postseal_centroid_temperature_sensitivity(old_runs, gold):
             'models':result}
 
 
-def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
+def review_original(train_raw, test_raw, source, old_runs, fourth, materials,
+                    fit_witness):
     import stem_hard_charge_review_v3 as v3_review
     import stem_candidate_v1 as v1
     # Independently reconstruct the complete roster, both truth files and v3 controls.
@@ -343,12 +349,18 @@ def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
     _,gold=v3_review.reconstruct(train_raw,test_raw,v1.ORIGINAL_SHA)
     sensitivity = postseal_centroid_temperature_sensitivity(old_runs, gold)
     core.check_source(source)
+    import review_fit_witness_v7
+    core.require(core.digest(core.canonical(fit_witness)) ==
+                 fourth['fit_feature_witness_sha256'],
+                 'prelabel feature witness content not bound to original model receipt')
+    original_fit_replay=review_fit_witness_v7.verify(source,fit_witness,fourth)
     fourth_result=check_fourth(source,fourth,gold)
     ensure_matched_initial_heads(old_runs, fourth)
     return {'schema':'hepta.stem.original-four-model-postseal.v4',
             'cohort':core.COHORT,'source_sha256':source['source_plan_sha256'],
             'existing_original_three_model_scoring':incumbent,
             'postseal_zero_sgd_centroid_temperature_sensitivity':sensitivity,
+            'fit_only_centroid_independent_prelabel_replay':original_fit_replay,
             'fourth_model':{'id':core.ARM,'source':'original_pretrained_embeddinggemma2',
                             'descriptive_scores':fourth_result,
                             'matched_training_budget_only':True,
@@ -361,7 +373,7 @@ def review_original(train_raw, test_raw, source, old_runs, fourth, materials):
 def main():
     p=argparse.ArgumentParser()
     for key in ('train','test','source','old_granite47','old_granite97',
-                'old_mmbert140','fourth','materials','output'):
+                'old_mmbert140','fourth','fit_witness','materials','output'):
         p.add_argument('--'+key.replace('_','-'),type=Path,required=True)
     args=p.parse_args()
     def file_bytes(path):
@@ -372,7 +384,8 @@ def main():
                            core.read_json(args.source),
                            [core.read_json(getattr(args,'old_'+name))
                             for name in ('granite47','granite97','mmbert140')],
-                           core.read_json(args.fourth),core.read_json(args.materials))
+                           core.read_json(args.fourth),core.read_json(args.materials),
+                           core.read_json(args.fit_witness))
     core.write_private(args.output,result)
 
 if __name__=='__main__':

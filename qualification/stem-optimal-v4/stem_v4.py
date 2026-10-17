@@ -228,6 +228,10 @@ def physical_run(source):
     train_only_control = calibrated_baseline.calculate(
         feats[:64], [r['label'] for r in source['train']],
         feats[64:], source['heldout'])
+    import fit_witness_v7
+    fit_witness = fit_witness_v7.build(
+        source, feats[:64], train_only_control, source_weight_sha256=WEIGHT_SHA,
+        projection=PROJECTION)
     fleet = physical_fleet(feats[64])
     require(trained['total_head_parameters'] == 27656 and trained['steps'] == 100,
             'invalid trained Head budget')
@@ -253,18 +257,24 @@ def physical_run(source):
                 'maxrss_bytes_linux_unattested':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
                 'energy_joules':None,'complete_request_p99_ms':None},
         'fleet':fleet,'train_only_centroid':train_only_control,
+        'fit_feature_witness_sha256':digest(canonical(fit_witness)),
         'future_windows':0,'human_verified_new_sources':0,
         'ndu_task_utility_qualified':False,'cell_split_authorized':False,
         'production_authorized':False,'authority':'DENY_ALL','disposition':STATUS,
-    }
+    }, fit_witness
 
 
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--source',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--fit-witness-output',type=Path,required=True)
     args=p.parse_args()
-    write_private(args.output,physical_run(read_json(args.source)))
+    receipt,fit_witness=physical_run(read_json(args.source))
+    # Create-only two-file set: an interrupted write is NOT an admitted receipt.
+    # Both SHA-sidecars are checked on the separate original-label runner.
+    write_private(args.fit_witness_output,fit_witness)
+    write_private(args.output,receipt)
 
 if __name__ == '__main__':
     main()

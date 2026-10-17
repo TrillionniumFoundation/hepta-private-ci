@@ -110,3 +110,22 @@ The read-only workflow on a same-repository authored branch runs original heavyw
 ## Remaining work for real NDU System 2
 
 Train a separate estimator using **genuine, independently observed** later task outcomes; compare deterministic stopping, learned Bellman continuation and bounded stochastic FBSDE with identical candidate/feature sources, CPU + energy/call costs and source/time-disjoint test sets. Only if their observed risk-adjusted task utility exceeds the cheaper deterministic baseline while old-task retention and safety stay intact should any NDU policy be considered for native shadow consumer qualification. Short-horizon local existence and a low numerical residual do **not** imply a global, unique graph solution or improved task accuracy.
+
+## V7 independent train-only LOO feature-custody evidence
+
+The producer exports a bounded, original **FIT-only 64x384 FP32** feature
+witness with exact roster/model/projection and calibration digest. There are
+**no TEST targets or TEST feature vectors** in the witness. An independent
+Torch-free (Python stdlib only) runner recomputes all 64 leave-one-out
+centroid losses across the same seven fixed temperatures **before downloading
+original publisher TEST labels**; it checks the exact input FP32 bytes and
+FIT-only labels, the seven reported FP32 losses under tight numeric tolerance,
+the selected minimum, and separately SHA-verifies the original witness file.
+The later independent human-label reviewer reruns this same check and binds
+its output into the descriptive, unconditional HOLD_NO_GO report.
+
+This witness is produced by the same original Encoder job and is a
+**model-source-bound numerical replay**, NOT an independent second pretrained
+forward, issuer signature, hardware attestation, learned reasoning, safe
+Cell Split, or a new source-independent future evaluation. Any selected
+model or qualified calibration claim remains DENIED.

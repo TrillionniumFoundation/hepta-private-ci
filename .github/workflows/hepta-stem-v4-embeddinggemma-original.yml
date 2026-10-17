@@ -44,13 +44,15 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
           python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
-          python -m py_compile "$EXP_DIR/stem_v4.py" "$EXP_DIR/review_v4.py" "$EXP_DIR/system2_v4.py" "$EXP_DIR/test_v4.py" "$EXP_DIR/material_census_v5.py" "$EXP_DIR/test_material_census_v5.py" "$EXP_DIR/train_only_centroid_v5.py" "$EXP_DIR/test_train_only_centroid_v5.py"
+          python -m py_compile "$EXP_DIR/stem_v4.py" "$EXP_DIR/review_v4.py" "$EXP_DIR/system2_v4.py" "$EXP_DIR/test_v4.py" "$EXP_DIR/material_census_v5.py" "$EXP_DIR/test_material_census_v5.py" "$EXP_DIR/train_only_centroid_v5.py" "$EXP_DIR/test_train_only_centroid_v5.py" "$EXP_DIR/fit_witness_v7.py" "$EXP_DIR/review_fit_witness_v7.py" "$EXP_DIR/test_fit_witness_v7.py"
           python -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
           python -O -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
           python -m unittest discover -s "$EXP_DIR" -p 'test_material_census_v5.py' -v
           python -O -m unittest discover -s "$EXP_DIR" -p 'test_material_census_v5.py' -v
           python -m unittest discover -s "$EXP_DIR" -p 'test_train_only_centroid_v5.py' -v
           python -O -m unittest discover -s "$EXP_DIR" -p 'test_train_only_centroid_v5.py' -v
+          python -m unittest discover -s "$EXP_DIR" -p 'test_fit_witness_v7.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_fit_witness_v7.py' -v
 
   original-source-owner:
     needs: source-negative-and-physical-head-tests
@@ -185,14 +187,17 @@ jobs:
           mkdir -p "$RUNNER_TEMP/v4-eg2"
           python "$EXP_DIR/stem_v4.py" \
             --source "$RUNNER_TEMP/v4-source/source-v4.json" \
-            --output "$RUNNER_TEMP/v4-eg2/fourth.json"
-          (cd "$RUNNER_TEMP/v4-eg2" && sha256sum fourth.json > fourth.sha256)
+            --output "$RUNNER_TEMP/v4-eg2/fourth.json" \
+            --fit-witness-output "$RUNNER_TEMP/v4-eg2/fit-witness.json"
+          (cd "$RUNNER_TEMP/v4-eg2" && sha256sum fourth.json > fourth.sha256 && sha256sum fit-witness.json > fit-witness.sha256)
       - uses: actions/upload-artifact@v4
         with:
           name: stem-v4-embeddinggemma2-original-denyall
           path: |
             ${{ runner.temp }}/v4-eg2/fourth.json
             ${{ runner.temp }}/v4-eg2/fourth.sha256
+            ${{ runner.temp }}/v4-eg2/fit-witness.json
+            ${{ runner.temp }}/v4-eg2/fit-witness.sha256
           if-no-files-found: error
           retention-days: 7
 
@@ -224,6 +229,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source-v4.sha256)
           (cd "$RUNNER_TEMP/v4-predictions" && for f in *.sha256; do sha256sum --check "$f"; done)
+          # Independent train-only numerical replay is performed before any TEST gold acquisition.
+          python "$EXP_DIR/review_fit_witness_v7.py" \
+            --source "$RUNNER_TEMP/v4-source/source-v4.json" \
+            --witness "$RUNNER_TEMP/v4-predictions/fit-witness.json" \
+            --receipt "$RUNNER_TEMP/v4-predictions/fourth.json" \
+            --output "$RUNNER_TEMP/v4-predictions/fit-loo-independent-no-gold.json"
       - name: Independently redownload original public publisher truth and re-score all 4
         shell: bash
         run: |
@@ -252,6 +263,7 @@ jobs:
             --old-granite97 "$RUNNER_TEMP/v4-predictions/old-granite97.json" \
             --old-mmbert140 "$RUNNER_TEMP/v4-predictions/old-mmbert140.json" \
             --fourth "$RUNNER_TEMP/v4-predictions/fourth.json" \
+            --fit-witness "$RUNNER_TEMP/v4-predictions/fit-witness.json" \
             --materials "$V1_DIR/MODEL_MATERIALS.json" \
             --output "$RUNNER_TEMP/v4-review/descriptive-hold-no-go.json"
           (cd "$RUNNER_TEMP/v4-review" && sha256sum descriptive-hold-no-go.json > descriptive-hold-no-go.sha256)
