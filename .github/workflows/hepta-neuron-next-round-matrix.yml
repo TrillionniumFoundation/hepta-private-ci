@@ -76,11 +76,30 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$RUNNER_TEMP/original-v24-scienceqa-11945106672.zip"
           echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $RUNNER_TEMP/original-v24-scienceqa-11945106672.zip" | sha256sum -c -
           printf 'HEPTA_V24_ORIGINAL_ZIP=%s\n' "$RUNNER_TEMP/original-v24-scienceqa-11945106672.zip" >> "$GITHUB_ENV"
-      - name: Execute focused suite with mandatory original V24 and explicit optional skips
+      - name: Execute focused source suite with mandatory original V24 and explicit optional skips
         shell: bash
         run: |
           set -euo pipefail
-          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
+          # The V32 original-material replay is push-only in its dedicated
+          # workflow. Keep this broad PR regression source-only when that
+          # private stage/report bundle is not present; never turn the
+          # dedicated original replay into a synthetic pass.
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
+          import pathlib
+          import sys
+          import unittest
+
+          root = pathlib.Path("qualification/stem-cell-v1").resolve()
+          sys.path.insert(0, str(root))
+          suite = unittest.TestSuite()
+          loader = unittest.defaultTestLoader
+          for path in sorted(root.glob("test_*.py")):
+              if path.name == "test_v32_real_original_replay.py":
+                  continue
+              suite.addTests(loader.loadTestsFromName(path.stem))
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
           python -m compileall -q qualification/stem-cell-v1
       - name: Retain exact-run source test observations
         if: always()
