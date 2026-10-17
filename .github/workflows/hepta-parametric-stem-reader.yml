@@ -62,7 +62,7 @@ jobs:
             memory-inputs/reader/tokenizer_config.json memory-inputs/reader/vocab.json
           mkdir /tmp/isolated-reader-transport
           mv /tmp/stem-reader-stage/memory-inputs/reader/* /tmp/isolated-reader-transport/
-          (cd /tmp/isolated-reader-transport && find . -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          (cd /tmp/isolated-reader-transport && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           python3 scripts/memory_cell/reader_weight_transport.py /tmp/isolated-reader-transport > /tmp/stem-reader-preflight/reader-model-receipt.json
           test "$(find /tmp/isolated-reader-transport -maxdepth 1 -type f | wc -l)" -eq 9
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
