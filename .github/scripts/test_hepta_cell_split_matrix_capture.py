@@ -361,7 +361,6 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
 
-
     def test_later_workload_cannot_rewrite_previous_original_bytes(self):
         """A valid numeric aggregate is not proof the original bytes survived."""
         packet = manifest()
@@ -411,7 +410,6 @@ if scope == 64 and mode == "logical_split":
                     execute_matrix(packet, ROOT, output, 30)
                 self.assertFalse((output / "measured-matrix.json").exists())
                 self.assertFalse((output / "diagnostic-comparison.json").exists())
-
 
     def test_replaced_inode_with_identical_bytes_cannot_survive_matrix_capture(self):
         """SHA equality alone must not launder replacement of an original inode."""
