@@ -19,8 +19,10 @@ use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::RuntimeTopologyCandidateV1;
+use codex_hepta_types::RuntimeTopologyCandidateV2;
 use codex_hepta_types::RuntimeTopologyContractErrorV1;
-use codex_hepta_types::RuntimeTopologyOperationV1;
+use codex_hepta_types::RuntimeTopologyContractErrorV2;
+use codex_hepta_types::RuntimeTopologyOperationV2;
 use codex_hepta_types::StableId;
 
 use crate::WriterHandoffCheckpointV1;
@@ -33,7 +35,7 @@ const MAX_PENDING_TOPOLOGIES: usize = 128;
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
     selections: BTreeMap<(StableId, Generation), Digest32>,
-    pending_topologies: BTreeMap<Digest32, RuntimeTopologyCandidateV1>,
+    pending_topologies: BTreeMap<Digest32, RuntimeTopologyCandidateV2>,
     pending_promotions: BTreeMap<(Digest32, StableId), RuntimeModulePromotionWitnessV1>,
     retirement_ready: BTreeMap<(StableId, Generation), Digest32>,
 }
@@ -106,6 +108,49 @@ impl From<RuntimeTopologyContractErrorV1> for RuntimeModuleSupervisorErrorV1 {
     }
 }
 
+// V2 contract validation remains exhaustive without widening the historical
+// public lifecycle-error enum or weakening any rejection.
+impl From<RuntimeTopologyContractErrorV2> for RuntimeModuleSupervisorErrorV1 {
+    fn from(error: RuntimeTopologyContractErrorV2) -> Self {
+        let legacy_shape = match error {
+            RuntimeTopologyContractErrorV2::EmptyDigest(field) => {
+                RuntimeTopologyContractErrorV1::EmptyDigest(field)
+            }
+            RuntimeTopologyContractErrorV2::GenerationNotExactSuccessor => {
+                RuntimeTopologyContractErrorV1::GenerationNotExactSuccessor
+            }
+            RuntimeTopologyContractErrorV2::RollbackPredecessorMismatch => {
+                RuntimeTopologyContractErrorV1::RollbackPredecessorMismatch
+            }
+            RuntimeTopologyContractErrorV2::CandidateShape => {
+                RuntimeTopologyContractErrorV1::CandidateShape
+            }
+            RuntimeTopologyContractErrorV2::DeltaCount => {
+                RuntimeTopologyContractErrorV1::DeltaCount
+            }
+            RuntimeTopologyContractErrorV2::CandidateDigestMismatch => {
+                RuntimeTopologyContractErrorV1::CandidateDigestMismatch
+            }
+            RuntimeTopologyContractErrorV2::DuplicateModule(module) => {
+                RuntimeTopologyContractErrorV1::DuplicateModule(module)
+            }
+            RuntimeTopologyContractErrorV2::DuplicateRelatedModule(module) => {
+                RuntimeTopologyContractErrorV1::DuplicateRelatedModule(module)
+            }
+            RuntimeTopologyContractErrorV2::InvalidDelta(module) => {
+                RuntimeTopologyContractErrorV1::InvalidDelta(module)
+            }
+            RuntimeTopologyContractErrorV2::SplitParticipantMissingAdd(module) => {
+                RuntimeTopologyContractErrorV1::SplitParticipantMissingAdd(module)
+            }
+            RuntimeTopologyContractErrorV2::MergeParticipantMissingRetire(module) => {
+                RuntimeTopologyContractErrorV1::MergeParticipantMissingRetire(module)
+            }
+        };
+        Self::TopologyContract(legacy_shape)
+    }
+}
+
 impl Default for RuntimeModuleSupervisorV1 {
     fn default() -> Self {
         Self::new()
@@ -166,12 +211,41 @@ impl RuntimeModuleSupervisorV1 {
         Ok(())
     }
 
-    /// Atomically admit every implementation-bearing delta from one independently
-    /// selected topology candidate into Shadow. Retire deltas stay pending until
-    /// all successor modules have completed their own canary/handoff promotion.
+    /// Historical V1 candidates remain readable but cannot enter current effects.
+    ///
+    /// This compatibility entrypoint always returns `MissingVerifiedSelection`:
+    /// a historical V1 witness is never a selection of the new V2 commitment.
+    /// The error enum/signature remain source-compatible. This does not mean the
+    /// supplied historical witness was cryptographically invalid. Build a new V2
+    /// candidate and obtain a fresh independent V2-digest-bound selection, then
+    /// call `register_selected_topology_candidate_v2`.
     pub fn register_selected_topology_candidate(
         &mut self,
         candidate: RuntimeTopologyCandidateV1,
+        abis: Vec<RuntimeModuleAbiV1>,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        let _ = selection;
+        self.reject_legacy_topology_candidate(&candidate, &abis)
+    }
+
+    // Keep the pre-selection version barrier independently testable without
+    // manufacturing an opaque signed-selection token. This immutable receiver
+    // cannot register, retire, publish or mutate pending owner state.
+    fn reject_legacy_topology_candidate(
+        &self,
+        _candidate: &RuntimeTopologyCandidateV1,
+        _abis: &[RuntimeModuleAbiV1],
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        Err(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
+    }
+
+    /// Atomically admit every implementation-bearing delta from one independently
+    /// selected topology candidate into Shadow. Retire deltas stay pending until
+    /// all successor modules have completed their own canary/handoff promotion.
+    pub fn register_selected_topology_candidate_v2(
+        &mut self,
+        candidate: RuntimeTopologyCandidateV2,
         abis: Vec<RuntimeModuleAbiV1>,
         selection: &VerifiedSelfEvolutionSelectionV1,
     ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
@@ -221,7 +295,7 @@ impl RuntimeModuleSupervisorV1 {
         let mut admitted = Vec::new();
         for delta in &candidate.deltas {
             match delta.operation {
-                RuntimeTopologyOperationV1::Retire => {
+                RuntimeTopologyOperationV2::Retire => {
                     if supplied.contains_key(&delta.module_id) {
                         return Err(RuntimeModuleSupervisorErrorV1::UnexpectedTopologyAbi(
                             delta.module_id.clone(),
@@ -249,11 +323,11 @@ impl RuntimeModuleSupervisorV1 {
                         ));
                     }
                 }
-                RuntimeTopologyOperationV1::Add
-                | RuntimeTopologyOperationV1::Replace
-                | RuntimeTopologyOperationV1::Rewire
-                | RuntimeTopologyOperationV1::Split
-                | RuntimeTopologyOperationV1::Merge => {
+                RuntimeTopologyOperationV2::Add
+                | RuntimeTopologyOperationV2::Replace
+                | RuntimeTopologyOperationV2::Rewire
+                | RuntimeTopologyOperationV2::Split
+                | RuntimeTopologyOperationV2::Merge => {
                     let abi = supplied.remove(&delta.module_id).ok_or_else(|| {
                         RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone())
                     })?;
@@ -266,7 +340,7 @@ impl RuntimeModuleSupervisorV1 {
                         ));
                     }
                     match delta.operation {
-                        RuntimeTopologyOperationV1::Add => {
+                        RuntimeTopologyOperationV2::Add => {
                             if self.registry.active_generation(&delta.module_id).is_some()
                                 || abi.predecessor_generation.is_some()
                                 || !abi.rollback_predecessor_digest.is_zero()
@@ -354,7 +428,7 @@ impl RuntimeModuleSupervisorV1 {
         }
         let mut staged = self.registry.clone();
         for delta in &candidate.deltas {
-            if delta.operation != RuntimeTopologyOperationV1::Retire {
+            if delta.operation != RuntimeTopologyOperationV2::Retire {
                 staged.enter_canary(&delta.module_id, candidate.candidate_generation)?;
             }
         }
@@ -386,7 +460,7 @@ impl RuntimeModuleSupervisorV1 {
         let mut promotion_witnesses = BTreeMap::new();
         let mut retirements = BTreeMap::new();
         for delta in &candidate.deltas {
-            if delta.operation == RuntimeTopologyOperationV1::Retire {
+            if delta.operation == RuntimeTopologyOperationV2::Retire {
                 let generation = self
                     .registry
                     .active_generation(&delta.module_id)
@@ -496,7 +570,7 @@ impl RuntimeModuleSupervisorV1 {
             .clone();
         let mut staged = self.registry.clone();
         for delta in &candidate.deltas {
-            if delta.operation == RuntimeTopologyOperationV1::Retire {
+            if delta.operation == RuntimeTopologyOperationV2::Retire {
                 continue;
             }
             if staged.active_generation(&delta.module_id) == Some(candidate.candidate_generation) {
@@ -786,7 +860,7 @@ impl RuntimeModuleSupervisorV1 {
                 candidate.candidate_generation == generation
                     && candidate.deltas.iter().any(|delta| {
                         delta.module_id == *module_id
-                            && delta.operation != RuntimeTopologyOperationV1::Retire
+                            && delta.operation != RuntimeTopologyOperationV2::Retire
                     })
             });
         if let Some(candidate) = pending_topology {
@@ -861,7 +935,7 @@ impl RuntimeModuleSupervisorV1 {
 
 fn validate_projected_dependency_graph(
     current: &RuntimeTopologySnapshotV1,
-    candidate: &RuntimeTopologyCandidateV1,
+    candidate: &RuntimeTopologyCandidateV2,
     admitted: &[RuntimeModuleAbiV1],
 ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
     let mut projected = current
@@ -874,7 +948,7 @@ fn validate_projected_dependency_graph(
         .map(|abi| (abi.module_id.clone(), abi))
         .collect::<BTreeMap<_, _>>();
     for delta in &candidate.deltas {
-        if delta.operation == RuntimeTopologyOperationV1::Retire {
+        if delta.operation == RuntimeTopologyOperationV2::Retire {
             projected.remove(&delta.module_id);
             continue;
         }

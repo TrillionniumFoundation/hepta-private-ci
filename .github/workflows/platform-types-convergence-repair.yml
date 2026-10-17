@@ -1,0 +1,112 @@
+name: platform.types legacy closure verification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "docs/modules/platform.types/**"
+      - "scripts/*platform_types*.py"
+      - ".github/workflows/platform-types-convergence-repair.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "docs/modules/platform.types/**"
+      - "scripts/*platform_types*.py"
+      - ".github/workflows/platform-types-convergence-repair.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-types-legacy-closure-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify the retained closure entrypoint is read-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PLATFORM_TYPES_RUSTFMT: "nightly-2026-09-20"
+      PYTHONPATH: scripts
+      CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+      CARGO_NET_RETRY: "20"
+      CARGO_HTTP_TIMEOUT: "600"
+      CARGO_HTTP_MULTIPLEXING: "false"
+      CARGO_HTTP_LOW_SPEED_LIMIT: "1"
+    steps:
+      # Executable bytes are selected only by the immutable pull-request or push event.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact dispatch checkout and workflow hardening
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/test_platform_types_workflow_security.py
+
+      - name: Install pinned native toolchain
+        uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          components: clippy
+
+      - name: Install pinned formatter
+        run: |
+          rustup toolchain install "$PLATFORM_TYPES_RUSTFMT" \
+            --profile minimal --component rustfmt --no-self-update
+
+      - name: Verify retained compatibility entrypoints are non-mutating
+        run: |
+          set -euo pipefail
+          before="$(git status --porcelain --untracked-files=all)"
+          python3 scripts/platform_types_prepare_stable_rama.py
+          if python3 scripts/platform_types_apply_closure_repair.py; then
+            echo "retired mutating closure script unexpectedly succeeded" >&2
+            exit 1
+          fi
+          after="$(git status --porcelain --untracked-files=all)"
+          test "$before" = "$after"
+
+      - name: Verify focused platform.types closure
+        run: |
+          set -euo pipefail
+          python3 scripts/platform_types_rama_lock_guard.py
+          python3 -m unittest \
+            scripts/test_platform_types_rama_lock_guard.py \
+            scripts/test_platform_types_rustdoc_api.py \
+            scripts/test_platform_types_implementation_map_binding.py \
+            scripts/test_platform_types_candidate_support.py
+          python3 scripts/platform_types_public_api.py
+          python3 scripts/platform_types_implementation_map.py --expected-sha "${{ github.event.pull_request.head.sha || github.sha }}"
+          cargo "+$PLATFORM_TYPES_RUSTFMT" fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy --all-targets
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-wire --all-targets
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy \
+            --all-targets -- -D warnings
+
+      - name: Exercise the bounded registry workload matrix
+        run: |
+          set -euo pipefail
+          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types --bin platform-types-registry-bench -- \
+            50000 "$RUNNER_TEMP/platform-types-registry-benchmark.json"
+          python3 -c 'import json,pathlib,os; value=json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "platform-types-registry-benchmark.json").read_text()); assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"; assert [row["entryCount"] for row in value["cases"]] == [8,256]'
+
+      - name: Prove verification left the source tree unchanged
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"

@@ -31,7 +31,7 @@ use crate::evaluation_digest::push_axis_values;
 use crate::scoring::pareto_frontier;
 use crate::scoring::score_frontier;
 
-const MAX_CONTRIBUTIONS: usize = 4096;
+pub(crate) const MAX_CONTRIBUTIONS: usize = 4096;
 const MAX_CANDIDATES: usize = 128;
 const MAX_UTILITY_DIMENSIONS: usize = 8;
 const MAX_RISK_RESOURCE_DIMENSIONS: usize = 32;

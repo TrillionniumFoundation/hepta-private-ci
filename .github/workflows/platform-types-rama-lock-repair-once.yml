@@ -1,0 +1,42 @@
+# Retained compatibility path for the retired one-shot lock repair.
+# This entry point only verifies the checked-in lockfile.
+name: platform.types retired Rama lock verifier
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/platform-types-rama-lock-repair-once.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/platform-types-rama-lock-repair-once.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-types-retired-rama-lock-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify-lock:
+    name: Verify retained Rama lock entrypoint is read-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify source identity and reviewed dependency coherence
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/platform_types_rama_lock_guard.py
+
+      - name: Prove verification left the source tree unchanged
+        run: git diff --exit-code && test -z "$(git status --porcelain)"

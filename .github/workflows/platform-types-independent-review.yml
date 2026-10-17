@@ -1,0 +1,67 @@
+name: platform.types independent review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, review_requested]
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/lane-a-foundation/platform.types/**"
+      - "docs/modules/platform.types/**"
+      - "qualification/module-execution-dossiers/detail/platform.types.md"
+      - "scripts/platform_types_*.py"
+      - "scripts/run_platform_types_*.sh"
+      - ".github/workflows/platform-types-*.yml"
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: platform-types-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  independent-review:
+    name: Verify independent current-head approval
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Review-gate self-tests
+        run: python3 scripts/test_platform_types_independent_review.py
+      - id: review
+        name: Evaluate current-head independent approval
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          python3 scripts/platform_types_independent_review.py
+          --repository "${{ github.repository }}"
+          --pr-number "${{ github.event.pull_request.number }}"
+          --head-sha "${{ github.event.pull_request.head.sha }}"
+          --output .hepta-evidence/platform-types-review/review.json
+      - id: artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-independent-review-${{ github.event.pull_request.head.sha }}
+          path: .hepta-evidence/platform-types-review/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - if: ${{ always() }}
+        shell: bash
+        run: |
+          test "${{ steps.review.outcome }}" = success
+          test "${{ steps.artifact.outcome }}" = success

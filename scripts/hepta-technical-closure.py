@@ -897,7 +897,11 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
             for number in range(1, len(HEADINGS) + 1)
         ):
             raise Invalid(mid + ": design sections")
-        test_ids = re.findall(r"^- `?([A-Z0-9-]+-[0-9]{2})`?:", text, re.M)
+        test_ids = re.findall(
+            r"^- (?:\*\*)?`?([A-Z0-9-]+-[0-9]{2})`?(?::|\s+[—-])(?:\*\*)?",
+            text,
+            re.M,
+        )
         if not test_ids or len(set(test_ids)) != len(test_ids):
             raise Invalid(mid + ": missing or duplicate named product-test designs")
         named_test_count += len(test_ids)

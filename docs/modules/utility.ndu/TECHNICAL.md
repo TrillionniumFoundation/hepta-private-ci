@@ -76,6 +76,8 @@ The bounded components are:
 - `bounded state updater`
 - `recursive utility evaluator`
 - `boundary-condition cache`
+- `immutable numeric-registry admission adapter`
+- `authenticated owner with registry-frozen production-policy identity`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -139,6 +141,8 @@ Consumed contracts:
 - `ModulePort::learning.artifacts::utility.ndu`
 - `ModulePort::learning.ledger::utility.ndu`
 - `ModulePort::platform.types::utility.ndu`
+- `ContractRegistryV1`
+- `RegisteredNumericConversionReceiptV1`
 - `NduBoundaryConditionV1`
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
@@ -178,7 +182,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. `NduNumericRegistryV1` freezes one immutable platform.types registry generation and computes its canonical digest. `NduAuthenticatedOwnerV1::open_with_numeric_registry` incorporates that digest into the production-policy identity before any utility-signal admission or durable mutation. `admit_utility_signal` returns `NduRegisteredUtilitySignalV1`; an owner opened without a registry fails closed with `RegistryNotConfigured`. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -208,7 +212,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. A real request-local read-only caller is established through `runtime.agentd cognitive_context -> control plan_observed_context -> evaluate_prepared_plan_with_ndu -> NDU V2 evaluator`; this does not establish the authenticated production NDU owner/caller or activate global adaptive reconfiguration. `NduProjectionJournalV1` remains the semantic journal, while `NduProjectionStoreV1` is a crash-bounded durable-writer source candidate with exclusive writer locking, complete-image temp write + file sync, atomic rename, Unix parent-directory sync, indeterminate-handle fencing and monotonic backup restore. Neither source existence nor local qualification substitutes for governed production writer selection, host enrollment, retention/off-host backup policy, monitoring or target-host acceptance.
+Embed the deterministic evaluator under a frozen objective and versioned policy. A real request-local read-only caller is established through `runtime.agentd cognitive_context -> control plan_observed_context -> evaluate_prepared_plan_with_ndu -> NDU V2 evaluator`; this does not establish the authenticated production NDU owner/caller or activate global adaptive reconfiguration. The authenticated owner now has a source-composed registered numeric-admission path: the provisioning caller supplies one immutable `NduNumericRegistryV1`, the owner freezes its digest, and each admitted utility signal carries a distinct registry-admission receipt. A plain `NumericConversionReceiptV1` is never treated as registry admission. `NduProjectionJournalV1` remains the semantic journal, while `NduProjectionStoreV1` is a crash-bounded durable-writer source candidate with exclusive writer locking, complete-image temp write + file sync, atomic rename, Unix parent-directory sync, indeterminate-handle fencing and monotonic backup restore. Neither source existence nor local qualification substitutes for governed production writer selection, registry authentication, host enrollment, retention/off-host backup policy, monitoring or target-host acceptance.
 
 Current operating and state-format references:
 
@@ -227,6 +231,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
 - [codex-rs/hepta-ndu/src/projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/projection_store_tests.rs); durable reopen/restore, single-writer and indeterminate-fencing cases.
 - [codex-rs/hepta-ndu/src/z_conversion_tests.rs](../../../codex-rs/hepta-ndu/src/z_conversion_tests.rs); whitening-coordinate and signed-Q24 ties-to-even cases.
+- [codex-rs/hepta-ndu/src/numeric_admission_tests.rs](../../../codex-rs/hepta-ndu/src/numeric_admission_tests.rs); registry-generation, normalization, axis-order and distinct-admission-receipt cases.
+- [codex-rs/hepta-ndu/src/owner_tests.rs](../../../codex-rs/hepta-ndu/src/owner_tests.rs); registry-frozen authenticated owner and missing-registry rejection cases.
 - [codex-rs/hepta-control-plane/src/planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs) and [planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs); real request-local Control caller regressions.
 
 In `codex-rs`, run `just test -p codex-hepta-ndu`. The dedicated NDU qualification workflow also runs focused `codex-hepta-control-plane` planner-context/planner-NDU regressions so the established read-only caller cannot drift independently of the evaluator. These commands are test invocations, not stored results. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
@@ -253,7 +259,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Request-local composition requires a named bounded caller; authenticated production composition additionally requires the production owner/caller, selected writer and current authority/revocation fences. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion now includes the registered numeric-admission adapter and authenticated-owner integration. Request-local composition requires a named bounded caller; authenticated production composition additionally requires authenticated registry provisioning, the production owner/caller, selected writer and current authority/revocation fences. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -469,3 +475,17 @@ The bootstrap source-location obligation for `utility.ndu` is implemented by wor
 - `codex-rs/hepta-ndu`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Configured owner numeric admission before ordinary evaluation
+
+The existing `NduAuthenticatedOwnerV1::evaluate` path uses the frozen
+`NduNumericRegistryV1` whenever the owner was opened with a numeric registry.
+Utility contribution axes are checked against the exact policy order and admitted
+as signed-Q32 utility values through `rescale_signal_registered`. A versioned
+canonical support digest binds original evidence and the registry-admission digest;
+the existing V2 evaluation receipt therefore commits to the admitted evidence.
+The source contribution limit is checked before admission work. Missing source
+support cannot be replaced with a generated nonzero digest. The owner tests cover
+normal deterministic evaluation, missing registry definition and invalid axes.
+The ordinary registry-less owner retains compatibility semantics and does not
+claim registered admission or activated product bootstrap.

@@ -6,24 +6,32 @@
 //! canonical cognitive/memory contracts and not wire schemas. Canonical V1
 //! contract ownership lives exclusively in `codex-rs/hepta-cognitive-types`.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fmt;
 
-use codex_hepta_cognitive_types::hnmf::{
-    ContractIdV1, MAX_LABEL_BYTES, MAX_PROVENANCE, MAX_SEMANTIC_KEYS, MemoryEventV1,
-    MemoryLifecycleV1,
-};
-pub use codex_hepta_cognitive_types::hnmf::{
-    ModalityKindV1 as ReferenceModalityKind, PrivacyClassV1 as ReferencePrivacyClass,
-};
-pub use codex_hepta_cognitive_types::hnmf_learning::{
-    EngramPopulationV1 as ReferenceEngramPopulation, SynapseRelationV1 as ReferenceSynapseRelation,
-};
-use codex_hepta_cognitive_types::hnmf_learning::{
-    MAX_ACTIVATION_PATHS, MAX_ACTIVE_NODES, MAX_ACTIVE_PER_POPULATION, MAX_CANDIDATE_EVENTS,
-    MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS, MAX_NODES, MAX_RECALL_EVENTS, MAX_RECURRENT_STEPS,
-    MAX_REPLAY_CANDIDATES, MAX_REPLAY_SELECTION, MAX_SYNAPSES, MAX_WEIGHT_DELTA_PPM,
-};
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MAX_LABEL_BYTES;
+use codex_hepta_cognitive_types::hnmf::MAX_PROVENANCE;
+use codex_hepta_cognitive_types::hnmf::MAX_SEMANTIC_KEYS;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+pub use codex_hepta_cognitive_types::hnmf::ModalityKindV1 as ReferenceModalityKind;
+pub use codex_hepta_cognitive_types::hnmf::PrivacyClassV1 as ReferencePrivacyClass;
+pub use codex_hepta_cognitive_types::hnmf_learning::EngramPopulationV1 as ReferenceEngramPopulation;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVATION_PATHS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVE_NODES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVE_PER_POPULATION;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CANDIDATE_EVENTS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_NODES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_RECALL_EVENTS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_RECURRENT_STEPS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_REPLAY_CANDIDATES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_REPLAY_SELECTION;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_SYNAPSES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_WEIGHT_DELTA_PPM;
+pub use codex_hepta_cognitive_types::hnmf_learning::SynapseRelationV1 as ReferenceSynapseRelation;
 
 pub const PPM: i64 = codex_hepta_cognitive_types::hnmf::PPM as i64;
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;

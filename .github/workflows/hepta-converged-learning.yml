@@ -1,10 +1,45 @@
 name: Hepta converged learning qualification (read-only)
 
 on:
-  # Automatic pull-request and main-branch fan-out is owned by the two
-  # aggregate checks. Deep qualifications remain reusable and manually runnable.
-  workflow_call:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - work/architecture-scalability-convergence-20260918
+    paths:
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-shadow-qualification/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "tools/hepta-engineering-control/**"
+      - "scripts/verify_cargo_lock.py"
+      - "scripts/test_verify_cargo_lock.py"
+      - ".github/scripts/check_ci_results.py"
+      - ".github/workflows/hepta-converged-learning.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-shadow-qualification/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "tools/hepta-engineering-control/**"
+      - "scripts/verify_cargo_lock.py"
+      - "scripts/test_verify_cargo_lock.py"
+      - ".github/scripts/check_ci_results.py"
+      - ".github/workflows/hepta-converged-learning.yml"
+  workflow_call:
 
 permissions:
   contents: read
@@ -173,14 +208,21 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/hepta-long-horizon-measurement"
-          mkdir -p "$out"
+          data="$RUNNER_TEMP/hepta-long-horizon-data"
+          mkdir -p "$out" "$data"
           { git rev-parse HEAD HEAD^{tree}; rustc --version; uname -sm; } > "$out/environment.txt"
-          cargo build --locked --release -p codex-hepta-learning-ledger --example long_horizon_scale
-          sha256sum target/release/examples/long_horizon_scale > "$out/binary.sha256"
-          # The existing executable records 100/1k/10k/100k milestones,
-          # real checkpoint recovery and historical dedupe at each milestone.
-          # Timings remain observations, not invented target-host thresholds.
-          timeout 600s target/release/examples/long_horizon_scale 100000 "$RUNNER_TEMP/hepta-long-horizon-data" | tee "$out/measurements.jsonl"
+          cargo build --locked --release -p codex-hepta-learning-ledger --example target_host_qualification
+          sha256sum target/release/examples/target_host_qualification > "$out/binary.sha256"
+          HEPTA_LEDGER_QUAL_ROOT="$data" \
+          HEPTA_LEDGER_RECORDS=100000 \
+          HEPTA_LEDGER_SEGMENT_RECORDS=1000 \
+          HEPTA_TARGET_HOST_ID="github-ubuntu-24.04-arm-${{ matrix.lane }}" \
+          HEPTA_KEEP_ARTIFACTS=1 \
+            timeout 600s target/release/examples/target_host_qualification \
+              | tee "$out/qualification-summary.json"
+          python3 -m json.tool "$out/qualification-summary.json" >/dev/null
+          find "$data" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/ledger-files.sha256"
+          du -sk "$data" > "$out/ledger-size-kib.txt"
       - name: Retain real-file measurements
         if: always() && steps.ledger_measure.outcome != 'skipped'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -192,7 +234,7 @@ jobs:
       - name: Strict selected-package Clippy
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+        run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
       - name: Unmodified source
         if: always()
         shell: bash

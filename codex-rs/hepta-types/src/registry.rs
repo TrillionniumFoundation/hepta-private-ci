@@ -13,7 +13,7 @@ use crate::NumericProfileDefinitionV1;
 use crate::NumericProfileV1;
 use crate::StableId;
 use crate::canonical_digest_v1;
-use crate::validate_id;
+use crate::identity::validate_id_profile_raw;
 
 pub const MAX_REGISTRY_ENTRIES_V1: usize = 256;
 pub const MAX_REGISTRY_DEFINITION_BYTES_V1: usize = 4_096;
@@ -61,7 +61,7 @@ impl RegistryDefinitionV1 {
         if version == 0 {
             return Err(RegistryError::InvalidVersion);
         }
-        validate_id(id.as_str(), kind.id_profile()).map_err(RegistryError::Identity)?;
+        validate_id_profile_raw(id.as_str(), kind.id_profile()).map_err(RegistryError::Identity)?;
         let definition = BoundedText::try_from_str(definition).map_err(RegistryError::Bounded)?;
         let type_id = StableId::new("platform.types:registry-definition-v1")
             .map_err(RegistryError::Identity)?;
@@ -119,7 +119,12 @@ impl RegistryDefinitionV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContractRegistryV1 {
     entries: Vec<RegistryDefinitionV1>,
+    /// Immutable lookup projection sorted by `(kind, digest, canonical entry
+    /// index)`. It is derived only from already-validated registry content and
+    /// never caches freshness, authorization or final-use acceptance.
+    definition_digest_index: Vec<(RegistryKindV1, Digest32, usize)>,
     numeric_profiles: Vec<NumericProfileDefinitionV1>,
+    registry_digest: Digest32,
 }
 
 impl ContractRegistryV1 {
@@ -157,6 +162,13 @@ impl ContractRegistryV1 {
                 return Err(RegistryError::DuplicateDefinition);
             }
         }
+        let mut definition_digest_index = entries
+            .iter()
+            .enumerate()
+            .map(|(entry_index, entry)| (entry.kind, entry.digest, entry_index))
+            .collect::<Vec<_>>();
+        definition_digest_index.sort_unstable();
+
         numeric_profiles
             .sort_unstable_by_key(super::numeric_profile::NumericProfileDefinitionV1::profile);
         for pair in numeric_profiles.windows(2) {
@@ -164,9 +176,25 @@ impl ContractRegistryV1 {
                 return Err(RegistryError::DuplicateNumericProfile);
             }
         }
+        let registry_digest = compute_registry_digest(&entries, &numeric_profiles)?;
+        // Length limits alone do not bound retained caller allocations: a
+        // one-entry or empty input can still reserve an arbitrarily large Vec.
+        // Preserve within-bound allocations and normalize only excess capacity.
+        let entries = if entries.capacity() > MAX_REGISTRY_ENTRIES_V1 {
+            entries.into_boxed_slice().into_vec()
+        } else {
+            entries
+        };
+        let numeric_profiles = if numeric_profiles.capacity() > MAX_REGISTRY_ENTRIES_V1 {
+            numeric_profiles.into_boxed_slice().into_vec()
+        } else {
+            numeric_profiles
+        };
         Ok(Self {
             entries,
+            definition_digest_index,
             numeric_profiles,
+            registry_digest,
         })
     }
 
@@ -184,9 +212,17 @@ impl ContractRegistryV1 {
         id: &StableId,
         version: u32,
     ) -> Option<&RegistryDefinitionV1> {
-        self.entries
-            .iter()
-            .find(|entry| entry.kind == kind && entry.id == *id && entry.version == version)
+        let index = self
+            .entries
+            .binary_search_by(|entry| {
+                entry
+                    .kind
+                    .cmp(&kind)
+                    .then_with(|| entry.id.as_str().cmp(id.as_str()))
+                    .then_with(|| entry.version.cmp(&version))
+            })
+            .ok()?;
+        self.entries.get(index)
     }
 
     pub fn resolve_digest(
@@ -194,9 +230,16 @@ impl ContractRegistryV1 {
         kind: RegistryKindV1,
         digest: Digest32,
     ) -> Option<&RegistryDefinitionV1> {
-        self.entries
-            .iter()
-            .find(|entry| entry.kind == kind && entry.digest == digest)
+        let key = (kind, digest);
+        let index_position = self
+            .definition_digest_index
+            .partition_point(|(entry_kind, entry_digest, _)| (*entry_kind, *entry_digest) < key);
+        let (entry_kind, entry_digest, entry_index) =
+            *self.definition_digest_index.get(index_position)?;
+        if (entry_kind, entry_digest) != key {
+            return None;
+        }
+        self.entries.get(entry_index)
     }
 
     pub fn normalization_definition(&self, digest: Digest32) -> Option<&RegistryDefinitionV1> {
@@ -215,37 +258,46 @@ impl ContractRegistryV1 {
         &self,
         profile: NumericProfileV1,
     ) -> Result<&NumericProfileDefinitionV1, RegistryError> {
-        self.numeric_profiles
-            .iter()
-            .find(|definition| definition.profile() == profile)
-            .ok_or(RegistryError::UnknownNumericProfile)
+        let index = self
+            .numeric_profiles
+            .binary_search_by(|definition| definition.profile().cmp(&profile))
+            .map_err(|_| RegistryError::UnknownNumericProfile)?;
+        Ok(&self.numeric_profiles[index])
     }
 
+    /// Return the immutable, versioned canonical registry commitment computed
+    /// during construction. The result proves content identity; freshness and
+    /// current-generation policy remain with the product owner.
     pub fn registry_digest(&self) -> Result<Digest32, RegistryError> {
-        let type_id = StableId::new("platform.types:contract-registry-v1")
-            .map_err(RegistryError::Identity)?;
-        let definition_values: Vec<CanonicalValueV1<'_>> = self
-            .entries
-            .iter()
-            .map(|entry| CanonicalValueV1::Digest(entry.digest))
-            .collect();
-        let profile_values: Vec<CanonicalValueV1<'_>> = self
-            .numeric_profiles
-            .iter()
-            .map(|profile| CanonicalValueV1::Digest(profile.digest()))
-            .collect();
-        let fields = [
-            CanonicalFieldV1 {
-                name: "definitions",
-                value: CanonicalValueV1::Array(&definition_values),
-            },
-            CanonicalFieldV1 {
-                name: "numeric_profiles",
-                value: CanonicalValueV1::Array(&profile_values),
-            },
-        ];
-        canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)
+        Ok(self.registry_digest)
     }
+}
+
+fn compute_registry_digest(
+    entries: &[RegistryDefinitionV1],
+    numeric_profiles: &[NumericProfileDefinitionV1],
+) -> Result<Digest32, RegistryError> {
+    let type_id =
+        StableId::new("platform.types:contract-registry-v1").map_err(RegistryError::Identity)?;
+    let definition_values: Vec<CanonicalValueV1<'_>> = entries
+        .iter()
+        .map(|entry| CanonicalValueV1::Digest(entry.digest))
+        .collect();
+    let profile_values: Vec<CanonicalValueV1<'_>> = numeric_profiles
+        .iter()
+        .map(|profile| CanonicalValueV1::Digest(profile.digest()))
+        .collect();
+    let fields = [
+        CanonicalFieldV1 {
+            name: "definitions",
+            value: CanonicalValueV1::Array(&definition_values),
+        },
+        CanonicalFieldV1 {
+            name: "numeric_profiles",
+            value: CanonicalValueV1::Array(&profile_values),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
