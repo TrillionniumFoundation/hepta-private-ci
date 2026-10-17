@@ -43,6 +43,7 @@ permissions:
 concurrency:
   group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   selftest:

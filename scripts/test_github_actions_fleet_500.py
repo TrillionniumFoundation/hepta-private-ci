@@ -189,6 +189,61 @@ class TestFleetAudit(unittest.TestCase):
             1,
         )
 
+    def test_queue_delay_ignores_queued_and_skipped_job_timestamps(self):
+        now = datetime(2026, 10, 17, tzinfo=timezone.utc)
+        run = {
+            "id": 123,
+            "status": "in_progress",
+            "created_at": "2026-10-17T04:00:00Z",
+        }
+
+        def query(path, params):
+            if path.endswith("/runs"):
+                if "created" in params:
+                    return {"total_count": 0, "workflow_runs": []}
+                if params["status"] == "in_progress":
+                    return {"total_count": 1, "workflow_runs": [run]}
+                return {"total_count": 0, "workflow_runs": []}
+            return {
+                "total_count": 3,
+                "jobs": [
+                    {
+                        "status": "queued",
+                        "created_at": "2026-10-17T04:00:00Z",
+                        "started_at": "2026-10-17T04:00:00Z",
+                        "runner_name": None,
+                    },
+                    {
+                        "status": "completed",
+                        "conclusion": "skipped",
+                        "created_at": "2026-10-17T04:00:00Z",
+                        "started_at": "2026-10-17T04:00:00Z",
+                        "runner_name": None,
+                    },
+                    {
+                        "status": "in_progress",
+                        "created_at": "2026-10-17T04:00:00Z",
+                        "started_at": "2026-10-17T04:03:00Z",
+                        "runner_name": "GitHub Actions 123",
+                        "labels": ["ubuntu-24.04"],
+                    },
+                ],
+            }
+
+        result = summarize("owner/repo", query, now=now)
+        observed = result["job_observation"]
+        self.assertEqual(observed["observed_started_jobs"], 1)
+        self.assertEqual(observed["median_started_job_queue_seconds"], 180)
+        self.assertEqual(observed["currently_running_jobs_lower_bound"], 1)
+
+    def test_workflow_retains_fifo_pending_runs(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("  queue: max\n", workflow)
+        self.assertIn("  cancel-in-progress: false\n", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()

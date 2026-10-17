@@ -112,7 +112,14 @@ def summarize(
                 labels[f"label:{','.join(sorted(tag)) or '(none)'}"] += 1
             started = _time(job.get("started_at"))
             created = _time(job.get("created_at"))
-            if started and created:
+            # GitHub can populate started_at on queued/unassigned jobs.
+            # A timestamp alone is not proof a runner actually started work.
+            if (
+                state in {"in_progress", "completed"}
+                and (job.get("runner_name") or job.get("runner_id"))
+                and started
+                and created
+            ):
                 queue_seconds.append(max(0, (started - created).total_seconds()))
         inspected_runs.append(
             {

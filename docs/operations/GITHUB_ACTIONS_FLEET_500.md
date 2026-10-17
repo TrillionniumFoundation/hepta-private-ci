@@ -16,7 +16,7 @@ Runners. It does not cancel existing CI or bypass required checks.
 The public hepta-private-ci main commit
 f8c9419df6ddeb36ff8b522a50219981fb8d9345 contained 76 Python test
 files under scripts/, with 903 AST-defined test_* methods before adding
-fleet tests. After adding six planner/audit regressions, 909 statically
+fleet tests. After adding eight planner/audit regressions, 911 statically
 recognizable unittest.TestCase methods were available in the local
 source-only scan. Not all 909 were independently run. The planner selects
 500 different method identifiers, not 500 fake sleeps or build duplicates.
@@ -33,7 +33,11 @@ dispatch **two** pinned cohorts A and B to offer 500 unique jobs.
 Actual simultaneous execution is limited by your account plan, runner group,
 operating-system pool, budget, and other CI workloads. Standard GitHub-hosted
 concurrency is 20/40/60/500 for Free/Pro/Team/Enterprise respectively.
-**The organization plan and allocated quota have not been verified.**
+**The organization plan was verified as Enterprise via Pocket4 authenticated GitHub CLI on 2026-10-17.** GitHub's published *default* Enterprise standard-hosted concurrency is 500, but a 500-job simultaneous running peak has not yet been observed or verified, and effective per-pool limits may vary.
+
+A read-only 33-second scan of 30 active org repositories at 2026-10-17T04:08:16Z..04:08:49Z observed 102 job records in `in_progress` state across 33 workflow runs (Linux x64 28, ARM 22, Windows 32, macOS 20); the non-atomic scan is **not** a same-instant peak claim. Read-only billing reported net zero Actions compute for the sampled SKUs, with storage usage billed separately. These figures are sampled, not a future price guarantee.
+
+The GitHub Actions workflow concurrency group uses `queue: max` (supported since May 2026) alongside `cancel-in-progress: false` to retain pending manual dispatch runs instead of replacing the previous pending cohort.
 
 Reference: https://docs.github.com/en/actions/reference/limits
 Usage: https://docs.github.com/en/actions/concepts/metrics
