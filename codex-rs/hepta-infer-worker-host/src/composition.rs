@@ -66,7 +66,6 @@ impl CellHeadManifest {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct ResidentEncoder {
-    key: CompositionKey,
     shared_memory_bytes: u64,
     references: usize,
 }
@@ -166,7 +165,6 @@ impl SharedEncoderPool {
                 self.encoders.insert(
                     key.clone(),
                     ResidentEncoder {
-                        key: key.clone(),
                         shared_memory_bytes,
                         references: 1,
                     },
@@ -181,7 +179,7 @@ impl SharedEncoderPool {
                 head: head.clone(),
             },
         );
-        Ok(self.receipt_for(&key, &head.cell_id, encoder_loaded))
+        self.receipt_for(&key, &head.cell_id, encoder_loaded)
     }
 
     pub fn detach_cell(&mut self, cell_id: &str) -> Result<CompositionReceipt, CompositionError> {
@@ -250,17 +248,22 @@ impl SharedEncoderPool {
             + self.cells.values().map(|item| item.head.private_memory_bytes).sum::<u64>()
     }
 
-    fn receipt_for(&self, key: &CompositionKey, cell_id: &str, encoder_loaded: bool) -> CompositionReceipt {
-        let encoder = self.encoders.get(key).expect("attached encoder must be resident");
-        let head = self.cells.get(cell_id).expect("attached head must be bound");
-        CompositionReceipt {
+    fn receipt_for(
+        &self,
+        key: &CompositionKey,
+        cell_id: &str,
+        encoder_loaded: bool,
+    ) -> Result<CompositionReceipt, CompositionError> {
+        let encoder = self.encoders.get(key).ok_or(CompositionError::CellKeyMismatch)?;
+        let head = self.cells.get(cell_id).ok_or(CompositionError::CellNotBound)?;
+        Ok(CompositionReceipt {
             cell_id: cell_id.to_owned(),
             encoder_loaded,
             shared_memory_bytes: encoder.shared_memory_bytes,
             private_head_memory_bytes: head.head.private_memory_bytes,
             active_cells: self.cells.len(),
             resident_encoders: self.encoders.len(),
-        }
+        })
     }
 }
 
