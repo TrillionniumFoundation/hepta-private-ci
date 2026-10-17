@@ -1,6 +1,6 @@
 """G8 full-corpus source-owner. Only named TRAIN gold crosses the model boundary.
 
-G5's pre-selected questions are immutable. The corpus is now the *full* original
+G5's preselected questions are immutable. The corpus is now the *full* original
 utterance set at both TRAIN and HELD, removing G7's asymmetric coverage regime.
 No production authority; source owner deletes original raw QA before handoff.
 """
