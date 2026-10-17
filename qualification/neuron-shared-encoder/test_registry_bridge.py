@@ -121,6 +121,10 @@ def envelope(modality: str, *, slots: int = 16, regions: int = 0):
 
 
 class RegistryBridgeTests(unittest.TestCase):
+    def test_incomplete_envelope_is_rejected_explicitly(self) -> None:
+        with self.assertRaises(RegistryError):
+            bind_envelope_to_registry(object(), STEM, TOWERS, PROJECTORS)
+
     def test_audio_envelope_binds_to_frozen_registries(self) -> None:
         bound = bind_envelope_to_registry(envelope("audio"), STEM, TOWERS, PROJECTORS)
         self.assertIsInstance(bound, BoundModalityEnvelopeV1)
