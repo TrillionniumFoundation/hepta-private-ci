@@ -397,7 +397,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             'if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" ]]; then',
             workflow,
         )
-        self.assertIn('aarch64-apple-darwin|x86_64-apple-darwin) ;;', workflow)
+        self.assertIn("aarch64-apple-darwin|x86_64-apple-darwin) ;;", workflow)
         self.assertIn('*) exit "${bazel_status}" ;;', workflow)
         self.assertIn(
             'echo "Bazel exited 37 on macOS ${TARGET}; '
