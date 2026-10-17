@@ -248,8 +248,7 @@ fn validate_request<D>(
     {
         return Err(SharedEncoderError::InputRangeViolation);
     }
-    if canonical_shared_encoder_input_digest_v1(&request.input_features_q24)
-        != request.input_digest
+    if canonical_shared_encoder_input_digest_v1(&request.input_features_q24) != request.input_digest
     {
         return Err(SharedEncoderError::InputDigestMismatch);
     }
@@ -264,10 +263,7 @@ fn validate_cells(cell_ids: &[StableId]) -> Result<(), SharedEncoderError> {
         return Err(SharedEncoderError::CellLimitExceeded(cell_ids.len()));
     }
     for (index, cell_id) in cell_ids.iter().enumerate() {
-        if cell_ids[..index]
-            .iter()
-            .any(|previous| previous == cell_id)
-        {
+        if cell_ids[..index].iter().any(|previous| previous == cell_id) {
             return Err(SharedEncoderError::DuplicateCellId(cell_id.to_string()));
         }
     }
