@@ -151,8 +151,10 @@ class SourceDisjointSplitV1:
             _digest(name, value)
         source_digests = {self.train_source_digest, self.eval_source_digest, self.future_source_digest, self.ood_source_digest}
         _require(len(source_digests) == 4, "train/eval/future/ood sources must be disjoint")
-        for name, value in (("train_count", self.train_count), ("eval_count", self.eval_count), ("source_family_count", self.source_family_count), ("future_window_count", self.future_window_count)):
+        for name, value in (("train_count", self.train_count), ("eval_count", self.eval_count)):
             _integer(name, value, minimum=1)
+        _integer("source_family_count", self.source_family_count, minimum=2)
+        _integer("future_window_count", self.future_window_count, minimum=2)
         _integer("overlap_count", self.overlap_count, minimum=0)
         _require(self.overlap_count == 0, "source-disjoint split contains overlap")
         _boolean("independent_new_source", self.independent_new_source)
@@ -333,6 +335,7 @@ class ComponentResourceBundleV1:
 class StemQualificationRunV1:
     run_id: str
     candidate_id: str
+    task_id: str
     stem_digest: str
     stem_generation: int
     checkpoint: CheckpointRefV1
@@ -357,6 +360,7 @@ class StemQualificationRunV1:
     def __post_init__(self) -> None:
         _identifier("run_id", self.run_id)
         _identifier("candidate_id", self.candidate_id)
+        _identifier("task_id", self.task_id)
         _digest("stem_digest", self.stem_digest)
         _integer("stem_generation", self.stem_generation)
         _require(self.stem_digest == self.checkpoint.stem_digest, "run Stem digest differs from checkpoint")
@@ -396,6 +400,7 @@ class StemQualificationRunV1:
             "schema": SCHEMA_RUN,
             "run_id": self.run_id,
             "candidate_id": self.candidate_id,
+            "task_id": self.task_id,
             "stem_digest": self.stem_digest,
             "stem_generation": self.stem_generation,
             "checkpoint": self.checkpoint.to_dict(),
@@ -460,14 +465,17 @@ def qualify_from_receipt(
     _require(getattr(receipt, "budget_digest", None) == expected_budget_digest, "bridge receipt budget mismatch")
     _require(getattr(receipt, "model_digest", None) == checkpoint.checkpoint_digest, "bridge receipt model identity is missing or mismatched")
     _identifier("candidate_id", candidate_id)
+    _identifier("task_id", task_id)
     _digest("expected_budget_digest", expected_budget_digest)
     _digest("expected_cases_digest", expected_cases_digest)
     _digest("expected_cost_profile_digest", expected_cost_profile_digest)
     _require(cases_digest == expected_cases_digest, "cases digest does not match expected plan")
+    _require(budget_digest == expected_budget_digest, "budget digest does not match expected plan")
     _require(cost_profile_digest == expected_cost_profile_digest, "cost profile digest does not match expected plan")
     return StemQualificationRunV1(
         run_id=run_id,
         candidate_id=candidate_id,
+        task_id=task_id,
         stem_digest=checkpoint.stem_digest,
         stem_generation=checkpoint.generation,
         checkpoint=checkpoint,
