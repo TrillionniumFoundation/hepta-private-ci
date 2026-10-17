@@ -56,6 +56,21 @@ def _require(condition: bool, message: str) -> None:
         raise ContractError(message)
 
 
+def _boolean(name: str, value: Any) -> None:
+    _require(type(value) is bool, f"{name} must be a boolean")
+
+
+def _integer(name: str, value: Any, *, minimum: int = 0, maximum: int | None = None) -> None:
+    _require(type(value) is int, f"{name} must be an integer")
+    _require(value >= minimum, f"{name} is below its lower bound")
+    if maximum is not None:
+        _require(value <= maximum, f"{name} is above its upper bound")
+
+
+def _finite(name: str, value: float) -> None:
+    _require(type(value) in (int, float) and math.isfinite(float(value)), f"{name} must be finite")
+
+
 def _digest(name: str, value: str) -> None:
     _require(isinstance(value, str) and bool(_HEX64.fullmatch(value)), f"{name} must be a lowercase sha256")
 
@@ -65,7 +80,7 @@ def _identifier(name: str, value: str) -> None:
 
 
 def _finite_nonnegative(name: str, value: float) -> None:
-    _require(isinstance(value, (int, float)) and math.isfinite(float(value)), f"{name} must be finite")
+    _finite(name, value)
     _require(float(value) >= 0.0, f"{name} must be non-negative")
 
 
@@ -94,12 +109,12 @@ class StemManifestV1:
             ("adapter_basis_digest", self.adapter_basis_digest),
         ):
             _digest(name, value)
-        _require(isinstance(self.hidden_width, int) and 0 < self.hidden_width <= 8192, "hidden_width is out of bounds")
+        _integer("hidden_width", self.hidden_width, minimum=1, maximum=8192)
         _require(0 < len(self.modality_projectors) <= 32, "at least one modality projector is required")
         _require(tuple(sorted(set(self.modality_projectors))) == self.modality_projectors, "projectors must be sorted and unique")
         for projector in self.modality_projectors:
             _bounded_text("modality_projector", projector)
-        _require(isinstance(self.current_generation, int) and self.current_generation >= 0, "current_generation is invalid")
+        _integer("current_generation", self.current_generation)
         _require(self.freeze_policy == FREEZE_POLICY, "the current Stem must be immutable")
 
     def to_dict(self) -> dict[str, Any]:
@@ -136,13 +151,16 @@ class CellArtifactV1:
         _digest("head_digest", self.head_digest)
         _digest("memory_schema_digest", self.memory_schema_digest)
         _digest("objective_digest", self.objective_digest)
-        _require(isinstance(self.adapter_rank, int) and 0 < self.adapter_rank <= 1024, "adapter_rank is out of bounds")
+        _integer("adapter_rank", self.adapter_rank, minimum=1, maximum=1024)
         _require(tuple(sorted(set(self.layer_mask))) == self.layer_mask, "layer_mask must be sorted and unique")
-        _require(all(isinstance(layer, int) and 0 <= layer <= 4096 for layer in self.layer_mask), "layer_mask is invalid")
+        _require(all(type(layer) is int and 0 <= layer <= 4096 for layer in self.layer_mask), "layer_mask is invalid")
         _bounded_text("state_namespace", self.state_namespace)
-        _require(isinstance(self.generation, int) and self.generation >= 0, "generation is invalid")
+        _integer("generation", self.generation)
         if self.fallback_cell_id is not None:
             _identifier("fallback_cell_id", self.fallback_cell_id)
+            _require(self.fallback_cell_id != self.cell_id, "a Cell cannot fall back to itself")
+        _boolean("current_run_mutation", self.current_run_mutation)
+        _boolean("next_snapshot_only", self.next_snapshot_only)
         _require(not self.current_run_mutation, "runtime mutation is forbidden for a Cell artifact")
         _require(self.next_snapshot_only, "Cell changes can only enter a future snapshot")
         _require(not (_DISALLOWED_AUTHORITY & set(self.authority)), "Cell artifacts cannot mint authority")
@@ -224,15 +242,18 @@ class ModalityEnvelopeV1:
         _digest("stem_digest", self.stem_digest)
         for name, value in (("raw_digest", self.raw_digest), ("feature_digest", self.feature_digest), ("projector_digest", self.projector_digest)):
             _digest(name, value)
-        _require(isinstance(self.latent_width, int) and 0 < self.latent_width <= 2048, "latent_width is out of bounds")
-        _require(isinstance(self.slots, int) and 0 < self.slots <= 256, "slots are out of bounds")
-        _require(isinstance(self.region_count, int) and 0 <= self.region_count <= 4096, "region_count is invalid")
+        _integer("latent_width", self.latent_width, minimum=1, maximum=2048)
+        _integer("slots", self.slots, minimum=1, maximum=256)
+        _integer("region_count", self.region_count, minimum=0, maximum=4096)
         if self.temporal_span_ms is not None:
             _finite_nonnegative("temporal_span_ms", self.temporal_span_ms)
         if self.modality in {"audio", "video"}:
             _require(self.temporal_span_ms is not None, "temporal modalities require a time span")
+        else:
+            _require(self.temporal_span_ms is None, "only audio and video envelopes may carry a time span")
         if self.modality != "image":
             _require(self.region_count == 0, "region_count is only valid for image envelopes")
+        _boolean("readonly", self.readonly)
         _require(self.readonly, "feature envelopes must be readonly")
 
     def to_dict(self) -> dict[str, Any]:
@@ -283,10 +304,15 @@ class System2CandidateV1:
         _digest("stem_digest", self.stem_digest)
         _digest("objective_digest", self.objective_digest)
         _digest("evidence_digest", self.evidence_digest)
-        _finite_nonnegative("utility_lcb", self.utility_lcb)
-        _finite_nonnegative("utility_ucb", self.utility_ucb)
+        # Utility may be negative after a fully charged resource cost.  The
+        # interval only needs to be finite and ordered; forbidding negative
+        # values would silently discard valid high-cost alternatives.
+        _finite("utility_lcb", self.utility_lcb)
+        _finite("utility_ucb", self.utility_ucb)
         _require(self.utility_lcb <= self.utility_ucb, "utility interval is inverted")
         _require(self.authority == "DENY_ALL", "System2 advisory cannot carry authority")
+        _boolean("feasible", self.feasible)
+        _boolean("model_efficacy_measured", self.model_efficacy_measured)
         _require(not self.model_efficacy_measured, "this contract cannot certify model efficacy")
 
     @property
@@ -383,7 +409,7 @@ class ParameterLedgerV1:
     def __post_init__(self) -> None:
         for name in ("stem_params", "projector_params", "resident_cell_params", "active_cell_params", "state_params", "cache_params", "logical_cells", "active_cells"):
             value = getattr(self, name)
-            _require(isinstance(value, int) and value >= 0, f"{name} must be a non-negative integer")
+            _integer(name, value)
         _require(self.active_cell_params <= self.resident_cell_params, "active Cell parameters exceed resident parameters")
         _require(self.active_cells <= self.logical_cells, "active Cells exceed logical Cells")
 
@@ -420,7 +446,8 @@ class SplitGateV1:
         for name, value in (("fallback_coverage", self.fallback_coverage), ("rollback_recovery", self.rollback_recovery)):
             _finite_nonnegative(name, value)
             _require(float(value) <= 1.0, f"{name} cannot exceed one")
-        _require(isinstance(self.deleted_replay, int) and self.deleted_replay >= 0, "deleted_replay is invalid")
+        _integer("deleted_replay", self.deleted_replay)
+        _boolean("reader_sufficient", self.reader_sufficient)
 
     @property
     def passes(self) -> bool:
@@ -465,7 +492,15 @@ class SplitProposalV1:
         _require(self.parent.adapter_basis_digest == self.child.adapter_basis_digest, "parent and child must use the same adapter basis")
         _require(self.child.parent_cell_id == self.parent.cell_id, "child parent link is invalid")
         _require(self.child.generation > self.parent.generation, "split must advance the Cell generation")
+        _boolean("current_run_mutation", self.current_run_mutation)
         _require(not self.current_run_mutation and not self.child.current_run_mutation, "split cannot mutate the current run")
+        _require(self.child.fallback_cell_id == self.parent.cell_id, "split child must fall back to its parent")
+        _require(self.child.state_namespace != self.parent.state_namespace, "split child needs an isolated state namespace")
+        _require(self.child.adapter_rank == self.parent.adapter_rank, "split proposal must be zero-delta for adapter rank")
+        _require(self.child.layer_mask == self.parent.layer_mask, "split proposal must be zero-delta for layer mask")
+        _require(self.child.head_digest == self.parent.head_digest, "split proposal must be zero-delta for head weights")
+        _require(self.child.memory_schema_digest == self.parent.memory_schema_digest, "split proposal must preserve memory schema")
+        _require(self.child.objective_digest == self.parent.objective_digest, "split proposal must preserve objective")
         if self.disposition == "accept_next_snapshot":
             _require(self.gate.passes, "a failed gate cannot be accepted")
 
@@ -544,12 +579,31 @@ def build_four_condition_plan(
 
 
 def validate_no_model_visible_gold(plan: Mapping[str, Any]) -> None:
+    _require(isinstance(plan, Mapping), "Reader plan must be a mapping")
+    _require(plan.get("schema") == SCHEMA_READER, "Reader plan schema is invalid")
+    _identifier("task_id", plan.get("task_id"))
     _require(tuple(plan.get("arms", ())) == ARM_ORDER, "Reader arms must be in the four-condition order")
     evaluator = plan.get("evaluator", {})
-    _require(isinstance(evaluator, Mapping) and evaluator.get("gold_visible_to_model") is False, "gold must be evaluator-only")
-    for request in plan.get("model_requests", ()):
+    _require(isinstance(evaluator, Mapping), "Reader evaluator metadata is invalid")
+    _require(set(evaluator) == {"gold", "gold_visible_to_model"}, "Reader evaluator metadata has undeclared fields")
+    _bounded_text("evaluator_gold", evaluator.get("gold"), 1024)
+    _require(type(evaluator.get("gold_visible_to_model")) is bool and evaluator.get("gold_visible_to_model") is False, "gold must be evaluator-only")
+    requests = plan.get("model_requests")
+    _require(isinstance(requests, (tuple, list)) and len(requests) == len(ARM_ORDER), "Reader plan must contain exactly four model requests")
+    seen_arms: set[str] = set()
+    for request in requests:
+        _require(isinstance(request, Mapping), "each model request must be a mapping")
+        _require(set(request) == {"task_id", "arm", "question", "options", "evidence", "gold_visible_to_model"}, "model request has undeclared fields")
         _require("gold" not in request and "evaluator" not in request, "gold leaked into a model request")
-        _require(request.get("gold_visible_to_model") is False, "model request gold visibility must be false")
+        _require(request.get("task_id") == plan.get("task_id"), "model request task_id does not match the plan")
+        _require(request.get("arm") in ARM_ORDER and request.get("arm") not in seen_arms, "model request arm is invalid or duplicated")
+        seen_arms.add(request.get("arm"))
+        _bounded_text("question", request.get("question"), 4096)
+        options = request.get("options")
+        _require(isinstance(options, (tuple, list)) and options and all(isinstance(option, str) and option for option in options), "model request options are invalid")
+        _require(isinstance(request.get("evidence"), str) and len(request.get("evidence")) <= 16384, "model request evidence is invalid")
+        _require(type(request.get("gold_visible_to_model")) is bool and request.get("gold_visible_to_model") is False, "model request gold visibility must be false")
+    _require(seen_arms == set(ARM_ORDER), "Reader plan must cover every arm exactly once")
 
 
 def manifest_digest(manifest: StemManifestV1) -> str:
