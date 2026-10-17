@@ -31,10 +31,14 @@ def public_probe(tokenizer, model, tensor_from, inference_context):
                                         enable_thinking=False)
     if type(ids) is not list or not 1 <= len(ids) <= 2048 or any(type(x) is not int or x < 0 for x in ids):
         raise ValueError('public tokenizer geometry invalid')
+    # A single unpadded prompt still needs an explicit full attention mask:
+    # this model has pad_token_id == eos_token_id, so auto-inference is unsafe.
+    encoded_input = tensor_from([ids])
+    attention_mask = tensor_from([[1] * len(ids)])
     started = time.process_time()
     with inference_context():
-        out = model.generate(input_ids=tensor_from([ids]), do_sample=False,
-                             max_new_tokens=OUT_CAP,
+        out = model.generate(input_ids=encoded_input, attention_mask=attention_mask,
+                             do_sample=False, max_new_tokens=OUT_CAP,
                              pad_token_id=tokenizer.eos_token_id)
     tokens = out[0].tolist()
     if (type(tokens) is not list or any(type(x) is not int or x < 0 for x in tokens)

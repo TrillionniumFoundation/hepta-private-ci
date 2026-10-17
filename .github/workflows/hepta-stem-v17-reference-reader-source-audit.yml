@@ -6,6 +6,10 @@ on:
       - "qualification/stem-cell-v1/v18_reference_material_stage.py"
       - "qualification/stem-cell-v1/v25_pinned_qwen_loader.py"
       - "qualification/stem-cell-v1/test_v25_pinned_qwen_loader.py"
+      - "qualification/stem-cell-v1/v26_public_smoke_audit.py"
+      - "qualification/stem-cell-v1/test_v26_public_smoke_audit.py"
+      - "qualification/stem-cell-v1/STEM_V26_QWEN_OBSERVED_FORWARD.md"
+      - "qualification/stem-cell-v1/V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json"
       - "qualification/stem-cell-v1/STEM_V25_QWEN_LOADER_COMPAT.md"
       - "qualification/stem-cell-v1/test_v18_reference_material_stage.py"
       - "qualification/stem-cell-v1/STEM_V18_REFERENCE_MATERIAL_AND_CENSORING.md"
@@ -62,6 +66,19 @@ jobs:
             -p 'test_v19_original_archive_preflight.py' -v
           python -O -m unittest discover -s qualification/stem-cell-v1 \
             -p 'test_v19_original_archive_preflight.py' -v
+      - name: Validate observed public Qwen receipt and structured privacy regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-input --disable-pip-version-check 'PyYAML==6.0.3'
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m compileall -q qualification/stem-cell-v1/v26_public_smoke_audit.py qualification/stem-cell-v1/test_v26_public_smoke_audit.py
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v26_public_smoke_audit.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v26_public_smoke_audit.py' -v
+          python qualification/stem-cell-v1/v26_public_smoke_audit.py \
+            --workflow .github/workflows/hepta-stem-v18-qwen-public-smoke.yml \
+            --source qualification/stem-cell-v1/v18_reference_public_smoke.py \
+            --receipt qualification/stem-cell-v1/V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json
       - name: Verify no-go public source digest receipt without private archive
         shell: bash
         run: |

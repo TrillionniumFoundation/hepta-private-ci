@@ -219,7 +219,11 @@ def execute(plan, source, ranks, model_folder, spec, output):
             journal.flush()
             os.fsync(journal.fileno())
             t0 = time.process_time()
-            out = model.generate(input_ids=torch.tensor([ids], dtype=torch.long),
+            # With pad == EOS, Transformers cannot infer the correct mask.
+            # No padding is introduced and every original input token remains visible.
+            input_ids = torch.tensor([ids], dtype=torch.long)
+            out = model.generate(input_ids=input_ids,
+                                 attention_mask=torch.ones_like(input_ids),
                                  do_sample=False, max_new_tokens=OUT_CAP,
                                  pad_token_id=tokenizer.eos_token_id)
             all_ids = out[0].tolist()
