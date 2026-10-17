@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 
 pub mod hnmf;
+pub mod memory_cell;
 pub mod hnmf_learning;
 pub mod lane_c;
 pub mod wire;
