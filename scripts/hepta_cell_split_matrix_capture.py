@@ -37,8 +37,10 @@ MAX_HOST_RESULT_BYTES = 256 * 1024
 MAX_LOG_BYTES = 2 * 1024 * 1024
 
 
-def read_stable_raw(path: Path, limit: int, label: str) -> bytes:
-    """Read one bounded, regular, single-linked original inode, not a pathname claim."""
+def read_stable_raw(
+    path: Path, limit: int, label: str
+) -> tuple[bytes, tuple[int, int]]:
+    """Read bounded original bytes and return their verified device/inode identity."""
     flags = (
         os.O_RDONLY
         | getattr(os, "O_CLOEXEC", 0)
@@ -77,12 +79,12 @@ def read_stable_raw(path: Path, limit: int, label: str) -> bytes:
         or named.st_nlink != 1
     ):
         raise InvalidEvidence(f"{label}: original evidence changed during read")
-    return raw
+    return raw, (before.st_dev, before.st_ino)
 
 
 def read_bounded_json(path: Path, limit: int, label: str) -> Any:
     """Read a stable original JSON packet without FIFO waits or duplicate keys."""
-    raw = read_stable_raw(path, limit, label)
+    raw, _ = read_stable_raw(path, limit, label)
     try:
         return strict_json_loads(raw)
     except (UnicodeDecodeError, ValueError) as error:
@@ -203,11 +205,11 @@ def execute_matrix(
     # A later workload may rewrite earlier files. Freeze the original bytes
     # and re-open their original inodes before publishing a diagnostic packet.
     # Detached observer custody remains independently mandatory.
-    frozen: dict[str, tuple[int, bytes]] = {}
+    frozen: dict[str, tuple[int, bytes, tuple[int, int]]] = {}
 
     def freeze(path: Path, limit: int) -> bytes:
-        raw = read_stable_raw(path, limit, path.name)
-        frozen[path.name] = (limit, hashlib.sha256(raw).digest())
+        raw, inode = read_stable_raw(path, limit, path.name)
+        frozen[path.name] = (limit, hashlib.sha256(raw).digest(), inode)
         return raw
 
     freeze(output / "manifest.json", MAX_MANIFEST_BYTES)
@@ -274,9 +276,12 @@ def execute_matrix(
 
     # Identical parsed metrics are insufficient: any earlier raw result, log
     # or manifest mutation invalidates capture. Do not write a complete packet.
-    for name, (limit, original_sha) in frozen.items():
-        current = read_stable_raw(output / name, limit, name)
-        if hashlib.sha256(current).digest() != original_sha:
+    for name, (limit, original_sha, original_inode) in frozen.items():
+        current, current_inode = read_stable_raw(output / name, limit, name)
+        if (
+            current_inode != original_inode
+            or hashlib.sha256(current).digest() != original_sha
+        ):
             raise InvalidEvidence(
                 f"{name}: original host evidence changed after measurement"
             )
