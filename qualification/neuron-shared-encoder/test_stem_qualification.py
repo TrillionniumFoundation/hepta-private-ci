@@ -99,14 +99,14 @@ def component(kind: str) -> ComponentResourceReceiptV1:
 
 def bundle() -> ComponentResourceBundleV1:
     kinds = (
-        "stem_encoder",
-        "modality_tower",
-        "projector",
         "cell_head",
         "controller_decoder",
-        "state_cache",
-        "verification",
         "device",
+        "modality_tower",
+        "projector",
+        "state_cache",
+        "stem_encoder",
+        "verification",
     )
     return ComponentResourceBundleV1(
         bundle_id="resources.run",
