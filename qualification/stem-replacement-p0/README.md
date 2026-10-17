@@ -62,12 +62,22 @@ mutable revision or downgrade full-tensor checks just to obtain a score.
    independently sourced future windows, negative transfer, NDU utility, target
    host RSS/CPU/GPU/p95/p99 and independently authorized final-use/CNS.
 
+### Source metadata preflight
+
+`preflight.py` calls the pinned immutable HF revisions via `HfApi.model_info`
+and requires the advertised checkpoint and tokenizer inventory plus LFS metadata.
+It **never downloads checkpoint weights or creates a valid model loader receipt**.
+It rejects missing/oversized files and records Ettin's `.bin` conversion risk.
+A dedicated non-PR GitHub CI job performs the real upstream **metadata-only**
+lookup; source tests use mock metadata and cannot be treated as a Hub success.
+Network/Hub failure is a blocked candidate, not permission to use a mutable repo.
+
 ## Read-only executable gate
 
 ```bash
 cd qualification/stem-replacement-p0
-python3 -m unittest -q test_gate
-python3 -O -m unittest -q test_gate
+python3 -m unittest -q test_gate test_preflight
+python3 -O -m unittest -q test_gate test_preflight
 python3 gate.py --panel /secure/source/panel.json \
   --sealed /secure/research/sealed_predictions.json \
   --gold /secure/observer/original_gold.json \
