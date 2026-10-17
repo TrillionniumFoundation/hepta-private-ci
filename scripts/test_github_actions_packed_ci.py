@@ -1,12 +1,11 @@
 """Real-case batching tests; fail-closed evidence without fake runner passes."""
 
-from __future__ import annotations
-
 import hashlib
 import json
 from pathlib import Path
 import subprocess
 import tempfile
+import textwrap
 import unittest
 
 from scripts.github_actions_fleet_500 import collect_tests, plan
@@ -163,10 +162,65 @@ class PackedExecutionFixture(unittest.TestCase):
         (self.root / "scripts").mkdir(parents=True)
         (self.root / "scripts" / "__init__.py").write_text("")
         (self.root / "scripts" / "test_fixture.py").write_text(
-            "import unittest\nclass Fixtures(unittest.TestCase):\n"
-            "    def test_pass(self): self.assertTrue(True)\n"
-            "    def test_pass_second(self): self.assertTrue(True)\n"
-            "    def test_fail(self): self.assertEqual(1, 2)\n"
+            textwrap.dedent("""\
+                import os
+                import sys
+                import time
+                import unittest
+
+                class Fixtures(unittest.TestCase):
+                    def test_pass(self): self.assertTrue(True)
+                    def test_pass_second(self): self.assertTrue(True)
+                    def test_fail(self): self.assertEqual(1, 2)
+                    @unittest.skip("fixture skip")
+                    def test_skip(self): self.fail("must not run")
+                    @unittest.expectedFailure
+                    def test_expected_failure(self): self.fail("expected")
+                    @unittest.expectedFailure
+                    def test_unexpected_success(self): pass
+                    def test_error(self): raise RuntimeError("fixture error")
+                    def test_exit_zero(self): sys.exit(0)
+                    def test_hard_exit_zero(self): os._exit(0)
+                    def test_sleep(self): time.sleep(5)
+                    def test_subtests(self):
+                        for value in (1, 2):
+                            with self.subTest(value=value): self.assertGreater(value, 0)
+                    def test_subtest_failure(self):
+                        with self.subTest(value=1): self.assertEqual(1, 2)
+                    def test_noise(self):
+                        print('{"status":"failed","tests_run":999}')
+                        print("arbitrary stderr", file=sys.stderr)
+
+                class TearDownSkip(unittest.TestCase):
+                    @classmethod
+                    def tearDownClass(cls): raise unittest.SkipTest("teardown skipped")
+                    def test_pass(self): pass
+
+                class MissingCompletion(unittest.TestCase):
+                    def test_pass(self): pass
+                    def run(self, result):
+                        result.startTest(self)
+                        result.addSuccess(self)
+                        return result
+
+                class Redirected(unittest.TestCase):
+                    def test_pass(self): pass
+                    def run(self, result):
+                        Fixtures("test_pass")(result)
+                        return result
+
+                def empty_suite(): return unittest.TestSuite()
+                def extra_suite():
+                    return unittest.TestSuite([
+                        Fixtures("test_pass"), Fixtures("test_pass_second")])
+            """),
+            encoding="utf-8",
+        )
+        (self.root / "scripts" / "test_import_exit.py").write_text(
+            'import sys\nprint(\'{"status":"passed"}\', flush=True)\nsys.exit(0)\n'
+        )
+        (self.root / "scripts" / "test_import_hardexit.py").write_text(
+            "import os\nos._exit(0)\n"
         )
         for args in (
             ("init", "-q"),
@@ -184,7 +238,12 @@ class PackedExecutionFixture(unittest.TestCase):
         self.receipt = Path(holder.name) / "receipt.json"
 
     def schedule(self, *names):
-        cases = [f"scripts.test_fixture.Fixtures.test_{name}" for name in names]
+        cases = [
+            name
+            if name.startswith("scripts.")
+            else f"scripts.test_fixture.Fixtures.test_{name}"
+            for name in names
+        ]
         return {
             "selected_cases": cases,
             "cohort": "A",
@@ -216,6 +275,155 @@ class PackedExecutionFixture(unittest.TestCase):
         self.assertEqual([j["status"] for j in x["cases"]], ["failed", "passed"])
         self.assertEqual([j["exit_code"] for j in x["cases"]][-1], 0)
         self.assertEqual(json.loads(self.receipt.read_text())["status"], "failed")
+
+    def test_real_unittest_outcomes_are_distinct_and_only_success_passes(self):
+        x = run_cases(
+            self.root,
+            self.sha,
+            self.schedule(
+                "skip",
+                "expected_failure",
+                "unexpected_success",
+                "error",
+                "subtest_failure",
+                "exit_zero",
+                "pass",
+            ),
+            self.receipt,
+        )
+        self.assertEqual(x["status"], "failed")
+        self.assertEqual(
+            [case["status"] for case in x["cases"]],
+            [
+                "skipped",
+                "expected_failure",
+                "unexpected_success",
+                "test_error",
+                "failed",
+                "test_error",
+                "passed",
+            ],
+        )
+        self.assertEqual(
+            [case["exit_code"] for case in x["cases"]], [0, 0, 1, 1, 1, 1, 0]
+        )
+        self.assertEqual(json.loads(self.receipt.read_text()), x)
+
+    def test_teardown_class_skip_rejects_a_recorded_success(self):
+        target = "scripts.test_fixture.TearDownSkip.test_pass"
+        x = run_cases(self.root, self.sha, self.schedule(target), self.receipt)
+        result = x["cases"][0]
+        self.assertEqual(
+            (x["status"], result["status"], result["exit_code"]),
+            ("failed", "skipped", 0),
+        )
+        self.assertEqual(
+            result["unittest_result"],
+            {
+                "version": 1,
+                "case": target,
+                "tests_run": 1,
+                "started": [target],
+                "completed": [target],
+                "successes": [target],
+                "skipped": 1,
+                "expected_failures": 0,
+                "unexpected_successes": 0,
+                "errors": 0,
+                "failures": 0,
+            },
+        )
+
+    def test_successful_subtests_and_noisy_output_keep_structured_success(self):
+        x = run_cases(
+            self.root, self.sha, self.schedule("subtests", "noise"), self.receipt
+        )
+        self.assertEqual(
+            (x["status"], [case["status"] for case in x["cases"]]),
+            ("passed", ["passed", "passed"]),
+        )
+        for case in x["cases"]:
+            self.assertEqual(case["unittest_result"]["successes"], [case["case"]])
+            self.assertEqual(case["unittest_result"]["tests_run"], 1)
+
+    def test_early_clean_exit_and_stdout_claims_cannot_replace_a_report(self):
+        x = run_cases(
+            self.root,
+            self.sha,
+            self.schedule(
+                "scripts.test_import_exit.Never.test_case",
+                "scripts.test_import_hardexit.Never.test_case",
+                "hard_exit_zero",
+                "pass",
+            ),
+            self.receipt,
+        )
+        self.assertEqual(x["status"], "failed")
+        self.assertEqual(
+            [(case["status"], case["exit_code"]) for case in x["cases"]],
+            [
+                ("missing_report", 0),
+                ("missing_report", 0),
+                ("missing_report", 0),
+                ("passed", 0),
+            ],
+        )
+
+    def test_single_target_must_start_finish_and_be_the_recorded_success(self):
+        x = run_cases(
+            self.root,
+            self.sha,
+            self.schedule(
+                "scripts.test_fixture.empty_suite",
+                "scripts.test_fixture.extra_suite",
+                "scripts.test_fixture.MissingCompletion.test_pass",
+                "scripts.test_fixture.Redirected.test_pass",
+                "pass",
+            ),
+            self.receipt,
+        )
+        self.assertEqual(x["status"], "failed")
+        self.assertEqual(
+            [case["status"] for case in x["cases"]],
+            ["incomplete_test"] * 4 + ["passed"],
+        )
+        self.assertEqual(
+            [case["unittest_result"]["tests_run"] for case in x["cases"]],
+            [0, 2, 1, 1, 1],
+        )
+
+    def test_real_timeout_still_runs_the_following_case(self):
+        x = run_cases(
+            self.root,
+            self.sha,
+            self.schedule("sleep", "pass"),
+            self.receipt,
+            timeout_seconds=1,
+        )
+        self.assertEqual(
+            (x["status"], [case["status"] for case in x["cases"]]),
+            ("failed", ["timed_out", "passed"]),
+        )
+
+    def test_successful_report_does_not_override_nonzero_process_exit(self):
+        def nonzero_runner(command, **kwargs):
+            completed = subprocess.run(command, **kwargs)
+            self.assertEqual(completed.returncode, 0)
+            completed.returncode = 7
+            return completed
+
+        x = run_cases(
+            self.root,
+            self.sha,
+            self.schedule("pass"),
+            self.receipt,
+            runner=nonzero_runner,
+        )
+        self.assertEqual(
+            (x["status"], x["cases"][0]["status"], x["cases"][0]["exit_code"]),
+            ("failed", "failed", 7),
+        )
+        self.assertEqual(x["cases"][0]["unittest_result"]["tests_run"], 1)
 
     def test_sha_mismatch_or_dirty_checkout_prevents_execution(self):
         with self.assertRaises(ValueError):

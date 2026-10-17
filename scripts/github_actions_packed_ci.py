@@ -6,8 +6,6 @@ One checkout executes a bounded, deterministic subset. Every case runs in a
 fresh Python subprocess; no failed, timed-out or missing case becomes PASS.
 """
 
-from __future__ import annotations
-
 import argparse
 from datetime import datetime, timezone
 import hashlib
@@ -19,8 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
-
-from scripts.github_actions_fleet_500 import collect_tests, plan
+import unittest
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 ALLOWED_WORKERS = frozenset({8, 16, 32})
@@ -28,6 +25,8 @@ ALLOWED_WORKERS = frozenset({8, 16, 32})
 
 def select_cases(root: Path, cohort: str, worker_count: int, worker_index: int) -> dict:
     """Partition canonical A, B, or the ALL union without duplicate methods."""
+    from scripts.github_actions_fleet_500 import collect_tests, plan
+
     if cohort not in {"A", "B", "ALL"}:
         raise ValueError("cohort must be A, B or ALL")
     if type(worker_count) is not int or worker_count not in ALLOWED_WORKERS:
@@ -100,6 +99,94 @@ def atomic_receipt(path: Path, receipt: dict) -> None:
             os.unlink(tmp)
 
 
+def _run_test_child(case: str, report_path: Path) -> int:
+    """Write a separate report only after unittest completes its full lifecycle."""
+
+    class CaseResult(unittest.TextTestResult):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.started = []
+            self.completed = []
+            self.successes = []
+
+        def startTest(self, test):
+            super().startTest(test)
+            self.started.append(test.id())
+
+        def stopTest(self, test):
+            super().stopTest(test)
+            self.completed.append(test.id())
+
+        def addSuccess(self, test):
+            super().addSuccess(test)
+            self.successes.append(test.id())
+
+    suite = unittest.TestLoader().loadTestsFromName(case)
+    result = unittest.TextTestRunner(verbosity=2, resultclass=CaseResult).run(suite)
+    atomic_receipt(
+        report_path,
+        {
+            "version": 1,
+            "case": case,
+            "tests_run": result.testsRun,
+            "started": result.started,
+            "completed": result.completed,
+            "successes": result.successes,
+            "failures": len(result.failures),
+            "errors": len(result.errors),
+            "skipped": len(result.skipped),
+            "expected_failures": len(result.expectedFailures),
+            "unexpected_successes": len(result.unexpectedSuccesses),
+        },
+    )
+    return 0 if result.wasSuccessful() else 1
+
+
+def _read_case_report(path: Path, case: str, exit_code: int) -> tuple[str, dict | None]:
+    """Require a completed, single, successful target in addition to exit zero."""
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return "missing_report", None
+    except (OSError, ValueError):
+        return "invalid_report", None
+    counts = (
+        "tests_run",
+        "failures",
+        "errors",
+        "skipped",
+        "expected_failures",
+        "unexpected_successes",
+    )
+    if (
+        not isinstance(report, dict)
+        or type(report.get("version")) is not int
+        or report["version"] != 1
+        or report.get("case") != case
+        or any(type(report.get(key)) is not int or report[key] < 0 for key in counts)
+        or any(
+            not isinstance(report.get(key), list)
+            or not all(isinstance(value, str) for value in report[key])
+            for key in ("started", "completed", "successes")
+        )
+    ):
+        return "invalid_report", None
+    for key, status in (
+        ("errors", "test_error"),
+        ("failures", "failed"),
+        ("unexpected_successes", "unexpected_success"),
+        ("skipped", "skipped"),
+        ("expected_failures", "expected_failure"),
+    ):
+        if report[key]:
+            return status, report
+    if report["tests_run"] != 1 or any(
+        report[key] != [case] for key in ("started", "completed", "successes")
+    ):
+        return "incomplete_test", report
+    return ("passed" if exit_code == 0 else "failed"), report
+
+
 def run_cases(
     root: Path,
     expected_sha: str,
@@ -145,24 +232,36 @@ def run_cases(
         beginning = time.monotonic()
         print(f"TEST_START {index + 1}/{len(expected)} {case}", flush=True)
         try:
-            completed = runner(
-                [sys.executable, "-m", "unittest", "-v", case],
-                cwd=root,
-                env=env,
-                text=True,
-                capture_output=True,
-                timeout=timeout_seconds,
-                check=False,
-            )
+            with tempfile.TemporaryDirectory(prefix="packed-case-") as directory:
+                report_path = Path(directory) / "result.json"
+                completed = runner(
+                    [
+                        sys.executable,
+                        str(Path(__file__).resolve()),
+                        "--unittest-case",
+                        case,
+                        str(report_path),
+                    ],
+                    cwd=root,
+                    env=env,
+                    text=True,
+                    capture_output=True,
+                    timeout=timeout_seconds,
+                    check=False,
+                )
+                status, report = _read_case_report(
+                    report_path, case, completed.returncode
+                )
             raw = (completed.stdout or "") + "\n" + (completed.stderr or "")
             result = {
                 "case": case,
-                "status": "passed" if completed.returncode == 0 else "failed",
+                "status": status,
                 "exit_code": completed.returncode,
+                "unittest_result": report,
                 "output_sha256": hashlib.sha256(raw.encode()).hexdigest(),
                 "elapsed_ms": round((time.monotonic() - beginning) * 1000),
             }
-            if completed.returncode:
+            if status != "passed":
                 any_bad = True
                 print("FAILURE_OUTPUT_TAIL\n" + raw[-3000:], flush=True)
         except subprocess.TimeoutExpired:
@@ -260,4 +359,6 @@ def main(argv=None) -> int:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 4 and sys.argv[1] == "--unittest-case":
+        raise SystemExit(_run_test_child(sys.argv[2], Path(sys.argv[3])))
     raise SystemExit(main())

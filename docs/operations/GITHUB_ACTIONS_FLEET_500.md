@@ -256,3 +256,75 @@ HEAD and refuses execution if they differ. A moving branch or older
 arbitrary commit cannot be silently substituted. Existing read-only
 repository permissions and persist-credentials:false are preserved;
 no cache-poisoning alerts are dismissed by policy exceptions.
+
+## Strict packed unittest receipts (2026-10-17)
+
+Packed execution now records the complete standard-library unittest result,
+rather than treating an exit code of zero as proof that a test passed. Each
+case runs in its own Python process and writes a separate temporary JSON
+report after the test runner returns, including class/module teardown and
+cleanup outcomes. The parent writes the retained worker receipt.
+
+A case is `passed` only when the child exits with zero, the report identifies
+the expected target, exactly one test ran, that target started and stopped
+exactly once and received one success, and there are no failures, errors,
+skips, expected failures or unexpected successes. Successful subtests remain
+supported. A missing report after an early clean exit, an incomplete lifecycle
+or a different target cannot count as a pass. stdout/stderr remain logs and
+cannot replace the structured result.
+
+The per-case `unittest_result` field retains the report. Non-passing case
+statuses distinguish `skipped`, `expected_failure`, `unexpected_success`,
+`test_error`, `missing_report`, `invalid_report` and `incomplete_test`.
+Existing failure/timeout outcomes, exact-source checks, atomic receipts and
+execution of subsequent cases are preserved. These reports describe normal
+unittest execution; they are not a sandbox for hostile same-user Python code.
+
+Validation: the planner, organization interval collector and packed runner
+modules passed 41 tests together. Additional independent real subprocess
+checks covered class-setup skip/error, subtest skip, import errors, missing
+methods, paths containing spaces and successful-case-to-early-exit ordering.
+
+## Full historical 500-job interval verification
+
+A bounded read of three job pages for each completed run independently
+verified the earlier admission comparison:
+
+| Metric | Cohort A | Cohort B |
+| --- | --- | --- |
+| Run | [39004837428](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39004837428) | [39004840761](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39004840761) |
+| Assigned execution jobs | 250 | 250 |
+| GitHub job conclusions | 250 success | 250 success |
+| Median admission wait | 4,216 seconds | 5,354 seconds |
+| Median assigned job duration | 6 seconds | 6 seconds |
+
+Both runs used source
+`f462a687a3fdc675c548bd9c262a8dad9fc7dd6d` and
+`ubuntu-24.04-arm`. Each API result had another three skipped non-execution
+records. All 500 execution jobs had nonzero runner IDs and valid timestamps;
+there were no duplicate job IDs or mixed attempts. Half-open execution
+intervals `[started_at, completed_at)`, releasing ends before starts at the
+same timestamp, give a combined peak of **8**, first reached at
+**2026-10-17T06:28:05Z**.
+
+This is the complete peak for those two runs, not the organization entitlement.
+The historical success count is GitHub's job conclusion, not a fresh review of
+every assertion or proof that the older harness rejected skips.
+
+## Effective capacity remains a separate provider fact
+
+A GitHub organization API `plan.name=enterprise` does not by itself prove
+that increased Actions concurrency is enabled. GitHub Enterprise Cloud trials
+exclude increased job concurrency and larger runners. Confirm the effective
+maximum in organization Settings -> Actions -> Runners -> GitHub-hosted ->
+All jobs usage; retain Active and Maximum with their observation time.
+
+When already-materialized root jobs have no dependencies and still lack a
+runner, increasing `max-parallel` adds demand without proving additional
+provider capacity. Use actual assignment waits and runner execution intervals
+to diagnose that condition. The packed ALL mode remains a throughput tool for
+500 test methods; its 8/16/32 worker jobs do not establish 500 concurrent runners.
+
+References:
+- https://docs.github.com/en/actions/how-tos/manage-runners/github-hosted-runners/view-current-jobs
+- https://docs.github.com/en/enterprise-cloud@latest/admin/overview/setting-up-a-trial-of-github-enterprise-cloud
