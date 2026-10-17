@@ -70,7 +70,7 @@ class OwnerEvidenceProjectionTests(unittest.TestCase):
     def test_exact_success_projection_is_shadow_only(self):
         ir, candidate = make_ir(), None
         candidate = make_candidate(ir)
-        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(), make_guardian(scope=F), make_taskflow(), expected_input_digest=H, expected_scope_digest=F)
+        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(), make_guardian(scope=F), make_taskflow(), expected_request_digest=D, expected_input_digest=H, expected_scope_digest=F)
         self.assertEqual(decision.status, "PROJECTED")
         self.assertFalse(decision.effect_admitted)
         self.assertEqual(decision.authority, "DENY_ALL")
@@ -79,7 +79,7 @@ class OwnerEvidenceProjectionTests(unittest.TestCase):
     def test_runtime_and_input_drift_fallback(self):
         ir, candidate = make_ir(), None
         candidate = make_candidate(ir)
-        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(runtime=I, input_digest=D), make_guardian(scope=F), make_taskflow(), expected_input_digest=H, expected_scope_digest=F)
+        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(runtime=I, input_digest=D), make_guardian(scope=F), make_taskflow(), expected_request_digest=D, expected_input_digest=H, expected_scope_digest=F)
         self.assertEqual(decision.status, "FALLBACK")
         self.assertIn("RUNTIME_TUPLE_MISMATCH", decision.reason_codes)
         self.assertIn("INPUT_DIGEST_MISMATCH", decision.reason_codes)
@@ -88,14 +88,14 @@ class OwnerEvidenceProjectionTests(unittest.TestCase):
         ir, candidate = make_ir(), None
         candidate = make_candidate(ir)
         for status in ("failed", "cancelled", "indeterminate"):
-            decision = project_owner_shadow_evidence(candidate, ir, make_neuron(status=status), make_guardian(scope=F), make_taskflow(), expected_input_digest=H, expected_scope_digest=F)
+            decision = project_owner_shadow_evidence(candidate, ir, make_neuron(status=status), make_guardian(scope=F), make_taskflow(), expected_request_digest=D, expected_input_digest=H, expected_scope_digest=F)
             self.assertEqual(decision.status, "FALLBACK")
             self.assertIn("NEURON_NONTERMINAL_OR_FAILED", decision.reason_codes)
 
     def test_guardian_stale_or_risky_forces_fallback(self):
         ir, candidate = make_ir(), None
         candidate = make_candidate(ir)
-        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(), make_guardian(eligible=False, scope=F), make_taskflow(), expected_input_digest=H, expected_scope_digest=F)
+        decision = project_owner_shadow_evidence(candidate, ir, make_neuron(), make_guardian(eligible=False, scope=F), make_taskflow(), expected_request_digest=D, expected_input_digest=H, expected_scope_digest=F)
         self.assertEqual(decision.status, "FALLBACK")
         self.assertIn("GUARDIAN_FALLBACK", decision.reason_codes)
 
