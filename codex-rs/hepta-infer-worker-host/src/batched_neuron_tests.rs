@@ -3259,3 +3259,104 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     )));
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
+
+#[derive(Clone)]
+struct ScalarOvergrantOnceDriver {
+    calls: Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl ModelDriver for ScalarOvergrantOnceDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for ScalarOvergrantOnceDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        let mut result = Driver.run_neuron_features(handle, request)?;
+        if self
+            .calls
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+            == 0
+        {
+            // 1024 resident + 3073 transient breaches the original 4096
+            // worker grant after the backend has physically returned.
+            result.transient_allocation_bytes = 3073;
+        }
+        Ok(result)
+    }
+}
+
+#[test]
+fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[123; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    let first_grant = signed_member(&signer, first_binding, "overgrant-first", 123);
+    let second_grant = signed_member(&signer, second_binding, "after-overgrant", 124);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+
+    {
+        let mut worker = runner_with_driver(
+            &signer,
+            dir.path(),
+            model.clone(),
+            ScalarOvergrantOnceDriver {
+                calls: Arc::clone(&calls),
+            },
+            1,
+        );
+        worker
+            .enqueue(100, "model".into(), first, key.clone(), first_grant)
+            .unwrap();
+        let first_outcome = worker.poll_and_execute(101).unwrap();
+        assert_eq!(first_outcome.outcomes.len(), 1);
+        assert!(matches!(
+            first_outcome.outcomes[0].result,
+            Err(BatchWorkerErrorV1::Worker)
+        ));
+        assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+        assert_eq!(
+            worker.enqueue(
+                102,
+                "model".into(),
+                second.clone(),
+                key.clone(),
+                second_grant.clone(),
+            ),
+            Err(BatchWorkerErrorV1::InvalidBinding)
+        );
+        assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    }
+
+    // Reopen the same actual durable Final-use nonce journal in this
+    // qualification fixture. The second grant was never claimed by the
+    // poisoned Worker and can only be used under a separately recovered
+    // trusted Worker. This is NOT production recovery authorization.
+    let mut recovered = runner(&signer, dir.path(), model);
+    recovered
+        .enqueue(200, "model".into(), second, key, second_grant)
+        .unwrap();
+    let accepted = recovered.poll_and_execute(206).unwrap();
+    assert_eq!(accepted.outcomes.len(), 1);
+    assert!(accepted.outcomes[0].result.is_ok());
+}

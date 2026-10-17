@@ -704,6 +704,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 || !self.binding_current(&intent.key)
                             {
                                 Err(BatchWorkerErrorV1::InvalidBinding)
+                            } else if !self.worker.can_enter_neuron_feature_effect(
+                                dispatch_now_ms_v1(now_ms, started),
+                                &pending.model_id,
+                            ) {
+                                // Do not consume a valid signed one-use nonce when
+                                // the physical Worker is already known unhealthy.
+                                Err(BatchWorkerErrorV1::Worker)
                             } else {
                                 pending.request.feature_vector_q24 =
                                     pending.feature.as_slice().to_vec();
@@ -872,9 +879,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         return Err(BatchWorkerErrorV1::InvalidBinding);
                     }
                 } else {
-                    // Reject unsupported batches before allocating or
-                    // hashing any re-materialized feature vector, and before
-                    // any signed nonce can be consumed.
+                    // Check the original loaded Worker before spending any
+                    // member's signed Final-use nonce or cloning its features.
+                    if !self.worker.can_enter_neuron_feature_effect(
+                        dispatch_now_ms_v1(now_ms, dispatch_started),
+                        &pending.model_id,
+                    ) {
+                        return Err(BatchWorkerErrorV1::Worker);
+                    }
+                    // Unsupported native batches fail before nonce claim;
+                    // never silently fall back to sequential scalar effects.
                     if !self.worker.can_run_neuron_feature_batch(&pending.model_id) {
                         return Err(BatchWorkerErrorV1::BatchUnsupported);
                     }

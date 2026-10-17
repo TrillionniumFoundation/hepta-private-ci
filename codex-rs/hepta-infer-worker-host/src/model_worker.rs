@@ -227,13 +227,25 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     /// Admit only the currently loaded, exact model identity for this digest.
     pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
-        self.model_digest_index
+        !self.poisoned
+            && self.model_digest_index
             .get(&digest)
             .is_some_and(|id| id == model_id)
             && self
                 .models
                 .get(model_id)
                 .is_some_and(|model| !model.unload_indeterminate)
+    }
+
+    /// Advisory only: no signed nonce is consumed for a known-poisoned,
+    /// expired or unloaded physical model. The effect path revalidates after
+    /// Final-use claim and may still reject if its frontier becomes stale.
+    pub(crate) fn can_enter_neuron_feature_effect(&self, now_ms: u64, model_id: &str) -> bool {
+        self.validate_current_grant(now_ms).is_ok()
+            && self
+                .models
+                .get(model_id)
+                .is_some_and(|loaded| !loaded.unload_indeterminate)
     }
 
     pub fn load_model(
@@ -608,9 +620,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// has no native batch backend. Actual execution revalidates every grant,
     /// current model and resource fence independently of this advisory flag.
     pub(crate) fn can_run_neuron_feature_batch(&self, model_id: &str) -> bool {
-        self.models
-            .get(model_id)
-            .is_some_and(|loaded| self.driver.supports_neuron_feature_batch(&loaded.handle))
+        !self.poisoned
+            && self.models.get(model_id).is_some_and(|loaded| {
+                !loaded.unload_indeterminate
+                    && self.driver.supports_neuron_feature_batch(&loaded.handle)
+            })
     }
 
     pub(crate) fn run_neuron_features(
