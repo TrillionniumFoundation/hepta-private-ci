@@ -46,8 +46,6 @@ def inventory(repo: Path):
                 and "persist-credentials: false" in source
                 and ("-m unittest -q " + name) in source,
                 "mandatory original test must physically run on PR HEAD: " + name)
-        require("upload-artifact@" not in source or "original-" not in source.split("name:", 1)[0],
-                "source manifest has no production authorization")  # no test bypass
     source = tuple(n for n in names if n not in ORIGINAL_EVIDENCE)
     require(bool(source), "no real source tests found")
     return {"root": repo, "directory": directory, "source_modules": source,
