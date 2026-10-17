@@ -186,7 +186,8 @@ class IndependentByteCustodyTests(unittest.TestCase):
 
     def test_failed_comparison_is_retained_as_failure_not_promotion(self):
         physical = next(
-            row for row in self.packet["runs"]
+            row
+            for row in self.packet["runs"]
             if row["scopes"] == 4096 and row["mode"] == "physical_split"
         )
         physical["elapsed_seconds"] = 12
