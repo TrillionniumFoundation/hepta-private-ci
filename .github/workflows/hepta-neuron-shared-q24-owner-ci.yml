@@ -54,10 +54,21 @@ jobs:
         run: |
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
+      - name: Build exact-source real Codex executable for physical App Server tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          codex_exe="$GITHUB_WORKSPACE/codex-rs/target/debug/codex"
+          test -f "$codex_exe"
+          test -x "$codex_exe"
+          "$codex_exe" --version
+          printf 'HEPTA_TEST_CODEX_EXECUTABLE=%s\\n' "$codex_exe" >> "$GITHUB_ENV"
       - name: Run worker source and public Q24 tests
         shell: bash
         run: |
           set -euo pipefail
+          test -x "$HEPTA_TEST_CODEX_EXECUTABLE"
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
       - name: Strict correctness and resource safety Clippy
         shell: bash
