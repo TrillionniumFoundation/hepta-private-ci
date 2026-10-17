@@ -170,21 +170,72 @@ class MetricIntervalV1:
 
 @dataclass(frozen=True)
 class ComponentResourceReceiptV1:
-    receipt_id: str
+    component_id: str
+    component_kind: str
+    artifact_digest: str
+    measurement_digest: str
+    forward_calls: int
+    input_tokens: int
+    flops: float
+    peak_memory_bytes: float
+    p50_latency_ms: float
+    p95_latency_ms: float
+    p99_latency_ms: float
+    energy_mj: float
+    parameter_count: int
+    evidence_class: str = "REAL_SHADOW"
+    complete: bool = True
+
+    def __post_init__(self) -> None:
+        _identifier("component_id", self.component_id)
+        _require(self.component_kind in {
+            "stem_encoder",
+            "modality_tower",
+            "projector",
+            "cell_head",
+            "controller_decoder",
+            "state_cache",
+            "verification",
+            "device",
+        }, "unsupported resource component kind")
+        _digest("artifact_digest", self.artifact_digest)
+        _digest("measurement_digest", self.measurement_digest)
+        for name, value in (
+            ("forward_calls", self.forward_calls),
+            ("input_tokens", self.input_tokens),
+            ("parameter_count", self.parameter_count),
+        ):
+            _integer(name, value, minimum=1)
+        for name, value in (
+            ("flops", self.flops),
+            ("peak_memory_bytes", self.peak_memory_bytes),
+            ("p50_latency_ms", self.p50_latency_ms),
+            ("p95_latency_ms", self.p95_latency_ms),
+            ("p99_latency_ms", self.p99_latency_ms),
+            ("energy_mj", self.energy_mj),
+        ):
+            _finite(name, value)
+        _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "component latency quantiles must be ordered")
+        _require(self.flops > 0 and self.peak_memory_bytes > 0 and self.p95_latency_ms > 0 and self.energy_mj > 0, "component resources must be positive")
+        _require(self.evidence_class == "REAL_SHADOW", "only REAL_SHADOW components can qualify")
+        _boolean("complete", self.complete)
+        _require(self.complete, "incomplete component receipts cannot qualify")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {**asdict(self), "schema": "hepta.stem.component-resource.v1"}
+
+
+@dataclass(frozen=True)
+class ComponentResourceBundleV1:
+    bundle_id: str
     benchmark_id: str
     hardware_digest: str
     runtime_digest: str
     measurement_digest: str
-    encoder_flops: float
-    tower_projector_flops: float
-    cell_head_flops: float
-    controller_decoder_flops: float
-    state_cache_flops: float
-    verification_flops: float
+    components: tuple[ComponentResourceReceiptV1, ...]
     p50_latency_ms: float
     p95_latency_ms: float
     p99_latency_ms: float
-    peak_memory_bytes: float
     energy_mj: float
     batch_size: int
     warmup_steps: int
@@ -194,46 +245,70 @@ class ComponentResourceReceiptV1:
     complete: bool = True
 
     def __post_init__(self) -> None:
-        _identifier("receipt_id", self.receipt_id)
+        _identifier("bundle_id", self.bundle_id)
         _identifier("benchmark_id", self.benchmark_id)
         for name, value in (("hardware_digest", self.hardware_digest), ("runtime_digest", self.runtime_digest), ("measurement_digest", self.measurement_digest)):
             _digest(name, value)
+        _require(type(self.components) is tuple and self.components, "components must be a non-empty tuple")
+        _require(all(isinstance(component, ComponentResourceReceiptV1) for component in self.components), "invalid resource component")
+        required = {
+            "stem_encoder",
+            "modality_tower",
+            "projector",
+            "cell_head",
+            "controller_decoder",
+            "state_cache",
+            "verification",
+            "device",
+        }
+        _require({component.component_kind for component in self.components} == required, "resource bundle must cover every component kind exactly")
+        _require(len(self.components) == len(required), "resource component kinds must be unique")
         for name, value in (
-            ("encoder_flops", self.encoder_flops),
-            ("tower_projector_flops", self.tower_projector_flops),
-            ("cell_head_flops", self.cell_head_flops),
-            ("controller_decoder_flops", self.controller_decoder_flops),
-            ("state_cache_flops", self.state_cache_flops),
-            ("verification_flops", self.verification_flops),
             ("p50_latency_ms", self.p50_latency_ms),
             ("p95_latency_ms", self.p95_latency_ms),
             ("p99_latency_ms", self.p99_latency_ms),
-            ("peak_memory_bytes", self.peak_memory_bytes),
             ("energy_mj", self.energy_mj),
             ("cache_hit_rate", self.cache_hit_rate),
         ):
             _finite(name, value)
-        _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "latency quantiles must be ordered")
-        _require(self.p95_latency_ms > 0 and self.peak_memory_bytes > 0 and self.energy_mj > 0, "measured resources must be positive")
+        _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "bundle latency quantiles must be ordered")
+        _require(self.p95_latency_ms > 0 and self.energy_mj > 0, "bundle resources must be positive")
+        _require(self.cache_hit_rate <= 1.0, "cache_hit_rate cannot exceed one")
         for name, value in (("batch_size", self.batch_size), ("warmup_steps", self.warmup_steps), ("measured_steps", self.measured_steps), ("repetitions", self.repetitions)):
             _integer(name, value, minimum=1)
-        _require(self.cache_hit_rate <= 1.0, "cache_hit_rate cannot exceed one")
         _boolean("complete", self.complete)
-        _require(self.complete, "incomplete resource receipts cannot qualify a run")
+        _require(self.complete, "incomplete resource bundles cannot qualify")
 
     @property
     def total_flops(self) -> float:
-        return (
-            self.encoder_flops
-            + self.tower_projector_flops
-            + self.cell_head_flops
-            + self.controller_decoder_flops
-            + self.state_cache_flops
-            + self.verification_flops
-        )
+        return sum(component.flops for component in self.components)
+
+    @property
+    def peak_component_memory_bytes(self) -> float:
+        return max(component.peak_memory_bytes for component in self.components)
 
     def to_dict(self) -> dict[str, Any]:
-        return {**asdict(self), "schema": SCHEMA_RESOURCE, "total_flops": self.total_flops}
+        return {
+            "schema": SCHEMA_RESOURCE,
+            "bundle_id": self.bundle_id,
+            "benchmark_id": self.benchmark_id,
+            "hardware_digest": self.hardware_digest,
+            "runtime_digest": self.runtime_digest,
+            "measurement_digest": self.measurement_digest,
+            "components": [component.to_dict() for component in self.components],
+            "p50_latency_ms": self.p50_latency_ms,
+            "p95_latency_ms": self.p95_latency_ms,
+            "p99_latency_ms": self.p99_latency_ms,
+            "energy_mj": self.energy_mj,
+            "batch_size": self.batch_size,
+            "warmup_steps": self.warmup_steps,
+            "measured_steps": self.measured_steps,
+            "repetitions": self.repetitions,
+            "cache_hit_rate": self.cache_hit_rate,
+            "complete": self.complete,
+            "total_flops": self.total_flops,
+            "peak_component_memory_bytes": self.peak_component_memory_bytes,
+        }
 
 
 @dataclass(frozen=True)
@@ -249,7 +324,7 @@ class StemQualificationRunV1:
     objective_digest: str
     evaluation_plan_digest: str
     metrics: tuple[MetricIntervalV1, ...]
-    resources: ComponentResourceReceiptV1
+    resources: ComponentResourceBundleV1
     evidence_class: str = "REAL_SHADOW"
     status: str = "SHADOW_COMPLETE"
     model_input_gold_visible: bool = False
@@ -314,7 +389,7 @@ def qualify_from_receipt(
     objective_digest: str,
     evaluation_plan_digest: str,
     metrics: tuple[MetricIntervalV1, ...],
-    resources: ComponentResourceReceiptV1,
+    resources: ComponentResourceBundleV1,
 ) -> StemQualificationRunV1:
     """Upgrade a complete REAL_SHADOW bridge receipt into a full run.
 
@@ -347,6 +422,7 @@ def qualify_from_receipt(
 
 __all__ = [
     "CheckpointRefV1",
+    "ComponentResourceBundleV1",
     "ComponentResourceReceiptV1",
     "MetricIntervalV1",
     "SCHEMA_CHECKPOINT",
