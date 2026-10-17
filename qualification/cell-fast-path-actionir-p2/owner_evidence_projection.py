@@ -204,6 +204,23 @@ class OwnerEvidenceProjectionV1:
             raise ValueError("owner projection cannot admit effects")
         if self.authority != DENY_ALL:
             raise ValueError("owner projection cannot carry authority")
+        expected = canonical_digest({
+            "schema": SCHEMA,
+            "candidate_id": self.candidate_id,
+            "app_identity": self.app_identity,
+            "action_ir_digest": self.action_ir_digest,
+            "runtime_tuple_digest": self.runtime_tuple_digest,
+            "snapshot_id": self.snapshot_id,
+            "neuron_receipt_digest": self.neuron_receipt_digest,
+            "guardian_evidence_digest": self.guardian_evidence_digest,
+            "taskflow_observer_digest": self.taskflow_observer_digest,
+            "status": self.status,
+            "reason_codes": list(self.reason_codes),
+            "effect_admitted": self.effect_admitted,
+            "authority": self.authority,
+        })
+        if self.projection_digest != expected:
+            raise ValueError("projection_digest does not bind the exact projection payload")
 
     def as_dict(self) -> dict[str, Any]:
         return {"schema": SCHEMA, **{field: getattr(self, field) for field in self.__dataclass_fields__}}
@@ -216,10 +233,12 @@ def project_owner_shadow_evidence(
     guardian: GuardianEvidenceV1,
     taskflow: TaskFlowObserverReceiptV1,
     *,
+    expected_request_digest: str,
     expected_input_digest: str,
     expected_scope_digest: str,
 ) -> OwnerEvidenceProjectionV1:
     """Project exact owner evidence; never admits an effect or calls an owner."""
+    _require_digest(expected_request_digest, "expected_request_digest")
     _require_digest(expected_input_digest, "expected_input_digest")
     _require_digest(expected_scope_digest, "expected_scope_digest")
     reasons: list[str] = []
@@ -227,10 +246,16 @@ def project_owner_shadow_evidence(
         reasons.append("ACTION_IR_MISMATCH")
     if candidate.app_identity != ir.app_identity:
         reasons.append("APP_IDENTITY_MISMATCH")
+    if neuron.request_digest != expected_request_digest:
+        reasons.append("REQUEST_DIGEST_MISMATCH")
     if neuron.input_digest != expected_input_digest:
         reasons.append("INPUT_DIGEST_MISMATCH")
     if neuron.runtime_tuple_digest != candidate.runtime_tuple_digest:
         reasons.append("RUNTIME_TUPLE_MISMATCH")
+    if neuron.encoder_digest != ir.stem_digest:
+        reasons.append("ENCODER_MISMATCH")
+    if neuron.head_digest != ir.head_digest:
+        reasons.append("HEAD_MISMATCH")
     if guardian.scope_digest != expected_scope_digest:
         reasons.append("GUARDIAN_SCOPE_MISMATCH")
     if guardian.authorization_version != candidate.authorization_version:
@@ -241,6 +266,8 @@ def project_owner_shadow_evidence(
         reasons.append("GUARDIAN_FALLBACK")
     if taskflow.terminal_claim:
         reasons.append("TASKFLOW_TERMINAL_CLAIM")
+    if not taskflow.observed:
+        reasons.append("TASKFLOW_NOT_OBSERVED")
     status = "PROJECTED" if not reasons else "FALLBACK"
     payload = {
         "candidate_id": candidate.candidate_id,
