@@ -1113,11 +1113,11 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             .create_new(true)
             .open(&output_path)
             .map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
+                format!(
+                    "failed to create curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
         std::io::copy(&mut entry, &mut output).map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",
