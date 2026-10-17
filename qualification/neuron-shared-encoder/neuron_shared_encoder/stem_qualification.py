@@ -277,6 +277,7 @@ class ComponentResourceBundleV1:
         required = _REQUIRED_COMPONENTS[self.component_profile]
         _require({component.component_kind for component in self.components} == required, "resource bundle must cover every component kind exactly")
         _require(len(self.components) == len(required), "resource component kinds must be unique")
+        _require(self.components == tuple(sorted(self.components, key=lambda component: component.component_kind)), "components must be sorted by kind")
         for name, value in (
             ("p50_latency_ms", self.p50_latency_ms),
             ("p95_latency_ms", self.p95_latency_ms),
@@ -373,6 +374,7 @@ class StemQualificationRunV1:
         _require(self.authority == "DENY_ALL", "qualification run cannot carry authority")
         _require(type(self.metrics) is tuple and self.metrics, "metrics must be a non-empty tuple")
         _require(len({metric.metric_id for metric in self.metrics}) == len(self.metrics), "metric IDs must be unique")
+        _require(self.metrics == tuple(sorted(self.metrics, key=lambda metric: metric.metric_id)), "metrics must be sorted by ID")
         for metric in self.metrics:
             _require(metric.heldout_source_digest == self.source_split.eval_source_digest, "metric source differs from split")
         _require(self.resources.runtime_digest == self.checkpoint.runtime_digest, "resource runtime differs from checkpoint runtime")
