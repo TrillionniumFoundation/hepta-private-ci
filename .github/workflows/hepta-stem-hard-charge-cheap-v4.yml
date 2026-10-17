@@ -1,0 +1,206 @@
+name: Hepta original hard-charge cheap lexical controls V4 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-hard-charge-cheap-control-v4-20261017]
+    paths:
+      - 'qualification/stem-optimal-v4/**'
+      - '.github/workflows/hepta-stem-hard-charge-cheap-v4.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v4/**'
+      - '.github/workflows/hepta-stem-hard-charge-cheap-v4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-hard-charge-cheap-v4-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXP_DIR: qualification/stem-optimal-v4
+  V3_DIR: qualification/stem-optimal-v3
+
+jobs:
+  negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute real stdlib lexical arithmetic with no original-model claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$EXP_DIR/cheap_lexical_stem_v4.py" "$EXP_DIR/cheap_lexical_review_v4.py" "$EXP_DIR/test_cheap_lexical_v4.py"
+          python -m unittest discover -s "$EXP_DIR" -p 'test_cheap_lexical_v4.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_cheap_lexical_v4.py' -v
+
+  original-publisher-owner:
+    needs: negative-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-hard-charge-cheap-control-v4-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pin and read original publisher, expose no heldout labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/lexical-source"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          output = Path(os.environ["RUNNER_TEMP"]) / "lexical-source"
+          revision = "57ec275d8078af65b7731c2a98be812d844a6d6b"
+          frozen = {"train": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+                    "test": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"}
+          for name in ("train", "test"):
+              url = f"https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{name}.csv"
+              with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "hepta-cheap-original-owner-v4"}), timeout=35) as req:
+                  if req.geturl() != url:
+                      raise SystemExit("publisher redirect")
+                  data = req.read(2_000_001)
+              if not 0 < len(data) <= 2_000_000 or hashlib.sha256(data).hexdigest() != frozen[name]:
+                  raise SystemExit("original publisher bytes changed")
+              (output / f"{name}.csv").write_bytes(data)
+          PY
+          python "$V3_DIR/stem_hard_charge_v3.py" prepare \
+            --train "$RUNNER_TEMP/lexical-source/train.csv" \
+            --test "$RUNNER_TEMP/lexical-source/test.csv" \
+            --output "$RUNNER_TEMP/lexical-source/source.json"
+          (cd "$RUNNER_TEMP/lexical-source" && sha256sum source.json > source.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-hard-charge-label-free
+          path: |
+            ${{ runner.temp }}/lexical-source/source.json
+            ${{ runner.temp }}/lexical-source/source.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  cheap-original-lexical-producer:
+    needs: original-publisher-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-hard-charge-label-free
+          path: ${{ runner.temp }}/v4-source
+      - name: Train-only lexical IDF and two cheap original 4-class controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source.sha256)
+          mkdir -p "$RUNNER_TEMP/v4-predictions"
+          python "$EXP_DIR/cheap_lexical_stem_v4.py" \
+            --source "$RUNNER_TEMP/v4-source/source.json" \
+            --output "$RUNNER_TEMP/v4-predictions/lexical-receipt.json"
+          (cd "$RUNNER_TEMP/v4-predictions" && sha256sum lexical-receipt.json > lexical-receipt.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-cheap-prelabel-predictions-denyall
+          path: |
+            ${{ runner.temp }}/v4-predictions/lexical-receipt.json
+            ${{ runner.temp }}/v4-predictions/lexical-receipt.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-publisher-late-label-review:
+    needs: cheap-original-lexical-producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-hard-charge-label-free
+          path: ${{ runner.temp }}/v4-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-cheap-prelabel-predictions-denyall
+          path: ${{ runner.temp }}/v4-predictions
+      - name: Acquire original heldout labels in a separate process only after prelabel seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source.sha256)
+          (cd "$RUNNER_TEMP/v4-predictions" && sha256sum --check lexical-receipt.sha256)
+          mkdir -p "$RUNNER_TEMP/v4-label-owner"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          output = Path(os.environ["RUNNER_TEMP"]) / "v4-label-owner"
+          revision = "57ec275d8078af65b7731c2a98be812d844a6d6b"
+          frozen = {"train": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+                    "test": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"}
+          for name in ("train", "test"):
+              url = f"https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{name}.csv"
+              with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "hepta-cheap-original-review-v4"}), timeout=35) as req:
+                  if req.geturl() != url:
+                      raise SystemExit("original publisher redirect in reviewer")
+                  data = req.read(2_000_001)
+              if not 0 < len(data) <= 2_000_000 or hashlib.sha256(data).hexdigest() != frozen[name]:
+                  raise SystemExit("original publisher labels changed")
+              (output / f"{name}.csv").write_bytes(data)
+          PY
+      - name: Independently recompute every lexical probability and original quality score
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$EXP_DIR/cheap_lexical_review_v4.py" \
+            --train "$RUNNER_TEMP/v4-label-owner/train.csv" \
+            --test "$RUNNER_TEMP/v4-label-owner/test.csv" \
+            --source "$RUNNER_TEMP/v4-source/source.json" \
+            --receipt "$RUNNER_TEMP/v4-predictions/lexical-receipt.json" \
+            --output "$RUNNER_TEMP/v4-cheap-review.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          result = json.loads((Path(os.environ["RUNNER_TEMP"]) / "v4-cheap-review.json").read_text())
+          assert result["publisher_original_sha_verified"] is True
+          assert result["independent_algorithm_replay"] is True
+          assert result["disposition"] == "HOLD_NO_GO" and result["authority"] == "DENY_ALL"
+          assert result["source_independent_families"] == 1 and result["future_windows"] == 0
+          assert result["production_authorized"] is False and result["stem_winner_verified"] is False
+          print({name: {"correct": score["correct"], "brier": score["mean_multiclass_brier"]}
+                 for name, score in result["cheap_controls"].items()})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-cheap-original-independent-review-denyall
+          path: ${{ runner.temp }}/v4-cheap-review.json
+          if-no-files-found: error
+          retention-days: 7
