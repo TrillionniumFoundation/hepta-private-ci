@@ -208,7 +208,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     }
 
     /// Update expiry-sensitive Artifact CURRENT verification time. Rollback of
-    /// this clock is forbidden; the production host must supply trusted time.
+    /// this clock is forbidden; the product host must supply a trustworthy
+    /// clock on EACH step and each live cutover attachment, not cache the
+    /// bootstrap timestamp indefinitely.
     pub fn advance_current_time(
         &mut self,
         now: u64,
@@ -229,7 +231,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     pub fn attach_live_cutover(
         &mut self,
         applied: RuntimeTopologyApplyReceiptV1,
+        now: u64,
     ) -> Result<(), ProductSplitNativeErrorV1<O::Error>> {
+        self.advance_current_time(now)?;
         if !self.binding.validate_selection(&self.plan, self.selection)
             || !self.binding.validate_cutover(&self.plan, &applied)
         {
@@ -254,10 +258,13 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     pub fn advance_receipt_gated_phase(
         &mut self,
         journal: &mut DurableWriterHandoffJournalV1,
+        now: u64,
     ) -> Result<
         WriterHandoffCheckpointV1,
         CellSplitOwnerErrorV1<ProductSplitNativeErrorV1<O::Error>>,
     > {
+        self.advance_current_time(now)
+            .map_err(CellSplitOwnerErrorV1::Native)?;
         if !self.binding.validate_selection(&self.plan, self.selection) {
             return Err(CellSplitOwnerErrorV1::Native(
                 ProductSplitNativeErrorV1::PlanOrBindingMismatch,
