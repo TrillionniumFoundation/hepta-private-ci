@@ -186,6 +186,8 @@ jobs:
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-native-batch.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --test-threads=1
       - name: Require executed original signed preclaim poison/nonce protection
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-preclaim-poison.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim -- --test-threads=1
+      - name: Require executed original native cohort poison/nonce protection
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-native-preclaim-poison.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call -- --test-threads=1
       - name: Require executed scalar post-effect resource overgrant and overflow fence
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-scalar-resource-fence.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib reported_feature_transient_overgrant_or_overflow_fences_all_future_effects -- --test-threads=1
       - name: Require executed one-call native cohort resource fence
