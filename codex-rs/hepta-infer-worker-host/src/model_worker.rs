@@ -522,6 +522,19 @@ pub trait NeuronFeatureDriver: ModelDriver {
     ) -> Result<DriverNeuronFeatureObservation, Error>;
 }
 
+/// Fail closed when a backend reports disjoint resident and transient Q24
+/// allocations above its resource grant. The backend's reported numbers are
+/// not an independently measured peak RSS or a production qualification.
+fn neuron_feature_memory_within_grant(
+    observed: &DriverNeuronFeatureObservation,
+    maximum_memory_bytes: u64,
+) -> bool {
+    observed
+        .observed_memory_bytes
+        .checked_add(observed.transient_allocation_bytes)
+        .is_some_and(|total| total <= maximum_memory_bytes)
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,
@@ -603,7 +616,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 return Err(error);
             }
         };
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
             self.poisoned = true;
             return Err(Error::ModelCapacity);
         }

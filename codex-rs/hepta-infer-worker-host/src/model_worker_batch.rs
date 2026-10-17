@@ -208,8 +208,14 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 return Err(Error::PayloadMismatch);
             }
             let observed = batch_item.feature;
-            if observed.observed_memory_bytes > self.grant.maximum_memory_bytes
-                || observed.encoder_digest != request.encoder_digest
+            if !super::neuron_feature_memory_within_grant(
+                &observed,
+                self.grant.maximum_memory_bytes,
+            ) {
+                self.poisoned = true;
+                return Err(Error::ModelCapacity);
+            }
+            if observed.encoder_digest != request.encoder_digest
                 || observed.head_digest != request.head_digest
             {
                 self.poisoned = true;
@@ -298,6 +304,7 @@ mod tests {
         indeterminate_with_output: bool,
         swap_items: bool,
         fail_batch: bool,
+        reported_transient_bytes: Option<u64>,
     }
 
     impl ModelDriver for BatchMock {
@@ -360,7 +367,7 @@ mod tests {
                         drive_q24: vec![1 << 24; req.expected_output_width],
                         prediction_q24: vec![0; req.expected_output_width],
                         observed_memory_bytes: 2048,
-                        transient_allocation_bytes: 128,
+                        transient_allocation_bytes: self.reported_transient_bytes.unwrap_or(128),
                         queue_age_micros: 3,
                         latency_micros: 10,
                     },
@@ -660,4 +667,45 @@ mod tests {
         );
         assert_eq!(worker.driver.batches, 1);
     }
+
+    #[test]
+    fn reported_batch_transient_overgrant_fences_every_cell_after_dispatch() {
+        // 2048 reported resident bytes + 2048 transient exactly fits.
+        let mut exact = worker(BatchMock {
+            reported_transient_bytes: Some(2048),
+            ..BatchMock::default()
+        });
+        assert!(exact
+            .run_neuron_features_batch(100, "model.v2", vec![feature("exact", 'b')])
+            .is_ok());
+        assert!(!exact.poisoned);
+
+        for transient in [2049_u64, u64::MAX] {
+            let mut worker = worker(BatchMock {
+                reported_transient_bytes: Some(transient),
+                ..BatchMock::default()
+            });
+            assert_eq!(
+                worker.run_neuron_features_batch(
+                    100,
+                    "model.v2",
+                    vec![feature("request.overgrant", 'b')],
+                ),
+                Err(Error::ModelCapacity)
+            );
+            assert_eq!(worker.driver.batches, 1);
+            assert!(worker.poisoned);
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.v2"].active_requests, 0);
+            assert_eq!(
+                worker.run_neuron_features_batch(
+                    100,
+                    "model.v2",
+                    vec![feature("request.after-fence", 'b')],
+                ),
+                Err(Error::IndeterminateLifecycle)
+            );
+        }
+    }
+
 }
