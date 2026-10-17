@@ -4,11 +4,11 @@ use std::sync::Arc;
 use super::*;
 use codex_hepta_types::AuthorityPosture;
 
-use crate::canonical_cell_head_digest_v1;
 use crate::LocalModelRuntimeReceiptV1;
 use crate::NeuronResourceReceiptV1;
 use crate::NeuronSignalReceiptV1;
 use crate::NeuronTickReceiptV1;
+use crate::canonical_cell_head_digest_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
