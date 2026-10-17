@@ -343,9 +343,7 @@ def analyze(plan, rows):
         ),
     }
     out["paired_task_diagnostics"] = contrasts
-    out["four_stage_disposition"] = four_stage_disposition(
-        out, contrasts, rows
-    )
+    out["four_stage_disposition"] = four_stage_disposition(out, contrasts, rows)
     return out
 
 
@@ -355,6 +353,7 @@ def paired_task_outcomes(by_key, cases, control, candidate):
     `root` is only an author-declared grouping. No confidence or external
     source-family independence can be inferred from these counts.
     """
+
     def blank():
         return dict(planned=0, wins=0, losses=0, both_success=0, both_fail=0)
 
@@ -378,7 +377,11 @@ def paired_task_outcomes(by_key, cases, control, candidate):
             category = "both_success"
         else:
             category = "both_fail"
-        for bucket in (total, by_kind.setdefault(kind, blank()), by_root.setdefault(root, blank())):
+        for bucket in (
+            total,
+            by_kind.setdefault(kind, blank()),
+            by_root.setdefault(root, blank()),
+        ):
             bucket["planned"] += 1
             bucket[category] += 1
         diagnostics_delta += b["diagnostic_count"] - a["diagnostic_count"]
@@ -390,7 +393,8 @@ def paired_task_outcomes(by_key, cases, control, candidate):
     def effect(bucket):
         return dict(
             **bucket,
-            net_task_success_delta=(bucket["wins"] - bucket["losses"]) / bucket["planned"],
+            net_task_success_delta=(bucket["wins"] - bucket["losses"])
+            / bucket["planned"],
         )
 
     return dict(
@@ -415,15 +419,22 @@ def four_stage_disposition(report, pairs, rows):
     oracle = a["oracle"]["success_rate"]
     hybrid = a["hybrid"]["success_rate"]
     reference = report["arms"]["hybrid_rag"]["reference"]["oracle"]["success_rate"]
+    ablated = a["ablated"]["success_rate"]
+    premise = pairs["frozen_oracle_vs_ablation"]
     if oracle < 1:
         reader_next = "audit_sufficiency_prompt_representation_and_reader_errors"
+    elif premise["both_success"]:
+        reader_next = "audit_removed_premise_independence_and_shortcut_paths"
     elif hybrid < oracle:
         reader_next = "investigate_retrieval_selection_distractors_and_packing"
     else:
         reader_next = "validate_on_independent_blinded_project_families"
     organized = pairs["organized_vs_hybrid"]
     learning = {}
-    for name, prefix in (("learned_read", "learned_policy"), ("knowledge", "knowledge")):
+    for name, prefix in (
+        ("learned_read", "learned_policy"),
+        ("knowledge", "knowledge"),
+    ):
         vs_organized = pairs[prefix + "_vs_organized"]
         vs_hybrid = pairs[prefix + "_vs_hybrid"]
         learning[name] = dict(
@@ -445,6 +456,10 @@ def four_stage_disposition(report, pairs, rows):
             frozen_oracle_success_rate=oracle,
             reference_oracle_success_rate=reference,
             ordinary_hybrid_success_rate=hybrid,
+            ablated_success_rate=ablated,
+            oracle_success_with_premise_removed=premise["both_success"],
+            oracle_success_lost_after_ablation=premise["wins"],
+            ablation_is_not_independent_necessity_proof=True,
             reference_only_gain_is_reader_capacity=True,
             claimed_full_evidence_human_certified=False,
             missing_premise_necessity_human_certified=False,
@@ -456,7 +471,7 @@ def four_stage_disposition(report, pairs, rows):
             paired_organization_wins=organized["wins"],
             paired_organization_losses=organized["losses"],
             no_task_gain_on_this_cohort=organized["wins"] == organized["losses"],
-            eligible_strong_rag_control=True,
+            matched_strong_rag_control_is_not_independently_qualified=True,
             independent_organization_superiority_established=False,
         ),
         stage_3_parametric=dict(
@@ -464,6 +479,7 @@ def four_stage_disposition(report, pairs, rows):
             knowledge_only_vs_empty_task_delta=pairs[
                 "knowledge_only_vs_empty"
             ]["net_task_success_delta"],
+            knowledge_only_original_body_absence_authenticated=False,
             prospective_training_freeze_authenticated=False,
             independent_heldout_gain_established=False,
         ),

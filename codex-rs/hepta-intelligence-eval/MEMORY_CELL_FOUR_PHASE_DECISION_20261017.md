@@ -9,6 +9,9 @@ baseline, or turn prior development artifacts into new evidence.
 1. **Reader solvability.** Compare frozen and stronger research readers on
    no evidence, ordinary hybrid evidence, human-reviewed sufficient evidence,
    and a necessary-premise ablation, with unchanged template and budgets.
+   If a supposedly removed premise still permits correct answers, count that
+   as a potential redundant-source/shortcut path, **not** proof of necessity.
+   Inspect these cases before optimizing yet another retrieval objective.
    Record every paired task, including abstentions and errors. The existing
    schema's `oracle` is **not independently human verified**; its observed
    success may diagnose a bottleneck but does not qualify the experiment.
@@ -21,7 +24,8 @@ baseline, or turn prior development artifacts into new evidence.
    experience-knowledge module against **both** organized memory and strong
    Hybrid, while holding reader, prompts and delivered evidence constant
    for parameter-only effects. Knowledge-only/no-raw-text results are a
-   compression boundary, not a replacement baseline. Source-before-task
+   compression boundary, not a replacement baseline; the reported hashes do
+   not authenticate the absence of raw evidence unless independently reviewed. Source-before-task
    frozen training and genuinely unexposed tasks must be certified separately.
 4. **Lifecycle acceptance.** Keep extraction, indexing, writing/training,
    query/diagnosis/recovery, maintenance, revocation and retained raw-source
