@@ -1,0 +1,153 @@
+name: hepta-hdcf-original-query-binding-v12
+
+on:
+  push:
+    branches:
+      - research/hdcf-original-query-binding-v12-20261017
+    paths:
+      - 'qualification/hdcf-research/organ_query_binding_v12.py'
+      - 'qualification/hdcf-research/review_organ_binding_v12.py'
+      - 'qualification/hdcf-research/test_organ_query_binding_v12.py'
+      - 'qualification/hdcf-research/ORIGINAL_QUERY_BINDING_V12.md'
+      - '.github/workflows/hepta-hdcf-original-query-binding-v12.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-hdcf-original-query-binding-v12-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  original-image-text-conditional-membership:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Exact source and inherited authentic evidence owner
+        working-directory: qualification/hdcf-research
+        env:
+          EXPECTED_SOURCE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -f original_beans_v9.py
+          test -f organ_query_binding_v12.py
+          test -f review_organ_binding_v12.py
+          python3 -m py_compile organ_query_binding_v12.py review_organ_binding_v12.py test_organ_query_binding_v12.py
+      - name: Install only frozen CPU numerical and independent original publisher review dependencies
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 pyarrow==20.0.0 huggingface-hub==0.36.0
+          python3 -m pip check
+      - name: Reacquire original source JPEGs and pinned physical DINO+Granite features only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 original_beans_v9.py download --kind source --out "$RUNNER_TEMP/original-source.zip"
+          python3 original_beans_v9.py download --kind features --out "$RUNNER_TEMP/original-features.zip"
+      - name: Physically train rank-8 conditional Organ and signed-isometry control without TEST targets
+        env:
+          HDCF_V12_SOURCE_ZIP: ${{ runner.temp }}/original-source.zip
+          HDCF_V12_FEATURE_ZIP: ${{ runner.temp }}/original-features.zip
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/original-targets.zip"
+          test ! -e "$RUNNER_TEMP/hdcf-original-beans-test.parquet"
+          python3 organ_query_binding_v12.py train \
+            --source-zip "$HDCF_V12_SOURCE_ZIP" \
+            --features-zip "$HDCF_V12_FEATURE_ZIP" \
+            --out "$RUNNER_TEMP/v12-sealed-predictions.json"
+          sha256sum "$RUNNER_TEMP/v12-sealed-predictions.json" > "$RUNNER_TEMP/v12-sealed-predictions.sha256"
+          test -s "$RUNNER_TEMP/v12-sealed-predictions.json"
+      - name: Late download original withholding and verify two genuine publisher Parquets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          sha256sum --check "$RUNNER_TEMP/v12-sealed-predictions.sha256"
+          python3 original_beans_v9.py download --kind targets --out "$RUNNER_TEMP/original-targets.zip"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          import original_beans_v9 as v
+          for split,expected in [('train',v.TRAIN_SHA),('test',v.TEST_SHA)]:
+              raw=Path(hf_hub_download(repo_type='dataset',repo_id='AI-Lab-Makerere/beans',
+                  filename=f'data/{split}-00000-of-00001.parquet',revision=v.DATA_REV))
+              with raw.open('rb') as fd:
+                  assert hashlib.file_digest(fd,'sha256').hexdigest()==expected
+              dest=Path(os.environ['RUNNER_TEMP'])/f'original-beans-{split}.parquet'
+              with dest.open('xb') as out,raw.open('rb') as inp:
+                  for block in iter(lambda:inp.read(1024*1024),b''):
+                      out.write(block)
+          PY
+      - name: Original-artifact adversarial tests including actual train and late labels
+        env:
+          HDCF_V12_SOURCE_ZIP: ${{ runner.temp }}/original-source.zip
+          HDCF_V12_FEATURE_ZIP: ${{ runner.temp }}/original-features.zip
+          HDCF_V12_TARGET_ZIP: ${{ runner.temp }}/original-targets.zip
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_organ_query_binding_v12
+          python3 -O -m unittest -v test_organ_query_binding_v12
+      - name: Separate postseal reviewer recomputes 24-image cluster outcomes
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          sha256sum --check "$RUNNER_TEMP/v12-sealed-predictions.sha256"
+          python3 review_organ_binding_v12.py \
+            --source-zip "$RUNNER_TEMP/original-source.zip" \
+            --features-zip "$RUNNER_TEMP/original-features.zip" \
+            --targets-zip "$RUNNER_TEMP/original-targets.zip" \
+            --predictions "$RUNNER_TEMP/v12-sealed-predictions.json" \
+            --publisher-train "$RUNNER_TEMP/original-beans-train.parquet" \
+            --publisher-test "$RUNNER_TEMP/original-beans-test.parquet" \
+            --out "$RUNNER_TEMP/v12-sanitized-independent.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'v12-sanitized-independent.json'
+          report=json.loads(p.read_text())
+          assert report['publisher_original_bytes_reverified'] is True
+          assert report['image_clusters']==24 and report['synthetic_class_membership_queries']==72
+          assert report['arm_correct_images']['strong_original_dino']==20
+          assert report['semantic_identifiability_proven'] is False
+          assert report['production_authorized'] is False
+          assert report['disposition']=='HOLD_NO_GO_DENY_ALL'
+          print('ORIGINAL_V12_PUBLISHER_BOUND_24_IMAGE_CLUSTER_HOLD_DENY_ALL')
+          print('Non-authorizing original class totals:',report['arm_correct_images'])
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hdcf-v12-original-query-binding-independent-hold
+          path: ${{ runner.temp }}/v12-sanitized-independent.json
+          retention-days: 7
+          if-no-files-found: error
