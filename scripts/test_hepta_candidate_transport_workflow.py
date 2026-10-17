@@ -214,7 +214,8 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"
         ).read_text()
         marker = (
-            "      - name: Verify GitHub prospective merge ref matches this exact candidate\n"
+            "      - name: Verify GitHub prospective merge ref "
+            "matches this exact candidate\n"
         )
         shell = textwrap.dedent(
             workflow.split(marker, 1)[1]
