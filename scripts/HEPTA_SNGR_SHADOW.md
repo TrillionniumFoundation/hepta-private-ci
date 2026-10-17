@@ -93,3 +93,31 @@ local source/fixture evidence, not a checked GitHub CI receipt, Rust build,
 real Laya training, real task uplift, stochastic solver convergence or a
 multimodal generation claim. An actual *equal work* Bellman vs NDU
 comparison and held-out independent task outcomes remain open gates.
+
+## Optional analytic-field learning pilot (PyTorch CPU)
+
+`scripts/hepta_sngr_learned_shadow.py --demo` trains a 1,218-parameter
+two-headed MLP on **1024 synthetic analytical labels** of the affine
+continuation field `U(t,x)` and known analytic `Z(t)`, evaluated on 512
+independently sampled inputs, with a simple fitted linear baseline and
+explicit out-of-support measurements. Four local fixed-seed runs (17–20)
+achieved held-out `U` MAE from approximately 0.0043 to 0.0071
+and `Z` MAE from approximately 0.0010 to 0.0024. The synthetic labels
+come from a known solution; they do not establish true BSDE learning.
+
+PyTorch is an **optional** manual research dependency. The Python unittest
+module `test_hepta_sngr_learned_shadow.py` checks preflight independent
+of PyTorch and explicitly skips optional fitting if it is unavailable.
+No PyTorch dependency was introduced into the Rust workspace or mandatory
+runtime. Training CPU wall time, train/eval sample counts, parameter count
+and explicit OOD rejection labels are reported; the linear comparator is not
+matched for trainable parameter count, FLOPs or lifecycle cost.
+
+```bash
+python3 scripts/hepta_sngr_learned_shadow.py --demo
+python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_learned_shadow.py'
+```
+
+Do not interpret this fixture's smaller supervised prediction error as
+real System 2 reasoning gain, general FBSDE convergence or an equal-compute
+advantage over traditional Bellman recursion.

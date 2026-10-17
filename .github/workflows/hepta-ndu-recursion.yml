@@ -63,6 +63,7 @@ jobs:
         run: |
           python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_shadow.py'
           python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_nonlinear_shadow.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr_learned_shadow.py'
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
