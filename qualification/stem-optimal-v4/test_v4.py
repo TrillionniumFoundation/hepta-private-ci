@@ -1,0 +1,217 @@
+"""Adversarial source-only and real CPU tensor tests; no pretrained HF forward."""
+from __future__ import annotations
+
+import copy
+import json
+import math
+from pathlib import Path
+import tempfile
+import unittest
+
+import stem_v4 as core
+import review_v4 as review
+import system2_v4 as bellman
+
+
+def fixture():
+    held=[{'case_id':f'heldout:{i:064x}','source_sha256':f'{i:064x}'} for i in range(32)]
+    source={'source_plan_sha256':'a'*64,'heldout':held}
+    probabilities=[.1,.7,.1,.1]
+    result={
+        'schema':core.SCHEMA,'cohort':core.COHORT,'candidate':core.ARM,
+        'source_plan_sha256':source['source_plan_sha256'],
+        'model_repo':core.REPO,'model_revision':core.REVISION,
+        'actual_weight_sha256':core.WEIGHT_SHA,'model_precision':'fp32_cpu',
+        'native_width':768,'projected_width':384,'projection':core.PROJECTION,
+        'prompt_name':'Classification',
+        'initial_head_sha256':'a'*64,'trained_head_sha256':'b'*64,
+        'head_parameters':27656,'optimizer_steps':100,
+        'rows':[{'case_id':r['case_id'],'source_sha256':r['source_sha256'],
+                 'scores':{a:list(probabilities) for a in review.ARMS}} for r in held],
+        'cost':{'physical_encoder_sequences':96,'physical_encoder_forward_batches':6,
+                'model_load_seconds':1.0,'embedding_seconds':2.0,'head_train_seconds':.2,
+                'complete_wall_seconds':4.,'complete_cpu_seconds':3.,
+                'maxrss_bytes_linux_unattested':2_000_000_000,
+                'energy_joules':None,'complete_request_p99_ms':None},
+        'fleet':{'fleet_cell_count':4096,'active_heads_per_call':32,
+                 'head_parameter_count':4096*6914,
+                 'head_weight_bytes_fp32':4096*6914*4,'timed_batched_calls':64,
+                 'head_batch_p95_ms':.2,'head_batch_p99_ms':.4,
+                 'last_logit_sha256':'f'*64,
+                 'real_pretrained_input_feature':True,'complete_request_p99':None,
+                 'energy_joules':None,'target_host_attested':False},
+        'future_windows':0,'human_verified_new_sources':0,
+        'ndu_task_utility_qualified':False,'cell_split_authorized':False,
+        'production_authorized':False,'authority':'DENY_ALL','disposition':'HOLD_NO_GO'}
+    gold={r['case_id']:i%4 for i,r in enumerate(held)}
+    return source,result,gold
+
+
+def graph():
+    return {'root':[
+        {'name':'stop','cost':0,'forecast_utility':0,'children':[]},
+        {'name':'direct','cost':1,'forecast_utility':150_000,'children':[]},
+        {'name':'check','cost':2,'forecast_utility':-100_000,
+         'children':[['success',500000],['fail',500000]]}],
+        'success':[{'name':'stop','cost':0,'forecast_utility':0,'children':[]},
+                   {'name':'continue','cost':1,'forecast_utility':800000,'children':[]}],
+        'fail':[{'name':'stop','cost':0,'forecast_utility':0,'children':[]}]}
+
+
+class ReceiptTests(unittest.TestCase):
+    def test_valid_descriptive_scores_never_authorize(self):
+        src,r,g=fixture()
+        out=review.check_fourth(src,r,g)
+        self.assertEqual(out['learned']['n'],32)
+        self.assertEqual(out['learned']['correct'],8)
+        self.assertGreater(out['learned']['brier'],0)
+
+    def test_denied_authority_and_outcome_leak(self):
+        src,r,g=fixture()
+        for key,value in [('authority','ALLOW'),('production_authorized',True),
+                          ('future_windows',1),('ndu_task_utility_qualified',True),
+                          ('cell_split_authorized',True)]:
+            bad=copy.deepcopy(r);bad[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                review.check_fourth(src,bad,g)
+        bad=copy.deepcopy(r);bad['rows'][0]['label']=1
+        with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_model_revision_weight_projection_and_optimizer_must_match(self):
+        src,r,g=fixture()
+        for key,value in [('model_revision','0'*40),('actual_weight_sha256','f'*64),
+                          ('projection','learned_from_heldout'),('optimizer_steps',0),
+                          ('head_parameters',4)]:
+            bad=copy.deepcopy(r);bad[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                review.check_fourth(src,bad,g)
+
+    def test_bad_gold_and_missing_changed_heldout(self):
+        src,r,g=fixture()
+        bad=copy.deepcopy(g);bad.pop(next(iter(bad)))
+        with self.assertRaises(ValueError):review.check_fourth(src,r,bad)
+        bad=copy.deepcopy(r);bad['rows'][0]['case_id']='fake'
+        with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_nan_and_nonprobability(self):
+        src,r,g=fixture()
+        for prob in [[.1,float('nan'),.3,.6],[.2,.2,.2,.2],[2,-1,0,0]]:
+            bad=copy.deepcopy(r);bad['rows'][0]['scores']['learned']=prob
+            with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
+
+    def test_missing_real_fleet_or_unattested_costs(self):
+        src,r,g=fixture()
+        mutations=(('fleet','head_parameter_count',4),
+                   ('fleet','fleet_cell_count',4),
+                   ('fleet','target_host_attested',True),
+                   ('cost','energy_joules',0.0),
+                   ('cost','physical_encoder_forward_batches',0))
+        for group,key,value in mutations:
+            bad=copy.deepcopy(r);bad[group][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                review.check_fourth(src,bad,g)
+
+    def test_canonical_io_duplicate_nonfinite_symlink_create_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            a=root/'a.json';a.write_text('{"a":1,"a":2}')
+            with self.assertRaises(ValueError):core.read_json(a)
+            a.write_text('{"a":NaN}')
+            with self.assertRaises(ValueError):core.read_json(a)
+            a.write_text('{"a":4}')
+            symlink=root/'sym';symlink.symlink_to(a)
+            with self.assertRaises(ValueError):core.read_json(symlink)
+            out=root/'out.json';core.write_private(out,{'science':'HOLD_NO_GO'})
+            self.assertEqual(json.loads(out.read_text())['science'],'HOLD_NO_GO')
+            self.assertEqual(out.stat().st_mode & 0o777,0o600)
+            with self.assertRaises(FileExistsError):core.write_private(out,{})
+
+    def test_wrong_actual_model_file_cannot_load(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/'model.safetensors';p.write_bytes(b'fixture not weights')
+            with self.assertRaises(ValueError):core.verify_weight_file(p)
+
+
+class ControlTests(unittest.TestCase):
+    def test_budget_stop_and_nonleak(self):
+        g=graph();best=bellman.solve(g,'root',budget=0)
+        self.assertEqual(best['chosen_action'],'stop')
+        self.assertFalse(best['oracle_outcomes_used'])
+        self.assertEqual(best['authority'],'DENY_ALL')
+
+    def test_search_uses_genuine_continuation_and_discount(self):
+        g=graph()
+        self.assertEqual(bellman.solve(g,'root',budget=3,horizon=1)['chosen_action'],'direct')
+        self.assertEqual(bellman.solve(g,'root',budget=3,horizon=2)['chosen_action'],'check')
+        self.assertEqual(bellman.solve(g,'root',budget=3,horizon=2,
+                                      discount_ppm=0)['chosen_action'],'direct')
+
+    def test_tree_probability_cost_and_nonanticipation(self):
+        for mutate in (
+            lambda g:g['root'][2]['children'][0].__setitem__(1,999999),
+            lambda g:g['root'][2].__setitem__('target',1),
+            lambda g:g['root'][2]['children'][0].__setitem__(0,'root'),
+            lambda g:g['root'][0].__setitem__('cost',1),
+            lambda g:g['root'][2].__setitem__('forecast_utility',10**20),
+        ):
+            g=graph();mutate(g)
+            with self.assertRaises(ValueError):bellman.solve(g,'root',budget=3)
+
+    def test_abstain_when_all_predictions_negative(self):
+        g={'root':[{'name':'stop','cost':0,'forecast_utility':0,'children':[]},
+                   {'name':'bad','cost':2,'forecast_utility':-900000,'children':[]}]}
+        self.assertEqual(bellman.solve(g,'root',budget=2)['chosen_action'],'stop')
+
+
+class PhysicalMechanismTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import torch
+        cls.torch=torch
+        torch.set_num_threads(2)
+
+    def test_proj_uses_all_768_features_and_normalizes(self):
+        torch=self.torch
+        x=torch.zeros(2,768)
+        x[0,0]=1;x[0,1]=1
+        x[1,766]=1;x[1,767]=1
+        y=core.project_768_to_384(x)
+        self.assertEqual(tuple(y.shape),(2,384))
+        self.assertEqual(y[0,0].item(),1.0)
+        self.assertEqual(y[1,383].item(),1.0)
+        with self.assertRaises(ValueError):core.project_768_to_384(torch.zeros(1,768))
+        with self.assertRaises(ValueError):core.project_768_to_384(torch.zeros(1,384))
+
+    def test_hook_counts_real_forward_not_logical_borrows(self):
+        torch=self.torch
+        class Inner(torch.nn.Module):
+            def forward(self,x):return x
+        class Encoder:
+            def __init__(self):self.enc=Inner()
+            def __getitem__(self,i):return self.enc
+            def encode(self,texts,**kwargs):
+                x=torch.ones(len(texts),768)
+                return self.enc(x)
+        features,count=core.physical_embedding(['a']*96,Encoder())
+        self.assertEqual(count,6)
+        self.assertEqual(tuple(features.shape),(96,384))
+
+    def test_physically_allocated_head_fleet_64(self):
+        torch=self.torch
+        x=torch.nn.functional.normalize(torch.ones(384),dim=0)
+        f=core.physical_fleet(x,64)
+        self.assertEqual(f['head_parameter_count'],64*6914)
+        self.assertEqual(f['timed_batched_calls'],64)
+        self.assertIsNone(f['complete_request_p99'])
+        self.assertTrue(f['head_batch_p99_ms']>=f['head_batch_p95_ms'])
+
+    def test_physically_allocated_head_fleet_4096(self):
+        torch=self.torch
+        x=torch.nn.functional.normalize(torch.ones(384),dim=0)
+        f=core.physical_fleet(x,4096)
+        self.assertEqual(f['head_parameter_count'],28_319_744)
+        self.assertEqual(f['head_weight_bytes_fp32'],113_278_976)
+        self.assertFalse(f['target_host_attested'])
+
+
+if __name__=='__main__':unittest.main()

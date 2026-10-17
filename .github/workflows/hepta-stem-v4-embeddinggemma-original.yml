@@ -1,0 +1,260 @@
+name: Hepta Stem V4 genuine EmbeddingGemma + 4096 Head (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-v4-embeddinggemma-20261017]
+    paths:
+      - 'qualification/stem-optimal-v4/**'
+      - '.github/workflows/hepta-stem-v4-embeddinggemma-original.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v4/**'
+      - '.github/workflows/hepta-stem-v4-embeddinggemma-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-v4-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXP_DIR: qualification/stem-optimal-v4
+  V1_DIR: qualification/stem-optimal-v1
+  V3_DIR: qualification/stem-optimal-v3
+
+jobs:
+  source-negative-and-physical-head-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Genuine Torch CPU mechanics, invalid source and System 2 control tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m py_compile "$EXP_DIR/stem_v4.py" "$EXP_DIR/review_v4.py" "$EXP_DIR/system2_v4.py" "$EXP_DIR/test_v4.py"
+          python -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_v4.py' -v
+
+  original-source-owner:
+    needs: source-negative-and-physical-head-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v4-embeddinggemma-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original publisher bytes and source-only heldout roster
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/v4-publisher"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          folder=Path(os.environ['RUNNER_TEMP'])/'v4-publisher'
+          sha={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+               'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for name in ('train','test'):
+              url='https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/'+name+'.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-v4-frozen-original'}),timeout=35) as response:
+                  if response.geturl()!=url: raise SystemExit('unexpected source redirect')
+                  raw=response.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=sha[name]:
+                  raise SystemExit('wrong source bytes')
+              (folder/(name+'.csv')).write_bytes(raw)
+          PY
+          python "$V3_DIR/stem_hard_charge_v3.py" prepare \
+            --train "$RUNNER_TEMP/v4-publisher/train.csv" \
+            --test "$RUNNER_TEMP/v4-publisher/test.csv" \
+            --output "$RUNNER_TEMP/v4-publisher/source-v4.json"
+          (cd "$RUNNER_TEMP/v4-publisher" && sha256sum source-v4.json > source-v4.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-original-source-without-heldout-labels
+          path: |
+            ${{ runner.temp }}/v4-publisher/source-v4.json
+            ${{ runner.temp }}/v4-publisher/source-v4.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  real-original-baselines:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-original-source-without-heldout-labels
+          path: ${{ runner.temp }}/v4-source
+      - name: Run matched original reference training
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source-v4.sha256)
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          mkdir -p "$RUNNER_TEMP/v4-model"
+          python "$V3_DIR/stem_hard_charge_v3.py" infer \
+            --source "$RUNNER_TEMP/v4-source/source-v4.json" \
+            --materials "$V1_DIR/MODEL_MATERIALS.json" \
+            --candidate '${{ matrix.candidate }}' \
+            --output "$RUNNER_TEMP/v4-model/old-${{ matrix.candidate }}.json"
+          (cd "$RUNNER_TEMP/v4-model" && sha256sum 'old-${{ matrix.candidate }}.json' > 'old-${{ matrix.candidate }}.sha256')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-${{ matrix.candidate }}-original-denyall
+          path: |
+            ${{ runner.temp }}/v4-model/old-${{ matrix.candidate }}.json
+            ${{ runner.temp }}/v4-model/old-${{ matrix.candidate }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  real-original-embeddinggemma:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-original-source-without-heldout-labels
+          path: ${{ runner.temp }}/v4-source
+      - name: Strict immutable text-only original pretrained inference and real Head fleet
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source-v4.sha256)
+          python -m pip install --disable-pip-version-check torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check sentence-transformers==6.1.0 transformers==5.19.0 safetensors
+          python - <<'PY'
+          import torch, transformers, sentence_transformers
+          assert torch.__version__.split('+')[0]=='2.14.1'
+          assert transformers.__version__=='5.19.0'
+          assert sentence_transformers.__version__=='6.1.0'
+          PY
+          mkdir -p "$RUNNER_TEMP/v4-eg2"
+          python "$EXP_DIR/stem_v4.py" \
+            --source "$RUNNER_TEMP/v4-source/source-v4.json" \
+            --output "$RUNNER_TEMP/v4-eg2/fourth.json"
+          (cd "$RUNNER_TEMP/v4-eg2" && sha256sum fourth.json > fourth.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-embeddinggemma2-original-denyall
+          path: |
+            ${{ runner.temp }}/v4-eg2/fourth.json
+            ${{ runner.temp }}/v4-eg2/fourth.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-postseal-original-label-review:
+    needs: [real-original-baselines, real-original-embeddinggemma]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v4-original-source-without-heldout-labels
+          path: ${{ runner.temp }}/v4-source
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-v4-*-original-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/v4-predictions
+      - name: Byte-sealed prediction check BEFORE reopening original truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source-v4.sha256)
+          (cd "$RUNNER_TEMP/v4-predictions" && for f in *.sha256; do sha256sum --check "$f"; done)
+      - name: Independently redownload original public publisher truth and re-score all 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v4-review"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          folder=Path(os.environ['RUNNER_TEMP'])/'v4-review'
+          sha={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+               'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          for name in ('train','test'):
+              url='https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/'+name+'.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-v4-late-truth'}),timeout=35) as response:
+                  if response.geturl()!=url: raise SystemExit('publisher redirect')
+                  raw=response.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=sha[name]:
+                  raise SystemExit('publisher truth byte mismatch')
+              (folder/(name+'.csv')).write_bytes(raw)
+          PY
+          python "$EXP_DIR/review_v4.py" \
+            --train "$RUNNER_TEMP/v4-review/train.csv" \
+            --test "$RUNNER_TEMP/v4-review/test.csv" \
+            --source "$RUNNER_TEMP/v4-source/source-v4.json" \
+            --old-granite47 "$RUNNER_TEMP/v4-predictions/old-granite47.json" \
+            --old-granite97 "$RUNNER_TEMP/v4-predictions/old-granite97.json" \
+            --old-mmbert140 "$RUNNER_TEMP/v4-predictions/old-mmbert140.json" \
+            --fourth "$RUNNER_TEMP/v4-predictions/fourth.json" \
+            --materials "$V1_DIR/MODEL_MATERIALS.json" \
+            --output "$RUNNER_TEMP/v4-review/descriptive-hold-no-go.json"
+          (cd "$RUNNER_TEMP/v4-review" && sha256sum descriptive-hold-no-go.json > descriptive-hold-no-go.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v4-postseal-descriptive-hold-no-go
+          path: |
+            ${{ runner.temp }}/v4-review/descriptive-hold-no-go.json
+            ${{ runner.temp }}/v4-review/descriptive-hold-no-go.sha256
+          if-no-files-found: error
+          retention-days: 7
