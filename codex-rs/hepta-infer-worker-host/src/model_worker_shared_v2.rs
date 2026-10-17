@@ -799,8 +799,13 @@ mod tests {
             latency_micros: 4,
         };
         let snapshot_digest = request.snapshot.identity.digest().expect("identity");
-        let baseline =
-            observation_digest_v3(&request, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest);
+        let baseline = observation_digest_v3(
+            &request,
+            &observation,
+            ExecutionStatus::Succeeded,
+            3,
+            snapshot_digest,
+        );
         for index in 0..4 {
             let mut changed = request.clone();
             match index {
