@@ -5,6 +5,7 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/cli/src/main.rs"
       - ".github/workflows/hepta-neuron-shared-q24-owner-ci.yml"
   workflow_dispatch:
 
@@ -43,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-cli -- --check
       - name: Check every native target
         shell: bash
         run: |
