@@ -359,8 +359,7 @@ mod tests {
                 .expect("historical transcript is never a final-use grant");
         assert!(historical);
         assert!(
-            require_fresh_completion_admission_v1("advance", true, None, &mut unexpected)
-                .is_err(),
+            require_fresh_completion_admission_v1("advance", true, None, &mut unexpected).is_err(),
             "no current plan means no positive completion"
         );
     }

@@ -345,8 +345,7 @@ class ScopeTests(unittest.TestCase):
         # expensive native canary work without weakening any CI command.
         fmt_step = "      - name: Early locked CellSplit Control/CNS Rustfmt preflight"
         canary_step = (
-            "      - name: Early CellSplit canary and evaluator compile "
-            "regression"
+            "      - name: Early CellSplit canary and evaluator compile regression"
         )
         product_step = (
             "      - name: Early original Control WAL recovery observer "
@@ -426,7 +425,8 @@ class ScopeTests(unittest.TestCase):
                 self.assertIn(
                     "--minimum-tests 1 -- cargo test --locked --manifest-path "
                     "codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib "
-                    + name + " -- --nocapture --test-threads=1",
+                    + name
+                    + " -- --nocapture --test-threads=1",
                     gate,
                 )
         self.assertLess(

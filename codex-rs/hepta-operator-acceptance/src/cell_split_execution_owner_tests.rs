@@ -2868,10 +2868,17 @@ fn original_effect_withdrawn_during_post_effect_admission_cannot_be_committed() 
         assert_eq!(checks, 3, "readback must deny before a fourth admission");
         assert_eq!(state.borrow().executions, completed + 1);
         assert_eq!(owner.completed_steps(), completed);
-        let prepared = root.path().join(format!("cell-split-{completed:02}-prepared.json"));
-        let committed = root.path().join(format!("cell-split-{completed:02}-committed.json"));
+        let prepared = root
+            .path()
+            .join(format!("cell-split-{completed:02}-prepared.json"));
+        let committed = root
+            .path()
+            .join(format!("cell-split-{completed:02}-committed.json"));
         assert!(prepared.is_file(), "keep original, fsynced intent");
-        assert!(!committed.exists(), "withdrawn native effect cannot be acknowledged");
+        assert!(
+            !committed.exists(),
+            "withdrawn native effect cannot be acknowledged"
+        );
         assert!(matches!(
             owner.advance_with_admission(|| Ok(())),
             Err(CellSplitExecutionErrorV1::Ambiguous)
