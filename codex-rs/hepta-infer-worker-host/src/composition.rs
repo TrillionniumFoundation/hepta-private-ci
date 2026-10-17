@@ -11,6 +11,7 @@ use std::fmt;
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct CompositionKey {
     pub encoder_digest: String,
+    pub weights_digest: String,
     pub tokenizer_digest: String,
     pub preprocessor_digest: String,
     pub normalization_digest: String,
@@ -23,6 +24,7 @@ impl CompositionKey {
     pub fn validate(&self) -> Result<(), CompositionError> {
         for (name, value) in [
             ("encoder_digest", &self.encoder_digest),
+            ("weights_digest", &self.weights_digest),
             ("tokenizer_digest", &self.tokenizer_digest),
             ("preprocessor_digest", &self.preprocessor_digest),
             ("normalization_digest", &self.normalization_digest),
@@ -35,6 +37,52 @@ impl CompositionKey {
             }
         }
         Ok(())
+    }
+}
+
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompositionManifestV1 {
+    pub cell_id: String,
+    pub encoder_digest: String,
+    pub weights_digest: String,
+    pub tokenizer_digest: String,
+    pub preprocessor_digest: String,
+    pub normalization_digest: String,
+    pub quantization_digest: String,
+    pub runtime_digest: String,
+    pub device_digest: String,
+    pub head_digest: String,
+    pub private_memory_bytes: u64,
+    pub maximum_tokens: u32,
+}
+
+impl CompositionManifestV1 {
+    pub fn validate(&self) -> Result<(), CompositionError> {
+        self.key().validate()?;
+        self.head().validate()
+    }
+
+    pub fn key(&self) -> CompositionKey {
+        CompositionKey {
+            encoder_digest: self.encoder_digest.clone(),
+            weights_digest: self.weights_digest.clone(),
+            tokenizer_digest: self.tokenizer_digest.clone(),
+            preprocessor_digest: self.preprocessor_digest.clone(),
+            normalization_digest: self.normalization_digest.clone(),
+            quantization_digest: self.quantization_digest.clone(),
+            runtime_digest: self.runtime_digest.clone(),
+            device_digest: self.device_digest.clone(),
+        }
+    }
+
+    pub fn head(&self) -> CellHeadManifest {
+        CellHeadManifest {
+            cell_id: self.cell_id.clone(),
+            head_digest: self.head_digest.clone(),
+            private_memory_bytes: self.private_memory_bytes,
+            maximum_tokens: self.maximum_tokens,
+        }
     }
 }
 
@@ -435,6 +483,7 @@ mod tests {
     fn key(device: &str) -> CompositionKey {
         CompositionKey {
             encoder_digest: "encoder-v1".into(),
+            weights_digest: "weights-v1".into(),
             tokenizer_digest: "tokenizer-v1".into(),
             preprocessor_digest: "preprocessor-v1".into(),
             normalization_digest: "normalization-v1".into(),
