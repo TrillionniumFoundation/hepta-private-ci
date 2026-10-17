@@ -59,3 +59,32 @@ All real archive tests skip (rather than pretend success) when the original ZIPs
 5. Independently tested **64/256/1024/4096** concurrent/cached realistic workloads, CPU/GPU/RSS/VRAM/energy/p95/p99/WAL cold recovery plus all Architecture and global `blocking-ci` gates. No waiver, auto-merge or model promotion in this P0 branch.
 
 **Intentional scientific outcome:** This slice answers whether the *mechanisms physically execute and reject invalid state*, not whether Cell Split learns, NDU improves natural-language reasoning, or native code replaces MCP. All such unsupported results stay false/unknown.
+
+## P0.4 stronger original model intervention and native hot-path cost (2026-10-17)
+
+This **additive research-only** follow-up keeps every owner and authority unchanged:
+
+- `causal_audit.py` works from the same four externally attested-by-SHA archived original ModernBERT ZIPs. Its `prelabel` subprocess physically reconstructs **all three independently trained original float64 heads** (256 SGD steps per trained arm), plus the frozen and swapped arms; verifies **all five original Head weight SHA256 IDs and 160/160 model predictions**, then actually feeds **32 all-zero 768D feature vectors** to the reconstructed Split model. The prelabel producer only opens the original **feature and trial** ZIPs; it cannot open publisher held labels. Its 0600 fsynced JSON and exact SHA are checked by a separate `review` subprocess before the original target/public ZIPs are opened. No new pretrained Encoder forward is claimed.
+- Independent historical late-label scoring: Split 20/32, zero-feature Split **20/32**, no-SGD type prior **20/32**. Split agrees with both on **32/32 binary decisions**. Zero-feature Brier 0.2438486935, Split 0.2390112494, prior 0.2372502012. Split-vs-equal-touch shared Head original 12 wins / 8 losses, nominal exact p=0.5034446716. Retrospective per-row paired Brier bootstrap (4,000 seeded resamples) is labeled **post-hoc and not valid for correlated group or future-source inference**. The current 32-case source was already seen before this intervention was designed; **all model selection and split gates remain NO-GO**.
+- `original_fetch.py` is a restricted helper for read-only Actions archives. Authenticated GitHub metadata retrieval **refuses automatic HTTP redirects**, accepts only approved HTTPS blob-host delivery endpoints, sends a fresh second request **without GitHub credentials**, then checks full original ZIP SHA256 and privately writes create-only bytes. `actions:read` exists only for the separate source-HEAD genuine-historical qualification job, not for the general source-only job. No model weights or private labels are published.
+- `native_paired.py` executes the same synthetic 16-lane Q24 task using typed Python and separately AOT-compiled original C kernel. Both timing arms perform the same typed program-policy and source-lineage SHA checks; native avoids redoing the Python Q24 numerical reference **inside its timed scope**, but the actual numerical parity is checked outside the timed scope. 3 repeats use balanced AB/BA ordering and record p50/p95/p99. The **microbenchmark is not an MCP, IPC, UI, GPU or full-service comparison**, and an apparent win in this pilot would still be ineligible for product selection.
+- `test_causal_audit.py`, `test_native_paired.py`, `test_original_fetch.py` include independent-process original reviews, bad receipt/ZIP/route/seal injection, no-label producer instrumentation, AOT parity and token-forwarding guards. Original-backed tests **must skip** if the full authentic archive set is absent; the separate hosted original-pretrained-review job **must fail**, not skip, when those archives are missing or altered.
+
+Local original ZIP execution command (write to a fresh private directory; **do not upload the prelabel producer JSON** because it contains individual archived original predictions):
+
+```sh
+cd qualification/neural-cell-fabric-p0
+HDCF_ORIGINAL_ARCHIVE_DIR=/path/to/four-pinned-original-zips python3 -m unittest -q \
+  test_fabric test_science_gate test_original_replay test_causal_audit test_native_paired test_original_fetch
+python3 -O -m unittest -q test_fabric test_science_gate test_original_replay \
+  test_causal_audit test_native_paired test_original_fetch
+python3 causal_audit.py prelabel --archive-dir /path/to/four-pinned-original-zips \
+  --output /new/private/dir/prelabel.json
+python3 causal_audit.py review --archive-dir /path/to/four-pinned-original-zips \
+  --prelabel /new/private/dir/prelabel.json --output /new/private/dir/review.json
+python3 native_paired.py --repetitions 512 --output /new/private/dir/native.json
+```
+
+### What P0.4 still does NOT establish
+
+This is a new **offline Head training rerun and intervention** from previously collected real pretrained features, not a fresh `ModernBERT` forward, newly sourced public cohort, genuine prospective time window, original human blind adjudication, learned NDU benefit, true GPU path, JIT memory writer, motor UI effect or MCP replacement. The standalone original Actions job is scoped to authentic **historical archived** evidence; it does not qualify a future publisher panel, nor is a previously green SHA a current exact-HEAD check. NDU remains finite synthetic action search and separately bounded scalar contraction, **not** a general continuous-time FBSDE theorem. All production authority stays with the existing independently authenticated owners.

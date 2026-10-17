@@ -31,12 +31,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           gcc --version | head -1
           python3 --version
-      - name: Python normal and optimized source/real CPU AOT tests
+      - name: Python normal/optimized source and actual AOT CPU tests
         working-directory: qualification/neural-cell-fabric-p0
         run: |
-          python3 -m unittest -q test_fabric test_science_gate test_original_replay
-          python3 -O -m unittest -q test_fabric test_science_gate test_original_replay
-      - name: Real CPU mechanism pilot; NO MODEL promotion
+          python3 -m unittest -q test_fabric test_science_gate test_original_replay test_causal_audit test_native_paired test_original_fetch
+          python3 -O -m unittest -q test_fabric test_science_gate test_original_replay test_causal_audit test_native_paired test_original_fetch
+      - name: Real CPU shadow mechanism pilot; NO model promotion
         working-directory: qualification/neural-cell-fabric-p0
         run: |
           python3 pilot.py --repetitions 16 --output-dir "$RUNNER_TEMP/hepta-p0-physical-shadow"
@@ -53,3 +53,90 @@ jobs:
           assert r['scalar_contraction']['not_global_theorem']
           print('SOURCE_BOUND_CPU_PILOT_PASS / NO_REAL_MODEL / DENY_ALL')
           PY
+      - name: Matched real CPU native-vs-typed computation (NOT MCP)
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          python3 native_paired.py --repetitions 128 --output "$RUNNER_TEMP/hepta-p04-native.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-p04-native.json'
+          r = json.loads(p.read_text())
+          assert r['authority'] == 'DENY_ALL' and r['disposition'] == 'HOLD_NO_GO'
+          assert r['calls_per_arm'] == 384 and r['typed_vs_native_same_numeric_outputs']
+          assert not r['speedup_claim_authorized']
+          print('MATCHED_NATIVE_CPU_ONLY / NO_MCP_OR_EFFECT_CLAIM')
+          PY
+
+  exact-original-pretrained-lesion-p04:
+    name: original ModernBERT trained-Head lesion / label-blind review (research)
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bound source HEAD and create private archive/producer locations
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p04-original" "$RUNNER_TEMP/hepta-p04-preseal"
+      - name: Only fetch original source feature + trial ZIPs before prelabel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 original_fetch.py --kind features --out "$RUNNER_TEMP/hepta-p04-original/hdcf-original-features.zip"
+          python3 original_fetch.py --kind trial --out "$RUNNER_TEMP/hepta-p04-original/hdcf-original-head-trial.zip"
+      - name: Actual 768D / five-arm float64 SGD prelabel in isolated process
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 causal_audit.py prelabel --archive-dir "$RUNNER_TEMP/hepta-p04-original" --output "$RUNNER_TEMP/hepta-p04-preseal/producer.json"
+          test -s "$RUNNER_TEMP/hepta-p04-preseal/producer.json"
+      - name: ONLY AFTER prelabel is sealed, obtain independent original labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 original_fetch.py --kind targets --out "$RUNNER_TEMP/hepta-p04-original/hdcf-original-targets.zip"
+          python3 original_fetch.py --kind public --out "$RUNNER_TEMP/hepta-p04-original/hdcf-original-public.zip"
+      - name: Independent new-process historical review and adversarial tests
+        env:
+          HDCF_ORIGINAL_ARCHIVE_DIR: ${{ runner.temp }}/hepta-p04-original
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 -m unittest -q test_original_replay test_causal_audit
+          python3 -O -m unittest -q test_original_replay test_causal_audit
+          python3 causal_audit.py review --archive-dir "$HDCF_ORIGINAL_ARCHIVE_DIR" --prelabel "$RUNNER_TEMP/hepta-p04-preseal/producer.json" --output "$RUNNER_TEMP/hepta-p04-preseal/review.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          r = json.loads((pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-p04-preseal/review.json').read_text())
+          assert r['authority'] == 'DENY_ALL' and r['disposition'] == 'HOLD_NO_GO'
+          assert r['prelabel_original_160_outputs_independently_reproduced'] is True
+          assert r['zero_feature_model_forward_reexecuted_on_reconstructed_head'] is True
+          assert r['split_vs_prior_decision_agreement'] == 32
+          assert r['split_vs_zero_feature_decision_agreement'] == 32
+          assert r['metrics']['split']['correct'] == 20
+          assert r['metrics']['type_prior']['correct'] == 20
+          assert r['metrics']['zero_features']['correct'] == 20
+          assert not r['future_source_independence_verified']
+          assert not r['learned_cell_gain_verified']
+          print('ORIGINAL_PRETRAINED_REPLAY_AND_ZERO_LESION_NO_GO / DENY_ALL')
+          PY
+      - name: Export only sanitized original-review aggregate, never raw predictions
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p04-historical-original-no-go
+          retention-days: 14
+          path: ${{ runner.temp }}/hepta-p04-preseal/review.json
+          if-no-files-found: error
