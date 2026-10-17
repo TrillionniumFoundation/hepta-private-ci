@@ -108,6 +108,11 @@ class ModalityRegistryTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             ModalityTowerRegistryV1("bad.v1", STEM, tuple(tower(m) for m in ("audio", "image", "text", "text")))
 
+    def test_registry_rejects_stem_without_all_modality_projectors(self):
+        partial_stem = StemManifestV1(**{**STEM.__dict__, "modality_projectors": ("audio", "image", "text")})
+        with self.assertRaises(ContractError):
+            ModalityTowerRegistryV1("bad.v1", partial_stem, towers())
+
     def test_registry_rejects_unsorted_tower_ids(self):
         ordered = towers()
         with self.assertRaises(ContractError):
