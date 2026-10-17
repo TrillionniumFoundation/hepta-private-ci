@@ -1,0 +1,33 @@
+name: Future OOD and harness receipt contracts
+
+on:
+  pull_request:
+    paths:
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-future-ood-harness-contract.yml"
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-future-ood-harness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run full shared-encoder contract suite
+        run: python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'
+      - name: Compile research modules
+        run: |
+          python3 -m py_compile \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/future_ood_matrix.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/harness_receipt_adapter.py
+          git diff --check
