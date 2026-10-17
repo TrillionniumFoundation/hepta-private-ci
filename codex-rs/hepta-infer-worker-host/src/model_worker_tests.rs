@@ -63,7 +63,9 @@ impl NeuronFeatureDriver for Driver {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         if self.fail_feature_driver {
-            return Err(Error::DriverFailure("feature backend indeterminate".to_string()));
+            return Err(Error::DriverFailure(
+                "feature backend indeterminate".to_string(),
+            ));
         }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
@@ -417,14 +419,9 @@ fn postdispatch_feature_errors_fence_worker_before_retry() {
             ..Driver::default()
         },
     ] {
-        let mut worker = InferenceWorker::new(
-            100,
-            "worker.postdispatch".to_string(),
-            3,
-            grant(),
-            driver,
-        )
-        .expect("worker");
+        let mut worker =
+            InferenceWorker::new(100, "worker.postdispatch".to_string(), 3, grant(), driver)
+                .expect("worker");
         worker.load_model(100, manifest()).expect("load");
         assert!(
             worker
