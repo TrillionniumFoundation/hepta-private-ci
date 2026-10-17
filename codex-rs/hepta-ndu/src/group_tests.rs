@@ -63,6 +63,7 @@ fn make_trace(subject: &GroupNduSubjectV1, candidates: &[GroupContinuationCandid
             cell_id: "cell:0".to_owned(),
             head_digest: digest("head"),
             action_digest: digest("action"),
+            evidence_digest: digest("evidence"),
             value_q32: 20,
             cost_micros: 5,
             uncertainty_q32: 1,
