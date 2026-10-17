@@ -111,7 +111,8 @@ class PairedReaderTests(unittest.TestCase):
                 hashlib.sha256(payload).hexdigest() + "  ./source.txt\n"
             )
             self.assertEqual(
-                verify_inventory(root)["source.txt"], hashlib.sha256(payload).hexdigest()
+                verify_inventory(root)["source.txt"],
+                hashlib.sha256(payload).hexdigest(),
             )
             (root / "source.txt").write_bytes(b"tampered")
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
