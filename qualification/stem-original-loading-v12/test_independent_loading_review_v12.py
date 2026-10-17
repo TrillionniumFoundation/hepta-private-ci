@@ -68,6 +68,9 @@ class NegativeOriginalLoaderTests(unittest.TestCase):
             'actual_head_train_wall_seconds':0.0,
             'total_elapsed_wall_seconds':1.0,
             'total_elapsed_cpu_seconds':1.0,
+            'historical_original_probability_max_abs_drift':{'frozen_init':0.0,
+            'centroid':0.0,'learned':0.0},
+
             'scientifically_fully_reproducible_same_head_and_base':False,
         })
         report['load_diagnostics'].update({
