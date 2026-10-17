@@ -47,7 +47,9 @@ modalities, choose a Stem, or activate a decoder.
 9. An envelope Stem digest and projector digest must match the frozen registry.
 10. Envelope latent width and slot count must fit the projector contract.
 11. Image regions, audio spans and video spans must match declared capabilities.
-12. Registry and envelope manifests remain DENY_ALL; creation is not model
+12. Stem current_generation must equal both registry generations.
+13. Registry storage is tuple-only; manifests reject forged registry digests.
+14. Registry and envelope manifests remain DENY_ALL; creation is not model
     selection or production admission.
 
 ## Relationship to the existing bridge
@@ -71,10 +73,10 @@ forward quality, semantic alignment, generation, latency, or Cell efficacy.
       qualification/neuron-shared-encoder/test_registry_bridge.py
 
     python3 qualification/neuron-shared-encoder/test_modality_registry.py
-    # Ran 10 tests — OK
+    # Ran 14 tests — OK
 
     python3 qualification/neuron-shared-encoder/test_registry_bridge.py
-    # Ran 9 tests — OK
+    # Ran 12 tests — OK
 
 The change remains research-only, shadow-only and non-authorizing. It does not
 change main, model selection, final-use authority, decoder execution, or
