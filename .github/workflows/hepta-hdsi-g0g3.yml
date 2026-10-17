@@ -42,9 +42,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           cd "$EXP_DIR"
-          python -m py_compile feature_bus.py circuit_ndu.py physical_fanout.py review_fanout.py test_hdsi.py
-          python -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests
-          python -O -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests
+          python -m py_compile feature_bus.py circuit_ndu.py physical_fanout.py review_fanout.py test_hdsi.py real_minilm_reference.py review_real_minilm.py test_real_minilm_reference.py
+          python -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests test_real_minilm_reference.MiniLMSourceTests
+          python -O -m unittest -v test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.NativeNduReferenceTests test_hdsi.ReviewerTests test_real_minilm_reference.MiniLMSourceTests
           git -C ../.. diff --check
 
   original-source-owner:

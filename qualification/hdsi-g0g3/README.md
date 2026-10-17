@@ -50,3 +50,60 @@ python3 -m unittest -q test_hdsi.FanoutTests test_hdsi.CircuitTests test_hdsi.Re
 ## Next independent scientific qualification
 
 Only if the physical multi-scale workflow succeeds: take the **same exact frozen Granite97 source/model** into evidence-necessary source-disjoint 2–6-hop natural QA, use token-level rather than only mean-pooled vectors, compare a cheap exact/BM25 control, frozen/learned Shared Head, Cell-split rank-8 Head, fixed-depth Circuit, adaptive heuristic, ordinary Bellman and fixed-profile NDU with equal physical end-to-end costs. Freeze train/source/calibration/test **before** inference. Add future time windows, independent reader/verifier and lesion tests. If NDU and Bellman tie, preserve that negative result; require task + cost + retention uplift before selecting any learning/structural proposal.
+
+
+## V2 local original-MiniLM independent physical control — 2026-10-17
+
+This continuation adds `real_minilm_reference.py`, a **six-layer FP32 BERT CPU
+implementation** that requires the exact original archived MiniLM model/vocab/
+tokenizer/config and LoCoMo public bytes. The original GitHub Actions archive
+artifact ID is `11586991191`, outer ZIP SHA256
+`07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af`.
+The archive and five inner original source/model SHA256 identities are rechecked;
+no model material, raw dialogue or publisher labels are committed. This is the
+**historical MiniLM control**, **not Granite97**, official Hugging Face parity,
+or the selected production Stem.
+
+`LOCAL_MINILM_ORIGINAL_CPU_20261017.json` contains one actual original-model CPU
+run: **160 complete physical six-layer forwards** (4 × 32 independent physical
+Encodings + 32 additional full no-cache comparison), 32 distinct source-first
+public utterances spanning 9 of 10 available conversation roots, and resident
+6,914-scalar FP32 rank-8 Head slots at 64/256/1024/4096 Cells. Each cohort
+physically encoded 32 original input strings once, reused those same 32 values
+for N scoped logical borrows and verified Head output identities on cache hits.
+The additional no-cache 32 original forwards had identical 384D FP32 features.
+All numeric CPU/wall/RSS observations are **local whole-process self-reports**;
+startup/Head execution and input reuse are not a target-host p95/p99/energy SLA.
+
+An entirely separate model-free source evaluator,
+`review_real_minilm.py`, reopens original LoCoMo bytes and independently
+reconstructs the source-first 32-case set and all physical work scopes.
+`LOCAL_MINILM_INDEPENDENT_REVIEW_20261017.json` records this **limited** review:
+it does **not** independently execute pretrained weights or attest hardware.
+`LOCAL_MINILM_NUMERIC_PROBE_20261017.json` records another independent
+same-host, original-weight six-layer BERT numerical probe: two different
+implementations yielded identical CLS+Pooler hashes, but historical
+cross-host hashes **differ**; do not claim cross-host bitwise model parity.
+
+Actual unoptimized+optimized local Python suites after V2 are **39/39 each**:
+30 inherited G0–G3 methods and nine additional original-source/security
+contract tests. The source-only workflow exercises the added nine methods
+without accessing model bytes; **it does not execute the real pretrained
+MiniLM workload in Actions**. The only scheduled heavy original GH job remains
+the separately SHA-pinned Granite97 path, which must actually terminate.
+
+To independently replay the local MiniLM experiment after safely extracting the
+original archive and SHA-verifying its member identities into `<ROOT>`:
+
+```sh
+cd qualification/hdsi-g0g3
+python3 real_minilm_reference.py --original-root '<ROOT>' --output /tmp/hdsi-minilm-original.json
+python3 review_real_minilm.py --root '<ROOT>' --receipt /tmp/hdsi-minilm-original.json --output /tmp/hdsi-minilm-review.json
+python3 -m unittest -q test_hdsi test_real_minilm_reference
+python3 -O -m unittest -q test_hdsi test_real_minilm_reference
+```
+
+There is still no prospective relation/QA answer correctness, learned old/new
+retention, multimodal necessity, native Rust source-integrated Cell run,
+mathematically certified stochastic FBSDE, NDU-vs-Bellman gain, or production
+model/CellSplit authorization. **DRAFT / RESEARCH_ONLY / DENY_ALL**.
