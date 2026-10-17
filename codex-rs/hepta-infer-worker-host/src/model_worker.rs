@@ -801,5 +801,9 @@ pub use shared_v2::SharedNeuronFeatureResultV2;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 
 #[cfg(test)]
+#[path = "model_worker_public_q24_tests.rs"]
+mod public_q24_tests;
+
+#[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
