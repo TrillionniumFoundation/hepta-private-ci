@@ -17,7 +17,7 @@ FILES = {
     'data/train_1_1.5k-00000-of-00001.parquet': 'cc35afe9d5e7ff01878c9aeba08bb0bdfa16947702789530b216a580a1bc09d5',
     'data/test-00000-of-00001.parquet': '2237e86474314bae6c611718e5bd16a42b4e8dfae53bb4a84abdae1bc1c5d3ee',
 }
-SCHEMA = 'hepta.ndu-merton.p2.agnews-stage.v1'
+SCHEMA = 'hepta.ndu-merton.p5.class-balanced-agnews-source.v1'
 LABELS = ('World', 'Sports', 'Business', 'Sci/Tech')
 
 
@@ -72,30 +72,36 @@ def validate_rows(records, split: str):
 
 def original_manifest():
     return {'repo': REPO, 'revision': REV, 'source_files_sha256': FILES,
-            'split_rule': 'first4-train-and-first2-test-per-bucket-and-row-parity',
+            'split_rule': 'first-per-original-publisher-class-bucket-index-parity',
+            'publisher_label_for_source_stratification_only': True,
             'bucket_rule': 'short_if_unicode_length_le_180',
             'publisher_future_window': False, 'independent_source_families': False}
 
 def split_original(train, held):
     train = validate_rows(train, 'train')
     held = validate_rows(held, 'held')
-    def pick(records, limit):
-        # Four train cases per bucket/parity (16), two held per bucket/parity (8).
-        selected, groups = [], {}
+    def pick(records):
+        # Predeclared BEFORE obtaining model outputs: first original row for each
+        # of the 4 publisher labels x 2 text lengths x 2 source row parities.
+        # Held labels are used by the source owner solely for selection and are
+        # stripped before publishing PUBLIC inputs to the Reader job.
+        selected = {}
         for row in records:
-            key = (row['bucket'], row['group'])
-            if groups.get(key, 0) >= limit:
-                continue
-            groups[key] = groups.get(key, 0) + 1
-            selected.append(row)
-            if len(selected) == 4*limit:
+            task_index = int(row['task_id'].rsplit('-', 1)[1])
+            key = (row['label'], row['bucket'], task_index % 2)
+            selected.setdefault(key, row)
+            if len(selected) == 16:
                 break
-        if len(selected) != 4*limit or len(groups) != 4:
-            raise ValueError('insufficient original source/bucket support')
-        return selected
-    training = pick(train, 4)
-    eval_rows = pick(held, 2)
-    if len({row['text_sha256'] for row in training + eval_rows}) != 24:
+        expected = {(label, bucket, parity)
+                    for label in range(4)
+                    for bucket in ('short', 'long')
+                    for parity in (0, 1)}
+        if set(selected) != expected:
+            raise ValueError('unavailable: original publisher lacks balanced label/bucket/parity support')
+        return sorted(selected.values(), key=lambda row: row['task_id'])
+    training = pick(train)
+    eval_rows = pick(held)
+    if len({row['text_sha256'] for row in training + eval_rows}) != 32:
         raise ValueError('source text duplicates across train/held')
     dataset = original_manifest()
     train_packet = {'schema': SCHEMA+'.train', 'source': dataset,
@@ -127,12 +133,12 @@ def main():
     for name,packet in zip(('train-public.json','held-public.json','held-private-labels.json'), packets):
         new_json(out/name,packet)
     new_json(out/'source-claim.json',{'schema':SCHEMA+'.stage-status',
-                                    'public_train_cases':16,'public_held_cases':8,
+                                    'public_train_cases':16,'public_held_cases':16,
                                     'original_model_forwards':0,
                                     'prospective_generalization':False,
                                     'authority':'DENY_ALL'})
     print(json.dumps({'source':REPO,'revision':REV,'output':str(out),
-                      'train':16,'held':8,'labels_separated':True},sort_keys=True))
+                      'train':16,'held':16,'labels_separated':True},sort_keys=True))
 
 if __name__ == '__main__':
     main()

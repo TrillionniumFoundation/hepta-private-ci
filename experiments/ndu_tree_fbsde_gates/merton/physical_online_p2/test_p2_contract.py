@@ -50,7 +50,7 @@ def fake_data():
             islong=i%4 in (2,3)
             text=('International business and sports headline '+split_name+' '+str(i)+' ' + 'X'*20 +
                   (' reports further factual news details '*10 if islong else ' reports news.'))
-            target.append({'text':text,'label':i%4})
+            target.append({'text':text,'label':(i//4)%4})
     return split_original(train,held)
 
 
@@ -151,9 +151,9 @@ class PhysicalContractTests(unittest.TestCase):
         self.assertIsNone(o['predicted_class'])
         self.assertFalse(o['thinking_complete'])
 
-    def test_new_p4_protocol_does_not_alias_p3_artifacts(self):
+    def test_new_p5_protocol_does_not_alias_p4_artifacts(self):
         from physical_online import SCHEMA
-        self.assertEqual(SCHEMA,'hepta.ndu-merton.p4.equal-cap-thinking-control.v1')
+        self.assertEqual(SCHEMA,'hepta.ndu-merton.p5.original-balanced-and-declared-parser.v1')
 
     def test_no_thinking_and_thinking_use_same_user_prompt(self):
         article = 'A sufficiently long public news article about current business and weather.'
@@ -253,9 +253,9 @@ class PhysicalContractTests(unittest.TestCase):
     def test_equalcap_schedule_is_frozen_complete_and_alternating(self):
         out,plan,completed,summary=self.run_complete()
         schedule=plan['paired_equalcap_schedule']
-        self.assertEqual(len(schedule),16)
-        self.assertEqual(len(completed['paired_equalcap_trace']),16)
-        for index in range(8):
+        self.assertEqual(len(schedule),32)
+        self.assertEqual(len(completed['paired_equalcap_trace']),32)
+        for index in range(16):
             pair=schedule[2*index:2*index+2]
             self.assertEqual(pair[0]['task_id'],pair[1]['task_id'])
             self.assertEqual(set(x['action'] for x in pair),{'reason','reason_equalcap'})
@@ -274,16 +274,16 @@ class PhysicalContractTests(unittest.TestCase):
 
     def test_postseal_never_credits_unselected_equalcap_as_free(self):
         out,plan,completed,summary=self.run_complete()
-        self.assertEqual(summary['additional_paid_equalcap_invocations'],16)
-        self.assertEqual(summary['paired_equalcap_96_token_contrast']['paired_tasks'],8)
+        self.assertEqual(summary['additional_paid_equalcap_invocations'],32)
+        self.assertEqual(summary['paired_equalcap_96_token_contrast']['paired_tasks'],16)
         stats=summary['paired_equalcap_96_token_contrast']['thinking_mode_vs_equalcap_nonthinking']
         self.assertEqual([r['action'] for r in stats],['reason','reason_equalcap'])
-        self.assertEqual([r['actual_independent_model_invocations'] for r in stats],[8,8])
-        self.assertEqual(sum(stats[0]['correct']==j for j in range(9)),1)
+        self.assertEqual([r['actual_independent_model_invocations'] for r in stats],[16,16])
+        self.assertEqual(sum(stats[0]['correct']==j for j in range(17)),1)
         self.assertTrue(stats[0]['total_thinking_tokens'] > 0)
         self.assertEqual(stats[1]['total_thinking_tokens'],0)
         self.assertEqual(sum(summary['paired_equalcap_96_token_contrast'][key] for key in (
-            'taskwise_thinking_wins','taskwise_thinking_losses','taskwise_both_correct','taskwise_neither_correct')),8)
+            'taskwise_thinking_wins','taskwise_thinking_losses','taskwise_both_correct','taskwise_neither_correct')),16)
 
     def test_missing_equalcap_physical_request_fails_closed(self):
         out,plan,completed,summary=self.run_complete()
@@ -343,25 +343,30 @@ class PhysicalContractTests(unittest.TestCase):
 
     def test_original_source_partition(self):
         self.assertEqual(len(self.train['rows']),16)
-        self.assertEqual(len(self.held['rows']),8)
-        self.assertEqual(len(self.gold['rows']),8)
+        self.assertEqual(len(self.held['rows']),16)
+        self.assertEqual(len(self.gold['rows']),16)
         self.assertTrue(all('label' not in r for r in self.held['rows']))
         self.assertTrue(all('text' not in r for r in self.gold['rows']))
-        self.assertEqual(len({r['task_id'] for r in self.train['rows']+self.held['rows']}),24)
+        self.assertEqual(len({r['task_id'] for r in self.train['rows']+self.held['rows']}),32)
+        from collections import Counter as C
+        for group in (self.train['rows'], self.gold['rows']):
+            self.assertEqual(C(r['label'] for r in group), C({k:4 for k in range(4)}))
+        self.assertEqual(C(r['bucket'] for r in self.held['rows']),
+                         C({'short':8, 'long':8}))
 
     def test_all_real_action_slots_are_physically_called_after_freeze_in_contract(self):
         out,plan,completed,summary=self.run_complete()
         self.assertEqual(completed['actual_training_requests'],48)
-        self.assertEqual(completed['actual_online_policy_requests'],56)
-        self.assertEqual(completed['actual_equalcap_contrast_requests'],16)
-        self.assertEqual(len(self.reader.calls),120)
-        self.assertEqual(summary['physical_on_policy_generation_invocations_self_reported'],120)
-        self.assertEqual(summary['additional_paid_equalcap_invocations'],16)
+        self.assertEqual(completed['actual_online_policy_requests'],112)
+        self.assertEqual(completed['actual_equalcap_contrast_requests'],32)
+        self.assertEqual(len(self.reader.calls),192)
+        self.assertEqual(summary['physical_on_policy_generation_invocations_self_reported'],192)
+        self.assertEqual(summary['additional_paid_equalcap_invocations'],32)
         self.assertEqual(len(summary['seven_policy_results']),7)
         self.assertEqual([r['policy'] for r in summary['seven_policy_results']],list(POLICIES))
         self.assertFalse(summary['actual_model_savings_proven'])
         paired=summary['paired_equalcap_96_token_contrast']
-        self.assertEqual(paired['paired_tasks'],8)
+        self.assertEqual(paired['paired_tasks'],16)
         self.assertEqual(paired['thinking_mode_vs_equalcap_nonthinking'][0]['max_generated_token_ceiling'],96)
         self.assertEqual(paired['thinking_mode_vs_equalcap_nonthinking'][1]['max_generated_token_ceiling'],96)
         self.assertFalse(paired['observed_saved_compute_claim'])
@@ -379,11 +384,11 @@ class PhysicalContractTests(unittest.TestCase):
     def test_no_reader_output_shortcut_or_policy_cache(self):
         out,plan,completed,summary=self.run_complete()
         traces=completed['actual_policy_trace']
-        self.assertEqual(len(traces),len(POLICIES)*8)
+        self.assertEqual(len(traces),len(POLICIES)*16)
         self.assertEqual(len({(x['policy'],x['task_id']) for x in traces}),len(traces))
-        self.assertEqual([x['policy'] for x in traces].count('direct'),8)
-        self.assertEqual([x['policy'] for x in traces].count('ndu_discrete'),8)
-        self.assertEqual([x['policy'] for x in traces].count('ordinary_same_profile'),8)
+        self.assertEqual([x['policy'] for x in traces].count('direct'),16)
+        self.assertEqual([x['policy'] for x in traces].count('ndu_discrete'),16)
+        self.assertEqual([x['policy'] for x in traces].count('ordinary_same_profile'),16)
 
     def test_held_label_in_worker_packet_refused(self):
         self.held['rows'][0]['label']=0
@@ -400,6 +405,15 @@ class PhysicalContractTests(unittest.TestCase):
     def test_text_sha_substitution_refused(self):
         self.held['rows'][0]['text']='forged altered newspaper paragraph 123'
         with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_postseal_rejects_unbalanced_publisher_gold(self):
+        out,plan,completed,summary=self.run_complete()
+        # A forged test-label distribution cannot be justified as the source
+        # owner's predeclared four-class balanced sampling profile.
+        self.gold['rows'][0]['label'] = (self.gold['rows'][0]['label'] + 1) % 4
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
 
     def test_publisher_truth_changed_after_seal_refused(self):
         out,plan,completed,summary=self.run_complete()
@@ -421,13 +435,13 @@ class PhysicalContractTests(unittest.TestCase):
     def test_frozen_schedule_balances_policy_position_across_tasks(self):
         out,plan,completed,summary=self.run_complete()
         schedule=plan['selected_request_schedule']
-        self.assertEqual(len(schedule),56)
+        self.assertEqual(len(schedule),112)
         by_task={tid:[] for tid in sorted(r['task_id'] for r in self.held['rows'])}
         for item in schedule:
             by_task[item['task_id']].append(item['policy'])
         self.assertTrue(all(set(x)==set(POLICIES) for x in by_task.values()))
         counts=Counter((i,policy) for x in by_task.values() for i,policy in enumerate(x))
-        self.assertTrue(all(1<=counts[i,p]<=2 for i in range(7) for p in POLICIES))
+        self.assertTrue(all(2<=counts[i,p]<=3 for i in range(7) for p in POLICIES))
         self.assertEqual([(r['policy'],r['task_id'],r['action']) for r in completed['actual_policy_trace']],
             [(r['policy'],r['task_id'],r['action']) for r in schedule])
 
@@ -488,9 +502,30 @@ class PhysicalContractTests(unittest.TestCase):
         copytrain['rows'][0]['label']=True
         with self.assertRaises(Invalid):validate_source(copytrain,self.held)
 
+    def test_source_owner_rejects_unbalanced_publisher_labels(self):
+        from public_source import split_original
+        cases = [{'text':'a valid news article about business and politics.','label':0} for _ in range(60)]
+        with self.assertRaises(ValueError):
+            split_original(cases,cases)
+
+    def test_balanced_publisher_selection_is_deterministic(self):
+        from public_source import split_original
+        # Model outputs never enter the source owner's fixed selection.
+        a,b=fake_data(),fake_data()
+        self.assertEqual(a,b)
+        self.assertNotIn('label',a[1]['rows'][0])
+        self.assertEqual(a[0]['source']['split_rule'],
+                         'first-per-original-publisher-class-bucket-index-parity')
+
     def test_strict_answer_parser(self):
         self.assertEqual(parse_answer('FINAL=3'),3)
         self.assertEqual(parse_answer('2'),2)
+        self.assertEqual(parse_answer(' <1> '),1)
+        self.assertEqual(parse_answer('FINAL=<3>'),3)
+        self.assertEqual(parse_answer('final = <0>'),0)
+        self.assertIsNone(parse_answer('<1><2>'))
+        self.assertIsNone(parse_answer('FINAL=<1> extra'))
+        self.assertIsNone(parse_answer('I think <1>'))
         self.assertIsNone(parse_answer('I think FINAL=1'))
         self.assertIsNone(parse_answer('FINAL=4'))
         self.assertIsNone(parse_answer('FINAL=1; FINAL=2'))
