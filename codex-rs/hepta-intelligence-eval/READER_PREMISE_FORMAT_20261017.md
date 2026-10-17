@@ -116,3 +116,34 @@ energy, revocation, restarts and complete lifecycle TCO. Only then test
 whether question-conditioned parameter memory improves *real* tasks over the
 same-Reader strong retrieval baseline. Until then the source-faithful
 Temporal/RRF retrieval path remains preferred.
+
+## Postseal input-copying and token-cost diagnostic (source-only; no new model calls)
+
+The read-only `reader_premise_echo_audit.py` consumes the existing sealed
+40-answer journal and plan **after** the reviewer has completed original-model
+reexecution. It does not alter answers, compute semantic correctness or
+construct any new citation. Its lexical flags may also be raised by a
+legitimate answer quoting an actual source, so **they are not labels of error**.
+
+The original 40 responses provide these descriptive counts:
+
+| Condition | Input tokens total | Generated tokens total | Repeated entire question | JSON prompt-echo form | Answer starts with evidence text | Hit 48-token budget |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Full annotated JSON | 1,620 | 278 | 3 | 2 | 0 | 4 |
+| One removed JSON | 1,104 | 308 | 1 | 0 | 0 | 1 |
+| Full annotated lines | 1,858 | 309 | 1 | 0 | 3 | 3 |
+| One removed lines | 1,461 | 240 | 0 | 0 | 1 | 1 |
+
+The labeled-lines version costs **238 more observed input tokens**
+than the full JSON version over these ten questions. Equal
+`max_new_tokens=48` does **not** equate prompt-token cost; no full latency/TCO
+equivalence is claimed. The full-lines case had two responses with delivered
+citation markers, while the removed-lines case had two responses with invalid
+markers referencing evidence not delivered. Neither fact proves citation
+entailment. The immutable sanitized receipt is
+`READER_PREMISE_ECHO_ORIGINAL_20261017.json`.
+
+Five additional local adversarial tests validate status, bounded
+input/output token counts, echo classification and invalid-source markers.
+The exact-HEAD workflow executes them in source preflight and records the
+echo audit only in the separate postseal reviewer, never in the Reader job.
