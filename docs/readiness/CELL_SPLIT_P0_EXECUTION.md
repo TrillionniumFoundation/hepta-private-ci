@@ -40,7 +40,9 @@ Before EVERY phase change, the Supervisor now reopens its existing bounded,
 fsync-backed Writer Handoff Journal under the same exclusive lock, verifies
 the full revision/receipt hash chain against the current acknowledged head,
 and compares each earlier native owner's present authenticated historical
-readback with the exact evidence digest first recorded for that phase.
+readback with the exact evidence digest first recorded for that phase. The
+durable split Binding commits to the exact Artifact ID as well as the content
+digest; identical bytes in a different registry lineage are not interchangeable.
 An owner may not substitute a newly valid-looking Drain, old writer fence,
 Artifact CAS, predecessor snapshot, child migration, boot validation, successor
 fence or CNS route receipt after the journal has advanced past that phase.
@@ -66,7 +68,7 @@ The independent codex-hepta-cell-split-executor crate implements
 ProductSplitNativeReadbackV1. Its construction requires the opaque
 VerifiedSelfEvolutionSelectionV1 token produced by independent NDU evaluation,
 selector-signature verification and role separation. The signed predecessor Cell identity, candidate ID,
-artifact digest, predecessor/successor generations, frozen no-change baseline
+exact Artifact ID and digest, predecessor/successor generations, frozen no-change baseline
 and exact selection digest must match the Supervisor's immutable binding. A
 plain selection checksum alone is NOT authorization. Only the binding digest
 is persisted in the Supervisor observation chain, and the product bridge must
