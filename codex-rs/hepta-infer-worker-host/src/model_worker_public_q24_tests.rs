@@ -236,7 +236,10 @@ const LEARNED_PUBLIC_EXPECTED_1_Q24: [i64; 4] = [43639893, -7953813, -32665379, 
 #[test]
 fn trained_linear_four_cell_parity_on_pinned_public_q24() {
     let encoder = Digest32::of_bytes(b"research-only pinned ModernBERT-base source");
-    assert_eq!(encoder.to_string(), "7bc5015a2197d7a0ea18c10965addaf80adac220e266a95fa789223606986365");
+    assert_eq!(
+        encoder.to_string(),
+        "7bc5015a2197d7a0ea18c10965addaf80adac220e266a95fa789223606986365"
+    );
     let tokenizer = Digest32::of_bytes(b"public feature tokenizer");
     let preprocessor = Digest32::of_bytes(b"train-fitted PCA32 preprocessor");
     let quantization = Digest32::of_bytes(b"public Q24 quantization");
@@ -299,8 +302,16 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
     worker.load_model(1, selected.clone()).expect("load reference tensors");
     let mut cache = SharedFeatureCacheV2::new(2, 1024).expect("bounded cache");
     let samples: [(&str, &[i64; 32], &[i64; 4]); 2] = [
-        ("fit:a761e5bf506a91e172492a3c023bdd9aa03e38d3e55fedcd684eaef6a6f154cf", &LEARNED_PUBLIC_FEATURE_0_Q24, &LEARNED_PUBLIC_EXPECTED_0_Q24),
-        ("heldout:3b2d2c35297ebbcb24a83da141508eff20a7bd546deb854f04b6a19817271313", &LEARNED_PUBLIC_FEATURE_1_Q24, &LEARNED_PUBLIC_EXPECTED_1_Q24),
+        (
+            "fit:a761e5bf506a91e172492a3c023bdd9aa03e38d3e55fedcd684eaef6a6f154cf",
+            &LEARNED_PUBLIC_FEATURE_0_Q24,
+            &LEARNED_PUBLIC_EXPECTED_0_Q24,
+        ),
+        (
+            "heldout:3b2d2c35297ebbcb24a83da141508eff20a7bd546deb854f04b6a19817271313",
+            &LEARNED_PUBLIC_FEATURE_1_Q24,
+            &LEARNED_PUBLIC_EXPECTED_1_Q24,
+        ),
     ];
     for (case_number, (case_id, feature, expected)) in samples.into_iter().enumerate() {
         let identity = SharedFeatureIdentityV2 {
