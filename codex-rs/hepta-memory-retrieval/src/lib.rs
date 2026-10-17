@@ -6,6 +6,7 @@ mod decision;
 mod engram;
 mod generation_bound;
 mod generator;
+mod memory_cell;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -74,6 +75,9 @@ pub use generator::RetrievalGeneratorBatchV1;
 pub use generator::RetrievalGeneratorOwnerV1;
 pub use generator::RetrievalGeneratorReceiptV1;
 pub use generator::RetrievalSourceCompletenessV1;
+pub use memory_cell::MemoryCellRuntimeErrorV1;
+pub use memory_cell::MemoryCellShadowTickV1;
+pub use memory_cell::run_memory_cell_tick;
 pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
 pub use generator::recall_generated;
