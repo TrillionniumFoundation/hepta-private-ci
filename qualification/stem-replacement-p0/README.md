@@ -96,3 +96,47 @@ shared-feature native Worker `#1498`, and all security/FinalUse/Artifact/CNS own
 These research lines are independent drafts rather than automatically selected
 main artifacts. Read new P0 observations only after checking each source HEAD,
 actual GitHub Actions outcome and the original content hashes.
+
+## P1 continuation: exact physical source bytes (2026-10-17)
+
+`preflight.py` now separates the **entire upstream repository inventory** from
+**only the actually selected candidate source files**. A Laya repository may
+bundle multilingual and typed-decisions sibling checkpoint weights; those other
+weights **are not** Laya421 input bytes and cannot be charged or automatically
+loaded for this selected Cell. Model tensor files must expose exact pinned
+LFS/Xet-compatible SHA-256 hashes; selected JSON/tokenizer files must expose
+original LFS SHA-256 or Git blob SHA-1 from the pinned immutable source commit.
+Both actual sha256 and original Git-blob ID are checked, not self-declared digests.
+
+`source_bytes.py` uses only the fixed Hub transport API and an exact commit
+revision, requests exact selected filenames in a private new local staging root,
+and re-hashes every downloaded byte (including nonweight tokenizer/config
+material). It rejects partial material, aliases/symlinks, nonregular or changed
+files, unselected extra files and excess byte budgets. An Ettin `.bin` is **not
+unpickled**, not imported by Torch, and not interpreted as a verified tensor
+checkpoint: this stage checks content only. Running a trusted
+`torch.load(weights_only=True)` conversion requires a separate, explicit loader
+qualification with frozen package versions, tensor-key/shape/value review,
+independent backends and actual forward parity. Xet/Git LFS byte hashes are not
+independent source-issuer signatures.
+
+`review_bytes.py` is a different Python process and implementation; it rereads
+all original staged bytes independently against the pinned source SHA256/Git
+objects, rejects altered original producer receipts and emits only a no-authority
+summary. The source files remain private in runner temp and are not uploaded.
+This does **not** create a production artifact or a real Encoder inference result.
+
+A separate push/dispatch-only GitHub workflow first checks all four *real upstream
+metadata inventories*, then physically downloads and checks only the two
+primary candidates, Laya421 and Ettin400, **after** the source-only tests and
+metadata gates succeed. It has finite time and byte budgets; a remote failure is
+a failed gate rather than permission to use an unpinned checkpoint. Typed421 and
+OpenJev434 remain metadata-only controls pending the primary physical evidence.
+No claim of actual completion is made until each named exact-head hosted job is
+observed terminal-success and its original log/result is inspected.
+
+Locally, the new tests exercise short mocked files and independent replay; not
+one external checkpoint is retrieved or forwarded. **All four model arm efficacy,
+matched actual 4,161-parameter training, original human-label observer,
+prospective/source-independent future test, negative-transfer and target host
+benchmark remain BLOCKED / HOLD_NO_GO.**
