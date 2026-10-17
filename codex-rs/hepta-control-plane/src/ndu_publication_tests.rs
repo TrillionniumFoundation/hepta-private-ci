@@ -1944,8 +1944,14 @@ fn sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined() {
         Digest32::ZERO,
     )
     .expect("read-only original Control Begin after real SIGKILL");
-    assert_eq!(inspected.predecessor_semantic_digest, snapshot(3).semantic_digest().unwrap());
-    assert_eq!(inspected.successor_semantic_digest, snapshot(4).semantic_digest().unwrap());
+    assert_eq!(
+        inspected.predecessor_semantic_digest,
+        snapshot(3).semantic_digest().unwrap()
+    );
+    assert_eq!(
+        inspected.successor_semantic_digest,
+        snapshot(4).semantic_digest().unwrap()
+    );
     assert_eq!(inspected.previous_checkpoint, Digest32::ZERO);
     assert_eq!(
         inspected.migrated_checkpoint,
