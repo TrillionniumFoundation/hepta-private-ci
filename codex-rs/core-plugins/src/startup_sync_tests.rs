@@ -21,6 +21,59 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[cfg(unix)]
+#[test]
+fn curated_plugins_zipball_never_restores_suid_sgid_or_sticky_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let archive_path = "openai-plugins-test/bin/script.sh";
+    let content = b"#!/bin/sh\nexit 0\n";
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file(
+            archive_path,
+            SimpleFileOptions::default().unix_permissions(0o755),
+        )
+        .expect("write a regular unix executable");
+    writer.write_all(content).expect("write script bytes");
+    let mut bytes = writer.finish().expect("finish ZIP").into_inner();
+
+    // ZipWriter deliberately masks privileged bits in its public writer API.
+    // Mutate one authentic central-directory external-attributes field to
+    // simulate an attacker-controlled ZIP with regular-file SUID/SGID/sticky.
+    let central = bytes
+        .windows(4)
+        .position(|bytes| bytes == b"PK\x01\x02")
+        .expect("central directory exists");
+    assert!(bytes.len() >= central + 46);
+    bytes[central + 5] = 3; // version-made-by host is Unix.
+    let malicious_mode = 0o107755u32;
+    bytes[central + 38..central + 42].copy_from_slice(&(malicious_mode << 16).to_le_bytes());
+
+    let mut zip = zip::ZipArchive::new(std::io::Cursor::new(&bytes)).expect("parse malicious ZIP");
+    let archive_entry = zip.by_index(0).expect("one ZIP entry");
+    assert_eq!(
+        archive_entry.unix_mode().expect("ZIP unix attributes") & 0o7777,
+        0o7755
+    );
+    drop(archive_entry);
+    drop(zip);
+
+    let tmp = tempdir().expect("isolated extraction directory");
+    extract_zipball_to_dir(&bytes, tmp.path()).expect("extract ZIP through original workflow");
+    let extracted = tmp.path().join("bin/script.sh");
+    let metadata = std::fs::symlink_metadata(&extracted).expect("file extracted");
+    assert!(metadata.file_type().is_file(), "no symlink extraction");
+    assert_eq!(std::fs::read(&extracted).expect("script content"), content);
+    let observed_mode = metadata.permissions().mode() & 0o7777;
+    assert_eq!(
+        observed_mode, 0o755,
+        "only ordinary rwx permissions may survive"
+    );
+    assert_eq!(observed_mode & 0o7000, 0, "never SUID, SGID or sticky");
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;

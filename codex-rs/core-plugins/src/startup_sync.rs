@@ -1117,6 +1117,9 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
+    // ZIP external attributes are untrusted. Retain only ordinary rwx bits,
+    // never SUID/SGID/sticky privileges or archived file-type metadata.
+    let mode = mode & 0o777;
     std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
