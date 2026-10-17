@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+from collections import OrderedDict
 import copy
 import hashlib
 import json
@@ -86,6 +87,9 @@ class PhysicalForwardGuards(unittest.TestCase):
     def test_safe_state_inventory_exact_tensor_shape(self):
         net, state = self.fake_net()
         self.assertEqual(physical_forward.safe_state_inventory(net, state, self.FakeTorch), 10)
+        # torch.load(weights_only=True) preserves nn.Module.state_dict's OrderedDict.
+        ordered = OrderedDict(state.items())
+        self.assertEqual(physical_forward.safe_state_inventory(net, ordered, self.FakeTorch), 10)
 
     def test_safe_state_inventory_denies_partial_extra_or_non_tensor(self):
         net, state = self.fake_net()
