@@ -140,3 +140,54 @@ one external checkpoint is retrieved or forwarded. **All four model arm efficacy
 matched actual 4,161-parameter training, original human-label observer,
 prospective/source-independent future test, negative-transfer and target host
 benchmark remain BLOCKED / HOLD_NO_GO.**
+
+## P1.5 physically loaded CPU-forward smoke (2026-10-17 candidate)
+
+`physical_forward.py` is a read-only, offline, exact-byte-bound experiment for
+**Laya 421M** and **Ettin 400M**. It runs only after `source_bytes.py` has
+created a physical source receipt and `review_bytes.py` has reread the actual
+stage in a separate process. A second independent rehash is enforced inside
+`physical_forward.checked_receipt` before importing any model library.
+
+- Ettin's immutable `pytorch_model.bin` is opened **only** with
+  `torch.load(..., weights_only=True, map_location="cpu")` on the pinned
+  `torch==2.10.0` CPU runtime. The complete named tensor inventory, shapes,
+  dtypes and byte-bounded source identity must match an explicitly constructed
+  original `AutoModelForMaskedLM` architecture; any mismatch stops the run.
+  `trust_remote_code` is always false. The output is one real encoder CLS
+  feature digest, **not** a binary support probability.
+- Laya uses `laya==0.3.20` on a separate private **copy** of the previously
+  verified source directory. The native loader may normalize the local tokenizer
+  config; the source remains unchanged, and the effective runtime tokenizer
+  config digest and modification flag are reported. A CPU forward hook requires
+  one actual local encoder invocation and typed bounded noul output. This is
+  **not** calibrated task success.
+- The probes are unlabeled, bounded to 128 tokens, and do not provide private
+  data or production capability. No original model checkpoint, text or secret
+  is uploaded. Model import/load CPU, measured process RSS, observed parameter
+  tensors, actual tokens and typed output are accounted separately from the
+  previously paid download/rehash work. Timers and RSS are **self-reported** on
+  the runner, not independently signed SLO or end-to-end task economics.
+- The two outputs have different semantics; there is intentionally no winner,
+  native-vs-Head equivalence, calibrator, training, meaningful held task score,
+  future window, NDU uplift, final-use authorization or physical Cell Split.
+  A future matched frozen-Encoder + identical trainable Head experiment must
+  own all of those independent gates.
+
+A dedicated read-only GitHub workflow has 81 fixture-based source/authority
+unit tests (normal and optimized Python). Genuine checkpoint download and
+physical CPU smoke run **only** on the named research branch push or an
+explicit workflow dispatch, not on a fork PR. A green source-only PR job does
+**not** mean either original checkpoint loaded. A failed, queued or skipped
+physical job is `HOLD_NO_GO` rather than a partially promoted model.
+
+Example operator-only use, after the exact model source has already passed the
+full physical preflight and all byte verification:
+
+```bash
+cd qualification/stem-replacement-p0
+python physical_forward.py --model ettin400 \
+  --receipt /secure/research/hepta-producer-ettin400.json \
+  --stage /secure/research/hepta-source-ettin400 \
+  --out /secure/research/hepta-forward-ettin400.json
+```
