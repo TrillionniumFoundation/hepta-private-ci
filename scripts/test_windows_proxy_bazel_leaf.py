@@ -5,6 +5,7 @@ This is a structural preflight, not a substitute for real Cargo/Bazel builds.
 The Windows restricted-token ingress regression must remain executable from a
 leaf crate, never a dev dependency of the protocol-facing proxy library.
 """
+
 from pathlib import Path
 import tomllib
 

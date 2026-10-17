@@ -79,13 +79,17 @@ def direct_local_inputs(root: Path) -> set[str]:
                     if spec.get("workspace") is True:
                         inherited = aliases.get(name)
                         if inherited is None:
-                            raise ValueError(f"missing workspace dependency definition: {name}")
+                            raise ValueError(
+                                f"missing workspace dependency definition: {name}"
+                            )
                         # Registry workspace dependencies may be strings (for
                         # example serde_json = "1") and have no local path.
                         if isinstance(inherited, str):
                             continue
                         if not isinstance(inherited, dict):
-                            raise ValueError(f"invalid workspace dependency definition: {name}")
+                            raise ValueError(
+                                f"invalid workspace dependency definition: {name}"
+                            )
                         dependency = inherited
                         dependency_base = root / "codex-rs"
                     else:
@@ -100,7 +104,9 @@ def direct_local_inputs(root: Path) -> set[str]:
                     try:
                         package_dir = resolved.relative_to(root.resolve(strict=True))
                     except ValueError as exc:
-                        raise ValueError(f"dependency escapes repository: {name}") from exc
+                        raise ValueError(
+                            f"dependency escapes repository: {name}"
+                        ) from exc
                     if not (resolved / "Cargo.toml").is_file():
                         raise ValueError(f"missing local dependency manifest: {name}")
                     required.add(f"{package_dir.as_posix()}/**")
@@ -121,7 +127,9 @@ def main() -> int:
         for rule in missing:
             print(f"UNQUALIFIED upstream input: {rule}")
         return 1
-    print("Native Neuron qualification includes every direct local Cargo input and policy file")
+    print(
+        "Native Neuron qualification includes every direct local Cargo input and policy file"
+    )
     return 0
 
 

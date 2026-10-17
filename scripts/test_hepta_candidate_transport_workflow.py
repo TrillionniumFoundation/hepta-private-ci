@@ -61,7 +61,9 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         start = workflow.index("      - name: Bind live PR base")
         history = workflow.index("      - name: Fetch exact qualification history")
         verify = workflow.index("      - name: Verify GitHub prospective merge ref")
-        synthetic = workflow.index("      - name: Construct the canonical prospective merge")
+        synthetic = workflow.index(
+            "      - name: Construct the canonical prospective merge"
+        )
         final = workflow.index("      - name: Revalidate current GitHub merge identity")
         self.assertLess(start, history)
         self.assertLess(history, verify)
