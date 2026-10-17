@@ -29,6 +29,9 @@ use crate::WriterHandoffPlanV1;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitBindingV1 {
     pub operation_id: StableId,
+    /// Exact immutable Artifact identity. Two different registries may contain
+    /// the same model bytes under distinct provenance and revocation scopes.
+    pub artifact_id: StableId,
     pub selected_artifact_digest: Digest32,
     /// Opaque independently signed NDU selection digest. Product executors
     /// must verify the token itself, not merely this checksum.
@@ -42,6 +45,7 @@ impl CellSplitBindingV1 {
     pub fn digest(&self) -> Digest32 {
         let mut bytes = b"hepta.supervisor.cell-split-binding.v1\0".to_vec();
         push_id(&mut bytes, &self.operation_id);
+        push_id(&mut bytes, &self.artifact_id);
         for d in [
             self.selected_artifact_digest,
             self.selection_digest,
