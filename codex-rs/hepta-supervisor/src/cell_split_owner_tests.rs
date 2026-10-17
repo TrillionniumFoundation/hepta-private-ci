@@ -626,7 +626,12 @@ fn tampered_durable_history_fails_before_any_new_native_effect() {
         + needle.len();
     bytes[position] = if bytes[position] == b'a' { b'b' } else { b'a' };
     fs::write(&path, bytes).expect("tamper exact-size journal");
-    File::open(&path).expect("reopen tampered journal").sync_all()
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&path)
+        .expect("reopen tampered journal")
+        .sync_all()
         .expect("sync corruption fixture");
     assert!(matches!(
         advance(&mut journal, &mut native),
