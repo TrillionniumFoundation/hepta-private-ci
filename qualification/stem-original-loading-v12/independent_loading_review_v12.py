@@ -47,12 +47,64 @@ def audit(report,original):
          type(meta.get('error_messages')) is list and
          len(meta['error_messages'])==min(10,meta['error_count']),
          'unqualified or truncated loader-missing-key provenance')
+    load_status=report.get('load_status','complete')
+    need(load_status in ('complete','failed'),'unknown physical loader status')
+    if load_status=='failed':
+        need(type(report.get('load_failure_type')) is str and
+             type(report.get('load_failure_message')) is str and
+             report['load_failure_message'],'missing physical loader failure identity')
+        need(meta['error_count']>=1 and
+             meta.get('model_base_weights_complete') is False and
+             meta.get('complete_model_resident_parameter_scalars')==0 and
+             type(meta.get('loader_class')) is str and
+             type(meta.get('base_model_class')) is str,
+             'unreliable retained loader failure receipt')
+        need(report.get('observed_initial_head_sha256')=='' and
+             report.get('observed_trained_head_sha256')=='' and
+             report.get('initial_head_byte_equal') is False and
+             report.get('trained_head_byte_equal') is False,
+             'loader failure must not invent Head evidence')
+        drifts=report.get('historical_original_probability_max_abs_drift')
+        need(type(drifts) is dict and set(drifts)=={'learned','centroid','frozen_init'} and
+             all(type(v) in (int,float) and math.isfinite(v) and v==0.0
+                 for v in drifts.values()),
+             'loader failure must not invent score drift')
+        need(report.get('scientifically_fully_reproducible_same_head_and_base') is False and
+             report.get('original_encoder_sequences_paid')==0 and
+             report.get('original_encoder_batches_paid')==0 and
+             report.get('selected_case_count')==8,
+             'loader failure has invalid zero-forward accounting')
+        need(report.get('model_load_wall_seconds',0)>0 and
+             report.get('actual_encode_wall_seconds')==0.0 and
+             report.get('actual_head_train_wall_seconds')==0.0 and
+             report.get('total_elapsed_wall_seconds',0)>=report['model_load_wall_seconds'] and
+             report.get('total_elapsed_cpu_seconds',0)>0 and
+             report.get('self_reported_peak_rss_bytes',0)>0,
+             'loader failure has invalid stage resource witness')
+        need(report.get('authority')=='DENY_ALL' and
+             report.get('disposition')=='HOLD_NO_GO' and
+             report.get('production_authorized') is False and
+             report.get('cell_split_authorized') is False and
+             report.get('stem_winner_verified') is False and
+             report.get('ndu_benefit_verified') is False and
+             report.get('same_host_full_lifecycle_cost_verified') is False and
+             report.get('retrospective_test_labels_previously_exposed') is True,
+             'forged authority on loader failure')
+        return {'profile':profile,'candidate':name,
+                'complete_pretrained_base_weights':False,
+                'missing_parameter_count':meta['missing_key_count'],
+                'unloaded_unexpected_checkpoint_keys':meta['unexpected_key_count'],
+                'initial_head_byte_match':False,'trained_head_byte_match':False,
+                'max_selected_probability_drift':drifts,
+                'all_original_baseline_replay_checks_pass':False,
+                'score_status':'LOADER_FAILURE_RETAINED_NO_GO'}
     loaded=(meta['missing_key_count']==meta['mismatched_key_count']==meta['error_count']==0)
     need(meta.get('model_base_weights_complete') is loaded and
          type(meta.get('complete_model_resident_parameter_scalars')) is int and
          meta['complete_model_resident_parameter_scalars']>0 and
          type(meta.get('loader_class')) is str and type(meta.get('base_model_class')) is str,
          'unreliable original pretrained weights completeness status')
+    need(load_status=='complete','complete model receipt missing explicit load status')
     for field in ('initial','trained'):
         equal=report.get(field+'_head_byte_equal')
         expected=report.get('original_'+('initial' if field=='initial' else 'trained')+'_head_sha256')
