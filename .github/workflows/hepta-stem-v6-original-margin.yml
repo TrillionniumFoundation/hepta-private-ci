@@ -1,0 +1,103 @@
+name: Hepta Stem V6 original multimodal margins (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/scienceqa_margin_stability_v6.py'
+      - 'qualification/stem-cell-v1/test_scienceqa_margin_stability_v6.py'
+      - 'qualification/stem-cell-v1/STEM_V6_ORIGINAL_MARGIN_20261016.json'
+      - 'qualification/stem-cell-v1/STEM_V6_ORIGINAL_MARGIN.md'
+      - '.github/workflows/hepta-stem-v6-original-margin.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original archived-study label-blind margin contract tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          python -m unittest -v test_scienceqa_margin_stability_v6
+          python -O -m unittest -v test_scienceqa_margin_stability_v6
+          python -m py_compile scienceqa_margin_stability_v6.py test_scienceqa_margin_stability_v6.py
+
+  original-archive-independent-margin:
+    needs: unit-contracts
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read the unchanged real original Granite97+DINOv2 E3 prediction archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          mkdir -p "$RUNNER_TEMP/stem-v6"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip \
+            > "$RUNNER_TEMP/stem-v6/original-model.zip"
+          python qualification/stem-cell-v1/scienceqa_margin_stability_v6.py \
+            --archive "$RUNNER_TEMP/stem-v6/original-model.zip" \
+            --out "$RUNNER_TEMP/stem-v6/independent-margin.json"
+      - name: Numeric outcome and original-source binding independent audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math,os
+          from pathlib import Path
+          expected=json.loads(Path('qualification/stem-cell-v1/STEM_V6_ORIGINAL_MARGIN_20261016.json').read_bytes())
+          observed=json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-v6/independent-margin.json').read_bytes())
+          def check(a,b,where):
+              if type(a) is dict:
+                  assert type(b) is dict and set(a)==set(b),where
+                  for key in a:check(a[key],b[key],where+'/'+key)
+              elif type(a) is list:
+                  assert type(b) is list and len(a)==len(b),where
+                  for i,(x,y) in enumerate(zip(a,b,strict=True)):check(x,y,where+'/'+str(i))
+              elif type(a) is float:
+                  assert type(b) is float and math.isfinite(b)
+                  assert math.isclose(a,b,rel_tol=1e-12,abs_tol=1e-12),where
+              else:
+                  assert type(a) is type(b) and a==b,where
+          check(expected,observed,'original')
+          assert observed['authority']=='DENY_ALL'
+          assert observed['visual_necessity_or_task_quality_proven'] is False
+          assert observed['actual_image_intervention_performed'] is False
+          a=observed['arms']['train_gate']
+          assert a['argmax_changes_vs_text']==38
+          assert a['certified_changed_at_epsilon']['0.0010']==24
+          assert a['certified_changed_at_epsilon']['0.0050']==3
+          print('REAL ORIGINAL MODEL PROBABILITY CERTIFICATES VERIFIED; NO CAUSAL OR MODEL QUALITY CLAIM')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-stem-v6-original-margin-no-label-denyall
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/stem-v6/independent-margin.json

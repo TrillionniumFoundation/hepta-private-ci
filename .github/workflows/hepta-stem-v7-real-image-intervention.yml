@@ -1,0 +1,313 @@
+name: Hepta Stem V7 pinned real image intervention (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/scienceqa_image_intervention_v7.py'
+      - 'qualification/stem-cell-v1/scienceqa_image_intervention_v7_review.py'
+      - 'qualification/stem-cell-v1/test_scienceqa_image_intervention_v7.py'
+      - 'qualification/stem-cell-v1/STEM_V7_IMAGE_INTERVENTION.md'
+      - '.github/workflows/hepta-stem-v7-real-image-intervention.yml'
+permissions:
+  contents: read
+jobs:
+  v7-source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run unprivileged Torch CPU contract tests and fail-closed originals
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install 'Pillow==11.3.0'
+          python -m unittest -v qualification/stem-cell-v1/test_scienceqa_image_intervention_v7.py
+          python -O -m unittest -v qualification/stem-cell-v1/test_scienceqa_image_intervention_v7.py
+          python -m py_compile qualification/stem-cell-v1/scienceqa_image_intervention_v7*.py
+
+  v7-genuine-original-model-image-interventions:
+    needs: v7-source-tests
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      actions: read
+    env:
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_ENABLE_HF_TRANSFER: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bind exact current HEAD and frozen original E3 implementation before model execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          git fetch --no-tags --depth=1 origin refs/heads/research/e3-required-physical-score-pr-20261015
+          test "$(git rev-parse FETCH_HEAD)" = '2dc43da7d9bf343acc871219ddce44d0e14d8911'
+          mkdir -p "$RUNNER_TEMP/stem-v7/original-code"
+          for file in e3_scienceqa_contract.py e3_scienceqa_stage.py e3_granite_dino_real.py execution.py \
+            multimodal_saved_tie_recovery_v18.py multimodal_meta_integrity_v14.py \
+            multimodal_exact_tied_alias_v11.py multimodal_native_pool_v7.py; do
+            git show "FETCH_HEAD:experiments/shared_stem_cell/$file" > "$RUNNER_TEMP/stem-v7/original-code/$file"
+          done
+          python - <<'PY'
+          import os, subprocess
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'stem-v7/original-code'
+          expected={
+            'e3_scienceqa_contract.py':'bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a',
+            'e3_scienceqa_stage.py':'3ca8f55ed6b7143729258e4a1e53693614460950',
+            'e3_granite_dino_real.py':'b99c99d8e13a4d1899a0597d7733753fb3ce092a',
+            'execution.py':'733da82a4bbbde1b256dfd1dbe4c05832dcd4856',
+            'multimodal_saved_tie_recovery_v18.py':'27839fbeb9402e8afeb1f2a23288006146757a53',
+            'multimodal_meta_integrity_v14.py':'d562d7e5c518a1f194c0f026968e8d64e996c527',
+            'multimodal_exact_tied_alias_v11.py':'f4ec7f415c6dc3f51a965c603eb96339d908413c',
+            'multimodal_native_pool_v7.py':'b3d54cec40c82d51457925f2a2113566cd8f1c6c',
+          }
+          for name,sha in expected.items():
+            assert subprocess.check_output(['git','hash-object',str(root/name)]).decode().strip()==sha,name
+          print('EXACT ORIGINAL E3 RUNTIME GIT BLOBS VERIFIED')
+          PY
+      - name: Install original public model/media Python dependencies, not replacement weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install 'numpy==1.26.4' 'transformers==4.57.1' 'safetensors==0.6.2' \
+            'huggingface-hub==0.35.3' 'tokenizers==0.22.1' 'datasets==3.6.0' \
+            'pyarrow==19.0.1' 'Pillow==11.3.0' 'psutil==7.0.0' 'packaging==25.0'
+          python -m pip check
+          python -c 'from transformers import AutoImageProcessor, Dinov2Model, AutoModel; from datasets import load_dataset; print("PINNED ORIGINAL MODEL SOURCE LOADER READY")'
+      - name: Acquire original publisher media and the unchanged historical prediction archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: ${{ runner.temp }}/stem-v7/original-code:qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip \
+            > "$RUNNER_TEMP/stem-v7/original-e3.zip"
+          python - <<'PY'
+          import os,sys
+          from pathlib import Path
+          from scienceqa_independent_rejudge_v5 import read_archive
+          read_archive(Path(os.environ['RUNNER_TEMP'])/'stem-v7/original-e3.zip')
+          print('ORIGINAL 14-MEMBER E3 PHYSICAL RESULT IMMUTABLE SHA VERIFIED')
+          PY
+          python "$RUNNER_TEMP/stem-v7/original-code/e3_scienceqa_stage.py" \
+            --output "$RUNNER_TEMP/stem-v7/publisher-staging"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'stem-v7/publisher-staging'
+          actual=json.loads((root/'source-seals.json').read_bytes())
+          assert actual['source_sha256']=='a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202'
+          assert actual['fit_labels_sha256']=='e8506bc65f96501b6b2fa4e4ae04c094c2b6b17b353de528a051136569e2849e'
+          assert actual['private_test_labels_sha256']=='b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3'
+          print('ORIGINAL LABEL-BLIND COHORT AND FIT/HELD SEALS MATCH PRIOR PHYSICAL')
+          PY
+      - name: Real pretrained correct-image, other-image and black-image forward using frozen fitted Head
+        shell: bash
+        env:
+          PYTHONPATH: ${{ runner.temp }}/stem-v7/original-code:qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/scienceqa_image_intervention_v7.py \
+            --sources "$RUNNER_TEMP/stem-v7/publisher-staging/inputs/sources.jsonl" \
+            --fit-labels "$RUNNER_TEMP/stem-v7/publisher-staging/inputs/fit_labels.jsonl" \
+            --images "$RUNNER_TEMP/stem-v7/publisher-staging/images" \
+            --original-archive "$RUNNER_TEMP/stem-v7/original-e3.zip" \
+            --model-root "$RUNNER_TEMP/stem-v7/weights-do-not-upload" \
+            --output "$RUNNER_TEMP/stem-v7/sealed-interventions.json"
+          sha256sum "$RUNNER_TEMP/stem-v7/sealed-interventions.json" \
+            > "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256"
+      - name: Separate process opens original TEST labels only after prediction seal and independently scores interventions
+        shell: bash
+        env:
+          PYTHONPATH: ${{ runner.temp }}/stem-v7/original-code:qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256"
+          sha256sum --check "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256"
+          python qualification/stem-cell-v1/scienceqa_image_intervention_v7_review.py \
+            --sources "$RUNNER_TEMP/stem-v7/publisher-staging/inputs/sources.jsonl" \
+            --source-sha256 a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202 \
+            --heldout-labels "$RUNNER_TEMP/stem-v7/publisher-staging/private_labels/test_labels.jsonl" \
+            --heldout-labels-sha256 b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3 \
+            --original-archive "$RUNNER_TEMP/stem-v7/original-e3.zip" \
+            --producer "$RUNNER_TEMP/stem-v7/sealed-interventions.json" \
+            --producer-seal "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256" \
+            --output "$RUNNER_TEMP/stem-v7/independent-late-label-review.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'stem-v7'
+          result=json.loads((root/'independent-late-label-review.json').read_bytes())
+          assert result['schema']=='hepta.stem.scienceqa-image-intervention-independent-review.v7'
+          assert result['arms']['correct_image']['correct']==24
+          assert result['arms']['text_only']['correct']==17
+          assert result['independent_human_visual_necessity_adjudicated'] is False
+          assert result['promotion_authorized'] is False and result['authority']=='DENY_ALL'
+          print(json.dumps({'intervention_per_case_rejudged':True,
+             'arm_accuracy':{k:v['accuracy'] for k,v in result['arms'].items()},
+             'paired':result['predeclared_contrasts'],
+             'human_necessity_certified':False,'authority':'DENY_ALL'},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-stem-v7-original-physical-interventions-denyall
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/stem-v7/original-interventions-before-labels.sha256
+            ${{ runner.temp }}/stem-v7/sealed-interventions.json
+            ${{ runner.temp }}/stem-v7/independent-late-label-review.json
+
+  v7-cross-runner-independent-review:
+    needs: v7-genuine-original-model-image-interventions
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    permissions:
+      contents: read
+      actions: read
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_ENABLE_HF_TRANSFER: "0"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch only pinned original source/staging implementation, never original model weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          git fetch --no-tags --depth=1 origin refs/heads/research/e3-required-physical-score-pr-20261015
+          test "$(git rev-parse FETCH_HEAD)" = 2dc43da7d9bf343acc871219ddce44d0e14d8911
+          mkdir -p "$RUNNER_TEMP/v7-independent/original-code"
+          for file in e3_scienceqa_contract.py e3_scienceqa_stage.py; do
+            git show "FETCH_HEAD:experiments/shared_stem_cell/$file" > "$RUNNER_TEMP/v7-independent/original-code/$file"
+          done
+          test "$(git hash-object "$RUNNER_TEMP/v7-independent/original-code/e3_scienceqa_contract.py")" = bd6d95ff957c3855b71a8778d7c13f61ff4d6a7a
+          test "$(git hash-object "$RUNNER_TEMP/v7-independent/original-code/e3_scienceqa_stage.py")" = 3ca8f55ed6b7143729258e4a1e53693614460950
+      - name: Acquire publisher data independently on a new host, no Torch/model loading
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'datasets==3.6.0' 'pyarrow==19.0.1' 'Pillow==11.3.0' 'huggingface-hub==0.35.3' 'packaging==25.0'
+          python -m pip check
+          PYTHONPATH="$RUNNER_TEMP/v7-independent/original-code" python "$RUNNER_TEMP/v7-independent/original-code/e3_scienceqa_stage.py" --output "$RUNNER_TEMP/v7-independent/new-publisher-staging"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          doc=json.loads((Path(os.environ["RUNNER_TEMP"])/"v7-independent/new-publisher-staging/source-seals.json").read_bytes())
+          assert doc["source_sha256"]=="a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202"
+          assert doc["fit_labels_sha256"]=="e8506bc65f96501b6b2fa4e4ae04c094c2b6b17b353de528a051136569e2849e"
+          assert doc["private_test_labels_sha256"]=="b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3"
+          assert doc["externally_independent_labels"] is False
+          print("Original public publisher source/test label hashes replayed on distinct host")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-stem-v7-original-physical-interventions-denyall
+          path: ${{ runner.temp }}/v7-independent/sealed-model-result
+      - name: Require original producer pre-label SHA and derive separately scoped reviewer seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/v7-independent/sealed-model-result"
+          test -f "$root/sealed-interventions.json"
+          test -f "$root/original-interventions-before-labels.sha256"
+          test -f "$root/independent-late-label-review.json"
+          python - <<'PY'
+          import hashlib,os,re
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"v7-independent/sealed-model-result"
+          prediction=root/"sealed-interventions.json"
+          prelabel=root/"original-interventions-before-labels.sha256"
+          recorded=prelabel.read_bytes().decode("ascii").strip().split("  ",1)
+          assert len(recorded)==2 and re.fullmatch("[a-f0-9]{64}",recorded[0])
+          assert recorded[1].endswith("/stem-v7/sealed-interventions.json")
+          assert hashlib.sha256(prediction.read_bytes()).hexdigest()==recorded[0]
+          review_seal=root/"new-host-prelabel.sha256"
+          with review_seal.open("x",encoding="ascii") as handle:
+              handle.write(recorded[0]+"  "+str(prediction)+"\n")
+          print("Original producer pre-label SHA verified before independent label join")
+          PY
+      - name: Independent new-runner complete late-label review and exact replay equality
+        shell: bash
+        env:
+          PYTHONPATH: ${{ runner.temp }}/v7-independent/original-code:qualification/stem-cell-v1
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v7-independent/historical"
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11947722496/zip \
+            > "$RUNNER_TEMP/v7-independent/historical/original-e3.zip"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from scienceqa_independent_rejudge_v5 import read_archive
+          read_archive(Path(os.environ["RUNNER_TEMP"])/"v7-independent/historical/original-e3.zip")
+          PY
+          base="$RUNNER_TEMP/v7-independent"
+          python qualification/stem-cell-v1/scienceqa_image_intervention_v7_review.py \
+            --sources "$base/new-publisher-staging/inputs/sources.jsonl" \
+            --source-sha256 a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202 \
+            --heldout-labels "$base/new-publisher-staging/private_labels/test_labels.jsonl" \
+            --heldout-labels-sha256 b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3 \
+            --original-archive "$base/historical/original-e3.zip" \
+            --producer "$base/sealed-model-result/sealed-interventions.json" \
+            --producer-seal "$base/sealed-model-result/new-host-prelabel.sha256" \
+            --output "$base/cross-runner-original-review.json"
+          cmp "$base/cross-runner-original-review.json" \
+            "$base/sealed-model-result/independent-late-label-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ["RUNNER_TEMP"])/"v7-independent/cross-runner-original-review.json").read_bytes())
+          assert result["authority"]=="DENY_ALL" and result["promotion_authorized"] is False
+          assert result["independently_joined_publisher_test_labels"] is True
+          assert result["arms"]["correct_image"]["correct"]==24
+          assert result["arms"]["text_only"]["correct"]==17
+          assert result["independent_human_visual_necessity_adjudicated"] is False
+          print("Separate-host original SHA/label model-free rejudgment: no production authority")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-stem-v7-different-runner-original-label-audit-denyall
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/v7-independent/cross-runner-original-review.json
