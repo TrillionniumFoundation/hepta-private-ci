@@ -81,7 +81,7 @@ class NativeWeightTests(unittest.TestCase):
         self.assertEqual(tokens.encode("hello world", add_special_tokens=False), [7592, 2088])
         self.assertEqual(tokens.encode("HELLO WORLD"), tokens.encode("hello world"))
         self.assertIn(100, tokens.encode("q" * 101))
-        for bad in ("", "   ", "caf\u00e9", "\u4e16\u754c", "hello\x00word",
+        for bad in ("", "   ", "ca" "f\u00e9", "\u4e16\u754c", "hello\x00word",
                     "someone typed [CLS]", "[MASK]", "[SEP]", "[PAD]", "[UNK]"):
             with self.subTest(text=bad), self.assertRaises(ValueError):
                 tokens.encode(bad)
