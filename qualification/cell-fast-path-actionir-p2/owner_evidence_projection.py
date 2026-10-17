@@ -22,6 +22,9 @@ from cell_fast_path_actionir import (
 )
 
 SCHEMA = "hepta.cell.fast-path-owner-evidence-projection.v1"
+SCHEMA_NEURON = "hepta.neuron.feature-receipt-projection.v1"
+SCHEMA_GUARDIAN = "hepta.guardian.fast-decision-evidence.v1"
+SCHEMA_TASKFLOW = "hepta.taskflow.observer-receipt.v1"
 _MODEL_STATUSES = frozenset({"succeeded", "failed", "cancelled", "indeterminate"})
 _GUARDIAN_DECISIONS = frozenset({"eligible", "fallback"})
 
@@ -71,7 +74,7 @@ class NeuronFeatureReceiptProjectionV1:
 
     def _receipt_payload_digest(self) -> str:
         return canonical_digest({
-            "schema": "hepta.neuron.feature-receipt-projection.v1",
+            "schema": SCHEMA_NEURON,
             "request_digest": self.request_digest,
             "input_digest": self.input_digest,
             "runtime_tuple_digest": self.runtime_tuple_digest,
@@ -89,7 +92,7 @@ class NeuronFeatureReceiptProjectionV1:
         })
 
     def as_dict(self) -> dict[str, Any]:
-        return {"schema": SCHEMA, **{field: getattr(self, field) for field in self.__dataclass_fields__}}
+        return {"schema": SCHEMA_NEURON, **{field: getattr(self, field) for field in self.__dataclass_fields__}}
 
 
 @dataclass(frozen=True)
@@ -125,7 +128,7 @@ class GuardianEvidenceV1:
         if (self.decision == "eligible") != expected_eligible:
             raise ValueError("Guardian decision does not match freshness/risk predicates")
         expected_digest = canonical_digest({
-            "schema": "hepta.guardian.fast-decision-evidence.v1",
+            "schema": SCHEMA_GUARDIAN,
             "enabled": self.enabled,
             "scope_digest": self.scope_digest,
             "authorization_version": self.authorization_version,
@@ -140,7 +143,7 @@ class GuardianEvidenceV1:
             raise ValueError("Guardian evidence digest drift")
 
     def as_dict(self) -> dict[str, Any]:
-        return {"schema": "hepta.guardian.fast-decision-evidence.v1", **{field: getattr(self, field) for field in self.__dataclass_fields__}}
+        return {"schema": SCHEMA_GUARDIAN, **{field: getattr(self, field) for field in self.__dataclass_fields__}}
 
 
 @dataclass(frozen=True)
@@ -171,10 +174,10 @@ class TaskFlowObserverReceiptV1:
 
     @property
     def digest(self) -> str:
-        return canonical_digest({"schema": "hepta.taskflow.observer-receipt.v1", **{field: getattr(self, field) for field in self.__dataclass_fields__}})
+        return canonical_digest({"schema": SCHEMA_TASKFLOW, **{field: getattr(self, field) for field in self.__dataclass_fields__}})
 
     def as_dict(self) -> dict[str, Any]:
-        return {"schema": "hepta.taskflow.observer-receipt.v1", **{field: getattr(self, field) for field in self.__dataclass_fields__}}
+        return {"schema": SCHEMA_TASKFLOW, **{field: getattr(self, field) for field in self.__dataclass_fields__}}
 
 
 @dataclass(frozen=True)
