@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-codex-adapter/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/app-server-client/src/remote.rs"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
       - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
@@ -126,6 +127,12 @@ jobs:
         run: |
           set -euo pipefail
           cargo clippy --locked -p codex-hepta-types -p codex-hepta-codex-adapter -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+
+      - name: Test original remote App Server client response conversion and worker exit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/remote-client.json" --minimum-tests 2 -- just test --locked -p codex-app-server-client -E 'test(remote::tests)'
 
       - name: Verify bounded Agentd control JSON protocol and Final-use witness parity
         shell: bash
