@@ -10,12 +10,12 @@ use std::collections::BTreeSet;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::hnmf::ppm;
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractGenerationV1;
 use crate::hnmf::ContractIdV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::ModalityKindV1;
+use crate::hnmf::ppm;
 use crate::hnmf_learning::EngramPopulationV1;
 
 pub const MEMORY_CELL_MANIFEST_SCHEMA_VERSION: u32 = 1;
