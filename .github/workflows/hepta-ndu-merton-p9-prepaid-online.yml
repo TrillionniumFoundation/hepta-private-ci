@@ -1,0 +1,154 @@
+name: Hepta NDU Merton P9 hard-prepaid original Qwen3 token portfolio (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/physical_online_p9/**'
+      - '.github/workflows/hepta-ndu-merton-p9-prepaid-online.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Exact P8-parent source and P9 adversarial mock contract tests ONLY (not physical model evidence)
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p9
+          export PYTHONPATH="$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -m compileall -q "$D"
+      - name: P8 original predecessor tests remain unchanged and passing
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          export PYTHONPATH="$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+  original-source:
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: SHA-pinned original publisher new fourth/fifth TRAIN and third HELD rows, independent of P5/P8 cohorts
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==22.0.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p9
+          PYTHONPATH="$D" python "$D/source.py" --out /tmp/p9-source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p9-original-train-and-label-blind-held
+          path: |
+            /tmp/p9-source/train-public.json
+            /tmp/p9-source/held-public.json
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p9-original-publisher-gold-postseal-only
+          path: /tmp/p9-source/held-private-labels.json
+          if-no-files-found: error
+          retention-days: 7
+  physically-paid-original:
+    needs: original-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p9-original-train-and-label-blind-held
+          path: /tmp/p9-reader-public
+      - name: Original Qwen3 model and tokenizer (no historical HELD truth), physical 2-resource escrow
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/p9-reader-public/held-private-labels.json
+          python -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0 huggingface-hub==0.36.0 transformers==4.57.1 tokenizers==0.22.1
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p9
+          PYTHONPATH="$D" python "$D/runner.py" \
+            --train-public /tmp/p9-reader-public/train-public.json \
+            --held-public /tmp/p9-reader-public/held-public.json \
+            --output /tmp/p9-original-paid
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p9-original-prepaid-starts-and-sealed-plan
+          path: /tmp/p9-original-paid
+          if-no-files-found: warn
+          retention-days: 7
+  postseal-original-audit:
+    needs: physically-paid-original
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p9-original-train-and-label-blind-held
+          path: /tmp/p9-review-public
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p9-original-publisher-gold-postseal-only
+          path: /tmp/p9-review-gold
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p9-original-prepaid-starts-and-sealed-plan
+          path: /tmp/p9-original-paid
+      - name: Independently re-open SHA-pinned original publisher data; exact byte-compare all sealed cohorts
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==22.0.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p9
+          PYTHONPATH="$D" python "$D/source.py" --out /tmp/p9-independent-source
+          cmp -s /tmp/p9-independent-source/train-public.json /tmp/p9-review-public/train-public.json
+          cmp -s /tmp/p9-independent-source/held-public.json /tmp/p9-review-public/held-public.json
+          cmp -s /tmp/p9-independent-source/held-private-labels.json /tmp/p9-review-gold/held-private-labels.json
+      - name: Independently load exact frozen tokenizer to recount BOTH selected and unselected quoted candidates
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 transformers==4.57.1 tokenizers==0.22.1
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p9
+          PYTHONPATH="$D" python "$D/audit.py" \
+            --train /tmp/p9-review-public/train-public.json \
+            --held /tmp/p9-review-public/held-public.json \
+            --gold /tmp/p9-review-gold/held-private-labels.json \
+            --plan /tmp/p9-original-paid/frozen-plan.json \
+            --original /tmp/p9-original-paid/completed-original.json \
+            --journal /tmp/p9-original-paid/original-starts-and-dones.jsonl \
+            --output /tmp/p9-sanitized-token-accounting-review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p9-sanitized-original-token-escrow-audit
+          path: /tmp/p9-sanitized-token-accounting-review.json
+          if-no-files-found: error
+          retention-days: 7
