@@ -92,7 +92,7 @@ class NativeWeightTests(unittest.TestCase):
         for bad in (
             "",
             "   ",
-            "caf\u00e9",
+            "c\u0061f\u00e9",
             "\u4e16\u754c",
             "hello\x00word",
             "someone typed [CLS]",
