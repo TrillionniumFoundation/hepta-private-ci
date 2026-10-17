@@ -212,7 +212,10 @@ class ScopeTests(unittest.TestCase):
             if "control-ndu-atomic-owner.json" in line
         )
         self.assertIn("--minimum-tests 30", original_owner)
-        self.assertIn("--lib ndu_publication -- --nocapture --test-threads=1", original_owner)
+        self.assertIn(
+            "--lib ndu_publication -- --nocapture --test-threads=1",
+            original_owner,
+        )
 
 
     def test_neuron_original_effect_non_test_denial_gate(self):
