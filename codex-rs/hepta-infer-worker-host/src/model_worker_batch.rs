@@ -207,7 +207,6 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             observations.iter().map(|item| &item.feature),
             minimum_bytes,
             selected_loaded_memory_bytes,
-            input_width,
             output_width,
             self.grant.maximum_memory_bytes,
         ) {
@@ -686,12 +685,11 @@ mod tests {
 
     #[test]
     fn reported_multi_cell_cohort_memory_fences_before_publishing_any_row() {
-        // Each reported 2048 resident + 1025 transient row fits in 4096,
-        // but two disjoint Q24 input/output floors and the two additional
-        // scratch charges together exceed the physical cohort grant.
-        // A driver claiming only 63 bytes cannot even represent one
-        // 64-byte Q24 input/drive/prediction row and must also fail closed.
-        for (transient, permitted) in [(1024_u64, true), (1025_u64, false), (63, false)] {
+        // 1024 loaded + 32 source inputs + 96 outputs + 1024 reported
+        // resident growth + 2*(1008-48 output bytes) = 4096 exactly.
+        // Two 1009-byte reports breach the combined budget. Less than the
+        // 48 output bytes per row is also impossible telemetry.
+        for (transient, permitted) in [(1008_u64, true), (1009_u64, false), (47, false)] {
             let mut worker = worker(BatchMock {
                 reported_transient_bytes: Some(transient),
                 ..BatchMock::default()
@@ -728,9 +726,10 @@ mod tests {
 
     #[test]
     fn reported_batch_transient_overgrant_fences_every_cell_after_dispatch() {
-        // 2048 reported resident bytes + 2048 transient exactly fits.
+        // 2048 reported resident + 16 retained source input + 2032
+        // transient (including 48 output) exactly fits a 4096-byte grant.
         let mut exact = worker(BatchMock {
-            reported_transient_bytes: Some(2048),
+            reported_transient_bytes: Some(2032),
             ..BatchMock::default()
         });
         assert!(
@@ -740,7 +739,7 @@ mod tests {
         );
         assert!(!exact.poisoned);
 
-        for transient in [2049_u64, u64::MAX] {
+        for transient in [2033_u64, u64::MAX] {
             let mut worker = worker(BatchMock {
                 reported_transient_bytes: Some(transient),
                 ..BatchMock::default()

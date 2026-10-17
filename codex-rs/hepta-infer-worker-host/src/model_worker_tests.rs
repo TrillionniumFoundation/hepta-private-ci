@@ -522,15 +522,68 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
 }
 
 #[test]
+fn single_cell_source_and_output_floor_rejects_before_physical_dispatch() {
+    let mut budget = grant();
+    // Loaded model 1024 + 16 retained Q24 input + 80 output = 1120.
+    budget.maximum_memory_bytes = 1_119;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.single-floor".into(),
+        3,
+        budget,
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert!(!worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.models["model.1"].active_requests, 0);
+}
+
+#[test]
+fn other_loaded_model_residency_is_charged_on_single_cell_execution() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.other-resident".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("selected load");
+    let mut second = manifest();
+    second.model_id = "model.2".into();
+    second.model_digest = "9".repeat(64);
+    worker.load_model(100, second).expect("other resident model");
+    // The selected model reports 1024 resident + 2048 transient, but the
+    // other loaded model plus source input pushes the total above 4096.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert!(worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.models["model.1"].active_requests, 0);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
 fn reported_neuron_transient_overgrant_and_overflow_fence_worker_after_dispatch() {
-    // 1024 resident + 3072 transient exactly meets the 4096-byte grant.
+    // 1024 resident + 16 retained source input + 3056 transient = 4096.
     let mut exact = InferenceWorker::new(
         100,
         "worker.exact-budget".into(),
         3,
         grant(),
         Driver {
-            reported_feature_transient_bytes: Some(3_072),
+            reported_feature_transient_bytes: Some(3_056),
             ..Driver::default()
         },
     )
@@ -545,7 +598,7 @@ fn reported_neuron_transient_overgrant_and_overflow_fence_worker_after_dispatch(
     );
     assert!(!exact.poisoned);
 
-    for transient in [3_073, u64::MAX] {
+    for transient in [3_057, 79, u64::MAX] {
         let mut worker = InferenceWorker::new(
             100,
             "worker.over-budget".into(),
