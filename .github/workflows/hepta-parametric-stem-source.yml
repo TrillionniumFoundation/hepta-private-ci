@@ -1,0 +1,183 @@
+name: Hepta original frozen Stem and parameter MemoryCell (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-meta-evolution-20261017]
+    paths:
+      - 'scripts/memory_cell/parametric_stem_reader.py'
+      - 'scripts/memory_cell/test_parametric_stem_reader.py'
+      - 'codex-rs/hepta-intelligence-eval/PARAMETRIC_STEM_SOURCE_20261017.md'
+      - '.github/workflows/hepta-parametric-stem-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-param-stem-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install CPU research dependencies for actual stem tests
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - name: Source-only and lineage/ablation tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/param-stem-prep-receipts
+          python3 -m unittest discover -s scripts/memory_cell -p test_parametric_stem_reader.py -v 2>&1 | tee /tmp/param-stem-prep-receipts/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/param-stem-staged
+      - name: Reopen original pinned LoCoMo with label separation
+        run: |
+          set -euo pipefail
+          mkdir /tmp/param-stem-original
+          tar -C /tmp/param-stem-original -xzf /tmp/param-stem-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/param-stem-original/memory-inputs/locomo.json | cut -d' ' -f1)" = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/param-stem-original/memory-inputs/locomo.json /tmp/param-stem-prepared \
+            > /tmp/param-stem-prep-receipts/preparation.json
+          mkdir /tmp/param-stem-public
+          cp /tmp/param-stem-prepared/{public,manifest}.json /tmp/param-stem-public/
+          test ! -e /tmp/param-stem-public/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: param-stem-source-public-only
+          path: /tmp/param-stem-public/
+          if-no-files-found: error
+      - name: Source receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/param-stem-prep-receipts
+          git rev-parse HEAD > /tmp/param-stem-prep-receipts/head.txt
+          (cd /tmp/param-stem-prep-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: param-stem-source-preflight-not-acceptance
+          path: /tmp/param-stem-prep-receipts/
+          if-no-files-found: error
+  original-pretrained-encoder:
+    needs: source-only-and-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install frozen CPU runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: param-stem-source-public-only
+          path: /tmp/param-stem-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/param-stem-staged
+      - name: Execute original MiniLM and actual small Cell training, blind to gold
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/param-stem-public/private.json
+          mkdir -p /tmp/param-stem-weights /tmp/param-stem-run-receipts
+          tar -C /tmp/param-stem-weights -xzf /tmp/param-stem-staged/memory-inputs.tar.gz memory-inputs/encoder
+          /usr/bin/time -v -o /tmp/param-stem-run-receipts/resources.txt \
+            python3 scripts/memory_cell/parametric_stem_reader.py run \
+              /tmp/param-stem-public /tmp/param-stem-weights/memory-inputs/encoder \
+              /tmp/param-stem-sealed-run > /tmp/param-stem-run-receipts/run.json
+          cp /tmp/param-stem-sealed-run/seal.json /tmp/param-stem-run-receipts/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: param-stem-original-model-unscored
+          path: /tmp/param-stem-sealed-run/
+          if-no-files-found: error
+      - name: Original weight and process receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/param-stem-run-receipts
+          git rev-parse HEAD > /tmp/param-stem-run-receipts/head.txt
+          (cd /tmp/param-stem-run-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: param-stem-original-weight-resource-not-acceptance
+          path: /tmp/param-stem-run-receipts/
+          if-no-files-found: error
+  independent-pretrained-reexecution:
+    needs: original-pretrained-encoder
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install identical frozen CPU runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: param-stem-source-public-only
+          path: /tmp/param-stem-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: param-stem-original-model-unscored
+          path: /tmp/param-stem-sealed-run
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/param-stem-staged
+      - name: Reopen publisher labels only after independent real-weight rerun
+        run: |
+          set -euo pipefail
+          mkdir /tmp/param-stem-review-source /tmp/param-stem-review-receipts
+          tar -C /tmp/param-stem-review-source -xzf /tmp/param-stem-staged/memory-inputs.tar.gz memory-inputs/locomo.json memory-inputs/encoder
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/param-stem-review-source/memory-inputs/locomo.json /tmp/param-stem-review-prepared \
+            > /tmp/param-stem-review-receipts/rebuilt.json
+          cmp /tmp/param-stem-review-prepared/public.json /tmp/param-stem-public/public.json
+          cmp /tmp/param-stem-review-prepared/manifest.json /tmp/param-stem-public/manifest.json
+          python3 scripts/memory_cell/parametric_stem_reader.py review \
+            /tmp/param-stem-review-prepared /tmp/param-stem-sealed-run \
+            /tmp/param-stem-review-source/memory-inputs/encoder \
+            /tmp/param-stem-review-receipts/review.json > /tmp/param-stem-review-receipts/summary.json
+      - name: Immutable review receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/param-stem-review-receipts
+          git rev-parse HEAD > /tmp/param-stem-review-receipts/head.txt
+          (cd /tmp/param-stem-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: param-stem-original-postseal-not-acceptance
+          path: /tmp/param-stem-review-receipts/
+          if-no-files-found: error
