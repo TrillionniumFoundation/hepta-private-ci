@@ -257,6 +257,9 @@ class FastPathCandidateV1:
     action_ir_digest: str
     artifact_digest: str
     capability_manifest_digest: str
+    runtime_tuple_digest: str
+    policy_digest: str
+    snapshot_id: str
     authorization_version: str
     revocation_epoch: int
     body_generation: int
@@ -273,8 +276,16 @@ class FastPathCandidateV1:
         _require_identifier(self.candidate_id, "candidate_id")
         _require_identifier(self.cell_id, "cell_id")
         _require_identifier(self.app_identity, "app_identity")
-        for field in ("action_ir_digest", "artifact_digest", "capability_manifest_digest", "evidence_digest"):
+        for field in (
+            "action_ir_digest",
+            "artifact_digest",
+            "capability_manifest_digest",
+            "runtime_tuple_digest",
+            "policy_digest",
+            "evidence_digest",
+        ):
             _require_digest(getattr(self, field), field)
+        _require_identifier(self.snapshot_id, "snapshot_id")
         _require_identifier(self.authorization_version, "authorization_version")
         _require_nonnegative_int(self.revocation_epoch, "revocation_epoch")
         _require_nonnegative_int(self.body_generation, "body_generation")
@@ -306,6 +317,9 @@ class FastPathCandidateV1:
             "action_ir_digest": self.action_ir_digest,
             "artifact_digest": self.artifact_digest,
             "capability_manifest_digest": self.capability_manifest_digest,
+            "runtime_tuple_digest": self.runtime_tuple_digest,
+            "policy_digest": self.policy_digest,
+            "snapshot_id": self.snapshot_id,
             "authorization_version": self.authorization_version,
             "revocation_epoch": self.revocation_epoch,
             "body_generation": self.body_generation,
@@ -391,6 +405,9 @@ def compile_shadow_candidate(
     *,
     candidate_id: str,
     capability_manifest_digest: str,
+    runtime_tuple_digest: str,
+    policy_digest: str,
+    snapshot_id: str,
     authorization_version: str,
     backend: str,
     target: str,
@@ -400,6 +417,9 @@ def compile_shadow_candidate(
 
     evidence_value = _shadow_evidence(evidence)
     _require_digest(capability_manifest_digest, "capability_manifest_digest")
+    _require_digest(runtime_tuple_digest, "runtime_tuple_digest")
+    _require_digest(policy_digest, "policy_digest")
+    _require_identifier(snapshot_id, "snapshot_id")
     artifact_digest = canonical_digest(
         {
             "ir": action_ir.as_dict(),
@@ -407,6 +427,9 @@ def compile_shadow_candidate(
             "target": target,
             "abi": action_ir.abi,
             "capability_manifest_digest": capability_manifest_digest,
+            "runtime_tuple_digest": runtime_tuple_digest,
+            "policy_digest": policy_digest,
+            "snapshot_id": snapshot_id,
         }
     )
     evidence_digest = canonical_digest({"evidence": evidence_value, "artifact_digest": artifact_digest})
@@ -417,6 +440,9 @@ def compile_shadow_candidate(
         action_ir_digest=action_ir.digest,
         artifact_digest=artifact_digest,
         capability_manifest_digest=capability_manifest_digest,
+        runtime_tuple_digest=runtime_tuple_digest,
+        policy_digest=policy_digest,
+        snapshot_id=snapshot_id,
         authorization_version=authorization_version,
         revocation_epoch=action_ir.revocation_epoch,
         body_generation=action_ir.body_generation,
