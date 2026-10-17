@@ -104,10 +104,7 @@ pub fn bind_cell_evidence_v1(
         resource_receipt: runtime.tick.resource_receipt.clone(),
         evidence_digest: Digest32::ZERO,
     };
-    let evidence_digest = canonical_cell_evidence_digest_v1(
-        &evidence,
-        runtime,
-    );
+    let evidence_digest = canonical_cell_evidence_digest_v1(&evidence, runtime);
     Ok(CellEvidenceV1 {
         evidence_digest,
         ..evidence
