@@ -80,7 +80,7 @@ jobs:
           # Neuron model_worker safety patch has its own exact new blob pin.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "1db3e101a562243bfeedf8a4c314ddb1df0b5953"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "48dfcee08f13055f592760d03a0d11c2a32a9913"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
