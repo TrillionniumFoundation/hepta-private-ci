@@ -584,6 +584,39 @@ mod tests {
         assert_eq!(worker.resident_encoder_count(), 0);
     }
 
+
+    fn manifest(cell_id: &str, weights: &str) -> CompositionManifestV1 {
+        CompositionManifestV1 {
+            cell_id: cell_id.into(),
+            encoder_digest: "encoder-v1".into(),
+            weights_digest: weights.into(),
+            tokenizer_digest: "tokenizer-v1".into(),
+            preprocessor_digest: "preprocessor-v1".into(),
+            normalization_digest: "normalization-v1".into(),
+            quantization_digest: "quantization-v1".into(),
+            runtime_digest: "runtime-v1".into(),
+            device_digest: "cuda-0".into(),
+            head_digest: format!("head-{cell_id}"),
+            private_memory_bytes: 20,
+            maximum_tokens: 128,
+        }
+    }
+
+    #[test]
+    fn manifest_bridge_binds_base_weights_and_private_head() {
+        let mut worker = CompositionWorker::new(
+            SharedEncoderPool::new(2, 8).expect("pool"),
+            WorkerDriver::default(),
+        );
+        worker.attach_manifest(manifest("cell-a", "weights-v1")).expect("manifest");
+        worker.attach_manifest(manifest("cell-b", "weights-v1")).expect("manifest");
+        assert_eq!(worker.driver.loads, 1);
+        assert_eq!(worker.active_cell_count(), 2);
+        worker.attach_manifest(manifest("cell-c", "weights-v2")).expect("new weights");
+        assert_eq!(worker.driver.loads, 2);
+        assert_eq!(worker.resident_encoder_count(), 2);
+    }
+
     #[test]
     fn shared_encoder_loads_once_and_heads_fan_out() {
         let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
