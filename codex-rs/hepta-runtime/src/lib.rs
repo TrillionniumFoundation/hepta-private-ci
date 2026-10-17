@@ -63,6 +63,8 @@ pub use cell_split_cns_runtime_port::CellSplitIndependentControlObserverV1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 pub use cell_split_cns_runtime_port::CellSplitSignedControlHighwaterV1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::CellSplitOrphanCnsReadOnlyObservationV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
 pub use cell_split_cns_runtime_port::cell_split_cns_live_route_signing_bytes_v1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 pub use cell_split_cns_runtime_port::cell_split_control_highwater_signing_bytes_v1;
