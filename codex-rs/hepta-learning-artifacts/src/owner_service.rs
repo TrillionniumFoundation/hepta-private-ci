@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactOwnerHostError;
+use crate::CellSplitArtifactCasReadbackV1;
 use crate::ArtifactOwnerPublicationCheckpointV1;
 use crate::ArtifactOwnerTrustV1;
 use crate::ArtifactPublicationError;
@@ -126,6 +127,45 @@ impl LearningArtifactOwnerService {
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
         Ok(self.host.current_registry_view(now)?)
+    }
+
+    /// Native Cell Split CAS observation through the *single product writer*
+    /// service. Never bypass a pending publication or a newer withdrawal
+    /// frontier: a signed historical artifact is not sufficient authority to
+    /// reuse revoked training lineage. No new artifact is published here.
+    pub fn observe_cell_split_artifact_cas_v1(
+        &self,
+        operation_id: &StableId,
+        artifact_id: &StableId,
+        expected_content_digest: Digest32,
+        now: u64,
+    ) -> Result<CellSplitArtifactCasReadbackV1, LearningArtifactOwnerServiceError> {
+        if let Some(blocked) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                blocked.clone(),
+            ));
+        }
+        let checkpoint = self
+            .host
+            .recover_publication(operation_id)?
+            .ok_or(ArtifactOwnerHostError::Indeterminate)?;
+        if checkpoint.checkpoint.withdrawal_scope_digest
+                != self.withdrawal_registry.scope_digest().ok_or(
+                    LearningArtifactOwnerServiceError::WithdrawalFrontierConflict,
+                )?
+            || checkpoint.checkpoint.withdrawal_head_digest
+                != self.withdrawal_registry.head_digest()
+        {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
+        }
+        self.host
+            .observe_cell_split_artifact_cas_v1(
+                operation_id,
+                artifact_id,
+                expected_content_digest,
+                now,
+            )
+            .map_err(Into::into)
     }
 
     #[must_use]
