@@ -1,0 +1,74 @@
+name: hepta-stem-v22-source-integrity
+
+on:
+  pull_request:
+    paths:
+      - qualification/stem-cell-v1/stem_source_suite_v22.py
+      - qualification/stem-cell-v1/test_stem_source_suite_v22.py
+      - .github/workflows/hepta-neuron-next-round-matrix.yml
+      - .github/workflows/hepta-stem-v18-original-physical.yml
+      - .github/workflows/hepta-stem-v19-trainonly-original.yml
+      - .github/workflows/hepta-stem-v20-independent-adam.yml
+      - .github/workflows/hepta-stem-v21-original-cross-family.yml
+      - scripts/tests/test_hepta_ci_dependencies.py
+      - .github/workflows/hepta-stem-v22-source-integrity.yml
+  push:
+    branches:
+      - research/stem-v22-exact-ci-source-gates-20261016
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-fail-closed-mechanisms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact research source HEAD
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Test original-evidence coverage and Git fixture cleanup without external data
+        run: |
+          set -euo pipefail
+          python -m py_compile qualification/stem-cell-v1/stem_source_suite_v22.py qualification/stem-cell-v1/test_stem_source_suite_v22.py scripts/tests/test_hepta_ci_dependencies.py
+          (cd qualification/stem-cell-v1 && python -m unittest -v test_stem_source_suite_v22)
+          python -m unittest -v scripts.tests.test_hepta_ci_dependencies.GitFixtureCleanupTests
+      - name: Prove physical original suites and numeric sources remain required
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          src = Path("qualification/stem-cell-v1/stem_source_suite_v22.py")
+          spec = importlib.util.spec_from_file_location("stem_v22", src)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          result = module.inventory(Path("."))
+          assert len(result["original_required"]) == 4
+          assert "test_v21_banking77_original" in result["original_required"]
+          assert "test_v20_original_training" in result["original_required"]
+          assert "test_v19_original_replay" in result["original_required"]
+          assert "test_v18_original_independent_review" in result["original_required"]
+          for script in ("hepta-stem-v18-original-physical.yml",
+                         "hepta-stem-v19-trainonly-original.yml",
+                         "hepta-stem-v20-independent-adam.yml"):
+              raw = Path(".github/workflows", script).read_text()
+              assert "'packaging==26.3'" in raw, script
+              assert "sha256sum -c -" in raw, script
+          matrix = Path(".github/workflows/hepta-neuron-next-round-matrix.yml").read_text()
+          assert "stem_source_suite_v22.py" in matrix
+          assert "cryptography==46.0.4" in matrix
+          assert "SOURCE_SHA:" in matrix
+          print("Original evidence work not skipped; production DENY_ALL")
+          PY
