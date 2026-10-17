@@ -3306,8 +3306,15 @@ fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
     let signer = SigningKey::from_bytes(&[123; 32]);
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
+    // A distinct already-installed original Scope frontier gets its own
+    // bounded scheduler lane, so both requests are truly admitted before
+    // the first driver effect. Same-lane overflow would test only Capacity.
+    let mut successor_key = key.clone();
+    successor_key.scope_id = StableId::new("different-scope").unwrap();
+    successor_key.route_fence = 18;
     let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
-    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &successor_key, &second).unwrap();
     let first_grant = signed_member(&signer, first_binding, "overgrant-first", 123);
     let second_grant = signed_member(&signer, second_binding, "after-overgrant", 124);
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -3328,7 +3335,13 @@ fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
         // Queue the second real signed grant *before* the physical error.
         // Post-poison admission checks alone cannot prove preclaim fencing.
         worker
-            .enqueue(100, "model".into(), second.clone(), key.clone(), second_grant.clone())
+            .enqueue(
+                100,
+                "model".into(),
+                second.clone(),
+                successor_key.clone(),
+                second_grant.clone(),
+            )
             .unwrap();
         let first_outcome = worker.poll_and_execute(101).unwrap();
         assert_eq!(first_outcome.outcomes.len(), 1);
@@ -3354,7 +3367,7 @@ fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
     // trusted Worker. This is NOT production recovery authorization.
     let mut recovered = runner(&signer, dir.path(), model);
     recovered
-        .enqueue(200, "model".into(), second, key, second_grant)
+        .enqueue(200, "model".into(), second, successor_key, second_grant)
         .unwrap();
     let accepted = recovered.poll_and_execute(206).unwrap();
     assert_eq!(accepted.outcomes.len(), 1);
@@ -3367,9 +3380,13 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     let signer = SigningKey::from_bytes(&[125; 32]);
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
+    let mut successor_key = key.clone();
+    successor_key.scope_id = StableId::new("different-scope").unwrap();
+    successor_key.route_fence = 18;
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     // Two *new* identities and genuinely separate signed one-shot grants.
-    // Queue these *before* the failure to exercise actual preclaim fencing.
+    // Queue these in the second authenticated Scope lane *before* the first
+    // driver failure. This preserves the one-batch-per-lane capacity bound.
     let mut third = first.clone();
     third.authorization.request_id = "after-poison-three".into();
     third.authorization.reservation_id = "after-poison-reservation-three".into();
@@ -3380,7 +3397,8 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
         .into_iter()
         .enumerate()
         .map(|(index, request)| {
-            let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+            let binding =
+                neuron_batch_final_use_binding_v1("worker-one", &successor_key, &request).unwrap();
             let grant = signed_member(
                 &signer,
                 binding,
@@ -3420,7 +3438,13 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     }
     for (request, grant) in &new_members {
         worker
-            .enqueue(100, "model".into(), request.clone(), key.clone(), grant.clone())
+            .enqueue(
+                100,
+                "model".into(),
+                request.clone(),
+                successor_key.clone(),
+                grant.clone(),
+            )
             .unwrap();
     }
     let malformed = worker.poll_and_execute(101).unwrap();
@@ -3463,7 +3487,7 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     );
     for (request, grant) in new_members {
         recovered
-            .enqueue(200, "model".into(), request, key.clone(), grant)
+            .enqueue(200, "model".into(), request, successor_key.clone(), grant)
             .unwrap();
     }
     let accepted = recovered.poll_and_execute(201).unwrap();
