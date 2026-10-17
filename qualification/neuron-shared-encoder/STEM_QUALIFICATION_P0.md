@@ -11,13 +11,15 @@ stem_qualification.py defines:
 - CheckpointRefV1: model manifest, weights, tokenizer, preprocessor,
   checkpoint, quantization, backend, runtime, device and Stem identity;
 - SourceDisjointSplitV1: train/eval/future/OOD source and lineage digests,
-  dedupe report, overlap count, source family count and future-window count;
+  dedupe report, overlap count, source family count, future-window count and
+  held-out cohort counts;
 - MetricIntervalV1: metric value with LCB/UCB, sample count, confidence,
   evaluator digest and held-out source digest;
 - ComponentResourceReceiptV1: one measured component receipt;
 - ComponentResourceBundleV1: canonical component bundle covering the selected
   profile (encoder_only, encoder_decoder, or full_generation);
-- StemQualificationRunV1: the complete real shadow run manifest;
+- StemQualificationRunV1: the complete real shadow run manifest, including
+  task identity, registry identity and the bound case/budget/cost digests;
 - qualify_from_receipt: a fail-closed adapter for the older bridge receipt.
 
 The module performs no checkpoint loading, forward execution, training, model
@@ -34,9 +36,9 @@ A run is admissible only when:
 4. the evidence class is REAL_SHADOW;
 5. the run status is SHADOW_COMPLETE;
 6. every metric has an ordered interval and non-zero sample count;
-7. every metric is bound to the held-out evaluation source;
+7. metrics cover the corresponding held-out eval, future and OOD cohorts;
 8. the measured resource bundle is complete and has ordered end-to-end
-   p50/p95/p99 latency;
+   p50/p95/p99 latency, positive measured peak memory and energy;
 9. component receipts cover every component required by the run profile;
 10. tower/projector registry digests, Stem digest and generation agree;
 11. model-visible gold is false;
@@ -44,8 +46,10 @@ A run is admissible only when:
 
 Synthetic smoke and historical replay can remain diagnostic artifacts, but
 qualify_from_receipt rejects them and also rejects incomplete point-only
-receipts. It never fills missing confidence intervals or resource dimensions
-with zero.
+receipts. A legacy bridge object is only an input identity check; the adapter
+still requires the caller to bind the complete checkpoint, source, interval,
+resource and plan evidence. It never fills missing confidence intervals or
+resource dimensions with zero.
 
 ## Cost accounting
 
@@ -60,9 +64,11 @@ The resource bundle keeps component FLOPs separate for:
 - verification;
 - device.
 
-The bundle also records end-to-end latency quantiles, peak memory, energy,
-batch size, warmups, measured steps, repetitions and cache hit rate. Component
-p95 values are not added together and are not treated as end-to-end latency.
+The bundle also records measured end-to-end latency quantiles, peak memory,
+energy, batch size, warmups, measured steps, repetitions and cache hit rate.
+Component p95 values are not added together and are not treated as end-to-end
+latency, and component peak memory is not silently substituted for end-to-end
+peak memory.
 
 Comparing 421M, 311M, 149M and 97M Stems requires a versioned matched budget,
 workload profile and normalized cost profile. FLOPs, latency, memory and energy
