@@ -21,6 +21,8 @@ MEMBERS = {'SEALED.json', 'case-registry.json', 'feature-q24.safetensors',
            'pooled-f32.safetensors', 'train-only-pca32.safetensors'}
 MODEL_REV = '8949b909ec900327062f0ebf497f51aef5e6f0c8'
 DATA_REV = '57ec275d8078af65b7731c2a98be812d844a6d6b'
+PINNED_ZIP_SHA256 = 'dfbef09702004bae8ce111f360584b6c9c641cc1b4475b71ef2b6d68af95a77a'
+PINNED_SEAL_SHA256 = '180955ec4e74cb985851f7c1ba5ae295b91fc3b5ea2188379e8a958e557e7cc2'
 
 
 def demand(condition, message):
@@ -89,7 +91,10 @@ def audited_inputs(path):
                and (q24[split].abs() <= 8*Q).all().item(), 'feature type/shape')
     demand(pca['components'].shape == (768,32) and pca['center'].shape == (768,)
            and pca['scale'].shape == (32,), 'PCA dimensions')
-    return fit, pooled, q24, pca, hashlib.sha256(raw).hexdigest(), seal_sha
+    archive_sha = hashlib.sha256(raw).hexdigest()
+    demand(archive_sha == PINNED_ZIP_SHA256 and seal_sha == PINNED_SEAL_SHA256,
+           'not the exact pinned physical public Q24 artifact')
+    return fit, pooled, q24, pca, archive_sha, seal_sha
 
 
 class LinearCells(torch.nn.Module):
