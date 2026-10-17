@@ -344,6 +344,8 @@ class StemQualificationRunV1:
     objective_digest: str
     evaluation_plan_digest: str
     cases_digest: str
+    budget_digest: str
+    cost_profile_digest: str
     evidence_manifest_digest: str
     metrics: tuple[MetricIntervalV1, ...]
     resources: ComponentResourceBundleV1
@@ -368,6 +370,8 @@ class StemQualificationRunV1:
         _digest("objective_digest", self.objective_digest)
         _digest("evaluation_plan_digest", self.evaluation_plan_digest)
         _digest("cases_digest", self.cases_digest)
+        _digest("budget_digest", self.budget_digest)
+        _digest("cost_profile_digest", self.cost_profile_digest)
         _digest("evidence_manifest_digest", self.evidence_manifest_digest)
         _require(self.evidence_class == "REAL_SHADOW", "only REAL_SHADOW runs can qualify")
         _require(self.status == "SHADOW_COMPLETE", "run is not complete")
@@ -403,6 +407,8 @@ class StemQualificationRunV1:
             "objective_digest": self.objective_digest,
             "evaluation_plan_digest": self.evaluation_plan_digest,
             "cases_digest": self.cases_digest,
+            "budget_digest": self.budget_digest,
+            "cost_profile_digest": self.cost_profile_digest,
             "evidence_manifest_digest": self.evidence_manifest_digest,
             "metrics": [metric.to_dict() for metric in self.metrics],
             "resources": self.resources.to_dict(),
@@ -421,6 +427,7 @@ def qualify_from_receipt(
     task_id: str,
     expected_budget_digest: str,
     expected_cases_digest: str,
+    expected_cost_profile_digest: str,
     checkpoint: CheckpointRefV1,
     source_split: SourceDisjointSplitV1,
     registry_stem_digest: str,
@@ -430,6 +437,8 @@ def qualify_from_receipt(
     objective_digest: str,
     evaluation_plan_digest: str,
     cases_digest: str,
+    budget_digest: str,
+    cost_profile_digest: str,
     evidence_manifest_digest: str,
     metrics: tuple[MetricIntervalV1, ...],
     resources: ComponentResourceBundleV1,
@@ -453,7 +462,9 @@ def qualify_from_receipt(
     _identifier("candidate_id", candidate_id)
     _digest("expected_budget_digest", expected_budget_digest)
     _digest("expected_cases_digest", expected_cases_digest)
+    _digest("expected_cost_profile_digest", expected_cost_profile_digest)
     _require(cases_digest == expected_cases_digest, "cases digest does not match expected plan")
+    _require(cost_profile_digest == expected_cost_profile_digest, "cost profile digest does not match expected plan")
     return StemQualificationRunV1(
         run_id=run_id,
         candidate_id=candidate_id,
