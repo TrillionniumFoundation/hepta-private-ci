@@ -77,7 +77,7 @@ python -m unittest -q test_multirc_source_bridge
 python -O -m unittest -q test_multirc_source_bridge
 ```
 
-The 13 synthetic fixture tests validate schemas, source group cuts, no-evidence
+The 18 synthetic fixture tests validate schemas, source group cuts, no-evidence
 label prohibition, complete authentic-case pairing, response-option order,
 original-question framing, hash/source identities and independent FIT custody.
 Passing these synthetic tests does not mean the hosted genuine Parquet source
