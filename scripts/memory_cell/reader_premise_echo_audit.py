@@ -48,8 +48,12 @@ def characterize(row, result):
     )
     budget = result.get("generated_tokens")
     n_input = result.get("input_tokens")
-    if (type(n_input) is not int or not 1 <= n_input <= 8192
-            or type(budget) is not int or not 1 <= budget <= premise.MAX_TOKENS):
+    if (
+        type(n_input) is not int
+        or not 1 <= n_input <= 8192
+        or type(budget) is not int
+        or not 1 <= budget <= premise.MAX_TOKENS
+    ):
         raise ValueError("missing bounded actual token accounting")
     return {
         "status": status,
@@ -61,7 +65,8 @@ def characterize(row, result):
         "starts_with_evidence_source": source_prefix,
         "any_citation_marker": bool(emitted),
         "invalid_citation_marker": any(label not in labels for label in emitted),
-        "all_emitted_markers_delivered": bool(emitted) and all(label in labels for label in emitted),
+        "all_emitted_markers_delivered": bool(emitted)
+        and all(label in labels for label in emitted),
     }
 
 
@@ -84,10 +89,15 @@ def audit(plan_dir, run_dir, report_path):
         if profile["status"] != "succeeded":
             continue
         for field in (
-            "input_tokens", "generated_tokens", "hit_generation_ceiling",
-            "json_prompt_echo_shape", "exact_question_repeated",
-            "starts_with_evidence_source", "any_citation_marker",
-            "invalid_citation_marker", "all_emitted_markers_delivered",
+            "input_tokens",
+            "generated_tokens",
+            "hit_generation_ceiling",
+            "json_prompt_echo_shape",
+            "exact_question_repeated",
+            "starts_with_evidence_source",
+            "any_citation_marker",
+            "invalid_citation_marker",
+            "all_emitted_markers_delivered",
         ):
             stats[field] += int(profile[field])
     if any(c["planned"] != premise.Q_COUNT for c in counts.values()):
