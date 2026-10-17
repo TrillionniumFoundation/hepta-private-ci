@@ -248,7 +248,9 @@ fn validate_request<D>(
     {
         return Err(SharedEncoderError::InputRangeViolation);
     }
-    if canonical_shared_encoder_input_digest_v1(&request.input_features_q24) != request.input_digest {
+    if canonical_shared_encoder_input_digest_v1(&request.input_features_q24)
+        != request.input_digest
+    {
         return Err(SharedEncoderError::InputDigestMismatch);
     }
     Ok(())
