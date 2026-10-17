@@ -1,0 +1,216 @@
+name: Hepta Neural Cell Fabric P0.8 same-Stem independent publisher (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/hepta-neural-cell-fabric-p08-new-publisher-20261017
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p08_*.py'
+      - 'qualification/neural-cell-fabric-p0/test_p08_*.py'
+      - 'qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md'
+      - '.github/workflows/hepta-cell-fabric-p08-huff-transfer.yml'
+  pull_request:
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p08_*.py'
+      - 'qualification/neural-cell-fabric-p0/test_p08_*.py'
+      - 'qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md'
+      - '.github/workflows/hepta-cell-fabric-p08-huff-transfer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-cell-fabric-p08-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exact-head check
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source/adversarial without network or pretrained model
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.2.6'
+          python -m py_compile p08_cohort.py p08_run.py p08_review.py test_p08.py
+          python -m unittest -q test_p08
+          python -O -m unittest -q test_p08
+
+  curator:
+    name: SHA-pinned separate publisher curator (label-stripped output)
+    needs: source-tests
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Publisher material pin, no untrusted code
+        run: |
+          python -m pip install --disable-pip-version-check 'huggingface_hub==0.34.4' 'numpy==2.2.6'
+      - name: Fetch old AGNews authentic original and new HuffPost independent publisher
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -m 700 -p "$RUNNER_TEMP/p08-curator"
+          python original_fetch.py --kind agnews --out "$RUNNER_TEMP/p08-curator/agnews.zip"
+          python - <<'PY'
+          import os, shutil
+          from huggingface_hub import hf_hub_download
+          from p08_cohort import HUFF_REPO,HUFF_REV,HUFF_SHA,sha
+          from pathlib import Path
+          src=Path(hf_hub_download(repo_id=HUFF_REPO,filename='data.json',revision=HUFF_REV,repo_type='dataset'))
+          target=Path(os.environ['RUNNER_TEMP'])/'p08-curator'/'huff.json'
+          with src.open('rb') as f, target.open('xb') as out:
+              shutil.copyfileobj(f,out)
+              out.flush();os.fsync(out.fileno())
+          target.chmod(0o600)
+          assert sha(target.read_bytes())==HUFF_SHA, 'HuffPost source SHA mismatch'
+          print('Huff source retrieved and SHA-pinned; full original labels remain curator-only')
+          PY
+          python p08_cohort.py --agnews "$RUNNER_TEMP/p08-curator/agnews.zip" \
+            --huff "$RUNNER_TEMP/p08-curator/huff.json" \
+            --out "$RUNNER_TEMP/p08-curator/panel.json"
+      - name: Publish label-free transfer view and AGNews training only (short-lived)
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p08-label-free-inputs
+          retention-days: 3
+          if-no-files-found: error
+          path: ${{ runner.temp }}/p08-curator/panel.json
+
+  producer:
+    name: Same pinned safe model, original CPU forwards, equal-work Head proposals
+    needs: curator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin CPU-only Torch and reviewed model loader
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.7.1'
+          python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'transformers==4.53.3' 'huggingface_hub==0.34.4' 'safetensors==0.5.3'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p08-label-free-inputs
+          path: ${{ runner.temp }}/p08-producer
+      - name: Verify no test labels passed and actually execute one shared Stem on all 128 inputs
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          chmod 700 "$RUNNER_TEMP/p08-producer"
+          python p08_run.py --panel "$RUNNER_TEMP/p08-producer/panel.json" \
+            --out "$RUNNER_TEMP/p08-producer/prelabel.json" \
+            --model-cache "$RUNNER_TEMP/p08-approved-mmbert"
+          cd "$RUNNER_TEMP/p08-producer"
+          sha256sum prelabel.json > prelabel.sha256
+          test -s prelabel.json && sha256sum --check prelabel.sha256
+      - name: Publish immutable prelabel predictions, no raw text or labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p08-sealed-prelabel-only
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/p08-producer/prelabel.json
+            ${{ runner.temp }}/p08-producer/prelabel.sha256
+
+  independent-reviewer:
+    name: Reopen publisher gold only after sealed model results; no auto-promotion
+    needs: producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Original reviewer dependencies (no Torch/Transformers)
+        run: |
+          python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'huggingface_hub==0.34.4'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p08-label-free-inputs
+          path: ${{ runner.temp }}/p08-review
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p08-sealed-prelabel-only
+          path: ${{ runner.temp }}/p08-review
+      - name: Independent source/label reopening and arithmetic scoring (postseal only)
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -m 700 -p "$RUNNER_TEMP/p08-review-original"
+          python original_fetch.py --kind agnews --out "$RUNNER_TEMP/p08-review-original/agnews.zip"
+          python - <<'PY'
+          import os,shutil
+          from huggingface_hub import hf_hub_download
+          from p08_cohort import HUFF_REPO,HUFF_REV,HUFF_SHA,sha
+          from pathlib import Path
+          src=Path(hf_hub_download(repo_id=HUFF_REPO,filename='data.json',revision=HUFF_REV,repo_type='dataset'))
+          target=Path(os.environ['RUNNER_TEMP'])/'p08-review-original'/'huff.json'
+          with src.open('rb') as f,target.open('xb') as out:
+              shutil.copyfileobj(f,out)
+              out.flush();os.fsync(out.fileno())
+          target.chmod(0o600)
+          assert sha(target.read_bytes())==HUFF_SHA, 'original publisher SHA differs'
+          print('independent original source hashes match; held gold not printed')
+          PY
+          cd "$RUNNER_TEMP/p08-review"
+          sha256sum --check prelabel.sha256
+          sealed="$(cut -d' ' -f1 prelabel.sha256)"
+          cd "$GITHUB_WORKSPACE/qualification/neural-cell-fabric-p0"
+          python p08_review.py --agnews "$RUNNER_TEMP/p08-review-original/agnews.zip" \
+            --huff "$RUNNER_TEMP/p08-review-original/huff.json" \
+            --panel "$RUNNER_TEMP/p08-review/panel.json" \
+            --prelabel "$RUNNER_TEMP/p08-review/prelabel.json" \
+            --prelabel-sha "$sealed" --out "$RUNNER_TEMP/p08-review/report.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'p08-review/report.json').read_text())
+          assert r['new_huffpost_historical_source_count']==32
+          assert not r['prospective_future_window_verified']
+          assert not r['independently_attested_model_forward']
+          assert not r['production_authorized']
+          assert r['disposition']=='HOLD_NO_GO'
+          PY
+      - name: Export sanitized statistics ONLY (no original texts, labels, or row scores)
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p08-independent-hold-no-go
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/p08-review/report.json
