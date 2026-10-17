@@ -40,7 +40,8 @@ jobs:
             hepta-stem-v4-public-learning-audit.yml \
             hepta-stem-v5-scienceqa-original-rejudge.yml \
             hepta-stem-v6-original-margin.yml \
-            hepta-stem-v7-real-image-intervention.yml; do
+            hepta-stem-v7-real-image-intervention.yml \
+            hepta-stem-exact-prettier-export.yml; do
             test -f ".github/workflows/$stem"
             cp ".github/workflows/$stem" "$target/$stem"
           done
