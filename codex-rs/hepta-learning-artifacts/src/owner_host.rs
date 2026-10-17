@@ -2002,6 +2002,105 @@ mod tests {
     }
 
     #[test]
+    fn cell_split_cas_readback_requires_actual_acknowledged_bytes_and_current_head() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("native artifact owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let (registry, mut transaction) =
+            deterministic_publication(&owner, &withdrawals, 20);
+        let operation = id("process-operation");
+        let artifact = id("candidate");
+        let payload_digest = digest("payload");
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                20,
+            ),
+            Err(ArtifactOwnerHostError::Indeterminate)
+        ));
+
+        owner
+            .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
+            .fixture("native CAS write and verify");
+        owner
+            .ensure_registry_durable(
+                &mut transaction,
+                &registry,
+                &withdrawals,
+                digest("binding"),
+                20,
+            )
+            .fixture("native registry snapshot");
+        let head = signed_head(&key, scope_digest, registry.snapshot().head_digest);
+        owner
+            .ensure_witness_durable(&mut transaction, &head, &withdrawals, 20)
+            .fixture("signed head publication");
+        // A signed current head without the acknowledged native transaction
+        // is still not an execution receipt.
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                20,
+            ),
+            Err(ArtifactOwnerHostError::Indeterminate)
+        ));
+        owner
+            .acknowledge(&mut transaction, &withdrawals, 20)
+            .fixture("durable owner acknowledgement");
+
+        let observed = owner
+            .observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                21,
+            )
+            .fixture("native CAS observed from exact signed registry and bytes");
+        assert_eq!(observed.payload_digest, payload_digest);
+        assert_eq!(observed.readback_digest, payload_digest);
+        assert_eq!(observed.registry_head_digest, registry.snapshot().head_digest);
+        assert!(!observed.native_ack_digest.is_zero());
+        assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
+
+        assert!(matches!(
+            owner.observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                digest("different-artifact"),
+                21,
+            ),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+
+        let payload_path = directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            artifact, payload_digest
+        ));
+        fs::write(payload_path, b"tampered").fixture("tamper native payload");
+        assert!(owner
+            .observe_cell_split_artifact_cas_v1(
+                &operation,
+                &artifact,
+                payload_digest,
+                21,
+            )
+            .is_err());
+    }
+
+    #[test]
     fn independent_current_head_anchor_rejects_restored_old_backup() {
         let current_directory = TestDir::new();
         let old_backup = TestDir::new();
