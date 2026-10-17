@@ -160,6 +160,20 @@ class RegistryBridgeTests(unittest.TestCase):
         with self.assertRaises(RegistryError):
             bind_envelope_to_registry(bad, STEM, TOWERS, PROJECTORS)
 
+    def test_video_temporal_binding_is_checked(self) -> None:
+        bound = bind_envelope_to_registry(envelope("video"), STEM, TOWERS, PROJECTORS)
+        self.assertEqual(bound.modality, "video")
+        self.assertEqual(bound.temporal_span_ms, 1000.0)
+
+    def test_image_region_budget_is_checked(self) -> None:
+        small_image = replace(TOWERS.towers[1], max_input_tokens=64)
+        small_towers = replace(
+            TOWERS,
+            towers=(TOWERS.towers[0], small_image, TOWERS.towers[2], TOWERS.towers[3]),
+        )
+        with self.assertRaises(RegistryError):
+            bind_envelope_to_registry(envelope("image", regions=128), STEM, small_towers, PROJECTORS)
+
     def test_image_tower_must_declare_region_support(self) -> None:
         with self.assertRaises(RegistryError):
             ModalityTowerSpecV1(
