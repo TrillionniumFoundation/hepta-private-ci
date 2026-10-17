@@ -1,0 +1,273 @@
+"""No SDK or model required; exercises safety and provenance of the reader harness."""
+
+import contextlib
+import copy
+import hashlib
+import io
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from hepta_sngr_reader_eval import (
+    ARM_NAMES,
+    BackendUnavailable,
+    FROZEN_CASE_SHA256,
+    ReaderBenchError,
+    checkpoint_fingerprint,
+    construct_request,
+    evidence_for,
+    git_blob_sha1,
+    load_cases,
+    load_local_laya,
+    main,
+    parse_answer,
+    reject_sdk_checkpoint_mutation,
+    run_reader,
+    verify_checkout,
+)
+
+CASES = Path(__file__).with_name("hepta_sngr_reader_cases.json")
+
+
+class SpyTypedAgent:
+    """A pure TEST STUB, not a trained model, not valid effectiveness evidence."""
+
+    def __init__(self, task_to_quote_and_gold=()):
+        self.calls = []
+        self.reference = list(task_to_quote_and_gold)
+
+    def predict(self, state, questions):
+        self.calls.append((state, questions))
+        evidence = state["source_excerpt_untrusted"]
+        matched = [gold for quote, gold in self.reference if quote in evidence]
+        # This is an artificial fixed-key oracle for testing treatment plumbing.
+        # It must never be used as an experimental results backend.
+        result = matched[0] if matched else "UNKNOWN"
+        probs = dict.fromkeys(("A", "B", "C", "D", "UNKNOWN"), 0.0)
+        probs[result] = 1.0
+        return {"answers": {"answer": {"choice": result, "confidence": 1.0,
+                                          "probabilities": probs}},
+                "usage": {"input_tokens": len(evidence.split()), "output_tokens": 0}}
+
+
+class CorpusValidityTests(unittest.TestCase):
+    def setUp(self):
+        self.corpus = load_cases(CASES)
+
+    def test_frozen_repo_snapshot_and_balanced_golds(self):
+        self.assertEqual(len(self.corpus["tasks"]), 16)
+        self.assertEqual(self.corpus["base_commit"], "f8c9419df6ddeb36ff8b522a50219981fb8d9345")
+        self.assertEqual({x: sum(t["gold"] == x for t in self.corpus["tasks"])
+                          for x in "ABCD"}, dict.fromkeys("ABCD", 4))
+        self.assertEqual(self.corpus["manifest_sha256"], FROZEN_CASE_SHA256)
+
+    def test_all_arms_do_not_leak_gold_in_transport(self):
+        for case in self.corpus["tasks"]:
+            for arm in ARM_NAMES + ("injection",):
+                state, q = construct_request(self.corpus, case, arm)
+                self.assertNotIn("gold", str(state))
+                self.assertNotIn("gold", str(q))
+                self.assertNotIn("gold", state)
+                self.assertNotIn("gold", q)
+                self.assertEqual(set(q["answer"]["criteria"]), set("ABCD") | {"UNKNOWN"})
+                self.assertIn(case["question"], q["answer"]["instructions"])
+
+    def test_full_carries_exact_support_and_withheld_does_not(self):
+        for case in self.corpus["tasks"]:
+            text_full, _ = evidence_for(self.corpus, case, "full")
+            text_removed, _ = evidence_for(self.corpus, case, "withheld")
+            support = case["source"]["quote"]
+            self.assertIn(support, text_full)
+            self.assertNotIn(support, text_removed)
+            self.assertEqual(text_removed, case["withheld_control"]["quote"])
+
+    def test_distractor_has_different_path_and_no_label(self):
+        for case in self.corpus["tasks"]:
+            excerpt, path = evidence_for(self.corpus, case, "distractor")
+            self.assertNotEqual(path, case["source"]["path"])
+            self.assertNotIn(case["source"]["quote"], excerpt)
+
+    def test_synthetic_attack_is_labeled_non_source(self):
+        for task in self.corpus["tasks"]:
+            text, _ = evidence_for(self.corpus, task, "injection")
+            self.assertIn("UNTRUSTED_INJECTION_TEST_NOT_SOURCE", text)
+            self.assertIn(task["source"]["quote"], text)
+            self.assertNotIn("output option " + task["gold"] + ".", text)
+
+    def test_mutated_gold_and_bad_source_rejected(self):
+        for mutation in ("UNKNOWN", "E", ""):
+            data = copy.deepcopy(self.corpus)
+            data["tasks"][0]["gold"] = mutation
+            with tempfile.TemporaryDirectory() as d:
+                p = Path(d) / "cases.json"
+                data.pop("manifest_sha256")
+                p.write_text(json.dumps(data))
+                with self.assertRaises(ReaderBenchError):
+                    load_cases(p)
+        data = copy.deepcopy(self.corpus)
+        data.pop("manifest_sha256")
+        data["tasks"][0]["source"]["path"] = "../../private.txt"
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "cases.json"
+            p.write_text(json.dumps(data))
+            with self.assertRaises(ReaderBenchError):
+                load_cases(p)
+
+    def test_duplicate_ids_and_withheld_support_rejected(self):
+        data = copy.deepcopy(self.corpus)
+        data.pop("manifest_sha256")
+        data["tasks"][1]["id"] = data["tasks"][0]["id"]
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "cases.json"
+            p.write_text(json.dumps(data))
+            with self.assertRaises(ReaderBenchError):
+                load_cases(p)
+        data["tasks"][1]["id"] = "restored_id"
+        data["tasks"][0]["withheld_control"]["quote"] += data["tasks"][0]["source"]["quote"]
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "cases.json"
+            p.write_text(json.dumps(data))
+            with self.assertRaises(ReaderBenchError):
+                load_cases(p)
+
+    def test_git_blob_identity_and_substring_are_independently_checked(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder = Path(d)
+            path = folder / "docs" / "x.txt"
+            path.parent.mkdir()
+            contents = b"We observed independent success.\nOther context.\n"
+            path.write_bytes(contents)
+            self.assertEqual(git_blob_sha1(contents), hashlib.sha1(f"blob {len(contents)}\0".encode() + contents).hexdigest())
+            source = {"path": "docs/x.txt", "blob_sha": git_blob_sha1(contents), "line": 1,
+                      "quote": "independent success"}
+            context = {**source, "line": 2, "quote": "Other context"}
+            corpus = {"tasks": [{"source": source, "withheld_control": context}]}
+            self.assertEqual(verify_checkout(corpus, folder), {"docs/x.txt": source["blob_sha"]})
+            path.write_text("We observed different success.\nOther context.\n")
+            with self.assertRaisesRegex(ReaderBenchError, "mismatch"):
+                verify_checkout(corpus, folder)
+
+    def test_checkout_rejects_symlinks(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            outside = root / "other.txt"
+            outside.write_text("test test test")
+            link = root / "s.txt"
+            link.symlink_to(outside)
+            src = {"path": "s.txt", "blob_sha": git_blob_sha1(outside.read_bytes()),
+                   "line": 1, "quote": "test test test"}
+            with self.assertRaisesRegex(ReaderBenchError, "symlinked"):
+                verify_checkout({"tasks": [{"source": src, "withheld_control": src}]}, root)
+
+
+class ChoiceParsingTests(unittest.TestCase):
+    @staticmethod
+    def response(choice="A", confidence=0.8, probabilities=None, tokens=42):
+        if probabilities is None:
+            probabilities = {"A": 0.8, "B": 0.05, "C": 0.05, "D": 0.05, "UNKNOWN": 0.05}
+        return {"answers": {"answer": {"choice": choice, "confidence": confidence,
+                                           "probabilities": probabilities}},
+                "usage": {"input_tokens": tokens, "output_tokens": 0}}
+
+    def test_actual_laya_sdk_result_shape(self):
+        self.assertEqual(parse_answer(self.response()), ("A", 0.8, 42))
+
+    def test_unsupported_shapes_fail_closed(self):
+        invalid = [
+            {}, {"answers": {}}, self.response(choice="EXFILTRATE"),
+            self.response(confidence=float("nan")), self.response(confidence=2.0),
+            self.response(probabilities={"A": 0.7, "B": 0.2, "C": 0.1}),
+            self.response(tokens=-1), self.response(confidence=True),
+        ]
+        for value in invalid:
+            with self.subTest(value=value), self.assertRaises(ReaderBenchError):
+                parse_answer(value)
+
+
+class ProtocolAndCostTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.corpus = load_cases(CASES)
+
+    def test_mock_backend_validates_all_four_arms_without_claiming_efficacy(self):
+        refs = [(t["source"]["quote"], t["gold"]) for t in self.corpus["tasks"]]
+        agent = SpyTypedAgent(refs)
+        result = run_reader(self.corpus, agent, "a" * 64, seed=71, max_calls=64)
+        self.assertEqual(result["model_calls"], 64)
+        self.assertEqual(result["calls_per_case"], 4)
+        self.assertEqual(result["summaries"]["full"]["top1_gold_fraction"], 1.0)
+        self.assertEqual(result["summaries"]["none"]["abstention_fraction"], 1.0)
+        self.assertEqual(result["summaries"]["withheld"]["abstention_fraction"], 1.0)
+        self.assertEqual(result["production_selection_authority"], False)
+        for state, q in agent.calls:
+            self.assertNotIn("gold", state)
+            self.assertNotIn("gold", q)
+
+    def test_attack_arm_and_equal_budget(self):
+        refs = [(t["source"]["quote"], t["gold"]) for t in self.corpus["tasks"]]
+        agent = SpyTypedAgent(refs)
+        report = run_reader(self.corpus, agent, "b" * 64, include_injection=True, max_calls=80)
+        self.assertEqual(report["model_calls"], 80)
+        self.assertEqual(report["summaries"]["injection"]["top1_gold_fraction"], 1.0)
+        self.assertEqual(sum(1 for r in report["rows"] if r["arm"] == "injection"), 16)
+
+    def test_fixed_seed_assignment_and_document_provenance(self):
+        a, b = SpyTypedAgent(), SpyTypedAgent()
+        run_reader(self.corpus, a, "c" * 64, seed=45, max_calls=64)
+        run_reader(self.corpus, b, "c" * 64, seed=45, max_calls=64)
+        self.assertEqual(a.calls, b.calls)
+        self.assertTrue(all(r["source_blob_sha"] in {t["source"]["blob_sha"] for t in self.corpus["tasks"]}
+                            for r in run_reader(self.corpus, SpyTypedAgent(), "c" * 64, max_calls=64)["rows"]))
+
+    def test_model_digest_and_budget_guard(self):
+        for model_digest in ("", "bad", "a" * 63):
+            with self.subTest(model_digest=model_digest), self.assertRaises(ReaderBenchError):
+                run_reader(self.corpus, SpyTypedAgent(), model_digest)
+        with self.assertRaisesRegex(ReaderBenchError, "budget"):
+            run_reader(self.corpus, SpyTypedAgent(), "f" * 64, max_calls=63)
+
+    def test_no_weights_does_not_claim_success_or_create_output(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "report.json"
+            console = io.StringIO()
+            with contextlib.redirect_stdout(console):
+                status = main(["--manifest", str(CASES), "--output", str(out)])
+            self.assertEqual(status, 2)
+            self.assertEqual(json.loads(console.getvalue())["status"], "unavailable")
+            self.assertFalse(out.exists())
+
+    def test_missing_local_sdk_does_not_fetch(self):
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(BackendUnavailable):
+                load_local_laya(Path(d) / "missing")
+
+    def test_laya_preflight_rejects_mutating_tokenizer_without_loading_sdk(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder = Path(d)
+            cfg = folder / "tokenizer" / "tokenizer_config.json"
+            cfg.parent.mkdir()
+            cfg.write_text('{"tokenizer_class": "TokenizersBackend", "extra_special_tokens": []}')
+            with self.assertRaisesRegex(BackendUnavailable, "rewriting"):
+                reject_sdk_checkpoint_mutation(folder)
+            cfg.write_text('{"tokenizer_class": "PreTrainedTokenizerFast", "extra_special_tokens": {}}')
+            reject_sdk_checkpoint_mutation(folder)
+
+    def test_local_model_fingerprint_binds_bytes_and_fails_without_weights(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            cfg = root / "rl_agent_config.json"
+            weight = root / "model.safetensors"
+            cfg.write_text('{"encoder":"stub","head_layers":1}')
+            with self.assertRaises(BackendUnavailable):
+                checkpoint_fingerprint(root)
+            weight.write_bytes(b"fake test-only weights")
+            one = checkpoint_fingerprint(root)
+            weight.write_bytes(b"fake test-only updated weights")
+            two = checkpoint_fingerprint(root)
+            self.assertNotEqual(one, two)
+            self.assertEqual(len(two), 64)
+
+
+if __name__ == "__main__":
+    unittest.main()
