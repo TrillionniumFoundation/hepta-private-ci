@@ -520,3 +520,34 @@ class PhysicalForgeryTests(FakePhysicalReviewer):
             f.write_bytes(v17.canon(v))
             with self.assertRaises(ValueError):
                 self.verify_fixture_only(f,j,meta,fake,Path(td)/'out.json')
+
+
+class PinnedTransformers4533LoaderTests(unittest.TestCase):
+    """Strict source profile, not a real pretrained Qwen3 inference receipt."""
+
+    def test_4533_requires_torch_dtype_and_trusted_local_safetensors(self):
+        calls=[]
+        result=SimpleNamespace(eval=lambda: 'local-eval-model')
+        class FrozenAuto:
+            @staticmethod
+            def from_pretrained(path,**kw):
+                if 'dtype' in kw:
+                    raise TypeError("Qwen3ForCausalLM.__init__() got an unexpected keyword argument 'dtype'")
+                calls.append((path,kw))
+                return result
+        value=q.load_pinned_qwen453(FrozenAuto,'pinned-snapshot','fp32-sentinel')
+        self.assertEqual(value,'local-eval-model')
+        self.assertEqual(calls,[('pinned-snapshot',dict(
+            local_files_only=True,trust_remote_code=False,
+            use_safetensors=True,torch_dtype='fp32-sentinel'))])
+
+    def test_missing_original_model_fails_instead_of_faking_reference(self):
+        class MissingWeights:
+            calls=0
+            @classmethod
+            def from_pretrained(cls,path,**kw):
+                cls.calls+=1
+                raise RuntimeError('pinned publisher model bytes unavailable')
+        with self.assertRaisesRegex(RuntimeError,'pinned publisher model bytes unavailable'):
+            q.load_pinned_qwen453(MissingWeights,'missing','fp32')
+        self.assertEqual(MissingWeights.calls,1)
