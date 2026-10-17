@@ -78,7 +78,13 @@ not proof that the NDU learning loop has completed target-host qualification.
 Each advance_receipt_gated_phase and attach_live_cutover call now requires a
 fresh trustworthy timestamp, monotonically nondecreasing across the bound
 operation; a bootstrap clock reading must not be reused for later Artifact
-CURRENT expiry checks. A native snapshot query against the predecessor State
+CURRENT expiry checks. attach_live_cutover now also requires the exact
+exclusive Supervisor handoff journal to be at the *durably committed*
+NewWriterFenced phase and requires a fresh Artifact/State readback before it
+will acknowledge a CNS Final-use apply receipt. This is receipt admission:
+the external native runtime authority must separately enforce the ordering
+**before** any actual route mutation; bridge checks do not retroactively
+prevent an out-of-order external effect. A native snapshot query against the predecessor State
 Owner is mandatory before Snapshotted can commit. Until that owner is really
 composed the bridge returns Indeterminate and refuses unsafe CAS/CNS writes.
 
