@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.reader-grounding-postseal-original-observation.v1",
+  "generated_on": "2026-10-17",
+  "status": "RESEARCH_SHADOW_ONLY_DENY_ALL",
+  "original_source_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "pretrained_reader_identity": "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c",
+  "original_frozen_premise_plan_sha256": "d71f38bdc0667b465ed23fcfd3e7e057547e5ea48c18e3c27345ab4a15f6a5bc",
+  "original_frozen_citation_plan_sha256": "30d20bb21bb35e5e1cd03655347392546a0d28863f527b2475da1edbd132ac19",
+  "new_local_original_reader_journal_sha256": "da23f4a497ab2ab498294272a999335671afea786ae14451b56f8ba739d8797d",
+  "original_independent_40_call_replay_review_sha256": "6e07b9b0b3bb399a6d01103d1923c53b8336fd94a226cd0ee2423173a20c3586",
+  "grounded_mechanical_report_sha256": "8d16b3ac7aa357909a5a24fb1380c8856d1d78da6218148b1b8658ce3c2c92db",
+  "original_blinded_adjudication_worklist_sha256": "3ebdfb29f0122ef8f32aae3f8e9fa5c286cfed8e8263ce9095ba3717a100d0da",
+  "model_runtime": "original-SmolLM2-135m-CPU-FP32",
+  "registered_transformers_bf16_parity_verified": false,
+  "source_families": 10,
+  "model_original_calls": 40,
+  "model_independent_clean_replays": 40,
+  "source_valid_marker_citations_total": 10,
+  "out_of_scope_markers": 0,
+  "arms": {
+    "legacy_lines": {
+      "planned": 10,
+      "generated": 10,
+      "any_delivered_label": 2,
+      "exact_adjacent_quoted_support": 0
+    },
+    "citation_first": {
+      "planned": 10,
+      "generated": 10,
+      "any_delivered_label": 4,
+      "exact_adjacent_quoted_support": 0
+    },
+    "citation_last": {
+      "planned": 10,
+      "generated": 10,
+      "any_delivered_label": 4,
+      "exact_adjacent_quoted_support": 0
+    },
+    "two_field": {
+      "planned": 10,
+      "generated": 10,
+      "any_delivered_label": 0,
+      "exact_adjacent_quoted_support": 0
+    }
+  },
+  "strict_literal_quotation_contract_satisfied": 0,
+  "semantic_entailment_undetermined": true,
+  "semantic_entailment_precision": null,
+  "independently_completed_human_reviews": 0,
+  "prepared_blinded_review_items": 40,
+  "original_journal_counters_include_wallclock_note": "Full journal bytes differ across real reruns because original receipt includes wall times; clean reviewer checks original output token identities excluding per-call seconds.",
+  "quote_span_limit": "Verbatim quote and immediately adjacent valid delivered source only; no paraphrase or whole-answer inference",
+  "source_only_training_gain_not_proven": true,
+  "source_retrieval_superiority_not_proven": true,
+  "posterior_decision": "retain_no_citation_promotion_no_cell_split",
+  "statistical_superiority": false,
+  "final_use_authorized": false,
+  "production_accepted": false,
+  "exact_head_hosted_CI_completed": false
+}

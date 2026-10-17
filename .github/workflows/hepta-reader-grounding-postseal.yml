@@ -1,0 +1,359 @@
+name: Hepta original Reader citation grounding & blinded adjudication (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-reader-citation-grammar-20261017]
+    paths:
+      - 'scripts/memory_cell/reader_citation_grounding.py'
+      - 'scripts/memory_cell/test_reader_citation_grounding.py'
+      - 'scripts/memory_cell/test_reader_citation_grounding_integration.py'
+      - 'codex-rs/hepta-intelligence-eval/READER_GROUNDING_POSTSEAL_20261017.md'
+      - '.github/workflows/hepta-reader-grounding-postseal.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-citation-grounding-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  privileged-original-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install fixed CPU research packages
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - name: Original-source, cross-arm invariants and tamper tests
+        run: |
+          set -euo pipefail
+          mkdir /tmp/cit-tests
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_reader_citation_protocol.py' -v 2>&1 | tee /tmp/cit-tests/tests.log
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_reader_citation_grounding.py' -v 2>&1 | tee /tmp/cit-tests/grounding-tests.log
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_reader_citation_grounding_integration.py' -v 2>&1 | tee /tmp/cit-tests/grounding-integration-tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-staged
+      - name: Pin original publisher bytes and export LABEL-FREE public source
+        run: |
+          set -euo pipefail
+          mkdir /tmp/original-source
+          tar -C /tmp/original-source -xzf /tmp/original-staged/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/original-source/memory-inputs/locomo.json | cut -d' ' -f1)" = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/original-source/memory-inputs/locomo.json /tmp/original-prepared \
+            > /tmp/cit-tests/prepared.json
+          mkdir /tmp/public-only
+          cp /tmp/original-prepared/{public,manifest}.json /tmp/public-only/
+          test ! -e /tmp/public-only/private.json
+      - name: Stage frozen model files separately; validate exact Reader identity
+        run: |
+          set -euo pipefail
+          mkdir /tmp/frozen-encoder /tmp/frozen-reader
+          tar -C /tmp/frozen-encoder -xzf /tmp/original-staged/memory-inputs.tar.gz \
+            memory-inputs/encoder/model.safetensors memory-inputs/encoder/config.json \
+            memory-inputs/encoder/tokenizer.json memory-inputs/encoder/vocab.txt \
+            memory-inputs/encoder/special_tokens_map.json memory-inputs/encoder/tokenizer_config.json
+          tar -C /tmp/frozen-reader -xzf /tmp/original-staged/memory-inputs.tar.gz \
+            memory-inputs/reader/model.safetensors memory-inputs/reader/config.json \
+            memory-inputs/reader/generation_config.json memory-inputs/reader/merges.txt \
+            memory-inputs/reader/special_tokens_map.json memory-inputs/reader/tokenizer.json \
+            memory-inputs/reader/tokenizer_config.json memory-inputs/reader/vocab.json
+          mkdir /tmp/reader-transport
+          mv /tmp/frozen-reader/memory-inputs/reader/* /tmp/reader-transport/
+          (cd /tmp/reader-transport && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 scripts/memory_cell/reader_weight_transport.py /tmp/reader-transport > /tmp/cit-tests/reader-model.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-public-only
+          path: /tmp/public-only/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-encoder-only
+          path: /tmp/frozen-encoder/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-reader-only
+          path: /tmp/reader-transport/
+          if-no-files-found: error
+      - name: Exact tested source receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/cit-tests
+          git rev-parse HEAD > /tmp/cit-tests/head.txt
+          (cd /tmp/cit-tests && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: citation-contracts-not-acceptance
+          path: /tmp/cit-tests/
+          if-no-files-found: error
+  frozen-source-ranking:
+    needs: privileged-original-source
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install actual frozen MiniLM runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-public-only
+          path: /tmp/public-only
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-encoder-only
+          path: /tmp/frozen-encoder
+      - name: Source-only actual Encoder and Cell training, no gold annotations
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/public-only/private.json
+          mkdir /tmp/rank-receipts
+          /usr/bin/time -v -o /tmp/rank-receipts/resources.txt \
+            python3 scripts/memory_cell/parametric_stem_reader.py run \
+              /tmp/public-only /tmp/frozen-encoder/memory-inputs/encoder \
+              /tmp/sealed-rank > /tmp/rank-receipts/original-model-run.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-original-rank-unscored
+          path: /tmp/sealed-rank/
+          if-no-files-found: error
+  privileged-premise-plan:
+    needs: frozen-source-ranking
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-public-only
+          path: /tmp/public-only
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-original-rank-unscored
+          path: /tmp/sealed-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/publisher-original
+      - name: Derive only publisher evidence IDs, not gold answers, for sealed Reader plan
+        run: |
+          set -euo pipefail
+          mkdir /tmp/publisher-source /tmp/plan-receipts
+          tar -C /tmp/publisher-source -xzf /tmp/publisher-original/memory-inputs.tar.gz memory-inputs/locomo.json
+          python3 scripts/memory_cell/reader_premise_format.py prepare \
+            /tmp/public-only /tmp/sealed-rank \
+            /tmp/publisher-source/memory-inputs/locomo.json /tmp/base-premise-plan \
+            > /tmp/plan-receipts/base-plan.json
+          python3 scripts/memory_cell/reader_citation_protocol.py prepare \
+            /tmp/base-premise-plan /tmp/citation-plan > /tmp/plan-receipts/citation-plan.json
+          test ! -e /tmp/citation-plan/private.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-frozen-original-premise-plan
+          path: /tmp/base-premise-plan/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-frozen-four-arm-plan
+          path: /tmp/citation-plan/
+          if-no-files-found: error
+  blind-original-reader:
+    needs: privileged-premise-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Reader runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-frozen-four-arm-plan
+          path: /tmp/citation-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-reader-only
+          path: /tmp/reader-transport
+      - name: Produce 40 original language generations without any source answer file
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/citation-plan/private.json
+          mkdir /tmp/generation-receipts
+          /usr/bin/time -v -o /tmp/generation-receipts/resources.txt \
+            python3 scripts/memory_cell/reader_citation_protocol.py run \
+              /tmp/citation-plan /tmp/reader-transport /tmp/citation-generations \
+            > /tmp/generation-receipts/original-model.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: citation-unchanged-original-language
+          path: /tmp/citation-generations/
+          if-no-files-found: error
+  independent-replay-and-review:
+    needs: blind-original-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install same actual original-model CPU runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-frozen-original-premise-plan
+          path: /tmp/base-premise-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-frozen-four-arm-plan
+          path: /tmp/citation-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-unchanged-original-language
+          path: /tmp/citation-generations
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-reader-only
+          path: /tmp/reader-transport
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-original-rank-unscored
+          path: /tmp/sealed-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-public-only
+          path: /tmp/public-only
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/reviewer-original
+      - name: Reexecute all 40 original model results and reopen original references
+        run: |
+          set -euo pipefail
+          mkdir /tmp/review-original /tmp/final-review-receipts
+          tar -C /tmp/review-original -xzf /tmp/reviewer-original/memory-inputs.tar.gz memory-inputs/locomo.json
+          /usr/bin/time -v -o /tmp/final-review-receipts/resources.txt \
+            python3 scripts/memory_cell/reader_citation_protocol.py review \
+              /tmp/base-premise-plan /tmp/citation-plan /tmp/citation-generations \
+              /tmp/reader-transport /tmp/review-original/memory-inputs/locomo.json \
+              /tmp/public-only /tmp/sealed-rank /tmp/final-review-receipts/review.json \
+              > /tmp/final-review-receipts/summary.json
+          python3 -c 'import json; a=json.load(open("/tmp/final-review-receipts/review.json")); assert a["planned"]==40 and a["replayed_model_calls"]==40 and a["production_accepted"] is False'
+      - name: Exact-source, unsponsored review receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/final-review-receipts
+          git rev-parse HEAD > /tmp/final-review-receipts/head.txt
+          (cd /tmp/final-review-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: citation-four-arm-postseal-research-not-acceptance
+          path: /tmp/final-review-receipts/
+          if-no-files-found: error
+
+  independent-grounding-and-blinded-worklist:
+    needs: independent-replay-and-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exact source-only Reader validation dependencies
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-frozen-four-arm-plan
+          path: /tmp/grounding-plan
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-unchanged-original-language
+          path: /tmp/grounding-journal
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: citation-four-arm-postseal-research-not-acceptance
+          path: /tmp/grounding-prior-reviewed
+      - name: Admit only completed exact-journal original 40-call replay
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/reader_citation_grounding.py audit \
+            /tmp/grounding-plan /tmp/grounding-journal \
+            /tmp/grounding-prior-reviewed/review.json \
+            /tmp/grounding-output > /tmp/grounding-summary.json
+          python3 - <<'PY'
+          import json
+          report=json.load(open("/tmp/grounding-output/grounding-report.json"))
+          work=json.load(open("/tmp/grounding-output/blinded-worklist.json"))
+          assert report["planned"] == 40 and report["succeeded_for_blinded_review"] == 40
+          assert len(work["cases"]) == 40
+          assert report["citation_entailment_precision"] is None
+          assert report["external_independent_reviewer_count"] == 0
+          assert report["production_accepted"] is False
+          assert work["no_independent_verdicts_fabricated"] is True
+          PY
+      - name: Immutable reviewer boundary hashes (not external signatures)
+        if: always()
+        run: |
+          mkdir -p /tmp/grounding-receipts
+          cp /tmp/grounding-summary.json /tmp/grounding-receipts/summary.json 2>/dev/null || true
+          git rev-parse HEAD > /tmp/grounding-receipts/head.txt
+          (cd /tmp/grounding-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: grounding-original-model-postseal-unaccepted
+          path: |
+            /tmp/grounding-output/
+            /tmp/grounding-receipts/
+          if-no-files-found: warn
