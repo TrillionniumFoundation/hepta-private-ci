@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -81,6 +82,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
     if set(labels) != {r['task_id'] for r in held_public['rows']} or any(
             labels[r['task_id']]['text_sha256'] != r['text_sha256'] for r in held_public['rows']):
         raise Invalid('gold/source text lineage is not original')
+    if len(labels) != 16 or Counter(row['label'] for row in labels.values()) != Counter({k:4 for k in range(4)}):
+        raise Invalid('P5 publisher held truth is not predeclared four-class balanced')
     if type(plan) is not dict or set(plan) != {'schema','manifest_sha256','train_source_sha256',
             'held_public_sha256','train_original_calls','train_original_outputs_sha256',
             'train_record','public_record','portfolio_attempt','selected_request_schedule',
@@ -310,6 +313,8 @@ def review(manifest_doc: Any, train: Any, held_public: Any, gold: Any,
        'seven_policy_results':scores,
        'paired_equalcap_96_token_contrast':paired_contrast,
        'historical_public_test_set_not_future_window':True,
+       'original_publisher_label_balance':{str(i):4 for i in range(4)},
+       'publisher_labels_available_to_source_owner_only_before_seal':True,
        'independent_hardware_attestation':False,
        'actual_model_savings_proven':False,
        'no_training_cost_double_charge':True,

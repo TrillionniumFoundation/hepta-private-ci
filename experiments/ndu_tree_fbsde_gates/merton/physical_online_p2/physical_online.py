@@ -18,7 +18,7 @@ from typing import Any
 from portfolio import Invalid, POLICIES, digest as p1_digest, manifest, public_cases, run
 from public_source import SCHEMA as SOURCE_SCHEMA, encoded, new_json, sha, original_manifest, sync_dir
 
-SCHEMA = 'hepta.ndu-merton.p4.equal-cap-thinking-control.v1'
+SCHEMA = 'hepta.ndu-merton.p5.original-balanced-and-declared-parser.v1'
 MODEL_REPO = 'Qwen/Qwen3-0.6B'
 MODEL_REV = '16706fc57485378d4ffaf54139b29ccc66ae08fa'
 MODEL_WEIGHTS_SHA256 = 'f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b'
@@ -33,7 +33,11 @@ def assert_original_checkpoint_hashes(weights_sha256: str, tokenizer_sha256: str
     if (weights_sha256 != MODEL_WEIGHTS_SHA256 or
             tokenizer_sha256 != MODEL_TOKENIZER_SHA256):
         raise Invalid('pretrained model/tokenizer bytes differ from independently pinned originals')
-LABEL = re.compile(r'\A\s*(?:FINAL\s*[:=]\s*)?([0123])\s*\Z', re.I)
+# Frozen from prior ORIGINAL TRAIN-only Qwen3 outputs (<1>, <2>, <3>);
+# exact whole-string grammar, not substring extraction or prompt obedience.
+# P2-P4 historical strict evaluator remains immutable and is never rescored
+# as a claimed prospective improvement.
+LABEL = re.compile(r'\A\s*(?:FINAL\s*[:=]\s*)?(?:([0123])|<([0123])>)\s*\Z', re.I)
 PORTFOLIO_ACTIONS = ('direct', 'reason', 'verify')
 EQUAL_CAP_ACTIONS = ('reason', 'reason_equalcap')
 ACTION_MAX = {'direct': 12, 'reason': 96, 'verify': 32, 'reason_equalcap': 96}
@@ -41,7 +45,7 @@ ACTION_MAX = {'direct': 12, 'reason': 96, 'verify': 32, 'reason_equalcap': 96}
 # The marker is verified against the pinned tokenizer at model load.
 THINK_END_TOKEN_ID = 151668
 SAMPLING = {'do_sample': True, 'temperature': 0.6, 'top_p': 0.95, 'top_k': 20}
-READER_PROFILE = 'qwen3-p4-cpu-matched-96-token-thinking-vs-nonthinking-sampled-0.6-0.95-20-v1'
+READER_PROFILE = 'qwen3-p5-cpu-balanced-agnews-predeclared-bracket-parser-96tok-0.6-0.95-20-v1'
 
 
 def prompt_seed(prompt: list[dict[str, str]]) -> int:
@@ -103,8 +107,8 @@ def validate_source(train: Any, held: Any):
         raise Invalid('publisher source is not exact registered immutable material')
     if type(train['rows']) is not list or len(train['rows']) < 8 or len(train['rows']) > 32:
         raise Invalid('source lineage or training size')
-    if type(held['rows']) is not list or not 1 <= len(held['rows']) <= MAX_CASES:
-        raise Invalid('held cohort size')
+    if type(held['rows']) is not list or len(held['rows']) != MAX_CASES or len(train['rows']) != 16:
+        raise Invalid('P5 exactly 16 TRAIN and 16 held original records required')
     train_ids=set(); held_ids=set(); train_groups=set(); texts=set(); held_cases=[]
     for is_train,rows in ((True,train['rows']),(False,held['rows'])):
         for row in rows:
@@ -145,6 +149,15 @@ def validate_source(train: Any, held: Any):
         raise Invalid('cross-split groups collide')
     if len(held_ids) != len(held['rows']):
         raise Invalid('duplicated held rows')
+    from collections import Counter
+    if Counter(r['label'] for r in train['rows']) != Counter({k:4 for k in range(4)}):
+        raise Invalid('TRAIN publisher labels not balanced across 4 task classes')
+    for prefix, packet in (('train',train),('held',held)):
+        observed = Counter((r['bucket'], r['group']) for r in packet['rows'])
+        for parity in (0,1):
+            for bucket in ('short','long'):
+                if observed[(bucket,f'{prefix}-row-parity-{parity}')] != 4:
+                    raise Invalid('original balanced bucket/parity cohort missing support')
     return {'schema':'hepta.p1.public.v1','cases':held_cases}
 
 
@@ -166,7 +179,7 @@ def parse_answer(value: str) -> int | None:
     if type(value) is not str or len(value)>2048:
         raise Invalid('invalid model answer')
     m=LABEL.fullmatch(value)
-    return int(m.group(1)) if m else None
+    return int(m.group(1) if m.group(1) is not None else m.group(2)) if m else None
 
 
 class QwenReader:
@@ -324,7 +337,7 @@ def run_online(manifest_doc: Any, train: Any, held: Any, reader,
                outdir: Path) -> dict[str,Any]:
     acts,budget,latency,fee=manifest(manifest_doc)
     if {a.name for a in acts} != set(PORTFOLIO_ACTIONS):
-        raise Invalid('P2 trial only admits direct/reason/verify')
+        raise Invalid('P5 trial only admits registered direct/reason/verify')
     public=validate_source(train,held)
     cases=public_cases(public)
     if not set(c.task_id for c in cases)=={r['task_id'] for r in held['rows']}:
