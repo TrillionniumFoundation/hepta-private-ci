@@ -27,10 +27,10 @@ conventions.
 - `ActionIRV1` binds a Cell to Stem/head/objective digests, app identity,
   body generation, ABI, revocation epoch, capability IDs, and bounded
   operation/time/memory budgets. Duplicate idempotency keys are rejected.
-- `FastPathCandidateV1` binds the IR digest to a precompiled backend label,
-  target, capability-manifest digest, authorization version, revocation epoch,
-  resource limits, and evidence digest. The candidate is advisory and cannot
-  activate production.
+- `FastPathCandidateV1` binds the IR digest to the Cell and app identities, a
+  precompiled backend label, target, capability-manifest digest,
+  authorization version, revocation epoch, resource limits, and evidence
+  digest. The candidate is advisory and cannot activate production.
 - `FastPathRuntimeReceiptV1` records pre/post observation digests and resource
   counters while structurally forbidding execution and committed effects.
 
