@@ -229,9 +229,8 @@ class ScopeTests(unittest.TestCase):
         # file locks. Do not race its 33 native cases within one test binary.
         # WriterUnavailable from overlapping fork windows is NOT permission
         # to change orphan-B Indeterminate semantics or retry the effect.
-        owner_line = next(
-            line for line in gate.splitlines() if "control-ndu-atomic-owner.json" in line
-        )
+        owner_key = "control-ndu-atomic-owner.json"
+        owner_line = next(line for line in gate.splitlines() if owner_key in line)
         self.assertIn("--minimum-tests 33", owner_line)
         self.assertIn(
             "--lib ndu_publication -- --nocapture --test-threads=1",
