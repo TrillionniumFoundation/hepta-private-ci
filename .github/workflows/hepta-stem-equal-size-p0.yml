@@ -1,21 +1,24 @@
 name: Hepta Equal-Size Stem P0/P1 source and physical-byte gates (DENY_ALL)
-'on':
+on:
   pull_request:
     paths:
-      - 'qualification/stem-replacement-p0/**'
-      - '.github/workflows/hepta-stem-equal-size-p0.yml'
+      - "qualification/stem-replacement-p0/**"
+      - ".github/workflows/hepta-stem-equal-size-p0.yml"
   push:
     branches:
-      - 'research/ettin400-equal-size-p0-20261016'
+      - "research/ettin400-equal-size-p0-20261016"
     paths:
-      - 'qualification/stem-replacement-p0/**'
-      - '.github/workflows/hepta-stem-equal-size-p0.yml'
+      - "qualification/stem-replacement-p0/**"
+      - ".github/workflows/hepta-stem-equal-size-p0.yml"
   workflow_dispatch:
+
 permissions:
   contents: read
+
 concurrency:
   group: stem-equal-size-p0-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   source-fail-closed:
     runs-on: ubuntu-24.04
@@ -27,18 +30,18 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Compile and execute original-source, physical-byte, adversarial tests
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py source_bytes.py review_bytes.py test_source_bytes.py
-          python -m unittest -q test_gate test_preflight test_source_bytes
+          python -m py_compile gate.py test_gate.py preflight.py test_preflight.py source_bytes.py review_bytes.py test_source_bytes.py physical_forward.py test_physical_forward.py
+          python -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward
       - name: Optimized-mode source and physical-byte guards
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
-          python -O -m unittest -q test_gate test_preflight test_source_bytes
+          python -O -m unittest -q test_gate test_preflight test_source_bytes test_physical_forward
       - name: Reject promotion and arbitrary code execution
         run: |
           set -euo pipefail
@@ -63,11 +66,11 @@ jobs:
           ref: ${{ github.sha }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Exact metadata client version
         run: |
           set -euo pipefail
-          python -m pip install --only-binary=:all: 'huggingface_hub==0.36.0'
+          python -m pip install --only-binary=:all: "huggingface_hub==0.36.0"
           python -m pip check
       - name: Pin four complete original Hub identities without model download
         run: |
@@ -91,7 +94,7 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: hub-metadata-only
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -103,17 +106,17 @@ jobs:
           ref: ${{ github.sha }}
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install fixed Hub/Xet file transport only
         run: |
           set -euo pipefail
-          python -m pip install --only-binary=:all: 'huggingface_hub==0.36.0'
+          python -m pip install --only-binary=:all: "huggingface_hub==0.36.0"
           python -m pip check
       - name: Download pinned bytes and independently re-hash in a separate process
         env:
           STEM_MODEL: ${{ matrix.model }}
-          HF_HUB_DISABLE_TELEMETRY: '1'
-          HF_HUB_DOWNLOAD_TIMEOUT: '120'
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          HF_HUB_DOWNLOAD_TIMEOUT: "120"
         run: |
           set -euo pipefail
           cd qualification/stem-replacement-p0
@@ -137,3 +140,39 @@ jobs:
           assert r['disposition']=='HOLD_NO_GO'
           print(f'{model}: independently verified on-disk source hashes, NOT model loading/inference')
           PY
+      - name: Safely load only byte-verified original models and execute genuine CPU forward
+        env:
+          STEM_MODEL: ${{ matrix.model }}
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+          TOKENIZERS_PARALLELISM: "false"
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "transformers==4.57.6" "numpy==2.2.6" "safetensors==0.8.0"
+          if [ "$STEM_MODEL" = "laya421" ]; then
+            python -m pip install --no-deps "laya==0.3.20"
+          fi
+          python -m pip check
+          cd qualification/stem-replacement-p0
+          python physical_forward.py --model "$STEM_MODEL" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --receipt "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json" \
+            --out "$RUNNER_TEMP/hepta-forward-$STEM_MODEL.json"
+          python - <<'PYVERIFY'
+          import json, os
+          from pathlib import Path
+          model = os.environ["STEM_MODEL"]
+          doc = json.loads((Path(os.environ["RUNNER_TEMP"]) / ("hepta-forward-"+model+".json")).read_text())
+          assert doc["real_forward_on_fixed_unlabeled_probe"] is True
+          assert doc["output"]["original_cpu_base_forward_calls"] == 1
+          assert doc["output"]["actual_tensor_values_loaded"] > 0
+          assert doc["heldout_human_task_score"] is None
+          assert doc["equal_head_training_budget_verified"] is False
+          assert doc["publisher_signature_verified"] is False
+          assert doc["production_promotion_permitted"] is False
+          assert doc["disposition"] == "HOLD_NO_GO"
+          print(f"{model}: genuine CPU forward observed; no accuracy or production claim")
+          PYVERIFY
