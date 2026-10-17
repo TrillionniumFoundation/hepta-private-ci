@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "qualification fixture creation and assertions intentionally abort on failure"
+)]
+
 //! Isolated filesystem qualification only. These fixtures do NOT authenticate
 //! production CAS, CNS, migration, final-use or Supervisor receipts.
 
