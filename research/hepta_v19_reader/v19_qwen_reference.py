@@ -115,6 +115,20 @@ def build(source_paths, output):
             'cases':30,'logical_requests':120,'authority':'DENY_ALL'}
 
 
+def load_frozen_qwen_model(auto_model_class, model_dir, torch_module):
+    """Use the pinned Transformers 4.53.3 model-loading API.
+
+    `dtype=` is not handled as a loader parameter in the pinned runtime and
+    leaked through to Qwen3ForCausalLM.__init__ on actual hosted run 38925755341.
+    The legacy supported kwarg is `torch_dtype=`, *not* `dtype=`. Do not silently
+    change the pinned model, runtime version or selected precision.
+    """
+    return auto_model_class.from_pretrained(
+        model_dir, local_files_only=True, trust_remote_code=False,
+        use_safetensors=True, torch_dtype=torch_module.float32,
+    ).eval()
+
+
 def run(source_paths, plan_path, model_dir, model_spec_path, output_path):
     p=validate(source_paths,plan_path)
     from v19_qwen_material import verify_snapshot
@@ -126,9 +140,7 @@ def run(source_paths, plan_path, model_dir, model_spec_path, output_path):
     torch.set_num_threads(2)
     tokenizer=AutoTokenizer.from_pretrained(model_dir,local_files_only=True,
                                              trust_remote_code=False,use_fast=True)
-    model=AutoModelForCausalLM.from_pretrained(model_dir,local_files_only=True,
-                                             trust_remote_code=False,
-                                             use_safetensors=True,dtype=torch.float32).eval()
+    model=load_frozen_qwen_model(AutoModelForCausalLM, model_dir, torch)
     if verify_snapshot(model_dir,model_spec)!=material_sha:
         raise ValueError('reference model changed while loading')
     tokenized={}
