@@ -1,0 +1,71 @@
+name: hepta-stem-v24-original-modal-necessity-no-go
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v24_multimodal_causal_bounds.py'
+      - 'qualification/stem-cell-v1/test_v24_multimodal_causal_bounds.py'
+      - 'qualification/stem-cell-v1/STEM_V24_*'
+      - '.github/workflows/hepta-stem-v24-modality-audit.yml'
+  push:
+    branches:
+      - research/stem-v24-multimodal-identification-20261016
+    paths:
+      - 'qualification/stem-cell-v1/v24_multimodal_causal_bounds.py'
+      - 'qualification/stem-cell-v1/test_v24_multimodal_causal_bounds.py'
+      - 'qualification/stem-cell-v1/STEM_V24_*'
+      - '.github/workflows/hepta-stem-v24-modality-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  v24-source-and-optional-original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact checked-out source and run negative source tests
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        working-directory: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m py_compile v24_multimodal_causal_bounds.py test_v24_multimodal_causal_bounds.py
+          python -m unittest -q test_v24_multimodal_causal_bounds.SourceOnly
+          python -O -m unittest -q test_v24_multimodal_causal_bounds.SourceOnly
+      - name: Retrieve only original byte-exact ScienceQA sealed archive
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11945106672/zip" > "$RUNNER_TEMP/e3-scienceqa-11945106672.zip"
+          echo "7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30  $RUNNER_TEMP/e3-scienceqa-11945106672.zip" | sha256sum -c -
+      - name: Independently re-read only original prediction bytes and preserve HOLD
+        if: github.event_name != 'pull_request'
+        working-directory: qualification/stem-cell-v1
+        env:
+          HEPTA_V24_ORIGINAL_ZIP: ${{ runner.temp }}/e3-scienceqa-11945106672.zip
+        run: |
+          set -euo pipefail
+          python -m unittest -q test_v24_multimodal_causal_bounds
+          python -O -m unittest -q test_v24_multimodal_causal_bounds
+          python v24_multimodal_causal_bounds.py --archive "$HEPTA_V24_ORIGINAL_ZIP" --output "$RUNNER_TEMP/v24-sanitized-HOLD.json"
+          cmp "$RUNNER_TEMP/v24-sanitized-HOLD.json" STEM_V24_ORIGINAL_PAIRED_BOUND_20261016.json
+      - name: Upload only sanitized numerical HOLD
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v24-sanitized-hold-${{ github.sha }}
+          path: ${{ runner.temp }}/v24-sanitized-HOLD.json
+          if-no-files-found: error
