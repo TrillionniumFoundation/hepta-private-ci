@@ -169,7 +169,6 @@ fn archived_physical_q24_one_buffer_executes_distinct_scoped_cell_heads() {
     assert_eq!(worker.driver.batch_calls(), 1);
 }
 
-
 // FP32 AdamW seed 17, 120 steps on 64 labeled *fitting* vectors; frozen
 // per-Cell linear parameters were transferred through ties-even signed Q24.
 // The first official-test vector has NO label and is checked only for numeric
@@ -274,7 +273,9 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
     };
     let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("research driver");
     for (index, candidate) in candidates.into_iter().enumerate() {
-        let digest = driver.register_head(candidate).expect("immutable linear Cell");
+        let digest = driver
+            .register_head(candidate)
+            .expect("immutable linear Cell");
         assert_eq!(digest, LEARNED_PUBLIC_HEAD_DIGESTS[index]);
     }
     // Four Cells have only 4*(32 weights + 1 bias) trainable parameters;
@@ -299,7 +300,9 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
         driver,
     )
     .expect("bounded research worker");
-    worker.load_model(1, selected.clone()).expect("load reference tensors");
+    worker
+        .load_model(1, selected.clone())
+        .expect("load reference tensors");
     let mut cache = SharedFeatureCacheV2::new(2, 1024).expect("bounded cache");
     let samples: [(&str, &[i64; 32], &[i64; 4]); 2] = [
         (
@@ -356,16 +359,17 @@ fn trained_linear_four_cell_parity_on_pinned_public_q24() {
                 weights_digest: selected.weights_digest.clone(),
                 expected_output_width: 1,
             };
-            let payload = canonical_shared_neuron_payload_digest_v2(&item)
-                .expect("bounded Cell payload");
+            let payload =
+                canonical_shared_neuron_payload_digest_v2(&item).expect("bounded Cell payload");
             item.authorization.payload_digest = payload.clone();
             item.authorization.lease_payload_digest = payload;
             requests.push(item);
         }
-        assert!(requests.iter().all(|item| Arc::ptr_eq(
-            &item.snapshot.features_q24,
-            &snapshot.features_q24,
-        )));
+        assert!(
+            requests
+                .iter()
+                .all(|item| Arc::ptr_eq(&item.snapshot.features_q24, &snapshot.features_q24,))
+        );
         let observed = worker
             .run_shared_neuron_features_batch_v2(100, &selected.model_id, requests)
             .expect("native Q24 multi-Cell batch");
