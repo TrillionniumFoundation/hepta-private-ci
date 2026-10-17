@@ -5,6 +5,8 @@ on:
     paths:
       - "qualification/stem-transfer-cell-artifact-p0/**"
       - "qualification/neuron-shared-encoder/**"
+      - "scripts/hepta_sngr_reader_eval.py"
+      - "scripts/hepta_sngr_reader_cases.json"
       - ".github/workflows/hepta-stem-reader-bridge.yml"
   workflow_dispatch:
 
@@ -41,5 +43,7 @@ jobs:
             qualification/stem-transfer-cell-artifact-p0/stem_transfer_cell_artifact.py \
             qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py \
-            qualification/neuron-shared-encoder/tests/test_stem_bridge.py
+            qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_stem_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py
           git diff --check
