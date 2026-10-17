@@ -36,7 +36,6 @@ use codex_hepta_types::StableId;
 
 use crate::CellRoleQualificationReplayV1;
 use crate::CellSplitCanaryReceiptV1;
-use crate::CellSplitCanarySampleV1;
 use crate::CellSplitLifecycleErrorV1;
 use crate::CellSplitLifecycleEventV1;
 use crate::CellSplitLifecycleJournalV1;
@@ -1601,6 +1600,7 @@ impl From<CellSplitLifecycleErrorV1> for CellSplitAutomationErrorV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::CellSplitCanarySampleV1;
     use crate::CellSplitEvaluationDispositionV1;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_fleet::AgentManifest;
