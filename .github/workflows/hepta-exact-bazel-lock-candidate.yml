@@ -1,0 +1,79 @@
+name: Hepta exact-source Bazel lock candidate (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-exact-bazel-lock-candidate.yml
+      - codex-rs/Cargo.lock
+      - codex-rs/Cargo.toml
+      - MODULE.bazel
+      - MODULE.bazel.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-bazel-lock-candidate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-read-only:
+    name: Exact-head Bazel module lock generation and after-check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source branch candidate without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Prepare official Bazel toolchain, target and cache
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-qualification-lock
+
+      - name: Generate and independently re-check the exact module lock
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          out="$RUNNER_TEMP/hepta-exact-bazel-lock"
+          mkdir -p "$out"
+          printf '%s\n' "$SOURCE_SHA" > "$out/source-head-sha.txt"
+          printf '%s\n' "$BASE_SHA" > "$out/pr-base-sha.txt"
+          git rev-parse HEAD:MODULE.bazel.lock > "$out/lock-before-git-blob.txt"
+          sha256sum MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.lock > "$out/sha256-before.txt"
+          # Record each *actual* command exit; never report zero by ignoring
+          # a missing registry resolution or a failed Bazel lock after-check.
+          before=0
+          ./scripts/check-module-bazel-lock.sh > "$out/check-before.log" 2>&1 || before=$?
+          generated=0
+          bazel mod deps --lockfile_mode=update > "$out/generate.log" 2>&1 || generated=$?
+          after=0
+          ./scripts/check-module-bazel-lock.sh > "$out/check-after.log" 2>&1 || after=$?
+          printf 'source_sha=%s\nbase_sha=%s\ncheck_before=%s\ngenerate=%s\ncheck_after=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$before" "$generated" "$after" > "$out/command-status.txt"
+          sha256sum MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.lock > "$out/sha256-after.txt"
+          git diff --numstat -- MODULE.bazel.lock > "$out/lock-diff-numstat.txt"
+          git diff --binary -- MODULE.bazel.lock > "$out/lock-diff.patch"
+          cp MODULE.bazel.lock "$out/MODULE.bazel.lock"
+          test "$generated" -eq 0
+          test "$after" -eq 0
+          # This job is diagnostic only: there is no Git commit/push and
+          # no production signer, Control/CNS or Final-use modification.
+
+      - name: Upload generated module lock and real command receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hepta-exact-bazel-lock-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-exact-bazel-lock
+          if-no-files-found: error
+          retention-days: 5

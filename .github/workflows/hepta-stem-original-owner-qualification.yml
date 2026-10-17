@@ -46,6 +46,7 @@ on:
       - "codex-rs/hepta-infer-worker-host/src/batched_neuron_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
+      - "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview.rs"
       - "codex-rs/hepta-infer-worker-host/src/stem_original_batch_preview_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/lib.rs"
@@ -75,10 +76,11 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
-          # Exact original #2145 source blobs, not newly substituted owners.
+          # Keep the original signed owners immutable; only the reviewed
+          # Neuron model_worker safety patch has its own exact new blob pin.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "29237eab79b17c0e4d09fbf356d02420f8b3f515"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "9fe42424b3fd63a91705ddb42559f29c69bd1c89"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "48dfcee08f13055f592760d03a0d11c2a32a9913"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
@@ -182,6 +184,10 @@ jobs:
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-shared-arc.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib shared_arc_enqueue_ -- --test-threads=1
       - name: Require executed two-Cell one-physical-batch signed receipts
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-native-batch.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --test-threads=1
+      - name: Require executed scalar post-effect resource overgrant and overflow fence
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-scalar-resource-fence.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib reported_feature_transient_overgrant_or_overflow_fences_all_future_effects -- --test-threads=1
+      - name: Require executed one-call native cohort resource fence
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-original-native-cohort-resource-fence.json" --minimum-tests 1 -- cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib native_cohort_resource_overgrant_is_nonretryable_after_one_backend_call -- --test-threads=1
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
       - name: Require actual non-test product library to DENY unverified original Control/CNS
