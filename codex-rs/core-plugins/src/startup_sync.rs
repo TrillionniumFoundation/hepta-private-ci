@@ -1053,10 +1053,24 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
-                "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                "curated plugins zip entry {index} escapes extraction root"
             ));
         };
+        // Curated plugin packages are data files, never filesystem links.
+        // Zip archive entry paths alone do not constrain symlink targets.
+        if entry.is_symlink() {
+            return Err(format!("curated plugins zip entry {index} is a symlink"));
+        }
+        if let Some(mode) = entry.unix_mode() {
+            // Refuse non-regular Unix file types (FIFOs, devices, sockets),
+            // even if an archive reader exposes them as ordinary entries.
+            let file_type = mode & 0o170000;
+            if !entry.is_dir() && file_type != 0 && file_type != 0o100000 {
+                return Err(format!(
+                    "curated plugins zip entry {index} is not a regular file"
+                ));
+            }
+        }
 
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
@@ -1092,7 +1106,13 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 )
             })?;
         }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
+        // Refuse duplicates and pre-existing symlinks; never truncate or
+        // follow a previous archive entry as an output target.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
             format!(
                 "failed to create curated plugins file {}: {err}",
                 output_path.display()
@@ -1104,20 +1124,32 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        apply_zip_permissions(entry.unix_mode(), &output_path)?;
     }
 
     Ok(())
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn sanitized_curated_zip_mode(mode: u32) -> u32 {
+    // Never honor archive-supplied SUID/SGID/sticky or group/world write
+    // flags. Ordinary read and owner-execute bits remain compatible with
+    // curated plugin scripts.
+    mode & 0o755
+}
+
+#[cfg(unix)]
+fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = mode else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
+    std::fs::set_permissions(
+        output_path,
+        std::fs::Permissions::from_mode(sanitized_curated_zip_mode(mode)),
+    )
+    .map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
@@ -1126,10 +1158,7 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
-    _output_path: &Path,
-) -> Result<(), String> {
+fn apply_zip_permissions(_mode: Option<u32>, _output_path: &Path) -> Result<(), String> {
     Ok(())
 }
 
