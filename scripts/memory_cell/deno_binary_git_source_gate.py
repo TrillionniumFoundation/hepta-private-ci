@@ -35,7 +35,9 @@ def strict_json(raw):
     return json.loads(
         raw,
         object_pairs_hook=pairs,
-        parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite API JSON")),
+        parse_constant=lambda _: (_ for _ in ()).throw(
+            ValueError("nonfinite API JSON")
+        ),
     )
 
 
@@ -55,9 +57,7 @@ def recover_blob(response, expected_sha=BLOB):
     ):
         raise ValueError("original binary Git object identity mismatch")
     try:
-        data = base64.b64decode(
-            response["content"].replace("\n", ""), validate=True
-        )
+        data = base64.b64decode(response["content"].replace("\n", ""), validate=True)
     except (ValueError, base64.binascii.Error):
         raise ValueError("invalid original base64 blob") from None
     if len(data) != response["size"] or git_blob_sha(data) != expected_sha:
@@ -155,9 +155,7 @@ def capture(gh_api, manifest_path):
 
 def github_api(path):
     command = ["gh", "api", "-H", "Accept: application/vnd.github+json", path]
-    reply = subprocess.run(
-        command, capture_output=True, check=True, timeout=30
-    )
+    reply = subprocess.run(command, capture_output=True, check=True, timeout=30)
     if len(reply.stdout) > 1024 * 1024:
         raise ValueError("bounded GitHub response required")
     return strict_json(reply.stdout)

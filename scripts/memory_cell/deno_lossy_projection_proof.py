@@ -13,7 +13,12 @@ import json
 from pathlib import Path
 
 from deno_binary_git_source_gate import (
-    BLOB, COMMIT, ROOT_TREE, PATH, REPOSITORY, CUTOFF,
+    BLOB,
+    COMMIT,
+    ROOT_TREE,
+    PATH,
+    REPOSITORY,
+    CUTOFF,
     git_blob_sha,
 )
 
@@ -22,8 +27,9 @@ REPLACEMENT = "\ufffd".encode("utf-8")
 ORIGINAL_BYTE_COUNT = 23
 
 
-def recover_single_byte_projection(encoded, *, original_sha=BLOB,
-                                    original_size=ORIGINAL_BYTE_COUNT):
+def recover_single_byte_projection(
+    encoded, *, original_sha=BLOB, original_size=ORIGINAL_BYTE_COUNT
+):
     """Only allow *one* replacement of exactly one byte; compare all 256 guesses."""
     if not isinstance(encoded, str) or len(encoded) > 1024:
         raise ValueError("bounded, registered lossy projection required")
@@ -69,20 +75,22 @@ def recover_single_byte_projection(encoded, *, original_sha=BLOB,
 
 def frozen_proof():
     report = recover_single_byte_projection(LOSSY_PROJECTION_BASE64)
-    report.update({
-        "source_repository": REPOSITORY,
-        "original_commit": COMMIT,
-        "original_commit_tree": ROOT_TREE,
-        "original_source_path": PATH,
-        "original_source_cut": CUTOFF,
-        "original_commit_tree_path_binding_previously_inspected": True,
-        "human_review_certified": False,
-        "source_byte_sha_proof_is_not_task_answer_truth": True,
-        "independent_source_population_qualified": False,
-        "model_inference_calls": 0,
-        "learned_memory_gain_established": False,
-        "production_accepted": False,
-    })
+    report.update(
+        {
+            "source_repository": REPOSITORY,
+            "original_commit": COMMIT,
+            "original_commit_tree": ROOT_TREE,
+            "original_source_path": PATH,
+            "original_source_cut": CUTOFF,
+            "original_commit_tree_path_binding_previously_inspected": True,
+            "human_review_certified": False,
+            "source_byte_sha_proof_is_not_task_answer_truth": True,
+            "independent_source_population_qualified": False,
+            "model_inference_calls": 0,
+            "learned_memory_gain_established": False,
+            "production_accepted": False,
+        }
+    )
     return report
 
 
