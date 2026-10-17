@@ -42,6 +42,8 @@ _REASON_PRIORITY = (
     "HEAD_MISMATCH",
     "OBJECTIVE_MISMATCH",
     "ARTIFACT_MISMATCH",
+    "RUNTIME_TUPLE_MISMATCH",
+    "SNAPSHOT_MISMATCH",
     "ABI_MISMATCH",
     "ARTIFACT_TARGET_MISMATCH",
     "CAPABILITY_SCOPE_MISMATCH",
@@ -491,6 +493,12 @@ def qualify_shadow_candidate(
         reasons.append("OBJECTIVE_MISMATCH")
     if candidate.artifact_digest != binding.artifact_digest:
         reasons.append("ARTIFACT_MISMATCH")
+    if candidate.runtime_tuple_digest != binding.runtime_tuple_digest:
+        reasons.append("RUNTIME_TUPLE_MISMATCH")
+    if candidate.snapshot_id != binding.snapshot_id:
+        reasons.append("SNAPSHOT_MISMATCH")
+    if candidate.policy_digest != context.policy_digest:
+        reasons.append("POLICY_SCOPE_MISMATCH")
     if candidate.abi != binding.abi or ir.abi != binding.abi:
         reasons.append("ABI_MISMATCH")
     expected_target = "gpu" if candidate.backend == "cuda_graph" else "cpu"
