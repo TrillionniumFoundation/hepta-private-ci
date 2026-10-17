@@ -14,9 +14,14 @@ The single Supervisor journal owner advances one observed phase at a time:
 1. AdmissionStopped: predecessor admission owner attests stopped admission.
 2. Drained: native outbox readback reports a stable watermark and zero unknown effects.
 3. OldWriterFenced: authoritative writer lease/fence readback rejects old result commits.
-4. Snapshotted: **native Artifact CAS owner** returns immutable payload digest,
-   exact CAS readback digest and persistent registry head receipt.
-5. Migrated: **native state owner** returns bound artifact, source and child state digests.
+4. Snapshotted: **two independent native readbacks are required**: the Artifact
+   CAS owner's acknowledged immutable payload, exact bytes and signed registry
+   head; AND the authoritative predecessor State Owner's durable state-snapshot
+   receipt bound to the original writer, operation, scope and Generation. Model
+   payload publication alone cannot satisfy the native writer Snapshot phase.
+5. Migrated: **native state owner** returns bound artifact, source and child
+   state digests. Its source digest must equal the predecessor's observed
+   Snapshotted-state digest; an unrelated child-state migration fails closed.
 6. Validated: child bootstrap owner returns loaded artifact and observed state readback;
    the coordinator requires it to match the preceding migration.
 7. NewWriterFenced: **Supervisor / writer lease owner** returns the exact successor fence.
@@ -47,7 +52,22 @@ readback even after it is complete.
 ## Native readback bridge (separate crate)
 
 The independent codex-hepta-cell-split-executor crate implements
-ProductSplitNativeReadbackV1. It connects the **real**
+ProductSplitNativeReadbackV1. Its construction requires the opaque
+VerifiedSelfEvolutionSelectionV1 token produced by independent NDU evaluation,
+selector-signature verification and role separation. The signed candidate ID,
+artifact digest, predecessor/successor generations, frozen no-change baseline
+and exact selection digest must match the Supervisor's immutable binding. A
+plain selection checksum alone is NOT authorization. Only the binding digest
+is persisted in the Supervisor observation chain, and the product bridge must
+retain a verified token throughout execution. This is selection *admission*,
+not proof that the NDU learning loop has completed target-host qualification.
+
+Each advance_receipt_gated_phase and attach_live_cutover call now requires a
+fresh trustworthy timestamp, monotonically nondecreasing across the bound
+operation; a bootstrap clock reading must not be reused for later Artifact
+CURRENT expiry checks. A native snapshot query against the predecessor State
+Owner is mandatory before Snapshotted can commit. Until that owner is really
+composed the bridge returns Indeterminate and refuses unsafe CAS/CNS writes. It connects the **real**
 LearningArtifactOwnerService::observe_cell_split_artifact_cas_v1 and
 HeptaRuntime::observe_governed_topology_cutover directly to the locked
 Supervisor CellSplitOwnerV1 native lookup trait. It keeps Agentd and Worker
