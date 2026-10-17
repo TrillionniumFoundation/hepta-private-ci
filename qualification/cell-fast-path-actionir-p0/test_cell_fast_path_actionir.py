@@ -65,6 +65,8 @@ class ActionIRContractTests(unittest.TestCase):
         program = ir(op(1), op(2, name="assert"))
         item = candidate(program)
         self.assertEqual(item.action_ir_digest, program.digest)
+        self.assertEqual(item.cell_id, program.cell_id)
+        self.assertEqual(item.app_identity, program.app_identity)
         self.assertEqual(item.revocation_epoch, 9)
         self.assertEqual(item.resource_limits["max_ops"], 8)
         receipt = build_shadow_receipt(
@@ -107,6 +109,10 @@ class ActionIRContractTests(unittest.TestCase):
     def test_idempotency_keys_must_be_unique(self):
         with self.assertRaises(ValueError):
             ir(op(1), op(1, name="assert"))
+
+    def test_operation_capabilities_must_be_declared(self):
+        with self.assertRaises(ValueError):
+            ir(op(1, args={}, name="observe_ax"), required_capabilities=())
 
     def test_limits_are_bounded_and_positive(self):
         with self.assertRaises(ValueError):
