@@ -53,7 +53,7 @@ def projector(modality: str, input_width: int, *, kind: str = "mlp") -> Projecto
     return ProjectorSpecV1(
         modality=modality,
         projector_id=f"{modality}-projector",
-        projector_digest=digest(modality[0].upper()),
+        projector_digest=digest(modality[0]),
         input_width=input_width,
         output_width=384,
         slots=32,
@@ -95,9 +95,7 @@ class ModalityRegistryTests(unittest.TestCase):
         self.assertTrue(bound.source_bound)
 
     def test_registry_digest_is_deterministic(self) -> None:
-        left = valid_towers()
-        right = valid_towers()
-        self.assertEqual(left.registry_digest, right.registry_digest)
+        self.assertEqual(valid_towers().registry_digest, valid_towers().registry_digest)
         self.assertEqual(valid_projectors().registry_digest, valid_projectors().registry_digest)
 
     def test_manifest_is_non_authorizing(self) -> None:
@@ -111,9 +109,8 @@ class ModalityRegistryTests(unittest.TestCase):
 
     def test_duplicate_tower_modality_rejected(self) -> None:
         towers = valid_towers()
-        duplicate = replace(towers, towers=(towers.towers[0], towers.towers[0]))
         with self.assertRaises(RegistryError):
-            ModalityTowerRegistryV1(**duplicate.to_dict())
+            ModalityTowerRegistryV1(FakeStem.stem_digest, (towers.towers[0], towers.towers[0]))
 
     def test_unfrozen_tower_rejected(self) -> None:
         with self.assertRaises(RegistryError):
@@ -125,7 +122,7 @@ class ModalityRegistryTests(unittest.TestCase):
             ProjectorSpecV1(
                 modality="text",
                 projector_id="text-projector",
-                projector_digest=digest("T"),
+                projector_digest=digest("b"),
                 input_width=384,
                 output_width=384,
                 slots=32,
@@ -134,7 +131,6 @@ class ModalityRegistryTests(unittest.TestCase):
             )
 
     def test_width_mismatch_rejected_at_binding(self) -> None:
-        towers = valid_towers()
         bad_projectors = replace(
             valid_projectors(),
             projectors=(
@@ -145,7 +141,7 @@ class ModalityRegistryTests(unittest.TestCase):
             ),
         )
         with self.assertRaises(RegistryError):
-            bind_modality_registries(FakeStem(), towers, bad_projectors)
+            bind_modality_registries(FakeStem(), valid_towers(), bad_projectors)
 
     def test_missing_stem_projector_registration_rejected(self) -> None:
         stem = FakeStem()
