@@ -3325,6 +3325,11 @@ fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
         worker
             .enqueue(100, "model".into(), first, key.clone(), first_grant)
             .unwrap();
+        // Queue the second real signed grant *before* the physical error.
+        // Post-poison admission checks alone cannot prove preclaim fencing.
+        worker
+            .enqueue(100, "model".into(), second.clone(), key.clone(), second_grant.clone())
+            .unwrap();
         let first_outcome = worker.poll_and_execute(101).unwrap();
         assert_eq!(first_outcome.outcomes.len(), 1);
         assert!(matches!(
@@ -3332,16 +3337,14 @@ fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
             Err(BatchWorkerErrorV1::Worker)
         ));
         assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
-        assert_eq!(
-            worker.enqueue(
-                102,
-                "model".into(),
-                second.clone(),
-                key.clone(),
-                second_grant.clone(),
-            ),
-            Err(BatchWorkerErrorV1::InvalidBinding)
-        );
+        assert_eq!(worker.pending(), 1);
+        let second_outcome = worker.poll_and_execute(102).unwrap();
+        assert_eq!(second_outcome.outcomes.len(), 1);
+        assert!(matches!(
+            second_outcome.outcomes[0].result,
+            Err(BatchWorkerErrorV1::Worker)
+        ));
+        assert_eq!(worker.pending(), 0);
         assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     }
 
@@ -3365,6 +3368,28 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    // Two *new* identities and genuinely separate signed one-shot grants.
+    // Queue these *before* the failure to exercise actual preclaim fencing.
+    let mut third = first.clone();
+    third.authorization.request_id = "after-poison-three".into();
+    third.authorization.reservation_id = "after-poison-reservation-three".into();
+    let mut fourth = second.clone();
+    fourth.authorization.request_id = "after-poison-four".into();
+    fourth.authorization.reservation_id = "after-poison-reservation-four".into();
+    let new_members = [third, fourth]
+        .into_iter()
+        .enumerate()
+        .map(|(index, request)| {
+            let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+            let grant = signed_member(
+                &signer,
+                binding,
+                &format!("unused-after-poison-{index}"),
+                127 + u8::try_from(index).unwrap(),
+            );
+            (request, grant)
+        })
+        .collect::<Vec<_>>();
     let mut worker = runner_with_driver(
         &signer,
         dir.path(),
@@ -3393,6 +3418,11 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
             )
             .unwrap();
     }
+    for (request, grant) in &new_members {
+        worker
+            .enqueue(100, "model".into(), request.clone(), key.clone(), grant.clone())
+            .unwrap();
+    }
     let malformed = worker.poll_and_execute(101).unwrap();
     assert_eq!(malformed.outcomes.len(), 2);
     assert!(
@@ -3403,40 +3433,13 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 
-    // Two *new* identities and genuinely separate signed one-shot grants.
-    // A poisoned physical worker must never admit either member.
-    let mut third = first;
-    third.authorization.request_id = "after-poison-three".into();
-    third.authorization.reservation_id = "after-poison-reservation-three".into();
-    let mut fourth = second;
-    fourth.authorization.request_id = "after-poison-four".into();
-    fourth.authorization.reservation_id = "after-poison-reservation-four".into();
-    let new_members = [third, fourth]
-        .into_iter()
-        .enumerate()
-        .map(|(index, request)| {
-            let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-            let grant = signed_member(
-                &signer,
-                binding,
-                &format!("unused-after-poison-{index}"),
-                127 + u8::try_from(index).unwrap(),
-            );
-            (request, grant)
-        })
-        .collect::<Vec<_>>();
-    for (request, signed_grant) in &new_members {
-        assert_eq!(
-            worker.enqueue(
-                102,
-                "model".into(),
-                request.clone(),
-                key.clone(),
-                signed_grant.clone(),
-            ),
-            Err(BatchWorkerErrorV1::InvalidBinding)
-        );
-    }
+    assert_eq!(worker.pending(), 2);
+    let refused = worker.poll_and_execute(102).unwrap();
+    assert_eq!(refused.outcomes.len(), 2);
+    assert!(refused
+        .outcomes
+        .iter()
+        .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(worker.pending(), 0);
     drop(worker);
