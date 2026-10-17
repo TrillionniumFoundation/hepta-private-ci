@@ -34,6 +34,7 @@ def digest(letter: str) -> str:
 class FakeStem:
     stem_digest = digest("a")
     hidden_width = 384
+    current_generation = 0
     modality_projectors = ("audio-projector", "image-projector", "text-projector", "video-projector")
 
 
@@ -110,6 +111,25 @@ class ModalityRegistryTests(unittest.TestCase):
         self.assertEqual(manifest["authority"], "DENY_ALL")
         self.assertEqual(manifest["binding"]["authority"], "DENY_ALL")
         self.assertEqual(manifest["binding"]["stem_digest"], FakeStem.stem_digest)
+
+    def test_generation_mismatch_rejected(self) -> None:
+        with self.assertRaises(RegistryError):
+            bind_modality_registries(FakeStem(), replace(valid_towers(), generation=1), valid_projectors())
+
+    def test_tower_registry_requires_tuple_storage(self) -> None:
+        with self.assertRaises(RegistryError):
+            ModalityTowerRegistryV1(FakeStem.stem_digest, list(valid_towers().towers))
+
+    def test_projector_registry_requires_tuple_storage(self) -> None:
+        with self.assertRaises(RegistryError):
+            ProjectorRegistryV1(FakeStem.stem_digest, 384, list(valid_projectors().projectors))
+
+    def test_manifest_rejects_forged_registry_digest(self) -> None:
+        towers = valid_towers()
+        projectors = valid_projectors()
+        bound = bind_modality_registries(FakeStem(), towers, projectors)
+        with self.assertRaises(RegistryError):
+            registry_manifest(towers, projectors, binding=replace(bound, tower_registry_digest=digest("0")))
 
     def test_duplicate_tower_modality_rejected(self) -> None:
         towers = valid_towers()
