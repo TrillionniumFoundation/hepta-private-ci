@@ -1,0 +1,147 @@
+name: Hepta NDU Merton P8 original conditional Qwen3 investment (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/physical_online_p8/**'
+      - '.github/workflows/hepta-ndu-merton-p8-conditional-online.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Research-only source/portfolio/ledger mock tests — NOT real model outcomes
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          export PYTHONPATH="$D"
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -m compileall -q "$D"
+  original-source:
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify original SHA-pinned AG News and choose disjoint second/third source strata
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==22.0.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          PYTHONPATH="$D" python "$D/source.py" --out /tmp/p8-source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p8-new-original-train-and-label-blind-held
+          path: |
+            /tmp/p8-source/train-public.json
+            /tmp/p8-source/held-public.json
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p8-held-private-publisher-truth-postseal-only
+          path: /tmp/p8-source/held-private-labels.json
+          if-no-files-found: error
+          retention-days: 7
+  physically-paid-two-stage:
+    needs: original-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p8-new-original-train-and-label-blind-held
+          path: /tmp/p8-reader-public
+      - name: Original pretrained Qwen3, TRAIN-only profile, six independently paid online policies
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/p8-reader-public/held-private-labels.json
+          python -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0 huggingface-hub==0.36.0 transformers==4.57.1 tokenizers==0.22.1
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          PYTHONPATH="$D" python "$D/online.py" \
+            --train-public /tmp/p8-reader-public/train-public.json \
+            --held-public /tmp/p8-reader-public/held-public.json \
+            --output /tmp/p8-original-online
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p8-paid-original-starts-plan-and-completions
+          path: /tmp/p8-original-online
+          if-no-files-found: warn
+          retention-days: 7
+  postseal-review:
+    needs: physically-paid-two-stage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p8-new-original-train-and-label-blind-held
+          path: /tmp/p8-review-public
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p8-held-private-publisher-truth-postseal-only
+          path: /tmp/p8-review-gold
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-p8-paid-original-starts-plan-and-completions
+          path: /tmp/p8-original-online
+      - name: Re-download original publisher Parquets, rederive and byte-compare all stage packets
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==22.0.0
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          PYTHONPATH="$D" python "$D/source.py" --out /tmp/p8-independent-source-replay
+          cmp -s /tmp/p8-independent-source-replay/train-public.json /tmp/p8-review-public/train-public.json
+          cmp -s /tmp/p8-independent-source-replay/held-public.json /tmp/p8-review-public/held-public.json
+          cmp -s /tmp/p8-independent-source-replay/held-private-labels.json /tmp/p8-review-gold/held-private-labels.json
+      - name: Recompute all paid calls, TRAIN-only portfolio, owner truth, journal and same-profile no-go
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/physical_online_p8
+          PYTHONPATH="$D" python "$D/review.py" \
+            --train /tmp/p8-review-public/train-public.json \
+            --held /tmp/p8-review-public/held-public.json \
+            --gold /tmp/p8-review-gold/held-private-labels.json \
+            --original /tmp/p8-original-online/completed-original.json \
+            --plan /tmp/p8-original-online/frozen-plan.json \
+            --journal /tmp/p8-original-online/original-starts-and-dones.jsonl \
+            --output /tmp/p8-sanitized-original-review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p8-original-postseal-human-source-sanitized-audit
+          path: /tmp/p8-sanitized-original-review.json
+          if-no-files-found: error
+          retention-days: 7
