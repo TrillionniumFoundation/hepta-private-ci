@@ -15,6 +15,9 @@ from fabric import Denied, digest, q24_dot, sha
 
 
 REVIEWED_SOURCE_SHA256 = "83337012fc1f8efab4dc6cbdb4fa5fedfc6f10774e3acb2b4bbaa189a483bb30"
+# Process-local evidence of this module compiling the exact pinned source.
+# This is defense-in-depth, never external authorization or a sandbox.
+_APPROVED_OUTPUTS: dict[str, str] = {}
 
 
 @dataclass(frozen=True)
@@ -56,15 +59,21 @@ def compile_reviewed_source(source: Path, output: Path) -> dict[str, object]:
                     "-shared", str(source), "-o", str(output)], check=True, timeout=30)
     compile_ns = time.perf_counter_ns() - t0
     output.chmod(0o500)
+    output_digest = sha(output.read_bytes())
+    _APPROVED_OUTPUTS[str(output.resolve(strict=True))] = output_digest
     return {"source_sha256": sha(source.read_bytes()),
-            "binary_sha256": sha(output.read_bytes()),
+            "binary_sha256": output_digest,
             "compile_ns": compile_ns, "kind": "reviewed_aot_cpu_only"}
 
 
 class NativeMotorShadow:
     def __init__(self, lib_path: Path, expected_binary_sha256: str):
-        if not lib_path.is_file() or lib_path.is_symlink() or sha(lib_path.read_bytes()) != digest(expected_binary_sha256):
+        if not lib_path.is_file() or lib_path.is_symlink():
             raise Denied("native library not verified")
+        identity = str(lib_path.resolve(strict=True))
+        if (_APPROVED_OUTPUTS.get(identity) != digest(expected_binary_sha256)
+                or sha(lib_path.read_bytes()) != expected_binary_sha256):
+            raise Denied("native library not registered or verified")
         self._lib = ctypes.CDLL(str(lib_path))
         self._func = self._lib.hepta_q24_dot16
         self._func.argtypes = [ctypes.POINTER(ctypes.c_int32), ctypes.POINTER(ctypes.c_int32),

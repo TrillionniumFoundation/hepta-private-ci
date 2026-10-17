@@ -5,6 +5,7 @@ from dataclasses import replace
 from fractions import Fraction as F
 from pathlib import Path
 import random
+import shutil
 import tempfile
 import unittest
 
@@ -237,6 +238,12 @@ class NativeTests(unittest.TestCase):
     def test_native_binary_cannot_be_compiled_over_existing_path(self):
         with self.assertRaises(Denied):
             compile_reviewed_source(Path(__file__).with_name("q24_native.c"), self.bin)
+
+    def test_unregistered_native_library_even_identical_bytes_denied(self):
+        copied = self.path / "copy.so"
+        shutil.copyfile(self.bin, copied)
+        with self.assertRaises(Denied):
+            NativeMotorShadow(copied, self.record["binary_sha256"])
 
     def test_source_replacement_rejected(self):
         with self.assertRaises(Denied):
