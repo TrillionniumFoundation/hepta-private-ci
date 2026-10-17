@@ -62,6 +62,8 @@ jobs:
             qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py \
             qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/prospective_plan.py \
             qualification/neuron-shared-encoder/tests/test_stem_bridge.py \
-            qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py
+            qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_prospective_plan.py
           git diff --check

@@ -48,3 +48,38 @@ gold fields before a caller can pass the request to a model. The adapter does
 not invoke a model or score answers. The registered fixture still requires a
 real source checkout and the pinned local checkpoint before any efficacy claim
 could be made.
+
+## Prospective equal-budget transfer plan
+
+`neuron_shared_encoder.prospective_plan` is the P1 experiment boundary after
+the fixture bridge. It requires the frozen shared Stem arms (`shared_head`,
+`split_head`, and LoRA ranks 2/4/8), a full-fork control, strong-cheap and
+zero-feature/type-prior controls, and a reference-only no-change teacher. All
+gate-eligible arms must bind the same Stem, objective, budget digest, Reader
+manifest, and independent source policy. A different Stem can remain a
+reference control but cannot enter the same System2 interval gate.
+
+Each candidate must receive the same number of Reader calls across
+`none`/`distractor`/`withheld`/`full`; measured token, FLOP, memory, latency,
+and energy receipts must stay under the matched caps. A `ProspectiveCaseV1`
+also binds the task, Reader arm, source split, Git blob SHA-1, request digest,
+manifest digest, model digest, held-label digest, and resident/active
+parameter counts. P1 deliberately fixes one four-arm presentation per task;
+a future schema must add an explicit presentation index before repeated
+presentations can increase the call budget. Missing, synthetic, historical,
+or model-gold-visible records cannot enter a transfer matrix. The plan is
+`SHADOW_ONLY`, has no selection authority, and cannot mutate the current run.
+
+`build_system2_interval_gate()` first requires the complete validated case
+matrix and equal, bounded real-shadow resource receipts. It then consumes only
+caller-supplied intervals and fully charged `ResourceCostV1` receipts that
+have already passed independent real-shadow verification. It returns the
+existing #2672 `DENY_ALL` advisory:
+interval overlap is `NO_GO`, while strict unique interval dominance is only
+`ADVISORY_SELECT`. It does not generate a selection, efficacy, or promotion
+receipt and it cannot activate a Cell or mutate a snapshot.
+
+This is still an experiment contract. It does not train a Cell, run a
+checkpoint, or prove a Stem winner, NDU efficacy, multimodal generation, or
+10T/100T equivalence. The real receipt must come from the pinned harness
+before any System2 or split decision is considered.
