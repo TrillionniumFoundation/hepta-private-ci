@@ -162,8 +162,23 @@ def study_arms(source_rows,sealed_rows,process_text,process_vision):
                          and wall>=image_obs['wall_ns']
                          and cpu>=image_obs['cpu_ns'],
                          'unobserved sequence timing')
-        observations.append({'arm':name,'cpu_ns':cpu,'wall_ns':wall,
-                             **text_obs, **image_obs})
+        # The two phase observations contain their own timing fields.  Do NOT
+        # unpack image_obs over the end-to-end feature-time clock: that silently
+        # overwrites total cpu_ns/wall_ns with DINO-only measurements.  Treat
+        # total, text and vision as three independently named observed clocks.
+        physical.require(cpu>=text_obs['text_cpu_ns']+image_obs['cpu_ns']
+                         and wall>=text_obs['text_wall_ns']+image_obs['wall_ns'],
+                         'total feature clocks do not include both model phases')
+        observations.append({'arm':name, 'cpu_ns':cpu, 'wall_ns':wall,
+                             'text_items':text_obs['text_items'],
+                             'text_batches':text_obs['text_batches'],
+                             'text_cpu_ns':text_obs['text_cpu_ns'],
+                             'text_wall_ns':text_obs['text_wall_ns'],
+                             'items':image_obs['items'],
+                             'batches':image_obs['batches'],
+                             'media_bytes_read':image_obs['media_bytes_read'],
+                             'vision_cpu_ns':image_obs['cpu_ns'],
+                             'vision_wall_ns':image_obs['wall_ns']})
         text_outputs.append(probs)
         (full if name=='all64' else selective).append(images)
     max_text=max(abs(a[k][j]-b[k][j])

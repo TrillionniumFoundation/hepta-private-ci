@@ -97,3 +97,43 @@ RSS is not a per-arm resident-delta measurement. In particular even a
 successful V30 does not repair the frozen **negative** V25/V27 17/64 accuracy
 finding. Do not change `main`, production models, selected Stem, FinalUse,
 CNS, or Cell topology based on this study.
+
+## V30 exact-source correction: distinct total/text/vision clocks and independent postseal audit
+
+The first V30 source commit constructed each arm trace as
+`{'cpu_ns': combined, 'wall_ns': combined, **text_obs, **image_obs}`.
+Because the image phase also names `cpu_ns` and `wall_ns`, Python dictionary
+unpacking overwrote the combined total with **DINO-only** measurements. This is a
+real scientific-integrity bug in the original report emission; existing V30
+source tests did not catch it. Any physical report emitted by that uncorrected
+source is **not** valid combined text+vision CPU evidence, even if its visual
+batch counts or test job were successful.
+
+The corrected V30 source retains `cpu_ns` / `wall_ns` for the entire
+source-to-feature run, `text_cpu_ns` / `text_wall_ns` for the repeated original
+Granite text phase, and new `vision_cpu_ns` / `vision_wall_ns` for the actual
+DINO phase, with `cpu_ns >= text_cpu_ns + vision_cpu_ns` and an analogous wall
+time bound. `items`, `batches` and `media_bytes_read` remain the physically
+observed visual counts so the existing forward-count ABI stays unchanged.
+A positive cost ratio is NOT hardcoded: slower conditional feature execution
+must be reported as a negative saving, not forced into an apparent win.
+
+The new independent read-only `v30_independent_feature_cost_review.py` runs in a
+**separate Actions job**, consuming only the previous exact-push sanitized
+physical-model artifact. It checks exact source/route/model identity,
+ABBA inventory, every text and visual forward count, three disjoint phase
+clocks, media byte repeat parity, calibration/feature drift, and 
+`DENY_ALL`. It independently recomputes two paired total CPU deltas and the
+aggregate descriptive ratio; it never loads pretrained weights or heldout
+labels. Missing model job artifact, impossible clocks, changed source/model,
+unknown fields, fabricated performance telemetry or incomplete original
+features fail closed. A missing/failed model job blocks the auditor rather
+than being replaced by synthetic fixtures.
+
+A separate CPU evidence consumer can check **arithmetic consistency**, but
+reading a model-generated JSON is NOT an external, cryptographically trusted
+physical runner attestation. Consequently it writes
+`producer_counters_independently_hardware_attested=false` and cannot issue
+scientific promotion, NDU selection, user effects, FinalUse or Cell Split.
+All source/authoring test outcomes and new Actions check results must be tied
+to the exact corrected commit SHA. Existing older CI runs cannot validate it.

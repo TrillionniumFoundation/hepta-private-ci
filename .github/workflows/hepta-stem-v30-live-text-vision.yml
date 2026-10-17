@@ -8,6 +8,8 @@ on:
       - "qualification/stem-cell-v1/v30_live_text_vision.py"
       - "qualification/stem-cell-v1/test_v28_physical_lazy_vision.py"
       - "qualification/stem-cell-v1/test_v30_live_text_vision.py"
+      - "qualification/stem-cell-v1/v30_independent_feature_cost_review.py"
+      - "qualification/stem-cell-v1/test_v30_independent_feature_cost_review.py"
       - "qualification/stem-cell-v1/STEM_V30_LIVE_TEXT_COST_20261017.md"
       - ".github/workflows/hepta-stem-v30-live-text-vision.yml"
   push:
@@ -43,9 +45,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$HEAD_SHA"
-          python -m py_compile v28_physical_lazy_vision.py v29_route_only.py v30_live_text_vision.py test_v28_physical_lazy_vision.py test_v30_live_text_vision.py
-          python -m unittest -v test_v28_physical_lazy_vision test_v30_live_text_vision
-          python -O -m unittest -v test_v28_physical_lazy_vision test_v30_live_text_vision
+          python -m py_compile v28_physical_lazy_vision.py v29_route_only.py v30_live_text_vision.py v30_independent_feature_cost_review.py test_v28_physical_lazy_vision.py test_v30_live_text_vision.py test_v30_independent_feature_cost_review.py
+          python -m unittest -v test_v28_physical_lazy_vision test_v30_live_text_vision test_v30_independent_feature_cost_review
+          python -O -m unittest -v test_v28_physical_lazy_vision test_v30_live_text_vision test_v30_independent_feature_cost_review
 
   original-physical-live-text-vision:
     # Research weights and publisher bytes are acquired on push only, never on PR.
@@ -190,5 +192,72 @@ jobs:
         with:
           name: stem-v30-live-text-vision-cost-hold-${{ github.sha }}
           path: ${{ runner.temp }}/v30-physical-descriptive-HOLD.json
+          if-no-files-found: error
+          retention-days: 7
+
+
+  independent-feature-cost-review:
+    # Separate process/job from the original physical model owner, and no
+    # predictor files, private labels, source media or checkpoint weights.
+    needs: original-physical-live-text-vision
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v30-live-text-vision-20261017' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v4
+        with:
+          # Only the producer artifact from THIS exact push run is eligible.
+          name: stem-v30-live-text-vision-cost-hold-${{ github.sha }}
+          path: ${{ runner.temp }}/v30-producer
+      - name: Independently recount both model phases and reject V30 clock collision
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m unittest -q test_v30_independent_feature_cost_review
+        working-directory: qualification/stem-cell-v1
+      - name: Generate independent read-only original feature-cost audit
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -s "$RUNNER_TEMP/v30-producer/v30-physical-descriptive-HOLD.json"
+          python qualification/stem-cell-v1/v30_independent_feature_cost_review.py \
+            --producer "$RUNNER_TEMP/v30-producer/v30-physical-descriptive-HOLD.json" \
+            --output "$RUNNER_TEMP/v30-independent-numerical-HOLD.json"
+          python - <<'PY_CHECK'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ['RUNNER_TEMP'])/'v30-independent-numerical-HOLD.json').read_text())
+          assert result['decision']=='HOLD_RESEARCH_FEATURE_CPU_ONLY_NO_PROMOTION'
+          assert result['numerical_receipt_recounted'] is True
+          assert result['producer_counters_independently_hardware_attested'] is False
+          assert result['actual_accuracy_or_future_utility_verified'] is False
+          assert result['production_authorized'] is False
+          assert result['text_batched_forwards_by_arm']==[20]*4
+          assert result['vision_batched_forwards_by_arm']==[8,3,3,8]
+          print('Independent feature-cost arithmetic only; model authority DENY_ALL')
+          PY_CHECK
+      - name: Publish numerical audit only, no predictor artifact or private data
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v30-independent-feature-cost-hold-${{ github.sha }}
+          path: ${{ runner.temp }}/v30-independent-numerical-HOLD.json
           if-no-files-found: error
           retention-days: 7

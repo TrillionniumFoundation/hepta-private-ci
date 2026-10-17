@@ -102,6 +102,12 @@ class ABBA(unittest.TestCase):
         self.assertEqual([x['arm'] for x in rows],['all64','conditional21','conditional21','all64'])
         self.assertEqual([x['text_batches'] for x in rows],[20]*4)
         self.assertEqual([x['batches'] for x in rows],[8,3,3,8])
+        self.assertEqual([x['vision_cpu_ns'] for x in rows],[200]*4)
+        self.assertEqual([x['vision_wall_ns'] for x in rows],[220]*4)
+        self.assertTrue(all(x['cpu_ns']>x['vision_cpu_ns']
+                            and x['cpu_ns'] >= x['text_cpu_ns']+x['vision_cpu_ns']
+                            and x['wall_ns'] >= x['text_wall_ns']+x['vision_wall_ns']
+                            for x in rows))
         self.assertEqual((td,vd),(0.,0.))
 
     def test_real_driver_arity_gate(self):
