@@ -1,7 +1,5 @@
 """Checks that organization-wide peak concurrency requires real overlapping jobs."""
 
-from __future__ import annotations
-
 from datetime import datetime, timedelta, timezone
 import unittest
 
@@ -125,6 +123,7 @@ class OrgPeakProofTests(unittest.TestCase):
                     {"name": "archived-old", "archived": True},
                 ]
             if path.endswith("/runs"):
+                self.assertEqual(params["status"], "in_progress")
                 return {"total_count": 1, "workflow_runs": [{"id": 17}]}
             self.assertIn("/17/jobs", path)
             return {
@@ -161,6 +160,222 @@ class OrgPeakProofTests(unittest.TestCase):
         self.assertEqual(result["peak_provable_concurrent_jobs_lower_bound"], 2)
         self.assertEqual(result["peak_proof_timestamp"], stamp().isoformat())
         self.assertFalse(result["verified_500_running"])
+
+    def test_queued_parent_running_child_is_counted_without_duplicate_run_reads(self):
+        job_reads = []
+
+        def query(path, params):
+            if path.endswith("/repos"):
+                return [{"name": "one", "archived": False}]
+            if path.endswith("/runs"):
+                # Run 17 transitions between the two separately observed lists.
+                ids = [17] if params["status"] == "in_progress" else [17, 18]
+                return {
+                    "total_count": len(ids),
+                    "workflow_runs": [{"id": value} for value in ids],
+                }
+            run_id = int(path.split("/")[-2])
+            job_reads.append(run_id)
+            return {
+                "total_count": 1,
+                "jobs": [
+                    {
+                        "status": "in_progress",
+                        "runner_id": run_id,
+                        "labels": ["ubuntu-24.04"],
+                        "started_at": stamp(-1).isoformat(),
+                    }
+                ],
+            }
+
+        ticks = iter(range(10))
+        result = collect(
+            "Sample-Org",
+            query,
+            clock=lambda: stamp(next(ticks)),
+            workers=1,
+            include_queued=True,
+        )
+        self.assertEqual(job_reads, [17, 18])
+        self.assertEqual(
+            {
+                key: result[key]
+                for key in (
+                    "provider_active_workflow_runs_by_repository",
+                    "provider_workflow_run_counts_by_status_and_repository",
+                    "unique_parent_runs_discovered",
+                    "workflow_runs_sampled",
+                    "sampled_job_records",
+                    "job_states_seen_nonatomic",
+                    "peak_provable_concurrent_jobs_lower_bound",
+                    "all_read_paths_complete",
+                )
+            },
+            {
+                "provider_active_workflow_runs_by_repository": {"one": 1},
+                "provider_workflow_run_counts_by_status_and_repository": {
+                    "in_progress": {"one": 1},
+                    "queued": {"one": 2},
+                },
+                "unique_parent_runs_discovered": 2,
+                "workflow_runs_sampled": 2,
+                "sampled_job_records": 2,
+                "job_states_seen_nonatomic": {"in_progress": 2},
+                "peak_provable_concurrent_jobs_lower_bound": 2,
+                "all_read_paths_complete": True,
+            },
+        )
+
+    def test_queued_runs_share_global_limit_without_displacing_active_parents(self):
+        job_reads = []
+
+        def query(path, params):
+            if path.endswith("/repos"):
+                return [{"name": "one", "archived": False}]
+            if path.endswith("/runs"):
+                ids = [99] if params["status"] == "in_progress" else [1, 2]
+                return {
+                    "total_count": len(ids),
+                    "workflow_runs": [{"id": value} for value in ids],
+                }
+            job_reads.append(int(path.split("/")[-2]))
+            return {"total_count": 0, "jobs": []}
+
+        ticks = iter(range(10))
+        result = collect(
+            "Sample-Org",
+            query,
+            clock=lambda: stamp(next(ticks)),
+            workers=1,
+            include_queued=True,
+            max_runs=1,
+        )
+        self.assertEqual(job_reads, [99])
+        self.assertEqual(
+            {
+                key: result[key]
+                for key in (
+                    "unique_parent_runs_discovered",
+                    "parent_runs_omitted_by_max_runs",
+                    "sampled_parent_run_query_statuses",
+                    "all_read_paths_complete",
+                    "errors",
+                )
+            },
+            {
+                "unique_parent_runs_discovered": 3,
+                "parent_runs_omitted_by_max_runs": 2,
+                "sampled_parent_run_query_statuses": {"in_progress": 1},
+                "all_read_paths_complete": False,
+                "errors": [
+                    {
+                        "stage": "active_runs",
+                        "reason": "max_runs_exceeded",
+                        "available": 3,
+                        "limit": 1,
+                    }
+                ],
+            },
+        )
+
+    def test_queued_query_failure_keeps_active_job_evidence_and_reports_unknown_count(
+        self,
+    ):
+        def query(path, params):
+            if path.endswith("/repos"):
+                return [{"name": "one", "archived": False}]
+            if path.endswith("/runs"):
+                if params["status"] == "queued":
+                    raise OSError("fixture read failure")
+                return {"total_count": 1, "workflow_runs": [{"id": 17}]}
+            return {
+                "total_count": 1,
+                "jobs": [
+                    {
+                        "status": "in_progress",
+                        "runner_id": 17,
+                        "started_at": stamp(-1).isoformat(),
+                    }
+                ],
+            }
+
+        ticks = iter(range(10))
+        result = collect(
+            "Sample-Org",
+            query,
+            clock=lambda: stamp(next(ticks)),
+            workers=1,
+            include_queued=True,
+        )
+        self.assertEqual(
+            {
+                key: result[key]
+                for key in (
+                    "provider_workflow_run_counts_by_status_and_repository",
+                    "peak_provable_concurrent_jobs_lower_bound",
+                    "all_read_paths_complete",
+                    "errors",
+                )
+            },
+            {
+                "provider_workflow_run_counts_by_status_and_repository": {
+                    "in_progress": {"one": 1},
+                    "queued": {"one": None},
+                },
+                "peak_provable_concurrent_jobs_lower_bound": 1,
+                "all_read_paths_complete": False,
+                "errors": [
+                    {
+                        "stage": "active_runs",
+                        "repo": "one",
+                        "status": "queued",
+                        "reason": "OSError",
+                    }
+                ],
+            },
+        )
+
+    def test_queued_pagination_limit_is_explicitly_incomplete(self):
+        pages = []
+
+        def query(path, params):
+            if path.endswith("/repos"):
+                return [{"name": "one", "archived": False}]
+            if path.endswith("/runs"):
+                pages.append((params["status"], params["page"]))
+                if params["status"] == "in_progress":
+                    return {"total_count": 0, "workflow_runs": []}
+                return {
+                    "total_count": 101,
+                    "workflow_runs": [{"id": value} for value in range(100)],
+                }
+            return {"total_count": 0, "jobs": []}
+
+        ticks = iter(range(10))
+        result = collect(
+            "Sample-Org",
+            query,
+            clock=lambda: stamp(next(ticks)),
+            workers=1,
+            include_queued=True,
+            max_run_pages=1,
+            max_runs=1,
+        )
+        self.assertEqual(pages, [("in_progress", 1), ("queued", 1)])
+        self.assertEqual(result["unique_parent_runs_discovered"], 100)
+        self.assertEqual(
+            result["sampling_limits"]["max_run_pages_per_repository_status"], 1
+        )
+        self.assertFalse(result["all_read_paths_complete"])
+        self.assertIn(
+            {
+                "stage": "active_runs",
+                "repo": "one",
+                "status": "queued",
+                "reason": "truncated",
+            },
+            result["errors"],
+        )
 
     def test_incomplete_run_list_never_claims_complete_read(self):
         def query(path, params):

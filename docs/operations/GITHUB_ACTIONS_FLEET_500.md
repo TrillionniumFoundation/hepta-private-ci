@@ -120,7 +120,7 @@ No token contents are ever written to the report:
 GITHUB_TOKEN="$(gh auth token)" \
   python3 scripts/github_actions_org_capacity.py \
     --org TrillionniumFoundation \
-    --workers 8 --max-runs 200 \
+    --workers 8 --max-runs 1000 --max-run-pages 8 --include-queued \
     --output /tmp/hepta-gha-org-capacity.json
 \`\`\`
 
@@ -134,6 +134,15 @@ The maximum overlap of those intervals is a **provable lower bound** for
 simultaneous running jobs, even when REST queries occur at different
 times. It is never computed by summing non-atomic "in_progress" counters.
 Missing repos/pages/permissions or API errors are recorded as incomplete.
+With `--include-queued`, the collector scans both `in_progress` and `queued`
+parent workflow runs, because a queued parent can already contain assigned,
+executing child jobs. Parent IDs are deduplicated across pages and statuses,
+and in-progress parents take priority if the global run limit is reached.
+Per-status provider counts, page limits, omitted parents and failed reads are
+reported explicitly; provider run counts must not be summed as distinct runs.
+The compatibility default scans only in-progress parents and records that
+queued-parent children are outside that scope. Increase the explicit sampling
+limits only when a report identifies truncation.
 The collector cannot claim that **500 was actually reached** unless at least
 500 such intervals overlap. It does not register, create, cancel, retry or
 dispatch workflows. GitHub org-level metrics can provide corroborating
@@ -311,13 +320,13 @@ This is the complete peak for those two runs, not the organization entitlement.
 The historical success count is GitHub's job conclusion, not a fresh review of
 every assertion or proof that the older harness rejected skips.
 
-## Effective capacity remains a separate provider fact
+## Effective Maximum confirmed; execution remains separately measured
 
-A GitHub organization API `plan.name=enterprise` does not by itself prove
-that increased Actions concurrency is enabled. GitHub Enterprise Cloud trials
-exclude increased job concurrency and larger runners. Confirm the effective
-maximum in organization Settings -> Actions -> Runners -> GitHub-hosted ->
-All jobs usage; retain Active and Maximum with their observation time.
+The earlier request to verify effective quota is closed: on 2026-10-17 the
+operator read the organization's actual hosted-runner setting and confirmed
+`Maximum = 500`. This evidence comes from the operator's settings observation,
+not an inference from the organization's subscription name. Further execution
+does not require repeating the quota check.
 
 When already-materialized root jobs have no dependencies and still lack a
 runner, increasing `max-parallel` adds demand without proving additional
@@ -327,7 +336,6 @@ to diagnose that condition. The packed ALL mode remains a throughput tool for
 
 References:
 - https://docs.github.com/en/actions/how-tos/manage-runners/github-hosted-runners/view-current-jobs
-- https://docs.github.com/en/enterprise-cloud@latest/admin/overview/setting-up-a-trial-of-github-enterprise-cloud
 
 ## Strict direct fanout and confirmed Maximum (2026-10-17)
 
@@ -355,3 +363,31 @@ a 500-job overlap peak. Measure real runner assignments and half-open job
 execution intervals; report queue waits, completed strict results and the
 observed peak separately. Do not pad test runtime with sleep or a start barrier
 to manufacture concurrent occupancy.
+
+## Queued-parent correction and independently verified organization evidence
+
+A read-only snapshot on 2026-10-17 enumerated both `queued` and `in_progress`
+parents across 30 active repositories, then completed the job-page reads from
+11:16:34.675 UTC through 11:19:57.911 UTC. It covered 648 unique parent runs
+and 2,997 unique job records, with no missing job pages or read errors in that
+declared scope. Parent status counts are non-atomic and can overlap during
+pagination; deduplicated IDs define the sampled set.
+
+An independent interval sweep proved **177 jobs on 177 different runner IDs
+simultaneously running at 11:16:34.675 UTC**: Linux 90, Windows 37 and macOS 50.
+Of the 177 assigned in-progress job records observed during the scan, 157 were
+under parents returned by the queued-run query. A separately closed job
+interval also contains the entire request/response window in which its parent
+was returned as queued, confirming that this is not merely a cross-request
+timestamp comparison.
+
+Completed jobs use their actual completion time. In-progress jobs contribute
+only until the start of their job-list request, and interval ends are processed
+before starts at an equal timestamp. This is a proved lower bound within the
+declared scan scope, not the configured maximum, a full historical peak, or
+evidence that the separate 500-job test fleet reached 500-way overlap.
+
+A later supplemental scan of the other nonterminal parent statuses found no
+assigned running children; it is a separate observation, not an atomic part of
+the earlier interval proof. Private repository names and job inventories are
+retained in the operator's audit evidence, not in this public document.
