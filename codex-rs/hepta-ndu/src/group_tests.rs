@@ -26,7 +26,7 @@ fn subject() -> GroupNduSubjectV1 {
     }
 }
 
-fn candidates() -> Vec<GroupContinuationCandidateV1> {
+fn candidate_fixtures() -> Vec<GroupContinuationCandidateV1> {
     vec![
         GroupContinuationCandidateV1 {
             candidate_id: "continue".to_owned(),
@@ -78,7 +78,7 @@ fn make_trace(
 #[test]
 fn positive_continuation_is_selected() {
     let subject = subject();
-    let candidates = candidates();
+    let candidates = candidate_fixtures();
     let result = must(decide_group_continuation_v1(
         &subject,
         &make_trace(&subject, &candidates),
@@ -92,7 +92,7 @@ fn positive_continuation_is_selected() {
 #[test]
 fn non_positive_continuation_abstains() {
     let subject = subject();
-    let mut candidates = candidates();
+    let mut candidates = candidate_fixtures();
     candidates[0].continuation_value_q32 = 10;
     let result = must(decide_group_continuation_v1(
         &subject,
@@ -105,7 +105,7 @@ fn non_positive_continuation_abstains() {
 #[test]
 fn candidate_set_digest_is_bound_and_deterministic() {
     let subject = subject();
-    let candidates = candidates();
+    let candidates = candidate_fixtures();
     let first = make_trace(&subject, &candidates);
     let second = make_trace(&subject, &candidates);
     assert_eq!(
@@ -123,7 +123,7 @@ fn candidate_set_digest_is_bound_and_deterministic() {
 #[test]
 fn missing_abstain_and_zero_digest_fail_closed() {
     let subject = subject();
-    let mut candidates = candidates();
+    let mut candidates = candidate_fixtures();
     candidates.pop();
     let missing_trace = make_trace(&subject, &candidates);
     assert_eq!(
@@ -133,7 +133,7 @@ fn missing_abstain_and_zero_digest_fail_closed() {
 
     let mut invalid_subject = subject;
     invalid_subject.encoder_digest = Digest32::ZERO;
-    let candidates = candidates();
+    let candidates = candidate_fixtures();
     assert_eq!(
         decide_group_continuation_v1(
             &invalid_subject,
