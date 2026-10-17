@@ -109,7 +109,7 @@ pub fn run_memory_cell_tick(
     if input.objective_digest.digest() != cue.objective_digest {
         return Err(MemoryCellRuntimeErrorV1::Binding("objective_digest"));
     }
-    if input.snapshot_digest.digest() != cue.snapshot_key.vector_digest {
+    if input.snapshot_digest.digest() != engram_snapshot.snapshot_digest {
         return Err(MemoryCellRuntimeErrorV1::Binding("snapshot_digest"));
     }
     if engram_snapshot.generation_vector_digest != cue.snapshot_key.vector_digest {
@@ -190,12 +190,32 @@ fn shadow_checkpoint_digest(
     recall: &GeneratedRecallV1,
 ) -> Result<ContractDigestV1, MemoryCellRuntimeErrorV1> {
     let mut bytes = b"hepta.memory-cell.shadow-checkpoint.v1".to_vec();
-    bytes.extend_from_slice(input.cell_id.as_str().as_bytes());
+    let cell_id = input.cell_id.as_str().as_bytes();
+    bytes.extend_from_slice(
+        &u64::try_from(cell_id.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(cell_id);
     bytes.extend_from_slice(&input.logical_sequence.to_be_bytes());
-    bytes.extend_from_slice(recall.receipt_digest.as_array());
+    bytes.extend_from_slice(&input.graph_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&input.model_generation.get().to_be_bytes());
+    for digest in [
+        input.input_digest.digest(),
+        input.ndu_state_digest.digest(),
+        input.cue_digest.digest(),
+        input.snapshot_digest.digest(),
+        input.source_frontier_digest.digest(),
+        input.forget_frontier_digest.digest(),
+        input.objective_digest.digest(),
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.push(u8::from(input.predecessor_checkpoint_digest.is_some()));
     if let Some(predecessor) = input.predecessor_checkpoint_digest {
         bytes.extend_from_slice(predecessor.digest().as_array());
     }
+    bytes.extend_from_slice(recall.receipt_digest.as_array());
     contract_digest(Digest32::of_bytes(&bytes))
 }
 
