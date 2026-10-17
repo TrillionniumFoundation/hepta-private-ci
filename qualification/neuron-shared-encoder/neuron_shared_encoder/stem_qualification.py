@@ -285,6 +285,7 @@ class ComponentResourceBundleV1:
         required = _REQUIRED_COMPONENTS[self.component_profile]
         _require({component.component_kind for component in self.components} == required, "resource bundle must cover every component kind exactly")
         _require(len(self.components) == len(required), "resource component kinds must be unique")
+        _require(len({component.component_id for component in self.components}) == len(self.components), "resource component IDs must be unique")
         _require(self.components == tuple(sorted(self.components, key=lambda component: component.component_kind)), "components must be sorted by kind")
         for name, value in (
             ("p50_latency_ms", self.p50_latency_ms),
