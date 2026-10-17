@@ -39,6 +39,33 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(result["disposition"], "HOLD_NO_GO")
         self.assertIs(result["all_original_weights_downloaded"], False)
         self.assertTrue(result["models"][2]["requires_safe_weights_only_conversion"])
+    def test_hub_root_gitattributes_is_not_a_model_input(self):
+        # All four real pinned Hub trees include a root .gitattributes.
+        for name in gate.MODELS:
+            with self.subTest(name=name):
+                meta=good_meta(name)
+                meta.siblings.append(S(rfilename=".gitattributes", size=500,
+                                       blob_id="c"*40, lfs=None))
+                result=preflight.inspect_model(name, meta)
+                self.assertEqual(result["other_repo_files_excluded"], 1)
+                self.assertNotIn(".gitattributes", [v["filename"]
+                    for v in result["selected_source_inventory"]])
+
+    def test_duplicate_git_transport_file_denied(self):
+        meta=good_meta("ettin400")
+        meta.siblings += [S(rfilename=".gitattributes", size=100, blob_id="c"*40, lfs=None),
+                          S(rfilename=".gitattributes", size=100, blob_id="c"*40, lfs=None)]
+        with self.assertRaisesRegex(gate.Denied,"duplicate Git bookkeeping"):
+            preflight.inspect_model("ettin400", meta)
+
+    def test_unknown_hidden_path_and_hidden_nested_member_denied(self):
+        for path in (".env", "tokenizer/.hidden.json", ".gitattributes/evil.bin"):
+            with self.subTest(path=path):
+                meta=good_meta("ettin400")
+                meta.siblings.append(S(rfilename=path, size=100, blob_id="c"*40, lfs=None))
+                with self.assertRaises(gate.Denied):
+                    preflight.inspect_model("ettin400", meta)
+
     def test_wrong_sha(self):
         x = good_meta("ettin400"); x.sha = "0"*40
         with self.assertRaises(gate.Denied): preflight.inspect_model("ettin400", x)
