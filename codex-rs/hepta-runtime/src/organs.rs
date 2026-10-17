@@ -126,6 +126,10 @@ impl RuntimeOrgans {
             successor,
             ..
         } = request;
+        // Any authorized replacement attempt can change, stop or quarantine
+        // the graph. Never keep the previous volatile success witness live
+        // across an ambiguous or failed attempt.
+        host.last_apply = None;
         let replacement = authority.with_verified_use(token, &binding, || {
             host.host.replace_read_only_generation_with_migration(
                 validated.predecessor_generation,
@@ -177,6 +181,10 @@ impl RuntimeOrgans {
             successor,
             ..
         } = request;
+        // Any authorized replacement attempt can change, stop or quarantine
+        // the graph. Never keep the previous volatile success witness live
+        // across an ambiguous or failed attempt.
+        host.last_apply = None;
         let replacement = authority.with_verified_use(token, &binding, || {
             host.host.recover_read_only_generation_with_migration(
                 validated.predecessor_generation,
@@ -221,6 +229,19 @@ impl RuntimeOrgans {
         let host = guard
             .as_ref()
             .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        // Re-query the actual CNS graph rather than trusting the host's
+        // cached route descriptor alone.
+        let actual = host
+            .host
+            .route(
+                &host.route.source.system,
+                &host.route.source.organ,
+                host.route.output_port,
+            )
+            .map_err(RuntimeTopologyExecutionError::Runtime)?;
+        if actual != host.route {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
         if host.last_apply.as_ref() != Some(receipt)
             || receipt.authority != AuthorityPosture::DENY_ALL
             || host.host.generation() != receipt.successor_generation
