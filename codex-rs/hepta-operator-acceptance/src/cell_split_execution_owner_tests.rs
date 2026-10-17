@@ -40,6 +40,8 @@ struct FixturePort {
     fail_preflight: bool,
     reject_signature: bool,
     tamper_frozen_during_preflight: Option<std::path::PathBuf>,
+    tamper_on_preflight_number: Option<(usize, std::path::PathBuf)>,
+    preflight_reads: usize,
     tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
     inject_unledgered_during_live_readback: Rc<RefCell<Option<CellSplitExecutionIntentV1>>>,
     revoke_previous_during_preflight: bool,
@@ -57,6 +59,8 @@ impl FixturePort {
             fail_preflight: false,
             reject_signature: false,
             tamper_frozen_during_preflight: None,
+            tamper_on_preflight_number: None,
+            preflight_reads: 0,
             tamper_during_live_readback: Rc::new(RefCell::new(None)),
             inject_unledgered_during_live_readback: Rc::new(RefCell::new(None)),
             revoke_previous_during_preflight: false,
@@ -101,6 +105,17 @@ impl CellSplitExecutionPortV1 for FixturePort {
             .contains_key(&intent.idempotency_key)
         {
             return Err("effect already exists");
+        }
+        self.preflight_reads += 1;
+        if let Some((at, path)) = &self.tamper_on_preflight_number
+            && self.preflight_reads == *at
+        {
+            if path.exists() {
+                fs::write(path, b"{}").map_err(|_| "fixture could not alter final preflight")?;
+            } else {
+                crate::durable::write_private_new(path, b"{}")
+                    .map_err(|_| "fixture could not add original-shaped final frame")?;
+            }
         }
         if let Some(path) = &self.tamper_frozen_during_preflight {
             fs::write(path, b"{}").map_err(|_| "fixture could not alter frozen trust")?;
@@ -1237,6 +1252,41 @@ fn verified_incomplete_status_double_checks_original_after_live_prefix_readback(
 }
 
 #[test]
+fn final_negative_rpc_cannot_return_healthy_incomplete_after_local_frame_mutation() {
+    for transcript in [false, true] {
+        for (filename, expected) in [
+            ("cell-split-frozen-plan.json", "frozen plan drift"),
+            ("cell-split-owner-trust-pins.json", "owner trust pins drift"),
+            ("cell-split-00-prepared.json", "unexpected successor frame; reopen required"),
+        ] {
+            let root = private_tempdir();
+            let state = Rc::new(RefCell::new(Observed::default()));
+            let mut port = FixturePort::new(state.clone());
+            // The first negative proof and live prefix check succeed. Only
+            // the final signed-negative RPC mutates local persistent state.
+            port.tamper_on_preflight_number = Some((2, root.path().join(filename)));
+            let mut owner =
+                CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+            let result = if transcript {
+                owner.verified_transcript().map(|proof| proof.is_some())
+            } else {
+                owner.verified_complete()
+            };
+            assert!(
+                matches!(
+                    result,
+                    Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected
+                ),
+                "final negative RPC must not certify drift: {filename}"
+            );
+            assert_eq!(owner.completed_steps(), 0);
+            assert_eq!(state.borrow().executions, 0);
+            assert!(!root.path().join("cell-split-00-committed.json").exists());
+        }
+    }
+}
+
+#[test]
 fn verified_completion_rejects_unprepared_original_effect_at_every_step() {
     for completed in 0..4 {
         let root = private_tempdir();
@@ -1521,6 +1571,49 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
     );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
+}
+
+#[test]
+fn final_admission_callback_cannot_mutate_frozen_or_committed_state_before_prepare() {
+    for completed in [0_usize, 1] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original owner");
+        if completed == 1 {
+            owner.advance().expect("original predecessor effect");
+        }
+
+        let tamper_path = root.path().join(if completed == 0 {
+            "cell-split-owner-trust-pins.json"
+        } else {
+            "cell-split-00-committed.json"
+        });
+        let mut admission_reads = 0;
+        let result = owner.advance_with_admission(|| {
+            admission_reads += 1;
+            if admission_reads == 2 {
+                fs::write(&tamper_path, b"{}").expect("alter locally persisted proof");
+            }
+            Ok(())
+        });
+        assert!(result.is_err(), "final admission cannot ignore local drift");
+        assert_eq!(admission_reads, 2);
+        assert_eq!(owner.completed_steps(), completed);
+        assert_eq!(state.borrow().executions, completed);
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed:02}-prepared.json"))
+                .exists(),
+            "mutation after the final independent callback must fence Prepare"
+        );
+    }
 }
 
 #[test]

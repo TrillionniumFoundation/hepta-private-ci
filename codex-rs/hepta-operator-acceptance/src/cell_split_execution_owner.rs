@@ -680,7 +680,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // become stale. Recheck original next-owner absence before reporting
         // a harmless incomplete state. This is diagnostic only, not an
         // atomic multi-owner snapshot or a Final-use grant.
-        self.probe_next_unprepared_original()?;
+        if !self.is_complete() {
+            self.probe_next_unprepared_original()?;
+            // The final negative RPC is not a reservation and may be slow.
+            // Reject any local ledger/pin mutation caused by that callback
+            // without repeating all live predecessor-owner RPCs.
+            self.verify_local_prefix_after_callback()?;
+        }
         Ok(self.is_complete())
     }
 
@@ -695,7 +701,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // This same readback validates the frozen plan, complete receipt chain,
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
-        let receipts = self.read_verified_prefix(true)?;
+        let receipts = self.read_verified_prefix(true, true)?;
         // A prepared step may already have changed the original external
         // owner even when its local Commit frame is absent. The Operator's
         // read-only transcript action must never collapse that unknown effect
@@ -708,6 +714,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // predecessor verification. Never report an empty transcript
             // if a next effect appeared during the preceding readbacks.
             self.probe_next_unprepared_original()?;
+            self.verify_local_prefix_after_callback()?;
             return Ok(None);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
@@ -748,15 +755,26 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
-        self.read_verified_prefix(false).map(|_| ())
+        self.read_verified_prefix(false, true).map(|_| ())
     }
 
-    /// One canonical pass for execution preflight and transcript export.
-    /// Retain real-owner readback on every invocation, but never perform it
-    /// twice within the same export. None of these receipts grants authority.
+    /// Locally revalidate the *same* original ledger, frozen plan and signer
+    /// pins after a potentially slow negative-readback or Selector/NDU
+    /// callback. The preceding full verification already consulted each
+    /// original owner; do not repeat remote RPCs on this final local fence.
+    /// This check is not an atomic multi-owner snapshot or Final-use grant.
+    fn verify_local_prefix_after_callback(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        self.read_verified_prefix(false, false).map(|_| ())
+    }
+
+    /// Canonical bounded local history pass. When verify_original_owner is
+    /// true, each committed predecessor must ALSO be freshly read from its
+    /// real effect owner. False is permitted only as a final post-callback
+    /// local continuity fence after the full signed live pass has succeeded.
     fn read_verified_prefix(
         &mut self,
         collect_receipts: bool,
+        verify_original_owner: bool,
     ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
         self._lock.verify_current(&self.root)?;
         verify_split_frame_namespace(&self.root)?;
@@ -811,9 +829,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let receipt = decode_committed_receipt(&bytes)?;
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
-            self.port
-                .verify_committed(&intent, &receipt)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            if verify_original_owner {
+                self.port
+                    .verify_committed(&intent, &receipt)
+                    .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            }
             local_frames.push((prepared, bytes));
             if collect_receipts {
                 predecessor = receipt.receipt_digest.clone();
@@ -979,6 +999,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // checks. Final-use remains an independent physical-owner gate;
             // these negative observations do NOT create an atomic commit.
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+            // The final independent Selector/NDU callback can itself race
+            // with local frozen-plan/receipt mutation. Prevent any new
+            // prepared intent or original effect under a changed ledger.
+            self.verify_local_prefix_after_callback()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
