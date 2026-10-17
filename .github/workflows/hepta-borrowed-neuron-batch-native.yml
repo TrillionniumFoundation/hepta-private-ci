@@ -73,7 +73,7 @@ jobs:
       - name: Verify typed Cell Split journal/policy/canary regressions
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-cell-split-eval.json" --minimum-tests 5 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib cell_split_ -- --nocapture
       - name: Verify owned provider terminal handoff and redaction tests
-        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-provider-policy.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-core --lib client_provider_policy_tests -- --nocapture
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-provider-policy.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-core --lib provider_policy_tests -- --nocapture
       - name: Verify non-test Worker library and strict all-target Clippy
         shell: bash
         run: |
