@@ -262,10 +262,14 @@ impl CellSplitAutomationJournalOwnerV1 for CellSplitInMemoryJournalOwnerV1 {
                 "journal replay does not match commit".to_string(),
             ));
         }
-        if self.journals.get(&journal.split_id).is_some_and(|previous| {
-            previous.events.len() > journal.events.len()
-                || previous.events != journal.events[..previous.events.len()]
-        }) {
+        if self
+            .journals
+            .get(&journal.split_id)
+            .is_some_and(|previous| {
+                previous.events.len() > journal.events.len()
+                    || previous.events != journal.events[..previous.events.len()]
+            })
+        {
             return Err(CellSplitAutomationErrorV1::Store(
                 "journal append regressed or rewrote history".to_string(),
             ));
@@ -2090,8 +2094,10 @@ mod tests {
         let mut owner = CellSplitInMemoryJournalOwnerV1::default();
         // Simulate an unknown result after a successful canary, leaving only
         // the durable Retained frontier as recoverable evidence.
-        let mut failed = Executor::default();
-        failed.evaluate_disposition = CellSplitEvaluationDispositionV1::EligibleForCanary;
+        let mut failed = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            ..Executor::default()
+        };
         let mut journal = CellSplitLifecycleJournalV1::proposed(&split).unwrap();
         journal.record_proposal(proposal.proposal_digest).unwrap();
         let evaluation = failed.evaluate(&split).unwrap();

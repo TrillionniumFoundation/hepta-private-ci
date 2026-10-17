@@ -1036,7 +1036,7 @@ mod tests {
             CellSplitGovernedPlannerV1::synthesize(&signal, &policy, &context(), &other),
             Err(CellSplitPlannerErrorV1::Binding("signal policy/telemetry"))
         );
-        let mut tampered_policy = policy.clone();
+        let mut tampered_policy = policy;
         tampered_policy.child_count = 4;
         assert_eq!(
             CellSplitGovernedPlannerV1::synthesize(

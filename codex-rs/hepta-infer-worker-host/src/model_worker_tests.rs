@@ -8,6 +8,7 @@ struct Driver {
     fail_unload: bool,
     fail_load: bool,
     load_memory_bytes: Option<u64>,
+    reported_feature_transient_bytes: Option<u64>,
     loaded: usize,
     feature_vector_ptr: Option<std::sync::Arc<std::sync::atomic::AtomicUsize>>,
 }
@@ -77,7 +78,7 @@ impl NeuronFeatureDriver for Driver {
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
-                transient_allocation_bytes: 2_048,
+                transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
                 queue_age_micros: 11,
                 latency_micros: 17,
             });
@@ -94,7 +95,7 @@ impl NeuronFeatureDriver for Driver {
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
             observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -501,4 +502,159 @@ fn typed_receipt_borrows_original_q24_allocation_for_driver_execution() {
         receipt.status,
         codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
     );
+}
+
+#[test]
+fn reported_feature_transient_overgrant_or_overflow_fences_all_future_effects() {
+    let mut exact = InferenceWorker::new(
+        100,
+        "worker.memory-exact".into(),
+        3,
+        grant(),
+        Driver {
+            reported_feature_transient_bytes: Some(3_072),
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    exact.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        exact
+            .run_neuron_features(100, "model.1", &neuron_feature_request())
+            .expect("exact grant")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert!(!exact.poisoned);
+
+    for transient in [3_073_u64, u64::MAX] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.memory-overgrant".into(),
+            3,
+            grant(),
+            Driver {
+                reported_feature_transient_bytes: Some(transient),
+                ..Driver::default()
+            },
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", &neuron_feature_request()),
+            Err(Error::ModelCapacity)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", &neuron_feature_request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(
+            worker.unload_model(100, "model.1"),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
+}
+
+#[derive(Debug)]
+struct BatchMemoryDriver {
+    scalar: Driver,
+    transient: u64,
+    calls: usize,
+}
+
+impl ModelDriver for BatchMemoryDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        self.scalar.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        self.scalar.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.scalar.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for BatchMemoryDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.scalar.run_neuron_features(handle, request)
+    }
+
+    fn supports_neuron_feature_batch(&self, _handle: &DriverModelHandle) -> bool {
+        true
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureBatchObservationV1>, Error> {
+        self.calls += 1;
+        requests
+            .iter()
+            .map(|request| {
+                let mut observation = self.scalar.run_neuron_features(handle, request)?;
+                observation.transient_allocation_bytes = self.transient;
+                Ok(DriverNeuronFeatureBatchObservationV1 {
+                    request_id: request.authorization.request_id.clone(),
+                    input_digest: request.input_digest.clone(),
+                    observation,
+                })
+            })
+            .collect()
+    }
+}
+
+#[test]
+fn native_cohort_resource_overgrant_is_nonretryable_after_one_backend_call() {
+    fn requests() -> Vec<NeuronFeatureRequest> {
+        let first = neuron_feature_request();
+        let mut second = first.clone();
+        second.authorization.request_id = "request.2".into();
+        second.authorization.reservation_id = "reservation.2".into();
+        vec![first, second]
+    }
+    for (transient, expected_success) in [(3_072_u64, true), (3_073, false), (u64::MAX, false)] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.batch-memory".into(),
+            3,
+            grant(),
+            BatchMemoryDriver {
+                scalar: Driver::default(),
+                transient,
+                calls: 0,
+            },
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let outcome = worker.run_neuron_features_batch_receipts(100, "model.1", requests());
+        assert_eq!(worker.driver.calls, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        if expected_success {
+            assert_eq!(outcome.expect("bounded cohort").len(), 2);
+            assert!(!worker.poisoned);
+        } else {
+            assert_eq!(outcome, Err(Error::ModelCapacity));
+            assert!(worker.poisoned);
+            assert_eq!(
+                worker.run_neuron_features_batch_receipts(100, "model.1", requests()),
+                Err(Error::IndeterminateLifecycle)
+            );
+            assert_eq!(worker.driver.calls, 1);
+        }
+    }
 }

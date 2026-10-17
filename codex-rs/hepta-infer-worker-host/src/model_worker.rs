@@ -129,6 +129,8 @@ pub enum Error {
     ModelNotLoaded,
     ModelMismatch,
     ModelUnloadIndeterminate,
+    /// Unresolved backend effect; block every later call in this generation.
+    IndeterminateLifecycle,
     PayloadMismatch,
     TokenLimit,
     DeadlineExpired,
@@ -182,6 +184,8 @@ pub struct InferenceWorker<D: ModelDriver> {
     // prevents digest aliases to distinct physical driver handles.
     model_digest_index: BTreeMap<Digest32, String>,
     active_requests: BTreeMap<String, String>,
+    // Sticky post-effect fence; no new effects until external reconciliation.
+    poisoned: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -205,6 +209,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             models: BTreeMap::new(),
             model_digest_index: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            poisoned: false,
         })
     }
 
@@ -411,6 +416,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::IndeterminateLifecycle);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -583,6 +591,18 @@ pub trait NeuronFeatureDriver: ModelDriver {
     }
 }
 
+/// Check reported disjoint resident plus transient memory without u64 overflow.
+/// Driver reports are not independently measured peak RSS.
+fn neuron_feature_memory_within_grant(
+    observed: &DriverNeuronFeatureObservation,
+    maximum_memory_bytes: u64,
+) -> bool {
+    observed
+        .observed_memory_bytes
+        .checked_add(observed.transient_allocation_bytes)
+        .is_some_and(|total| total <= maximum_memory_bytes)
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Fail before a signed one-shot nonce claim if the selected loaded model
     /// has no native batch backend. Actual execution revalidates every grant,
@@ -661,14 +681,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // An error after backend entry cannot prove an effect never happened.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
+        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
+            self.poisoned = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -706,7 +738,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // original request into its typed receipt. No clone of the full
         // feature vector is needed for the single-request backend path.
         let observed = self.run_neuron_features(now_ms, model_id, &request)?;
-        feature_receipt_from_observation(request, observed)
+        let receipt = feature_receipt_from_observation(request, observed);
+        if receipt.is_err() {
+            self.poisoned = true;
+        }
+        receipt
     }
 
     /// No sequential fallback: a multi-request group must be handled by a
@@ -783,8 +819,20 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
-        let results = results?;
-        if results.len() != requests.len() {
+        let results = match results {
+            Ok(results) => results,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
+        // One non-retryable cohort: never publish only the terminal members.
+        if results.len() != requests.len()
+            || results
+                .iter()
+                .any(|item| !item.observation.terminal_observed)
+        {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut receipts = Vec::with_capacity(requests.len());
@@ -792,16 +840,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             if batch.request_id != request.authorization.request_id
                 || batch.input_digest != request.input_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureContract);
             }
             let observed = batch.observation;
-            if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
+                self.poisoned = true;
                 return Err(Error::ModelCapacity);
             }
-            let status = if !observed.terminal_observed {
-                ExecutionStatus::Indeterminate
-            } else if observed.succeeded {
-                validate_neuron_feature_output(&request, &observed)?;
+            let status = if observed.succeeded {
+                if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                    self.poisoned = true;
+                    return Err(error);
+                }
                 ExecutionStatus::Succeeded
             } else {
                 ExecutionStatus::Failed
@@ -823,7 +874,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 latency_micros: observed.latency_micros,
                 terminal_observed: observed.terminal_observed,
             };
-            receipts.push(feature_receipt_from_observation(request, execution)?);
+            match feature_receipt_from_observation(request, execution) {
+                Ok(receipt) => receipts.push(receipt),
+                Err(error) => {
+                    self.poisoned = true;
+                    return Err(error);
+                }
+            }
         }
         Ok(receipts)
     }
