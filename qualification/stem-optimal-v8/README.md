@@ -29,3 +29,15 @@ Synthetic source tests exercise strict route cardinality/ordering, unchanged gol
 ## What would be needed to claim *physical* savings or intelligence
 
 A genuine target-host Worker path must run exactly the routed subset of **new** heldout inputs (not all 32 then reuse results) and meter prefill/model load, 64 training features, Head training, p95/p99/CPU/RSS/energy, shared cache and amortization across 64/256/1,024/4,096 Cells; cost-account final-use grants, caller generation fences, WAL/recovery and cold cache; then test new publisher families, true independent prospective future windows, negative transfer and measured task/utility gains against cheap-only, full-model and unchanged-production baselines. Neither existing 421M model replacement nor real NDU benefit may be claimed from this fixed historical cohort.
+
+## Exact-source CI inheritance repair (2026-10-17)
+
+Earlier V7 source-only push Actions `39021795286` **failed** at import
+`ModuleNotFoundError: No module named 'packaging'` in
+`safetensors.torch`. This was a missing Python runtime dependency, not a
+numerical or model-efficacy test result. The standalone V7 source and
+real-Encoder-workflow dependency installs have now pinned
+`packaging==25.0`. This stacked V8 research branch carries the **same
+exact fixed Git blobs**, while the new V7 and V8 exact-head hosted
+normal/optimized tests and original ZIP review must independently pass.
+No green or promotion is asserted from this document update.
