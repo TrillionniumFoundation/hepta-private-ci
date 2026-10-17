@@ -603,3 +603,36 @@ fn historical_child_migration_drift_blocks_late_retirement() {
     assert_eq!(native.execute_count, effects);
     assert!(!native.stage(WriterHandoffPhaseV1::Retired).exists());
 }
+
+#[test]
+fn tampered_durable_history_fails_before_any_new_native_effect() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    advance(&mut journal, &mut native).expect("admission closed");
+    let head = journal.checkpoint().clone();
+    let effects = native.execute_count;
+
+    // Alter the first persisted evidence digest without changing byte length
+    // or touching the in-memory checkpoint. A size-only journal check is
+    // insufficient; all records must be rehashed and chained before acting.
+    let path = root.path().join("split-journal");
+    let mut bytes = fs::read(&path).expect("read current journal");
+    let needle = b"evidenceDigest\":\"";
+    let position = bytes
+        .windows(needle.len())
+        .position(|value| value == needle)
+        .expect("find encoded evidence")
+        + needle.len();
+    bytes[position] = if bytes[position] == b'a' { b'b' } else { b'a' };
+    fs::write(&path, bytes).expect("tamper exact-size journal");
+    File::open(&path).expect("reopen tampered journal").sync_all()
+        .expect("sync corruption fixture");
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::Journal(WriterHandoffErrorV1::Corrupt))
+    ));
+    assert_eq!(journal.checkpoint(), &head);
+    assert_eq!(native.execute_count, effects);
+    assert!(!native.stage(WriterHandoffPhaseV1::Drained).exists());
+}
