@@ -328,3 +328,30 @@ to diagnose that condition. The packed ALL mode remains a throughput tool for
 References:
 - https://docs.github.com/en/actions/how-tos/manage-runners/github-hosted-runners/view-current-jobs
 - https://docs.github.com/en/enterprise-cloud@latest/admin/overview/setting-up-a-trial-of-github-enterprise-cloud
+
+## Strict direct fanout and confirmed Maximum (2026-10-17)
+
+The operator has read the organization's actual hosted-runner `Maximum` as
+**500**. This is an operator-confirmed settings value, closing the earlier
+unknown-quota item; actual simultaneous execution must still be measured.
+
+The direct 250-job A/B workflow now uses the same strict `run_cases` parent as
+the previously validated packed execution. It validates the selected case and
+source SHA against the source-bound plan, requires a complete successful
+unittest lifecycle, and retains both the plan and the final result with
+`if: always()`. Artifact names identify the run, attempt, cohort and shard.
+A zero exit with a skip, expected failure or missing result remains a failure.
+
+For 500 unique jobs, dispatch A and B once each with `per_cohort=250`, the same
+exact `source_sha`, `absolute_offset=false`, and `start_index=0`. A selects
+cases 0–249 and B selects cases 250–499. In absolute-offset mode the cohort
+letter does not change the slice; equal start indexes would repeat cases.
+The two cohorts have separate concurrency groups and neither depends on a
+planning runner. Existing unrelated organization jobs also consume slots.
+
+The workload remains 500 real, distinct tests. Short tests may complete before
+later runners are allocated, so dispatching 500 jobs alone does not establish
+a 500-job overlap peak. Measure real runner assignments and half-open job
+execution intervals; report queue waits, completed strict results and the
+observed peak separately. Do not pad test runtime with sleep or a start barrier
+to manufacture concurrent occupancy.

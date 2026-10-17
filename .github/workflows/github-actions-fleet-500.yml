@@ -4,8 +4,10 @@ on:
   pull_request:
     paths:
       - scripts/github_actions_fleet_500.py
+      - scripts/github_actions_packed_ci.py
       - scripts/github_actions_runner_audit.py
       - scripts/test_github_actions_fleet_500.py
+      - scripts/test_github_actions_packed_ci.py
       - scripts/github_actions_org_capacity.py
       - scripts/test_github_actions_org_capacity.py
       - .github/workflows/github-actions-fleet-500.yml
@@ -73,7 +75,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify fleet planning and telemetry regressions
-        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500 scripts.test_github_actions_org_capacity
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500 scripts.test_github_actions_org_capacity scripts.test_github_actions_packed_ci
 
   capacity-audit:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'audit'
@@ -196,12 +198,54 @@ jobs:
             args+=(--absolute-offset --start-index "$START_INDEX")
           fi
           python3 scripts/github_actions_fleet_500.py "${args[@]}"
-      - name: Execute one real unittest method
+      - name: Execute one real unittest method with a strict result receipt
         env:
           TEST_CASE: ${{ steps.selected.outputs.case }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+          SHARD_INDEX: ${{ matrix.shard }}
           PYTHONDONTWRITEBYTECODE: "1"
         shell: bash
         run: |
           set -euo pipefail
           test -n "$TEST_CASE"
-          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH="$GITHUB_WORKSPACE/scripts"             python3 -m unittest -v "$TEST_CASE"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          from scripts.github_actions_fleet_500 import select_direct_case
+          from scripts.github_actions_packed_ci import run_cases
+
+          root = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          plan = json.loads((temporary / "real-shard.json").read_text())
+          index = int(os.environ["SHARD_INDEX"])
+          case = select_direct_case(plan, index)
+          expected_sha = os.environ["PINNED_SHA"]
+          if plan["source_sha"] != expected_sha:
+              raise ValueError("direct plan source SHA mismatch")
+          if case != plan["selected_case"] or case != os.environ["TEST_CASE"]:
+              raise ValueError("direct plan selected case mismatch")
+          schedule = {
+              "cohort": plan["cohort"],
+              "worker_count": plan["per_cohort"],
+              "worker_index": index,
+              "selected_cases": [case],
+              "manifest_sha256": plan["manifest_sha256"],
+              "case_set_sha256": hashlib.sha256(case.encode()).hexdigest(),
+          }
+          receipt = run_cases(root, expected_sha, schedule, temporary / "real-result.json")
+          print(json.dumps(receipt, sort_keys=True))
+          raise SystemExit(0 if receipt["status"] == "passed" else 1)
+          PY
+      - name: Retain source plan and strict execution result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-fleet-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.cohort }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/real-shard.json
+            ${{ runner.temp }}/real-result.json
+          if-no-files-found: warn
+          retention-days: 7
