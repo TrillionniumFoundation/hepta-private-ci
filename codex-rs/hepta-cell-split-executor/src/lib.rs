@@ -442,6 +442,46 @@ mod tests {
             cns_final_use_request_digest: d(b"final-use"),
         };
         assert!(binding.validate(&plan));
+        let mut selector_receipt = SelfEvolutionSelectionReceiptV1 {
+            selection_id: id("selection:1"),
+            objective_digest: d(b"objective"),
+            predecessor_id: id("cell:parent"),
+            predecessor_generation: plan.old_generation,
+            predecessor_artifact_digest: d(b"predecessor-model"),
+            candidate_id: id("cell-candidate:1"),
+            candidate_generation: plan.new_generation,
+            candidate_artifact_digest: d(b"artifact"),
+            no_change_baseline_id: id("no-change:1"),
+            no_change_baseline_digest: d(b"frozen-no-change"),
+            dataset_digest: d(b"dataset"),
+            ledger_head_digest: d(b"ledger-head"),
+            evaluation_evidence_digest: d(b"independent-evaluation"),
+            evaluation_authentication_digest: d(b"evaluation-signature"),
+            evaluation_trust_digest: d(b"evaluation-trust"),
+            frozen_plan_digest: d(b"frozen-plan"),
+            minimum_dataset_records: 8,
+            minimum_future_window_micros: 1_000,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        assert!(binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.no_change_baseline_digest = Digest32::ZERO;
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.no_change_baseline_digest = d(b"frozen-no-change");
+        selector_receipt.candidate_artifact_digest = d(b"other-artifact");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.candidate_artifact_digest = d(b"artifact");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"unrelated-selection"), d(b"selector-signature"),
+        ));
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), Digest32::ZERO,
+        ));
         binding.cns_final_use_request_digest = Digest32::ZERO;
         assert!(!binding.validate(&plan));
         binding.cns_final_use_request_digest = d(b"final-use");
