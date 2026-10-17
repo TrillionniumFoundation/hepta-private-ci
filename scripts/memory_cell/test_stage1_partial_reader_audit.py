@@ -2,7 +2,7 @@
 import copy
 import math
 import unittest
-from selector_answer_metrics import answer_scores
+from stage1_reader_score import answer_scores
 from stage1_partial_reader_audit import evaluate_prefix
 
 

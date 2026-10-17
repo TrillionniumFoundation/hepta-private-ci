@@ -9,7 +9,7 @@ import math
 from pathlib import Path
 import statistics
 from reader_reference import MODELS, PINS
-from selector_answer_metrics import answer_scores
+from stage1_reader_score import answer_scores
 from stage1_reader_pair import digest, insist, read_json, records_from_run, strict_json, verify_inventory
 
 GENERATING_SOURCE = "5c9acdb340975adc2d16927fdb744023bd973bd8"
