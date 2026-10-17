@@ -125,8 +125,6 @@ pub use shared_encoder::SharedEncoderOwnerV1;
 pub use shared_encoder::SharedEncoderRequestV1;
 pub use shared_encoder::SharedFeatureBatchV1;
 pub use shared_encoder::canonical_shared_encoder_feature_digest_v1;
-pub use shared_encoder::MAX_SHARED_ENCODER_CELLS_V1;
-pub use shared_encoder::MAX_SHARED_ENCODER_FEATURES_V1;
 pub use shared_encoder::canonical_shared_encoder_input_digest_v1;
 pub use sparse::InhibitoryEdge;
 pub use sparse::SparseCheckpoint;
