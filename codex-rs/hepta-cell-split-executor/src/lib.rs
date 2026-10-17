@@ -50,6 +50,17 @@ pub struct ProductSplitBindingV1 {
     /// Frozen predecessor Cell identity in the NDU selection; not necessarily
     /// the process/writer ID held in the Supervisor handoff plan.
     pub selected_predecessor_id: StableId,
+    /// Exact predecessor artifact in the independently evaluated selection.
+    pub predecessor_artifact_digest: Digest32,
+    /// Frozen evaluation objective; a different task's valid selection must
+    /// never be reinterpreted for this split.
+    pub objective_digest: Digest32,
+    /// No-change baseline identity and content are independently pinned.
+    pub no_change_baseline_id: StableId,
+    pub no_change_baseline_digest: Digest32,
+    /// The evaluation plan and the Supervisor handoff plan are DIFFERENT
+    /// protocols and must retain distinct native commitments.
+    pub evaluation_plan_digest: Digest32,
     /// Candidate identity selected by the independent, signed NDU Selector.
     /// This is distinct from the CNS topology proposal/candidate IDs.
     pub selected_candidate_id: StableId,
@@ -68,6 +79,10 @@ impl ProductSplitBindingV1 {
             && self.split.artifact_id == self.artifact_id
             && !self.split.selected_artifact_digest.is_zero()
             && !self.split.selection_digest.is_zero()
+            && !self.predecessor_artifact_digest.is_zero()
+            && !self.objective_digest.is_zero()
+            && !self.no_change_baseline_digest.is_zero()
+            && !self.evaluation_plan_digest.is_zero()
             && !self.split.predecessor_route_digest.is_zero()
             && !self.split.successor_route_digest.is_zero()
             && self.split.predecessor_route_digest != self.split.successor_route_digest
@@ -104,18 +119,20 @@ impl ProductSplitBindingV1 {
             && receipt.authority == AuthorityPosture::DENY_ALL
             && receipt.selection_id == self.selection_id
             && receipt.predecessor_id == self.selected_predecessor_id
+            && receipt.predecessor_artifact_digest == self.predecessor_artifact_digest
+            && receipt.objective_digest == self.objective_digest
+            && receipt.no_change_baseline_id == self.no_change_baseline_id
+            && receipt.no_change_baseline_digest == self.no_change_baseline_digest
+            && receipt.frozen_plan_digest == self.evaluation_plan_digest
             && receipt.candidate_id == self.selected_candidate_id
             && receipt.predecessor_generation == plan.old_generation
             && receipt.candidate_generation == plan.new_generation
             && receipt.candidate_artifact_digest == self.split.selected_artifact_digest
             && selection_digest == self.split.selection_digest
-            && !receipt.objective_digest.is_zero()
-            && !receipt.no_change_baseline_digest.is_zero()
             && !receipt.dataset_digest.is_zero()
             && !receipt.ledger_head_digest.is_zero()
             && !receipt.evaluation_evidence_digest.is_zero()
             && !receipt.evaluation_authentication_digest.is_zero()
-            && !receipt.frozen_plan_digest.is_zero()
     }
 
     fn validate_cutover(
@@ -541,6 +558,11 @@ mod tests {
             },
             artifact_id: id("artifact:1"),
             selected_predecessor_id: id("cell:parent"),
+            predecessor_artifact_digest: d(b"predecessor-model"),
+            objective_digest: d(b"objective"),
+            no_change_baseline_id: id("no-change:1"),
+            no_change_baseline_digest: d(b"frozen-no-change"),
+            evaluation_plan_digest: d(b"frozen-plan"),
             selected_candidate_id: id("cell-candidate:1"),
             selection_id: id("selection:1"),
             cns_proposal_id: id("topology:1"),
@@ -596,6 +618,31 @@ mod tests {
             &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
         ));
         selector_receipt.no_change_baseline_digest = d(b"frozen-no-change");
+        selector_receipt.no_change_baseline_id = id("alternative-baseline");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.no_change_baseline_id = id("no-change:1");
+        selector_receipt.no_change_baseline_digest = d(b"other-baseline-bytes");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.no_change_baseline_digest = d(b"frozen-no-change");
+        selector_receipt.objective_digest = d(b"unrelated-objective");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.objective_digest = d(b"objective");
+        selector_receipt.predecessor_artifact_digest = d(b"foreign-parent-model");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.predecessor_artifact_digest = d(b"predecessor-model");
+        selector_receipt.frozen_plan_digest = d(b"unrelated-evaluation-plan");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.frozen_plan_digest = d(b"frozen-plan");
         selector_receipt.candidate_artifact_digest = d(b"other-artifact");
         assert!(!binding.validate_selection_receipt(
             &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),

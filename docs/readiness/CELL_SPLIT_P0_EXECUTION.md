@@ -78,9 +78,12 @@ readback even after it is complete.
 The independent codex-hepta-cell-split-executor crate implements
 ProductSplitNativeReadbackV1. Its construction requires the opaque
 VerifiedSelfEvolutionSelectionV1 token produced by independent NDU evaluation,
-selector-signature verification and role separation. The signed predecessor Cell identity, candidate ID,
-exact Artifact ID and digest, predecessor/successor generations, frozen no-change baseline
-and exact selection digest must match the Supervisor's immutable binding. A
+selector-signature verification and role separation. The signed predecessor Cell identity and artifact, candidate ID,
+exact Artifact ID and digest, predecessor/successor generations, evaluation
+objective, frozen no-change baseline ID/digest, frozen NDU evaluation plan,
+and exact selection digest must match the immutable product admission. The
+native CNS handoff plan and NDU evaluation plan are separate commitments;
+neither may stand in for the other. A
 plain selection checksum alone is NOT authorization. Only the binding digest
 is persisted in the Supervisor observation chain, and the product bridge must
 retain a verified token throughout execution. This is selection *admission*,
