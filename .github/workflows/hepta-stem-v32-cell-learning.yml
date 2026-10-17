@@ -1,0 +1,192 @@
+name: Hepta Stem V32 original mmBERT per-Cell OOF learning (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v32_original_cell_learning.py'
+      - 'qualification/stem-cell-v1/v32_independent_numpy_review.py'
+      - 'qualification/stem-cell-v1/test_v32_original_cell_learning.py'
+      - 'qualification/stem-cell-v1/test_v32_real_original_replay.py'
+      - 'qualification/stem-cell-v1/STEM_V32_ORIGINAL_CELL_LEARNING_20261017.md'
+      - 'qualification/stem-cell-v1/STEM_V32_ORIGINAL_TRAIN_OOF_20261017.json'
+      - '.github/workflows/hepta-stem-v32-cell-learning.yml'
+  push:
+    branches:
+      - research/stem-v32-true-head-adaptation-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v32-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned original feature/Head research CPU dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.3.5' 'safetensors==0.7.0' 'PyYAML==6.0.3'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Exact-head synthetic/source-only Head and custody checks
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m py_compile qualification/stem-cell-v1/v32_original_cell_learning.py qualification/stem-cell-v1/v32_independent_numpy_review.py qualification/stem-cell-v1/test_v32_original_cell_learning.py qualification/stem-cell-v1/test_v32_real_original_replay.py
+          cd qualification/stem-cell-v1
+          python -m unittest -v test_v32_original_cell_learning
+          python -O -m unittest -v test_v32_original_cell_learning
+
+  original-pretrained-feature-training:
+    # Physical optimization and original publisher archive are push-only.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v32-true-head-adaptation-20261017' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact CPU learning and independent numerical audit environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+      - name: Acquire exact original mmBERT feature/archive without forwarding GitHub token
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          work="$RUNNER_TEMP/v32-original-archive-redirect"
+          mkdir -m 700 "$work"
+          status="$(curl --fail --silent --show-error --retry 2 --proto '=https' --max-redirs 0 \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$work/headers" --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          test "$status" = '302'
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$work/headers" | tr -d '\r')"
+          case "$location" in https://*) ;; *) echo 'Refusing non-HTTPS original artifact' >&2; exit 1 ;; esac
+          # Signed CDN link carries no repository Authorization header.
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' --output "$RUNNER_TEMP/original-mmbert.zip" "$location"
+          unset location
+          echo '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  '"$RUNNER_TEMP/original-mmbert.zip" | sha256sum -c -
+      - name: Stage 64 ORIGINAL TRAIN source rows and frozen features, not CAL/BLIND labels
+        # Full original immutable source contains pretrained feature SHA:
+        # e724b8a24605abe8959e6f3ff269c8e580f4ca6c50155d1dc9095763aab52490
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          cd qualification/stem-cell-v1
+          python v32_original_cell_learning.py stage --archive "$RUNNER_TEMP/original-mmbert.zip" --out "$RUNNER_TEMP/v32-training-material"
+          echo '69bdb09bb235c9cf490da400e239c5d9fabe8e13327cb255721090ea47d2e096  '"$RUNNER_TEMP/v32-training-material/train-source.json" | sha256sum -c -
+          echo '2530b62d48b593cebeeb783c3ee754f8229b924558340dd09fb7160c6d1e3cc3  '"$RUNNER_TEMP/v32-training-material/train-features.safetensors" | sha256sum -c -
+          rm -f "$RUNNER_TEMP/original-mmbert.zip"
+          test ! -e "$RUNNER_TEMP/original-mmbert.zip"
+          test ! -e "$RUNNER_TEMP/v32-training-material/holdout-labels.json"
+      - name: Actually fit 1440 Head updates, independently re-run all 48 learned Head tensors
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          HEPTA_V32_ORIGINAL_STAGE: ${{ runner.temp }}/v32-training-material
+          HEPTA_V32_ACTUAL_REPORT: ${{ runner.temp }}/v32-original-public-A.json
+          HEPTA_V32_ACTUAL_PRIVATE: ${{ runner.temp }}/v32-original-private-A.json
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/original-mmbert.zip"
+          cd qualification/stem-cell-v1
+          python v32_original_cell_learning.py run --source "$HEPTA_V32_ORIGINAL_STAGE" \
+            --output "$HEPTA_V32_ACTUAL_REPORT" --private "$HEPTA_V32_ACTUAL_PRIVATE"
+          python v32_independent_numpy_review.py --source "$HEPTA_V32_ORIGINAL_STAGE" \
+            --public "$HEPTA_V32_ACTUAL_REPORT" --private "$HEPTA_V32_ACTUAL_PRIVATE" \
+            --out "$RUNNER_TEMP/v32-original-numpy-review-A.json"
+          python -m unittest -v test_v32_real_original_replay
+          python -O v32_original_cell_learning.py run --source "$HEPTA_V32_ORIGINAL_STAGE" \
+            --output "$RUNNER_TEMP/v32-original-public-B.json" \
+            --private "$RUNNER_TEMP/v32-original-private-B.json"
+          python -O v32_independent_numpy_review.py --source "$HEPTA_V32_ORIGINAL_STAGE" \
+            --public "$RUNNER_TEMP/v32-original-public-B.json" \
+            --private "$RUNNER_TEMP/v32-original-private-B.json" \
+            --out "$RUNNER_TEMP/v32-original-numpy-review-B.json"
+          HEPTA_V32_ACTUAL_REPORT="$RUNNER_TEMP/v32-original-public-B.json" \
+            HEPTA_V32_ACTUAL_PRIVATE="$RUNNER_TEMP/v32-original-private-B.json" \
+            python -O -m unittest -v test_v32_real_original_replay
+          # Only identity-stable scientific values are expected to match, not
+          # different CPU timer durations or per-fold host scheduling.
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          read=lambda suffix:json.loads((root/suffix).read_bytes())
+          pa,pb=read('v32-original-public-A.json'),read('v32-original-public-B.json')
+          qa,qb=read('v32-original-private-A.json'),read('v32-original-private-B.json')
+          ra,rb=read('v32-original-numpy-review-A.json'),read('v32-original-numpy-review-B.json')
+          assert ra==rb and ra['decision']=='HOLD_TRAIN_ONLY_ORIGINAL_OOF_NOT_PROSPECTIVE'
+          assert pa['total_physical_optimizer_updates_paid']==pb['total_physical_optimizer_updates_paid']==1440
+          assert len(qa['records'])==len(qb['records'])==12
+          for a,b in zip(qa['records'],qb['records']):
+              for field in ('seed','fold','train_old_case_ids','train_new_case_ids',
+                            'held_case_ids','weights_sha256','logits_sha256'):
+                  assert a[field]==b[field],f'Original checkpoint drift: {field}'
+          assert all(pa['per_seed'][s]['arms']==pb['per_seed'][s]['arms'] for s in ('41','47','53'))
+          assert ra['unseen_future_windows']==0 and ra['production_authorized'] is False
+          assert ra['physical_optimizer_gradient_independently_replayed'] is False
+          print('True original TRAIN Head optimizer updates + 48 NumPy weight checks: HOLD/DENY_ALL')
+          PY
+          # Matching immutable source and expected historical TRAIN-only scores.
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          observed=json.loads((root/'v32-original-numpy-review-A.json').read_text())
+          frozen=json.loads(Path('STEM_V32_ORIGINAL_TRAIN_OOF_20261017.json').read_text())
+          for key in ('decision','source_bound_model_prediction_count','checkpoint_count',
+                      'physical_head_updates_charge','original_archive_sha256'):
+              assert observed[key]==frozen[key],key
+          for seed,arms in frozen['crossfit_cell_old_new_scores'].items():
+              actual=observed['crossfit_cell_old_new_scores'][seed]
+              for arm,values in arms.items():
+                  for k,v in values.items():
+                      if k.endswith('_correct'):assert actual[arm][k]==v,(seed,arm,k)
+                      else: assert abs(actual[arm][k]-v)<1e-5,(seed,arm,k)
+          assert observed['production_authorized'] is False
+          print('Original pretrained TRAIN-only panel faithfully repeats expected historical OOF; not prospective')
+          PY
+      - name: Retain only sanitized read-only NumPy aggregate, never publish private source, labels, weights or logits
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v32-train-only-original-OOF-NO_GO-${{ github.sha }}
+          path: ${{ runner.temp }}/v32-original-numpy-review-A.json
+          if-no-files-found: error
+          retention-days: 7
