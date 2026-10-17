@@ -23,6 +23,7 @@ ModalityTowerSpecV1 = MODULE.ModalityTowerSpecV1
 ProjectorRegistryV1 = MODULE.ProjectorRegistryV1
 ProjectorSpecV1 = MODULE.ProjectorSpecV1
 RegistryError = MODULE.RegistryError
+MAX_MULTIMODAL_WIDTH = MODULE.MAX_MULTIMODAL_WIDTH
 bind_modality_registries = MODULE.bind_modality_registries
 registry_manifest = MODULE.registry_manifest
 
@@ -187,6 +188,17 @@ class ModalityRegistryTests(unittest.TestCase):
                 stem_digest=FakeStem.stem_digest,
                 target_width=384,
                 projectors=(replace(projector("text", 384), output_width=256),),
+            )
+
+    def test_registry_width_matches_envelope_abi(self) -> None:
+        self.assertEqual(MAX_MULTIMODAL_WIDTH, 2048)
+        with self.assertRaises(RegistryError):
+            tower("text", MAX_MULTIMODAL_WIDTH + 1)
+        with self.assertRaises(RegistryError):
+            ProjectorRegistryV1(
+                stem_digest=FakeStem.stem_digest,
+                target_width=MAX_MULTIMODAL_WIDTH + 1,
+                projectors=(),
             )
 
 
