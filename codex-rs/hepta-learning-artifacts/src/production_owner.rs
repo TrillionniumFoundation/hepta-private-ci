@@ -500,7 +500,8 @@ impl ArtifactCasOwnerV1 {
             // leave readiness denied until a later, quiescent flush succeeds.
             return false;
         }
-        self.metrics_flushed_epoch.store(observed, Ordering::Release);
+        self.metrics_flushed_epoch
+            .store(observed, Ordering::Release);
         self.production_metrics_ready()
     }
 
@@ -1663,9 +1664,14 @@ mod tests {
         assert!(owner.production_metrics_ready());
 
         // Inject the exact exhaustion boundary rather than looping 2^64 times.
-        owner.failed_metric_records.store(u64::MAX, Ordering::Release);
+        owner
+            .failed_metric_records
+            .store(u64::MAX, Ordering::Release);
         let rejected = owner.with_metrics_sink(Arc::new(CapturedOwnerMetrics::default()));
-        assert_eq!(rejected.failed_metric_records.load(Ordering::Acquire), u64::MAX);
+        assert_eq!(
+            rejected.failed_metric_records.load(Ordering::Acquire),
+            u64::MAX
+        );
         assert!(!rejected.production_metrics_ready());
         assert!(!rejected.flush_production_metrics());
     }
@@ -1682,7 +1688,9 @@ mod tests {
         assert!(owner.flush_production_metrics());
         assert!(owner.production_metrics_ready());
 
-        owner.failed_metric_records.store(u64::MAX, Ordering::Release);
+        owner
+            .failed_metric_records
+            .store(u64::MAX, Ordering::Release);
         let result: Result<u32, ()> = owner.timed(
             Digest32::of_bytes(b"scope.metric-failure-overflow"),
             Digest32::of_bytes(b"operation.metric-failure-overflow"),
@@ -1691,7 +1699,10 @@ mod tests {
         );
         assert_eq!(result, Ok(43));
         assert_eq!(sink.record_attempts.load(Ordering::Acquire), 1);
-        assert_eq!(owner.failed_metric_records.load(Ordering::Acquire), u64::MAX);
+        assert_eq!(
+            owner.failed_metric_records.load(Ordering::Acquire),
+            u64::MAX
+        );
         assert!(!owner.production_metrics_ready());
         assert!(!owner.flush_production_metrics());
     }
