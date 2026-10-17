@@ -1,0 +1,78 @@
+name: Hepta P0 global Ruff repair proposal (diagnostic only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/test_run_bazel_ci.py"
+      - "scripts/check_neuron_qualification_triggers.py"
+      - "scripts/test_hepta_candidate_transport_workflow.py"
+      - "scripts/test_windows_proxy_bazel_leaf.py"
+      - ".github/workflows/hepta-p0-global-ruff-proposal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-ruff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-ruff-proposal:
+    name: Authentic pinned Ruff patch (not acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout immutable exact head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Require exact unchanged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install pinned official Ruff environment
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Generate byte-for-byte original Ruff formatter patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-ruff"
+          files=(
+            .github/scripts/test_run_bazel_ci.py
+            scripts/check_neuron_qualification_triggers.py
+            scripts/test_hepta_candidate_transport_workflow.py
+            scripts/test_windows_proxy_bazel_leaf.py
+          )
+          uv run --frozen --project scripts ruff format "${files[@]}"
+          uv run --frozen --project scripts ruff format --check "${files[@]}"
+          python3 -m py_compile "${files[@]}"
+          git diff --binary -- "${files[@]}" > "$RUNNER_TEMP/hepta-ruff/Ruff.patch"
+          test -s "$RUNNER_TEMP/hepta-ruff/Ruff.patch"
+          git diff --check
+      - name: Upload exactly the formatted source changes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p0-exact-ruff-patch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-ruff/Ruff.patch
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Deny qualifying an uncommitted formatter proposal
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          if ! git diff --quiet -- .github/scripts/test_run_bazel_ci.py scripts/check_neuron_qualification_triggers.py scripts/test_hepta_candidate_transport_workflow.py scripts/test_windows_proxy_bazel_leaf.py; then
+            echo "::error::Ruff formatter proposal not yet committed. Review genuine source diff; this diagnostic is not CI acceptance."
+            exit 1
+          fi
+          test -z "$(git status --porcelain --untracked-files=no)"
