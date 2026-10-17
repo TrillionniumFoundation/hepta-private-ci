@@ -221,12 +221,13 @@ class ComponentResourceReceiptV1:
         }, "unsupported resource component kind")
         _digest("artifact_digest", self.artifact_digest)
         _digest("measurement_digest", self.measurement_digest)
+        is_device = self.component_kind == "device"
         for name, value in (
             ("forward_calls", self.forward_calls),
             ("input_tokens", self.input_tokens),
             ("parameter_count", self.parameter_count),
         ):
-            _integer(name, value, minimum=0 if name == "parameter_count" and self.component_kind == "device" else 1)
+            _integer(name, value, minimum=0 if is_device else 1)
         for name, value in (
             ("flops", self.flops),
             ("peak_memory_bytes", self.peak_memory_bytes),
@@ -237,7 +238,8 @@ class ComponentResourceReceiptV1:
         ):
             _finite(name, value)
         _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "component latency quantiles must be ordered")
-        _require(self.flops > 0 and self.peak_memory_bytes > 0 and self.p95_latency_ms > 0 and self.energy_mj > 0, "component resources must be positive")
+        _require(self.peak_memory_bytes > 0 and self.p95_latency_ms > 0 and self.energy_mj > 0, "component resources must be positive")
+        _require(is_device or self.flops > 0, "model component FLOPs must be positive")
         _require(self.evidence_class == "REAL_SHADOW", "only REAL_SHADOW components can qualify")
         _boolean("complete", self.complete)
         _require(self.complete, "incomplete component receipts cannot qualify")
