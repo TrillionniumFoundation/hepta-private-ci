@@ -59,6 +59,53 @@ def run(name, *, sha=HEAD, base=BASE, conclusion="success", event="pull_request"
 
 
 class ExactPrCiTests(unittest.TestCase):
+    def test_explicit_modern_fix_branch_requires_exact_ref_and_head(self):
+        candidate = pr()
+        candidate["head"]["ref"] = "fix/hepta-original-rustfmt-native-20261017"
+        with self.assertRaisesRegex(ValueError, "differs from pin"):
+            GATE.validate_pr(candidate, REPO, 1468, HEAD)
+        expected = candidate["head"]["ref"]
+        self.assertEqual(
+            GATE.validate_pr(candidate, REPO, 1468, HEAD, expected_ref=expected),
+            (expected, BASE),
+        )
+        self.assertTrue(
+            GATE.evaluate(
+                candidate,
+                [run(name) for name in GATE.REQUIRED],
+                REPO,
+                1468,
+                HEAD,
+                expected_ref=expected,
+            )["qualified"]
+        )
+        for wrong_ref in ("fix/another-head", "integration/other-owner", "codex/stale"):
+            with self.subTest(wrong_ref=wrong_ref):
+                with self.assertRaisesRegex(ValueError, "differs from pin"):
+                    GATE.validate_pr(
+                        candidate, REPO, 1468, HEAD, expected_ref=wrong_ref
+                    )
+        with self.assertRaisesRegex(ValueError, "differs from pin"):
+            GATE.validate_pr(candidate, REPO, 1468, "c" * 40, expected_ref=expected)
+
+    def test_rejects_invalid_ref_even_with_exact_sha_and_explicit_pin(self):
+        for unsafe in (
+            "fix//bad",
+            "fix/../bad",
+            "fix/.lock",
+            "fix/invalid@{ref}",
+            "fix/trailing.",
+            "fix/trailing/",
+            "",
+        ):
+            with self.subTest(unsafe=unsafe):
+                candidate = pr()
+                candidate["head"]["ref"] = unsafe
+                with self.assertRaisesRegex(ValueError, "differs from pin"):
+                    GATE.validate_pr(
+                        candidate, REPO, 1468, HEAD, expected_ref=unsafe
+                    )
+
     def test_full_exact_pr_workflow_set_is_required(self):
         all_runs = [run(name) for name in GATE.REQUIRED]
         result = GATE.evaluate(pr(), all_runs, REPO, 1468, HEAD)
