@@ -134,6 +134,44 @@ class ContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             validate_no_model_visible_gold(bad)
 
+    def test_reader_validator_rejects_missing_or_undeclared_requests(self):
+        plan = build_four_condition_plan(
+            task_id="reader.task",
+            question="q",
+            options=("a",),
+            source_evidence="s",
+            distractor_evidence="d",
+            withheld_evidence="w",
+            evaluator_gold="a",
+        )
+        missing = dict(plan)
+        missing["model_requests"] = ()
+        with self.assertRaises(ContractError):
+            validate_no_model_visible_gold(missing)
+        undeclared = dict(plan)
+        undeclared["model_requests"] = tuple({**request, "nested": {"gold": "a"}} for request in plan["model_requests"])
+        with self.assertRaises(ContractError):
+            validate_no_model_visible_gold(undeclared)
+
+    def test_reader_validator_rejects_wrong_task_or_duplicate_arm(self):
+        plan = build_four_condition_plan(
+            task_id="reader.task",
+            question="q",
+            options=("a",),
+            source_evidence="s",
+            distractor_evidence="d",
+            withheld_evidence="w",
+            evaluator_gold="a",
+        )
+        bad_task = dict(plan)
+        bad_task["model_requests"] = ({**plan["model_requests"][0], "task_id": "other.task"}, *plan["model_requests"][1:])
+        with self.assertRaises(ContractError):
+            validate_no_model_visible_gold(bad_task)
+        duplicate = dict(plan)
+        duplicate["model_requests"] = tuple({**request, "arm": "none"} for request in plan["model_requests"])
+        with self.assertRaises(ContractError):
+            validate_no_model_visible_gold(duplicate)
+
     def test_split_gate_passes_only_with_future_lower_bound(self):
         gate = SplitGateV1(0.82, 0.80, 0.01, 0.02, 0.001, 1, 1, 0)
         proposal = propose_split(PARENT, child_id="cell.reasoning.v2", failure_cluster="long_horizon", gate=gate)
@@ -159,6 +197,26 @@ class ContractTests(unittest.TestCase):
         proposal = propose_split(PARENT, child_id="cell.reasoning.v2", failure_cluster="memory", gate=gate)
         self.assertNotEqual(proposal.parent.state_namespace, proposal.child.state_namespace)
         self.assertEqual(proposal.child.head_digest, proposal.parent.head_digest)
+
+    def test_split_proposal_requires_parent_fallback_and_zero_delta(self):
+        gate = SplitGateV1(0.82, 0.80, 0.01, 0.02, 0.001, 1, 1, 0)
+        child = CellArtifactV1(
+            cell_id="cell.reasoning.v2",
+            parent_cell_id=PARENT.cell_id,
+            stem_digest=PARENT.stem_digest,
+            adapter_basis_digest=PARENT.adapter_basis_digest,
+            adapter_rank=PARENT.adapter_rank,
+            layer_mask=PARENT.layer_mask,
+            head_digest=PARENT.head_digest,
+            memory_schema_digest=PARENT.memory_schema_digest,
+            state_namespace="state.reasoning.v1.split.v2",
+            objective_digest=PARENT.objective_digest,
+            generation=1,
+            fallback_cell_id=None,
+        )
+        from stem_transfer_cell_artifact import SplitProposalV1
+        with self.assertRaises(ContractError):
+            SplitProposalV1(PARENT, child, gate, "accept_next_snapshot", "memory")
 
     def test_split_acceptance_cannot_ignore_a_failed_gate(self):
         gate = SplitGateV1(0.70, 0.80, 0.01, 0.02, 0.001, 1, 1, 0)
@@ -192,6 +250,10 @@ class ContractTests(unittest.TestCase):
             ModalityEnvelopeV1("text", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, region_count=1)
         with self.assertRaises(ContractError):
             ModalityEnvelopeV1("text", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, readonly=False)
+        with self.assertRaises(ContractError):
+            ModalityEnvelopeV1("text", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, readonly="false")
+        with self.assertRaises(ContractError):
+            ModalityEnvelopeV1("image", STEM.stem_digest, digest("raw"), digest("feature"), digest("projector"), 384, 1, temporal_span_ms=10)
 
     def _system2_cost(self, scale):
         return ResourceCostV1(10 * scale, 5 * scale, 2 * scale, 1 * scale, 1 * scale, 1 * scale, 1 * scale)
@@ -218,6 +280,15 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(cost.total_units, 21)
         with self.assertRaises(ContractError):
             System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), 1, 2, cost, digest("evidence"), model_efficacy_measured=True)
+
+    def test_system2_accepts_negative_net_utility_intervals(self):
+        cost = self._system2_cost(1)
+        candidate = System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), -5, -4, cost, digest("evidence"))
+        self.assertLess(candidate.net_ucb, 0)
+
+    def test_system2_rejects_non_boolean_feasibility(self):
+        with self.assertRaises(ContractError):
+            System2CandidateV1("cell.a", STEM.stem_digest, digest("objective"), 1, 2, self._system2_cost(1), digest("evidence"), feasible="false")
 
 
 if __name__ == "__main__":
