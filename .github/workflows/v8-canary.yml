@@ -320,6 +320,7 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN="1.95.0" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
             "${CARGO_1_95}" "${cargo_args[@]}"
