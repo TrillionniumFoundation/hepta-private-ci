@@ -98,6 +98,8 @@ pub enum CompositionError {
     EncoderIdentityMismatch,
     CellKeyMismatch,
     DuplicateCellInFanout,
+    InvalidRequest,
+    DriverFailure(&'static str),
 }
 
 impl fmt::Display for CompositionError {
@@ -248,6 +250,28 @@ impl SharedEncoderPool {
             + self.cells.values().map(|item| item.head.private_memory_bytes).sum::<u64>()
     }
 
+
+    pub fn key_for_cell(&self, cell_id: &str) -> Result<CompositionKey, CompositionError> {
+        self.cells
+            .get(cell_id)
+            .map(|cell| cell.key.clone())
+            .ok_or(CompositionError::CellNotBound)
+    }
+
+    pub fn head_for_cell(&self, cell_id: &str) -> Result<CellHeadManifest, CompositionError> {
+        self.cells
+            .get(cell_id)
+            .map(|cell| cell.head.clone())
+            .ok_or(CompositionError::CellNotBound)
+    }
+
+    pub fn encoder_reference_count(&self, key: &CompositionKey) -> Result<usize, CompositionError> {
+        self.encoders
+            .get(key)
+            .map(|encoder| encoder.references)
+            .ok_or(CompositionError::CellKeyMismatch)
+    }
+
     fn receipt_for(
         &self,
         key: &CompositionKey,
@@ -264,6 +288,143 @@ impl SharedEncoderPool {
             active_cells: self.cells.len(),
             resident_encoders: self.encoders.len(),
         })
+    }
+}
+
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompositionRequest {
+    pub cell_id: String,
+    pub input_digest: String,
+    pub maximum_tokens: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompositionRunObservation {
+    pub output_digest: String,
+    pub consumed_tokens: u32,
+}
+
+pub trait CompositionDriver {
+    type Handle: Clone;
+
+    fn load_encoder(&mut self, key: &CompositionKey) -> Result<Self::Handle, CompositionError>;
+    fn unload_encoder(
+        &mut self,
+        key: &CompositionKey,
+        handle: Self::Handle,
+    ) -> Result<(), CompositionError>;
+    fn run_head(
+        &mut self,
+        handle: &Self::Handle,
+        head: &CellHeadManifest,
+        request: &CompositionRequest,
+    ) -> Result<CompositionRunObservation, CompositionError>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompositionExecutionObservation {
+    pub cell_id: String,
+    pub output_digest: String,
+    pub consumed_tokens: u32,
+    pub shared_memory_bytes: u64,
+    pub private_head_memory_bytes: u64,
+}
+
+pub struct CompositionWorker<D: CompositionDriver> {
+    pool: SharedEncoderPool,
+    driver: D,
+    handles: BTreeMap<CompositionKey, D::Handle>,
+}
+
+impl<D: CompositionDriver> CompositionWorker<D> {
+    pub fn new(pool: SharedEncoderPool, driver: D) -> Self {
+        Self {
+            pool,
+            driver,
+            handles: BTreeMap::new(),
+        }
+    }
+
+    pub fn attach_cell(
+        &mut self,
+        key: CompositionKey,
+        head: CellHeadManifest,
+        shared_memory_bytes: u64,
+    ) -> Result<CompositionReceipt, CompositionError> {
+        let cell_id = head.cell_id.clone();
+        let receipt = self.pool.attach_cell(key.clone(), head, shared_memory_bytes)?;
+        if receipt.encoder_loaded {
+            match self.driver.load_encoder(&key) {
+                Ok(handle) => {
+                    self.handles.insert(key, handle);
+                }
+                Err(error) => {
+                    let _ = self.pool.detach_cell(&cell_id);
+                    return Err(error);
+                }
+            }
+        }
+        Ok(receipt)
+    }
+
+    pub fn detach_cell(&mut self, cell_id: &str) -> Result<CompositionReceipt, CompositionError> {
+        let key = self.pool.key_for_cell(cell_id)?;
+        let references = self.pool.encoder_reference_count(&key)?;
+        if references == 1 {
+            let handle = self
+                .handles
+                .remove(&key)
+                .ok_or(CompositionError::DriverFailure("missing encoder handle"))?;
+            if let Err(error) = self.driver.unload_encoder(&key, handle.clone()) {
+                self.handles.insert(key, handle);
+                return Err(error);
+            }
+        }
+        self.pool.detach_cell(cell_id)
+    }
+
+    pub fn run(
+        &mut self,
+        request: CompositionRequest,
+    ) -> Result<CompositionExecutionObservation, CompositionError> {
+        if request.cell_id.is_empty()
+            || request.input_digest.is_empty()
+            || request.maximum_tokens == 0
+        {
+            return Err(CompositionError::InvalidRequest);
+        }
+        let key = self.pool.key_for_cell(&request.cell_id)?;
+        let head = self.pool.head_for_cell(&request.cell_id)?;
+        if request.maximum_tokens > head.maximum_tokens {
+            return Err(CompositionError::InvalidTokens);
+        }
+        let handle = self
+            .handles
+            .get(&key)
+            .ok_or(CompositionError::DriverFailure("missing encoder handle"))?;
+        let observed = self.driver.run_head(handle, &head, &request)?;
+        if observed.consumed_tokens > request.maximum_tokens {
+            return Err(CompositionError::InvalidTokens);
+        }
+        Ok(CompositionExecutionObservation {
+            cell_id: request.cell_id,
+            output_digest: observed.output_digest,
+            consumed_tokens: observed.consumed_tokens,
+            shared_memory_bytes: self
+                .pool
+                .fanout(&key, &[head.cell_id.clone()])?
+                .shared_memory_bytes,
+            private_head_memory_bytes: head.private_memory_bytes,
+        })
+    }
+
+    pub fn resident_encoder_count(&self) -> usize {
+        self.pool.resident_encoder_count()
+    }
+
+    pub fn active_cell_count(&self) -> usize {
+        self.pool.active_cell_count()
     }
 }
 
@@ -290,6 +451,74 @@ mod tests {
             private_memory_bytes: bytes,
             maximum_tokens: 128,
         }
+    }
+
+
+    #[derive(Default)]
+    struct WorkerDriver {
+        loads: usize,
+        unloads: usize,
+        runs: usize,
+    }
+
+    impl CompositionDriver for WorkerDriver {
+        type Handle = String;
+
+        fn load_encoder(&mut self, key: &CompositionKey) -> Result<Self::Handle, CompositionError> {
+            self.loads += 1;
+            Ok(format!("encoder:{}", key.device_digest))
+        }
+
+        fn unload_encoder(
+            &mut self,
+            _key: &CompositionKey,
+            _handle: Self::Handle,
+        ) -> Result<(), CompositionError> {
+            self.unloads += 1;
+            Ok(())
+        }
+
+        fn run_head(
+            &mut self,
+            handle: &Self::Handle,
+            head: &CellHeadManifest,
+            request: &CompositionRequest,
+        ) -> Result<CompositionRunObservation, CompositionError> {
+            self.runs += 1;
+            assert!(handle.starts_with("encoder:"));
+            assert_eq!(head.cell_id, request.cell_id);
+            Ok(CompositionRunObservation {
+                output_digest: format!("output:{}", request.input_digest),
+                consumed_tokens: request.maximum_tokens,
+            })
+        }
+    }
+
+    #[test]
+    fn composition_worker_loads_once_and_unloads_after_last_cell() {
+        let pool = SharedEncoderPool::new(2, 8).expect("pool");
+        let mut worker = CompositionWorker::new(pool, WorkerDriver::default());
+        worker
+            .attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+            .expect("first");
+        worker
+            .attach_cell(key("cuda-0"), head("cell-b", 20), 100)
+            .expect("second");
+        assert_eq!(worker.driver.loads, 1);
+        let observed = worker
+            .run(CompositionRequest {
+                cell_id: "cell-b".into(),
+                input_digest: "input-1".into(),
+                maximum_tokens: 16,
+            })
+            .expect("run");
+        assert_eq!(observed.shared_memory_bytes, 100);
+        assert_eq!(worker.driver.runs, 1);
+        worker.detach_cell("cell-a").expect("detach first");
+        assert_eq!(worker.driver.unloads, 0);
+        worker.detach_cell("cell-b").expect("detach last");
+        assert_eq!(worker.driver.unloads, 1);
+        assert_eq!(worker.resident_encoder_count(), 0);
     }
 
     #[test]
