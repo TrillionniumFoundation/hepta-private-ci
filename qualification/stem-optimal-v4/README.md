@@ -129,3 +129,12 @@ This witness is produced by the same original Encoder job and is a
 forward, issuer signature, hardware attestation, learned reasoning, safe
 Cell Split, or a new source-independent future evaluation. Any selected
 model or qualified calibration claim remains DENIED.
+
+## V8 CI dependency/queue repair (observed original regression, research only)
+
+- Original V5 [Actions #39019352546](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39019352546) and V6 [Actions #39020833282](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39020833282) **source jobs failed**, so every physical original model job on those SHAs was **skipped**. The exact six original tensor material tests failed to import `safetensors.torch` because the otherwise-pinned source-test Python install omitted `packaging` (`ModuleNotFoundError`), **not** because the tensor audit accepted or rejected original pretrained weights.
+- The scoped V8 source job now installs and verifies `packaging==25.0` alongside `torch==2.6.0`, NumPy and safetensors **before** executing every existing test. The real EmbeddingGemma-only job also pins that dependency; no test method, assertion, input material, model SHA, decoder, scoring contract, original evidence or security gate is relaxed.
+- Concurrency is now limited to the same **Git ref**, with `cancel-in-progress: true`: superseded research-only pushes on this ref may be cancelled rather than occupying runners. A cancelled run remains cancelled, not a passed test or a valid original evaluation receipt. Other branches and workflows are unaffected.
+- This source change alone does **not** prove the original 1.49 GB EmbeddingGemma model loads, the complete source-value material matches, or that any prospective task/calibration benefit exists. Require a complete, terminal, exact new-HEAD run including independent blinded review and all global `blocking-ci` gates before considering scientific admission.
+
+**DRAFT / RESEARCH_ONLY / SHADOW_ONLY / HOLD_NO_GO / DENY_ALL / NO FINALUSE.**
