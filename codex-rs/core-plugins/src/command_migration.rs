@@ -317,7 +317,7 @@ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
     let mapping = parsed.as_mapping()?;
     mapping.iter().find_map(|(key, value)| {
-        if key.as_str()?.trim() == "description" {
+        if key.trim() == "description" {
             yaml_scalar(value)
         } else {
             None
