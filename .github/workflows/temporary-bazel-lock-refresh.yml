@@ -6,7 +6,7 @@ on:
       - fix/security-zip-20261017
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   refresh:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
+          persist-credentials: true
       - name: Prepare Bazel CI
         uses: ./.github/actions/prepare-bazel-ci
         with:
@@ -23,8 +23,16 @@ jobs:
           cache-scope: lock-refresh
       - name: Refresh MODULE.bazel.lock
         run: bazel mod deps --lockfile_mode=update
-      - name: Upload refreshed lock
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: refreshed-module-bazel-lock
-          path: MODULE.bazel.lock
+      - name: Commit refreshed lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- MODULE.bazel.lock; then
+            echo "MODULE.bazel.lock already current"
+            exit 0
+          fi
+          git config user.name "hepta-ci-lock-refresh"
+          git config user.email "hepta-ci-lock-refresh@users.noreply.github.com"
+          git add MODULE.bazel.lock
+          git commit -m "chore: refresh Bazel module lock"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
