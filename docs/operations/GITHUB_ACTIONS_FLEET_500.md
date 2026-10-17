@@ -186,3 +186,40 @@ This design does **not** guarantee 500 *simultaneously running* jobs:
 individually short tests and GitHub's runner admission rate can keep the
 peak far below 500 even if all 500 jobs eventually complete. Measure
 actual overlapping execution intervals with the org-capacity audit.
+
+## Packed real-test throughput mode (opt-in)
+
+The full 2×250 test-per-Job workflow proved **500 real completed successes** in
+2026-10-17, but **only 8 actually overlapped** because 250 workers spent
+70–90 minutes median in GitHub runner admission and each assigned Job took
+a median of 6 seconds. Additional one-case-per-runner dispatches waste network
+and scheduling overhead rather than creating useful compute concurrency.
+
+\`.github/workflows/github-actions-fleet-packed.yml\` is an independent,
+manual-only throughput experiment for exactly the *same* source-bound cohort
+partition: choose A and B, the same complete Git commit SHA, \`workers=16\`,
+and an appropriate Linux hosted runner label. This creates **16 real workers
+per cohort, each executing 15–16 different Python unittest methods**
+(32 workers for the 500 distinct tests). Alternatives 8/32 supported.
+Each runner downloads/checks out source **once**, then invokes individual
+\`unittest\` methods in fresh Python child processes.
+
+\`scripts/github_actions_packed_ci.py\` enforces:
+- Exact 40-hex checkout SHA and clean Git worktree before and after each case.
+- Deterministic, gap-free A/B 250-method partition; no test-case duplicates.
+- Independent worker scheduling by \`case_index % worker_count\`.
+- Per-case execution in a new Python subprocess with a bounded 120-second
+  timeout; failures/timeouts are retained, never reclassified as success.
+- Atomic JSON receipt after every case, recording each exact method ID,
+  exit status, observed milliseconds, and SHA256 of captured output.
+  The workflow uploads this receipt even on a failed worker.
+- Success only if every assigned case actually completes and passes.
+  Missing receipt, skipped case, source mutation, or invalid arguments fail.
+
+This is **not** a way to claim 500 concurrently running Runners. Its
+purpose is to reduce the number of queue admissions and GitHub source fetches
+needed to execute the same 500 real cases, then compare *elapsed wall-clock
+time, queue latency, actual CPU-time throughput and failure evidence*.
+The original 2×250 and org-wide overlap-proof code remain available and
+unchanged. This packed workflow has no secrets or elevated permissions and
+cannot write to the repository.
