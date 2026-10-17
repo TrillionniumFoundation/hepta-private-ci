@@ -573,8 +573,7 @@ fn neuron_batch_reported_memory_within_grant<'a>(
     let mut observed_any = false;
     for item in observations {
         observed_any = true;
-        peak_reported_resident_bytes =
-            peak_reported_resident_bytes.max(item.observed_memory_bytes);
+        peak_reported_resident_bytes = peak_reported_resident_bytes.max(item.observed_memory_bytes);
         // A driver reporting scratch-only bytes or an impossible Q24 floor
         // cannot silently understate the physical cohort. Such telemetry
         // must be corrected or rejected before returning a success.

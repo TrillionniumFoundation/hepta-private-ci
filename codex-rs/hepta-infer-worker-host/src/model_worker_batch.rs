@@ -699,7 +699,10 @@ mod tests {
             let result = worker.run_neuron_features_batch(
                 100,
                 "model.v2",
-                vec![feature("request.cohort.a", 'b'), feature("request.cohort.b", 'c')],
+                vec![
+                    feature("request.cohort.a", 'b'),
+                    feature("request.cohort.b", 'c'),
+                ],
             );
             assert_eq!(worker.driver.batches, 1);
             assert!(worker.active_requests.is_empty());
@@ -730,9 +733,11 @@ mod tests {
             reported_transient_bytes: Some(2048),
             ..BatchMock::default()
         });
-        assert!(exact
-            .run_neuron_features_batch(100, "model.v2", vec![feature("exact", 'b')])
-            .is_ok());
+        assert!(
+            exact
+                .run_neuron_features_batch(100, "model.v2", vec![feature("exact", 'b')])
+                .is_ok()
+        );
         assert!(!exact.poisoned);
 
         for transient in [2049_u64, u64::MAX] {

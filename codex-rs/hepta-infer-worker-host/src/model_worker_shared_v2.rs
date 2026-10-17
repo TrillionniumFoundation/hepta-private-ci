@@ -817,7 +817,11 @@ mod tests {
             }
             assert_ne!(
                 observation_digest_v3(
-                    &changed, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest
+                    &changed,
+                    &observation,
+                    ExecutionStatus::Succeeded,
+                    3,
+                    snapshot_digest
                 ),
                 baseline
             );
@@ -828,7 +832,11 @@ mod tests {
         changed.snapshot = Arc::new(snapshot);
         assert_ne!(
             observation_digest_v3(
-                &changed, &observation, ExecutionStatus::Succeeded, 3, snapshot_digest
+                &changed,
+                &observation,
+                ExecutionStatus::Succeeded,
+                3,
+                snapshot_digest
             ),
             baseline
         );
@@ -851,7 +859,10 @@ mod tests {
         };
         assert!(validate_item(&a, 10, 3, 2, &manifest).is_ok());
         manifest.normalizer_digest = "f".repeat(64);
-        assert_eq!(validate_item(&a, 10, 3, 2, &manifest), Err(Error::ModelMismatch));
+        assert_eq!(
+            validate_item(&a, 10, 3, 2, &manifest),
+            Err(Error::ModelMismatch)
+        );
         manifest.normalizer_digest = a.snapshot.identity.normalizer_digest.to_string();
         let same_partition = req("cell.b", "req.2", frame(2));
         assert!(validate_batch_partition_v2(&[a.clone(), same_partition.clone()]).is_ok());
@@ -1089,11 +1100,8 @@ mod tests {
             )
             .expect("worker");
             worker.load_model(1, manifest.clone()).expect("load");
-            let result = worker.run_shared_neuron_features_batch_v2(
-                100,
-                "model.shared",
-                requests.clone(),
-            );
+            let result =
+                worker.run_shared_neuron_features_batch_v2(100, "model.shared", requests.clone());
             assert_eq!(worker.driver.calls, 1);
             assert!(worker.active_requests.is_empty());
             assert_eq!(worker.models["model.shared"].active_requests, 0);
