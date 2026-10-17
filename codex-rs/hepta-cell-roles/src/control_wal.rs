@@ -178,7 +178,9 @@ impl ControlWalEventV1 {
                 if &intent.cell_id != expected_cell || intent.scope_digest != expected_scope {
                     return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
                 }
-                Ok(ControlWalOutputV1::Receipt(owner.prepare(intent.as_ref().clone())?))
+                Ok(ControlWalOutputV1::Receipt(
+                    owner.prepare(intent.as_ref().clone())?,
+                ))
             }
             Self::Forward(id) => Ok(ControlWalOutputV1::Receipt(owner.forward(id)?)),
             Self::Terminal(id, digest) => Ok(ControlWalOutputV1::Receipt(
