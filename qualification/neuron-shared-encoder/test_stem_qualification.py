@@ -80,20 +80,21 @@ def metric(metric_id: str = "quality") -> MetricIntervalV1:
 
 
 def component(kind: str) -> ComponentResourceReceiptV1:
+    is_device = kind == "device"
     return ComponentResourceReceiptV1(
         component_id=f"{kind}.run",
         component_kind=kind,
         artifact_digest=digest(f"{kind}.artifact"),
         measurement_digest=digest(f"{kind}.measurement"),
-        forward_calls=100,
-        input_tokens=1000,
-        flops=1000.0,
+        forward_calls=0 if is_device else 100,
+        input_tokens=0 if is_device else 1000,
+        flops=0.0 if is_device else 1000.0,
         peak_memory_bytes=10000.0,
         p50_latency_ms=1.0,
         p95_latency_ms=2.0,
         p99_latency_ms=3.0,
         energy_mj=1.0,
-        parameter_count=100,
+        parameter_count=0 if is_device else 100,
     )
 
 
@@ -172,6 +173,10 @@ class StemQualificationTests(unittest.TestCase):
     def test_component_quantiles_must_be_ordered(self) -> None:
         with self.assertRaises(StemQualificationError):
             replace(component("device"), p95_latency_ms=0.5)
+
+    def test_device_receipt_allows_zero_compute(self) -> None:
+        self.assertEqual(component("device").flops, 0.0)
+        self.assertEqual(component("device").parameter_count, 0)
 
     def test_component_bundle_requires_all_kinds(self) -> None:
         with self.assertRaises(StemQualificationError):
