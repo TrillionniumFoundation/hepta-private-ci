@@ -26,7 +26,14 @@ impl WorkspaceBinding {
         let path = path.into();
         validate_absolute_normalized(&path, "workspace root")?;
         let canonical = path.canonicalize()?;
-        if canonical != path {
+        let same_canonical_path = canonical == path;
+        // Windows canonicalize() returns a verbatim \\?\ prefix even for
+        // ordinary absolute paths. Only accept that spelling change; do not
+        // normalize path components or weaken the existing symlink check.
+        #[cfg(windows)]
+        let same_canonical_path =
+            same_canonical_path || same_windows_path_except_verbatim_prefix(&path, &canonical);
+        if !same_canonical_path {
             return Err(FleetRegistryError::Invalid(format!(
                 "workspace root must be canonical and must not traverse a symlink: {}",
                 path.display()
@@ -203,4 +210,72 @@ fn validate_absolute_normalized(path: &Path, label: &str) -> Result<(), FleetReg
         )));
     }
     Ok(())
+}
+
+#[cfg(windows)]
+fn same_windows_path_except_verbatim_prefix(requested: &Path, canonical: &Path) -> bool {
+    use std::os::windows::ffi::OsStrExt as _;
+
+    // Work with exact UTF-16 code units instead of lossy UTF-8 conversion,
+    // lexical component cleanup or case-folding. A symlink, junction, "..",
+    // "." or changed subtree cannot become admissible by this comparison.
+    const VERBATIM: [u16; 4] = [92, 92, 63, 92]; // \\?\
+    const VERBATIM_UNC: [u16; 8] = [92, 92, 63, 92, 85, 78, 67, 92]; // \\?\UNC\
+    const UNC: [u16; 2] = [92, 92]; // \\
+
+    let original: Vec<u16> = requested.as_os_str().encode_wide().collect();
+    let resolved: Vec<u16> = canonical.as_os_str().encode_wide().collect();
+    if resolved.starts_with(&VERBATIM_UNC) {
+        return original.starts_with(&UNC)
+            && resolved[VERBATIM_UNC.len()..] == original[UNC.len()..];
+    }
+    resolved.starts_with(&VERBATIM) && resolved[VERBATIM.len()..] == original
+}
+
+#[cfg(all(test, windows))]
+mod windows_workspace_binding_tests {
+    use super::*;
+
+    #[test]
+    fn verbatim_prefix_is_only_an_exact_spelling_exception() {
+        let ordinary = Path::new(r"C:\temp\workspace");
+        let verbatim = Path::new(r"\\?\C:\temp\workspace");
+        assert!(same_windows_path_except_verbatim_prefix(ordinary, verbatim));
+        assert!(!same_windows_path_except_verbatim_prefix(
+            Path::new(r"C:\temp\other"),
+            verbatim,
+        ));
+        assert!(!same_windows_path_except_verbatim_prefix(
+            Path::new(r"C:\temp\..\temp\workspace"),
+            verbatim,
+        ));
+        assert!(!same_windows_path_except_verbatim_prefix(
+            Path::new(r"C:\temp\.\workspace"),
+            verbatim,
+        ));
+        assert!(same_windows_path_except_verbatim_prefix(
+            Path::new(r"\\server\share\workspace"),
+            Path::new(r"\\?\UNC\server\share\workspace"),
+        ));
+        assert!(!same_windows_path_except_verbatim_prefix(
+            Path::new(r"\\server\share\other"),
+            Path::new(r"\\?\UNC\server\share\workspace"),
+        ));
+    }
+
+    #[test]
+    fn ordinary_windows_temp_workspace_is_accepted_without_a_link() {
+        let temp = tempfile::tempdir().expect("private Windows temp root");
+        let workspace = temp.path().join("workspace");
+        let fleet = temp.path().join("fleet");
+        std::fs::create_dir(&workspace).expect("physical workspace directory");
+        std::fs::create_dir(&fleet).expect("physical fleet directory");
+        let root = HeptaFleetRoot::parse(fleet).expect("independent fleet root");
+        let binding =
+            WorkspaceBinding::new(workspace.clone(), &root).expect("canonical physical workspace");
+        assert_eq!(
+            binding.as_path(),
+            workspace.canonicalize().expect("physical canonical path"),
+        );
+    }
 }
