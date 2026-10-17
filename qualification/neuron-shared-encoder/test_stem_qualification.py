@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""Protocol tests for real Stem qualification receipts."""
+
+from __future__ import annotations
+
+from dataclasses import replace
+import hashlib
+from pathlib import Path
+import sys
+import unittest
+from types import SimpleNamespace
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+
+from neuron_shared_encoder.stem_qualification import (  # noqa: E402
+    CheckpointRefV1,
+    ComponentResourceBundleV1,
+    ComponentResourceReceiptV1,
+    MetricIntervalV1,
+    SourceDisjointSplitV1,
+    StemQualificationError,
+    StemQualificationRunV1,
+    qualify_from_receipt,
+)
+
+
+def digest(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+CHECKPOINT = CheckpointRefV1(
+    model_id="stem-421m",
+    model_manifest_digest=digest("model-manifest"),
+    weights_digest=digest("weights"),
+    tokenizer_digest=digest("tokenizer"),
+    preprocessor_digest=digest("preprocessor"),
+    backend_id="torch",
+    runtime_digest=digest("runtime"),
+    device_identity_digest=digest("device"),
+    stem_digest=digest("stem"),
+    parameter_count=421_000_000,
+    generation=0,
+    quantization_id="bf16",
+)
+
+SPLIT = SourceDisjointSplitV1(
+    train_source_digest=digest("train-source"),
+    eval_source_digest=digest("eval-source"),
+    train_manifest_digest=digest("train-manifest"),
+    eval_manifest_digest=digest("eval-manifest"),
+    split_manifest_digest=digest("split-manifest"),
+    overlap_report_digest=digest("overlap-report"),
+    train_count=1000,
+    eval_count=400,
+    overlap_count=0,
+    source_family_count=2,
+    future_window_count=2,
+)
+
+
+def metric(metric_id: str = "quality") -> MetricIntervalV1:
+    return MetricIntervalV1(
+        metric_id=metric_id,
+        value=0.80,
+        lcb=0.76,
+        ucb=0.84,
+        sample_count=400,
+        confidence_level=0.95,
+        evaluator_digest=digest("evaluator"),
+        heldout_source_digest=SPLIT.eval_source_digest,
+    )
+
+
+def component(kind: str) -> ComponentResourceReceiptV1:
+    return ComponentResourceReceiptV1(
+        component_id=f"{kind}.run",
+        component_kind=kind,
+        artifact_digest=digest(f"{kind}.artifact"),
+        measurement_digest=digest(f"{kind}.measurement"),
+        forward_calls=100,
+        input_tokens=1000,
+        flops=1000.0,
+        peak_memory_bytes=10000.0,
+        p50_latency_ms=1.0,
+        p95_latency_ms=2.0,
+        p99_latency_ms=3.0,
+        energy_mj=1.0,
+        parameter_count=100,
+    )
+
+
+def bundle() -> ComponentResourceBundleV1:
+    kinds = (
+        "stem_encoder",
+        "modality_tower",
+        "projector",
+        "cell_head",
+        "controller_decoder",
+        "state_cache",
+        "verification",
+        "device",
+    )
+    return ComponentResourceBundleV1(
+        bundle_id="resources.run",
+        benchmark_id="bench.v1",
+        hardware_digest=digest("hardware"),
+        runtime_digest=CHECKPOINT.runtime_digest,
+        measurement_digest=digest("measurement"),
+        components=tuple(component(kind) for kind in kinds),
+        p50_latency_ms=8.0,
+        p95_latency_ms=16.0,
+        p99_latency_ms=24.0,
+        energy_mj=8.0,
+        batch_size=4,
+        warmup_steps=2,
+        measured_steps=10,
+        repetitions=3,
+        cache_hit_rate=0.5,
+    )
+
+
+def run() -> StemQualificationRunV1:
+    return StemQualificationRunV1(
+        run_id="run-421m-v1",
+        candidate_id="stem-421m",
+        stem_digest=CHECKPOINT.stem_digest,
+        stem_generation=CHECKPOINT.generation,
+        checkpoint=CHECKPOINT,
+        source_split=SPLIT,
+        tower_registry_digest=digest("tower-registry"),
+        projector_registry_digest=digest("projector-registry"),
+        objective_digest=digest("objective"),
+        evaluation_plan_digest=digest("plan"),
+        metrics=(metric(),),
+        resources=bundle(),
+    )
+
+
+class StemQualificationTests(unittest.TestCase):
+    def test_valid_run_is_deterministic_and_denied(self) -> None:
+        first = run()
+        second = run()
+        self.assertEqual(first.run_digest, second.run_digest)
+        self.assertEqual(first.to_dict()["authority"], "DENY_ALL")
+        self.assertEqual(first.to_dict()["status"], "SHADOW_COMPLETE")
+        self.assertEqual(first.resources.total_flops, 8000.0)
+
+    def test_metric_interval_must_contain_value(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(metric(), lcb=0.85)
+
+    def test_source_overlap_is_rejected(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(SPLIT, overlap_count=1)
+
+    def test_train_and_eval_source_must_differ(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(SPLIT, eval_source_digest=SPLIT.train_source_digest)
+
+    def test_component_quantiles_must_be_ordered(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(component("device"), p95_latency_ms=0.5)
+
+    def test_component_bundle_requires_all_kinds(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(bundle(), components=bundle().components[:-1])
+
+    def test_component_bundle_rejects_duplicate_kind(self) -> None:
+        comps = bundle().components
+        with self.assertRaises(StemQualificationError):
+            replace(bundle(), components=comps[:-2] + (comps[-1], comps[-1]))
+
+    def test_synthetic_component_is_not_qualification_evidence(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(component("device"), evidence_class="SYNTHETIC_SMOKE")
+
+    def test_incomplete_resource_is_rejected(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(component("device"), complete=False)
+
+    def test_generation_mismatch_is_rejected(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(run(), stem_generation=1)
+
+    def test_runtime_mismatch_is_rejected(self) -> None:
+        bad = replace(bundle(), runtime_digest=digest("other-runtime"))
+        with self.assertRaises(StemQualificationError):
+            replace(run(), resources=bad)
+
+    def test_gold_visibility_is_rejected(self) -> None:
+        with self.assertRaises(StemQualificationError):
+            replace(run(), model_input_gold_visible=True)
+
+    def test_legacy_point_receipt_cannot_be_silently_promoted(self) -> None:
+        legacy = SimpleNamespace(
+            receipt_status="COMPLETE",
+            evidence_class="REAL_SHADOW",
+            independent_new_source=True,
+            model_input_gold_visible=False,
+            stem_digest=CHECKPOINT.stem_digest,
+            source_digest=SPLIT.eval_source_digest,
+        )
+        result = qualify_from_receipt(
+            legacy,
+            run_id="run-upgrade",
+            candidate_id="stem-421m",
+            checkpoint=CHECKPOINT,
+            source_split=SPLIT,
+            tower_registry_digest=digest("tower-registry"),
+            projector_registry_digest=digest("projector-registry"),
+            objective_digest=digest("objective"),
+            evaluation_plan_digest=digest("plan"),
+            metrics=(metric(),),
+            resources=bundle(),
+        )
+        self.assertEqual(result.candidate_id, "stem-421m")
+
+    def test_incomplete_bridge_receipt_is_rejected(self) -> None:
+        legacy = SimpleNamespace(
+            receipt_status="INCOMPLETE",
+            evidence_class="REAL_SHADOW",
+            independent_new_source=True,
+            model_input_gold_visible=False,
+            stem_digest=CHECKPOINT.stem_digest,
+            source_digest=SPLIT.eval_source_digest,
+        )
+        with self.assertRaises(StemQualificationError):
+            qualify_from_receipt(
+                legacy,
+                run_id="run-upgrade",
+                candidate_id="stem-421m",
+                checkpoint=CHECKPOINT,
+                source_split=SPLIT,
+                tower_registry_digest=digest("tower-registry"),
+                projector_registry_digest=digest("projector-registry"),
+                objective_digest=digest("objective"),
+                evaluation_plan_digest=digest("plan"),
+                metrics=(metric(),),
+                resources=bundle(),
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
