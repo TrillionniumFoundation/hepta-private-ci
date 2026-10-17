@@ -40,6 +40,13 @@ POLICY = {
 POLICY_SHA = hashlib.sha256(b'hepta.p09.policy.v1\0'+original.canonical(POLICY)).hexdigest()
 
 
+def assert_registered_policy() -> None:
+    # Keep an in-memory mutation from silently changing the admitted action
+    # threshold while still advertising the frozen original policy digest.
+    if hashlib.sha256(b'hepta.p09.policy.v1\0'+original.canonical(POLICY)).hexdigest() != POLICY_SHA:
+        raise original.Denied('registered policy mutated after source selection')
+
+
 def require(cond: bool, why: str) -> None:
     if not cond:
         raise original.Denied(why)
@@ -53,6 +60,7 @@ def confidence(p: list[float]) -> float:
 
 
 def decide(arms: dict[str, list[float]]) -> tuple[str, str]:
+    assert_registered_policy()
     require(type(arms) is dict and set(arms)==set(original.ALL_ARMS), 'wrong original candidate arms')
     # Validate every arm, including those not used by the fixed portfolio.
     for p in arms.values():confidence(p)
@@ -71,6 +79,7 @@ def decide(arms: dict[str, list[float]]) -> tuple[str, str]:
 
 
 def proposed(bundle: dict, prelabel: dict) -> dict:
+    assert_registered_policy()
     original.verify_bundle(bundle)
     require(prelabel.get('schema') == original.SCHEMA and
             prelabel.get('bundle_sha256') == original.digest(original.canonical(bundle)) and

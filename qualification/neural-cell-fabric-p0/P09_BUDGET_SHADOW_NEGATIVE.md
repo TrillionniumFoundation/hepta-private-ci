@@ -85,3 +85,15 @@ only then test any genuinely preregistered policy on a separately sourced
 future-time cohort with independent outcome custody and actual incremental
 CPU/GPU energy + latency receipts. No learned NDU/System2 or physical Cell Split
 can be selected from this post-hoc negative baseline.
+
+### P0.9.1 actual policy digest hardening
+
+All fixed shadow thresholds are rehashed against the registered policy SHA before
+proposals or actions are evaluated, rejecting runtime mutation that otherwise
+could retain the old digest while making different choices. Original model
+prediction bytes are checked against their **current source-head private SHA**,
+not an unrelated hardware/Python-version-specific float serialization hash.
+The full inherited test suite with all original archived sources actually ran
+**172/172 PASS, no skips**, for ordinary Python and `python -O` on the isolated
+local CPU. Passing numerical/contract tests does not advance the source,
+prospective cohort, production model or Final-use permission claims.

@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
 import tempfile
+from unittest.mock import patch
 import unittest
 
 import matched_router_p06 as p06
@@ -26,6 +28,12 @@ class PureDecisionTests(unittest.TestCase):
         self.assertFalse(s.POLICY['prospective_policy'])
         self.assertEqual(s.POLICY['authority'],'DENY_ALL')
         self.assertEqual(len(s.POLICY_SHA),64)
+    def test_mutated_registered_threshold_is_rejected(self):
+        # Mutable Python dictionaries do NOT authorize a changed policy SHA.
+        with patch.dict(s.POLICY, {'centroid_fast_floor': 0.01}):
+            with self.assertRaises(p06.Denied):
+                s.decide(vectors(centroid_train_loo=[.85,.05,.05,.05]))
+
     def test_fast_centroid(self):
         a,p=s.decide(vectors(centroid_train_loo=[.85,.05,.05,.05]))
         self.assertEqual((a,p),('centroid_fast','centroid_train_loo'))
@@ -77,8 +85,10 @@ class OriginalHistoricalTests(unittest.TestCase):
         self.assertEqual(self.shadow['registered_policy_sha256'],s.POLICY_SHA)
         self.assertFalse(self.shadow['claims']['production_authorized'])
         self.assertFalse(self.shadow['claims']['resource_savings_physically_measured'])
+        # Assert the actual source-head journal, not a cross-device/version
+        # numerical byte hash accidentally frozen from one Python environment.
         self.assertEqual(self.shadow['original_prelabel_sha256'],
-             '54b4a63a25e21fb1de10eccac17cfed71d1076a35e32f92787f3ff2228e0c6cb')
+            hashlib.sha256((RUN/'prelabel.json').read_bytes()).hexdigest())
     def test_reject_prediction_mutation_even_when_internally_rehashed(self):
         x=copy.deepcopy(self.shadow)
         x['choices'][0]['probabilities']=[1.,0.,0.,0.]
