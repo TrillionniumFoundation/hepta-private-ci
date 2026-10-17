@@ -237,8 +237,16 @@ jobs:
           fi
 
           run_v8_bazel() {
+            # Bazel 9 can race background remote-cache uploads of late-discovered
+            # action outputs on Linux as well as macOS (ActionInputMap.getIndex).
+            # Scope synchronous uploads to this V8 canary, not global CI.
+            local -a v8_transport_args=()
+            if [[ "${RUNNER_OS}" == "Linux" ]]; then
+              v8_transport_args+=(--noremote_cache_async)
+            fi
             ./.github/scripts/run_bazel_with_buildbuddy.py \
               --noexperimental_remote_repo_contents_cache \
+              "${v8_transport_args[@]}" \
               "${bazel_args[@]}" \
               "--config=${{ matrix.bazel_config }}"
           }
