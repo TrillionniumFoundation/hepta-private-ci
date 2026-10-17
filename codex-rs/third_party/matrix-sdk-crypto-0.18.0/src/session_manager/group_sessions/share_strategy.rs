@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 33730)
-Total output lines: 3546
-
 // Copyright 2024 The Matrix.org Foundation C.I.C.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1541,7 +1538,434 @@ mod tests {
             withheld_code_for_device_for_share_strategy(
                 &get_device_data(
                     &machine,
-         …3730 tokens truncated…         let split_result = split_devices_for_share_strategy(
+                    KeyDistributionTestData::dan_id(),
+                    KeyDistributionTestData::dan_signed_device_id()
+                )
+                .await,
+                CollectStrategy::OnlyTrustedDevices,
+                &own_identity_data,
+                &dan_identity_data,
+            )
+            .await
+            .unwrap(),
+            None,
+        );
+        assert_eq!(
+            withheld_code_for_device_for_share_strategy(
+                &get_device_data(
+                    &machine,
+                    KeyDistributionTestData::dan_id(),
+                    KeyDistributionTestData::dan_unsigned_device_id()
+                )
+                .await,
+                CollectStrategy::OnlyTrustedDevices,
+                &own_identity_data,
+                &dan_identity_data,
+            )
+            .await
+            .unwrap(),
+            Some(WithheldCode::Unverified),
+        );
+        assert_eq!(
+            withheld_code_for_device_for_share_strategy(
+                &get_device_data(
+                    &machine,
+                    KeyDistributionTestData::dave_id(),
+                    KeyDistributionTestData::dave_device_id()
+                )
+                .await,
+                CollectStrategy::OnlyTrustedDevices,
+                &own_identity_data,
+                &dave_identity_data,
+            )
+            .await
+            .unwrap(),
+            Some(WithheldCode::Unverified),
+        );
+    }
+
+    /// Test that [`collect_session_recipients`] returns an error if there are
+    /// unsigned devices belonging to verified users, when
+    /// `error_on_verified_user_problem` is set.
+    #[async_test]
+    async fn test_error_on_unsigned_of_verified_users() {
+        use VerificationViolationTestData as DataSet;
+
+        // We start with Bob, who is verified and has one unsigned device.
+        let machine = unsigned_of_verified_setup().await;
+
+        // Add Carol, also verified with one unsigned device.
+        let carol_keys = DataSet::carol_keys_query_response_signed();
+        machine
+            .mark_request_as_sent(&TransactionId::new(), &carol_keys)
+            .await
+            .unwrap();
+
+        // Double-check the state of Carol.
+        let carol_identity = machine
+            .get_identity(DataSet::carol_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(carol_identity.other().unwrap().is_verified());
+
+        let carol_unsigned_device = machine
+            .get_device(
+                DataSet::carol_id(),
+                DataSet::carol_unsigned_device_id(),
+                None,
+            )
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(!carol_unsigned_device.is_verified());
+
+        // Sharing an OutboundGroupSession should fail.
+        let encryption_settings = error_on_verification_problem_encryption_settings();
+        let group_session = create_test_outbound_group_session(&machine, &encryption_settings);
+        let share_result = collect_session_recipients(
+            machine.store(),
+            vec![DataSet::bob_id(), DataSet::carol_id()].into_iter(),
+            &encryption_settings,
+            &group_session,
+        )
+        .await;
+
+        assert_let!(
+            Err(OlmError::SessionRecipientCollectionError(
+                SessionRecipientCollectionError::VerifiedUserHasUnsignedDevice(unverified_devices)
+            )) = share_result
+        );
+
+        // Check the list of devices in the error.
+        assert_eq!(
+            unverified_devices,
+            BTreeMap::from([
+                (
+                    DataSet::bob_id().to_owned(),
+                    vec![DataSet::bob_device_2_id().to_owned()]
+                ),
+                (
+                    DataSet::carol_id().to_owned(),
+                    vec![DataSet::carol_unsigned_device_id().to_owned()]
+                ),
+            ])
+        );
+
+        #[cfg(feature = "experimental-send-custom-to-device")]
+        {
+            let all_devices = vec![
+                get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_1_id()).await,
+                get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_2_id()).await,
+                get_device_data(
+                    &machine,
+                    DataSet::carol_id(),
+                    DataSet::carol_signed_device_id(),
+                )
+                .await,
+                get_device_data(
+                    &machine,
+                    DataSet::carol_id(),
+                    DataSet::carol_unsigned_device_id(),
+                )
+                .await,
+            ];
+
+            let split_result = split_devices_for_share_strategy(
+                machine.store(),
+                all_devices,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+            )
+            .await;
+
+            assert_let!(
+                Err(OlmError::SessionRecipientCollectionError(
+                    SessionRecipientCollectionError::VerifiedUserHasUnsignedDevice(
+                        unverified_devices
+                    )
+                )) = split_result
+            );
+
+            // Check the list of devices in the error.
+            assert_eq!(
+                unverified_devices,
+                BTreeMap::from([
+                    (
+                        DataSet::bob_id().to_owned(),
+                        vec![DataSet::bob_device_2_id().to_owned()]
+                    ),
+                    (
+                        DataSet::carol_id().to_owned(),
+                        vec![DataSet::carol_unsigned_device_id().to_owned()]
+                    ),
+                ])
+            );
+        }
+
+        let own_identity_data = get_own_identity_data(&machine, DataSet::own_id()).await;
+        let carol_identity_data = get_user_identity_data(&machine, DataSet::carol_id()).await;
+
+        assert_eq!(
+            withheld_code_for_device_for_share_strategy(
+                &get_device_data(
+                    &machine,
+                    DataSet::carol_id(),
+                    DataSet::carol_signed_device_id()
+                )
+                .await,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+                &own_identity_data,
+                &carol_identity_data,
+            )
+            .await
+            .unwrap(),
+            None,
+        );
+        assert_let!(
+            Err(OlmError::SessionRecipientCollectionError(
+                SessionRecipientCollectionError::VerifiedUserHasUnsignedDevice(_)
+            )) = withheld_code_for_device_for_share_strategy(
+                &get_device_data(
+                    &machine,
+                    DataSet::carol_id(),
+                    DataSet::carol_unsigned_device_id()
+                )
+                .await,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+                &own_identity_data,
+                &carol_identity_data,
+            )
+            .await
+        );
+    }
+
+    /// Test that we can resolve errors from
+    /// `error_on_verified_user_problem` by whitelisting the
+    /// device.
+    #[async_test]
+    async fn test_error_on_unsigned_of_verified_resolve_by_whitelisting() {
+        use VerificationViolationTestData as DataSet;
+
+        let machine = unsigned_of_verified_setup().await;
+
+        // Whitelist the unsigned device
+        machine
+            .get_device(DataSet::bob_id(), DataSet::bob_device_2_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .set_local_trust(LocalTrust::Ignored)
+            .await
+            .unwrap();
+
+        let encryption_settings = error_on_verification_problem_encryption_settings();
+        let group_session = create_test_outbound_group_session(&machine, &encryption_settings);
+
+        // We should be able to share a key, and it should include the unsigned device.
+        let share_result = collect_session_recipients(
+            machine.store(),
+            iter::once(DataSet::bob_id()),
+            &encryption_settings,
+            &group_session,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            2,
+            share_result.devices.get(DataSet::bob_id()).unwrap().len()
+        );
+        assert_eq!(0, share_result.withheld_devices.len());
+
+        #[cfg(feature = "experimental-send-custom-to-device")]
+        {
+            let all_devices = vec![
+                get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_1_id()).await,
+                get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_2_id()).await,
+            ];
+
+            let (shared_devices, withheld_devices) = split_devices_for_share_strategy(
+                machine.store(),
+                all_devices,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(shared_devices.len(), 2);
+            assert_eq!(withheld_devices.len(), 0);
+        }
+
+        let own_identity_data = get_own_identity_data(&machine, DataSet::own_id()).await;
+        let bob_identity_data = get_user_identity_data(&machine, DataSet::bob_id()).await;
+
+        assert_eq!(
+            withheld_code_for_device_for_share_strategy(
+                &get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_2_id()).await,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+                &own_identity_data,
+                &bob_identity_data,
+            )
+            .await
+            .unwrap(),
+            None,
+        );
+    }
+
+    /// Test that we can resolve errors from
+    /// `error_on_verified_user_problem` by blacklisting the
+    /// device.
+    #[async_test]
+    async fn test_error_on_unsigned_of_verified_resolve_by_blacklisting() {
+        use VerificationViolationTestData as DataSet;
+
+        let machine = unsigned_of_verified_setup().await;
+
+        // Blacklist the unsigned device
+        machine
+            .get_device(DataSet::bob_id(), DataSet::bob_device_2_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .set_local_trust(LocalTrust::BlackListed)
+            .await
+            .unwrap();
+
+        let encryption_settings = error_on_verification_problem_encryption_settings();
+        let group_session = create_test_outbound_group_session(&machine, &encryption_settings);
+
+        // We should be able to share a key, and it should exclude the unsigned device.
+        let share_result = collect_session_recipients(
+            machine.store(),
+            iter::once(DataSet::bob_id()),
+            &encryption_settings,
+            &group_session,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            1,
+            share_result.devices.get(DataSet::bob_id()).unwrap().len()
+        );
+        let withheld_list: Vec<_> = share_result
+            .withheld_devices
+            .iter()
+            .map(|(d, code)| (d.device_id().to_owned(), code.clone()))
+            .collect();
+        assert_eq!(
+            withheld_list,
+            vec![(
+                DataSet::bob_device_2_id().to_owned(),
+                WithheldCode::Blacklisted
+            )]
+        );
+
+        let bob_device_2 =
+            get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_2_id()).await;
+        #[cfg(feature = "experimental-send-custom-to-device")]
+        {
+            let bob_device_1 =
+                get_device_data(&machine, DataSet::bob_id(), DataSet::bob_device_1_id()).await;
+            let all_devices = vec![bob_device_1.clone(), bob_device_2.clone()];
+
+            let (shared_devices, withheld_devices) = split_devices_for_share_strategy(
+                machine.store(),
+                all_devices,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(shared_devices, vec![bob_device_1.clone()]);
+            assert_eq!(
+                withheld_devices,
+                vec![(bob_device_2.clone(), WithheldCode::Blacklisted)]
+            );
+        }
+
+        let own_identity_data = get_own_identity_data(&machine, DataSet::own_id()).await;
+        let bob_identity_data = get_user_identity_data(&machine, DataSet::bob_id()).await;
+
+        assert_eq!(
+            withheld_code_for_device_for_share_strategy(
+                &bob_device_2,
+                CollectStrategy::ErrorOnVerifiedUserProblem,
+                &own_identity_data,
+                &bob_identity_data,
+            )
+            .await
+            .unwrap(),
+            Some(WithheldCode::Blacklisted),
+        );
+    }
+
+    /// Test that [`collect_session_recipients`] returns an error when
+    /// `error_on_verified_user_problem` is set, if our own identity
+    /// is verified and we have unsigned devices.
+    #[async_test]
+    async fn test_error_on_unsigned_of_verified_owner_is_us() {
+        use VerificationViolationTestData as DataSet;
+
+        let machine = unsigned_of_verified_setup().await;
+
+        // Add a couple of devices to Alice's account
+        let mut own_keys = DataSet::own_keys_query_response_1().clone();
+        own_keys.device_keys.insert(
+            DataSet::own_id().to_owned(),
+            BTreeMap::from([
+                DataSet::own_signed_device_keys(),
+                DataSet::own_unsigned_device_keys(),
+            ]),
+        );
+        machine
+            .mark_request_as_sent(&TransactionId::new(), &own_keys)
+            .await
+            .unwrap();
+
+        let encryption_settings = error_on_verification_problem_encryption_settings();
+        let group_session = create_test_outbound_group_session(&machine, &encryption_settings);
+        let share_result = collect_session_recipients(
+            machine.store(),
+            iter::once(DataSet::own_id()),
+            &encryption_settings,
+            &group_session,
+        )
+        .await;
+
+        assert_let!(
+            Err(OlmError::SessionRecipientCollectionError(
+                SessionRecipientCollectionError::VerifiedUserHasUnsignedDevice(unverified_devices)
+            )) = share_result
+        );
+
+        // Check the list of devices in the error.
+        assert_eq!(
+            unverified_devices,
+            BTreeMap::from([(
+                DataSet::own_id().to_owned(),
+                vec![DataSet::own_unsigned_device_id()]
+            ),])
+        );
+
+        #[cfg(feature = "experimental-send-custom-to-device")]
+        {
+            let all_devices = vec![
+                get_device_data(
+                    &machine,
+                    DataSet::own_id(),
+                    &DataSet::own_signed_device_id(),
+                )
+                .await,
+                get_device_data(
+                    &machine,
+                    DataSet::own_id(),
+                    &DataSet::own_unsigned_device_id(),
+                )
+                .await,
+            ];
+
+            let split_result = split_devices_for_share_strategy(
                 machine.store(),
                 all_devices,
                 CollectStrategy::ErrorOnVerifiedUserProblem,

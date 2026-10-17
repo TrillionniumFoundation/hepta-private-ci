@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 32038)
-Total output lines: 3249
-
 // Copyright 2020, 2026 The Matrix.org Foundation C.I.C.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1512,7 +1509,223 @@ impl OlmMachine {
         #[derive(Deserialize)]
         struct ToDeviceStub<'a> {
             sender: &'a str,
-            #[serde(renam…2038 tokens truncated…fn receive_sync_changes(
+            #[serde(rename = "type")]
+            event_type: &'a str,
+            #[serde(borrow)]
+            content: ContentStub<'a>,
+        }
+
+        if let Ok(event) = event.deserialize_as_unchecked::<ToDeviceStub<'_>>() {
+            Span::current().record("sender", event.sender);
+            Span::current().record("event_type", event.event_type);
+            Span::current().record("message_id", event.content.message_id);
+        }
+    }
+
+    /// Decrypt the supplied to-device event (if needed, and if we can) and
+    /// handle it.
+    ///
+    /// Return the same event, decrypted if possible and needed.
+    ///
+    /// If we can identify that this to-device event came from a dehydrated
+    /// device, this method does not process it, and returns `None`.
+    #[instrument(skip_all, fields(sender, event_type, message_id))]
+    async fn receive_to_device_event(
+        &self,
+        transaction: &mut StoreTransaction,
+        changes: &mut Changes,
+        raw_event: Raw<AnyToDeviceEvent>,
+        decryption_settings: &DecryptionSettings,
+    ) -> Option<ProcessedToDeviceEvent> {
+        Self::record_message_id(&raw_event);
+
+        let event: ToDeviceEvents = match raw_event.deserialize_as() {
+            Ok(e) => e,
+            Err(e) => {
+                // Skip invalid events.
+                warn!("Received an invalid to-device event: {e}");
+                return Some(ProcessedToDeviceEvent::Invalid(raw_event));
+            }
+        };
+
+        debug!("Received a to-device event");
+
+        match event {
+            ToDeviceEvents::RoomEncrypted(e) => {
+                self.receive_encrypted_to_device_event(
+                    transaction,
+                    changes,
+                    raw_event,
+                    e,
+                    decryption_settings,
+                )
+                .await
+            }
+            e => {
+                self.handle_to_device_event(changes, &e).await;
+                Some(ProcessedToDeviceEvent::PlainText(raw_event))
+            }
+        }
+    }
+
+    /// Decrypt the supplied encrypted to-device event (if we can) and handle
+    /// it.
+    ///
+    /// Return the same event, decrypted if possible.
+    ///
+    /// If we are in strict "exclude insecure devices" mode and the sender
+    /// device is not verified, and the decrypted event type is not on the
+    /// allow list, or if this event comes from a dehydrated device, this method
+    /// does not process it, and returns `None`.
+    ///
+    /// (The allow list of types that are processed even if the sender is
+    /// unverified is: `m.room_key`, `m.room_key.withheld`,
+    /// `m.room_key_request`, `m.secret.request` and `m.key.verification.*`.)
+    async fn receive_encrypted_to_device_event(
+        &self,
+        transaction: &mut StoreTransaction,
+        changes: &mut Changes,
+        mut raw_event: Raw<AnyToDeviceEvent>,
+        e: ToDeviceEvent<ToDeviceEncryptedEventContent>,
+        decryption_settings: &DecryptionSettings,
+    ) -> Option<ProcessedToDeviceEvent> {
+        let decrypted = match self
+            .decrypt_to_device_event(transaction, &e, changes, decryption_settings)
+            .await
+        {
+            Ok(decrypted) => decrypted,
+            Err(DecryptToDeviceError::OlmError(err)) => {
+                let reason = if let OlmError::UnverifiedSenderDevice = &err {
+                    ToDeviceUnableToDecryptReason::UnverifiedSenderDevice
+                } else {
+                    ToDeviceUnableToDecryptReason::DecryptionFailure
+                };
+
+                if let OlmError::SessionWedged(sender, curve_key) = err
+                    && let Err(e) =
+                        self.inner.session_manager.mark_device_as_wedged(&sender, curve_key).await
+                {
+                    error!(
+                        error = ?e,
+                        "Couldn't mark device to be unwedged",
+                    );
+                }
+
+                return Some(ProcessedToDeviceEvent::UnableToDecrypt {
+                    encrypted_event: raw_event,
+                    utd_info: ToDeviceUnableToDecryptInfo { reason },
+                });
+            }
+            Err(DecryptToDeviceError::FromDehydratedDevice) => return None,
+        };
+
+        // New sessions modify the account so we need to save that
+        // one as well.
+        match decrypted.session {
+            SessionType::New(s) | SessionType::Existing(s) => {
+                changes.sessions.push(s);
+            }
+        }
+
+        changes.message_hashes.push(decrypted.message_hash);
+
+        if let Some(group_session) = decrypted.inbound_group_session {
+            changes.inbound_group_sessions.push(group_session);
+        }
+
+        match decrypted.result.raw_event.deserialize_as() {
+            Ok(event) => {
+                self.handle_to_device_event(changes, &event).await;
+
+                raw_event = event
+                    .serialize_zeroized()
+                    .expect("Zeroizing and reserializing our events should always work")
+                    .cast();
+            }
+            Err(e) => {
+                warn!("Received an invalid encrypted to-device event: {e}");
+                raw_event = decrypted.result.raw_event;
+            }
+        }
+
+        Some(ProcessedToDeviceEvent::Decrypted {
+            raw: raw_event,
+            encryption_info: decrypted.result.encryption_info,
+        })
+    }
+
+    /// Return an error if the supplied to-device event was sent from a
+    /// dehydrated device.
+    async fn check_to_device_event_is_not_from_dehydrated_device(
+        &self,
+        decrypted: &OlmDecryptionInfo,
+        sender_user_id: &UserId,
+    ) -> Result<(), DecryptToDeviceError> {
+        if self.to_device_event_is_from_dehydrated_device(decrypted, sender_user_id).await? {
+            warn!(
+                sender = ?sender_user_id,
+                session = ?decrypted.session,
+                "Received a to-device event from a dehydrated device. This is unexpected: ignoring event"
+            );
+            Err(DecryptToDeviceError::FromDehydratedDevice)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Decide whether a decrypted to-device event was sent from a dehydrated
+    /// device.
+    ///
+    /// This accepts an [`OlmDecryptionInfo`] because it deals with a decrypted
+    /// event.
+    async fn to_device_event_is_from_dehydrated_device(
+        &self,
+        decrypted: &OlmDecryptionInfo,
+        sender_user_id: &UserId,
+    ) -> OlmResult<bool> {
+        // Does the to-device message include device info?
+        if let Some(device_keys) = decrypted.result.event.sender_device_keys() {
+            // There is no need to check whether the device keys are signed correctly - any
+            // to-device message that claims to be from a dehydrated device is weird, so we
+            // will drop it.
+
+            // Does the included device info say the device is dehydrated?
+            if device_keys.dehydrated.unwrap_or(false) {
+                return Ok(true);
+            }
+            // If not, fall through and check our existing list of devices
+            // below, just in case the sender is sending us incorrect
+            // information embedded in the to-device message, but we know
+            // better.
+        }
+
+        // Do we already know about this device?
+        Ok(self
+            .store()
+            .get_device_from_curve_key(sender_user_id, decrypted.result.sender_key)
+            .await?
+            .is_some_and(|d| d.is_dehydrated()))
+    }
+
+    /// Handle a to-device and one-time key counts from a sync response.
+    ///
+    /// This will decrypt and handle to-device events returning the decrypted
+    /// versions of them.
+    ///
+    /// To decrypt an event from the room timeline, call [`decrypt_room_event`].
+    ///
+    /// # Arguments
+    ///
+    /// * `sync_changes` - an [`EncryptionSyncChanges`] value, constructed from
+    ///   a sync response.
+    ///
+    /// [`decrypt_room_event`]: #method.decrypt_room_event
+    ///
+    /// # Returns
+    ///
+    /// A tuple of (decrypted to-device events, updated room keys).
+    #[instrument(skip_all)]
+    pub async fn receive_sync_changes(
         &self,
         sync_changes: EncryptionSyncChanges<'_>,
         decryption_settings: &DecryptionSettings,
