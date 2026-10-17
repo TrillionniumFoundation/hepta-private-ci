@@ -506,13 +506,9 @@ fn original_signed_cns_receipt_behind_current_durable_frontier_cannot_be_replaye
         ready,
     )
     .with_advanced_sequence();
-    let mut recovered = CellSplitCnsCutoverOwnerV1::open(
-        root.path(),
-        plan(),
-        binding(),
-        newer_frontier,
-    )
-    .expect("same frozen owner for read-only recovery");
+    let mut recovered =
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), newer_frontier)
+            .expect("same frozen owner for read-only recovery");
     assert_eq!(recovered.port.route().generation, plan().child_generation);
     assert!(matches!(
         recovered.read_committed(&request),
@@ -546,9 +542,8 @@ fn cns_frontier_advancing_during_signed_route_lookup_denies_old_original_effect(
         ready,
     )
     .with_revision_change_during_live();
-    let mut recovered =
-        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), racing)
-            .expect("frozen original CNS");
+    let mut recovered = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), racing)
+        .expect("frozen original CNS");
     assert!(matches!(
         recovered.read_committed(&request),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
