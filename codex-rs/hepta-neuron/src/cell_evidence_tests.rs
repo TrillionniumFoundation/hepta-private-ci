@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use std::sync::Arc;
 
 use super::*;
+use codex_hepta_types::AuthorityPosture;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
