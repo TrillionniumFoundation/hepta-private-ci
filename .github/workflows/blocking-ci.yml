@@ -126,6 +126,13 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    # Do not reduce affected-owner/reverse-consumer coverage to fit a small
+    # hosted runner. Drop debug artifacts/incremental state instead.
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +140,45 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Prove native Cargo reverse-dependency disk capacity
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Hosted Linux image only. Never delete test sources, Cargo cache,
+          # Rust toolchains, V8 artifacts, or source dependency records.
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          free_bytes() {
+            df -B1 --output=avail "$GITHUB_WORKSPACE" | tail -n 1 | tr -d '[:space:]'
+          }
+          before="$(free_bytes)"
+          target=$((10 * 1024 * 1024 * 1024))
+          echo "Scoped native host available bytes before=$before"
+          df -h "$GITHUB_WORKSPACE"
+          # SDKs preinstalled on the ephemeral Ubuntu image but unrelated to
+          # the selected native Rust host-target test graph. Reclaim only when
+          # needed and only from this fixed allowlist, never arbitrary paths.
+          if (( before < target )); then
+            for unused_sdk in /usr/local/lib/android /opt/ghc /usr/share/dotnet; do
+              if [[ -d "$unused_sdk" && ! -L "$unused_sdk" ]]; then
+                echo "Reclaiming unused hosted image SDK: $unused_sdk"
+                sudo rm -rf -- "$unused_sdk"
+              fi
+              if (( $(free_bytes) >= target )); then
+                break
+              fi
+            done
+          fi
+          after="$(free_bytes)"
+          echo "Scoped native host available bytes after=$after"
+          df -h "$GITHUB_WORKSPACE"
+          printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\nminimum_required_bytes=%s\n' \
+            "$(git rev-parse HEAD)" "$before" "$after" "$target" \
+            > "$RUNNER_TEMP/hepta-scoped-disk.txt"
+          # Fail before any compilation if the environment cannot support
+          # the real impacted-owner test graph. Never report green by skipping.
+          test "$after" -ge "$target"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -172,6 +218,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/hepta-scoped-disk.txt
           if-no-files-found: error
           retention-days: 14
 
