@@ -288,7 +288,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             prediction_q24: vec![0; 5],
         },
     )?;
-    let neuron_anchor = neuron.current_anchor()?.unwrap_or_else(|_| panic!("neuron anchor"));
+    let neuron_anchor = neuron.current_anchor()?.unwrap_or_else(|| panic!("neuron anchor"));
 
     let trust_scope = digest("plasticity-process-trust-scope");
     let keys = [
