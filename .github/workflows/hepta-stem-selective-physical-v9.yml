@@ -1,0 +1,115 @@
+name: Hepta Stem V9 actual selective pretrained CPU forward (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-selective-physical-v9-20261017]
+    paths:
+      - 'qualification/stem-optimal-v9/**'
+      - '.github/workflows/hepta-stem-selective-physical-v9.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v9/**'
+      - '.github/workflows/hepta-stem-selective-physical-v9.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: stem-selective-v9-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONPATH: qualification/stem-optimal-v9:qualification/stem-optimal-v8:qualification/stem-optimal-v5:qualification/stem-optimal-v1
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify no-network source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile qualification/stem-optimal-v9/*.py
+          python -m unittest discover -s qualification/stem-optimal-v9 -p 'test_*.py' -v
+          python -O -m unittest discover -s qualification/stem-optimal-v9 -p 'test_*.py' -v
+  actual-original-selected:
+    needs: source-only
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-selective-physical-v9-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reopen all six pinned original ZIP bytes; no test labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/original"
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role source_v3 --role source_v4 --role cheap_v4 \
+            --role granite47 --role granite97 --role mmbert140
+          python qualification/stem-optimal-v8/selective_route_v8.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" --output "$RUNNER_TEMP/route.json"
+      - name: Install exact CPU inference profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check \
+            transformers==4.57.1 huggingface_hub==0.36.0 \
+            safetensors==0.6.2 numpy==2.2.6 packaging==25.0
+      - name: One real model load, 64 FIT and strictly 8 selected original heldout forwards
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          python qualification/stem-optimal-v9/selective_physical_v9.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" \
+            --plan "$RUNNER_TEMP/route.json" \
+            --materials qualification/stem-optimal-v1/MODEL_MATERIALS.json \
+            --candidate '${{ matrix.model }}' \
+            --output "$RUNNER_TEMP/physical-${{ matrix.model }}.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          for path in Path(os.environ['RUNNER_TEMP']).glob('physical-*.json'):
+              x = json.loads(path.read_text())
+              assert x['physical_encoder_train_sequences'] == 64
+              assert x['physical_encoder_test_sequences'] == 8
+              assert x['physical_encoder_batches'] == 5
+              assert x['new_total_encoder_sequences'] == 72
+              assert x['max_abs_original_probability_drift'] <= 5e-4
+              assert x['authority'] == 'DENY_ALL'
+              assert x['matched_host_lifecycle_savings_verified'] is False
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v9-original-selected-${{ matrix.model }}-denyall
+          path: ${{ runner.temp }}/physical-${{ matrix.model }}.json
+          if-no-files-found: error
+          retention-days: 7
