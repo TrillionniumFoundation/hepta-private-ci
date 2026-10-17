@@ -26,6 +26,11 @@ jobs:
     timeout-minutes: 45
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      # hepta_ci_exec.py validates checkout equality, not only a test count.
+      # These must describe this exact source-head checkout; never default or
+      # synthesize them inside the evidence runner.
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
       CARGO_BUILD_JOBS: "2"
       CARGO_INCREMENTAL: "0"
     steps:
@@ -39,6 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$TESTED_SHA" = "$SOURCE_SHA"
+          test "$HEPTA_CI_LANE" = "source-head"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
           grep -Fq 'pub fn require_original_control_v1()' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs
           grep -Fq 'UnverifiedOriginalControl' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs

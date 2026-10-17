@@ -81,6 +81,12 @@ jobs:
     name: Actual immutable Arc reuse, digest separation, Rust fmt/test/Clippy
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      # Supply the exact checked-out source identity required by hepta_ci_exec.
+      # This job tests the source head, never an implicit synthetic merge.
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
     defaults:
       run:
         working-directory: codex-rs
@@ -94,7 +100,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$TESTED_SHA" = "$SOURCE_SHA"
+          test "$HEPTA_CI_LANE" = "source-head"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --check
       - name: Install pinned Rust 1.95.0
         shell: bash
