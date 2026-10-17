@@ -174,6 +174,22 @@ class ModalityRegistryTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             validate_multimodal_binding(mismatched_tower_registry, projector_registry)
 
+    def test_validate_binding_rejects_same_digest_with_different_stem_manifest(self):
+        tower_registry, _ = registries()
+        drifted_stem = StemManifestV1(**{**STEM.__dict__, "hidden_width": 2048})
+        drifted_projectors = tuple(
+            projector(modality, latent_width=2048) for modality in SUPPORTED_MODALITIES
+        )
+        projector_registry = ProjectorRegistryV1(
+            "projectors.drifted.v1",
+            drifted_stem,
+            tower_registry.registry_digest,
+            drifted_projectors,
+        )
+        self.assertEqual(drifted_stem.stem_digest, tower_registry.stem.stem_digest)
+        with self.assertRaises(ContractError):
+            validate_multimodal_binding(tower_registry, projector_registry)
+
     def test_envelope_rejects_wrong_temporal_or_slot_contract(self):
         _, projectors_registry = registries()
         with self.assertRaises(ContractError):
