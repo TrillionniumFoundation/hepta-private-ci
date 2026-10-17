@@ -39,9 +39,9 @@ impl RuntimeStateAdapter for ReadOnlyState {
     }
 }
 
-/// Test-only witness. Unlike the production protocol it has no mutation
-/// authority, and it must NEVER return an admitted successor or positive
-/// original commit.
+/// Test-only witness. It can return a historical signed record for
+/// read-only negative regressions, but never admits a successor, writes a
+/// runtime mutation or grants production CNS/Control authority.
 struct DenyingWitness {
     _authority_root: tempfile::TempDir,
     signer: SigningKey,
