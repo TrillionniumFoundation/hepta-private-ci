@@ -54,8 +54,13 @@ The product host must supply actual adapters, using authorized preexisting owner
   product CellSplitNativeOwnerV1 implementation yet.
 - Child migration: old-state snapshot, idempotent new-state write, readback
   of the new child state, cancellation and recovery for unknown external effects.
-- CNS: native compare-and-swap route/generation cutover, then authoritative
-  query against the current generation; no route mutation on digest-only plans.
+- CNS: the new HeptaRuntime::observe_governed_topology_cutover verifies
+  that a real Final-use-guarded transition receipt equals the in-process
+  runtime owner's last successful apply receipt, and that the live route still
+  has the exact successor hierarchy and generation. A forged receipt and a
+  process restart fail closed. This is **process-local** evidence only: a
+  durable CNS CAS route owner, native persistent cutover receipt and restart
+  reconciliation remain to be composed; no route mutation on digest-only plans.
 - Supervisor: persistent writer authority fence, old task/result rejection
   and exclusive successor writer issue after independent final-use admission.
 - Observer: separate signed evidence of reconciliation and outcome windows.
@@ -79,6 +84,7 @@ Run when a matching Rust toolchain is available:
     cd codex-rs
     cargo test -p codex-hepta-supervisor cell_split_owner
     cargo test -p codex-hepta-learning-artifacts cell_split_cas_readback
+    cargo test -p codex-hepta-runtime governed_topology_requires_final_use
     cargo clippy -p codex-hepta-supervisor --all-targets -- -D warnings
     cargo fmt --all -- --check
 
