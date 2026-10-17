@@ -3353,7 +3353,14 @@ fn execute_borrowed_native_two_cell_fixture(
     let shared = SharedFeatureBufferV1::from_vec(std::mem::take(&mut first.feature_vector_q24))
         .expect("bounded immutable Q24 allocation");
     let original_pointer = shared.as_slice().as_ptr() as usize;
-    let second = second_request(&first);
+    // Two genuinely separate Head identities must share one Stem allocation
+    // without sharing original Final-use identities or request digests.
+    let mut second = second_request(&first);
+    second.head_digest = digest(b"second-specialized-head").to_string();
+    let second_payload =
+        canonical_neuron_feature_payload_digest_with_slice(&second, shared.as_slice());
+    second.authorization.payload_digest = second_payload.clone();
+    second.authorization.lease_payload_digest = second_payload;
     let first_binding =
         neuron_batch_final_use_binding_with_slice_v1("worker-one", &key, &first, shared.as_slice())
             .expect("original signed feature identity");
@@ -3418,6 +3425,10 @@ fn borrowed_native_batch_shares_exact_q24_arc_across_signed_cells() {
         &row.result,
         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
     )));
+    assert_ne!(
+        poll.outcomes[0].result.as_ref().unwrap().head_digest,
+        poll.outcomes[1].result.as_ref().unwrap().head_digest
+    );
 }
 
 #[test]
