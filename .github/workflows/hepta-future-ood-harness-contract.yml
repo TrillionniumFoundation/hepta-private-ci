@@ -29,5 +29,6 @@ jobs:
         run: |
           python3 -m py_compile \
             qualification/neuron-shared-encoder/neuron_shared_encoder/future_ood_matrix.py \
-            qualification/neuron-shared-encoder/neuron_shared_encoder/harness_receipt_adapter.py
+            qualification/neuron-shared-encoder/neuron_shared_encoder/harness_receipt_adapter.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/resource_checkpoint_binding.py
           git diff --check
