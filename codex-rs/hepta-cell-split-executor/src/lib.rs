@@ -99,7 +99,9 @@ impl ProductSplitBindingV1 {
             && receipt.authority == AuthorityPosture::DENY_ALL
             && receipt.selection_id == self.selection_id
             && receipt.candidate_id == self.selected_candidate_id
+            && receipt.predecessor_id == plan.source_writer
             && receipt.predecessor_generation == plan.old_generation
+            && !receipt.predecessor_artifact_digest.is_zero()
             && receipt.candidate_generation == plan.new_generation
             && receipt.candidate_artifact_digest == self.split.selected_artifact_digest
             && selection_digest == self.split.selection_digest
@@ -109,7 +111,26 @@ impl ProductSplitBindingV1 {
             && !receipt.ledger_head_digest.is_zero()
             && !receipt.evaluation_evidence_digest.is_zero()
             && !receipt.evaluation_authentication_digest.is_zero()
+            && !receipt.evaluation_trust_digest.is_zero()
             && !receipt.frozen_plan_digest.is_zero()
+            && receipt.minimum_dataset_records > 0
+            && receipt.minimum_future_window_micros > 0
+    }
+
+    // This checks the live Supervisor journal owned by the product caller,
+    // NOT a candidate-supplied checkpoint or a digest-only statement.
+    fn validate_cutover_checkpoint(
+        &self,
+        plan: &WriterHandoffPlanV1,
+        checkpoint: &WriterHandoffCheckpointV1,
+    ) -> bool {
+        self.validate(plan)
+            && checkpoint.plan == *plan
+            && checkpoint.phase == WriterHandoffPhaseV1::NewWriterFenced
+            && checkpoint.outbox_watermark.is_some()
+            && checkpoint.unknown_effect_count == 0
+            && !checkpoint.evidence_digest.is_zero()
+            && !checkpoint.receipt_digest.is_zero()
     }
 
     fn validate_cutover(
@@ -196,6 +217,8 @@ pub enum ProductSplitNativeErrorV1<E> {
     InvalidNativeReadback,
     Artifact(LearningArtifactOwnerServiceError),
     RuntimeReadbackUnavailable,
+    CurrentArtifactUnavailable,
+    CurrentFenceUnavailable,
     External(E),
     /// This bridge never publishes CAS or routes. Such a request must be
     /// routed to a separately authorized, idempotent native operation owner.
@@ -268,28 +291,54 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     }
 
     /// Attach a real Final-use-guarded CNS apply receipt, after re-observing
-    /// the live route inside the actual runtime owner. An arbitrary caller
-    /// cannot fabricate a successful receipt with only a matching digest.
+    /// the live route inside the actual runtime owner. This **post-effect**
+    /// readback does not authorize the earlier CNS mutation. A product caller
+    /// MUST gate that mutation separately on the same live Supervisor journal.
     ///
-    /// The receipt is **volatile**. On restart it must be reconciled against
-    /// an independently durable CNS owner before resuming this split.
+    /// The journal must be precisely NewWriterFenced, its last fence must
+    /// still be observed by the authoritative native owner, and the CURRENT
+    /// Artifact CAS must still be eligible before accepting the route readback.
+    /// A candidate-provided digest or a stale journal checkpoint is insufficient.
+    /// The receipt is **volatile** and never survives a process restart.
     pub fn attach_live_cutover(
         &mut self,
+        journal: &DurableWriterHandoffJournalV1,
         applied: RuntimeTopologyApplyReceiptV1,
         now: u64,
     ) -> Result<(), ProductSplitNativeErrorV1<O::Error>> {
         self.advance_current_time(now)?;
+        let checkpoint = journal.checkpoint();
         if !self.binding.validate_selection(&self.plan, self.selection)
             || !self.binding.validate_cutover(&self.plan, &applied)
+            || !self.binding.validate_cutover_checkpoint(&self.plan, checkpoint)
+            || self.cutover.is_some()
         {
             return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
         }
+
+        // Reopen the native owner rather than reusing an old journal digest:
+        // this may have changed since migration due to source revocation.
+        if !matches!(
+            self.lookup_owned(WriterHandoffPhaseV1::Snapshotted)?,
+            CellSplitLookupV1::Observed(_)
+        ) {
+            return Err(ProductSplitNativeErrorV1::CurrentArtifactUnavailable);
+        }
+        let fence = self
+            .other
+            .lookup_external(&self.plan, WriterHandoffPhaseV1::NewWriterFenced)
+            .map_err(ProductSplitNativeErrorV1::External)?;
+        if !matches!(
+            fence,
+            CellSplitLookupV1::Observed(ref observed)
+                if observed.matches_durable_checkpoint(checkpoint, &self.binding.split)
+        ) {
+            return Err(ProductSplitNativeErrorV1::CurrentFenceUnavailable);
+        }
+
         self.runtime
             .observe_governed_topology_cutover(&applied)
             .map_err(|_| ProductSplitNativeErrorV1::RuntimeReadbackUnavailable)?;
-        if self.cutover.is_some() {
-            return Err(ProductSplitNativeErrorV1::PlanOrBindingMismatch);
-        }
         self.cutover = Some(applied);
         Ok(())
     }
@@ -549,6 +598,31 @@ mod tests {
         assert!(binding.validate_selection_receipt(
             &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
         ));
+        selector_receipt.predecessor_id = id("different-parent");
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.predecessor_id = plan.source_writer.clone();
+        selector_receipt.predecessor_artifact_digest = Digest32::ZERO;
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.predecessor_artifact_digest = d(b"predecessor-model");
+        selector_receipt.evaluation_trust_digest = Digest32::ZERO;
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.evaluation_trust_digest = d(b"evaluation-trust");
+        selector_receipt.minimum_future_window_micros = 0;
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.minimum_future_window_micros = 1_000;
+        selector_receipt.minimum_dataset_records = 0;
+        assert!(!binding.validate_selection_receipt(
+            &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
+        ));
+        selector_receipt.minimum_dataset_records = 8;
         selector_receipt.no_change_baseline_digest = Digest32::ZERO;
         assert!(!binding.validate_selection_receipt(
             &plan, &selector_receipt, d(b"selection"), d(b"selector-signature"),
@@ -570,5 +644,35 @@ mod tests {
         binding.cns_final_use_request_digest = d(b"final-use");
         binding.split.operation_id = id("another-split");
         assert!(!binding.validate(&plan));
+        binding.split.operation_id = plan.operation_id.clone();
+
+        // Route readbacks are only accepted at the exact frozen, durable
+        // NewWriterFenced boundary; later/earlier stages cannot be borrowed.
+        let checkpoint = WriterHandoffCheckpointV1 {
+            plan: plan.clone(),
+            revision: 8,
+            phase: WriterHandoffPhaseV1::NewWriterFenced,
+            outbox_watermark: Some(7),
+            unknown_effect_count: 0,
+            evidence_digest: d(b"native-successor-fence"),
+            previous_receipt_digest: d(b"previous-checkpoint"),
+            receipt_digest: d(b"durable-checkpoint"),
+        };
+        assert!(binding.validate_cutover_checkpoint(&plan, &checkpoint));
+        let mut stale = checkpoint.clone();
+        stale.phase = WriterHandoffPhaseV1::Migrated;
+        assert!(!binding.validate_cutover_checkpoint(&plan, &stale));
+        stale = checkpoint.clone();
+        stale.phase = WriterHandoffPhaseV1::RoutePublished;
+        assert!(!binding.validate_cutover_checkpoint(&plan, &stale));
+        stale = checkpoint.clone();
+        stale.plan.authority_epoch += 1;
+        assert!(!binding.validate_cutover_checkpoint(&plan, &stale));
+        stale = checkpoint.clone();
+        stale.outbox_watermark = None;
+        assert!(!binding.validate_cutover_checkpoint(&plan, &stale));
+        stale = checkpoint.clone();
+        stale.receipt_digest = Digest32::ZERO;
+        assert!(!binding.validate_cutover_checkpoint(&plan, &stale));
     }
 }

@@ -183,6 +183,19 @@ impl CellSplitObservedReceiptV1 {
             .then_some(value)
     }
 
+    /// Compare an authenticated owner readback with the exact fsync-backed
+    /// journal checkpoint. This is a *binding* check, not a signature verifier:
+    /// callers must separately authenticate the native owner and checkpoint
+    /// freshness before relying on it for a physical split.
+    pub fn matches_durable_checkpoint(
+        &self,
+        checkpoint: &WriterHandoffCheckpointV1,
+        binding: &CellSplitBindingV1,
+    ) -> bool {
+        self.validate(&checkpoint.plan, binding, checkpoint.phase)
+            && self.evidence_digest() == checkpoint.evidence_digest
+    }
+
     fn validate(
         &self,
         plan: &WriterHandoffPlanV1,
