@@ -35,6 +35,7 @@ use codex_hepta_supervisor::WriterHandoffPhaseV1;
 use codex_hepta_supervisor::WriterHandoffPlanV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 /// Pre-registered mapping between two different native handoff protocols.
@@ -128,10 +129,41 @@ impl ProductSplitBindingV1 {
     }
 }
 
+/// Reopenable native *state* snapshot readback. This is distinct from the
+/// Artifact CAS payload: migration must consume the exact old writer state
+/// identified here, not invent a state digest after the fact.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProductPredecessorSnapshotReceiptV1 {
+    pub operation_id: StableId,
+    pub domain_id: StableId,
+    pub source_writer: StableId,
+    pub predecessor_generation: Generation,
+    pub source_snapshot_digest: Digest32,
+    pub native_snapshot_ack: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ProductPredecessorSnapshotLookupV1 {
+    /// An actual persisted state Owner readback with verified native identity.
+    Observed(ProductPredecessorSnapshotReceiptV1),
+    /// No completed native snapshot; the caller must not assume a safe retry.
+    Absent,
+    Indeterminate,
+}
+
 /// The other seven stages require separately authenticated, persistent domain
 /// owners. No blanket dummy successful implementation is provided.
 pub trait ExternalCellSplitNativeOwnerV1 {
     type Error;
+
+    /// Must query the authoritative predecessor State Owner's durable
+    /// snapshot by operation/domain/generation, not a supplied plan digest.
+    /// The CAS stage cannot be acknowledged without this receipt.
+    fn lookup_predecessor_snapshot(
+        &mut self,
+        plan: &WriterHandoffPlanV1,
+    ) -> Result<ProductPredecessorSnapshotLookupV1, Self::Error>;
+
     fn lookup_external(
         &mut self,
         plan: &WriterHandoffPlanV1,
@@ -280,7 +312,7 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     /// from a missing file, an unacknowledged publication or lost volatile CNS
     /// state.
     fn lookup_owned(
-        &self,
+        &mut self,
         phase: WriterHandoffPhaseV1,
     ) -> Result<CellSplitLookupV1, ProductSplitNativeErrorV1<O::Error>> {
         let evidence = match phase {
@@ -304,11 +336,33 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
                 {
                     return Err(ProductSplitNativeErrorV1::InvalidNativeReadback);
                 }
+                let snapshot = match self
+                    .other
+                    .lookup_predecessor_snapshot(&self.plan)
+                    .map_err(ProductSplitNativeErrorV1::External)?
+                {
+                    ProductPredecessorSnapshotLookupV1::Observed(snapshot) => snapshot,
+                    ProductPredecessorSnapshotLookupV1::Absent
+                    | ProductPredecessorSnapshotLookupV1::Indeterminate => {
+                        return Ok(CellSplitLookupV1::Indeterminate);
+                    }
+                };
+                if snapshot.operation_id != self.plan.operation_id
+                    || snapshot.domain_id != self.plan.domain_id
+                    || snapshot.source_writer != self.plan.source_writer
+                    || snapshot.predecessor_generation != self.plan.old_generation
+                    || snapshot.source_snapshot_digest.is_zero()
+                    || snapshot.native_snapshot_ack.is_zero()
+                {
+                    return Err(ProductSplitNativeErrorV1::InvalidNativeReadback);
+                }
                 CellSplitNativeEvidenceV1::ArtifactCasCommitted {
                     native_ack: observed.native_ack_digest,
                     payload_digest: observed.payload_digest,
                     readback_digest: observed.readback_digest,
                     registry_head_digest: observed.registry_head_digest,
+                    source_snapshot_digest: snapshot.source_snapshot_digest,
+                    source_snapshot_ack: snapshot.native_snapshot_ack,
                 }
             }
             WriterHandoffPhaseV1::RoutePublished => {
