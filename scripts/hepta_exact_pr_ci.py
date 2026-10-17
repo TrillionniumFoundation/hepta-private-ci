@@ -38,7 +38,7 @@ def gh_json(endpoint: str) -> dict:
 def valid_branch_ref(ref: object) -> bool:
     if not isinstance(ref, str) or not BRANCH_REF.fullmatch(ref):
         return False
-    if not "/" in ref or ref.endswith(("/", ".", ".lock")) or ".." in ref:
+    if "/" not in ref or ref.endswith(("/", ".", ".lock")) or ".." in ref:
         return False
     return all(part not in ("", ".", "..") for part in ref.split("/"))
 
