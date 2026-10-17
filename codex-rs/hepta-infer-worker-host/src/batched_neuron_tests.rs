@@ -3259,3 +3259,239 @@ fn typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_
     )));
     assert_eq!(metrics.0.lock().unwrap().len(), 6);
 }
+
+#[derive(Clone)]
+struct ScalarOvergrantOnceDriver {
+    calls: Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl ModelDriver for ScalarOvergrantOnceDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for ScalarOvergrantOnceDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        let mut result = Driver.run_neuron_features(handle, request)?;
+        let previous_calls = self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if previous_calls == 0 {
+            // 1024 resident + 3073 transient breaches the original 4096
+            // worker grant after the backend has physically returned.
+            result.transient_allocation_bytes = 3073;
+        }
+        Ok(result)
+    }
+}
+
+#[test]
+fn poisoned_scalar_worker_refuses_new_final_use_nonce_before_physical_claim() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[123; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    // A distinct already-installed original Scope frontier gets its own
+    // bounded scheduler lane, so both requests are truly admitted before
+    // the first driver effect. Same-lane overflow would test only Capacity.
+    let mut successor_key = key.clone();
+    successor_key.scope_id = StableId::new("different-scope").unwrap();
+    successor_key.route_fence = 18;
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &successor_key, &second).unwrap();
+    let first_grant = signed_member(&signer, first_binding, "overgrant-first", 123);
+    let second_grant = signed_member(&signer, second_binding, "after-overgrant", 124);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+
+    {
+        let mut worker = runner_with_driver(
+            &signer,
+            dir.path(),
+            model.clone(),
+            ScalarOvergrantOnceDriver {
+                calls: Arc::clone(&calls),
+            },
+            1,
+        );
+        worker
+            .enqueue(100, "model".into(), first, key.clone(), first_grant)
+            .unwrap();
+        // Queue the second real signed grant *before* the physical error.
+        // Post-poison admission checks alone cannot prove preclaim fencing.
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                second.clone(),
+                successor_key.clone(),
+                second_grant.clone(),
+            )
+            .unwrap();
+        let first_outcome = worker.poll_and_execute(101).unwrap();
+        assert_eq!(first_outcome.outcomes.len(), 1);
+        assert!(matches!(
+            first_outcome.outcomes[0].result,
+            Err(BatchWorkerErrorV1::Worker)
+        ));
+        assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+        assert_eq!(worker.pending(), 1);
+        let second_outcome = worker.poll_and_execute(102).unwrap();
+        assert_eq!(second_outcome.outcomes.len(), 1);
+        assert!(matches!(
+            second_outcome.outcomes[0].result,
+            Err(BatchWorkerErrorV1::Worker)
+        ));
+        assert_eq!(worker.pending(), 0);
+        assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    }
+
+    // Reopen the same actual durable Final-use nonce journal in this
+    // qualification fixture. The second grant was never claimed by the
+    // poisoned Worker and can only be used under a separately recovered
+    // trusted Worker. This is NOT production recovery authorization.
+    let mut recovered = runner(&signer, dir.path(), model);
+    recovered
+        .enqueue(200, "model".into(), second, successor_key, second_grant)
+        .unwrap();
+    let accepted = recovered.poll_and_execute(206).unwrap();
+    assert_eq!(accepted.outcomes.len(), 1);
+    assert!(accepted.outcomes[0].result.is_ok());
+}
+
+#[test]
+fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[125; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let mut successor_key = key.clone();
+    successor_key.scope_id = StableId::new("different-scope").unwrap();
+    successor_key.route_fence = 18;
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    // Two *new* identities and genuinely separate signed one-shot grants.
+    // Queue these in the second authenticated Scope lane *before* the first
+    // driver failure. This preserves the one-batch-per-lane capacity bound.
+    let mut third = first.clone();
+    third.authorization.request_id = "after-poison-three".into();
+    third.authorization.reservation_id = "after-poison-reservation-three".into();
+    let mut fourth = second.clone();
+    fourth.authorization.request_id = "after-poison-four".into();
+    fourth.authorization.reservation_id = "after-poison-reservation-four".into();
+    let new_members = [third, fourth]
+        .into_iter()
+        .enumerate()
+        .map(|(index, request)| {
+            let binding =
+                neuron_batch_final_use_binding_v1("worker-one", &successor_key, &request).unwrap();
+            let grant = signed_member(
+                &signer,
+                binding,
+                &format!("unused-after-poison-{index}"),
+                127 + u8::try_from(index).unwrap(),
+            );
+            (request, grant)
+        })
+        .collect::<Vec<_>>();
+    let mut worker = runner_with_driver(
+        &signer,
+        dir.path(),
+        model.clone(),
+        NativeTestDriver {
+            invocations: Arc::clone(&calls),
+            truncate_outputs: true,
+            reorder_outputs: false,
+        },
+        2,
+    );
+    for (index, request) in [first.clone(), second.clone()].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("malformed-first-{index}"),
+                    125 + u8::try_from(index).unwrap(),
+                ),
+            )
+            .unwrap();
+    }
+    for (request, grant) in &new_members {
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request.clone(),
+                successor_key.clone(),
+                grant.clone(),
+            )
+            .unwrap();
+    }
+    let malformed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(malformed.outcomes.len(), 2);
+    assert!(
+        malformed
+            .outcomes
+            .iter()
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker)))
+    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+
+    assert_eq!(worker.pending(), 2);
+    let refused = worker.poll_and_execute(102).unwrap();
+    assert_eq!(refused.outcomes.len(), 2);
+    assert!(
+        refused
+            .outcomes
+            .iter()
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker)))
+    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    drop(worker);
+
+    // Test-only recovery proves the refused group's two genuine nonces
+    // remain unused in the original durable Final-use store. This test does
+    // not authorize recovery, restart or physical model effects in products.
+    let recovered_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut recovered = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        NativeTestDriver {
+            invocations: Arc::clone(&recovered_calls),
+            truncate_outputs: false,
+            reorder_outputs: false,
+        },
+        2,
+    );
+    for (request, grant) in new_members {
+        recovered
+            .enqueue(200, "model".into(), request, successor_key.clone(), grant)
+            .unwrap();
+    }
+    let accepted = recovered.poll_and_execute(201).unwrap();
+    assert_eq!(accepted.outcomes.len(), 2);
+    assert!(accepted.outcomes.iter().all(|item| item.result.is_ok()));
+    assert_eq!(recovered_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
