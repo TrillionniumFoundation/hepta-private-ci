@@ -79,6 +79,13 @@ pub struct CellSplitProposalSignalV1 {
     signal_digest: Digest32,
 }
 
+/// Source-bound sequencing is one logical observation, not two unrelated knobs.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitObservationClockV1 {
+    pub observation_sequence: u64,
+    pub observed_at_micros: u64,
+}
+
 impl CellSplitProposalSignalV1 {
     pub fn new(
         parent_cell_id: StableId,
@@ -87,9 +94,12 @@ impl CellSplitProposalSignalV1 {
         trigger: CellSplitProposalTriggerV1,
         trigger_evidence_digest: Digest32,
         policy_digest: Digest32,
-        observation_sequence: u64,
-        observed_at_micros: u64,
+        clock: CellSplitObservationClockV1,
     ) -> Result<Self, CellSplitAutomationErrorV1> {
+        let CellSplitObservationClockV1 {
+            observation_sequence,
+            observed_at_micros,
+        } = clock;
         if parent_cell_id.as_str().is_empty()
             || parent_bundle_digest.is_zero()
             || trigger_evidence_digest.is_zero()
@@ -1810,8 +1820,10 @@ mod tests {
             CellSplitProposalTriggerV1::TaskCoverageOpportunity,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                observation_sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         CellSplitProposalSourceV1
@@ -1961,8 +1973,10 @@ mod tests {
             CellSplitProposalTriggerV1::ResourcePressure,
             digest(41),
             digest(42),
-            1,
-            10,
+            CellSplitObservationClockV1 {
+                observation_sequence: 1,
+                observed_at_micros: 10,
+            },
         )
         .expect("signal");
         assert_eq!(
