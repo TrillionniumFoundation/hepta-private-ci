@@ -163,7 +163,11 @@ class ReaderDesignV1:
         _digest("manifest_sha256", self.manifest_sha256)
         _digest("independent_source_digest", self.independent_source_digest)
         _integer("task_count", self.task_count, minimum=1)
-        _require(self.presentations in (1, 4), "Reader presentations must be 1 or 4")
+        # P1 has no presentation index in ProspectiveCaseV1.  Refuse the
+        # four-presentation option until a v2 case schema binds each repeated
+        # presentation explicitly, otherwise the call budget could be
+        # overstated while the matrix still contains one four-arm group.
+        _require(self.presentations == 1, "P1 Reader design requires one presentation; use a v2 case schema for four")
         _require(tuple(self.arms) == READER_ARMS, "Reader arms must be none/distractor/withheld/full in order")
         _boolean("independent_new_source", self.independent_new_source)
         _boolean("independently_held_labels", self.independently_held_labels)
@@ -482,6 +486,8 @@ def build_system2_interval_gate(
     utility_intervals: Mapping[str, tuple[float, float]],
     resource_costs: Mapping[str, ResourceCostV1],
     evidence_digests: Mapping[str, str],
+    evidence_classes: Mapping[str, str],
+    cases: Iterable[ProspectiveCaseV1],
     *,
     feasible: Mapping[str, bool] | None = None,
     margin: float = 0.0,
@@ -489,8 +495,10 @@ def build_system2_interval_gate(
     """Build an advisory System2 gate over one validated gate-candidate set.
 
     The caller supplies intervals only after an independent real-shadow
-    evaluator has produced them.  This adapter deliberately does not score a
-    response, infer an interval, or certify efficacy.  The returned
+    evaluator has produced them, and must provide the complete case matrix so
+    this function can fail closed before constructing the advisory.  This
+    adapter deliberately does not score a response, infer an interval, or
+    certify efficacy.  The returned
     ``System2IntervalGateV1`` is advisory-only; its ``advisory()`` result is
     ``NO_GO`` on interval overlap and ``ADVISORY_SELECT`` only under strict
     interval dominance.  It never grants authority or mutates a running
@@ -500,12 +508,18 @@ def build_system2_interval_gate(
     _require(plan.status == "SHADOW_ONLY", "System2 gate requires a shadow-only plan")
     _require(not plan.selection_authority and not plan.current_run_mutation, "System2 gate cannot carry runtime authority")
     _finite_nonnegative("margin", margin)
+    case_items = tuple(cases)
+    plan.validate_cases(case_items)
+    receipt_by_id = {case.resource.candidate_id: case.resource for case in case_items if case.resource is not None}
+    _require(len(receipt_by_id) == len(plan.candidates), "System2 gate needs one resource receipt per planned candidate")
+    plan.validate_resource_receipts(tuple(receipt_by_id.values()))
     gate_candidates = tuple(candidate for candidate in plan.candidates if candidate.gate_eligible)
     gate_ids = {candidate.candidate_id for candidate in gate_candidates}
     _require(len(gate_candidates) >= 2, "System2 requires at least two gate candidates")
     _require(set(utility_intervals) == gate_ids, "utility intervals must cover exactly gate candidates")
     _require(set(resource_costs) == gate_ids, "resource costs must cover exactly gate candidates")
     _require(set(evidence_digests) == gate_ids, "evidence digests must cover exactly gate candidates")
+    _require(set(evidence_classes) == gate_ids, "evidence classes must cover exactly gate candidates")
     if feasible is None:
         feasible = {candidate_id: True for candidate_id in gate_ids}
     _require(set(feasible) == gate_ids, "feasibility flags must cover exactly gate candidates")
@@ -520,6 +534,7 @@ def build_system2_interval_gate(
         _require(float(lower) <= float(upper), "utility interval is inverted")
         evidence_digest = evidence_digests[candidate.candidate_id]
         _digest("evidence_digest", evidence_digest)
+        _require(evidence_classes[candidate.candidate_id] == "REAL_SHADOW", "System2 gate cannot consume synthetic or incomplete evidence")
         _boolean("feasible", feasible[candidate.candidate_id])
         try:
             candidates.append(
