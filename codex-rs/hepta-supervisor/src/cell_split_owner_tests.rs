@@ -138,12 +138,20 @@ impl FilesystemNative {
                     payload_digest: artifact,
                     readback_digest: if self.bad_cas { digest(b"wrong") } else { readback },
                     registry_head_digest: digest(b"native-registry-head"),
+                    source_snapshot_digest: digest(
+                        &fs::read(self.root.join("source-snapshot"))?,
+                    ),
+                    source_snapshot_ack: digest(
+                        &fs::read(self.root.join("source-snapshot-ack"))?,
+                    ),
                 }
             }
             WriterHandoffPhaseV1::Migrated => CellSplitNativeEvidenceV1::ChildMigrated {
                 native_ack: ack,
                 artifact_digest: artifact,
-                source_state_digest: digest(b"source-state"),
+                source_state_digest: digest(
+                    &fs::read(self.root.join("source-snapshot"))?,
+                ),
                 child_state_digest: digest(&fs::read(self.root.join("child-state"))?),
             },
             WriterHandoffPhaseV1::Validated => CellSplitNativeEvidenceV1::ChildValidated {
@@ -251,6 +259,11 @@ impl CellSplitNativeOwnerV1 for FilesystemNative {
         match phase {
             WriterHandoffPhaseV1::Snapshotted => {
                 persist_create_only(&self.root.join("cas-artifact"), b"artifact")?;
+                persist_create_only(&self.root.join("source-snapshot"), b"source-state")?;
+                persist_create_only(
+                    &self.root.join("source-snapshot-ack"),
+                    b"source-state-persisted-by-domain-owner",
+                )?;
             }
             WriterHandoffPhaseV1::Migrated => {
                 persist_create_only(&self.root.join("child-state"), b"child-state")?;
@@ -516,4 +529,23 @@ fn missing_current_artifact_authority_blocks_retirement() {
         journal.checkpoint().phase,
         WriterHandoffPhaseV1::RoutePublished
     );
+}
+
+#[test]
+fn predecessor_snapshot_tamper_after_ack_blocks_child_migration() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..4 {
+        advance(&mut journal, &mut native).expect("through native source snapshot");
+    }
+    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    fs::write(native.root.join("source-snapshot"), b"changed-state")
+        .expect("simulate source snapshot modification");
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::ObservationDrift)
+    ));
+    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert!(!native.root.join("child-state").exists());
 }
