@@ -240,3 +240,19 @@ running hosted Runners. The original 2x250, 16+16 packed runs, and their
 proven 500 unique passing case IDs and SHA256 manifests remain immutable.
 Compare actual start/finish timestamps and download/checkout errors of the
 single ALL run against the prior two dispatches on equivalent source tests.
+
+## Security: checkout immutable GitHub event SHA, never a supplied SHA reference
+
+GitHub CodeQL's PR check identified two high-severity potential
+cache-poisoning flows: accepting a workflow_dispatch user-supplied
+source_sha as the actions/checkout ref. Both Fleet workflows now
+explicitly check out the GitHub-trusted event identity
+(github.sha), **not** the untrusted source_sha input.
+
+For manual dispatch, select the branch/tag ref that points to the
+exact commit you wish to test and enter its complete 40-character SHA
+as source_sha. Each worker compares that input against the Git checkout
+HEAD and refuses execution if they differ. A moving branch or older
+arbitrary commit cannot be silently substituted. Existing read-only
+repository permissions and persist-credentials:false are preserved;
+no cache-poisoning alerts are dismissed by policy exceptions.

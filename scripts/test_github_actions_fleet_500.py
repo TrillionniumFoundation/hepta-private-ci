@@ -175,6 +175,21 @@ class Examples(unittest.TestCase):
         self.assertIn("--absolute-offset --start-index", workflow)
         self.assertNotIn("    needs: plan", workflow.split("  real-test:", 1)[1])
 
+    def test_manual_workflows_checkout_dispatch_identity_not_input_ref(self):
+        root = Path(__file__).resolve().parents[1]
+        marker = chr(36) + "{{"
+        for workflow in (
+            ".github/workflows/github-actions-fleet-500.yml",
+            ".github/workflows/github-actions-fleet-packed.yml",
+        ):
+            with self.subTest(workflow=workflow):
+                text = (root / workflow).read_text(encoding="utf-8")
+                self.assertNotIn("ref: " + marker + " inputs.source_sha", text)
+                self.assertIn("ref: " + marker + " github.sha }}", text)
+                self.assertIn("PINNED_SHA", text)
+        fleet = (root / ".github/workflows/github-actions-fleet-500.yml").read_text()
+        self.assertEqual(fleet.count("ref: " + marker + " github.sha }}"), 2)
+
 
 class TestFleetAudit(unittest.TestCase):
     def test_distinguish_run_backlog_from_actual_running_jobs(self):
