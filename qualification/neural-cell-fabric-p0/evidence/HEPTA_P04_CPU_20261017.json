@@ -1,0 +1,78 @@
+{
+  "authority": "DENY_ALL",
+  "benchmark_in_process_only": true,
+  "binary_sha256": "ba8013a9eeb97007e0f41783da733060d7ca516f285059930626c51059fb38a5",
+  "calls_per_arm": 1536,
+  "combined": {
+    "native": {
+      "p50_ns": 13530,
+      "p95_ns": 16585,
+      "p99_ns": 65028
+    },
+    "typed": {
+      "p50_ns": 12780,
+      "p95_ns": 15373,
+      "p99_ns": 61873
+    }
+  },
+  "compile_ns": 64847470,
+  "disposition": "HOLD_NO_GO",
+  "external_effects": false,
+  "kind": "actual-local-CPU-fixed-16-lane-matched-typed-vs-aot-with-validation",
+  "native_excludes_double_python_reference_but_postcall_uses_separate_oracle": true,
+  "paired_runs": [
+    {
+      "native": {
+        "p50_ns": 13540,
+        "p95_ns": 16465,
+        "p99_ns": 73400
+      },
+      "typed": {
+        "p50_ns": 12759,
+        "p95_ns": 16014,
+        "p99_ns": 83846
+      }
+    },
+    {
+      "native": {
+        "p50_ns": 13560,
+        "p95_ns": 17055,
+        "p99_ns": 56135
+      },
+      "typed": {
+        "p50_ns": 12789,
+        "p95_ns": 16064,
+        "p99_ns": 43405
+      }
+    },
+    {
+      "native": {
+        "p50_ns": 13500,
+        "p95_ns": 15653,
+        "p99_ns": 41672
+      },
+      "typed": {
+        "p50_ns": 12800,
+        "p95_ns": 14151,
+        "p99_ns": 39138
+      }
+    }
+  ],
+  "repeats": 3,
+  "repetitions": 512,
+  "scope_missing": [
+    "model inference",
+    "network",
+    "real OS UI",
+    "GPU",
+    "MCP schema overhead",
+    "sandbox transfer",
+    "full effect authorization",
+    "energy"
+  ],
+  "source_sha256": "83337012fc1f8efab4dc6cbdb4fa5fedfc6f10774e3acb2b4bbaa189a483bb30",
+  "speedup_claim_authorized": false,
+  "typed_vs_native_same_numeric_outputs": true,
+  "width": 16,
+  "work": "one exact Q24 dot plus identical policy/source lineage SHA per arm"
+}
