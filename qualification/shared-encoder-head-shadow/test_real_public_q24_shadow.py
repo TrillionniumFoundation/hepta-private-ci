@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import zipfile
 
-from hepta_shared_encoder_shadow import audited_inputs, run
+from real_public_q24_shadow import audited_inputs, run
 
 ARTIFACT = Path(__file__).with_name('stem-real-public-q24-feature-snapshot.zip')
 ROOT = 'public-q24-feature-snapshot/'
