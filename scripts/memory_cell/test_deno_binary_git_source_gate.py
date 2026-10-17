@@ -67,9 +67,16 @@ class OriginalBinaryGitObjectTests(unittest.TestCase):
             strict_json(b'{"sha":"x","sha":"x"}')
 
     def test_original_nested_tree_path_is_type_and_sha_bound(self):
-        tree = {"sha": ROOT_TREE, "tree": [{
-            "path": "tests", "type": "tree", "sha": COMMIT,
-        }]}
+        tree = {
+            "sha": ROOT_TREE,
+            "tree": [
+                {
+                    "path": "tests",
+                    "type": "tree",
+                    "sha": COMMIT,
+                }
+            ],
+        }
         self.assertEqual(tree_entry(tree, ROOT_TREE, "tests", "tree"), COMMIT)
         with self.assertRaisesRegex(ValueError, "path/type binding missing"):
             tree_entry(tree, ROOT_TREE, "tests", "blob")
