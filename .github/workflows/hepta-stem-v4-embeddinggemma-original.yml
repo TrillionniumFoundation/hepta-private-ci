@@ -170,7 +170,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           (cd "$RUNNER_TEMP/v4-source" && sha256sum --check source-v4.sha256)
           python -m pip install --disable-pip-version-check torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --disable-pip-version-check sentence-transformers==6.1.0 transformers==5.19.0 safetensors
+          python -m pip install --disable-pip-version-check sentence-transformers==6.1.0 transformers==5.19.0 safetensors numpy==2.2.6
           python - <<'PY'
           import torch, transformers, sentence_transformers
           assert torch.__version__.split('+')[0]=='2.14.1'

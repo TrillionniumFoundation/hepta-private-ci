@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import resource
 import statistics
+import struct
 import sys
 import time
 
@@ -194,7 +195,7 @@ def physical_fleet(feature, n=4096, active=32, repetitions=64):
             'head_parameter_count':6914*n, 'head_weight_bytes_fp32':6914*n*4,
             'timed_batched_calls':len(elapsed), 'head_batch_p95_ms':sorted(elapsed)[math.ceil(.95*len(elapsed))-1],
             'head_batch_p99_ms':sorted(elapsed)[math.ceil(.99*len(elapsed))-1],
-            'last_logit_sha256':digest(logits.contiguous().numpy().tobytes()),
+            'last_logit_sha256':digest(struct.pack('<32f', *logits.detach().cpu().tolist())),
             'real_pretrained_input_feature':True, 'complete_request_p99':None,
             'energy_joules':None, 'target_host_attested':False}
 
