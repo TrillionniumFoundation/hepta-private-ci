@@ -24,6 +24,9 @@ TARGET_ZIP_SHA = '946101fe7e57a151ce5ae9ec314fc6e01b7244aeac48f49034ee0a581e09c6
 SOURCE_MANIFEST_SHA = '0233221fae3986612ed34c86b3da2e708b2423a77d19a74f1d0a73ed46e81490'
 DINO_REV = '150c8e7bb7cef2d30ec31b13a517af14840ee3f7'
 DINO_WEIGHTS = 'ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1'
+DINO_PREPROCESS_SHA = '14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828'
+DINO_FEATURE_ENCODER_SHA = '66301a1057dffff05adbb24d8e635b74d1b01e4d3ebb477bee1f25fdd5e3d8a8'
+GRANITE_FEATURE_ENCODER_SHA = '651431e0ce6e37a34a7f576d1164b277a87d39466c77418b9d0bf4d5a15c0257'
 GRANITE_REV = '835ad14087e140460703cf0fae09f97d469d65c2'
 GRANITE_ENCODED_SHA = '4e60d544823a9f4441d3a040c2415080092923114d8082c0530e7c93f3a186e0'
 DATA_REV = '27aa014ce09b193e1a6f58112d4a66e0eddb69c5'
@@ -132,8 +135,7 @@ def load_training_only(source_zip, feature_zip):
         classes_rows = read_jsonl(source.read('source/train_class.jsonl'))
         class_by_id = {r['case_id']: r['class_label'] for r in classes_rows}
         need(len(train) == 36 and len(held) == 24 and len(class_by_id) == 36 and
-             sorted(class_by_id.values()).count('healthy') == 12 and
-             all(c in CLASSES for c in class_by_id.values()), 'training class census')
+             all(list(class_by_id.values()).count(c) == 12 for c in CLASSES), 'training class census')
         seen_cases, seen_groups, seen_images = set(), set(), set()
         for phase, rows in [('train', train), ('future', held)]:
             for row in rows:
@@ -161,6 +163,8 @@ def load_training_only(source_zip, feature_zip):
                  receipt['actual_model_forwards'] == len(originals) and
                  receipt['encoder_revision'] == DINO_REV and
                  receipt['snapshot_file_sha256s']['model.safetensors'] == DINO_WEIGHTS and
+                 receipt['snapshot_file_sha256s']['preprocessor_config.json'] == DINO_PREPROCESS_SHA and
+                 receipt['source_sha256'] == sha(b''.join(canonical(row)+b'\n' for row in originals)) and
                  receipt['checkpoint_locally_byte_verified'] is True and
                  receipt['publisher_authenticated'] is False and
                  receipt['labels_seen'] is False and
@@ -174,6 +178,7 @@ def load_training_only(source_zip, feature_zip):
                      observed_row['image_sha256'] == row['image_sha256'] and
                      observed_row['source_sha256'] == row['source_sha256'] and
                      observed_row['source']['modality'] == 'image' and
+                     observed_row['source']['encoder_sha256'] == DINO_FEATURE_ENCODER_SHA and
                      observed_row['source']['input_sha256'] == row['image_sha256'] and
                      'target' not in observed_row and 'label' not in observed_row,
                      'pretrained feature source/label mismatch')
@@ -186,6 +191,7 @@ def load_training_only(source_zip, feature_zip):
         rec = read_json(feat.read('granite_train/receipt.json'))
         need(rec['candidate'] == 'granite-97m-r2' and rec['model_revision'] == GRANITE_REV and
              rec['encoded_sha256'] == GRANITE_ENCODED_SHA == sha(encoded_raw) and
+             rec['feature_encoder_identity'] == GRANITE_FEATURE_ENCODER_SHA and
              rec['examples'] == 36 and rec['output_width'] == WIDTH and
              rec['model_checkpoint_locally_verified'] is True and
              rec['model_publisher_authenticated'] is False and
@@ -199,7 +205,9 @@ def load_training_only(source_zip, feature_zip):
             need(row['case_id'] == original['case_id'] and
                  row['group_id'] == original['group_id'] and
                  row['target']['modality'] == 'text' and
+                 row['target']['encoder_sha256'] == GRANITE_FEATURE_ENCODER_SHA and
                  row['source']['modality'] == 'image' and
+                 row['source']['encoder_sha256'] == DINO_FEATURE_ENCODER_SHA and
                  row['source']['input_sha256'] == original['image_sha256'],
                  'Granite source/case drift')
             value = np.asarray(row['target']['values'], dtype=np.float64)
