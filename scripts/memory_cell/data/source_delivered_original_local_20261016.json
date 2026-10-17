@@ -1,0 +1,223 @@
+{
+  "schema": "hepta.memory.source-delivered-original-smol-local-observation-20261016.v1",
+  "execution_provenance": {
+    "execution_type": "local CPU original model weights and prompt/tokenizer bytes independently ported from frozen source",
+    "model_runtime": "independent-port-Torch-2.10.0+cpu-FP32",
+    "original_experiment_runtime_pytorch_2_5_1_parity_verified": false,
+    "original_model_artifact_id": 11586991191,
+    "original_model_zip_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+    "original_weights_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "original_reader_inventory_digest": "75f5cbf51c65ca5ef81117d3df4366b425703817985257b31282a7e7b0b0891e",
+    "original_input_artifact_id": 11827287296,
+    "original_input_zip_sha256": "31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a",
+    "source_only_prelabel_journal_sha256": "37e365fe4c783349663e3036c714c783037963e9fa9cfd012cc160851a5f4703",
+    "model_original_raw_journal_sha256": "b77ea352c1a8c7a4c2c3d0fed6233400265f2df1aca8fdb5616022a9b79c3baf",
+    "sanitized_original_result_sha256": "f166395bf0e241bc91543ea38df0c6f61ba256a640c108382192222326096b7f",
+    "sanitized_second_process_replay_sha256": "f1619b8f04055c9bee7f52b26ef09adaa82b0b0d1688991b672fbb88043841fc",
+    "sanitized_posthoc_ablation_sha256": "3fde31e4c3e6a7490dedd67007aa7972151720457c6162e29058a20d90c95190",
+    "local_runner_source_sha256": "a52b044395b3c1d18650e1253c0f8bbdb4e726e9ab0957832e945bf453e7e567",
+    "local_original_reader_port_sha256": "29ba7c52cc405b7a6492088712be586d27b05125cb0cf623b11172c7fa85f12c",
+    "local_second_process_verifier_source_sha256": "8d6a7bb648b969a69b03d53fae5dbed38df314eefcc15f9cc1b2317acae09501",
+    "inference_generated_on_github_actions": false,
+    "github_actions_job_result_qualified": false
+  },
+  "observed": {
+    "registered_old_exposed_questions": 8,
+    "arms": 6,
+    "original_model_requests": 48,
+    "original_model_successful_requests": 48,
+    "original_model_failures": 0,
+    "actual_neural_forwards": 732,
+    "original_constrained_program_worker_calls": 12,
+    "separate_process_original_program_worker_reexecutions": 12,
+    "independent_process_new_model_calls": 0,
+    "original_source_local_candidate_coverage": {
+      "empty": 0,
+      "hybrid": 8,
+      "entity_time": 8,
+      "organized": 8,
+      "program_support": 8,
+      "without_prerequisite": 4
+    },
+    "by_arm": {
+      "empty": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 0,
+        "supported_success": 0,
+        "full_declared_support": 0,
+        "hypotheses": 8,
+        "input_tokens": 1581,
+        "reader_seconds": 6.30034,
+        "refusals": 8,
+        "worker_checks": 2,
+        "worker_success": 0
+      },
+      "hybrid": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 3,
+        "supported_success": 3,
+        "full_declared_support": 8,
+        "hypotheses": 28,
+        "input_tokens": 5967,
+        "reader_seconds": 32.98418,
+        "refusals": 3,
+        "worker_checks": 2,
+        "worker_success": 1
+      },
+      "entity_time": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 7,
+        "supported_success": 7,
+        "full_declared_support": 8,
+        "hypotheses": 18,
+        "input_tokens": 3555,
+        "reader_seconds": 16.10916,
+        "refusals": 1,
+        "worker_checks": 2,
+        "worker_success": 2
+      },
+      "organized": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 7,
+        "supported_success": 7,
+        "full_declared_support": 8,
+        "hypotheses": 16,
+        "input_tokens": 3278,
+        "reader_seconds": 14.64109,
+        "refusals": 1,
+        "worker_checks": 2,
+        "worker_success": 2
+      },
+      "program_support": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 7,
+        "supported_success": 7,
+        "full_declared_support": 8,
+        "hypotheses": 16,
+        "input_tokens": 3278,
+        "reader_seconds": 14.07333,
+        "refusals": 1,
+        "worker_checks": 2,
+        "worker_success": 2
+      },
+      "without_prerequisite": {
+        "planned": 8,
+        "model_calls": 8,
+        "failed": 0,
+        "choice_correct": 4,
+        "supported_success": 0,
+        "full_declared_support": 0,
+        "hypotheses": 12,
+        "input_tokens": 2142,
+        "reader_seconds": 9.76894,
+        "refusals": 4,
+        "worker_checks": 2,
+        "worker_success": 2
+      }
+    },
+    "total_observed_reader_wall_seconds": 93.87704,
+    "host_and_model_reload_cost_not_complete": true
+  },
+  "source_and_program_replay": {
+    "recounted_original_model_requests": 48,
+    "recounted_neural_forward_operations": 732,
+    "original_prompt_token_ids_reproduced": true,
+    "source_only_candidate_census_verified": true,
+    "explicit_typed_causal_chain_reconstructed": true,
+    "original_program_worker_execution_replays": 12,
+    "conditional_log_probabilities_independently_recomputed": false,
+    "semantic_human_entailment": false
+  },
+  "retrospective_refusal_ablation": {
+    "uses_saved_original_logits_only": true,
+    "new_model_forwards": 0,
+    "frozen_prior_policy": "visible-source-only candidate forced likelihood, fixed refusal as candidate",
+    "posthoc_forced_guess_policy": "discard refusal likelihood after observing old development labels, never an admissible safe policy",
+    "by_arm": {
+      "empty": {
+        "planned": 8,
+        "abstentions": 8,
+        "correct_suppressed_by_abstention": 0,
+        "wrong_suppressed_by_abstention": 0,
+        "fixed_refusal_correct": 8,
+        "posthoc_forced_guess_correct": 0,
+        "guess_unsupported": 0,
+        "unchanged": 0
+      },
+      "hybrid": {
+        "planned": 8,
+        "abstentions": 3,
+        "correct_suppressed_by_abstention": 2,
+        "wrong_suppressed_by_abstention": 1,
+        "fixed_refusal_correct": 3,
+        "posthoc_forced_guess_correct": 5,
+        "guess_unsupported": 0,
+        "unchanged": 5
+      },
+      "entity_time": {
+        "planned": 8,
+        "abstentions": 1,
+        "correct_suppressed_by_abstention": 1,
+        "wrong_suppressed_by_abstention": 0,
+        "fixed_refusal_correct": 7,
+        "posthoc_forced_guess_correct": 8,
+        "guess_unsupported": 0,
+        "unchanged": 7
+      },
+      "organized": {
+        "planned": 8,
+        "abstentions": 1,
+        "correct_suppressed_by_abstention": 1,
+        "wrong_suppressed_by_abstention": 0,
+        "fixed_refusal_correct": 7,
+        "posthoc_forced_guess_correct": 8,
+        "guess_unsupported": 0,
+        "unchanged": 7
+      },
+      "program_support": {
+        "planned": 8,
+        "abstentions": 1,
+        "correct_suppressed_by_abstention": 1,
+        "wrong_suppressed_by_abstention": 0,
+        "fixed_refusal_correct": 7,
+        "posthoc_forced_guess_correct": 8,
+        "guess_unsupported": 0,
+        "unchanged": 7
+      },
+      "without_prerequisite": {
+        "planned": 8,
+        "abstentions": 4,
+        "correct_suppressed_by_abstention": 0,
+        "wrong_suppressed_by_abstention": 0,
+        "fixed_refusal_correct": 4,
+        "posthoc_forced_guess_correct": 4,
+        "guess_unsupported": 4,
+        "unchanged": 4
+      }
+    },
+    "safe_refusal_rule_validated": false
+  },
+  "interpretation": {
+    "same_reader_organized_vs_hybrid_descriptive_supported_success_gain": 4,
+    "same_reader_organized_vs_complete_entity_time_supported_success_gain": 0,
+    "lesioned_gold_value_visible_but_source_chain_incomplete_in_four_cases": true,
+    "reader_capacity_or_generalization_established": false,
+    "parametric_memory_gain_established": false,
+    "original_model_generated_semantic_citation_proof": false,
+    "independent_future_source_families": 0,
+    "actual_autonomous_repository_repair_tasks": 0,
+    "full_lifecycle_cost_usd": null,
+    "original_model_released_for_production": false,
+    "production_accepted": false
+  }
+}

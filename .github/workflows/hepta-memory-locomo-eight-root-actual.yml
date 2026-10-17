@@ -1,0 +1,94 @@
+name: MemoryCell original LoCoMo Reader eight-root negative audit
+on:
+  push:
+    branches:
+      - "research/memorycell-four-stage-audit-20261016"
+    paths:
+      - "scripts/memory_cell/locomo_reader_four_regimes.py"
+      - "scripts/memory_cell/locomo_reader_replay.py"
+      - "scripts/memory_cell/locomo_real_evidence_gate.py"
+      - "scripts/memory_cell/test_locomo_real_evidence_gate.py"
+      - "scripts/memory_cell/data/locomo-eight-root-real-smol135-20261016.json"
+      - "scripts/memory_cell/data/locomo-eight-root-source-replay-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_PHYSICAL_NEGATIVE_20261016.md"
+      - "scripts/memory_cell/locomo_format_trial.py"
+      - "scripts/memory_cell/locomo_format_result_gate.py"
+      - "scripts/memory_cell/test_locomo_format_result_gate.py"
+      - "scripts/memory_cell/locomo_literal_sufficiency_audit.py"
+      - "scripts/memory_cell/test_locomo_literal_sufficiency_audit.py"
+      - "scripts/memory_cell/data/locomo-format-original-48-20261016.json"
+      - "scripts/memory_cell/data/locomo-format-literal-audit-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_FORMAT_NEGATIVE_20261016.md"
+      - "scripts/memory_cell/locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/test_locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/frozen_source_integrity.py"
+      - "scripts/memory_cell/test_frozen_source_integrity.py"
+      - "scripts/memory_cell/frozen_source/**"
+      - "scripts/memory_cell/data/locomo-blind-source-first-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_BLIND_SUFFICIENCY_20261016.md"
+      - ".github/workflows/hepta-memory-locomo-eight-root-actual.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/locomo_reader_four_regimes.py"
+      - "scripts/memory_cell/locomo_reader_replay.py"
+      - "scripts/memory_cell/locomo_real_evidence_gate.py"
+      - "scripts/memory_cell/test_locomo_real_evidence_gate.py"
+      - "scripts/memory_cell/data/locomo-eight-root-real-smol135-20261016.json"
+      - "scripts/memory_cell/data/locomo-eight-root-source-replay-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_PHYSICAL_NEGATIVE_20261016.md"
+      - "scripts/memory_cell/locomo_format_trial.py"
+      - "scripts/memory_cell/locomo_format_result_gate.py"
+      - "scripts/memory_cell/test_locomo_format_result_gate.py"
+      - "scripts/memory_cell/locomo_literal_sufficiency_audit.py"
+      - "scripts/memory_cell/test_locomo_literal_sufficiency_audit.py"
+      - "scripts/memory_cell/data/locomo-format-original-48-20261016.json"
+      - "scripts/memory_cell/data/locomo-format-literal-audit-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_READER_FORMAT_NEGATIVE_20261016.md"
+      - "scripts/memory_cell/locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/test_locomo_blind_sufficiency.py"
+      - "scripts/memory_cell/frozen_source_integrity.py"
+      - "scripts/memory_cell/test_frozen_source_integrity.py"
+      - "scripts/memory_cell/frozen_source/**"
+      - "scripts/memory_cell/data/locomo-blind-source-first-20261016.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_BLIND_SUFFICIENCY_20261016.md"
+      - ".github/workflows/hepta-memory-locomo-eight-root-actual.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  original-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check original 32-call pinned negative and adversarial controls
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=scripts/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_real_evidence_gate.py' -v
+          python3 scripts/memory_cell/locomo_real_evidence_gate.py > /tmp/locomo-research-negative.json
+          python3 -m compileall -q scripts/memory_cell/locomo_real_evidence_gate.py scripts/memory_cell/locomo_reader_replay.py scripts/memory_cell/locomo_reader_four_regimes.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_format_result_gate.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_literal_sufficiency_audit.py' -v
+          python3 scripts/memory_cell/locomo_format_result_gate.py > /tmp/locomo-format-negative.json
+          python3 -m compileall -q scripts/memory_cell/locomo_format_trial.py scripts/memory_cell/locomo_literal_sufficiency_audit.py scripts/memory_cell/locomo_format_result_gate.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_blind_sufficiency.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_frozen_source_integrity.py' -v
+          python3 scripts/memory_cell/frozen_source_integrity.py > /tmp/locomo-archived-source-integrity.json
+          python3 scripts/memory_cell/locomo_blind_sufficiency.py audit-public --receipt scripts/memory_cell/data/locomo-blind-source-first-20261016.json > /tmp/locomo-blind-source-only.json
+          python3 -m compileall -q scripts/memory_cell/locomo_blind_sufficiency.py
+          git diff --exit-code
+      - name: Retain research-only NO-GO summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-locomo-eight-root-negative-source-audit
+          path: |
+            /tmp/locomo-research-negative.json
+            /tmp/locomo-format-negative.json
+            /tmp/locomo-blind-source-only.json
+            /tmp/locomo-archived-source-integrity.json
+          if-no-files-found: warn
