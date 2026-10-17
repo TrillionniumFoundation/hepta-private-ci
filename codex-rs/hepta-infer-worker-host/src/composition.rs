@@ -440,6 +440,24 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         self.attach_cell(manifest.key(), manifest.head(), manifest.private_memory_bytes)
     }
 
+    pub fn attach_model_manifest(
+        &mut self,
+        manifest: &crate::model_worker::ModelManifest,
+        cell_id: String,
+        normalization_digest: String,
+        head_digest: String,
+        private_memory_bytes: u64,
+    ) -> Result<CompositionReceipt, CompositionError> {
+        let composition = CompositionManifestV1::from_model_manifest(
+            manifest,
+            cell_id,
+            normalization_digest,
+            head_digest,
+            private_memory_bytes,
+        );
+        self.attach_manifest(composition)
+    }
+
     pub fn attach_cell(
         &mut self,
         key: CompositionKey,
@@ -674,6 +692,37 @@ mod tests {
         assert_eq!(manifest.key().weights_digest, model.weights_digest);
         assert_eq!(manifest.key().tokenizer_digest, model.tokenizer_digest);
         assert_eq!(manifest.head().cell_id, "cell-a");
+    }
+
+    #[test]
+    fn worker_legacy_manifest_bridge_requires_explicit_composition_fields() {
+        let model = crate::model_worker::ModelManifest {
+            model_id: "base.1".into(),
+            model_digest: "a".repeat(64),
+            weights_digest: "b".repeat(64),
+            tokenizer_digest: "c".repeat(64),
+            preprocessor_digest: "d".repeat(64),
+            quantization_digest: "e".repeat(64),
+            runtime_digest: "f".repeat(64),
+            device_digest: "g".repeat(64),
+            maximum_tokens: 128,
+        };
+        let mut worker = CompositionWorker::new(
+            SharedEncoderPool::new(2, 8).expect("pool"),
+            WorkerDriver::default(),
+        );
+        let receipt = worker
+            .attach_model_manifest(
+                &model,
+                "cell-a".into(),
+                "normalization-v1".into(),
+                "head-a".into(),
+                20,
+            )
+            .expect("legacy manifest bridge");
+        assert!(receipt.encoder_loaded);
+        assert_eq!(worker.active_cell_count(), 1);
+        assert_eq!(worker.resident_encoder_count(), 1);
     }
 
     #[test]
