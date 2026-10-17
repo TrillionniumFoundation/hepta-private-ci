@@ -96,7 +96,7 @@ class WorkloadProfileV1:
 
     @property
     def workload_digest(self) -> str:
-        return _digest_object(self.to_dict())
+        return _digest_object({**asdict(self), "schema": SCHEMA_WORKLOAD})
 
     def to_dict(self) -> dict[str, Any]:
         return {**asdict(self), "schema": SCHEMA_WORKLOAD, "workload_digest": self.workload_digest}
@@ -199,7 +199,8 @@ class MatchedBudgetV1:
 
     @property
     def budget_digest(self) -> str:
-        return _digest_object(self.to_dict())
+        base = {**asdict(self), "workload": self.workload.to_dict(), "schema": SCHEMA_BUDGET}
+        return _digest_object(base)
 
     def to_dict(self) -> dict[str, Any]:
         return {**asdict(self), "workload": self.workload.to_dict(), "schema": SCHEMA_BUDGET, "budget_digest": self.budget_digest}
@@ -234,7 +235,7 @@ class CostNormalizationProfileV1:
 
     @property
     def profile_digest(self) -> str:
-        return _digest_object(self.to_dict())
+        return _digest_object({**asdict(self), "schema": SCHEMA_COST})
 
     def to_dict(self) -> dict[str, Any]:
         return {**asdict(self), "schema": SCHEMA_COST, "profile_digest": self.profile_digest}
