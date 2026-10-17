@@ -65,13 +65,24 @@ class ShadowTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'overstated source authority'):
                 audited_inputs(p)
 
+    def test_rejects_checksum_rebuilt_but_unpinned_source_replacement(self):
+        def rewrite_case(raw):
+            cases=json.loads(raw)
+            cases['fit'][0]['id']='fit:forged-input-id'
+            return json.dumps(cases,separators=(',',':')).encode()
+        payload=build_mutated(ROOT+'case-registry.json',rewrite_case)
+        with tempfile.TemporaryDirectory() as t:
+            p=Path(t)/'mutated.zip';p.write_bytes(payload)
+            with self.assertRaisesRegex(ValueError,'not the exact pinned physical'):
+                audited_inputs(p)
+
     def test_rejects_corrupt_q24_even_with_unsigned_hashes_recomputed(self):
         def corrupt(raw):
             return raw[:-1]+bytes([raw[-1]^255])
         payload=build_mutated(ROOT+'feature-q24.safetensors',corrupt)
         with tempfile.TemporaryDirectory() as t:
             p=Path(t)/'mutated.zip';p.write_bytes(payload)
-            with self.assertRaises(Exception):
+            with self.assertRaisesRegex(ValueError, 'feature type/shape'):
                 audited_inputs(p)
 
 if __name__=='__main__':unittest.main()
