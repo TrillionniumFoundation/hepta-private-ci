@@ -443,10 +443,10 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
     ) -> Result<CellSplitOrphanCnsReadOnlyObservationV1, String> {
         pinned_predecessor
             .validate()
-            .map_err(|error| format!("original predecessor snapshot invalid: {error}"))?;
+            .map_err(|error| format!("original predecessor snapshot invalid: {error:?}"))?;
         pinned_successor
             .validate()
-            .map_err(|error| format!("original successor snapshot invalid: {error}"))?;
+            .map_err(|error| format!("original successor snapshot invalid: {error:?}"))?;
         if pinned_predecessor.snapshot_digest.to_string() != self.plan.ndu_snapshot_digest
             || pinned_predecessor.generation.get() != self.plan.parent_generation
             || pinned_successor.generation.get() != self.plan.child_generation
@@ -460,10 +460,10 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         }
         let expected_parent = pinned_predecessor
             .semantic_digest()
-            .map_err(|error| format!("cannot bind predecessor: {error}"))?;
+            .map_err(|error| format!("cannot bind predecessor: {error:?}"))?;
         let expected_child = pinned_successor
             .semantic_digest()
-            .map_err(|error| format!("cannot bind successor: {error}"))?;
+            .map_err(|error| format!("cannot bind successor: {error:?}"))?;
         let pending = NduPublicationOwnerV1::inspect_original_pending_begin_v1(
             original_control_wal,
             pinned_predecessor,
