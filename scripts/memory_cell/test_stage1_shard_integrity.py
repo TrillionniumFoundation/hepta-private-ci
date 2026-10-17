@@ -75,7 +75,10 @@ def fixture():
 class ShardIntegrityTests(unittest.TestCase):
     def test_complete_unmodified_journal(self):
         report = verify_frozen_shard_attempts(*fixture())
-        self.assertEqual((report["planned"], report["succeeded"], report["unavailable"]), (8, 6, 2))
+        self.assertEqual(
+            (report["planned"], report["succeeded"], report["unavailable"]),
+            (8, 6, 2),
+        )
         self.assertFalse(report["production_accepted"])
 
     def test_reordering_both_journals_does_not_change_registration(self):
