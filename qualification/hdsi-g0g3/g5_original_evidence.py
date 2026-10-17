@@ -255,14 +255,15 @@ def train_rank8(records: list[dict], features: dict, *, shuffled: bool):
 
 
 def produce(root: Path, packet: dict) -> dict:
-    import torch
-    import resource
-    torch.set_num_threads(1)
+    # This admission check is deliberately before importing any optional model
+    # runtime. Source-only CI has no Torch; it must still reject exposed gold.
     verify_packet(packet)
-    # Fail closed if a model runner was accidentally handed raw publisher QA gold.
     must(not (root/'locomo.json').exists() and not (root/'reader').exists(),
          'untrusted model runner can access raw original QA/Reader')
     verified_encoder_only(root)
+    import torch
+    import resource
+    torch.set_num_threads(1)
     started, cpu_started = time.perf_counter(), time.process_time()
     enc = BatchedMiniLM(root)
     # Separate feature-cache roots prevent cross-root aliasing in the research reference.
