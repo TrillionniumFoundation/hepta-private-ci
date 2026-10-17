@@ -574,9 +574,7 @@ result.write_text(json.dumps(row), encoding="utf-8")
                 ):
                     execute_matrix(packet, ROOT, output, 30)
                 self.assertFalse((output / "measured-matrix.json").exists())
-                self.assertFalse(
-                    (output / "diagnostic-comparison.json").exists()
-                )
+                self.assertFalse((output / "diagnostic-comparison.json").exists())
 
 
 if __name__ == "__main__":

@@ -251,7 +251,9 @@ def execute_matrix(
     try:
         require_pinned_capture_root(directory_fd, output)
         with create_capture_file(directory_fd, "manifest.json") as record:
-            record.write((json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode())
+            record.write(
+                (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode()
+            )
 
         # A later workload may rewrite earlier files. Freeze the original bytes
         # and re-open their original inodes before publishing a diagnostic packet.
@@ -326,7 +328,9 @@ def execute_matrix(
                     raise InvalidEvidence(
                         f"{scope}/{mode}: invalid host JSON: {error}"
                     ) from error
-                measurements.append(validate_measurement(observed, manifest, scope, mode))
+                measurements.append(
+                    validate_measurement(observed, manifest, scope, mode)
+                )
                 freeze(stdout_path, MAX_LOG_BYTES)
                 freeze(stderr_path, MAX_LOG_BYTES)
 
@@ -364,7 +368,9 @@ def execute_matrix(
         with create_capture_file(directory_fd, "measured-matrix.json") as record:
             record.write((json.dumps(packet, sort_keys=True, indent=2) + "\n").encode())
         with create_capture_file(directory_fd, "diagnostic-comparison.json") as record:
-            record.write((json.dumps(comparison, sort_keys=True, indent=2) + "\n").encode())
+            record.write(
+                (json.dumps(comparison, sort_keys=True, indent=2) + "\n").encode()
+            )
         require_pinned_capture_root(directory_fd, output)
         return comparison
     finally:
