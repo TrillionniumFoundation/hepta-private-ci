@@ -36,11 +36,22 @@ A conclusive native Absent permits one idempotency-keyed execution; timeout,
 split-brain, unavailable receipt, uncertain commit or indeterminate readback must
 return Indeterminate and MUST NOT trigger a retry.
 
-The coordinator re-queries the native CURRENT Artifact CAS owner on every
-subsequent change after migration and again before route publication and
-retirement. Any source revocation, missing native receipt, payload tamper or
-indeterminate result blocks further external effects even when the original
-historical CAS checkpoint remains valid.
+Before EVERY phase change, the Supervisor now reopens its existing bounded,
+fsync-backed Writer Handoff Journal under the same exclusive lock, verifies
+the full revision/receipt hash chain against the current acknowledged head,
+and compares each earlier native owner's present authenticated historical
+readback with the exact evidence digest first recorded for that phase.
+An owner may not substitute a newly valid-looking Drain, old writer fence,
+Artifact CAS, predecessor snapshot, child migration, boot validation, successor
+fence or CNS route receipt after the journal has advanced past that phase.
+
+The coordinator therefore re-queries the native CURRENT Artifact CAS owner
+on every later change including route publication and retirement. Any source
+revocation, missing native receipt, payload tamper, changed historical receipt,
+or indeterminate result blocks further external effects even when an older
+CAS checkpoint remains structurally valid. This full-chain reread is bounded
+by the journal's existing 8 MiB cap; it does NOT replace independently retained
+anti-rollback minimum custody or native signature verification.
 
 The checkpoint receipt commits to a domain-separated binary encoding of the
 typed native observation and the frozen artifact/route binding. Reopening must
