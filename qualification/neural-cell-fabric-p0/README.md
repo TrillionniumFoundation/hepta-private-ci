@@ -34,6 +34,22 @@ python3 pilot.py --repetitions 16 --output-dir /tmp/new-private-hepta-cell-fabri
 | #1682, #2287, #2401, #2487 | Retain existing 256B typed action ABI and fresh OS readback; pure compiled CPU work may be reused only if approved. |
 | #2515 Execution Port | Effects stay with original owner, durable intent, current Final-use, real readback and reconciliation. No second executor or new effect authority. |
 
+
+## Original publisher-model evidence recount (P0.3)
+
+The optional `original_replay.py` **actually re-opens** the four genuine immutable GitHub Actions ZIPs from original ModernBERT physical [run 38930339541](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38930339541), independently re-scores all **160 archived 5-arm original pretrained predictions** against the **32 archived original-source targets**, then independently constructs a zero-SGD Laplace type-only baseline from **64 original train labels**. The four outer original ZIP SHA256 identities are pinned in source. A sanitized local original-result JSON is committed; no original text, per-case held labels, 768D vectors or individual model predictions are committed. **No new pretrained forward or native GUI action is run in this reviewer.**
+
+Verified historical original outcome: Frozen 12/32; Shared One Touch 16/32; Split 20/32; cheap type prior 20/32 with **32/32 identical Split/prior class decisions**, even though the prior uses no original Encoder calls or SGD. Split vs cost-matched shared one-touch: 12 split-only wins, 8 losses, McNemar exact p≈0.5034. The archived separate V8 zero-vector lesion is **not independently re-executed** in this recount because no original zero-lesion per-case predictions were supplied. No source-independent future advantage, multimodal generation, System2 natural-task utility or production authority is established.
+
+Historical replay, only after obtaining the exact four pinned ZIPs with the filenames in `ARCHIVES`:
+
+```sh
+HDCF_ORIGINAL_ARCHIVE_DIR=/path/to/pinned-zips python3 -m unittest -q test_original_replay
+python3 original_replay.py --archive-dir /path/to/pinned-zips --output /new/private/original-review.json
+```
+
+All real archive tests skip (rather than pretend success) when the original ZIPs are unavailable. Source-only tests still check rejection of missing archives, symlink roots and duplicate JSON keys.
+
 ## Strict next acceptance gates
 
 1. **Real pretrained** SHA-pinned 47M/97M/mmBERT/421M model+tokenizer/source originals, source-separated fit/cal/held/future windows, matching frozen/learned Head resources, and blind human labels. Independent reviewer must demonstrate that semantic inputs matter **beyond** route-only prior and zero-feature lesion.

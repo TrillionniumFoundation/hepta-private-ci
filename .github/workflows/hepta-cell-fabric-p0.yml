@@ -34,8 +34,8 @@ jobs:
       - name: Python normal and optimized source/real CPU AOT tests
         working-directory: qualification/neural-cell-fabric-p0
         run: |
-          python3 -m unittest -q test_fabric test_science_gate
-          python3 -O -m unittest -q test_fabric test_science_gate
+          python3 -m unittest -q test_fabric test_science_gate test_original_replay
+          python3 -O -m unittest -q test_fabric test_science_gate test_original_replay
       - name: Real CPU mechanism pilot; NO MODEL promotion
         working-directory: qualification/neural-cell-fabric-p0
         run: |
