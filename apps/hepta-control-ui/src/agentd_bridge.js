@@ -37,17 +37,26 @@ const STATUSES = new Set([
 ]);
 const FORBIDDEN_FIELDS = new Set([
   "requestAddr",
+  "request_addr",
   "responseAddr",
+  "response_addr",
   "controlFd",
+  "control_fd",
   "deviceFd",
+  "device_fd",
   "capSpaceId",
+  "cap_space_id",
   "bootId",
+  "boot_id",
   "sequence",
   "finalUse",
+  "final_use",
   "signature",
   "signedGrant",
+  "signed_grant",
   "secret",
   "socketPath",
+  "socket_path",
 ]);
 
 function requireRecord(value, name) {
