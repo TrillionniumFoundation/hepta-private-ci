@@ -53,3 +53,19 @@ The physical worker verifies these records before writing its final seal. Its se
 The Actions workflow additionally checks out the **exact PR source head** in preparation and physical Qwen jobs instead of silently using a GitHub synthetic PR merge commit. The separately pinned V19 Qwen model-material owner at aa807d61edd0f5e88178ab9812e59eabe2613f20 remains unchanged.
 
 **No production use, Cell Split, learned Meta-Graph, NDU System 2 promotion or CI bypass.** Any Qwen performance claims still require actual terminal model-run evidence, independent semantic review, source-root separation and complete cost comparisons. Old queued executions of earlier SHAs do not validate these changes.
+
+## Physical Qwen3 V4 — observed loader failure and pinned repair (2026-10-17 UTC)
+
+**Original actual run:** [GitHub Actions #38985380451](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38985380451), exact isolated push source `aa8ba657851a7172702832f57f3a9c018f40494f`. Its original-source 20×6 preparation and source-contract jobs **passed**. The actual publisher-pinned Qwen3-0.6B material stage loaded **seven model-source files** and verified sealed publisher model identity `e748e2efe1880f9e312eb31e8929e0fff8e46a575cbcf6788f9399960748d273`. The physical-worker job **FAILED BEFORE FIRST MODEL GENERATION**:
+
+```
+TypeError: Qwen3ForCausalLM.__init__() got an unexpected keyword argument 'dtype'
+```
+
+The frozen `transformers==4.53.3` loader accepts the `torch_dtype` keyword in `from_pretrained`, whereas `dtype` was forwarded to the model constructor. This is a real compatibility blocker, **not a model quality result**. No physical generation, reference answer, citation score, or user-facing task result was produced by this run, and postseal gold retrieval/review were correctly skipped.
+
+**Minimal V4 fix:** One bounded factory, `load_frozen_qwen`, now forwards `torch_dtype=torch.float32` (via its `precision` argument) while preserving `local_files_only=True`, `trust_remote_code=False`, `use_safetensors=True`, `attn_implementation="eager"`, and model `.eval()`. No model version change, dynamic dependency update, fallback, source/citation rewriting, or production selection was introduced.
+
+Three new tests check the exact 4.53.3 constructor-argument behavior with a strict rejecting fake API, require no remote/network or untrusted-code model loading, and verify failed pinned-model initialization remains a hard failure. These tests are protocol/factory tests, **not real pretrained Qwen3 inference**. The existing 30 original evidence/custody/citation cases and these three new tests executed locally on unchanged original LoCoMo (SHA256 `79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4`), original 120-request sealed plan `a7ad39c6548b06dc0fd752cd77149deaeb46875b3307696fe2857ef0cd1fc3e9`, and 135M historical journal `0797d8b1a4d9b9e3d7d68925bf4001666f253191d2bac46d90a0af11c78f0d76`: **33/33 PASS in ordinary Python and python -O, no skipped tests**. Exact source/test file Git blob identity is checked separately. Hosted source and actual physical worker remain independently required.
+
+**Disposition:** fix the confirmed loader compatibility first, then execute a distinct exact-head dedicated-branch Qwen trial and inspect the terminal output. Do not relabel the failed physical run or rerun its old SHA as the new experiment. `blocking-ci`, Architecture, immutable owner/permission gates, human semantic support/entailment and matched Reader resource costs are still required. **DRAFT / RESEARCH / HOLD_NO_GO / DENY_ALL / NO MAIN / NO FINALUSE / NO AUTOMATIC CELL SPLIT.**
