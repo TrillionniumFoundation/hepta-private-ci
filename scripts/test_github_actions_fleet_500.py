@@ -280,6 +280,7 @@ class TestFleetAudit(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("  queue: max\n", workflow)
+        self.assertIn("inputs.per_cohort || 'none'", workflow)
         self.assertIn("  cancel-in-progress: false\n", workflow)
 
 

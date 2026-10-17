@@ -49,7 +49,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}-${{ inputs.runner || 'default' }}
+  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}-${{ inputs.runner || 'default' }}-${{ inputs.per_cohort || 'none' }}
   cancel-in-progress: false
   queue: max
 
