@@ -2,6 +2,15 @@ use std::fmt::Debug;
 
 use super::*;
 
+use crate::canonical_shared_encoder_feature_digest_v1;
+use crate::canonical_shared_encoder_input_digest_v1;
+use crate::SharedEncoderDriver;
+use crate::SharedEncoderDriverError;
+use crate::SharedEncoderOutputV1;
+use crate::SharedEncoderOwnerV1;
+use crate::SharedEncoderRequestV1;
+use crate::SharedFeatureBatchV1;
+
 struct FakeDriver {
     output_features: Vec<i64>,
 }
@@ -61,10 +70,7 @@ fn feature_batch() -> SharedFeatureBatchV1 {
             output_features: vec![11, 12, 13],
         },
     ));
-    must(owner.encode_for_cells(
-        &request,
-        &[id("cell:0"), id("cell:1")],
-    ))
+    must(owner.encode_for_cells(&request, &[id("cell:0"), id("cell:1")]))
 }
 
 fn head_for(cell_id: StableId) -> CellHeadV1 {
