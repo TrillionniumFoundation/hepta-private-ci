@@ -78,3 +78,36 @@ python3 scripts/hepta_sngr_lexical_control.py --presentations 4 \
 ```
 
 On the frozen 16-case fixture, the rule answers **14/16** with sufficient evidence, abstains correctly on all **48/48** no-evidence/distractor/withheld cases, and achieves 56/64 full-evidence answers under four answer rotations. These are *in-sample diagnostic arithmetic*, because the rule was designed after inspecting these cases; they are neither a preregistered control nor evidence of Laya or System2 gain. The high lexical score shows that the current tasks primarily test source extraction. Any reasoning-efficacy claim requires a harder **independently held-out, multi-hop/contradiction/versioned** suite on which literal overlap is not sufficient, plus genuine model weights and independent task outcomes.
+
+## Two-source joint-truth diagnostic
+
+The second *designed* fixture `hepta_sngr_two_source_cases.json` contains eight
+two-source cases, each binding two pre-existing independently Git-blob-verified
+source excerpts **from different files**, with two claims and an evaluator-only
+joint truth assignment. A/B/C/D each appear twice. A second source is withheld
+in one arm while the first is retained; insufficient support requires UNKNOWN.
+Each of the four answer-order variants preserves the same evidence per arm.
+One real Laya checkpoint would require 8 x 4 x 4 = 128 inference calls; with
+the opt-in prompt-injection arm it would require 160.
+
+```bash
+python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr*.py'
+python3 scripts/hepta_sngr_two_source_eval.py --lexical-control-only \
+  --presentations 4 --output /tmp/sngr-two-source-control.json
+# The following runs ONLY if a genuine Laya checkpoint AND verified source checkout exist:
+python3 scripts/hepta_sngr_two_source_eval.py \
+  --checkpoint-dir /path/to/frozen-local-laya \
+  --source-checkout /path/to/source-checkout \
+  --presentations 4 --max-calls 128 \
+  --output /tmp/sngr-two-source-reader.json
+```
+
+The post-hoc token-overlap control abstains on all eight full-evidence cases
+(0/8; 0/32 under four rotations), while it answers 14/16 single-source cases.
+This demonstrates a **lexical shortcut difference between two task designs**;
+it does not prove the two-source labels are independently audited, prove a
+neural model can solve the task, or establish System2/FBSDE reasoning benefits.
+Untrusted source text may not issue runtime instructions or external effects.
+The source-chains and tasks are manually designed; independent future held-out
+episodes, contradiction/version corrections, and actual terminal outcomes are
+required before claiming general reasoning gains.
