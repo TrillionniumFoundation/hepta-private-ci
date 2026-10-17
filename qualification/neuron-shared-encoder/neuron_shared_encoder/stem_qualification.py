@@ -226,7 +226,7 @@ class ComponentResourceReceiptV1:
             ("input_tokens", self.input_tokens),
             ("parameter_count", self.parameter_count),
         ):
-            _integer(name, value, minimum=1)
+            _integer(name, value, minimum=0 if name == "parameter_count" and self.component_kind == "device" else 1)
         for name, value in (
             ("flops", self.flops),
             ("peak_memory_bytes", self.peak_memory_bytes),
@@ -377,7 +377,9 @@ class StemQualificationRunV1:
         _require(self.metrics == tuple(sorted(self.metrics, key=lambda metric: metric.metric_id)), "metrics must be sorted by ID")
         for metric in self.metrics:
             _require(metric.heldout_source_digest == self.source_split.eval_source_digest, "metric source differs from split")
+            _require(metric.sample_count <= self.source_split.eval_count, "metric sample count exceeds evaluation cohort")
         _require(self.resources.runtime_digest == self.checkpoint.runtime_digest, "resource runtime differs from checkpoint runtime")
+        _require(self.resources.hardware_digest == self.checkpoint.device_identity_digest, "resource hardware differs from checkpoint device")
 
     @property
     def run_digest(self) -> str:
@@ -447,6 +449,9 @@ def qualify_from_receipt(
     _require(getattr(receipt, "budget_digest", None) == expected_budget_digest, "bridge receipt budget mismatch")
     _require(getattr(receipt, "model_digest", None) == checkpoint.checkpoint_digest, "bridge receipt model identity is missing or mismatched")
     _identifier("candidate_id", candidate_id)
+    _digest("expected_budget_digest", expected_budget_digest)
+    _digest("expected_cases_digest", expected_cases_digest)
+    _require(cases_digest == expected_cases_digest, "cases digest does not match expected plan")
     return StemQualificationRunV1(
         run_id=run_id,
         candidate_id=candidate_id,
