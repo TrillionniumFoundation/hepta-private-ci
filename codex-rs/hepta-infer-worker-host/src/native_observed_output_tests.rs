@@ -5,6 +5,9 @@
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::ItemCompletedNotification;
+use codex_app_server_protocol::ThreadTokenUsage;
+use codex_app_server_protocol::ThreadTokenUsageUpdatedNotification;
+use codex_app_server_protocol::TokenUsageBreakdown;
 
 use super::*;
 
@@ -167,4 +170,85 @@ fn completed_message_output_limit_is_fail_closed_before_mutation() {
     assert!(output.output.is_empty());
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(!output.terminal_observed);
+}
+
+#[test]
+fn streaming_delta_requires_exact_connection_version_and_home() {
+    let binding = bound();
+    let mut output = empty_output();
+    let delta = || {
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "item-one".to_string(),
+            delta: "streamed text".to_string(),
+        })
+    };
+
+    for (connection_id, version, home) in [
+        (8, "test-app-server", "/home/test-agent"),
+        (7, "other-app-server", "/home/test-agent"),
+        (7, "test-app-server", "/home/other-agent"),
+    ] {
+        let wrong = RemoteAppServerObservedEvent::from_test_event(
+            AppServerEvent::ServerNotification(Box::new(delta())),
+            connection_id,
+            Some(version.to_string()),
+            Some(home.to_string()),
+        );
+        let reason = observe_event(&mut output, &wrong, &binding).unwrap_err();
+        assert!(reason.contains("invalid App Server delta witness"), "{reason}");
+        assert!(output.output.is_empty());
+        assert!(!output.terminal_observed);
+        assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
+    }
+
+    let correct = observed(delta(), 7);
+    assert!(!observe_event(&mut output, &correct, &binding).unwrap());
+    assert_eq!(output.output, "streamed text");
+    assert!(!output.terminal_observed);
+}
+
+fn token_usage_notification(output_tokens: i64) -> ServerNotification {
+    let usage = TokenUsageBreakdown {
+        total_tokens: 30,
+        input_tokens: 20,
+        cached_input_tokens: 0,
+        cache_write_input_tokens: 0,
+        output_tokens,
+        reasoning_output_tokens: 0,
+    };
+    ServerNotification::ThreadTokenUsageUpdated(ThreadTokenUsageUpdatedNotification {
+        thread_id: "thread-a".to_string(),
+        turn_id: "turn-a".to_string(),
+        token_usage: ThreadTokenUsage {
+            total: usage.clone(),
+            last: usage,
+            model_context_window: Some(4096),
+        },
+    })
+}
+
+#[test]
+fn token_usage_requires_exact_transport_identity_before_accounting() {
+    let binding = bound();
+    let mut output = empty_output();
+    let wrong = observed(token_usage_notification(10), 8);
+    let reason = observe_event(&mut output, &wrong, &binding).unwrap_err();
+    assert!(reason.contains("invalid App Server usage witness"), "{reason}");
+    assert_eq!(output.observed_output_tokens, None);
+    assert!(!output.terminal_observed);
+
+    let correct = observed(token_usage_notification(10), 7);
+    assert!(!observe_event(&mut output, &correct, &binding).unwrap());
+    assert_eq!(output.observed_output_tokens, Some(10));
+    assert!(!output.terminal_observed);
+
+    let regressed = observed(token_usage_notification(9), 7);
+    assert!(
+        observe_event(&mut output, &regressed, &binding)
+            .unwrap_err()
+            .contains("provider cumulative usage regressed")
+    );
+    assert_eq!(output.observed_output_tokens, Some(10));
 }
