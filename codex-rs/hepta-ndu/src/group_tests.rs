@@ -49,7 +49,10 @@ fn candidates() -> Vec<GroupContinuationCandidateV1> {
     ]
 }
 
-fn make_trace(subject: &GroupNduSubjectV1, candidates: &[GroupContinuationCandidateV1]) -> GroupDecisionTraceV1 {
+fn make_trace(
+    subject: &GroupNduSubjectV1,
+    candidates: &[GroupContinuationCandidateV1],
+) -> GroupDecisionTraceV1 {
     GroupDecisionTraceV1 {
         run_id: "run:demo".to_owned(),
         subject_id: subject.subject_id.clone(),
