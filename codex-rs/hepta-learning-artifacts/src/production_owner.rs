@@ -389,10 +389,23 @@ pub struct ArtifactCasLatencySnapshotV1 {
 // The failure count doubles as a sticky readiness poison: unchecked wrap to
 // zero after u64::MAX would silently rearm a previously rejected Evidence
 // owner. Keep the full diagnostic count up to saturation, never modulo u64.
+// Compatible with pinned Rust 1.95 and newer strict Clippy. Checked CAS
+// preserves the original saturating counter semantics under contention.
+fn checked_cas_metric_increment(counter: &AtomicU64) -> bool {
+    let mut current = counter.load(Ordering::Acquire);
+    loop {
+        let Some(next) = current.checked_add(1) else {
+            return false;
+        };
+        match counter.compare_exchange_weak(current, next, Ordering::AcqRel, Ordering::Acquire) {
+            Ok(_) => return true,
+            Err(observed) => current = observed,
+        }
+    }
+}
+
 fn latch_cas_metric_failure(counter: &AtomicU64) {
-    let _ = counter.fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
-        count.checked_add(1)
-    });
+    let _ = checked_cas_metric_increment(counter);
 }
 
 struct CasMetricsActivityV1<'a> {
@@ -510,18 +523,8 @@ impl ArtifactCasOwnerV1 {
     fn begin_metrics_activity(&self) -> CasMetricsActivityV1<'_> {
         // Never wrap the outstanding-operation counter to zero. If exhausted,
         // leave its maximum value in place and poison production readiness.
-        let registered = self
-            .metrics_in_flight
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |active| {
-                active.checked_add(1)
-            })
-            .is_ok();
-        let advanced = self
-            .metrics_epoch
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |epoch| {
-                epoch.checked_add(1)
-            })
-            .is_ok();
+        let registered = checked_cas_metric_increment(&self.metrics_in_flight);
+        let advanced = checked_cas_metric_increment(&self.metrics_epoch);
         if !registered || !advanced || self.metrics.is_none() {
             latch_cas_metric_failure(&self.failed_metric_records);
         }
