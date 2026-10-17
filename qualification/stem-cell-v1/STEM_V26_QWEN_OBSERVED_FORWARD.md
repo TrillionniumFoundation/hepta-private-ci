@@ -24,3 +24,7 @@ The public `V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json` is a manually cross-
 ## What has not happened
 
 No original 128-case Qwen/LoCoMo reference result, human-adjudicated source sufficiency, independent citation entailment, heldout future evaluation, original model retention resolution, matched full lifecycle tokens/CPU/energy, NDU/System2 task lift, Split/Merge learner benefit, 10T/100T equivalence or production authorization. Changing attention masks must be treated as a declared inference-protocol improvement rather than pretending full operator parity already existed.
+
+## Additional fail-closed regression
+
+The final safety step itself is also **byte-exact shell allowlisted** after YAML parsing; a command appended after the legitimate audit invocation is rejected. This avoids turning the old self-matching false positive into an unintended exemption for a malicious final-step upload. A new adversarial test appends an external shell command after the audit and verifies the structured validator rejects it. **28** local source-only tests passed in both ordinary and `python -O` modes following this strengthening (original pretrained inference was not repeated locally).

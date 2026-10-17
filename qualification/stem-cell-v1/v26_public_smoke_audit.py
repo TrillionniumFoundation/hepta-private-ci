@@ -139,10 +139,20 @@ def audit_workflow(workflow_text, smoke_source):
             if any(token in command.lower() for token in prohibited):
                 raise ValueError('unreviewed private-data exfiltration in workflow')
         else:
-            if ('v26_public_smoke_audit.py' not in command
-                or '--workflow' not in command or '--source' not in command
-                or '--receipt' not in command or 'upload-artifact@' in command):
-                raise ValueError('not the self-contained final safety guard')
+            # Audit the *entire* final shell, rather than exempting it from
+            # inspection just because it contains the approved Python call.
+            # Otherwise an upload command appended AFTER the checker would pass.
+            slash = chr(92)
+            final_guard = (
+                'set -euo pipefail\n'
+                'export PYTHONPATH=qualification/stem-cell-v1\n'
+                + 'python qualification/stem-cell-v1/v26_public_smoke_audit.py ' + slash + '\n'
+                + '  --workflow .github/workflows/hepta-stem-v18-qwen-public-smoke.yml ' + slash + '\n'
+                + '  --source qualification/stem-cell-v1/v18_reference_public_smoke.py ' + slash + '\n'
+                + '  --receipt qualification/stem-cell-v1/V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json\n'
+            )
+            if command != final_guard:
+                raise ValueError('final safety shell altered or extra action appended')
     source_step = steps[5]['run']
     if ('v18_reference_material_stage.py' not in source_step
         or 'v18_reference_public_smoke.py' not in source_step
