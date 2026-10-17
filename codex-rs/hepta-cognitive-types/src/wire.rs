@@ -29,6 +29,7 @@ use crate::hnmf_learning::ReplaySelectionReceiptV1;
 use crate::hnmf_learning::SynapseV1;
 use crate::hnmf_learning::TopologyProposalV1;
 use crate::memory_cell::MemoryCellManifestV1;
+use crate::memory_cell::MemoryCellSplitProposalV1;
 use crate::memory_cell::MemoryCellTickInputV1;
 use crate::memory_cell::MemoryCellTickReceiptV1;
 
@@ -162,6 +163,13 @@ impl_contract!(
     "hepta.memory-cell.tick-receipt.v1",
     65_536,
     MemoryCellTickReceiptV1::validate
+);
+impl_contract!(
+    MemoryCellSplitProposalV1,
+    "MemoryCellSplitProposalV1",
+    "hepta.memory-cell.split-proposal.v1",
+    262_144,
+    MemoryCellSplitProposalV1::validate
 );
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

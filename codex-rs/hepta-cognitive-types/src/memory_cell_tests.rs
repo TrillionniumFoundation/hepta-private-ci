@@ -4,7 +4,7 @@ use codex_hepta_types::Digest32;
 
 use super::{
     MemoryCellManifestV1, MemoryCellRoleV1, MemoryCellStatusV1, MemoryCellTickInputV1,
-    MemoryCellTickReceiptV1, MAX_MEMORY_CELL_STATE_BYTES,
+    MemoryCellSplitProposalV1, MemoryCellTickReceiptV1, MAX_MEMORY_CELL_STATE_BYTES,
 };
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractGenerationV1;
@@ -12,6 +12,14 @@ use crate::hnmf::ContractIdV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::ModalityKindV1;
 use crate::hnmf_learning::EngramPopulationV1;
+use crate::hnmf_learning::PlasticityBatchV1;
+use crate::hnmf_learning::TopologyEdgeSpecV1;
+use crate::hnmf_learning::TopologyNodeSpecV1;
+use crate::hnmf_learning::TopologyOperationV1;
+use crate::hnmf_learning::TopologyProposalStateV1;
+use crate::hnmf_learning::TopologyProposalV1;
+use crate::hnmf_learning::TopologyResourceDeltaV1;
+use crate::hnmf_learning::TopologyTypedNodesEdgesV1;
 
 fn id(value: &str) -> ContractIdV1 {
     ContractIdV1::new(value).expect("valid id")
@@ -151,6 +159,99 @@ fn receipt_binds_selected_output_and_rejects_invalid_abstain() {
         receipt.validate(),
         Err(HnmfContractError::Conflict(
             "abstained memory cell receipt output"
+        ))
+    ));
+}
+
+
+fn valid_split() -> MemoryCellSplitProposalV1 {
+    let topology = TopologyProposalV1 {
+        proposal_id: id("topology:split:1"),
+        predecessor_topology_digest: digest("topology-before"),
+        operation: TopologyOperationV1::Split,
+        typed_nodes_edges: TopologyTypedNodesEdgesV1 {
+            nodes: vec![
+                TopologyNodeSpecV1 {
+                    node_id: id("node:child-a"),
+                    population: EngramPopulationV1::EpisodicBinding,
+                    label: "child-a".to_string(),
+                },
+                TopologyNodeSpecV1 {
+                    node_id: id("node:child-b"),
+                    population: EngramPopulationV1::SemanticConcept,
+                    label: "child-b".to_string(),
+                },
+            ],
+            edges: Vec::<TopologyEdgeSpecV1>::new(),
+        },
+        compatibility_plan_digest: digest("compatibility"),
+        resource_delta: TopologyResourceDeltaV1 {
+            node_delta: 1,
+            edge_delta: 0,
+            resident_bytes_upper_bound_delta: 1024,
+        },
+        security_review_digest: digest("security"),
+        lesion_plan_digest: digest("lesion"),
+        rollback_plan_digest: digest("rollback"),
+        state: TopologyProposalStateV1::Proposed,
+    };
+    MemoryCellSplitProposalV1 {
+        schema_version: 1,
+        proposal_id: id("topology:split:1"),
+        parent_cell_id: id("memory-cell:episodic:parent"),
+        child_cell_ids: vec![
+            id("memory-cell:episodic:child-a"),
+            id("memory-cell:episodic:child-b"),
+        ],
+        parent_manifest_digest: digest("parent-manifest"),
+        child_manifest_digests: vec![digest("child-a-manifest"), digest("child-b-manifest")],
+        partition_digest: digest("partition"),
+        state_transform_digest: digest("state-transform"),
+        replay_snapshot_digest: digest("replay"),
+        source_frontier_digest: digest("source"),
+        forget_frontier_digest: digest("forget"),
+        predecessor_graph_generation: generation(1),
+        next_graph_generation: generation(2),
+        predecessor_model_generation: generation(1),
+        next_model_generation: generation(2),
+        topology,
+        plasticity: PlasticityBatchV1 {
+            predecessor_generation: generation(1),
+            next_generation: generation(2),
+            outcome_signal_digest: digest("outcome"),
+            weight_proposals: Vec::new(),
+            threshold_proposals: Vec::new(),
+            current_snapshot_immutable: true,
+            production_activation_allowed: false,
+        },
+        independent_evaluation_digest: digest("evaluation"),
+    }
+}
+
+#[test]
+fn split_proposal_requires_governed_binary_candidate() {
+    assert!(valid_split().validate().is_ok());
+
+    let mut proposal = valid_split();
+    proposal.topology.operation = TopologyOperationV1::Add;
+    assert!(matches!(
+        proposal.validate(),
+        Err(HnmfContractError::Conflict("memory cell split topology"))
+    ));
+
+    let mut proposal = valid_split();
+    proposal.child_cell_ids[1] = proposal.child_cell_ids[0].clone();
+    assert!(matches!(
+        proposal.validate(),
+        Err(HnmfContractError::Conflict("memory cell split identity"))
+    ));
+
+    let mut proposal = valid_split();
+    proposal.plasticity.production_activation_allowed = true;
+    assert!(matches!(
+        proposal.validate(),
+        Err(HnmfContractError::Conflict(
+            "plasticity generation/authority"
         ))
     ));
 }

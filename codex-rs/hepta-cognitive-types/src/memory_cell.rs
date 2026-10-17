@@ -17,10 +17,16 @@ use crate::hnmf::ContractIdV1;
 use crate::hnmf::HnmfContractError;
 use crate::hnmf::ModalityKindV1;
 use crate::hnmf_learning::EngramPopulationV1;
+use crate::hnmf_learning::PlasticityBatchV1;
+use crate::hnmf_learning::TopologyOperationV1;
+use crate::hnmf_learning::TopologyProposalStateV1;
+use crate::hnmf_learning::TopologyProposalV1;
 
 pub const MEMORY_CELL_MANIFEST_SCHEMA_VERSION: u32 = 1;
 pub const MEMORY_CELL_TICK_SCHEMA_VERSION: u32 = 1;
 pub const MEMORY_CELL_RECEIPT_SCHEMA_VERSION: u32 = 1;
+pub const MEMORY_CELL_SPLIT_SCHEMA_VERSION: u32 = 1;
+pub const MEMORY_CELL_SPLIT_CHILDREN: usize = 2;
 pub const MAX_MEMORY_CELL_MODALITIES: usize = 9;
 pub const MAX_MEMORY_CELL_POPULATIONS: usize = 7;
 pub const MAX_MEMORY_CELL_ACTIVE_CELLS: usize = 64;
@@ -211,6 +217,70 @@ impl MemoryCellTickReceiptV1 {
                 }
             }
         }
+        Ok(())
+    }
+}
+
+
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct MemoryCellSplitProposalV1 {
+    pub schema_version: u32,
+    pub proposal_id: ContractIdV1,
+    pub parent_cell_id: ContractIdV1,
+    pub child_cell_ids: Vec<ContractIdV1>,
+    pub parent_manifest_digest: ContractDigestV1,
+    pub child_manifest_digests: Vec<ContractDigestV1>,
+    pub partition_digest: ContractDigestV1,
+    pub state_transform_digest: ContractDigestV1,
+    pub replay_snapshot_digest: ContractDigestV1,
+    pub source_frontier_digest: ContractDigestV1,
+    pub forget_frontier_digest: ContractDigestV1,
+    pub predecessor_graph_generation: ContractGenerationV1,
+    pub next_graph_generation: ContractGenerationV1,
+    pub predecessor_model_generation: ContractGenerationV1,
+    pub next_model_generation: ContractGenerationV1,
+    pub topology: TopologyProposalV1,
+    pub plasticity: PlasticityBatchV1,
+    pub independent_evaluation_digest: ContractDigestV1,
+}
+
+impl MemoryCellSplitProposalV1 {
+    pub fn validate(&self) -> Result<(), HnmfContractError> {
+        if self.schema_version != MEMORY_CELL_SPLIT_SCHEMA_VERSION {
+            return Err(HnmfContractError::Invalid("memory cell split schema"));
+        }
+        if self.child_cell_ids.len() != MEMORY_CELL_SPLIT_CHILDREN
+            || self.child_manifest_digests.len() != self.child_cell_ids.len()
+        {
+            return Err(HnmfContractError::Invalid("memory cell split children"));
+        }
+        if self.parent_cell_id == self.child_cell_ids[0]
+            || self.parent_cell_id == self.child_cell_ids[1]
+            || self.child_cell_ids[0] >= self.child_cell_ids[1]
+        {
+            return Err(HnmfContractError::Conflict("memory cell split identity"));
+        }
+        if self.proposal_id != self.topology.proposal_id {
+            return Err(HnmfContractError::Conflict("memory cell split proposal binding"));
+        }
+        if self.topology.operation != TopologyOperationV1::Split
+            || self.topology.state == TopologyProposalStateV1::Rejected
+            || self.topology.resource_delta.node_delta < 1
+        {
+            return Err(HnmfContractError::Conflict("memory cell split topology"));
+        }
+        if self.predecessor_graph_generation.next()? != self.next_graph_generation
+            || self.plasticity.predecessor_generation != self.predecessor_model_generation
+            || self.plasticity.next_generation != self.next_model_generation
+        {
+            return Err(HnmfContractError::Conflict(
+                "memory cell split generation binding",
+            ));
+        }
+        self.topology.validate()?;
+        self.plasticity.validate()?;
         Ok(())
     }
 }
