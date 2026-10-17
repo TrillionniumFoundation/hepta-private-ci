@@ -1,0 +1,234 @@
+name: Hepta optimal Stem original 3-backbone comparison (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-optimal-candidate-v1-20261016]
+    paths:
+      - 'qualification/stem-optimal-v1/**'
+      - '.github/workflows/hepta-stem-optimal-original-v1.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v1/**'
+      - '.github/workflows/hepta-stem-optimal-original-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-optimal-original-v1-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXP_DIR: qualification/stem-optimal-v1
+
+jobs:
+  local-stdlib-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact repository source and protected research contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$EXP_DIR/stem_candidate_v1.py" "$EXP_DIR/stem_review_v1.py" "$EXP_DIR/test_stem_candidate_v1.py"
+          python -m json.tool "$EXP_DIR/MODEL_MATERIALS.json" >/dev/null
+          # No claims about original pretrained weights from source-only tests.
+          python -m unittest -v "$EXP_DIR/test_stem_candidate_v1.py"
+          python -O -m unittest -v "$EXP_DIR/test_stem_candidate_v1.py"
+
+  source-owner:
+    needs: local-stdlib-contract
+    # Do not execute untrusted fork code that may obtain original experimental inputs.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-optimal-candidate-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Acquire SHA-pinned original publisher files; do not export heldout labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/stem-original"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])/'stem-original'
+          sha = {'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+                 'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          commit = '57ec275d8078af65b7731c2a98be812d844a6d6b'
+          for split in ('train', 'test'):
+              url = f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{commit}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-stem-original-source-v1'}), timeout=35) as resp:
+                  if resp.geturl() != url: raise SystemExit('unexpected publisher redirect')
+                  blob = resp.read(2_000_001)
+              if not 0 < len(blob) <= 2_000_000 or hashlib.sha256(blob).hexdigest() != sha[split]:
+                  raise SystemExit('publisher immutable bytes mismatch')
+              (root/f'{split}.csv').write_bytes(blob)
+          print('Original public publisher bytes match immutably registered SHAs')
+          PY
+          python "$EXP_DIR/stem_candidate_v1.py" prepare \
+            --train "$RUNNER_TEMP/stem-original/train.csv" \
+            --test "$RUNNER_TEMP/stem-original/test.csv" \
+            --output "$RUNNER_TEMP/stem-original/source.json"
+          cd "$RUNNER_TEMP/stem-original"
+          sha256sum source.json > source.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-source-first-unlabelled-v1
+          path: |
+            ${{ runner.temp }}/stem-original/source.json
+            ${{ runner.temp }}/stem-original/source.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-pretrained-producer:
+    needs: source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-source-first-unlabelled-v1
+          path: ${{ runner.temp }}/source-owner
+      - name: Byte-check sealed label-free inputs, install immutable research runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          cd "$RUNNER_TEMP/source-owner"
+          sha256sum --check source.sha256
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          python - <<'PY'
+          import torch,transformers,huggingface_hub,safetensors
+          assert torch.__version__.split('+')[0] == '2.6.0'
+          assert transformers.__version__ == '4.57.1'
+          print('Loaded pinned research runtime only; no pretrained Encoder run yet')
+          PY
+      - name: Actual model material SHA verification, original Encoder CPU forward, 100-step per-candidate 4 Cell Head training
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-model"
+          python "$EXP_DIR/stem_candidate_v1.py" infer \
+            --source "$RUNNER_TEMP/source-owner/source.json" \
+            --materials "$EXP_DIR/MODEL_MATERIALS.json" \
+            --candidate '${{ matrix.candidate }}' \
+            --output "$RUNNER_TEMP/stem-model/receipt-${{ matrix.candidate }}.json"
+          cd "$RUNNER_TEMP/stem-model"
+          sha256sum 'receipt-${{ matrix.candidate }}.json' > 'receipt-${{ matrix.candidate }}.sha256'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-model-${{ matrix.candidate }}-denyall
+          path: |
+            ${{ runner.temp }}/stem-model/receipt-${{ matrix.candidate }}.json
+            ${{ runner.temp }}/stem-model/receipt-${{ matrix.candidate }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-independent-late-label-review:
+    needs: original-pretrained-producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-source-first-unlabelled-v1
+          path: ${{ runner.temp }}/source-owner
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-model-*-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/model-receipts
+      - name: Verify all three original prelabel raw predictions and fetch original publisher labels independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/source-owner" && sha256sum --check source.sha256)
+          (cd "$RUNNER_TEMP/model-receipts" && sha256sum --check receipt-granite47.sha256 receipt-granite97.sha256 receipt-mmbert140.sha256)
+          mkdir -p "$RUNNER_TEMP/stem-label-owner"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'stem-label-owner'
+          sha={'train':'b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b',
+               'test':'d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d'}
+          revision='57ec275d8078af65b7731c2a98be812d844a6d6b'
+          for split in ('train','test'):
+              url=f'https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{revision}/banking_data/{split}.csv'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hepta-independent-late-label-v1'}),timeout=35) as resp:
+                  if resp.geturl() != url: raise SystemExit('source redirect mismatch')
+                  raw=resp.read(2_000_001)
+              if not 0<len(raw)<=2_000_000 or hashlib.sha256(raw).hexdigest()!=sha[split]:
+                  raise SystemExit('independent late-label source mismatch')
+              (root/f'{split}.csv').write_bytes(raw)
+          PY
+      - name: Reconstruct original case roster independently; score all paired controls; unconditional NO-GO
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$EXP_DIR/stem_review_v1.py" \
+            --train "$RUNNER_TEMP/stem-label-owner/train.csv" \
+            --test "$RUNNER_TEMP/stem-label-owner/test.csv" \
+            --source "$RUNNER_TEMP/source-owner/source.json" \
+            --materials "$EXP_DIR/MODEL_MATERIALS.json" \
+            --run "$RUNNER_TEMP/model-receipts/receipt-granite47.json" \
+            --run "$RUNNER_TEMP/model-receipts/receipt-granite97.json" \
+            --run "$RUNNER_TEMP/model-receipts/receipt-mmbert140.json" \
+            --output "$RUNNER_TEMP/stem-review.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'stem-review.json').read_text())
+          assert r['publisher_original_sha_verified'] is True
+          assert len(r['models']) == 3 and r['case_count'] == 32
+          assert r['disposition'] == 'HOLD_NO_GO' and r['production_authorized'] is False
+          assert r['stem_winner_verified'] is False and r['ndu_benefit_verified'] is False
+          print('Full original public 3-model task review: research only, DENY_ALL')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-3-model-independent-public-review-denyall
+          path: ${{ runner.temp }}/stem-review.json
+          retention-days: 7
+          if-no-files-found: error

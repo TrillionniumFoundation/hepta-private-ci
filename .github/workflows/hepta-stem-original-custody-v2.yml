@@ -1,0 +1,140 @@
+name: Hepta Stem V2 original custody (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/stem-optimal-candidate-v1-20261016
+    paths:
+      - "qualification/stem-optimal-v1/original_receipt_audit_v2.py"
+      - "qualification/stem-optimal-v1/test_original_receipt_audit_v2.py"
+      - "qualification/stem-optimal-v1/STEM_V2_ORIGINAL_EVIDENCE.md"
+      - ".github/workflows/hepta-stem-original-custody-v2.yml"
+  pull_request:
+    paths:
+      - "qualification/stem-optimal-v1/original_receipt_audit_v2.py"
+      - "qualification/stem-optimal-v1/test_original_receipt_audit_v2.py"
+      - "qualification/stem-optimal-v1/STEM_V2_ORIGINAL_EVIDENCE.md"
+      - ".github/workflows/hepta-stem-original-custody-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exact-head original custody source tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          cd qualification/stem-optimal-v1
+          python -m unittest -v test_original_receipt_audit_v2
+          python -O -m unittest -v test_original_receipt_audit_v2
+          python -m py_compile original_receipt_audit_v2.py test_original_receipt_audit_v2.py
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  original-zip-physical-reread:
+    needs: source-negative-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-optimal-candidate-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Original exact-archive HTTPS redirect and independent byte verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/stem-v2"
+          python - <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+          from urllib.parse import urlparse
+          from urllib.request import HTTPRedirectHandler, Request, build_opener
+          from urllib.error import HTTPError
+
+          sys.path.insert(0, "qualification/stem-optimal-v1")
+          from original_receipt_audit_v2 import ARTIFACTS, sha256
+
+          class NoRedirect(HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = build_opener(NoRedirect)
+          destination = Path(os.environ["RUNNER_TEMP"]) / "stem-v2"
+          for name, (artifact_id, outer_sha, _) in ARTIFACTS.items():
+              url = f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/{artifact_id}/zip"
+              request = Request(url, headers={
+                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "User-Agent": "hepta-stem-v2-original-custody",
+              })
+              try:
+                  opener.open(request, timeout=30)
+                  raise RuntimeError("missing expected original GitHub artifact redirect")
+              except HTTPError as exc:
+                  if exc.code not in (302, 303, 307):
+                      raise
+                  location = exc.headers.get("Location", "")
+              target = urlparse(location)
+              if (target.scheme != "https" or not target.hostname or
+                      not (target.hostname.endswith(".blob.core.windows.net") or
+                           target.hostname.endswith(".actions.githubusercontent.com"))):
+                  raise RuntimeError("untrusted artifact download location")
+              # The blob host receives NO GitHub access token.
+              with opener.open(Request(location, headers={"User-Agent": "hepta-no-auth-original"}), timeout=40) as res:
+                  body = res.read(65537)
+              if not 0 < len(body) <= 65536 or sha256(body) != outer_sha:
+                  raise RuntimeError("full original ZIP digest or bounded size mismatch")
+              (destination / (name + ".zip")).write_bytes(body)
+          print("PASS: all four full original GitHub Actions artifact ZIPs SHA-verified")
+          PY
+      - name: Reread three original real model receipts and independent reviewer without opening held labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-optimal-v1/original_receipt_audit_v2.py \
+            --granite47 "$RUNNER_TEMP/stem-v2/granite47.zip" \
+            --granite97 "$RUNNER_TEMP/stem-v2/granite97.zip" \
+            --mmbert140 "$RUNNER_TEMP/stem-v2/mmbert140.zip" \
+            --review "$RUNNER_TEMP/stem-v2/review.zip" \
+            --output "$RUNNER_TEMP/stem-v2/custody.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          r = json.loads((Path(os.environ["RUNNER_TEMP"])/"stem-v2/custody.json").read_text())
+          assert r["authority"] == "DENY_ALL"
+          assert r["disposition"] == "HOLD_NO_GO"
+          assert r["stem_winner_verified"] is False
+          assert r["this_v2_recomputed_publisher_labels"] is False
+          assert r["original_reviewed_correct"]["granite47"]["centroid"] == 32
+          assert r["no_gold_prediction_disagreements"]["granite47_vs_granite97"]["learned"] == 0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v2-verified-original-custody-denyall
+          path: ${{ runner.temp }}/stem-v2/custody.json
+          retention-days: 7
+          if-no-files-found: error
