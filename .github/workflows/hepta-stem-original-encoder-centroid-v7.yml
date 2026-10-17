@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2 packaging==25.0
       - name: Exact source-only Torch/NumPy/safetensors parity and tamper negatives
         shell: bash
         run: |
@@ -128,7 +128,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           (cd "$RUNNER_TEMP/v7-source" && sha256sum --check original-source.sha256)
           python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6 packaging==25.0
           python - <<'PY'
           import torch, transformers, numpy, safetensors
           assert torch.__version__.split('+')[0] == '2.6.0'
@@ -191,7 +191,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           (cd "$RUNNER_TEMP/v7-source" && sha256sum --check original-source.sha256)
           (cd "$RUNNER_TEMP/v7-physical" && sha256sum --check evidence-granite47.sha256 evidence-granite97.sha256 evidence-mmbert140.sha256)
-          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2
+          python -m pip install --disable-pip-version-check numpy==2.2.6 safetensors==0.6.2 packaging==25.0
           mkdir -p "$RUNNER_TEMP/v7-original-v3" "$RUNNER_TEMP/v7-reviewed-labels"
           python "$V5/download_original_zip_v5.py" \
             --manifest "$V5/ORIGINAL_PAIR_V5.json" \
