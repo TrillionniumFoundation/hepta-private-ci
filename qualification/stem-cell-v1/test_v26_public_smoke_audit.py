@@ -4,7 +4,7 @@ import ast
 import copy
 from pathlib import Path
 import unittest
-import yaml
+from unittest.mock import patch
 
 from v26_public_smoke_audit import (
     CHECK_STEP, STEP_NAMES, audit_workflow, strict_json, validate_observed_receipt,
@@ -34,46 +34,54 @@ class PublicQwenPhysicalContracts(unittest.TestCase):
 
     def test_structural_gate_ignores_its_own_semantic_literals(self):
         result = self.check()
-        self.assertEqual(result['status'], 'STRUCTURED_SOURCE_ONLY_NO_UPLOAD_GATE_VALID')
+        self.assertIn(result['status'], ('STRUCTURED_SOURCE_ONLY_NO_UPLOAD_GATE_VALID',
+                                        'BYTE_FROZEN_SOURCE_ONLY_NO_UPLOAD_GATE_VALID'))
 
     def test_no_extra_job_or_upload_action(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['other'] = {'runs-on': 'ubuntu-latest', 'steps': [{'uses':'actions/upload-artifact@v4'}]}
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
-        del raw['jobs']['other']
-        raw['jobs']['public-only-neural-forward']['steps'].append({'uses':'actions/upload-artifact@v4'})
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        for changed in (
+            self.flow + "\n  other:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/upload-artifact@v4\n",
+            self.flow + "\n      - uses: actions/upload-artifact@v4\n",
+        ):
+            with self.subTest(change=changed[-90:]), self.assertRaises(ValueError):
+                self.check(changed)
 
     def test_modified_action_is_denied(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['public-only-neural-forward']['steps'][0]['uses'] = 'actions/upload-artifact@v4'
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        changed = self.flow.replace('uses: actions/checkout@v4', 'uses: actions/upload-artifact@v4')
+        self.assertNotEqual(changed, self.flow)
+        with self.assertRaises(ValueError):self.check(changed)
 
     def test_exfiltration_via_inline_command_rejected(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['public-only-neural-forward']['steps'][5]['run'] += '\ngh api upload-artifact\n'
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        target = '          python qualification/stem-cell-v1/v18_reference_public_smoke.py'
+        self.assertIn(target, self.flow)
+        changed = self.flow.replace(target, '          gh api upload-artifact\n' + target)
+        with self.assertRaises(ValueError):self.check(changed)
 
     def test_data_egress_from_public_job_rejected(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['public-only-neural-forward']['steps'][3]['run'] += '\ncat PRIVATE/locomo.json\n'
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        target = '      - name: Exercise actual pinned Transformers Qwen3 constructor with tiny synthetic weights'
+        self.assertIn(target,self.flow)
+        changed = self.flow.replace(target,'          cat PRIVATE/locomo.json\n'+target)
+        with self.assertRaises(ValueError):self.check(changed)
 
     def test_altered_final_audit_denied(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['public-only-neural-forward']['steps'][-1]['run'] = 'true\n'
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        target = '          python qualification/stem-cell-v1/v26_public_smoke_audit.py'
+        self.assertIn(target,self.flow)
+        with self.assertRaises(ValueError):self.check(self.flow.replace(target,'          true # bypass audit'))
 
     def test_appended_upload_after_final_guard_rejected(self):
-        raw = yaml.safe_load(self.flow)
-        raw['jobs']['public-only-neural-forward']['steps'][-1]['run'] += '\necho EXFILTRATE; curl example.invalid\n'
-        with self.assertRaises(ValueError):
-            self.check(yaml.safe_dump(raw, sort_keys=False))
+        changed = self.flow + '\n          echo EXFILTRATE; curl example.invalid\n'
+        with self.assertRaises(ValueError):self.check(changed)
 
     def test_write_access_denied(self):
-        raw = yaml.safe_load(self.flow)
-        raw['permissions']['contents'] = 'write'
-        with self.assertRaises(ValueError): self.check(yaml.safe_dump(raw, sort_keys=False))
+        target='  contents: read'
+        self.assertIn(target,self.flow)
+        with self.assertRaises(ValueError):self.check(self.flow.replace(target,'  contents: write'))
+
+    def test_no_external_yaml_dependency(self):
+        # Exact frozen byte identity remains enforced in the stdlib-only matrix.
+        with patch.dict('sys.modules', {'yaml': None}):
+            result = self.check()
+            self.assertEqual(result['status'],'BYTE_FROZEN_SOURCE_ONLY_NO_UPLOAD_GATE_VALID')
+            with self.assertRaises(ValueError):self.check(self.flow+'\n# changed\n')
 
     def test_no_attention_mask_denied(self):
         changed = self.source.replace('attention_mask=attention_mask,', '')

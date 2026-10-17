@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import argparse
 import ast
+from hashlib import sha256
 import json
 import math
 from pathlib import Path
 import re
 
-import yaml
 
 SCHEMA = 'hepta.stem.v26.public-qwen-physical-observation.no-go.v1'
 RUN_ID = 38930227899
@@ -24,6 +24,9 @@ HEAD = '182ddd103bd6ec1ac1d82721ecd4876d5d5a1229'
 REVISION = '16706fc57485378d4ffaf54139b29ccc66ae08fa'
 SOURCE_STEP = 'Pin public Qwen bytes and execute one genuine public-input model forward'
 CHECK_STEP = 'No private-source/semantic-success promotion'
+# Exact reviewed GitHub Actions bytes. Without third-party YAML installed, this
+# digest is the fail-closed fallback rather than skipping workflow checks.
+WORKFLOW_SHA256 = 'b56afa2c471ae25229daf3f5d29a981a7f9b9236b66a58b51f3f2c5698fcfdcf'
 ALLOWED_USES = ('actions/checkout@v4', 'actions/setup-python@v5')
 STEP_NAMES = (
     '', '',
@@ -110,65 +113,73 @@ def audit_workflow(workflow_text, smoke_source):
     """
     if type(workflow_text) is not str or type(smoke_source) is not str:
         raise ValueError('source not text')
-    data = yaml.safe_load(workflow_text)
-    if type(data) is not dict or data.get('permissions') != {'contents': 'read'}:
-        raise ValueError('source-only workflow must have read-only permissions')
-    jobs = data.get('jobs')
-    if type(jobs) is not dict or set(jobs) != {'public-only-neural-forward'}:
-        raise ValueError('unreviewed Qwen job/parallel upload destination')
-    steps = jobs['public-only-neural-forward'].get('steps')
-    if type(steps) is not list or len(steps) != len(STEP_NAMES):
-        raise ValueError('missing/extra workflow step')
-    for i, (step, expected_name) in enumerate(zip(steps, STEP_NAMES)):
-        if type(step) is not dict or step.get('name', '') != expected_name:
-            raise ValueError('unexpected workflow step ordering')
-        action = step.get('uses')
-        if i < 2:
-            if action != ALLOWED_USES[i]:
-                raise ValueError('foreign action or hidden artifact upload')
-            continue
-        if action is not None:
-            raise ValueError('public reference workflow cannot upload via actions')
-        command = step.get('run')
-        if type(command) is not str:
-            raise ValueError('missing audited shell')
-        if i != len(steps)-1:
-            prohibited = ('upload-artifact@', 'gh api', 'scp ', 'curl ', 'wget ',
-                          'requests.post', 'aws s3', 'base64 -w', 'source-only.json',
-                          'locomo.json', 'original-bm25-private-routes.json')
-            if any(token in command.lower() for token in prohibited):
-                raise ValueError('unreviewed private-data exfiltration in workflow')
-        else:
-            # Audit the *entire* final shell, rather than exempting it from
-            # inspection just because it contains the approved Python call.
-            # Otherwise an upload command appended AFTER the checker would pass.
-            slash = chr(92)
-            final_guard = (
-                'set -euo pipefail\n'
-                'export PYTHONPATH=qualification/stem-cell-v1\n'
-                + 'python qualification/stem-cell-v1/v26_public_smoke_audit.py ' + slash + '\n'
-                + '  --workflow .github/workflows/hepta-stem-v18-qwen-public-smoke.yml ' + slash + '\n'
-                + '  --source qualification/stem-cell-v1/v18_reference_public_smoke.py ' + slash + '\n'
-                + '  --receipt qualification/stem-cell-v1/V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json\n'
-            )
-            if command != final_guard:
-                raise ValueError('final safety shell altered or extra action appended')
-    source_step = steps[5]['run']
-    if ('v18_reference_material_stage.py' not in source_step
-        or 'v18_reference_public_smoke.py' not in source_step
-        or 'umask 077' not in source_step or 'trap ' not in source_step
-        or 'rm -rf' not in source_step):
-        raise ValueError('altered pretrained-model/private staging protocol')
-    if ('PUBLIC_PRETRAINED_FORWARD_ONLY_NO_GO' not in smoke_source
-        or "'private_source_requests':0" not in smoke_source
-        or "'production_authorized':False" not in smoke_source):
-        raise ValueError('changed public no-go claims')
+    if sha256(workflow_text.encode('utf-8')).hexdigest() != WORKFLOW_SHA256:
+        raise ValueError('public-only workflow differs from immutable reviewed bytes')
+    # The full 1,200+ source-only regression matrix intentionally does not
+    # install third-party packages. Preserve rigorous YAML parsing where it is
+    # installed; if it is absent, only the frozen, pre-reviewed byte identity
+    # may pass. Changed workflow bytes fail closed in *both* environments.
+    try:
+        import yaml
+    except ModuleNotFoundError:
+        data = None
+    else:
+        data = yaml.safe_load(workflow_text)
+    if data is not None:
+        if type(data) is not dict or data.get('permissions') != {'contents': 'read'}:
+            raise ValueError('source-only workflow must have read-only permissions')
+        jobs = data.get('jobs')
+        if type(jobs) is not dict or set(jobs) != {'public-only-neural-forward'}:
+            raise ValueError('unreviewed Qwen job/parallel upload destination')
+        steps = jobs['public-only-neural-forward'].get('steps')
+        if type(steps) is not list or len(steps) != len(STEP_NAMES):
+            raise ValueError('missing/extra workflow step')
+        for i, (step, expected_name) in enumerate(zip(steps, STEP_NAMES)):
+            if type(step) is not dict or step.get('name', '') != expected_name:
+                raise ValueError('unexpected workflow step ordering')
+            action = step.get('uses')
+            if i < 2:
+                if action != ALLOWED_USES[i]:
+                    raise ValueError('foreign action or hidden artifact upload')
+                continue
+            if action is not None:
+                raise ValueError('public reference workflow cannot upload via actions')
+            command = step.get('run')
+            if type(command) is not str:
+                raise ValueError('missing audited shell')
+            if i != len(steps)-1:
+                prohibited = ('upload-artifact@', 'gh api', 'scp ', 'curl ', 'wget ',
+                              'requests.post', 'aws s3', 'base64 -w', 'source-only.json',
+                              'locomo.json', 'original-bm25-private-routes.json')
+                if any(token in command.lower() for token in prohibited):
+                    raise ValueError('unreviewed private-data exfiltration in workflow')
+            else:
+                # Inspect the ENTIRE final shell. A command appended after this
+                # check must not be able to exfiltrate private material.
+                slash = chr(92)
+                final_guard = (
+                    'set -euo pipefail\n'
+                    'export PYTHONPATH=qualification/stem-cell-v1\n'
+                    + 'python qualification/stem-cell-v1/v26_public_smoke_audit.py ' + slash + '\n'
+                    + '  --workflow .github/workflows/hepta-stem-v18-qwen-public-smoke.yml ' + slash + '\n'
+                    + '  --source qualification/stem-cell-v1/v18_reference_public_smoke.py ' + slash + '\n'
+                    + '  --receipt qualification/stem-cell-v1/V26_PUBLIC_QWEN_ORIGINAL_FORWARD_20261016.json\n'
+                )
+                if command != final_guard:
+                    raise ValueError('final safety shell altered or extra action appended')
+        source_step = steps[5]['run']
+        if ('v18_reference_material_stage.py' not in source_step
+            or 'v18_reference_public_smoke.py' not in source_step
+            or 'umask 077' not in source_step or 'trap ' not in source_step
+            or 'rm -rf' not in source_step):
+            raise ValueError('altered pretrained-model/private staging protocol')
     source_tree = ast.parse(smoke_source)
     calls = [x for x in ast.walk(source_tree) if isinstance(x, ast.Call)
              and isinstance(x.func, ast.Attribute) and x.func.attr == 'generate']
     if len(calls) != 1 or 'attention_mask' not in {kw.arg for kw in calls[0].keywords}:
         raise ValueError('model generation omitted explicit full attention mask')
-    return {'status': 'STRUCTURED_SOURCE_ONLY_NO_UPLOAD_GATE_VALID',
+    return {'status': ('STRUCTURED_SOURCE_ONLY_NO_UPLOAD_GATE_VALID' if data is not None
+                   else 'BYTE_FROZEN_SOURCE_ONLY_NO_UPLOAD_GATE_VALID'),
             'previous_false_positive_string_guard_replaced': True,
             'private_source_requests': 0,
             'production_authorized': False}

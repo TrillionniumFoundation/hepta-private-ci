@@ -150,17 +150,17 @@ def validate(plan,src,ranks):
     seen=set();used=set();cnt={(f,g):0 for f in HELD for g in GROUPS}
     for c in cases:
         require(type(c)==dict and set(c)=={'id','family','cohort','witness_id','arms'},'case fields')
-        ident=c['id'];fam=c['family'];group=c['cohort'];wit=c['witness_id']
+        ident=c['id'];fam=c['family'];group=c['cohort'];witness_id=c['witness_id']
         require((fam,group) in cnt and ident in bycase and ident not in seen
                 and ident.split('/q')[0]==fam,'missing/colliding original family')
         seen.add(ident);cnt[fam,group]+=1
         docs={x['id']:x['text'] for x in src['families'][fam]['passages']}
         qs={x['id']:x['text'] for x in src['families'][fam]['questions']}
         top=bycase[ident]['top32'][:3]
-        require(wit in docs and wit not in top and type(c['arms'])==dict
+        require(witness_id in docs and witness_id not in top and type(c['arms'])==dict
                 and set(c['arms'])==set(ARMS),'unregistered witness')
         expected={'none':[], 'retrieved':list(top),
-                  'witness':[wit,top[0],top[1]],'lesion':[top[0],top[1]]}
+                  'witness':[witness_id,top[0],top[1]],'lesion':[top[0],top[1]]}
         for arm in ARMS:
             row=c['arms'][arm]
             require(type(row)==dict and set(row)=={'request_id','evidence_ids'},'arm injection')
