@@ -63,7 +63,7 @@ jobs:
           test -f "$codex_exe"
           test -x "$codex_exe"
           "$codex_exe" --version
-          printf 'HEPTA_TEST_CODEX_EXECUTABLE=%s\\n' "$codex_exe" >> "$GITHUB_ENV"
+          printf 'HEPTA_TEST_CODEX_EXECUTABLE=%s\n' "$codex_exe" >> "$GITHUB_ENV"
       - name: Run worker source and public Q24 tests
         shell: bash
         run: |
