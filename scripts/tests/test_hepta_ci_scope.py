@@ -365,6 +365,79 @@ class ScopeTests(unittest.TestCase):
         )
         self.assertLess(workflow.index(product), workflow.index(canary_step))
 
+    def test_canonical_cell_split_post_effect_ndu_gates_are_unskippable(self):
+        # The original native owner, not a second Supervisor execution seam,
+        # must fail the exact current source if new revocation regressions are
+        # removed, mis-scoped or filtered to zero executed tests.
+        for path in (
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs",
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+        ):
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["native"])
+                self.assertTrue(scope["lifecycle"])
+                self.assertTrue(scope["effects"])
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        start = (
+            "      - name: Early canonical CellSplit post-effect NDU revocation "
+            "and final status gates\n"
+        )
+        end = "      - name: Early original Control WAL canonical path native regression\n"
+        self.assertEqual(workflow.count(start), 1)
+        self.assertEqual(workflow.count(end), 1)
+        gate = workflow.split(start, 1)[1].split(end, 1)[0]
+        self.assertIn(
+            "if: steps.execution.outputs.run_native == 'true' && "
+            "(steps.scope.outputs.lifecycle == 'true' || "
+            "steps.scope.outputs.inference == 'true' || "
+            "steps.scope.outputs.effects == 'true' || "
+            "steps.scope.outputs.learning == 'true')",
+            gate,
+        )
+        regressions = {
+            "cell-split-posteffect-ndu-four-owners.json": (
+                "post_effect_selector_revocation_keeps_every_original_owner_reconcile_only"
+            ),
+            "cell-split-posteffect-ndu-native-readback.json": (
+                "selector_withdrawal_during_post_effect_owner_readback_blocks_commit"
+            ),
+            "cell-split-posteffect-ndu-local-ledger.json": (
+                "post_effect_admission_callback_cannot_replace_frozen_owner_identity"
+            ),
+            "cell-split-posteffect-native-withdrawal.json": (
+                "original_effect_withdrawn_during_post_effect_admission_cannot_be_committed"
+            ),
+            "cell-split-posteffect-second-native-revoke.json": (
+                "selector_revoked_during_second_native_readback_denies_local_commit"
+            ),
+            "cell-split-final-completion-selection.json": (
+                "post_readback_selection_withdrawal_cannot_report_completed_split"
+            ),
+        }
+        for receipt, name in regressions.items():
+            with self.subTest(receipt=receipt):
+                self.assertEqual(workflow.count(receipt), 1)
+                self.assertEqual(gate.count(name), 1)
+                self.assertIn(
+                    "--minimum-tests 1 -- cargo test --locked --manifest-path "
+                    "codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib "
+                    + name + " -- --nocapture --test-threads=1",
+                    gate,
+                )
+        self.assertLess(
+            workflow.index(start),
+            workflow.index("control-ndu-atomic-owner.json"),
+        )
+        self.assertLess(
+            workflow.index("Early locked CellSplit Control/CNS Rustfmt preflight"),
+            workflow.index(start),
+        )
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [
             "codex-rs/hepta-types/src/lib.rs",
