@@ -307,7 +307,9 @@ impl SharedFeatureCacheV2 {
         self.resident_bytes = self
             .retired
             .iter()
-            .fold(cached_bytes, |total, (_, _, bytes)| total.saturating_add(*bytes));
+            .fold(cached_bytes, |total, (_, _, bytes)| {
+                total.saturating_add(*bytes)
+            });
     }
 }
 
@@ -602,19 +604,29 @@ mod tests {
     fn isolation_preprocessing_and_source_frontier_each_change_cache_identity() {
         let source = identity("principal", "purpose", 3);
         let mut cache = SharedFeatureCacheV2::new(4, 128).expect("cache");
-        cache.insert(1, source.clone(), 100, Arc::from([1_i64 << 24]))
+        cache
+            .insert(1, source.clone(), 100, Arc::from([1_i64 << 24]))
             .expect("insert");
         let mut changed = source.clone();
         changed.scope_id = StableId::new("scope.other").expect("scope");
-        assert_ne!(source.digest().expect("source"), changed.digest().expect("changed"));
+        assert_ne!(
+            source.digest().expect("source"),
+            changed.digest().expect("changed")
+        );
         assert!(cache.get(2, &changed).expect("lookup").is_none());
         changed = source.clone();
         changed.preprocessor_digest = Digest32::of_bytes(b"different preprocessing");
-        assert_ne!(source.digest().expect("source"), changed.digest().expect("changed"));
+        assert_ne!(
+            source.digest().expect("source"),
+            changed.digest().expect("changed")
+        );
         assert!(cache.get(2, &changed).expect("lookup").is_none());
         changed = source.clone();
         changed.source_frontier_digest = Digest32::of_bytes(b"new source revision");
-        assert_ne!(source.digest().expect("source"), changed.digest().expect("changed"));
+        assert_ne!(
+            source.digest().expect("source"),
+            changed.digest().expect("changed")
+        );
         assert!(cache.get(2, &changed).expect("lookup").is_none());
         assert!(cache.get(2, &source).expect("lookup").is_some());
         changed = source.clone();
