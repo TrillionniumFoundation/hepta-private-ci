@@ -1597,6 +1597,8 @@ impl From<CellSplitLifecycleErrorV1> for CellSplitAutomationErrorV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use crate::CellSplitCanaryCountsV1;
     use crate::CellSplitEvaluationDispositionV1;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_fleet::AgentManifest;
@@ -1796,8 +1798,10 @@ mod tests {
                 digest(31),
                 digest(32),
                 digest(33),
-                10,
-                self.canary_failures,
+                CellSplitCanaryCountsV1 {
+                    observed_requests: 10,
+                    failed_requests: self.canary_failures,
+                },
                 true,
             )
             .expect("canary"))
@@ -1925,8 +1929,10 @@ mod tests {
             digest(151),
             digest(152),
             digest(153),
-            10,
-            0,
+            CellSplitCanaryCountsV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+            },
             true,
         )
         .expect("canary receipt");
@@ -2272,8 +2278,10 @@ mod tests {
             digest(172),
             digest(173),
             digest(174),
-            10,
-            0,
+            CellSplitCanaryCountsV1 {
+                observed_requests: 10,
+                failed_requests: 0,
+            },
             true,
         )
         .expect("canary");
