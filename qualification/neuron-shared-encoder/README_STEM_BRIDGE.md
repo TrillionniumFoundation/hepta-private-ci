@@ -83,3 +83,30 @@ This is still an experiment contract. It does not train a Cell, run a
 checkpoint, or prove a Stem winner, NDU efficacy, multimodal generation, or
 10T/100T equivalence. The real receipt must come from the pinned harness
 before any System2 or split decision is considered.
+
+## Modality tower and projector registries
+
+`neuron_shared_encoder.modality_registry` adds the next research-only
+boundary for multimodal differentiation. `ModalityTowerRegistryV1` records
+one immutable raw-input tower for each of `audio`, `image`, `text`, and
+`video`; `ProjectorRegistryV1` records one digest-bound projector for each
+Stem manifest projector ID. The projector input width must match its source
+tower, its latent width must equal the frozen Stem hidden width, and its slot
+capacity may not exceed the tower capacity. A registry may construct a
+`ModalityEnvelopeV1` only after binding the raw and feature digests to the
+registered projector and Stem.
+
+The registries retain the harness evidence class exactly, including
+`REAL_MODEL_LOCAL_QUALIFICATION`; they never relabel that receipt as
+`REAL_SHADOW`. `UNVERIFIED`, synthetic, historical, local-qualification, and
+real-shadow records are descriptors of receipt provenance, not multimodal
+quality results. Real classes require a checkpoint receipt digest, but a
+registry still carries `SHADOW_ONLY`, `selection_authority=False`, and
+`current_run_mutation=False`. Towers and projectors are frozen and readonly
+for the current generation; changes are future-snapshot artifacts.
+
+These contracts do not load or train a tower, run a decoder, select a
+projector, or claim text/image/video/audio generation. They only prevent a
+future experiment from mixing modal widths, Stem generations, source tower
+identities, mutable features, or untracked evidence while the actual frozen
+checkpoint and equal-budget transfer matrix are still pending.
