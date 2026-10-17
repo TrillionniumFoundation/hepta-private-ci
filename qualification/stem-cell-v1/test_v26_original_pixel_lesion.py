@@ -77,6 +77,10 @@ class SourceOnly(unittest.TestCase):
         with Image.open(io.BytesIO(black)) as im:
             self.assertEqual(im.getpixel((2,2)),(0,0,0))
 
+    def test_black_original_cannot_fake_pixel_lesion(self):
+        out=io.BytesIO();Image.new('RGB',(8,8),(0,0,0)).save(out,'PNG')
+        with self.assertRaises(p.Invalid):p.black_image(out.getvalue())
+
     def test_bad_image_bytes_rejected(self):
         with self.assertRaises(Exception):p.black_image(b'not an image')
 
