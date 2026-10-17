@@ -1009,9 +1009,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         };
         validate_receipt(&intent, &receipt)?;
         self.trust.verify(&intent, &receipt)?;
+        // The original owner may already have committed this effect even
+        // when its final signed current-state readback fails. Preserve the
+        // one prepared key for reconciliation; do not advertise a definite
+        // no-effect External or dispatch Execute again.
         self.port
             .verify_committed(&intent, &receipt)
-            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         // An effect may finish after another owner revoked a predecessor or
         // replaced a frozen local frame. Before acknowledging the new step,
         // revalidate the original signed owner prefix and still-pending intent.

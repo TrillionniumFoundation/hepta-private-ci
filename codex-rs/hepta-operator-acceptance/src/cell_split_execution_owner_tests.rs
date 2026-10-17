@@ -164,7 +164,11 @@ impl CellSplitExecutionPortV1 for FixturePort {
         // An original NEXT effect may become committed while this genuine
         // predecessor readback is being verified. This test-only injection
         // has no coordinator prepared frame or execution-dispatch privilege.
-        if let Some(next) = self.inject_unledgered_during_live_readback.borrow_mut().take() {
+        if let Some(next) = self
+            .inject_unledgered_during_live_readback
+            .borrow_mut()
+            .take()
+        {
             let committed = Self::receipt(&next);
             self.observed
                 .borrow_mut()
@@ -556,6 +560,51 @@ fn prepared_owner_rpc_errors_are_ambiguous_until_original_effect_readback() {
         );
         assert!(committed.is_file(), "only live readback can close intent");
     }
+}
+
+#[test]
+fn post_effect_live_readback_failure_is_ambiguous_until_reconciled() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.reject_signature = true;
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("open original execution owner");
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(owner.completed_steps(), 0);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(root.path().join("cell-split-00-prepared.json").is_file());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+        assert!(matches!(
+            owner.verified_complete(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::Ambiguous)
+        ));
+        assert_eq!(state.borrow().executions, 1, "recovery is not Execute");
+    }
+    let mut recovered = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("reopen trusted original writer");
+    let receipt = recovered
+        .advance()
+        .expect("signed original owner readback")
+        .expect("committed original effect");
+    assert_eq!(receipt.intent.step.index(), 0);
+    assert_eq!(state.borrow().executions, 1, "no second Execute");
+    assert_eq!(recovered.completed_steps(), 1);
+    assert!(root.path().join("cell-split-00-committed.json").is_file());
+    assert!(!recovered.verified_complete().expect("current signed prefix"));
 }
 
 #[test]
@@ -1102,13 +1151,16 @@ fn verified_incomplete_status_double_checks_original_after_live_prefix_readback(
             Err(CellSplitExecutionErrorV1::External(_))
         ));
         assert!(state.borrow().commits.contains_key(&next.idempotency_key));
-        assert_eq!(state.borrow().executions, 1, "status cannot execute a second effect");
+        assert_eq!(
+            state.borrow().executions,
+            1,
+            "status cannot execute a second effect"
+        );
         assert_eq!(owner.completed_steps(), 1, "no new local commit is adopted");
         assert!(!root.path().join("cell-split-01-prepared.json").exists());
         assert!(!root.path().join("cell-split-01-committed.json").exists());
     }
 }
-
 
 #[test]
 fn verified_completion_rejects_unprepared_original_effect_at_every_step() {
@@ -1316,7 +1368,6 @@ fn late_original_effect_after_preflight_never_prepares_or_reexecutes() {
         );
     }
 }
-
 
 #[test]
 fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
