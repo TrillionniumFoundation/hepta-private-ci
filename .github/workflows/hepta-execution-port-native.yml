@@ -9,8 +9,7 @@ on:
       - "codex-rs/hepta-agent-protocol/**"
       - "codex-rs/app-server-client/src/remote.rs"
       - "codex-rs/hepta-automation/**"
-      - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
-      - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-context-compiler/**"
       - "codex-rs/core/src/client.rs"
@@ -145,6 +144,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/migration.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation -E 'test(v1_store_migrates_atomically_to_dispatch_outcome_schema)'
+
+      - name: Test Agentd cognitive currentness, governed plasticity and owner recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-execution-port-records/agentd-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd -E 'test(cognitive_context) | test(plasticity_runtime_lifetime) | test(intelligence_product) | test(automation_effect)'
 
       - name: Count backend-neutral intent contract tests
         shell: bash
