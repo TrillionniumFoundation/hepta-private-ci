@@ -1,0 +1,291 @@
+name: Hepta HDSI G7 original paid Episode NDU vs Bellman (DENY_ALL)
+
+on:
+  push:
+    branches: [research/hdsi-g7-episode-ndu-20261017]
+    paths:
+      - 'qualification/hdsi-g0g3/g7_*'
+      - 'qualification/hdsi-g0g3/test_g7.py'
+      - 'qualification/hdsi-g0g3/G7_*'
+      - '.github/workflows/hepta-hdsi-g7-original.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdsi-g0g3/g7_*'
+      - 'qualification/hdsi-g0g3/test_g7.py'
+      - 'qualification/hdsi-g0g3/G7_*'
+      - '.github/workflows/hepta-hdsi-g7-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hdsi-g7-original-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  STUDY: qualification/hdsi-g0g3
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Exact source-head and policy/Bellman adversarial tests (no Torch)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd "$STUDY"
+          python -m py_compile g7_policy.py g7_train.py g7_run.py g7_review.py test_g7.py
+          python -S -m unittest -q test_g7.G7SourceOnlyTests
+          python -O -S -m unittest -q test_g7.G7SourceOnlyTests
+          python -m json.tool G7_LOCAL_PHYSICAL_CPU_20261017.json >/dev/null
+          python -m json.tool G7_LOCAL_INDEPENDENT_ORIGINAL_REVIEW_20261017.json >/dev/null
+          cd ../..
+          git diff --check
+
+  original-source-owner:
+    needs: source-contracts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/hdsi-g7-episode-ndu-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Original SHA-pinned LoCoMo, scrub all HELD gold before model worker
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g7-source"
+          python "$STUDY/g6_material_custody.py" --mode source_owner \
+            --archive "$RUNNER_TEMP/g7-original-archive.zip" \
+            --root "$RUNNER_TEMP/g7-source/model" \
+            --source "$RUNNER_TEMP/g7-source/public.json"
+          test ! -e "$RUNNER_TEMP/g7-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g7-source/model/reader"
+          (cd "$RUNNER_TEMP/g7-source" && sha256sum public.json > public.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g7-model-only-source
+          path: ${{ runner.temp }}/g7-source/
+          if-no-files-found: error
+          retention-days: 1
+
+  real-training-and-prelabel-plan:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-model-only-source
+          path: ${{ runner.temp }}/g7-source
+      - name: Source/label-free HELD admission before any Torch download
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          (cd "$RUNNER_TEMP/g7-source" && sha256sum --check public.sha256)
+          test ! -e "$RUNNER_TEMP/g7-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g7-source/model/reader"
+          cd "$STUDY"
+          python -S -m unittest -q test_g7.G7SourceOnlyTests
+          cd ../..
+      - name: Install bounded CPU-only research runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+      - name: Physically train original MiniLM TRAIN-only profile, seal entire HELD plan before inference
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g7-train"
+          python "$STUDY/g7_train.py" --model-only "$RUNNER_TEMP/g7-source/model" \
+            --source "$RUNNER_TEMP/g7-source/public.json" \
+            --output "$RUNNER_TEMP/g7-train/train.json"
+          (cd "$RUNNER_TEMP/g7-train" && sha256sum train.json > train.sha256)
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          j=json.loads((Path(os.environ['RUNNER_TEMP'])/'g7-train/train.json').read_bytes())
+          assert j['actual_train_encoder_sequences']==1680 and j['actual_train_encoder_batches']==108
+          assert j['sealed_plan']['held_labels_accessed'] is False
+          assert j['production_authorized'] is False and j['disposition']=='HOLD_NO_GO'
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g7-physically-trained-prelabel-plan
+          path: ${{ runner.temp }}/g7-train/
+          retention-days: 1
+          if-no-files-found: error
+
+  real-on-policy-paid-forward:
+    needs: real-training-and-prelabel-plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-model-only-source
+          path: ${{ runner.temp }}/g7-source
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-physically-trained-prelabel-plan
+          path: ${{ runner.temp }}/g7-train
+      - name: Audit sealed profile/plan and source before paid forward
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/g7-source" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g7-train" && sha256sum --check train.sha256)
+          test ! -e "$RUNNER_TEMP/g7-source/model/locomo.json"
+          test ! -e "$RUNNER_TEMP/g7-source/model/reader"
+      - name: Install original pinned CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check safetensors==0.6.2
+      - name: Physically pay separately for NDU-selected and fixed-budget original frozen rerank
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g7-paid"
+          python "$STUDY/g7_run.py" --model-only "$RUNNER_TEMP/g7-source/model" \
+            --source "$RUNNER_TEMP/g7-source/public.json" \
+            --training "$RUNNER_TEMP/g7-train/train.json" \
+            --output "$RUNNER_TEMP/g7-paid/paid.json"
+          (cd "$RUNNER_TEMP/g7-paid" && sha256sum paid.json > paid.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g7-actually-paid-prelabel-model
+          path: ${{ runner.temp }}/g7-paid/
+          retention-days: 1
+          if-no-files-found: error
+
+  independent-original-human-review:
+    needs: real-on-policy-paid-forward
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-model-only-source
+          path: ${{ runner.temp }}/g7-source
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-physically-trained-prelabel-plan
+          path: ${{ runner.temp }}/g7-train
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hdsi-g7-actually-paid-prelabel-model
+          path: ${{ runner.temp }}/g7-paid
+      - name: Verify entire source/plan/prediction seal before opening any publisher human evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd "$RUNNER_TEMP/g7-source" && sha256sum --check public.sha256)
+          (cd "$RUNNER_TEMP/g7-train" && sha256sum --check train.sha256)
+          (cd "$RUNNER_TEMP/g7-paid" && sha256sum --check paid.sha256)
+      - name: Separately reacquire original SHA-pinned human gold, no Torch in reviewer
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/g7-human"
+          python "$STUDY/g6_material_custody.py" --mode reviewer \
+            --archive "$RUNNER_TEMP/g7-late-original.zip" \
+            --root "$RUNNER_TEMP/g7-human"
+          test -f "$RUNNER_TEMP/g7-human/locomo.json"
+      - name: Independently verify original sources, source-first BM25 and two value solvers, then score historical human evidence
+        shell: bash
+        env:
+          G7_ORIGINAL: ${{ runner.temp }}/g7-human/locomo.json
+          G7_SOURCE: ${{ runner.temp }}/g7-source/public.json
+          G7_TRAIN: ${{ runner.temp }}/g7-train/train.json
+          G7_PAID: ${{ runner.temp }}/g7-paid/paid.json
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd "$STUDY"
+          python -S -m unittest -q test_g7.G7OriginalArchiveTests
+          python -O -S -m unittest -q test_g7.G7OriginalArchiveTests
+          cd ../..
+          mkdir -p "$RUNNER_TEMP/g7-review"
+          python "$STUDY/g7_review.py" \
+            --original "$G7_ORIGINAL" \
+            --source "$G7_SOURCE" \
+            --training "$G7_TRAIN" \
+            --paid "$G7_PAID" \
+            --output "$RUNNER_TEMP/g7-review/original-aggregate.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          obj=json.loads((Path(os.environ['RUNNER_TEMP'])/'g7-review/original-aggregate.json').read_bytes())
+          assert obj['historical_held_questions']==96
+          assert obj['actions']['ndu']==obj['actions']['bellman']
+          assert obj['ndu_specific_task_gain_verified'] is False
+          assert obj['production_authorized'] is False
+          assert obj['disposition']=='HOLD_NO_GO'
+          print('Exact original independent researcher outcome, unconditional hold')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hdsi-g7-independently-scored-original-aggregate-denyall
+          path: ${{ runner.temp }}/g7-review/original-aggregate.json
+          if-no-files-found: error
+          retention-days: 7
