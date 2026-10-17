@@ -117,7 +117,6 @@ impl CompositionManifestV1 {
 pub struct CellHeadManifest {
     pub cell_id: String,
     pub head_digest: String,
-    pub shared_memory_bytes: u64,
     pub private_memory_bytes: u64,
     pub maximum_tokens: u32,
 }
