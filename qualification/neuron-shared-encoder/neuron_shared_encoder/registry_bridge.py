@@ -33,6 +33,7 @@ except ImportError:  # direct qualification-file execution
 
 SCHEMA_BOUND_ENVELOPE = "hepta.modality.bound-envelope.v1"
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
+_IDENT = re.compile(r"^[a-z0-9][a-z0-9._/-]{0,127}$")
 
 
 def _require(condition: bool, message: str) -> None:
@@ -42,6 +43,10 @@ def _require(condition: bool, message: str) -> None:
 
 def _digest(name: str, value: str) -> None:
     _require(isinstance(value, str) and bool(_HEX64.fullmatch(value)), f"{name} must be a lowercase sha256")
+
+
+def _identifier(name: str, value: str) -> None:
+    _require(isinstance(value, str) and bool(_IDENT.fullmatch(value)), f"{name} is not a stable identifier")
 
 
 def _integer(name: str, value: Any, *, minimum: int, maximum: int) -> None:
@@ -86,8 +91,8 @@ class BoundModalityEnvelopeV1:
             ("projector_registry_digest", self.projector_registry_digest),
         ):
             _digest(name, value)
-        _require(isinstance(self.tower_id, str) and self.tower_id, "tower_id is required")
-        _require(isinstance(self.projector_id, str) and self.projector_id, "projector_id is required")
+        _identifier("tower_id", self.tower_id)
+        _identifier("projector_id", self.projector_id)
         _integer("latent_width", self.latent_width, minimum=1, maximum=8192)
         _integer("slots", self.slots, minimum=1, maximum=256)
         _integer("region_count", self.region_count, minimum=0, maximum=4096)
