@@ -68,6 +68,23 @@ jobs:
           manifest.write_text(text.replace(old, 'zip = "=9.0.4"'), encoding="utf-8")
           print("staged ZIP =9.0.4 solely in disposable Git worktree")
           PY
+          # ZIP 9 changed ZipFile::name() from &str to Result<Cow<str>, ZipError>.
+          # Adapt only the disposable candidate so the real compiler can expose
+          # any additional migration incompatibilities. Keep fail-closed errors.
+          python3 - "$candidate/codex-rs/core-plugins/src/startup_sync.rs" <<'PY'
+          import sys
+          from pathlib import Path
+          source = Path(sys.argv[1])
+          original = source.read_text(encoding="utf-8")
+          old = '''                entry.name()
+            ));'''
+          replacement = '''                entry.name().map_err(|err| format!("failed to read curated plugins zip entry name: {err}"))?
+            ));'''
+          if original.count(old) != 1:
+              raise SystemExit("ZIP9 ZipFile::name API site drifted; aborting candidate")
+          source.write_text(original.replace(old, replacement), encoding="utf-8")
+          print("staged ZIP9 fallible entry-name handling solely in disposable worktree")
+          PY
 
       - name: Resolve genuine locked security upgrade using Cargo
         shell: bash
