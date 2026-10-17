@@ -48,6 +48,13 @@ jobs:
             grep -F 'Ran 22 tests' "$RUNNER_TEMP/v26-$mode.log"
             grep -x 'OK' "$RUNNER_TEMP/v26-$mode.log"
           done
+          python -m py_compile test_v26_workflow_guard.py
+          for mode in ordinary optimized; do
+            if test "$mode" = optimized; then python -O -m unittest -v test_v26_workflow_guard.SourceOnly 2>&1 | tee "$RUNNER_TEMP/v26-workflow-guard-$mode.log";
+            else python -m unittest -v test_v26_workflow_guard.SourceOnly 2>&1 | tee "$RUNNER_TEMP/v26-workflow-guard-$mode.log"; fi
+            grep -F 'Ran 8 tests' "$RUNNER_TEMP/v26-workflow-guard-$mode.log"
+            grep -x 'OK' "$RUNNER_TEMP/v26-workflow-guard-$mode.log"
+          done
   physical-original-pixels:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push'
     needs: source-only
