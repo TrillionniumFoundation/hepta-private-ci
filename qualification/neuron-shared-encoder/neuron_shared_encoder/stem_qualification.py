@@ -25,6 +25,11 @@ SCHEMA_RUN = "hepta.stem.qualification-run.v1"
 SCHEMA_RECEIPT = SCHEMA_RUN
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _IDENT = re.compile(r"^[a-z0-9][a-z0-9._/-]{0,127}$")
+_REQUIRED_COMPONENTS = {
+    "encoder_only": {"stem_encoder", "modality_tower", "projector", "cell_head", "device"},
+    "encoder_decoder": {"stem_encoder", "modality_tower", "projector", "cell_head", "controller_decoder", "device"},
+    "full_generation": {"stem_encoder", "modality_tower", "projector", "cell_head", "controller_decoder", "state_cache", "verification", "device"},
+}
 
 
 class StemQualificationError(ValueError):
@@ -74,6 +79,8 @@ class CheckpointRefV1:
     backend_id: str
     runtime_digest: str
     device_identity_digest: str
+    checkpoint_digest: str
+    quantization_digest: str
     stem_digest: str
     parameter_count: int
     generation: int
@@ -91,6 +98,8 @@ class CheckpointRefV1:
             ("preprocessor_digest", self.preprocessor_digest),
             ("runtime_digest", self.runtime_digest),
             ("device_identity_digest", self.device_identity_digest),
+            ("checkpoint_digest", self.checkpoint_digest),
+            ("quantization_digest", self.quantization_digest),
             ("stem_digest", self.stem_digest),
         ):
             _digest(name, value)
@@ -110,8 +119,13 @@ class SourceDisjointSplitV1:
     eval_source_digest: str
     train_manifest_digest: str
     eval_manifest_digest: str
+    future_source_digest: str
+    ood_source_digest: str
+    future_manifest_digest: str
+    ood_manifest_digest: str
     split_manifest_digest: str
-    overlap_report_digest: str
+    lineage_digest: str
+    dedupe_report_digest: str
     train_count: int
     eval_count: int
     overlap_count: int
@@ -126,11 +140,17 @@ class SourceDisjointSplitV1:
             ("eval_source_digest", self.eval_source_digest),
             ("train_manifest_digest", self.train_manifest_digest),
             ("eval_manifest_digest", self.eval_manifest_digest),
+            ("future_source_digest", self.future_source_digest),
+            ("ood_source_digest", self.ood_source_digest),
+            ("future_manifest_digest", self.future_manifest_digest),
+            ("ood_manifest_digest", self.ood_manifest_digest),
             ("split_manifest_digest", self.split_manifest_digest),
-            ("overlap_report_digest", self.overlap_report_digest),
+            ("lineage_digest", self.lineage_digest),
+            ("dedupe_report_digest", self.dedupe_report_digest),
         ):
             _digest(name, value)
-        _require(self.train_source_digest != self.eval_source_digest, "train and evaluation sources must differ")
+        source_digests = {self.train_source_digest, self.eval_source_digest, self.future_source_digest, self.ood_source_digest}
+        _require(len(source_digests) == 4, "train/eval/future/ood sources must be disjoint")
         for name, value in (("train_count", self.train_count), ("eval_count", self.eval_count), ("source_family_count", self.source_family_count), ("future_window_count", self.future_window_count)):
             _integer(name, value, minimum=1)
         _integer("overlap_count", self.overlap_count, minimum=0)
@@ -243,6 +263,7 @@ class ComponentResourceBundleV1:
     measured_steps: int
     repetitions: int
     cache_hit_rate: float
+    component_profile: str = "full_generation"
     complete: bool = True
 
     def __post_init__(self) -> None:
@@ -250,18 +271,10 @@ class ComponentResourceBundleV1:
         _identifier("benchmark_id", self.benchmark_id)
         for name, value in (("hardware_digest", self.hardware_digest), ("runtime_digest", self.runtime_digest), ("measurement_digest", self.measurement_digest)):
             _digest(name, value)
+        _require(self.component_profile in _REQUIRED_COMPONENTS, "unsupported component profile")
         _require(type(self.components) is tuple and self.components, "components must be a non-empty tuple")
         _require(all(isinstance(component, ComponentResourceReceiptV1) for component in self.components), "invalid resource component")
-        required = {
-            "stem_encoder",
-            "modality_tower",
-            "projector",
-            "cell_head",
-            "controller_decoder",
-            "state_cache",
-            "verification",
-            "device",
-        }
+        required = _REQUIRED_COMPONENTS[self.component_profile]
         _require({component.component_kind for component in self.components} == required, "resource bundle must cover every component kind exactly")
         _require(len(self.components) == len(required), "resource component kinds must be unique")
         for name, value in (
@@ -274,7 +287,7 @@ class ComponentResourceBundleV1:
             _finite(name, value)
         _require(self.p50_latency_ms <= self.p95_latency_ms <= self.p99_latency_ms, "bundle latency quantiles must be ordered")
         _require(self.p95_latency_ms > 0 and self.energy_mj > 0, "bundle resources must be positive")
-        _require(self.cache_hit_rate <= 1.0, "cache_hit_rate cannot exceed one")
+        _require(0.0 <= self.cache_hit_rate <= 1.0, "cache_hit_rate must be in [0, 1]")
         for name, value in (("batch_size", self.batch_size), ("warmup_steps", self.warmup_steps), ("measured_steps", self.measured_steps), ("repetitions", self.repetitions)):
             _integer(name, value, minimum=1)
         _boolean("complete", self.complete)
@@ -306,6 +319,7 @@ class ComponentResourceBundleV1:
             "measured_steps": self.measured_steps,
             "repetitions": self.repetitions,
             "cache_hit_rate": self.cache_hit_rate,
+            "component_profile": self.component_profile,
             "complete": self.complete,
             "total_flops": self.total_flops,
             "peak_component_memory_bytes": self.peak_component_memory_bytes,
@@ -320,10 +334,14 @@ class StemQualificationRunV1:
     stem_generation: int
     checkpoint: CheckpointRefV1
     source_split: SourceDisjointSplitV1
+    registry_stem_digest: str
+    registry_generation: int
     tower_registry_digest: str
     projector_registry_digest: str
     objective_digest: str
     evaluation_plan_digest: str
+    cases_digest: str
+    evidence_manifest_digest: str
     metrics: tuple[MetricIntervalV1, ...]
     resources: ComponentResourceBundleV1
     evidence_class: str = "REAL_SHADOW"
@@ -338,10 +356,16 @@ class StemQualificationRunV1:
         _integer("stem_generation", self.stem_generation)
         _require(self.stem_digest == self.checkpoint.stem_digest, "run Stem digest differs from checkpoint")
         _require(self.stem_generation == self.checkpoint.generation, "run generation differs from checkpoint")
+        _digest("registry_stem_digest", self.registry_stem_digest)
+        _integer("registry_generation", self.registry_generation)
+        _require(self.registry_stem_digest == self.stem_digest, "registry Stem digest differs from run")
+        _require(self.registry_generation == self.checkpoint.generation, "registry generation differs from checkpoint")
         _digest("tower_registry_digest", self.tower_registry_digest)
         _digest("projector_registry_digest", self.projector_registry_digest)
         _digest("objective_digest", self.objective_digest)
         _digest("evaluation_plan_digest", self.evaluation_plan_digest)
+        _digest("cases_digest", self.cases_digest)
+        _digest("evidence_manifest_digest", self.evidence_manifest_digest)
         _require(self.evidence_class == "REAL_SHADOW", "only REAL_SHADOW runs can qualify")
         _require(self.status == "SHADOW_COMPLETE", "run is not complete")
         _boolean("model_input_gold_visible", self.model_input_gold_visible)
@@ -366,10 +390,14 @@ class StemQualificationRunV1:
             "stem_generation": self.stem_generation,
             "checkpoint": self.checkpoint.to_dict(),
             "source_split": self.source_split.to_dict(),
+            "registry_stem_digest": self.registry_stem_digest,
+            "registry_generation": self.registry_generation,
             "tower_registry_digest": self.tower_registry_digest,
             "projector_registry_digest": self.projector_registry_digest,
             "objective_digest": self.objective_digest,
             "evaluation_plan_digest": self.evaluation_plan_digest,
+            "cases_digest": self.cases_digest,
+            "evidence_manifest_digest": self.evidence_manifest_digest,
             "metrics": [metric.to_dict() for metric in self.metrics],
             "resources": self.resources.to_dict(),
             "evidence_class": self.evidence_class,
@@ -384,12 +412,19 @@ def qualify_from_receipt(
     *,
     run_id: str,
     candidate_id: str,
+    task_id: str,
+    expected_budget_digest: str,
+    expected_cases_digest: str,
     checkpoint: CheckpointRefV1,
     source_split: SourceDisjointSplitV1,
+    registry_stem_digest: str,
+    registry_generation: int,
     tower_registry_digest: str,
     projector_registry_digest: str,
     objective_digest: str,
     evaluation_plan_digest: str,
+    cases_digest: str,
+    evidence_manifest_digest: str,
     metrics: tuple[MetricIntervalV1, ...],
     resources: ComponentResourceBundleV1,
 ) -> StemQualificationRunV1:
@@ -406,6 +441,9 @@ def qualify_from_receipt(
     _require(not getattr(receipt, "model_input_gold_visible", True), "bridge receipt exposes model-visible gold")
     _require(getattr(receipt, "stem_digest", None) == checkpoint.stem_digest, "bridge receipt Stem mismatch")
     _require(getattr(receipt, "source_digest", None) == source_split.eval_source_digest, "bridge receipt source mismatch")
+    _require(getattr(receipt, "task_id", None) == task_id, "bridge receipt task mismatch")
+    _require(getattr(receipt, "budget_digest", None) == expected_budget_digest, "bridge receipt budget mismatch")
+    _require(getattr(receipt, "model_digest", None) == checkpoint.checkpoint_digest, "bridge receipt model identity is missing or mismatched")
     _identifier("candidate_id", candidate_id)
     return StemQualificationRunV1(
         run_id=run_id,
@@ -414,10 +452,14 @@ def qualify_from_receipt(
         stem_generation=checkpoint.generation,
         checkpoint=checkpoint,
         source_split=source_split,
+        registry_stem_digest=registry_stem_digest,
+        registry_generation=registry_generation,
         tower_registry_digest=tower_registry_digest,
         projector_registry_digest=projector_registry_digest,
         objective_digest=objective_digest,
         evaluation_plan_digest=evaluation_plan_digest,
+        cases_digest=cases_digest,
+        evidence_manifest_digest=evidence_manifest_digest,
         metrics=metrics,
         resources=resources,
     )
