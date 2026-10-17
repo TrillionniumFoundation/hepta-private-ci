@@ -100,6 +100,22 @@ def load_registered_corpus(repo_root: Path, *, manifest_path: Path | None = None
     return module, corpus
 
 
+def verify_registered_checkout(repo_root: Path) -> tuple[dict[str, Any], dict[str, str]]:
+    """Verify the registered source blobs and quoted lines before model use."""
+    root = repo_root.resolve(strict=True)
+    module, corpus = load_registered_corpus(root)
+    verifier = getattr(module, "verify_checkout", None)
+    if not callable(verifier):
+        raise ReaderFixtureError("Reader evaluator has no source-checkout verifier")
+    try:
+        source_digests = verifier(corpus, root)
+    except Exception as exc:
+        raise ReaderFixtureError("registered Reader source checkout failed verification") from exc
+    if not isinstance(source_digests, dict) or not source_digests:
+        raise ReaderFixtureError("Reader source verifier returned no source identities")
+    return corpus, source_digests
+
+
 def _contains_forbidden_key(value: Any) -> str | None:
     if isinstance(value, dict):
         for key, child in value.items():
@@ -208,4 +224,5 @@ __all__ = [
     "build_request",
     "load_reader_evaluator",
     "load_registered_corpus",
+    "verify_registered_checkout",
 ]
