@@ -46,3 +46,35 @@ Interpret the results by diagnostic regime: full evidence still wrong indicates 
 2. Evaluate fixed, preregistered *real* Hepta retrieval/diagnosis episodes with authentic provenance and independently observed terminal outcomes, including evidence removals and contradictory/versioned sources. Avoid giving gold as input or granting a model read access to answers.
 3. Reuse the same encoder, training steps, physical FLOPs, activation budget and held-out tasks when comparing frozen Cell Head, Bellman depth-2, NDU Head, NDU FBSDE and adaptive-search arms. Measure actual concurrency, latency, memory, accuracy, calibration, abstention, OOD and training costs.
 4. Verify Rust shadow builds, independent well-posedness and conditional covariance conventions, error bounds and candidate-only authority, then proceed through existing qualification and promotion. A Python reference or mock reader is **not** such evidence.
+
+## Answer-order counterbalance and input-budget gate
+
+The original fixed-label benchmark remains available via the default \`--presentations 1\`. For a stronger diagnostic, use \`--presentations 4\`: a SHA-256(seed, case ID)-derived offset rotates the same four answer descriptions through all A/B/C/D positions. This produces a four-position Latin square **per task**. The option order is selected without accessing the gold label, and each evidence arm gets the same order for that task/variant. A position-only always-A stub scores exactly 25% per task under this design; do not treat the four repetitions as 64 independent tasks.
+
+\`\`\`bash
+# Offline genuine Laya checkpoint required; 16 cases x 4 arms x 4 orders = 256 calls
+python3 scripts/hepta_sngr_reader_eval.py \
+  --checkpoint-dir /path/to/verified-local-laya \
+  --source-checkout /path/to/verified-hepta-checkout \
+  --presentations 4 --seed 17 --max-calls 256 --output /tmp/sngr-reader-balanced.json
+
+# Injection arm adds another 64 calls: exactly 320 total
+python3 scripts/hepta_sngr_reader_eval.py \
+  --checkpoint-dir /path/to/verified-local-laya \
+  --source-checkout /path/to/verified-hepta-checkout \
+  --presentations 4 --include-injection --max-calls 320
+\`\`\`
+
+Real-model runs now require valid model \`cfg.max_len\` and a reported per-inference token count **strictly below** that cap. A missing or saturated count rejects the evaluation as possibly truncated; passing this conservative check does **not** prove that the full evidence survived head/tokenizer allocation. Checkpoint bytes are fingerprinted before loading and again after all model calls. Summaries provide mean reported input tokens and answer-position diagnostics, in addition to wall time and call count.
+
+## Deterministic lexical negative control and task difficulty
+
+\`scripts/hepta_sngr_lexical_control.py\` is an explicitly **post-hoc**, gold-blind keyword-overlap negative control, not a learned model. Its simple rule compares the four option descriptions with untrusted evidence using token-set overlap, requiring at least two matching non-stopword tokens and a two-token lead; otherwise it emits UNKNOWN.
+
+\`\`\`bash
+python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr*.py'
+python3 scripts/hepta_sngr_lexical_control.py --presentations 4 \
+  --output /tmp/sngr-lexical-diagnostic.json
+\`\`\`
+
+On the frozen 16-case fixture, the rule answers **14/16** with sufficient evidence, abstains correctly on all **48/48** no-evidence/distractor/withheld cases, and achieves 56/64 full-evidence answers under four answer rotations. These are *in-sample diagnostic arithmetic*, because the rule was designed after inspecting these cases; they are neither a preregistered control nor evidence of Laya or System2 gain. The high lexical score shows that the current tasks primarily test source extraction. Any reasoning-efficacy claim requires a harder **independently held-out, multi-hop/contradiction/versioned** suite on which literal overlap is not sufficient, plus genuine model weights and independent task outcomes.

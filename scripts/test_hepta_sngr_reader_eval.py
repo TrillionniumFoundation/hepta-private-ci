@@ -22,6 +22,7 @@ from hepta_sngr_reader_eval import (
     load_cases,
     load_local_laya,
     main,
+    option_presentation,
     parse_answer,
     reject_sdk_checkpoint_mutation,
     run_reader,
@@ -295,6 +296,107 @@ class ProtocolAndCostTests(unittest.TestCase):
                 run_reader(self.corpus, SpyTypedAgent(), model_digest)
         with self.assertRaisesRegex(ReaderBenchError, "budget"):
             run_reader(self.corpus, SpyTypedAgent(), "f" * 64, max_calls=63)
+
+    def test_counterbalance_is_gold_blind_and_each_answer_occupies_each_slot(self):
+        for task in self.corpus["tasks"]:
+            modified = copy.deepcopy(task)
+            modified["gold"] = next(k for k in "ABCD" if k != task["gold"])
+            positions = set()
+            for variant in range(4):
+                choices, shift = option_presentation(task, 7, variant, presentations=4)
+                other, other_shift = option_presentation(modified, 7, variant, presentations=4)
+                self.assertEqual((choices, shift), (other, other_shift))
+                self.assertEqual(set(choices.values()), set(task["choices"].values()))
+                gold_position = "ABCD"[("ABCD".index(task["gold"]) + shift) % 4]
+                self.assertEqual(choices[gold_position], task["choices"][task["gold"]])
+                positions.add(gold_position)
+                for arm in ARM_NAMES + ("injection",):
+                    state, questions = construct_request(self.corpus, task, arm,
+                                                         choices_override=choices)
+                    self.assertEqual(questions["answer"]["criteria"][gold_position],
+                                     task["choices"][task["gold"]])
+                    self.assertNotIn("gold", state)
+                    self.assertNotIn("gold", questions)
+            self.assertEqual(positions, set("ABCD"))
+
+    def test_counterbalanced_four_arm_budget_and_paired_task_cluster_diagnostics(self):
+        class AlwaysAAuditStub:
+            def predict(self, state, questions):
+                # Deliberately biased TEST STUB, not a real reader result.
+                probs = {label: float(label == "A") for label in (*"ABCD", "UNKNOWN")}
+                return {"answers": {"answer": {"choice": "A", "confidence": 1.0,
+                                                   "probabilities": probs}},
+                        "usage": {"input_tokens": 32, "output_tokens": 0}}
+
+        audit = run_reader(self.corpus, AlwaysAAuditStub(), "e" * 64,
+                           seed=19, presentations=4, max_calls=256, max_input_tokens=128)
+        self.assertEqual(audit["model_calls"], 256)
+        self.assertEqual(audit["calls_per_case"], 16)
+        self.assertEqual(audit["answer_order_presentations"], 4)
+        self.assertEqual(audit["summaries"]["full"]["top1_gold_fraction"], 0.25)
+        self.assertEqual(audit["summaries"]["full"]["mean_reported_input_tokens"], 32)
+        self.assertEqual(audit["position_diagnostics"]["full_gold_accuracy_by_position"],
+                         {"A": 1.0, "B": 0.0, "C": 0.0, "D": 0.0})
+        self.assertEqual(audit["position_diagnostics"]["dependence_warning"],
+                         "repeated_presentations_same_task_not_independent_episodes")
+        self.assertEqual(set(audit["position_diagnostics"]["per_task_full_gold_accuracy"].values()),
+                         {0.25})
+        self.assertEqual(set(audit["paired_gold_fraction_differences"].values()), {0.0})
+        for t in self.corpus["tasks"]:
+            for variant in range(4):
+                rows = [r for r in audit["rows"]
+                        if r["task_id"] == t["id"] and r["presentation"] == variant]
+                self.assertEqual(len(rows), 4)
+                self.assertEqual(len({r["gold"] for r in rows}), 1)
+                self.assertEqual(len({r["option_shift"] for r in rows}), 1)
+
+    def test_maximum_five_arm_latin_square_fits_exact_320_call_ceiling(self):
+        audit = run_reader(self.corpus, SpyTypedAgent(), "f" * 64, seed=17,
+                           include_injection=True, presentations=4, max_calls=320)
+        self.assertEqual(audit["model_calls"], 320)
+        self.assertEqual(audit["summaries"]["injection"]["opposed_gold_cases"], 48)
+        with self.assertRaisesRegex(ReaderBenchError, "budget"):
+            run_reader(self.corpus, SpyTypedAgent(), "f" * 64, seed=17,
+                       include_injection=True, presentations=4, max_calls=319)
+        for presentations in (0, 2, 3, 5):
+            with self.assertRaisesRegex(ReaderBenchError, "single order"):
+                run_reader(self.corpus, SpyTypedAgent(), "f" * 64,
+                           presentations=presentations)
+
+    def test_same_seed_reproducible_different_seeds_change_presentation_order(self):
+        agent_a = SpyTypedAgent()
+        agent_b = SpyTypedAgent()
+        run_reader(self.corpus, agent_a, "f" * 64, seed=5,
+                   presentations=4, max_calls=256)
+        run_reader(self.corpus, agent_b, "f" * 64, seed=5,
+                   presentations=4, max_calls=256)
+        self.assertEqual(agent_a.calls, agent_b.calls)
+        agent_c = SpyTypedAgent()
+        run_reader(self.corpus, agent_c, "f" * 64, seed=6,
+                   presentations=4, max_calls=256)
+        self.assertNotEqual(agent_a.calls, agent_c.calls)
+
+    def test_missing_or_saturated_model_token_count_rejects_ambiguous_truncation(self):
+        class TokenAuditStub:
+            def __init__(self, tokens):
+                self.tokens = tokens
+
+            def predict(self, state, questions):
+                probabilities = {label: float(label == "UNKNOWN")
+                                 for label in (*"ABCD", "UNKNOWN")}
+                return {"answers": {"answer": {"choice": "UNKNOWN", "confidence": 1.0,
+                                                   "probabilities": probabilities}},
+                        "usage": {"input_tokens": self.tokens}}
+
+        for reported in (None, 128, 129):
+            with self.subTest(reported=reported), self.assertRaisesRegex(
+                    ReaderBenchError, "possible evidence truncation"):
+                run_reader(self.corpus, TokenAuditStub(reported), "f" * 64,
+                           max_input_tokens=128)
+        for invalid_limit in (0, 2.5, True, 8193):
+            with self.assertRaisesRegex(ReaderBenchError, "token limit"):
+                run_reader(self.corpus, TokenAuditStub(32), "f" * 64,
+                           max_input_tokens=invalid_limit)
 
     def test_no_weights_does_not_claim_success_or_create_output(self):
         with tempfile.TemporaryDirectory() as d:

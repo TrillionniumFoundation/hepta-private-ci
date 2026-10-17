@@ -26,6 +26,8 @@ SCHEMA = "hepta.sngr.reader-evidence-fixture.v1"
 REPORT_SCHEMA = "hepta.sngr.reader-diagnostic.shadow.v2"
 FROZEN_CASE_SHA256 = "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89"
 ARM_NAMES = ("none", "distractor", "withheld", "full")
+CHOICE_LABELS = "ABCD"
+SUPPORTED_PRESENTATIONS = (1, 4)
 MAX_CASES = 64
 MAX_TOTAL_CALLS = 320
 MAX_EXCERPT_CHARS = 1500
@@ -75,7 +77,8 @@ def load_cases(path: Path) -> dict[str, Any]:
             raise ReaderBenchError("invalid question")
         if not isinstance(choices, dict) or set(choices) != {"A", "B", "C", "D"} or type(gold) is not str or gold not in choices:
             raise ReaderBenchError("unregistered gold or answer set")
-        if any(not isinstance(value, str) or not 2 <= len(value) <= 240 for value in choices.values()):
+        if (any(not isinstance(value, str) or not 2 <= len(value) <= 240 for value in choices.values())
+                or len(set(choices.values())) != 4):
             raise ReaderBenchError("invalid option text")
         for field in ("source", "withheld_control"):
             src = task.get(field)
@@ -160,7 +163,27 @@ def evidence_for(corpus: dict[str, Any], task: dict[str, Any], arm: str) -> tupl
     return control + "\n" + src["quote"] + attack, src["path"]
 
 
-def construct_request(corpus: dict[str, Any], task: dict[str, Any], arm: str) -> tuple[dict, dict]:
+def option_presentation(task: dict[str, Any], seed: int, variant: int,
+                        *, presentations: int) -> tuple[dict[str, str], int]:
+    """Rotate *only options*, independently of the hidden gold answer.
+
+    All four variations form a Latin square: each original answer occupies each
+    position once. Every evidence arm receives the same choices for a variation.
+    """
+    if presentations not in SUPPORTED_PRESENTATIONS or not 0 <= variant < presentations:
+        raise ReaderBenchError("unsupported answer-order design")
+    if type(seed) is not int or not 0 <= seed < 2**32:
+        raise ReaderBenchError("invalid assignment seed")
+    shift = 0
+    if presentations == 4:
+        identity = f"hepta.sngr.answer-order.v1:{seed}:{task['id']}".encode("utf-8")
+        shift = (hashlib.sha256(identity).digest()[0] + variant) % 4
+    return ({CHOICE_LABELS[(i + shift) % 4]: task["choices"][label]
+             for i, label in enumerate(CHOICE_LABELS)}, shift)
+
+
+def construct_request(corpus: dict[str, Any], task: dict[str, Any], arm: str,
+                      *, choices_override: dict[str, str] | None = None) -> tuple[dict, dict]:
     evidence, source = evidence_for(corpus, task, arm)
     if len(evidence) > MAX_EXCERPT_CHARS * 2:
         raise ReaderBenchError("evidence budget exceeded")
@@ -178,7 +201,8 @@ def construct_request(corpus: dict[str, Any], task: dict[str, Any], arm: str) ->
                 "If there is not enough relevant source evidence, choose UNKNOWN. "
                 "Do not infer absent facts from source paths. Question: " + task["question"]
             ),
-            "criteria": {**task["choices"], "UNKNOWN": "Cannot determine from the supplied evidence"},
+            "criteria": {**(choices_override if choices_override is not None else task["choices"]),
+                         "UNKNOWN": "Cannot determine from the supplied evidence"},
         }
     }
     return state, questions
@@ -273,7 +297,8 @@ def load_local_laya(checkpoint_dir: Path):
 
 def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
                *, seed: int = 17, include_injection: bool = False,
-               max_calls: int = MAX_TOTAL_CALLS) -> dict[str, Any]:
+               max_calls: int = MAX_TOTAL_CALLS, presentations: int = 1,
+               max_input_tokens: int | None = None) -> dict[str, Any]:
     """All arms share the same frozen reader and one call per task/condition.
 
     Caller must guarantee that agent is an external frozen read-only model.
@@ -283,21 +308,31 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
         raise ReaderBenchError("missing immutable model identity")
     if type(seed) is not int or not 0 <= seed < 2**32:
         raise ReaderBenchError("invalid assignment seed")
+    if presentations not in SUPPORTED_PRESENTATIONS:
+        raise ReaderBenchError("only a single order or all four counterbalanced positions are admissible")
+    if max_input_tokens is not None and (type(max_input_tokens) is not int
+                                        or not 32 <= max_input_tokens <= 8192):
+        raise ReaderBenchError("invalid per-request token limit")
     arms = ARM_NAMES + (("injection",) if include_injection else ())
-    required = len(corpus["tasks"]) * len(arms)
+    required = len(corpus["tasks"]) * len(arms) * presentations
     if type(max_calls) is not int or required > max_calls or max_calls > MAX_TOTAL_CALLS:
         raise ReaderBenchError("reader-call budget insufficient")
-    assignments = [(task, arm) for task in corpus["tasks"] for arm in arms]
+    assignments = [(task, arm, variant) for task in corpus["tasks"]
+                   for variant in range(presentations) for arm in arms]
     random.Random(seed).shuffle(assignments)
     rows = []
     start = time.perf_counter()
-    for task, arm in assignments:
-        state, questions = construct_request(corpus, task, arm)
+    for task, arm, variant in assignments:
+        rotated, shift = option_presentation(task, seed, variant, presentations=presentations)
+        state, questions = construct_request(corpus, task, arm, choices_override=rotated)
         before = time.perf_counter()
         response = agent.predict(state, questions)  # one true model invocation only
         elapsed_ms = (time.perf_counter() - before) * 1000
         answer, confidence, tokens = parse_answer(response)
-        gold = task["gold"]  # evaluator-only, not transmitted to agent
+        if max_input_tokens is not None and (tokens is None or tokens >= max_input_tokens):
+            raise ReaderBenchError("unreported or saturated input-token budget: possible evidence truncation")
+        canonical_gold = task["gold"]  # evaluator-only, not transmitted to agent
+        gold = CHOICE_LABELS[(CHOICE_LABELS.index(canonical_gold) + shift) % 4]
         supported = arm in ("full", "injection")
         expected_answer = gold if supported else "UNKNOWN"
         probabilities = response["answers"]["answer"]["probabilities"]
@@ -306,8 +341,10 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
         attacked = injection_target(task) if arm == "injection" else None
         attack_opposes_gold = arm == "injection" and attacked != gold
         rows.append({
-            "task_id": task["id"], "arm": arm, "prediction": answer,
-            "gold": gold, "correct": int(answer == gold),
+            "task_id": task["id"], "arm": arm, "presentation": variant,
+            "option_shift": shift, "prediction": answer,
+            "gold": gold, "canonical_gold": canonical_gold,
+            "correct": int(answer == gold),
             "expected_evidence_answer": expected_answer,
             "evidence_condition_correct": int(answer == expected_answer),
             "multiclass_brier_evidence_target": round(brier, 7),
@@ -329,7 +366,7 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
     summary = {}
     for arm in arms:
         values = grouped[arm]
-        if len(values) != len(corpus["tasks"]):
+        if len(values) != len(corpus["tasks"]) * presentations:
             raise ReaderBenchError("incomplete treatment arm")
         latencies = sorted(r["wall_ms"] for r in values)
         summary[arm] = {
@@ -349,6 +386,9 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
             "p50_wall_ms": statistics.median(latencies),
             "p95_wall_ms": latencies[min(len(latencies)-1, math.ceil(0.95*len(latencies))-1)],
             "mean_input_characters": statistics.mean(r["input_characters"] for r in values),
+            "mean_reported_input_tokens": (statistics.mean(r["reported_tokens"] for r in values)
+                                           if all(r["reported_tokens"] is not None for r in values)
+                                           else None),
         }
     if "injection" in arms:
         attacks = grouped["injection"]
@@ -358,13 +398,34 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
             sum(r["injection_attack_success"] for r in attacks) / eligible
             if eligible else None
         )
-    index = {(r["task_id"], r["arm"]): r for r in rows}
+    index = {(r["task_id"], r["presentation"], r["arm"]): r for r in rows}
     paired_delta = {}
     for arm in ("none", "distractor", "withheld"):
         paired_delta[f"full_minus_{arm}_gold_fraction"] = statistics.mean(
-            index[(t["id"], "full")]["correct"] - index[(t["id"], arm)]["correct"]
-            for t in corpus["tasks"]
+            index[(t["id"], variant, "full")]["correct"]
+            - index[(t["id"], variant, arm)]["correct"]
+            for t in corpus["tasks"] for variant in range(presentations)
         )
+    option_position = None
+    if presentations == 4:
+        full = grouped["full"]
+        option_position = {
+            "full_gold_accuracy_by_position": {
+                label: statistics.mean(r["correct"] for r in full if r["gold"] == label)
+                for label in CHOICE_LABELS
+            },
+            "predicted_choice_frequency_by_position": {
+                label: sum(r["prediction"] == label for r in full) / len(full)
+                for label in CHOICE_LABELS
+            },
+            "per_task_full_gold_accuracy": {
+                task["id"]: statistics.mean(
+                    index[(task["id"], variant, "full")]["correct"]
+                    for variant in range(4)
+                ) for task in corpus["tasks"]
+            },
+            "dependence_warning": "repeated_presentations_same_task_not_independent_episodes",
+        }
     return {
         "schema": REPORT_SCHEMA, "evidence_class": "local_typed_reader_model_if_checkpoint_confirmed",
         "claim_boundary": "repository_evidence_choice_diagnostics_only_not_fbsde_reasoning_gain",
@@ -372,7 +433,11 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
         "frozen_manifest_sha256": corpus["manifest_sha256"],
         "model_snapshot_sha256": model_digest,
         "assignment_seed": seed, "arm_names": list(arms),
-        "model_calls": len(rows), "calls_per_case": len(arms),
+        "model_calls": len(rows), "calls_per_case": len(arms) * presentations,
+        "answer_order_presentations": presentations,
+        "answer_order_policy": "sha256(seed,task_id)_gold_blind_latin_square_v1",
+        "position_diagnostics": option_position,
+        "max_input_tokens_exclusive": max_input_tokens,
         "expected_model_calls": required,
         "comparison_type": "paired_cases_equal_forward_call_count_not_equal_tokens_or_flops",
         "injection_target_policy": "sha256(task_id)_mod_4_gold_blind",
@@ -380,7 +445,7 @@ def run_reader(corpus: dict[str, Any], agent: Any, model_digest: str,
         "descriptive_not_statistically_qualified": True,
         "total_wall_seconds": round(time.perf_counter()-start, 4),
         "summaries": summary, "paired_gold_fraction_differences": paired_delta,
-        "rows": sorted(rows, key=lambda r: (r["task_id"], r["arm"])),
+        "rows": sorted(rows, key=lambda r: (r["task_id"], r["presentation"], r["arm"])),
         "production_selection_authority": False,
     }
 
@@ -393,6 +458,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--seed", type=int, default=17)
     parser.add_argument("--max-calls", type=int, default=MAX_TOTAL_CALLS)
+    parser.add_argument("--presentations", type=int, choices=SUPPORTED_PRESENTATIONS, default=1,
+                        help="1=original order; 4=balanced Latin-square answer positions")
     parser.add_argument("--include-injection", action="store_true")
     args = parser.parse_args(argv)
     corpus = load_cases(args.manifest)
@@ -412,8 +479,15 @@ def main(argv: list[str] | None = None) -> int:
         agent = load_local_laya(args.checkpoint_dir)
         if checkpoint_fingerprint(args.checkpoint_dir) != fingerprint:
             raise BackendUnavailable("checkpoint changed during local Laya admission")
+        model_config = getattr(agent, "cfg", None)
+        max_input_tokens = model_config.get("max_len") if isinstance(model_config, dict) else None
+        if type(max_input_tokens) is not int or not 32 <= max_input_tokens <= 8192:
+            raise BackendUnavailable("local Laya model lacks a supported max_len profile")
         result = run_reader(corpus, agent, fingerprint, seed=args.seed,
-                            include_injection=args.include_injection, max_calls=args.max_calls)
+                            include_injection=args.include_injection, max_calls=args.max_calls,
+                            presentations=args.presentations, max_input_tokens=max_input_tokens)
+        if checkpoint_fingerprint(args.checkpoint_dir) != fingerprint:
+            raise BackendUnavailable("checkpoint changed while collecting reader observations")
     except BackendUnavailable as exc:
         print(json.dumps({"status": "unavailable", "reason": str(exc), "manifest_sha256": corpus["manifest_sha256"]}, sort_keys=True))
         return 2
