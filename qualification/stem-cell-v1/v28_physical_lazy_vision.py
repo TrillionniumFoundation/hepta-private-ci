@@ -214,7 +214,7 @@ def safe_write(path, document):
         f.write(canonical(document)); f.flush();os.fsync(f.fileno())
 
 
-def run(args):
+def run(args, *, route_loader=None):
     # Live withheld labels must be absent in this model-facing process.
     for var in ('HELD_SHA','HEPTA_V24_ORIGINAL_ZIP','HEPTA_V25_ORIGINAL_LABELS'):
         require(var not in os.environ, 'held-label environment entered model process')
@@ -225,9 +225,14 @@ def run(args):
     # The sealed historical ZIP and its withheld label digest are NOT present
     # in this model-facing process; only the exact prelabel route SHA enters.
     plan_bytes=protected_read(args.plan)
-    require(sha(plan_bytes)==PLAN_SHA, 'frozen prelabel route bytes changed')
-    plan=strict_json(plan_bytes)
-    route=validate_plan(plan)
+    if route_loader is None:
+        require(sha(plan_bytes)==PLAN_SHA, 'frozen prelabel route bytes changed')
+        plan=strict_json(plan_bytes)
+        route=validate_plan(plan)
+    else:
+        # V29 model-facing route loader must independently authenticate its
+        # own exact immutable smaller representation; never fall back to V27.
+        route=route_loader(plan_bytes)
     srcbytes=protected_read(args.source_dir/'inputs'/'sources.jsonl')
     require(sha(srcbytes)==STEM_SOURCE, 'original publisher source byte SHA mismatch')
     sources=[strict_json(line) for line in srcbytes.splitlines()]
@@ -268,7 +273,8 @@ def run(args):
          'original_E3_commit':ORIGINAL_E3_HEAD,'source_revision':STEM_SOURCE,
          'historical_archive_sha256':ARCHIVE_SHA,
          'route_policy':'original_label_blind_text_margin_lt_0.005',
-         'frozen_route_plan_sha256':PLAN_SHA,
+         'frozen_route_plan_sha256':sha(plan_bytes),
+         'route_model_inputs_restricted_to_source_and_trigger':route_loader is not None,
          'model_repository':DINO_REPO,'model_revision':DINO_REVISION,
          'model_identity':model_identity_safe(manifest,observed_model_identity),
          'actual_model_material_sha256':dict(sorted(manifest['files'].items())),
