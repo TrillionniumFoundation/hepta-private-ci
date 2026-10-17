@@ -17,6 +17,7 @@ from neuron_shared_encoder.ope_receipts import (  # noqa: E402
     REAL_SHADOW,
     SYNTHETIC_SMOKE,
     XYZEpisodeV1,
+    canonical_candidate_set_digest,
     estimate_ope,
     validate_xyz_episode,
 )
@@ -61,7 +62,7 @@ def episode(
     )
     decision = PolicyDecisionReceiptV1(
         episode_id=episode_id,
-        candidate_set_digest=digest("candidate-set"),
+        candidate_set_digest=canonical_candidate_set_digest(("target_policy", "baseline")),
         candidate_ids=("target_policy", "baseline"),
         selected_candidate_id="target_policy",
         target_policy_id="target_policy",
@@ -186,9 +187,22 @@ class OPEReceiptTests(unittest.TestCase):
             )
         with self.assertRaises(OPEReceiptError):
             PolicyDecisionReceiptV1(
-                "episode-1", digest("set"), ("target_policy",), "target_policy",
+                "episode-1", canonical_candidate_set_digest(("target_policy",)), ("target_policy",), "target_policy",
                 "target_policy", 0.0, 1.0, SUPPORT, BUDGET, POLICY,
                 "policy-principal",
+            )
+
+    def test_candidate_set_and_incomplete_resource_are_rejected(self):
+        with self.assertRaises(OPEReceiptError):
+            PolicyDecisionReceiptV1(
+                "episode-1", digest("not-the-support"), ("target_policy",), "target_policy",
+                "target_policy", 1.0, 1.0, SUPPORT, BUDGET, POLICY,
+                "policy-principal",
+            )
+        with self.assertRaises(OPEReceiptError):
+            OPEResourceReceiptV1(
+                "episode-1", BUDGET, "INCOMPLETE", 1, 1, 1.0, 1.0, 1.0, 1.0,
+                10, 1,
             )
 
 
