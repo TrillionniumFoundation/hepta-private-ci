@@ -38,11 +38,12 @@ class FakeStem:
 
 
 def tower(modality: str, width: int, *, temporal: bool = False, regions: bool = False) -> ModalityTowerSpecV1:
+    tower_digests = {"audio": "c", "image": "d", "text": "e", "video": "f"}
     return ModalityTowerSpecV1(
         modality=modality,
         tower_id=f"{modality}-tower",
-        tower_digest=digest(modality[0]),
-        preprocessor_digest=digest("p"),
+        tower_digest=digest(tower_digests[modality]),
+        preprocessor_digest=digest("b"),
         output_width=width,
         max_input_tokens=4096,
         supports_streaming=modality in {"audio", "video"},
@@ -52,10 +53,11 @@ def tower(modality: str, width: int, *, temporal: bool = False, regions: bool = 
 
 
 def projector(modality: str, input_width: int, *, kind: str = "mlp") -> ProjectorSpecV1:
+    projector_digests = {"audio": "c", "image": "d", "text": "e", "video": "f"}
     return ProjectorSpecV1(
         modality=modality,
         projector_id=f"{modality}-projector",
-        projector_digest=digest(modality[0]),
+        projector_digest=digest(projector_digests[modality]),
         input_width=input_width,
         output_width=384,
         slots=32,
