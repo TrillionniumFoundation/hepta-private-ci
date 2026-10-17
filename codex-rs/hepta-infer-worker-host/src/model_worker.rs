@@ -535,6 +535,52 @@ fn neuron_feature_memory_within_grant(
         .is_some_and(|total| total <= maximum_memory_bytes)
 }
 
+/// Conservative reported *cohort* envelope, not actual peak RSS.
+///
+/// The admission floor already counts every physical input allocation (one
+/// shared Arc for V2) and all simultaneously retained output vectors. Each
+/// row's transient report may include those same logical input/output bytes,
+/// so subtract the row's input+output floor before charging its additional
+/// scratch to the cohort. This avoids multiplying a shared Arc by Cell count.
+/// Charge a higher reported selected-model resident peak above the loaded
+/// model's baseline; keep other loaded models in the pre-dispatch floor.
+/// Backend telemetry is not independently attested production metering.
+fn neuron_batch_reported_memory_within_grant<'a>(
+    observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
+    pre_dispatch_floor_bytes: u64,
+    selected_loaded_memory_bytes: u64,
+    input_width: usize,
+    output_width: usize,
+    maximum_memory_bytes: u64,
+) -> bool {
+    let Some(row_floor_bytes) = output_width
+        .checked_mul(2)
+        .and_then(|outputs| input_width.checked_add(outputs))
+        .and_then(|elements| elements.checked_mul(std::mem::size_of::<i64>()))
+        .and_then(|bytes| u64::try_from(bytes).ok())
+    else {
+        return false;
+    };
+    let mut peak_reported_resident_bytes = selected_loaded_memory_bytes;
+    let mut additional_transient_bytes = 0_u64;
+    let mut observed_any = false;
+    for item in observations {
+        observed_any = true;
+        peak_reported_resident_bytes =
+            peak_reported_resident_bytes.max(item.observed_memory_bytes);
+        let extra = item.transient_allocation_bytes.saturating_sub(row_floor_bytes);
+        let Some(total) = additional_transient_bytes.checked_add(extra) else {
+            return false;
+        };
+        additional_transient_bytes = total;
+    }
+    observed_any
+        && pre_dispatch_floor_bytes
+            .checked_add(peak_reported_resident_bytes - selected_loaded_memory_bytes)
+            .and_then(|bytes| bytes.checked_add(additional_transient_bytes))
+            .is_some_and(|bytes| bytes <= maximum_memory_bytes)
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,

@@ -96,6 +96,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             return Err(Error::RequestCapacity);
         }
         let selected = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let selected_loaded_memory_bytes = selected.handle.observed_memory_bytes;
         let batch_encoder = &requests[0].encoder_digest;
         let input_width = requests[0].feature_vector_q24.len();
         let output_width = requests[0].expected_output_width;
@@ -198,6 +199,20 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         if observations.len() != requests.len() {
             self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
+        }
+        // Every row can be individually within grant while the retained
+        // cohort exceeds it. Validate before publishing *any* row; a
+        // post-dispatch overgrant poisons the worker for owner reconciliation.
+        if !super::neuron_batch_reported_memory_within_grant(
+            observations.iter().map(|item| &item.feature),
+            minimum_bytes,
+            selected_loaded_memory_bytes,
+            input_width,
+            output_width,
+            self.grant.maximum_memory_bytes,
+        ) {
+            self.poisoned = true;
+            return Err(Error::ModelCapacity);
         }
         let mut result = Vec::with_capacity(requests.len());
         for (request, batch_item) in requests.iter().zip(observations) {
@@ -666,6 +681,43 @@ mod tests {
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
+    }
+
+    #[test]
+    fn reported_multi_cell_cohort_memory_fences_before_publishing_any_row() {
+        // Each reported 2048 resident + 1025 transient row fits in 4096,
+        // but two disjoint Q24 input/output floors and the two additional
+        // scratch charges together exceed the physical cohort grant.
+        for (transient, permitted) in [(1024_u64, true), (1025_u64, false)] {
+            let mut worker = worker(BatchMock {
+                reported_transient_bytes: Some(transient),
+                ..BatchMock::default()
+            });
+            let result = worker.run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.cohort.a", 'b'), feature("request.cohort.b", 'c')],
+            );
+            assert_eq!(worker.driver.batches, 1);
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.v2"].active_requests, 0);
+            if permitted {
+                assert_eq!(result.expect("exact full-cohort budget").len(), 2);
+                assert!(!worker.poisoned);
+            } else {
+                assert_eq!(result, Err(Error::ModelCapacity));
+                assert!(worker.poisoned);
+                assert_eq!(
+                    worker.run_neuron_features_batch(
+                        100,
+                        "model.v2",
+                        vec![feature("request.after-fence", 'b')],
+                    ),
+                    Err(Error::IndeterminateLifecycle)
+                );
+                assert_eq!(worker.driver.batches, 1);
+            }
+        }
     }
 
     #[test]
