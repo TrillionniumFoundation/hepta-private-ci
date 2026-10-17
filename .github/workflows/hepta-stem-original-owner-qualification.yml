@@ -66,8 +66,8 @@ jobs:
           # Exact original #2145 source blobs, not newly substituted owners.
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/batched_neuron.rs)" = "0b98be50294d12418b7b6e3228f3a6d650aaebda"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs)" = "b5e28a719038c1a158ce31c347d0ab8dd3ae2844"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "247c104edbda5a5c674f3f0c8bc4900e46d9b735"
-          test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "5d72e5dd1af861a661631b35c394d99604a0bdeb"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-worker-host/src/model_worker.rs)" = "cc2f1b8629c51aaf08c450d63ac40a78c72f3deb"
+          test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/src/neuron_feature.rs)" = "6a36c2245e47f86a1e60107bd61868a5785d966e"
           test "$(git rev-parse HEAD:codex-rs/hepta-infer-core/Cargo.toml)" = "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
           # Original Control/CNS denial remains an explicit required gate.
           grep -Fq 'pub fn require_original_control_v1()' codex-rs/hepta-infer-worker-host/src/original_evidence_neuron.rs
