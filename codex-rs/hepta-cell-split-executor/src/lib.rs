@@ -58,7 +58,11 @@ impl ProductSplitBindingV1 {
             && plan.validate().is_ok()
     }
 
-    fn validate_cutover(&self, plan: &WriterHandoffPlanV1, native: &RuntimeTopologyApplyReceiptV1) -> bool {
+    fn validate_cutover(
+        &self,
+        plan: &WriterHandoffPlanV1,
+        native: &RuntimeTopologyApplyReceiptV1,
+    ) -> bool {
         self.validate(plan)
             && native.proposal_id == self.cns_proposal_id
             && native.candidate_id == self.cns_candidate_id
@@ -252,7 +256,9 @@ impl<'a, O: ExternalCellSplitNativeOwnerV1> ProductSplitNativeReadbackV1<'a, O> 
     }
 }
 
-impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1 for ProductSplitNativeReadbackV1<'_, O> {
+impl<O: ExternalCellSplitNativeOwnerV1> CellSplitNativeOwnerV1
+    for ProductSplitNativeReadbackV1<'_, O>
+{
     type Error = ProductSplitNativeErrorV1<O::Error>;
 
     fn lookup(
@@ -322,8 +328,10 @@ mod tests {
             domain_id: id("scope:1"),
             source_writer: id("cell:parent"),
             target_writer: id("cell:child"),
-            old_generation: Generation::new(1).unwrap_or_else(|_| unreachable!("constant")),
-            new_generation: Generation::new(2).unwrap_or_else(|_| unreachable!("constant")),
+            old_generation: Generation::new(1)
+                .unwrap_or_else(|_| unreachable!("constant")),
+            new_generation: Generation::new(2)
+                .unwrap_or_else(|_| unreachable!("constant")),
             authority_epoch: 1,
             migration_plan_digest: d(b"migration"),
             schema_digest: d(b"schema"),
