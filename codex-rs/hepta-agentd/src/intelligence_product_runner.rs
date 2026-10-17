@@ -197,7 +197,9 @@ impl AgentdIntelligenceProductRunnerV1 {
                     run_snapshot,
                     context_attachment,
                 };
-                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(prepared)))
+                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(
+                    prepared,
+                )))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
@@ -355,15 +357,15 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
-            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(Box::new(
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => {
+                Err(AgentdIntelligenceLedgerError::Indeterminate(Box::new(
                     PendingIntelligenceLedgerAppendV1 {
                         expected_predecessor,
                         snapshot,
                         event,
                     },
-                )),
-            ),
+                )))
+            }
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
     }
