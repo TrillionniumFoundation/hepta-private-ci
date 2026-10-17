@@ -49,5 +49,7 @@ jobs:
           import matched_head as m
           assert m.PARAMS == 4161 and m.STEPS == 40
           assert m.FIT_SCHEMA.endswith('.v1') and m.SCHEMA.endswith('.v1')
+          assert m.INITIALIZATION == 'hepta.stem.head-init.pcg64-f32.v2'
+          assert m.tensor_digest(m.initial_head_arrays(41)) == '72236efb02d5da0b23ded8442bb2f68a7d2768ee53b1bb1ba089a0c8dc97f16f'
           print('synthetic_matched_head=true pretrained_encoder=false scored_original_human_labels=false production_authorized=false')
           PY
