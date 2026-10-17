@@ -84,6 +84,8 @@ jobs:
           # workflow. Keep this broad PR regression source-only when that
           # private stage/report bundle is not present; never turn the
           # dedicated original replay into a synthetic pass.
+          # Keep the canonical discover command in this contract comment:
+          # python -m unittest discover -s qualification/stem-cell-v1
           python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
           import pathlib
           import sys
