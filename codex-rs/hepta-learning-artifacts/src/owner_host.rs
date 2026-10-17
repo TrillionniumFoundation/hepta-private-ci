@@ -904,6 +904,23 @@ impl LearningArtifactOwnerHost {
         Ok(registry)
     }
 
+    /// Product Cell Split requires a current-head floor authenticated and
+    /// stored outside this artifact owner's rollback domain. A locally valid
+    /// signed head alone cannot prove that older, valid backups were not
+    /// restored. Source callers may still inspect local history without a
+    /// floor, but may not use it for native physical-split admission.
+    pub fn require_cell_split_anti_rollback_floor_v1(
+        &self,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        if self.required_current_head.is_none() {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        self.discover_current_head(now)?
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
+        Ok(())
+    }
+
     /// Reconcile one exact acknowledged native CAS publication for a future
     /// Cell Split. This reads the persisted publication chain, verifies the
     /// current *signed* registry frontier, and reopens real payload bytes.
