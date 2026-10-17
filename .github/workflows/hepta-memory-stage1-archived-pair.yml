@@ -5,6 +5,8 @@ on:
       - ".github/workflows/hepta-memory-stage1-archived-pair.yml"
       - "scripts/memory_cell/stage1_reader_pair.py"
       - "scripts/memory_cell/test_stage1_reader_pair.py"
+      - "scripts/memory_cell/stage1_partial_reader_audit.py"
+      - "scripts/memory_cell/test_stage1_partial_reader_audit.py"
 permissions:
   contents: read
   actions: read
@@ -37,25 +39,35 @@ jobs:
           printf '%s\n' "$REVIEWER_HEAD" > /tmp/paired-evidence/reviewer-head.txt
           printf '%s\n' "$GENERATOR_COMMIT" > /tmp/paired-evidence/original-generating-head.txt
           python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_reader_pair.py' -v 2>&1 | tee /tmp/paired-evidence/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stage1_partial_reader_audit.py' -v 2>&1 | tee -a /tmp/paired-evidence/tests.log
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: memory-stage1-real-smol-*
           run-id: 39007522955
           github-token: ${{ github.token }}
           path: /tmp/original-stage1-artifacts
-      - name: Recheck all raw answers, models, source bytes and missing calls
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/original-stage1-labels
+      - name: Audit cancelled 1.7B real prefix with complete planned denominator
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/paired-evidence/auditor-resources.txt python3 scripts/memory_cell/stage1_reader_pair.py \
+          /usr/bin/time -v -o /tmp/paired-evidence/auditor-resources.txt python3 scripts/memory_cell/stage1_partial_reader_audit.py \
             --root /tmp/original-stage1-artifacts \
+            --labels /tmp/original-stage1-labels/labels.json \
             --source "$GENERATOR_COMMIT" \
-            --output /tmp/paired-evidence/paired-original-report.json
+            --output /tmp/paired-evidence/partial-original-report.json
           python3 - <<'PY'
           import json
           from pathlib import Path
-          report = json.loads(Path('/tmp/paired-evidence/paired-original-report.json').read_text())
-          if report["production_accepted"] or report["reader_capacity_is_memory_gain"]:
-              raise ValueError("unauthorized promotion claim")
+          report = json.loads(Path('/tmp/paired-evidence/partial-original-report.json').read_text())
+          if (report["production_accepted"] or report["capacity_superiority_established"]
+              or report["complete_original_reader_execution"]
+              or report["durable_prefix"] >= report["planned"]):
+              raise ValueError("partial model run was misclassified as complete or qualified")
           print(json.dumps({k: v for k, v in report.items() if k != "rows"}, indent=2))
           PY
       - name: Retain exact review receipt even when original model data are incomplete
