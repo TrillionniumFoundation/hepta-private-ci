@@ -1,0 +1,290 @@
+"""Source-only mechanics tests using a fake Reader. NEVER physical model evidence."""
+import copy
+import os
+import stat
+from unittest import mock
+from collections import Counter
+from fractions import Fraction
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from portfolio import Invalid, POLICIES
+from public_source import SCHEMA as SRC, split_original, encoded, sha, new_json
+from physical_online import (ACTION_MAX, MODEL_REPO, MODEL_REV, MODEL_WEIGHTS_SHA256,
+    MODEL_TOKENIZER_SHA256, assert_original_checkpoint_hashes, run_online,
+    validate_source, parse_answer, make_prompt)
+from physical_review import review
+
+
+class MockReader:
+    # Deliberately imitates original physical response schema to test verifier's
+    # inability to independently attest hardware. This MUST NOT be published as a run.
+    physical=True
+    identity={'repo':MODEL_REPO,'revision':MODEL_REV,
+       'weights_sha256':MODEL_WEIGHTS_SHA256,'tokenizer_sha256':MODEL_TOKENIZER_SHA256,
+       'actual_pretrained_model_loaded':True,'runtime':'FAKE CONTRACT TEST NOT PHYSICAL'}
+    load_cpu=0.01;load_wall=0.01
+    def __init__(self):
+        self.identity=copy.deepcopy(type(self).identity)
+        self.calls=[]
+    def infer(self,article,action):
+        self.calls.append((sha(article.encode()),action))
+        prompt=make_prompt(article,action)
+        result='FINAL=0' if action=='direct' else 'FINAL=1' if action=='reason' else 'FINAL=2'
+        return {'prompt_sha256':sha(encoded(prompt)),
+          'input_token_ids_sha256':sha(encoded([4,5])),
+          'output_token_ids_sha256':sha(encoded([6,7])),
+          'input_tokens':40,'output_tokens':3,'answer':result,
+          'answer_sha256':sha(result.encode()),'predicted_class':parse_answer(result)}
+
+
+def fake_data():
+    train=[];held=[]
+    for split_name,target in (("train",train),("held",held)):
+        for i in range(48):
+            islong=i%4 in (2,3)
+            text=('International business and sports headline '+split_name+' '+str(i)+' ' + 'X'*20 +
+                  (' reports further factual news details '*10 if islong else ' reports news.'))
+            target.append({'text':text,'label':i%4})
+    return split_original(train,held)
+
+
+def manifest():
+    return {'schema':'hepta.ndu-merton.token-portfolio-p1.v1',
+      'actions':[{'name':'direct','token_ceiling':0,'latency_ceiling_ms':0},
+                 {'name':'reason','token_ceiling':96,'latency_ceiling_ms':4096},
+                 {'name':'verify','token_ceiling':128,'latency_ceiling_ms':4096}],
+      'token_budget':256,'latency_budget_ms':8192,'token_tariff':'1/2048'}
+
+
+class PhysicalContractTests(unittest.TestCase):
+    def setUp(self):
+        self.train,self.held,self.gold=fake_data()
+        self.manifest=manifest()
+        self.reader=MockReader()
+
+    def run_complete(self):
+        self.tmp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        out=Path(self.tmp.name)/'output'
+        completed=run_online(self.manifest,self.train,self.held,self.reader,out)
+        plan=json.loads((out/'frozen-plan.json').read_text())
+        summary=review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+        return out,plan,completed,summary
+
+    def test_original_checkpoint_sha256_pins(self):
+        assert_original_checkpoint_hashes(MODEL_WEIGHTS_SHA256,MODEL_TOKENIZER_SHA256)
+        with self.assertRaises(Invalid):
+            assert_original_checkpoint_hashes('f'*64,MODEL_TOKENIZER_SHA256)
+        with self.assertRaises(Invalid):
+            assert_original_checkpoint_hashes(MODEL_WEIGHTS_SHA256,'0'*64)
+
+    def test_held_source_group_alias_rejected(self):
+        self.held['rows'][0]['group']='held-row-parity-0' if self.held['rows'][0]['group'] != 'held-row-parity-0' else 'held-row-parity-1'
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_held_source_bucket_alias_rejected(self):
+        self.held['rows'][0]['bucket']='long' if self.held['rows'][0]['bucket']=='short' else 'short'
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_forged_checkpoint_identity_rejected_postseal(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['reader']['weights_sha256']='0'*64
+        completed['physical_model_identity']['weights_sha256']='0'*64
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_boolean_prediction_is_not_original_class(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['actual_policy_trace'][0]['predicted_class']=True
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_total_model_latency_must_be_finite(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['execution_wall_seconds']=float('nan')
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_total_model_cpu_cannot_be_boolean(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['model_load_cpu_seconds']=False
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_original_source_partition(self):
+        self.assertEqual(len(self.train['rows']),16)
+        self.assertEqual(len(self.held['rows']),8)
+        self.assertEqual(len(self.gold['rows']),8)
+        self.assertTrue(all('label' not in r for r in self.held['rows']))
+        self.assertTrue(all('text' not in r for r in self.gold['rows']))
+        self.assertEqual(len({r['task_id'] for r in self.train['rows']+self.held['rows']}),24)
+
+    def test_all_real_action_slots_are_physically_called_after_freeze_in_contract(self):
+        out,plan,completed,summary=self.run_complete()
+        self.assertEqual(completed['actual_training_requests'],48)
+        self.assertEqual(completed['actual_online_policy_requests'],56)
+        self.assertEqual(len(self.reader.calls),104)
+        self.assertEqual(summary['physical_on_policy_generation_invocations_self_reported'],104)
+        self.assertEqual(len(summary['seven_policy_results']),7)
+        self.assertEqual([r['policy'] for r in summary['seven_policy_results']],list(POLICIES))
+        self.assertFalse(summary['actual_model_savings_proven'])
+        self.assertGreater(summary['actual_training_input_output_tokens'],0)
+        for row in summary['seven_policy_results']:
+            self.assertTrue(row['cold_start_calibration_fee_shared_not_summable'])
+            self.assertLessEqual(Fraction(row['illustrative_single_arm_cold_start_net_tokens_only']),
+                                 Fraction(row['external_correct_minus_FULL_serving_token_tariff']))
+        self.assertIn('FAKE CONTRACT',str(summary['model_identity']))
+        self.assertTrue(out.joinpath('frozen-plan.json').exists())
+
+    def test_no_reader_output_shortcut_or_policy_cache(self):
+        out,plan,completed,summary=self.run_complete()
+        traces=completed['actual_policy_trace']
+        self.assertEqual(len(traces),len(POLICIES)*8)
+        self.assertEqual(len({(x['policy'],x['task_id']) for x in traces}),len(traces))
+        self.assertEqual([x['policy'] for x in traces].count('direct'),8)
+        self.assertEqual([x['policy'] for x in traces].count('ndu_discrete'),8)
+        self.assertEqual([x['policy'] for x in traces].count('ordinary_same_profile'),8)
+
+    def test_held_label_in_worker_packet_refused(self):
+        self.held['rows'][0]['label']=0
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_future_label_in_source_metadata_refused(self):
+        self.held['rows'][0]['outcome']=1
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_train_and_held_group_collision(self):
+        self.held['rows'][0]['group']=self.train['rows'][0]['group']
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_text_sha_substitution_refused(self):
+        self.held['rows'][0]['text']='forged altered newspaper paragraph 123'
+        with self.assertRaises(Invalid):validate_source(self.train,self.held)
+
+    def test_publisher_truth_changed_after_seal_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        self.gold['rows'][0]['text_sha256']='0'*64
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_sealed_plan_changed_after_original_call_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['reader']['revision']='forged'
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_train_prompt_substitution_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['original_train_trace'][0]['prompt_sha256']='f'*64
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_frozen_schedule_balances_policy_position_across_tasks(self):
+        out,plan,completed,summary=self.run_complete()
+        schedule=plan['selected_request_schedule']
+        self.assertEqual(len(schedule),56)
+        by_task={tid:[] for tid in sorted(r['task_id'] for r in self.held['rows'])}
+        for item in schedule:
+            by_task[item['task_id']].append(item['policy'])
+        self.assertTrue(all(set(x)==set(POLICIES) for x in by_task.values()))
+        counts=Counter((i,policy) for x in by_task.values() for i,policy in enumerate(x))
+        self.assertTrue(all(1<=counts[i,p]<=2 for i in range(7) for p in POLICIES))
+        self.assertEqual([(r['policy'],r['task_id'],r['action']) for r in completed['actual_policy_trace']],
+            [(r['policy'],r['task_id'],r['action']) for r in schedule])
+
+    def test_substituted_prelabel_schedule_denied_even_if_resealed(self):
+        out,plan,completed,summary=self.run_complete()
+        plan['selected_request_schedule'][0],plan['selected_request_schedule'][1] = (
+            plan['selected_request_schedule'][1],plan['selected_request_schedule'][0])
+        from public_source import encoded, sha
+        completed['frozen_plan_sha256']=sha(encoded(plan))
+        with self.assertRaises(Invalid):
+            review(self.manifest,self.train,self.held,self.gold,plan,completed,
+                   out/'original-starts-and-dones.jsonl')
+
+    def test_unplanned_held_call_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['actual_policy_trace'][0]['action']='verify'
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_missing_original_inference_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['actual_policy_trace'].pop()
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_disguised_synthetic_output_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['actual_policy_trace'][0]['source_kind']='synthetic_fixture'
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_journal_missing_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        with (out/'original-starts-and-dones.jsonl').open('a') as f:
+            f.write('{"event":"false_success"}\n')
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_held_labels_must_be_opened_only_by_review(self):
+        out,plan,completed,summary=self.run_complete()
+        self.assertNotIn('held-private-labels',json.dumps(completed))
+        self.assertNotIn('held-private-labels',json.dumps(plan))
+        self.assertNotIn('label',json.dumps(plan['public_record']))
+
+    def test_budget_manifest_changed_after_plan_rejected(self):
+        out,plan,completed,summary=self.run_complete()
+        self.manifest['token_budget']=100
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_physical_flag_false_refused(self):
+        out,plan,completed,summary=self.run_complete()
+        completed['original_pretrained_reader_execution']=False
+        with self.assertRaises(Invalid):review(self.manifest,self.train,self.held,self.gold,plan,completed,out/'original-starts-and-dones.jsonl')
+
+    def test_no_preplanted_result_directory(self):
+        with tempfile.TemporaryDirectory() as d:
+            Path(d,'old').mkdir()
+            with self.assertRaises(FileExistsError):run_online(self.manifest,self.train,self.held,self.reader,Path(d,'old'))
+
+    def test_wrong_original_publisher_data_split(self):
+        copytrain=copy.deepcopy(self.train)
+        copytrain['rows'][0]['label']=True
+        with self.assertRaises(Invalid):validate_source(copytrain,self.held)
+
+    def test_strict_answer_parser(self):
+        self.assertEqual(parse_answer('FINAL=3'),3)
+        self.assertEqual(parse_answer('2'),2)
+        self.assertIsNone(parse_answer('I think FINAL=1'))
+        self.assertIsNone(parse_answer('FINAL=4'))
+        self.assertIsNone(parse_answer('FINAL=1; FINAL=2'))
+
+    def test_source_owner_requires_parent_directory_fsync(self):
+        with tempfile.TemporaryDirectory() as d:
+            seen=[]
+            fsync_original=os.fsync
+            def audited_fsync(fd):
+                seen.append(stat.S_ISDIR(os.fstat(fd).st_mode))
+                return fsync_original(fd)
+            with mock.patch('public_source.os.fsync', side_effect=audited_fsync):
+                new_json(Path(d)/'source.json',{'x':'y'})
+            self.assertIn(True,seen)
+            self.assertIn(False,seen)
+
+    def test_directory_sync_failure_stops_before_original_forward(self):
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch('physical_online.sync_dir', side_effect=OSError('lost directory fsync')):
+                with self.assertRaises(OSError):
+                    run_online(self.manifest,self.train,self.held,self.reader,Path(d)/'new')
+            self.assertEqual(self.reader.calls,[])
+
+    def test_create_only_source_packets(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'data.json'
+            new_json(p,{'x':'y'})
+            with self.assertRaises(FileExistsError):new_json(p,{'x':'z'})
+
+if __name__=='__main__':unittest.main()
