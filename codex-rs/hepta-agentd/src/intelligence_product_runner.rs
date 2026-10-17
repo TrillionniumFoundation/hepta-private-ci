@@ -189,15 +189,16 @@ impl AgentdIntelligenceProductRunnerV1 {
                     context_digest: envelope.context_receipt_digest.to_string(),
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
+                let prepared = PreparedAgentdIntelligenceRunV1 {
+                    envelope: *envelope,
+                    dispatch_proposal_digest,
+                    snapshot,
+                    candidate_ids,
+                    run_snapshot,
+                    context_attachment,
+                };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(
-                    PreparedAgentdIntelligenceRunV1 {
-                        envelope: *envelope,
-                        dispatch_proposal_digest,
-                        snapshot,
-                        candidate_ids,
-                        run_snapshot,
-                        context_attachment,
-                    },
+                    prepared,
                 )))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
