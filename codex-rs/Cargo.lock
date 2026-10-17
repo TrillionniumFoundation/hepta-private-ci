@@ -3601,6 +3601,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-cell-split-executor"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-learning-artifacts",
+ "codex-hepta-runtime",
+ "codex-hepta-supervisor",
+ "codex-hepta-types",
+]
+
+[[package]]
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
@@ -3611,16 +3621,6 @@ dependencies = [
  "codex-hepta-wire",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "codex-hepta-cell-split-executor"
-version = "0.0.0"
-dependencies = [
- "codex-hepta-learning-artifacts",
- "codex-hepta-runtime",
- "codex-hepta-supervisor",
- "codex-hepta-types",
 ]
 
 [[package]]
