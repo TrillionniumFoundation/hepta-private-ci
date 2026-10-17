@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from stage1_reader_pair import pair, read_json, verify_inventory
+from stage1_reader_pair import pair, read_json, strict_json, verify_inventory
 
 SOURCE = "a" * 40
 
@@ -121,6 +121,11 @@ class PairedReaderTests(unittest.TestCase):
             (root / "extra.txt").write_text("unlisted")
             with self.assertRaisesRegex(ValueError, "missing/extra"):
                 verify_inventory(root)
+
+    def test_raw_jsonl_line_must_reject_ambiguous_fields(self):
+        for payload in (b'{"answer":"yes","answer":"no"}', b'{"f1":NaN}'):
+            with self.assertRaises(ValueError):
+                strict_json(payload)
 
     def test_duplicate_and_nonfinite_original_json_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
