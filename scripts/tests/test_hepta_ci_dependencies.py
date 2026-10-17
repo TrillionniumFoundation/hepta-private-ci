@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import errno
 import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -16,6 +18,55 @@ spec = importlib.util.spec_from_file_location("hepta_ci_dependencies", SCRIPT)
 ci = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
+
+
+def cleanup_temp_git_fixture(temp, *, attempts=3):
+    """Retry only a verified transient fixture-directory race; never waive errors."""
+    for attempt in range(attempts):
+        try:
+            temp.cleanup()
+            return
+        except OSError as exc:
+            if exc.errno != errno.ENOTEMPTY or attempt + 1 == attempts:
+                raise
+            # Git filesystem housekeeping can complete just after its child
+            # command has exited on heavily shared Linux runners.
+            time.sleep(0.05 * (attempt + 1))
+
+
+class GitFixtureCleanupTests(unittest.TestCase):
+    def test_transient_directory_not_empty_retry_is_bounded(self):
+        class TemporaryFixture:
+            calls = 0
+            def cleanup(self):
+                self.calls += 1
+                if self.calls < 3:
+                    raise OSError(errno.ENOTEMPTY, "transient fixture directory")
+        fixture = TemporaryFixture()
+        cleanup_temp_git_fixture(fixture)
+        self.assertEqual(fixture.calls, 3)
+
+    def test_permanent_cleanup_failure_stays_failing(self):
+        class TemporaryFixture:
+            calls = 0
+            def cleanup(self):
+                self.calls += 1
+                raise OSError(errno.ENOTEMPTY, "persistent failure")
+        fixture = TemporaryFixture()
+        with self.assertRaises(OSError):
+            cleanup_temp_git_fixture(fixture)
+        self.assertEqual(fixture.calls, 3)
+
+    def test_unrelated_cleanup_error_never_retried(self):
+        class TemporaryFixture:
+            calls = 0
+            def cleanup(self):
+                self.calls += 1
+                raise PermissionError(errno.EACCES, "unauthorized cleanup")
+        fixture = TemporaryFixture()
+        with self.assertRaises(PermissionError):
+            cleanup_temp_git_fixture(fixture)
+        self.assertEqual(fixture.calls, 1)
 
 
 class SelectionTests(unittest.TestCase):
@@ -118,11 +169,13 @@ class SelectionTests(unittest.TestCase):
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(cleanup_temp_git_fixture, self.temp)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.write(
             "codex-rs/Cargo.toml",
             """[workspace]
