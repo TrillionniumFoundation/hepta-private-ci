@@ -146,6 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           test -s "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256"
+          sha256sum --check "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256"
           python qualification/stem-cell-v1/scienceqa_image_intervention_v7_review.py \
             --sources "$RUNNER_TEMP/stem-v7/publisher-staging/inputs/sources.jsonl" \
             --source-sha256 a561916c7d56b6677c5511c329a49bbeec94879f019d29f159ff59be83359202 \
@@ -153,6 +154,7 @@ jobs:
             --heldout-labels-sha256 b15cb81cbce3ff500ec58bb7da59c92801170bbce3b7995d689342505161f6d3 \
             --original-archive "$RUNNER_TEMP/stem-v7/original-e3.zip" \
             --producer "$RUNNER_TEMP/stem-v7/sealed-interventions.json" \
+            --producer-seal "$RUNNER_TEMP/stem-v7/original-interventions-before-labels.sha256" \
             --output "$RUNNER_TEMP/stem-v7/independent-late-label-review.json"
           python - <<'PY'
           import os,json
