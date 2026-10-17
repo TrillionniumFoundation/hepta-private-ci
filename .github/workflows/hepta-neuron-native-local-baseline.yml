@@ -1,0 +1,51 @@
+name: Hepta Neuron native local baseline (diagnostic)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/src/local_checkpoint_binding.rs"
+      - "codex-rs/hepta-neuron/src/runtime.rs"
+      - "codex-rs/hepta-neuron/src/runtime_tests.rs"
+      - "codex-rs/hepta-neuron/src/journal.rs"
+      - "codex-rs/hepta-neuron/src/lib.rs"
+      - "qualification/neuron-model-trials/NATIVE_LOCAL_BASELINE.md"
+      - ".github/workflows/hepta-neuron-native-local-baseline.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: hepta-neuron-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  native-local-checkpoint-read:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact experimental SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Native Rustfmt
+        run: cargo fmt --package codex-hepta-neuron -- --check
+      - name: Native all-target compilation
+        run: cargo check --locked -p codex-hepta-neuron --all-targets
+      - name: Native witness and checkpoint tests
+        run: cargo test --locked -p codex-hepta-neuron --lib
+      - name: Strict correctness Clippy
+        run: cargo clippy --locked -p codex-hepta-neuron --lib -- -D clippy::correctness
+      - name: Clean tree
+        working-directory: ${{ github.workspace }}
+        run: |
+          git diff --check
+          git diff --exit-code

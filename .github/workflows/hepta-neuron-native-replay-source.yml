@@ -1,0 +1,65 @@
+name: Hepta Neuron native Replay source bridge (diagnostic)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
+      - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
+      - "codex-rs/hepta-agentd/src/neuron_final_use.rs"
+      - "qualification/neuron-model-trials/NATIVE_SIGNED_TICK_FINAL_USE.md"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_observed_tick.rs"
+      - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
+      - "codex-rs/hepta-agentd/src/neuron_selected_artifact.rs"
+      - "qualification/neuron-model-trials/NATIVE_SELECTED_MODEL_DESCRIPTOR.md"
+      - "codex-rs/hepta-agentd/src/lib.rs"
+      - "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
+      - "qualification/neuron-model-trials/NATIVE_OBSERVATION_REPLAY_SOURCE.md"
+      - "qualification/neuron-model-trials/NATIVE_OBSERVER_TICK_JOIN.md"
+      - ".github/workflows/hepta-neuron-native-replay-source.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: hepta-neuron-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  native-owner-read:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout experimental source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust with rustfmt and Clippy
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Check rustfmt for Agentd owner
+        run: cargo fmt --package codex-hepta-agentd -- --check
+      - name: Check real Agentd integration crate
+        run: cargo check --locked -p codex-hepta-agentd --lib --tests
+      - name: Test owner-issued Neuron Tick identity and impersonation rejection
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_runtime::tests
+      - name: Test exact Neuron kernel Final-use request preflight
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_final_use::tests
+      - name: Run durable owner, SQLite Memory and Ledger integration
+        run: cargo test --locked -p codex-hepta-agentd --test terminal_cell_owner clean_agent_recall_replay_training_load_and_source_withdrawal -- --exact
+      - name: Verify canonical selected-model descriptor codec and owner binding
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_selected_artifact::tests
+      - name: Check independently signed artifact selection on CURRENT registry
+        run: cargo test --locked -p codex-hepta-learning-artifacts --lib art_12_independent_selector_binds_exact_current_and_manifest
+      - name: Check strict correctness
+        run: cargo clippy --locked -p codex-hepta-agentd --lib -- -D clippy::correctness
+      - name: Check source hygiene
+        working-directory: ${{ github.workspace }}
+        run: |
+          git diff --check
+          git diff --exit-code

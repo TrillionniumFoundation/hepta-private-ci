@@ -92,10 +92,15 @@ jobs:
           # BuildBuddy credentials are unavailable. The SDK tests need both
           # executables on disk because codex resolves code-mode-host as a
           # sibling process at runtime.
+          # Bazel 9 can crash when the remote CAS upload path receives a local
+          # SDK action result (RemoteActionFileSystem/UploadManifest NPE).
+          # Suppress only remote upload of local outputs; do not skip builds,
+          # tests, cache reads, remote-executed actions, or failure reporting.
           ./.github/scripts/run-bazel-ci.sh \
             --remote-download-toplevel \
             -- \
             build \
+            --noremote_upload_local_results \
             --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
             --build_metadata=TAG_job=sdk \
             -- \

@@ -8,6 +8,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+use codex_hepta_control_plane::ActiveRuntimeModuleV1;
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModuleLifecycleV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
@@ -16,6 +17,7 @@ use codex_hepta_control_plane::RuntimeModuleRegistryV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::RuntimeTopologyCandidateV1;
@@ -49,6 +51,60 @@ pub struct RuntimeModuleRetirementWitnessV1 {
     pub drain_digest: Digest32,
     pub reconciliation_digest: Digest32,
     pub unknown_effect_count: u64,
+}
+
+/// An in-process *candidate* observation from this exact Supervisor instance.
+///
+/// An Active module does not itself prove the live Agentd process loaded this
+/// model, that a CNS route points at it, or that the state survived restart.
+/// The selection digest is owned by the Supervisor's already admitted lifecycle,
+/// NOT an ArtifactSelectionVerifier/physical weight-load or final-use receipt.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SupervisorNeuronActiveCandidateV1 {
+    pub module_id: StableId,
+    pub module_generation: Generation,
+    pub owner_id: StableId,
+    pub implementation_digest: Digest32,
+    pub candidate_artifact_digest: Digest32,
+    pub topology_digest: Digest32,
+    pub lifecycle_selection_digest: Digest32,
+    pub diagnostic_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl SupervisorNeuronActiveCandidateV1 {
+    #[must_use]
+    pub fn computed_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.supervisor.neuron-active-candidate.diagnostic.v1\0".to_vec();
+        for id in [&self.module_id, &self.owner_id] {
+            let raw = id.as_str().as_bytes();
+            bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(raw);
+        }
+        bytes.extend_from_slice(&self.module_generation.get().to_be_bytes());
+        for digest in [
+            self.implementation_digest,
+            self.candidate_artifact_digest,
+            self.topology_digest,
+            self.lifecycle_selection_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    /// Local field integrity only, never an independently signed proof.
+    #[must_use]
+    pub fn validate_integrity(&self) -> bool {
+        self.authority == AuthorityPosture::DENY_ALL
+            && self.module_id.as_str() == "neuron.runtime"
+            && !self.implementation_digest.is_zero()
+            && !self.candidate_artifact_digest.is_zero()
+            && !self.topology_digest.is_zero()
+            && !self.lifecycle_selection_digest.is_zero()
+            && !self.diagnostic_digest.is_zero()
+            && self.diagnostic_digest == self.computed_digest()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -515,7 +571,7 @@ impl RuntimeModuleSupervisorV1 {
     }
 
     #[cfg(test)]
-    fn register_shadow_for_test(
+    pub(crate) fn register_shadow_for_test(
         &mut self,
         abi: RuntimeModuleAbiV1,
         selection_digest: Digest32,
@@ -854,6 +910,78 @@ impl RuntimeModuleSupervisorV1 {
             .ok_or(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
     }
 
+    /// Inspect the actual ACTIVE Neuron module in this in-process lifecycle
+    /// registry. Bootstrap entries have no independently verified evolution
+    /// selection and are denied rather than fabricated into selected artifacts.
+    ///
+    /// The exact candidate artifact digest is the supervisor module/topology
+    /// identity and MUST NOT silently be equated with a separately selected
+    /// small Model descriptor. CNS route, physical CAS load, Generation Fence
+    /// and host deployment activation are independently owned and absent here.
+    pub fn read_neuron_active_candidate_v1(
+        &self,
+        expected_generation: Generation,
+        expected_candidate_artifact_digest: Digest32,
+    ) -> Result<SupervisorNeuronActiveCandidateV1, RuntimeModuleSupervisorErrorV1> {
+        if expected_candidate_artifact_digest.is_zero() {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch);
+        }
+        let topology = self.registry.snapshot();
+        let active: &ActiveRuntimeModuleV1 = topology
+            .active
+            .iter()
+            .find(|module| module.module_id.as_str() == "neuron.runtime")
+            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        if active.generation != expected_generation {
+            return Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch);
+        }
+        if active.candidate_artifact_digest != expected_candidate_artifact_digest {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch);
+        }
+        let selection = self.selection_digest(&active.module_id, active.generation)?;
+        let mut observation = SupervisorNeuronActiveCandidateV1 {
+            module_id: active.module_id.clone(),
+            module_generation: active.generation,
+            owner_id: active.owner_id.clone(),
+            implementation_digest: active.implementation_digest,
+            candidate_artifact_digest: active.candidate_artifact_digest,
+            topology_digest: topology.digest,
+            lifecycle_selection_digest: selection,
+            diagnostic_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        observation.diagnostic_digest = observation.computed_digest();
+        if !observation.validate_integrity() {
+            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+        }
+        Ok(observation)
+    }
+
+    /// Revalidate one previously issued diagnostic against THIS Supervisor's
+    /// current active module and complete topology. A locally recomputed
+    /// digest does not prove currentness: quarantine, retirement, cutover
+    /// or unrelated active topology changes must revoke an earlier reading.
+    ///
+    /// This check grants no routing/effect authority and cannot atomically
+    /// fence other process owners. Host orchestration must serialize this
+    /// observation with any future effectful final-use boundary.
+    pub fn revalidate_neuron_active_candidate_v1(
+        &self,
+        previous: &SupervisorNeuronActiveCandidateV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        if !previous.validate_integrity() {
+            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+        }
+        let live = self.read_neuron_active_candidate_v1(
+            previous.module_generation,
+            previous.candidate_artifact_digest,
+        )?;
+        if live != *previous {
+            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+        }
+        Ok(())
+    }
+
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
         self.registry.snapshot()
     }
@@ -1052,6 +1180,174 @@ mod tests {
             )
             .expect("promote");
         assert_eq!(snapshot.active[0].generation, generation(2));
+    }
+    #[test]
+    fn read_neuron_active_candidate_v1_requires_live_selection_and_binds_topology() {
+        let selected_generation = generation(1);
+        let expected_artifact = digest("neuron-pinned-module");
+        let mut abi = abi(1, "neuron-module", None);
+        abi.module_id = id("neuron.runtime");
+        abi.owner_id = id("neuron-agentd-owner");
+        abi.candidate_artifact_digest = expected_artifact;
+        abi.authoritative_domains = [id("neuron-checkpoint")].into_iter().collect();
+
+        let empty = RuntimeModuleSupervisorV1::new();
+        assert!(matches!(
+            empty.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+
+        let mut bootstrap = RuntimeModuleSupervisorV1::new();
+        bootstrap
+            .register_bootstrap(abi.clone())
+            .expect("bootstrap");
+        assert!(matches!(
+            bootstrap.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
+        ));
+
+        let mut supervisor = RuntimeModuleSupervisorV1::new();
+        // Qualification-only shadow fixture: production uses the opaque
+        // VerifiedSelfEvolutionSelection token, never this test helper.
+        supervisor
+            .register_shadow_for_test(abi, digest("independent-lifecycle-selection"))
+            .expect("synthetic selection fixture");
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+        supervisor
+            .enter_canary(&id("neuron.runtime"), selected_generation)
+            .expect("canary");
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+        supervisor
+            .promote_new_initialized_module(
+                &id("neuron.runtime"),
+                selected_generation,
+                digest("synthetic-canary"),
+                RuntimeModuleInitializationWitnessV1 {
+                    initial_state_digest: digest("initialized-state"),
+                    readiness_digest: digest("initialized-ready"),
+                },
+            )
+            .expect("supervisor lifecycle");
+        let observation = supervisor
+            .read_neuron_active_candidate_v1(selected_generation, expected_artifact)
+            .expect("actual in-memory Active module");
+        assert!(observation.validate_integrity());
+        assert_eq!(observation.topology_digest, supervisor.topology().digest);
+        assert_eq!(observation.candidate_artifact_digest, expected_artifact);
+        assert_eq!(observation.module_id, id("neuron.runtime"));
+        assert_eq!(observation.authority, AuthorityPosture::DENY_ALL);
+
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(generation(2), expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch)
+        ));
+        assert!(matches!(
+            supervisor
+                .read_neuron_active_candidate_v1(selected_generation, digest("other-artifact")),
+            Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch)
+        ));
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, Digest32::ZERO),
+            Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch)
+        ));
+
+        let mut altered = observation.clone();
+        altered.owner_id = id("other-owner");
+        assert!(!altered.validate_integrity());
+        let mut altered = observation.clone();
+        altered.module_generation = generation(2);
+        assert!(!altered.validate_integrity());
+        let mut altered = observation.clone();
+        altered.topology_digest = digest("stale-topology");
+        assert!(!altered.validate_integrity());
+        let mut altered = observation.clone();
+        altered.candidate_artifact_digest = digest("different-candidate");
+        assert!(!altered.validate_integrity());
+        let mut altered = observation.clone();
+        altered.lifecycle_selection_digest = Digest32::ZERO;
+        altered.diagnostic_digest = altered.computed_digest();
+        assert!(!altered.validate_integrity());
+
+        // The SAME Supervisor must revalidate this emitted view. Recomputing
+        // a digest is never sufficient to revive stale or wrong-owner facts.
+        supervisor
+            .revalidate_neuron_active_candidate_v1(&observation)
+            .expect("same currently selected owner");
+        let mut forged = observation.clone();
+        forged.owner_id = id("forged-owner");
+        forged.diagnostic_digest = forged.computed_digest();
+        assert!(forged.validate_integrity());
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&forged)
+                .is_err()
+        );
+
+        // A different ACTIVE module changes the full topology while Neuron's
+        // generation/selection remain unchanged; old receipts fail closed.
+        supervisor
+            .register_bootstrap(self::abi(1, "independent-memory-runtime", None))
+            .expect("other module selected");
+        assert!(observation.validate_integrity());
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&observation)
+                .is_err()
+        );
+        let current = supervisor
+            .read_neuron_active_candidate_v1(selected_generation, expected_artifact)
+            .expect("reopened active Neuron observation");
+        supervisor
+            .revalidate_neuron_active_candidate_v1(&current)
+            .expect("new topology currentness");
+
+        // Quarantine suppresses new dispatch immediately, although the writer
+        // generation remains reserved pending drain and reconciliation.
+        supervisor
+            .registry
+            .quarantine(&id("neuron.runtime"), selected_generation)
+            .expect("quarantine");
+        assert_eq!(
+            supervisor.registry.active_generation(&id("neuron.runtime")),
+            Some(selected_generation)
+        );
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&current)
+                .is_err()
+        );
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+
+        // Retiring an independently reconciled owner cannot bring any
+        // previously captured candidate back into the active set.
+        supervisor
+            .retire_after_reconciliation(
+                &id("neuron.runtime"),
+                selected_generation,
+                RuntimeModuleRetirementWitnessV1 {
+                    drain_digest: digest("drained"),
+                    reconciliation_digest: digest("reconciled"),
+                    unknown_effect_count: 0,
+                },
+            )
+            .expect("acknowledged retirement");
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+        assert!(
+            current.validate_integrity(),
+            "stale integrity is not currency"
+        );
     }
 }
 

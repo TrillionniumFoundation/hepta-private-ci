@@ -26,6 +26,8 @@ pub enum RequestState {
     Pending,
     Reserved,
     Assigned,
+    /// Fsynced single-use pre-Worker claim. Never replay after process death.
+    Dispatching,
     Cancelling,
     Completed,
     Failed,
@@ -39,6 +41,7 @@ impl RequestState {
             Self::Pending => "pending",
             Self::Reserved => "reserved",
             Self::Assigned => "assigned",
+            Self::Dispatching => "dispatching",
             Self::Cancelling => "cancelling",
             Self::Completed => "completed",
             Self::Failed => "failed",
@@ -52,6 +55,7 @@ impl RequestState {
             "pending" => Ok(Self::Pending),
             "reserved" => Ok(Self::Reserved),
             "assigned" => Ok(Self::Assigned),
+            "dispatching" => Ok(Self::Dispatching),
             "cancelling" => Ok(Self::Cancelling),
             "completed" => Ok(Self::Completed),
             "failed" => Ok(Self::Failed),
@@ -119,6 +123,10 @@ pub struct RequestRecord {
     pub reservation: Option<Reservation>,
     pub assignment: Option<Assignment>,
     pub terminal_observation_digest: Option<String>,
+    /// Output identity physically retained by the same fsynced Settle event.
+    /// Unlike the caller-selected observation digest, this can be compared to
+    /// an independently verified typed Neuron receipt after crash recovery.
+    pub terminal_output_digest: Option<String>,
     pub consumed_tokens: u32,
     pub usage_units: u64,
 }
@@ -172,6 +180,9 @@ pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
     records: BTreeMap<String, RequestRecord>,
+    // Reserved IDs remain occupied across cancellation and settled history.
+    // Kept separate from full record copies for O(log n) admission.
+    reservation_owners: BTreeMap<String, String>,
     native: native::NativeJournal,
     capacity: usize,
     journal_bytes: u64,
@@ -179,6 +190,16 @@ pub struct DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// A failed or uncertain WAL fsync poisons the entire live owner. Even a
+    /// matching idempotent retry may not acknowledge an unverified frontier:
+    /// only a separately inspected, clean reopen can reestablish currentness.
+    fn ensure_writer_available(&self) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        Ok(())
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
@@ -198,6 +219,7 @@ impl DurableInferenceControl {
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
+        let mut reservation_owners = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
@@ -229,7 +251,27 @@ impl DurableInferenceControl {
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                let event = decode_event(line)?;
+                // Replayed legacy events must satisfy the same non-temporal
+                // field constraints as live writes. An on-disk WAL line is
+                // never trusted merely because its state transition parses.
+                validate_replayed_legacy_event(&event)
+                    .map_err(|_| Error::CorruptJournal("invalid legacy event fields"))?;
+                apply_event(
+                    &mut records,
+                    &reservation_owners,
+                    &event,
+                    /*replay*/ true,
+                )?;
+                if let Event::Reserve {
+                    request_id,
+                    reservation,
+                    ..
+                } = &event
+                {
+                    reservation_owners
+                        .insert(reservation.reservation_id.clone(), request_id.clone());
+                }
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -249,6 +291,7 @@ impl DurableInferenceControl {
             path,
             file,
             records,
+            reservation_owners,
             native,
             capacity,
             journal_bytes,
@@ -261,6 +304,7 @@ impl DurableInferenceControl {
         now_ms: u64,
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_request(now_ms, &request)?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
@@ -285,6 +329,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         reservation: Reservation,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -315,6 +360,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         assignment: Assignment,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -335,11 +381,59 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Commit a crash-durable, non-idempotent pre-execution claim on the
+    /// EXISTING control WAL, before allowing the Worker to invoke a driver.
+    ///
+    /// A process restart MUST treat Dispatching as potentially executed:
+    /// replay cannot recreate an unused reservation, even if no result arrived.
+    /// This is not a signed lease, final-use authorization or effect permission.
+    /// The trusted host authenticates time, lease, assignment and route.
+    pub fn claim_dispatch(
+        &mut self,
+        now_ms: u64,
+        request_id: &str,
+        expected_revision: u64,
+        reservation_id: &str,
+        assignment: &Assignment,
+    ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
+        validate_identity(request_id, "request")?;
+        validate_identity(reservation_id, "reservation")?;
+        validate_assignment(assignment)?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.state != RequestState::Assigned {
+            return Err(Error::InvalidTransition);
+        }
+        let reservation = record
+            .reservation
+            .as_ref()
+            .ok_or(Error::ReservationMismatch)?;
+        if reservation.reservation_id != reservation_id {
+            return Err(Error::ReservationMismatch);
+        }
+        if record.assignment.as_ref() != Some(assignment) {
+            return Err(Error::AssignmentMismatch);
+        }
+        if now_ms >= record.request.deadline_ms || now_ms >= reservation.valid_until_ms {
+            return Err(Error::InvalidTime);
+        }
+        self.commit(Event::Dispatch {
+            request_id: request_id.to_string(),
+            expected_revision,
+            reservation_id: reservation_id.to_string(),
+            assignment: assignment.clone(),
+        })
+    }
+
     pub fn cancel(
         &mut self,
         request_id: &str,
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
         if record.revision != expected_revision {
@@ -364,6 +458,7 @@ impl DurableInferenceControl {
         observation_digest: String,
         observation: TerminalObservation,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;
@@ -372,47 +467,30 @@ impl DurableInferenceControl {
             return Err(Error::StaleRevision);
         }
         if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
+            // A caller-chosen observation ID is NOT proof that a repeated
+            // settlement carries the original output or resource usage.
+            // Never acknowledge changed bytes as an idempotent replay.
+            validate_terminal_for_record(record, &observation)?;
+            let expected_state = if observation.terminal_observed {
+                observation
+                    .terminal_status
+                    .ok_or(Error::TerminalObservationMissing)?
+            } else {
+                RequestState::Indeterminate
+            };
+            if record.state != expected_state
+                || record.terminal_output_digest != observation.output_digest
+                || record.consumed_tokens != observation.consumed_tokens
+                || record.usage_units != observation.usage_units
+            {
+                return Err(Error::Conflict);
+            }
             return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::Conflict);
         }
-        let reservation = record
-            .reservation
-            .as_ref()
-            .ok_or(Error::ReservationMismatch)?;
-        let assignment = record
-            .assignment
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
-        if observation.request_id != record.request.request_id
-            || observation.reservation_id != reservation.reservation_id
-            || observation.worker_id != assignment.worker_id
-            || observation.worker_generation != assignment.worker_generation
-            || observation.model_digest != record.request.model_digest
-            || observation.payload_digest != record.request.payload_digest
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        if observation.consumed_tokens > reservation.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
-        if observation.terminal_observed {
-            let status = observation
-                .terminal_status
-                .ok_or(Error::TerminalObservationMissing)?;
-            if !matches!(
-                status,
-                RequestState::Completed | RequestState::Failed | RequestState::Cancelled
-            ) {
-                return Err(Error::InvalidTransition);
-            }
-            if matches!(status, RequestState::Completed) && observation.output_digest.is_none() {
-                return Err(Error::TerminalObservationMissing);
-            }
-        } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
-            return Err(Error::TerminalObservationMissing);
-        }
+        validate_terminal_for_record(record, &observation)?;
         self.commit(Event::Settle {
             request_id: request_id.to_string(),
             expected_revision,
@@ -433,14 +511,37 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        // Every event changes exactly one legacy request; the other requests
+        // are immutable for this transition. Stage only that record instead
+        // of cloning the entire bounded registry (which made one WAL append
+        // O(number of retained requests) even under the exclusive writer).
+        // Reservation identities are checked against the complete owner index.
+        let request_id = event.request_id().to_string();
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
+        apply_event(
+            &mut staged,
+            &self.reservation_owners,
+            &event,
+            /*replay*/ false,
+        )?;
+        // All fallible transition validation must complete BEFORE fsync. If
+        // append fails, the original in-memory record remains untouched.
+        let successor = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), successor);
+        if let Event::Reserve {
+            request_id,
+            reservation,
+            ..
+        } = &event
+        {
+            self.reservation_owners
+                .insert(reservation.reservation_id.clone(), request_id.clone());
+        }
         let record = self
             .records
             .get(&request_id)
@@ -488,6 +589,12 @@ enum Event {
         expected_revision: u64,
         assignment: Assignment,
     },
+    Dispatch {
+        request_id: String,
+        expected_revision: u64,
+        reservation_id: String,
+        assignment: Assignment,
+    },
     Cancel {
         request_id: String,
         expected_revision: u64,
@@ -506,6 +613,7 @@ impl Event {
             Self::Submit(request) => &request.request_id,
             Self::Reserve { request_id, .. }
             | Self::Assign { request_id, .. }
+            | Self::Dispatch { request_id, .. }
             | Self::Cancel { request_id, .. }
             | Self::Settle { request_id, .. } => request_id,
         }
@@ -514,6 +622,7 @@ impl Event {
 
 fn apply_event(
     records: &mut BTreeMap<String, RequestRecord>,
+    reservation_owners: &BTreeMap<String, String>,
     event: &Event,
     replay: bool,
 ) -> Result<(), Error> {
@@ -534,6 +643,7 @@ fn apply_event(
                     reservation: None,
                     assignment: None,
                     terminal_observation_digest: None,
+                    terminal_output_digest: None,
                     consumed_tokens: 0,
                     usage_units: 0,
                 },
@@ -544,10 +654,26 @@ fn apply_event(
             expected_revision,
             reservation,
         } => {
+            // An exact reservation belongs to a single request for its entire
+            // durable lifetime. Never allow an old cancelled or completed
+            // request to donate its ResourceGrant identity to a second request.
+            if reservation_owners
+                .get(&reservation.reservation_id)
+                .is_some_and(|owner| owner != request_id)
+            {
+                return Err(if replay {
+                    Error::CorruptJournal("reservation identity reused")
+                } else {
+                    Error::Conflict
+                });
+            }
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
             if record.state != RequestState::Pending {
                 return Err(Error::InvalidTransition);
+            }
+            if reservation.maximum_tokens < record.request.maximum_tokens {
+                return Err(Error::UsageExceeded);
             }
             record.reservation = Some(reservation.clone());
             record.state = RequestState::Reserved;
@@ -567,6 +693,31 @@ fn apply_event(
             record.state = RequestState::Assigned;
             record.revision = next_revision(record.revision)?;
         }
+        Event::Dispatch {
+            request_id,
+            expected_revision,
+            reservation_id,
+            assignment,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            if record.state != RequestState::Assigned {
+                return Err(Error::InvalidTransition);
+            }
+            if record
+                .reservation
+                .as_ref()
+                .map(|value| value.reservation_id.as_str())
+                != Some(reservation_id.as_str())
+            {
+                return Err(Error::ReservationMismatch);
+            }
+            if record.assignment.as_ref() != Some(assignment) {
+                return Err(Error::AssignmentMismatch);
+            }
+            record.state = RequestState::Dispatching;
+            record.revision = next_revision(record.revision)?;
+        }
         Event::Cancel {
             request_id,
             expected_revision,
@@ -575,7 +726,7 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             record.state = match record.state {
                 RequestState::Pending | RequestState::Reserved => RequestState::Cancelled,
-                RequestState::Assigned => RequestState::Cancelling,
+                RequestState::Assigned | RequestState::Dispatching => RequestState::Cancelling,
                 _ => return Err(Error::InvalidTransition),
             };
             record.revision = next_revision(record.revision)?;
@@ -590,10 +741,11 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Cancelling
+                RequestState::Assigned | RequestState::Dispatching | RequestState::Cancelling
             ) {
                 return Err(Error::InvalidTransition);
             }
+            validate_terminal_for_record(record, observation)?;
             record.state = if observation.terminal_observed {
                 observation
                     .terminal_status
@@ -602,6 +754,7 @@ fn apply_event(
                 RequestState::Indeterminate
             };
             record.terminal_observation_digest = Some(observation_digest.clone());
+            record.terminal_output_digest = observation.output_digest.clone();
             record.consumed_tokens = observation.consumed_tokens;
             record.usage_units = observation.usage_units;
             record.revision = next_revision(record.revision)?;
@@ -622,6 +775,103 @@ fn require_revision(record: &RequestRecord, expected: u64, replay: bool) -> Resu
 
 fn next_revision(value: u64) -> Result<u64, Error> {
     value.checked_add(1).ok_or(Error::ArithmeticOverflow)
+}
+
+/// Validate all legacy WAL fields before reconstructing durable state. The
+/// timestamps are historical, so replay checks their nonzero/bounded structure
+/// without comparing them to the process's current wall clock. Currentness is
+/// still checked by the claim owner immediately before any new dispatch.
+fn validate_replayed_legacy_event(event: &Event) -> Result<(), Error> {
+    match event {
+        Event::Submit(value) => validate_request(0, value),
+        Event::Reserve {
+            request_id,
+            reservation,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_reservation(0, reservation)
+        }
+        Event::Assign {
+            request_id,
+            assignment,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_assignment(assignment)
+        }
+        Event::Dispatch {
+            request_id,
+            reservation_id,
+            assignment,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_identity(reservation_id, "reservation")?;
+            validate_assignment(assignment)
+        }
+        Event::Cancel { request_id, .. } => validate_identity(request_id, "request"),
+        Event::Settle {
+            request_id,
+            observation_digest,
+            observation,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_digest(observation_digest, "observation")?;
+            validate_observation(observation)
+        }
+    }
+}
+
+/// The same immutable request/reservation/worker/terminal checks apply to
+/// admission and WAL replay. A forged legacy Settle line must not manufacture
+/// a completed request or an arbitrary resource accounting outcome on reopen.
+fn validate_terminal_for_record(
+    record: &RequestRecord,
+    observation: &TerminalObservation,
+) -> Result<(), Error> {
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(Error::ReservationMismatch)?;
+    let assignment = record
+        .assignment
+        .as_ref()
+        .ok_or(Error::AssignmentMismatch)?;
+    if observation.request_id != record.request.request_id
+        || observation.reservation_id != reservation.reservation_id
+        || observation.worker_id != assignment.worker_id
+        || observation.worker_generation != assignment.worker_generation
+        || observation.model_digest != record.request.model_digest
+        || observation.payload_digest != record.request.payload_digest
+    {
+        return Err(Error::AssignmentMismatch);
+    }
+    // The token and resource-unit reservations are separate ceilings.
+    // This is shared by live settlement and crash-recovered WAL replay.
+    if observation.consumed_tokens > reservation.maximum_tokens
+        || observation.usage_units > reservation.quota_units
+    {
+        return Err(Error::UsageExceeded);
+    }
+    if observation.terminal_observed {
+        let status = observation
+            .terminal_status
+            .ok_or(Error::TerminalObservationMissing)?;
+        if !matches!(
+            status,
+            RequestState::Completed | RequestState::Failed | RequestState::Cancelled
+        ) {
+            return Err(Error::InvalidTransition);
+        }
+        if status == RequestState::Completed && observation.output_digest.is_none() {
+            return Err(Error::TerminalObservationMissing);
+        }
+    } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
+        return Err(Error::TerminalObservationMissing);
+    }
+    Ok(())
 }
 
 fn validate_request(now_ms: u64, request: &InferenceRequest) -> Result<(), Error> {
@@ -742,6 +992,15 @@ fn encode_event(event: &Event) -> String {
             "assign|{request_id}|{expected_revision}|{}|{}|{}",
             assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
         ),
+        Event::Dispatch {
+            request_id,
+            expected_revision,
+            reservation_id,
+            assignment,
+        } => format!(
+            "dispatch|{request_id}|{expected_revision}|{reservation_id}|{}|{}|{}",
+            assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
+        ),
         Event::Cancel {
             request_id,
             expected_revision,
@@ -821,6 +1080,24 @@ fn decode_event(line: &str) -> Result<Event, Error> {
         ] => Ok(Event::Assign {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
+            assignment: Assignment {
+                worker_id: (*worker_id).to_string(),
+                worker_generation: parse_u64(generation)?,
+                assignment_digest: (*assignment_digest).to_string(),
+            },
+        }),
+        [
+            "dispatch",
+            request_id,
+            revision,
+            reservation_id,
+            worker_id,
+            generation,
+            assignment_digest,
+        ] => Ok(Event::Dispatch {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+            reservation_id: (*reservation_id).to_string(),
             assignment: Assignment {
                 worker_id: (*worker_id).to_string(),
                 worker_generation: parse_u64(generation)?,

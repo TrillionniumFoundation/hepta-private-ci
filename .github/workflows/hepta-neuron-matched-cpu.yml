@@ -1,0 +1,95 @@
+name: Hepta Neuron matched serial CPU diagnostic
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  matched-cpu-diagnostic:
+    # Explicit opt-in only. Existing public-weights label must be added.
+    if: >-
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'hepta-neuron-physical-smoke'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout experimental Hepta source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Checkout pinned public Laya SDK
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: NandhaKishorM/laya
+          ref: c7527708f9f5220c669d8aa385077cd28d04708a
+          path: upstream/laya
+          persist-credentials: false
+      - name: Install isolated CPU-only packages at fixed versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream/laya rev-parse HEAD)" = c7527708f9f5220c669d8aa385077cd28d04708a
+          python3 -m venv "$RUNNER_TEMP/hepta-laya-benchmark-venv"
+          PY="$RUNNER_TEMP/hepta-laya-benchmark-venv/bin/python"
+          "$PY" -m pip install --no-input --disable-pip-version-check \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu'
+          "$PY" -m pip install --no-input --disable-pip-version-check \
+            'transformers==4.53.3' 'safetensors==0.5.3' 'huggingface_hub==0.34.4' \
+            'numpy==1.26.4' 'setuptools==80.9.0'
+          "$PY" -m pip install --no-input --disable-pip-version-check \
+            --no-deps --no-build-isolation -e upstream/laya
+      - name: Download and verify three immutable public model weights
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-laya-benchmark-venv/bin/python"
+          test "$HF_HUB_DISABLE_TELEMETRY" = "1"
+          for arm in laya typed multilingual; do
+            "$PY" scripts/hepta_neuron_materialize_weights.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --destination "$RUNNER_TEMP/hepta-${arm}-bench-pinned" \
+              --output "$RUNNER_TEMP/hepta-${arm}-bench-materialization.json" --allow-network
+          done
+      - name: Repeat 100 real serial CPU forwards per arm after 5 warmups
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+        run: |
+          set -euo pipefail
+          test "$HF_HUB_OFFLINE" = "1"
+          test "$TRANSFORMERS_OFFLINE" = "1"
+          test "$USE_TF" = "0"
+          PY="$RUNNER_TEMP/hepta-laya-benchmark-venv/bin/python"
+          SDK_SHA=$(PYTHONPATH=scripts "$PY" -c 'from pathlib import Path; from hepta_neuron_model_trials import sha_tree; print(sha_tree(Path("upstream/laya/laya"), only_python=True))')
+          mkdir -p hepta-neuron-benchmark-output
+          for arm in laya typed multilingual; do
+            "$PY" scripts/hepta_neuron_cpu_benchmark.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --artifact-dir "$RUNNER_TEMP/hepta-${arm}-bench-pinned" \
+              --sdk-python-sha256 "$SDK_SHA" --warmup 5 --samples 100 --threads 2 \
+              --output "$PWD/hepta-neuron-benchmark-output/${arm}-cpu-diagnostic.json"
+          done
+          "$PY" scripts/hepta_neuron_cpu_benchmark_verify.py \
+            --directory "$PWD/hepta-neuron-benchmark-output" \
+            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+            --sdk-python-sha256 "$SDK_SHA" \
+            --output "$RUNNER_TEMP/hepta-neuron-matched-summary.json"
+          cp "$RUNNER_TEMP/hepta-neuron-matched-summary.json" hepta-neuron-benchmark-output/summary.json
+      - name: Retain diagnostic measurements only; never publish weights or user data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-neuron-matched-three-arm-serial-cpu-diagnostic
+          path: hepta-neuron-benchmark-output/*.json
+          if-no-files-found: warn
+          retention-days: 7

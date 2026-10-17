@@ -1,0 +1,102 @@
+name: Hepta Neuron pinned physical smoke (diagnostic, no data)
+
+on:
+  # Label-triggered on the draft PR because workflow_dispatch is not registered
+  # until a workflow is present on the repository default branch.
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      run:
+        description: "Execute pinned public Laya physical diagnostics (no private data)"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  # This job can NEVER run in normal PR tests or from a source push. Explicit
+  # operator intent is a named label or the manual boolean in Actions.
+  laya-physical-smoke:
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.event.action == 'labeled' &&
+       github.event.label.name == 'hepta-neuron-physical-smoke') ||
+      (github.event_name == 'workflow_dispatch' && inputs.run == true)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout experimental Hepta source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Checkout exact Laya SDK revision without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: NandhaKishorM/laya
+          ref: c7527708f9f5220c669d8aa385077cd28d04708a
+          path: upstream/laya
+          persist-credentials: false
+      - name: Check SDK commit and install isolated CPU-only dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream/laya rev-parse HEAD)" = "c7527708f9f5220c669d8aa385077cd28d04708a"
+          python3 -m venv "$RUNNER_TEMP/hepta-laya-venv"
+          "$RUNNER_TEMP/hepta-laya-venv/bin/python" -m pip install --no-input --disable-pip-version-check \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu'
+          "$RUNNER_TEMP/hepta-laya-venv/bin/python" -m pip install --no-input --disable-pip-version-check \
+            'transformers==4.53.3' 'safetensors==0.5.3' 'huggingface_hub==0.34.4' \
+            'numpy==1.26.4' 'setuptools==80.9.0'
+          "$RUNNER_TEMP/hepta-laya-venv/bin/python" -m pip install --no-input --disable-pip-version-check \
+            --no-deps --no-build-isolation -e upstream/laya
+      - name: Materialize all three pinned public Laya variants with explicit network opt-in
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          HF_HOME: ${{ runner.temp }}/hepta-hf-readonly-cache
+        run: |
+          set -euo pipefail
+          test "$HF_HUB_DISABLE_TELEMETRY" = "1"
+          for arm in laya typed multilingual; do
+            "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_materialize_weights.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --destination "$RUNNER_TEMP/hepta-${arm}-pinned" \
+              --output "$RUNNER_TEMP/hepta-${arm}-materialization.json" --allow-network
+          done
+      - name: Execute identical synthetic no-label CPU forward on each pinned variant
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          USE_TF: "0"
+        run: |
+          set -euo pipefail
+          test "$HF_HUB_OFFLINE" = "1"
+          test "$TRANSFORMERS_OFFLINE" = "1"
+          test "$USE_TF" = "0"
+          SDK_SHA=$(PYTHONPATH=scripts "$RUNNER_TEMP/hepta-laya-venv/bin/python" - <<'PYSDK'
+          from pathlib import Path
+          from hepta_neuron_model_trials import sha_tree
+          print(sha_tree(Path('upstream/laya/laya'), only_python=True))
+          PYSDK
+          )
+          for arm in laya typed multilingual; do
+            "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_physical_smoke.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --artifact-dir "$RUNNER_TEMP/hepta-${arm}-pinned" \
+              --sdk-python-sha256 "$SDK_SHA" --device cpu \
+              --output "$RUNNER_TEMP/hepta-${arm}-physical-smoke.json"
+          done
+      - name: Retain metadata only; never upload model weights, cache or user data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-neuron-all-three-public-weight-diagnostic
+          path: |
+            ${{ runner.temp }}/hepta-*-materialization.json
+            ${{ runner.temp }}/hepta-*-physical-smoke.json
+          if-no-files-found: warn
+          retention-days: 7

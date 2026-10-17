@@ -1,0 +1,52 @@
+name: Hepta Neuron native Ledger source (diagnostic)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_source.rs"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_observed_tick.rs"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_observer_cohort.rs"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_source_tests.rs"
+      - "codex-rs/hepta-learning-ledger/src/lib.rs"
+      - "qualification/neuron-model-trials/NATIVE_LEDGER_SOURCE.md"
+      - "qualification/neuron-model-trials/NATIVE_OBSERVER_TICK_JOIN.md"
+      - ".github/workflows/hepta-neuron-native-ledger-source.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: hepta-neuron-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  native-ledger-read-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact experimental commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Check Ledger formatting
+        run: cargo fmt --package codex-hepta-learning-ledger -- --check
+      - name: Compile actual native Ledger owner and test targets
+        run: cargo check --locked -p codex-hepta-learning-ledger --all-targets
+      - name: Run native signed frozen-source and durable event-join tests
+        run: cargo test --locked -p codex-hepta-learning-ledger --lib
+      - name: Strict native Ledger correctness lint
+        run: cargo clippy --locked -p codex-hepta-learning-ledger --lib -- -D clippy::correctness
+      - name: Check tracked source hygiene
+        working-directory: ${{ github.workspace }}
+        run: |
+          git diff --check
+          git diff --exit-code

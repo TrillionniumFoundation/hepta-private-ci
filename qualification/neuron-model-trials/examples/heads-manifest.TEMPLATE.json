@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.neuron.model-trial.v1",
+  "source_sha": "REPLACE_WITH_EXACT_40_HEX_GIT_SHA",
+  "dataset_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+  "blind_dataset_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+  "host_profile_digest": "REPLACE_WITH_VERIFIED_64_HEX",
+  "family": "heads",
+  "parameter_cap": 262656,
+  "head": {
+    "input_dimension": 512,
+    "state_width": 256,
+    "encoder_digest": "REPLACE_WITH_VERIFIED_64_HEX",
+    "seed": 17,
+    "epochs": 10,
+    "batch_size": 16,
+    "learning_rate": 0.0003
+  }
+}

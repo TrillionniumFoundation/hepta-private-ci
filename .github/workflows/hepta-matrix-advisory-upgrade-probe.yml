@@ -1,0 +1,221 @@
+name: Hepta Matrix advisory upgrade probe (non-accepting)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-matrix-advisory-upgrade-probe.yml"
+      - "qualification/matrix-sdk-security/UPGRADE_PROBE.md"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix-compatibility-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact experimental SHA without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+
+      - name: Resolve Matrix SDK 0.19.1 in a disposable checkout
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/matrix-advisory"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/source-sha.txt"
+          cp Cargo.lock "$OUT/baseline-Cargo.lock"
+          python3 - <<'PY'
+          from pathlib import Path
+          file = Path("Cargo.toml")
+          content = file.read_text()
+          old = 'matrix-sdk = { version = "0.18.0",'
+          new = 'matrix-sdk = { version = "=0.19.1",'
+          if content.count(old) != 1:
+              raise SystemExit("Unexpected Matrix SDK version or manifest")
+          file.write_text(content.replace(old, new))
+          PY
+          set +e
+          cargo update -p matrix-sdk --precise 0.19.1 2>&1 | tee "$OUT/cargo-update.log"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$OUT/resolve-exit.txt"
+          if [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
+          cp Cargo.lock "$OUT/proposed-Cargo.lock"
+          git diff -- Cargo.toml Cargo.lock > "$OUT/proposed-upgrade.patch"
+          cargo tree --locked -i anymap2 > "$OUT/anymap2-tree.txt" 2>&1 || true
+          cargo tree --locked -i matrix-sdk-crypto > "$OUT/matrix-crypto-tree.txt" 2>&1 || true
+          python3 - <<'PY'
+          import json
+          import os
+          import tomllib
+          from pathlib import Path
+          rows = tomllib.loads(Path("Cargo.lock").read_text())["package"]
+          names = ["matrix-sdk", "matrix-sdk-base", "matrix-sdk-crypto", "anymap2", "anymap3"]
+          result = {name: sorted({row["version"] for row in rows if row["name"] == name}) for name in names}
+          Path(os.environ["RUNNER_TEMP"], "matrix-advisory", "resolved-packages.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(result)
+          PY
+
+      - name: Compile Matrix SDK host and daemon after temporary upgrade
+        id: compile
+        if: steps.resolve.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --package codex-hepta-matrix-sdk --package codex-hepta-matrixd --all-targets 2>&1 | tee "$RUNNER_TEMP/matrix-advisory/cargo-check.log"
+
+      - name: Check unignored security advisories with existing cargo-deny action
+        id: advisories
+        if: steps.resolve.outcome == 'success'
+        continue-on-error: true
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.95.0
+          manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Retain exact-source upgrade diagnostics, not production acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-advisory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-advisory/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Refuse an unsafe or incomplete dependency upgrade
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ steps.resolve.outcome }}' != success || '${{ steps.compile.outcome }}' != success || '${{ steps.advisories.outcome }}' != success ]]; then
+            echo "::error::Matrix migration needs successful resolution, host compilation AND zero unignored advisories"
+            exit 1
+          fi
+
+  # Independent of the Hepta workspace's exact Starlark =1.8.2 BLAKE3 pin.
+  # This explores a separate dependency graph; it can NEVER authorize upgrade.
+  isolated-upstream-dependency-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install isolated upstream MSRV toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.96.0"
+      - name: Resolve Matrix 0.19.1 without Starlark in disposable standalone crate
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/matrix-isolated-advisory"
+          PROBE="$OUT/standalone"
+          mkdir -p "$PROBE/src"
+          cat > "$PROBE/Cargo.toml" <<'TOML'
+          [package]
+          name = "hepta-matrix-isolated-security-probe"
+          version = "0.0.0"
+          edition = "2024"
+          publish = false
+          [dependencies]
+          matrix-sdk = { version = "=0.19.1", default-features = false, features = ["e2e-encryption", "sqlite"] }
+          TOML
+          printf 'pub fn isolated_matrix_probe() {}\n' > "$PROBE/src/lib.rs"
+          set +e
+          (
+            set -e
+            cd "$PROBE"
+            cargo +1.96.0 generate-lockfile
+            cargo +1.96.0 metadata --locked --format-version 1 > "$OUT/metadata.json"
+            cargo +1.96.0 tree --locked -i anymap2 > "$OUT/anymap2-tree.txt"
+            cargo +1.96.0 tree --locked -i matrix-sdk-crypto > "$OUT/matrix-crypto-tree.txt"
+          ) > "$OUT/resolve.log" 2>&1
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$OUT/resolve-exit.txt"
+          if [[ "$code" -ne 0 ]]; then
+            cat "$OUT/resolve.log"
+            echo "::error::The isolated upstream SDK graph could not be resolved; no upgrade accepted"
+            exit "$code"
+          fi
+          export PROBE_REPORT_DIR="$OUT"
+          python3 - <<'PY'
+          import json
+          import os
+          import tomllib
+          from pathlib import Path
+
+          root = Path(os.environ["PROBE_REPORT_DIR"])
+          metadata = json.loads((root / "metadata.json").read_text())
+          packages = metadata["packages"]
+          def versions(name):
+              return sorted({p["version"] for p in packages if p["name"] == name})
+          sdk = [p for p in packages if p["name"] == "matrix-sdk" and p["version"] == "0.19.1"]
+          crypto = versions("matrix-sdk-crypto")
+          unmaintained = versions("anymap2")
+          product_toolchain = tomllib.loads(
+              (Path(os.environ["GITHUB_WORKSPACE"]) / "codex-rs/rust-toolchain.toml").read_text()
+          )["toolchain"]["channel"]
+          sdk_msrv = sdk[0]["rust_version"] if len(sdk) == 1 else None
+          def release(version):
+              return tuple(int(x) for x in version.split(".")[:3])
+          report = {
+              "schema": "hepta.matrix.isolated-advisory-diagnostic.v1",
+              "experimental_sdk": "0.19.1",
+              "product_toolchain": product_toolchain,
+              "upstream_sdk_msrv": sdk_msrv,
+              "resolved_crypto_versions": crypto,
+              "unmaintained_anymap2_versions": unmaintained,
+              "starlark_excluded_from_this_graph": True,
+              "production_upgrade_authorized": False,
+              "security_advisories_ignored": False,
+          }
+          report["msrv_compatible"] = (
+              sdk_msrv is not None and release(product_toolchain) >= release(sdk_msrv)
+          )
+          report["unmaintained_dependency_absent"] = not unmaintained
+          report["patched_crypto_present"] = bool(crypto) and all(
+              release(x) >= release("0.19.0") for x in crypto
+          )
+          (root / "audit.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          if not all([
+              report["msrv_compatible"],
+              report["unmaintained_dependency_absent"],
+              report["patched_crypto_present"],
+          ]):
+              raise SystemExit("Isolated dependency graph is NOT eligible for production upgrade")
+          PY
+      - name: Retain isolated SDK graph and compatibility diagnosis
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-isolated-audit-${{ github.run_id }}
+          path: ${{ runner.temp }}/matrix-isolated-advisory/
+          if-no-files-found: error
+          retention-days: 7
