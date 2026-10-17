@@ -51,7 +51,7 @@ def review(sources, labels, sealed, pred, archived):
         or sealed.get('original_held_label_sha256')!=HELD_SHA
         or sealed.get('production_authorized') is not False or pred.get('production_authorized') is not False
         or pred.get('frozen_conditional_sha256')!=digest(canonical(sealed))
-        or sealed.get('unselected_test_pixels_never_loaded_before_seal') is not True
+        or sealed.get('unselected_test_images_not_forwarded_by_dino_before_seal') is not True
         or pred.get('identical_fit_weights_across_all_arms') is not True
         or sealed.get('authority_posture')!=DENY or pred.get('authority_posture')!=DENY
         or pred.get('original_archive_sha256')!=ARCHIVE_SHA
@@ -163,7 +163,9 @@ def main():
         raw=read_pinned(a.images/r['image'],r['image'],maximum=8*1024*1024)
         swap=read_pinned(a.images/donor['image'],donor['image'],maximum=8*1024*1024)
         with Image.open(io.BytesIO(raw)) as image:
-            image.load();mask=Image.new('RGB',image.size,(0,0,0));buff=io.BytesIO();mask.save(buff,format='PNG')
+            image.load()
+            if image.convert('RGB').getbbox() is None:raise Invalid('black image lesion must change pixels')
+            mask=Image.new('RGB',image.size,(0,0,0));buff=io.BytesIO();mask.save(buff,format='PNG')
         if digest(buff.getvalue())!=meta.get('masked_input_sha256') or digest(swap)!=meta.get('donor_image_sha256') or r['image']==donor['image']:
             raise Invalid('forged black/shuffled original pixel bytes')
         donors.append(donor['id'])
