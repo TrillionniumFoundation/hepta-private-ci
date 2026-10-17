@@ -11,6 +11,8 @@ use serde::Serialize;
 use serde_json::Value;
 use sha2::Digest;
 use sha2::Sha256;
+#[cfg(windows)]
+use winapi_util::file::information as windows_file_information;
 
 use crate::AcceptanceError;
 
