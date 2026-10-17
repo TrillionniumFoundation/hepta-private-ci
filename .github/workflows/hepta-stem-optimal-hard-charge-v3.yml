@@ -1,0 +1,232 @@
+name: Hepta Stem original hard-charge stress V3 (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-optimal-charge-stress-v3-20261017]
+    paths:
+      - 'qualification/stem-optimal-v3/**'
+      - '.github/workflows/hepta-stem-optimal-hard-charge-v3.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v3/**'
+      - '.github/workflows/hepta-stem-optimal-hard-charge-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-charge-v3-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXP_DIR: qualification/stem-optimal-v3
+  V1_DIR: qualification/stem-optimal-v1
+
+jobs:
+  source-only-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Negative source, label and cost custody tests (real pretrained not asserted)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$EXP_DIR/stem_hard_charge_v3.py" "$EXP_DIR/stem_hard_charge_review_v3.py" "$EXP_DIR/test_stem_hard_charge_v3.py"
+          python -m unittest discover -s "$EXP_DIR" -p 'test_stem_hard_charge_v3.py' -v
+          python -O -m unittest discover -s "$EXP_DIR" -p 'test_stem_hard_charge_v3.py' -v
+
+  original-source-owner:
+    needs: source-only-negative-tests
+    # Only an authored push may receive publisher inputs; no fork PR model execution.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-optimal-charge-stress-v3-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reopen exact original BANKING77 publisher bytes, with test labels still private
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/hard-charge-owner"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          dest = Path(os.environ["RUNNER_TEMP"]) / "hard-charge-owner"
+          rev = "57ec275d8078af65b7731c2a98be812d844a6d6b"
+          digests = {"train": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+                     "test": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"}
+          for split in ("train", "test"):
+              url = f"https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{rev}/banking_data/{split}.csv"
+              with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "hepta-original-charge-source-v3"}), timeout=35) as r:
+                  if r.geturl() != url:
+                      raise SystemExit("original publisher redirect")
+                  raw = r.read(2_000_001)
+              if not 0 < len(raw) <= 2_000_000 or hashlib.sha256(raw).hexdigest() != digests[split]:
+                  raise SystemExit("publisher source drift")
+              (dest / f"{split}.csv").write_bytes(raw)
+          PY
+          python "$EXP_DIR/stem_hard_charge_v3.py" prepare \
+            --train "$RUNNER_TEMP/hard-charge-owner/train.csv" \
+            --test "$RUNNER_TEMP/hard-charge-owner/test.csv" \
+            --output "$RUNNER_TEMP/hard-charge-owner/source-v3.json"
+          (cd "$RUNNER_TEMP/hard-charge-owner" && sha256sum source-v3.json > source-v3.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v3-hard-charge-unlabelled-owner
+          path: |
+            ${{ runner.temp }}/hard-charge-owner/source-v3.json
+            ${{ runner.temp }}/hard-charge-owner/source-v3.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-pretrained-stem:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v3-hard-charge-unlabelled-owner
+          path: ${{ runner.temp }}/v3-source
+      - name: Verify original source envelope and install pinned CPU inference dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v3-source" && sha256sum --check source-v3.sha256)
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6
+          python - <<'PY'
+          import torch, transformers, huggingface_hub, safetensors
+          assert torch.__version__.split("+")[0] == "2.6.0"
+          assert transformers.__version__ == "4.57.1"
+          PY
+      - name: Read real pinned original model weights and train matched four Cell Heads
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v3-model"
+          python "$EXP_DIR/stem_hard_charge_v3.py" infer \
+            --source "$RUNNER_TEMP/v3-source/source-v3.json" \
+            --materials "$V1_DIR/MODEL_MATERIALS.json" \
+            --candidate '${{ matrix.candidate }}' \
+            --output "$RUNNER_TEMP/v3-model/receipt-${{ matrix.candidate }}.json"
+          (cd "$RUNNER_TEMP/v3-model" && sha256sum 'receipt-${{ matrix.candidate }}.json' > 'receipt-${{ matrix.candidate }}.sha256')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v3-${{ matrix.candidate }}-original-denyall
+          path: |
+            ${{ runner.temp }}/v3-model/receipt-${{ matrix.candidate }}.json
+            ${{ runner.temp }}/v3-model/receipt-${{ matrix.candidate }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  original-late-label-independent-review:
+    needs: original-pretrained-stem
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: stem-v3-hard-charge-unlabelled-owner
+          path: ${{ runner.temp }}/v3-source
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-v3-*-original-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/v3-models
+      - name: Reopen publisher original labels independently only after sealed predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/v3-source" && sha256sum --check source-v3.sha256)
+          (cd "$RUNNER_TEMP/v3-models" && sha256sum --check receipt-granite47.sha256 receipt-granite97.sha256 receipt-mmbert140.sha256)
+          mkdir -p "$RUNNER_TEMP/v3-label-owner"
+          python - <<'PY'
+          import hashlib, os, urllib.request
+          from pathlib import Path
+          dest = Path(os.environ["RUNNER_TEMP"]) / "v3-label-owner"
+          rev = "57ec275d8078af65b7731c2a98be812d844a6d6b"
+          digests = {"train": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+                     "test": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"}
+          for split in ("train", "test"):
+              url = f"https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/{rev}/banking_data/{split}.csv"
+              with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "hepta-late-label-charge-review-v3"}), timeout=35) as r:
+                  if r.geturl() != url:
+                      raise SystemExit("late-label source redirect")
+                  raw = r.read(2_000_001)
+              if not 0 < len(raw) <= 2_000_000 or hashlib.sha256(raw).hexdigest() != digests[split]:
+                  raise SystemExit("late-label original publisher drift")
+              (dest / f"{split}.csv").write_bytes(raw)
+          PY
+      - name: Independent paired quality, calibration and cheap baseline; unconditional no-go
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$EXP_DIR/stem_hard_charge_review_v3.py" \
+            --train "$RUNNER_TEMP/v3-label-owner/train.csv" \
+            --test "$RUNNER_TEMP/v3-label-owner/test.csv" \
+            --source "$RUNNER_TEMP/v3-source/source-v3.json" \
+            --materials "$V1_DIR/MODEL_MATERIALS.json" \
+            --run "$RUNNER_TEMP/v3-models/receipt-granite47.json" \
+            --run "$RUNNER_TEMP/v3-models/receipt-granite97.json" \
+            --run "$RUNNER_TEMP/v3-models/receipt-mmbert140.json" \
+            --output "$RUNNER_TEMP/v3-reviewed.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ["RUNNER_TEMP"]) / "v3-reviewed.json").read_text())
+          assert r["publisher_original_sha_verified"] is True
+          assert r["disposition"] == "HOLD_NO_GO" and r["authority"] == "DENY_ALL"
+          assert r["production_authorized"] is False and r["stem_winner_verified"] is False
+          assert r["source_independent_families"] == 1 and r["future_windows"] == 0
+          for name, model in sorted(r["models"].items()):
+              print(name, {k: x["correct"] for k, x in model["arms"].items()})
+          print("Public original hard-charge same-source canary; NO MODEL PROMOTION")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v3-independent-review-denyall
+          path: ${{ runner.temp }}/v3-reviewed.json
+          if-no-files-found: error
+          retention-days: 7
