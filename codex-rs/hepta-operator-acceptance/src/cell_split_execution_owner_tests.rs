@@ -606,7 +606,11 @@ fn post_effect_live_readback_failure_is_ambiguous_until_reconciled() {
     assert_eq!(state.borrow().executions, 1, "no second Execute");
     assert_eq!(recovered.completed_steps(), 1);
     assert!(root.path().join("cell-split-00-committed.json").is_file());
-    assert!(!recovered.verified_complete().expect("current signed prefix"));
+    assert!(
+        !recovered
+            .verified_complete()
+            .expect("current signed prefix")
+    );
 }
 
 #[test]
