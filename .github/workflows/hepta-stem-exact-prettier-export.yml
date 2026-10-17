@@ -4,6 +4,12 @@ on:
   pull_request:
     paths:
       - ".github/workflows/hepta-stem-exact-prettier-export.yml"
+      - ".github/workflows/hepta-stem-multimodal-source-v1.yml"
+      - ".github/workflows/hepta-stem-v2-original-physical-bridge.yml"
+      - ".github/workflows/hepta-stem-v4-public-learning-audit.yml"
+      - ".github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml"
+      - ".github/workflows/hepta-stem-v6-original-margin.yml"
+      - ".github/workflows/hepta-stem-v7-real-image-intervention.yml"
 
 permissions:
   contents: read
