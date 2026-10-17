@@ -1,0 +1,67 @@
+name: Hepta Stem Reader bridge (read-only)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-transfer-cell-artifact-p0/**"
+      - "qualification/neuron-shared-encoder/**"
+      - "scripts/hepta_sngr_reader_eval.py"
+      - "scripts/hepta_sngr_reader_cases.json"
+      - ".github/workflows/hepta-stem-reader-bridge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-stem-reader-bridge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Stem/Reader bridge contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+
+      - name: Run Stem and Cell contract tests
+        run: python3 -m unittest discover -v -s qualification/stem-transfer-cell-artifact-p0 -p 'test_*.py'
+
+      - name: Run qualification bridge tests
+        run: python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'
+
+      - name: Bind the registered Reader fixture (no model)
+        run: |
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "qualification/neuron-shared-encoder")
+          from neuron_shared_encoder.reader_fixture_bridge import (
+              ARM_NAMES,
+              build_four_condition_requests,
+              verify_registered_checkout,
+          )
+          corpus, source_digests = verify_registered_checkout(Path("."))
+          requests = build_four_condition_requests(Path("."), corpus["tasks"][0]["id"])
+          assert tuple(request.arm for request in requests) == ARM_NAMES
+          assert all("gold" not in request.to_model_payload()[0] for request in requests)
+          print(f"verified {len(source_digests)} source blobs; bound {len(corpus['tasks'])} frozen Reader tasks across {len(ARM_NAMES)} arms")
+          PY
+
+      - name: Compile bridge and inspect whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            qualification/stem-transfer-cell-artifact-p0/stem_transfer_cell_artifact.py \
+            qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/stem_bridge.py \
+            qualification/neuron-shared-encoder/neuron_shared_encoder/reader_fixture_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_stem_bridge.py \
+            qualification/neuron-shared-encoder/tests/test_reader_fixture_bridge.py
+          git diff --check
