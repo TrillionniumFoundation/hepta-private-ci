@@ -730,7 +730,9 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
                 authority: AuthorityPosture::DENY_ALL,
             };
             return Ok(match decision.decision {
-                AdvisoryDecisionV1::Abstained => CanonicalRunOutcomeV1::Abstained(Box::new(terminal)),
+                AdvisoryDecisionV1::Abstained => {
+                    CanonicalRunOutcomeV1::Abstained(Box::new(terminal))
+                }
                 AdvisoryDecisionV1::SlowPath => CanonicalRunOutcomeV1::SlowPath(Box::new(terminal)),
                 AdvisoryDecisionV1::Selected { .. } => unreachable!(),
             });
