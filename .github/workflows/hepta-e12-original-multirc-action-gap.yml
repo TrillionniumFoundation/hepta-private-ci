@@ -75,7 +75,8 @@ jobs:
           set -euo pipefail
           python "$ROOT/e12_gap_multirc.py" --archive "$ARCHIVE" \
             --output "$BLIND/blind-original-policies.json" | tee "$BLIND/blind-stdout.json"
-          sha256sum "$BLIND/blind-original-policies.json" > "$BLIND/blind.sha256"
+          (cd "$BLIND" && sha256sum blind-original-policies.json > blind.sha256)
+          grep -Eq '^[0-9a-f]{64}  blind-original-policies[.]json$' "$BLIND/blind.sha256"
           test ! -e "$BLIND/validation.parquet"
       - name: Preserve unscored policy plus all failed attempt information
         uses: actions/upload-artifact@v4
@@ -119,6 +120,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$(cat /tmp/hepta-gap-blind-read/source-head.txt)"
           sha256sum --check /tmp/hepta-gap-blind-read/source-hashes.sha256
           cd /tmp/hepta-gap-blind-read
+          grep -Eq '^[0-9a-f]{64}  blind-original-policies[.]json$' blind.sha256
           sha256sum --check blind.sha256
       - name: Install only pinned human-publisher scoring libraries
         shell: bash
