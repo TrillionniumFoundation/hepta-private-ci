@@ -468,6 +468,29 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         &mut self,
     ) -> Result<WriterHandoffCheckpointV1, CellSplitOwnerErrorV1<N::Error>> {
         let checkpoint = self.journal.checkpoint().clone();
+        // A valid historical CAS acknowledgement does not mean its source
+        // lineage remains eligible today. Re-query CURRENT native Artifact
+        // authority before all later state/fence/route effects. Otherwise a
+        // revoked model could be installed after an apparently valid migrate.
+        if matches!(
+            checkpoint.phase,
+            WriterHandoffPhaseV1::Migrated
+                | WriterHandoffPhaseV1::Validated
+                | WriterHandoffPhaseV1::NewWriterFenced
+                | WriterHandoffPhaseV1::RoutePublished
+                | WriterHandoffPhaseV1::Retired
+        ) {
+            let cas = self.require_observation(
+                &checkpoint.plan,
+                WriterHandoffPhaseV1::Snapshotted,
+            )?;
+            if !matches!(
+                cas.evidence,
+                CellSplitNativeEvidenceV1::ArtifactCasCommitted { .. }
+            ) {
+                return Err(CellSplitOwnerErrorV1::InvalidObservation);
+            }
+        }
         if checkpoint.phase == WriterHandoffPhaseV1::Retired {
             let observed = self.require_observation(&checkpoint.plan, checkpoint.phase)?;
             if observed.evidence_digest() != checkpoint.evidence_digest {
