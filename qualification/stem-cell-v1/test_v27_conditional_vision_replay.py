@@ -168,4 +168,29 @@ class SourceTests(unittest.TestCase):
                         workflow.index('e3_scienceqa_contract.py?ref='))
 
 
+    def test_full_matrix_regression_pins_crypto_and_original_v24(self):
+        """The 2026-10-17 hosted regression failure cannot be bypassed with skips."""
+        path = (Path(__file__).resolve().parents[2] / '.github' / 'workflows' /
+                'hepta-neuron-next-round-matrix.yml')
+        complete = path.read_text()
+        self.assertEqual(complete.count('  execution-regressions:'), 1)
+        job = complete.split('  execution-regressions:', 1)[1].split(
+            '  hf-profile-compatibility:', 1)[0]
+        self.assertIn('actions: read', job)
+        self.assertIn('cryptography==50.0.2', job)
+        self.assertIn('actions/artifacts/11945106672/zip', job)
+        self.assertIn('7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30', job)
+        self.assertIn('GH_TOKEN: ${{ github.token }}', job)
+        self.assertIn('sha256sum -c -', job)
+        self.assertIn("HEPTA_V24_ORIGINAL_ZIP=%s", job)
+        self.assertIn('"$GITHUB_ENV"', job)
+        self.assertIn("python -m unittest discover -s qualification/stem-cell-v1", job)
+        self.assertNotIn('HEPTA_V24_ORIGINAL_ZIP=/dev/null', job)
+        self.assertNotIn('|| true', job)
+        self.assertLess(job.index('cryptography==50.0.2'), job.index('actions/artifacts/11945106672/zip'))
+        self.assertLess(job.index('actions/artifacts/11945106672/zip'),
+                        job.index('python -m unittest discover -s qualification/stem-cell-v1'))
+
+
+
 if __name__=='__main__':unittest.main()

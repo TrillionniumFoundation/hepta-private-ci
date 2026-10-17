@@ -117,3 +117,11 @@ python -m py_compile v27_conditional_vision_replay.py test_v27_conditional_visio
 Original reenactment requires the exact E3 archived ZIP, original frozen dataset
 material and a SHA-pinned source owner. No synthetic fixture or missing material
 may be replaced with success.
+
+## V27 follow-up: mandatory original V24 regression inputs (2026-10-17)
+
+Hosted exact-head `hepta-neuron-next-round-matrix` [run 39003384722](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39003384722) executed 1,038 tests, reporting six errors and 83 skips. Five errors resulted from `ModuleNotFoundError: cryptography`; the sixth was the **correct hard failure** that `OriginalMaterial.setUpClass` refused a missing `HEPTA_V24_ORIGINAL_ZIP`. This is a dependency/material provisioning defect in the inherited broad research workflow, not evidence of failed model efficacy, and certainly not a reason to remove `OriginalMaterial`.
+
+The follow-up workflow pins `cryptography==50.0.2` in the existing Python 3.13 CPU test environment, grants the `execution-regressions` job only `contents:read` / `actions:read`, then retrieves **original, previously published** E3 archive `11945106672`. The expected full ZIP SHA-256 is `7807b82d6c747b0b13666b330145e3801a8c8a0aadeee3f2ff7ab5f5c8c00a30`. The complete archive was separately acquired through the GitHub artifact connection in this repair round, and its byte SHA-256 and 11-member roster actually matched this expectation. The hosted job independently verifies those bytes and supplies `HEPTA_V24_ORIGINAL_ZIP` before the broad regression suite. GitHub archive retrieval failure, changed SHA, absent dependency, or a failing genuine original-material test still makes the job fail.
+
+Existing 83 conditionally skipped tests were outside this fix and remain separately unqualified; the CI label now records that optional skips exist. This change does not convert those skips to successes or weaken any selection, provenance, CPU/GPU, prospective utility, safety or authority requirements. At authoring time **new exact-HEAD hosted results were not yet available**. The V27 original-label replay is distinct from this inherited V24 material gate and requires its own completed push job.
