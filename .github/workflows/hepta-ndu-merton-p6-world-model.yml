@@ -1,0 +1,52 @@
+name: Hepta NDU Merton P6 learned finite World Model (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/world_model_p6/**'
+      - '.github/workflows/hepta-ndu-merton-p6-world-model.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-control-and-independent-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Strict synthetic controls and falsification in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/world_model_p6
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p 'test_*.py' -v
+          python -m compileall -q "$D"
+      - name: Producer and independent held-out outcome opening (synthetic only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/world_model_p6
+          mkdir -p /tmp/hepta-p6
+          python "$D/world_model_p6.py" --output /tmp/hepta-p6/original-attempt.json
+          python "$D/independent_audit.py" --attempt /tmp/hepta-p6/original-attempt.json --output /tmp/hepta-p6/independent-audit.json
+          python - /tmp/hepta-p6/independent-audit.json <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as stream:
+              data = json.load(stream)
+          scores = data['score']
+          assert data['posture'] == 'RESEARCH_ONLY_DENY_ALL'
+          assert data['same_profile_parity'] is True
+          assert scores['ndu_discrete'] == scores['ordinary_same_profile']
+          assert scores['neutral']['correct'] >= scores['ndu_discrete']['correct']
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p6-synthetic-attempt-and-independent-audit
+          path: /tmp/hepta-p6
+          if-no-files-found: error
+          retention-days: 7
