@@ -1,0 +1,40 @@
+name: Hepta Cell Fabric P0.6 prospectively paired study contract (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - "research/hepta-cell-fabric-p06-prospective-contract-20261017"
+    paths:
+      - "qualification/neural-cell-fabric-p0/prospective_split_panel.py"
+      - "qualification/neural-cell-fabric-p0/test_prospective_split_panel.py"
+      - "qualification/neural-cell-fabric-p0/PROSPECTIVE_SPLIT_P06.md"
+      - ".github/workflows/hepta-cell-fabric-p06-prospective.yml"
+  pull_request:
+    paths:
+      - "qualification/neural-cell-fabric-p0/prospective_split_panel.py"
+      - "qualification/neural-cell-fabric-p0/test_prospective_split_panel.py"
+      - "qualification/neural-cell-fabric-p0/PROSPECTIVE_SPLIT_P06.md"
+      - ".github/workflows/hepta-cell-fabric-p06-prospective.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-contract:
+    name: Source-locked paired/future evidence negatives (no model authority)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate and run strict normal/optimized contracts
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m unittest -v test_prospective_split_panel
+          python3 -O -m unittest -q test_prospective_split_panel
+          echo 'P06_SYNTHETIC_CONTRACT_ONLY / HOLD_NO_GO / DENY_ALL'
