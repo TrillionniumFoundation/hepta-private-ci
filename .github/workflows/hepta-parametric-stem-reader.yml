@@ -1,0 +1,265 @@
+name: Hepta original-weight MemoryCell Reader capacity (DENY_ALL)
+on:
+  pull_request:
+    branches: [research/memorycell-stem-reader-20261017]
+    paths:
+      - 'scripts/memory_cell/parametric_stem_reader_language.py'
+      - 'scripts/memory_cell/test_parametric_stem_reader_language.py'
+      - 'codex-rs/hepta-intelligence-eval/PARAMETRIC_STEM_READER_20261017.md'
+      - '.github/workflows/hepta-parametric-stem-reader.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-param-reader-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  privileged-source-and-model-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install frozen research dependency profile
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - name: Adversarial source/Reader boundary contracts (no model answer inference)
+        run: |
+          set -euo pipefail
+          mkdir /tmp/stem-reader-preflight
+          python3 -m unittest discover -s scripts/memory_cell -p test_parametric_stem_reader_language.py -v 2>&1 | tee /tmp/stem-reader-preflight/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/publisher-private-stage
+      - name: Isolate public source and two disjoint pinned-model artifacts
+        run: |
+          set -euo pipefail
+          mkdir /tmp/prepared-original /tmp/stem-encoder-stage /tmp/stem-reader-stage
+          tar -C /tmp/prepared-original -xzf /tmp/publisher-private-stage/memory-inputs.tar.gz memory-inputs/locomo.json
+          test "$(sha256sum /tmp/prepared-original/memory-inputs/locomo.json | cut -d' ' -f1)" = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/prepared-original/memory-inputs/locomo.json /tmp/publisher-prepared > /tmp/stem-reader-preflight/prepared.json
+          mkdir /tmp/stem-public
+          cp /tmp/publisher-prepared/{public,manifest}.json /tmp/stem-public/
+          test ! -e /tmp/stem-public/private.json
+          tar -C /tmp/stem-encoder-stage -xzf /tmp/publisher-private-stage/memory-inputs.tar.gz \
+            memory-inputs/encoder/model.safetensors memory-inputs/encoder/config.json \
+            memory-inputs/encoder/tokenizer.json memory-inputs/encoder/vocab.txt \
+            memory-inputs/encoder/special_tokens_map.json memory-inputs/encoder/tokenizer_config.json
+          tar -C /tmp/stem-reader-stage -xzf /tmp/publisher-private-stage/memory-inputs.tar.gz \
+            memory-inputs/reader/model.safetensors memory-inputs/reader/config.json \
+            memory-inputs/reader/generation_config.json memory-inputs/reader/merges.txt \
+            memory-inputs/reader/special_tokens_map.json memory-inputs/reader/tokenizer.json \
+            memory-inputs/reader/tokenizer_config.json memory-inputs/reader/vocab.json
+          mkdir /tmp/isolated-reader-transport
+          mv /tmp/stem-reader-stage/memory-inputs/reader/* /tmp/isolated-reader-transport/
+          (cd /tmp/isolated-reader-transport && find . -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 scripts/memory_cell/reader_weight_transport.py /tmp/isolated-reader-transport > /tmp/stem-reader-preflight/reader-model-receipt.json
+          test "$(find /tmp/isolated-reader-transport -maxdepth 1 -type f | wc -l)" -eq 9
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-reader-public-no-labels
+          path: /tmp/stem-public/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-reader-frozen-encoder-only
+          path: /tmp/stem-encoder-stage/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-reader-frozen-reader-only
+          path: /tmp/isolated-reader-transport/
+          if-no-files-found: error
+      - name: Source-stage SHA receipts
+        if: always()
+        run: |
+          mkdir -p /tmp/stem-reader-preflight
+          git rev-parse HEAD > /tmp/stem-reader-preflight/head.txt
+          (cd /tmp/stem-reader-preflight && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-reader-preflight-not-acceptance
+          path: /tmp/stem-reader-preflight/
+          if-no-files-found: error
+  frozen-miniLM-source-ranking:
+    needs: privileged-source-and-model-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned MiniLM CPU runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-public-no-labels
+          path: /tmp/stem-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-frozen-encoder-only
+          path: /tmp/stem-encoder-stage
+      - name: Train bounded real Encoder-linked parameter memory without reference labels
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/stem-public/private.json
+          mkdir /tmp/stem-rank-receipts
+          /usr/bin/time -v -o /tmp/stem-rank-receipts/resources.txt \
+            python3 scripts/memory_cell/parametric_stem_reader.py run \
+              /tmp/stem-public /tmp/stem-encoder-stage/memory-inputs/encoder \
+              /tmp/stem-sealed-rank > /tmp/stem-rank-receipts/run.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-reader-original-source-rank-unscored
+          path: /tmp/stem-sealed-rank/
+          if-no-files-found: error
+      - name: Rank receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/stem-rank-receipts
+          git rev-parse HEAD > /tmp/stem-rank-receipts/head.txt
+          (cd /tmp/stem-rank-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-reader-rank-resources-not-acceptance
+          path: /tmp/stem-rank-receipts/
+          if-no-files-found: error
+  physically-isolated-original-reader:
+    needs: frozen-miniLM-source-ranking
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU original Reader dependencies
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-public-no-labels
+          path: /tmp/stem-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-original-source-rank-unscored
+          path: /tmp/stem-sealed-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-frozen-reader-only
+          path: /tmp/stem-reader-transport
+      - name: Original SmolLM2 50 real generations; no label, no full original archive
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/stem-public/private.json
+          test ! -e /tmp/stem-reader-transport/private.json
+          mkdir /tmp/stem-reader-model-receipts
+          /usr/bin/time -v -o /tmp/stem-reader-model-receipts/resources.txt \
+            python3 scripts/memory_cell/parametric_stem_reader_language.py run \
+              /tmp/stem-public /tmp/stem-sealed-rank /tmp/stem-reader-transport \
+              /tmp/stem-reader-generations > /tmp/stem-reader-model-receipts/reader.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-reader-original-language-unscored
+          path: /tmp/stem-reader-generations/
+          if-no-files-found: error
+      - name: Reader receipt
+        if: always()
+        run: |
+          mkdir -p /tmp/stem-reader-model-receipts
+          git rev-parse HEAD > /tmp/stem-reader-model-receipts/head.txt
+          (cd /tmp/stem-reader-model-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-reader-original-model-resource-not-acceptance
+          path: /tmp/stem-reader-model-receipts/
+          if-no-files-found: error
+  independent-source-and-language-review:
+    needs: physically-isolated-original-reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install same original CPU Encoder runtime
+        run: |
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install numpy==1.26.4 safetensors==0.6.2 regex==2025.9.18 jinja2==3.1.6
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-public-no-labels
+          path: /tmp/stem-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-original-source-rank-unscored
+          path: /tmp/stem-sealed-rank
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-original-language-unscored
+          path: /tmp/stem-reader-generations
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: stem-reader-frozen-encoder-only
+          path: /tmp/stem-encoder-stage
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp/original-review-only
+      - name: Exact original Encoder reexecution THEN publisher answer scoring
+        run: |
+          set -euo pipefail
+          mkdir /tmp/review-original-source /tmp/stem-language-receipts
+          tar -C /tmp/review-original-source -xzf /tmp/original-review-only/memory-inputs.tar.gz memory-inputs/locomo.json
+          python3 scripts/memory_cell/associative_graph_causal.py prepare \
+            /tmp/review-original-source/memory-inputs/locomo.json /tmp/stem-review-prepared > /tmp/stem-language-receipts/prepared.json
+          cmp /tmp/stem-review-prepared/public.json /tmp/stem-public/public.json
+          cmp /tmp/stem-review-prepared/manifest.json /tmp/stem-public/manifest.json
+          python3 -c 'import parametric_stem_reader as s;s.verified_run("/tmp/stem-review-prepared","/tmp/stem-sealed-rank","/tmp/stem-encoder-stage/memory-inputs/encoder")'
+          python3 scripts/memory_cell/parametric_stem_reader_language.py review \
+            /tmp/stem-public /tmp/stem-sealed-rank /tmp/stem-reader-generations \
+            /tmp/review-original-source/memory-inputs/locomo.json \
+            /tmp/stem-language-receipts/report.json > /tmp/stem-language-receipts/summary.json
+      - name: Exact source/reviewer receipts
+        if: always()
+        run: |
+          mkdir -p /tmp/stem-language-receipts
+          git rev-parse HEAD > /tmp/stem-language-receipts/head.txt
+          (cd /tmp/stem-language-receipts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-reader-final-postseal-negative-not-acceptance
+          path: /tmp/stem-language-receipts/
+          if-no-files-found: error
