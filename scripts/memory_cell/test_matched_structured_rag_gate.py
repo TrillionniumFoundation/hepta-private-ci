@@ -12,7 +12,12 @@ from matched_structured_rag_gate import audit, payload
 class FrozenSameReaderGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.fixture = payload(Path(os.environ["HEPTA_MATCHED_RAG_ARCHIVE"]))
+        archive = os.environ.get("HEPTA_MATCHED_RAG_ARCHIVE")
+        if archive is None:
+            raise unittest.SkipTest(
+                "archived-result tests require the pinned artifact in their dedicated CI job"
+            )
+        cls.fixture = payload(Path(archive))
 
     def sample(self):
         plan, report, replay, rows, raw = self.fixture
