@@ -1091,6 +1091,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertGreater(end, helper_start, "read-only join must be scoped")
         observation = source[start:helper_start]
         helper = source[helper_start:end]
+        audit = source[start:end]
         self.assertIn(
             "pub posture: NonAuthorizingPosture,",
             source,
@@ -1110,8 +1111,8 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         ):
             self.assertNotIn(
                 forbidden,
-                observation,
-                "orphan evidence must never invoke a mutation or Final-use owner",
+                audit,
+                "orphan evidence and its helper must never mutate or grant Final-use",
             )
         # Lexical code strips comments and string literals deliberately.
         # Count genuine original-owner calls, not diagnostic message text.

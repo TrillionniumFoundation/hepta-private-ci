@@ -165,7 +165,7 @@ class ScopeTests(unittest.TestCase):
         gate = "cns-orphan-control-readonly-join.json"
         self.assertEqual(workflow.count(gate), 1)
         self.assertIn(
-            "--minimum-tests 2 -- cargo test --locked --manifest-path "
+            "--minimum-tests 3 -- cargo test --locked --manifest-path "
             "codex-rs/Cargo.toml -p codex-hepta-runtime "
             "--features cell-split-cns-port --lib orphan_control_cns_read_only_",
             workflow,
