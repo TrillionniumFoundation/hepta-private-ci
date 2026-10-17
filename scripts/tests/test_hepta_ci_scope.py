@@ -344,9 +344,13 @@ class ScopeTests(unittest.TestCase):
         # Keep the original format and product (non-cfg(test)) gates before
         # expensive native canary work without weakening any CI command.
         fmt_step = "      - name: Early locked CellSplit Control/CNS Rustfmt preflight"
-        canary_step = "      - name: Early CellSplit canary and evaluator compile regression"
+        canary_step = (
+            "      - name: Early CellSplit canary and evaluator compile "
+            "regression"
+        )
         product_step = (
-            "      - name: Early original Control WAL recovery observer non-test compile"
+            "      - name: Early original Control WAL recovery observer "
+            "non-test compile"
         )
         for step in (fmt_step, product_step, canary_step):
             self.assertEqual(workflow.count(step), 1)
