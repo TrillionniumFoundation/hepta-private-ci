@@ -3290,9 +3290,7 @@ impl NeuronFeatureDriver for ScalarOvergrantOnceDriver {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         let mut result = Driver.run_neuron_features(handle, request)?;
-        let previous_calls = self
-            .calls
-            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        let previous_calls = self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         if previous_calls == 0 {
             // 1024 resident + 3073 transient breaches the original 4096
             // worker grant after the backend has physically returned.
@@ -3397,10 +3395,12 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
     }
     let malformed = worker.poll_and_execute(101).unwrap();
     assert_eq!(malformed.outcomes.len(), 2);
-    assert!(malformed
-        .outcomes
-        .iter()
-        .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
+    assert!(
+        malformed
+            .outcomes
+            .iter()
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker)))
+    );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 
     // Two *new* identities and genuinely separate signed one-shot grants.
@@ -3415,8 +3415,7 @@ fn poisoned_native_cohort_denies_fresh_nonces_without_second_driver_call() {
         .into_iter()
         .enumerate()
         .map(|(index, request)| {
-            let binding =
-                neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+            let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
             let grant = signed_member(
                 &signer,
                 binding,
