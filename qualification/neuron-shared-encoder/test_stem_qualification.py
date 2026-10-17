@@ -219,6 +219,12 @@ class StemQualificationTests(unittest.TestCase):
         with self.assertRaises(StemQualificationError):
             replace(bundle(), components=comps[:-2] + (comps[-1], comps[-1]))
 
+    def test_component_bundle_rejects_duplicate_id(self) -> None:
+        comps = bundle().components
+        duplicate = replace(comps[1], component_id=comps[0].component_id)
+        with self.assertRaises(StemQualificationError):
+            replace(bundle(), components=(comps[0], duplicate) + comps[2:])
+
     def test_synthetic_component_is_not_qualification_evidence(self) -> None:
         with self.assertRaises(StemQualificationError):
             replace(component("device"), evidence_class="SYNTHETIC_SMOKE")
