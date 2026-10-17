@@ -26,7 +26,7 @@ fn digest(raw: &[u8]) -> Digest32 {
     Digest32::of_bytes(raw)
 }
 
-fn gen(raw: u64) -> Generation {
+fn generation(raw: u64) -> Generation {
     Generation::new(raw).expect("generation")
 }
 
@@ -36,8 +36,8 @@ fn plan() -> WriterHandoffPlanV1 {
         domain_id: id("cell.scope.test.1"),
         source_writer: id("cell.parent"),
         target_writer: id("cell.child"),
-        old_generation: gen(7),
-        new_generation: gen(8),
+        old_generation: generation(7),
+        new_generation: generation(8),
         authority_epoch: 17,
         migration_plan_digest: digest(b"migration"),
         schema_digest: digest(b"schema"),
