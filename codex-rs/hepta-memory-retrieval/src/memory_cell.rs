@@ -116,6 +116,17 @@ pub fn run_memory_cell_tick(
         return Err(MemoryCellRuntimeErrorV1::Binding("generation_vector_digest"));
     }
 
+    let generated_union =
+        crate::build_candidate_union_from_generated(cue, retrieval_policy, generated_input)
+            .map_err(MemoryCellRuntimeErrorV1::Retrieval)?;
+    let input_ood_ppm = generated_union
+        .union
+        .entries
+        .iter()
+        .map(|entry| probability_ppm(entry.maximum_ood))
+        .max()
+        .unwrap_or(0);
+
     let recall = crate::recall_generated_with_engram(
         cue,
         retrieval_policy,
@@ -149,13 +160,7 @@ pub fn run_memory_cell_tick(
             )
         })
         .unwrap_or((0, 0));
-    let ood_ppm = recall
-        .packet
-        .selections
-        .iter()
-        .map(|selection| probability_ppm(selection.maximum_ood))
-        .max()
-        .unwrap_or(0);
+    let ood_ppm = input_ood_ppm;
 
     let mut receipt = MemoryCellTickReceiptV1 {
         schema_version: 1,
