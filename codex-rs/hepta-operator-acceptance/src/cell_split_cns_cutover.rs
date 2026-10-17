@@ -435,7 +435,12 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
                 .port
                 .committed_sequence(&self.binding.cns_id)
                 .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
-            if current_sequence == 0 || record.committed_sequence > current_sequence {
+            // A later CNS journal revision is not evidence that this older
+            // signed cutover remains the currently committed route. Even
+            // when the serving route's digest happens to match again, an
+            // advanced frontier may conceal rollback / ABA replacement.
+            // Demand the exact original runtime commitment revision.
+            if current_sequence != record.committed_sequence {
                 return Err(CellSplitCnsCutoverErrorV1::Invalid);
             }
         }

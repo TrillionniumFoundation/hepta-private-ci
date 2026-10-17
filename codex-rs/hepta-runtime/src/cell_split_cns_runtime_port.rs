@@ -682,8 +682,11 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
             .witness
             .current_durable_sequence(&self.binding.cns_id)
             .map_err(|e| e.to_string())?;
-        if frontier == 0 || frontier < commit.committed_sequence {
-            return Err("signed CNS receipt exceeds independently retained frontier".into());
+        // Read-only direct callers require the same current revision as the
+        // durable CNS effect adapter. A valid old signature and unchanged
+        // route digest cannot hide an intervening CNS WAL revision / ABA.
+        if frontier != commit.committed_sequence {
+            return Err("signed CNS receipt is not the current durable frontier".into());
         }
         Ok(())
     }
