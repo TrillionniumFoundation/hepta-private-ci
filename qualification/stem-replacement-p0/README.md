@@ -6,7 +6,9 @@ NDU training, CAS/CNS/FinalUse, online Cell Split, or changes to production Work
 This additive research slice starts from main's backend-neutral Neuron contract.
 It prevents an apparently impressive public checkpoint benchmark (different data,
 training or token budget) from being mistaken for a controlled Hepta decision result.
-It does **not** download or load 400–434M pretrained models or certify performance.
+The P0 source gate alone does **not** download or load 400–434M pretrained
+models or certify performance. The separate opt-in P1.5 workflow attempts real
+model loading only after source-byte and independent rehash gates have passed.
 
 ## Immutable public candidate identities (not trusted model signatures)
 
@@ -152,7 +154,8 @@ stage in a separate process. A second independent rehash is enforced inside
 - Ettin's immutable `pytorch_model.bin` is opened **only** with
   `torch.load(..., weights_only=True, map_location="cpu")` on the pinned
   `torch==2.10.0` CPU runtime. The complete named tensor inventory, shapes,
-  dtypes and byte-bounded source identity must match an explicitly constructed
+  dtypes and byte-bounded source identity (including native Torch OrderedDict
+  state dictionaries) must match an explicitly constructed
   original `AutoModelForMaskedLM` architecture; any mismatch stops the run.
   `trust_remote_code` is always false. The output is one real encoder CLS
   feature digest, **not** a binary support probability.
