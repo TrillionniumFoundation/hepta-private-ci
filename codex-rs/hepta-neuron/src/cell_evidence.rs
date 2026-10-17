@@ -1,7 +1,6 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -78,7 +77,7 @@ pub fn bind_cell_evidence_v1(
     if runtime.tick.checkpoint_after.is_zero() {
         return Err(CellEvidenceError::EmptyDigest("checkpoint"));
     }
-    if runtime.signal.authority != AuthorityPosture::DENY_ALL {
+    if runtime.signal.authority.grants_any() {
         return Err(CellEvidenceError::AuthorityViolation);
     }
     if runtime.tick.confidence_ppm > PPM_LIMIT_V1 || runtime.tick.ood_ppm > PPM_LIMIT_V1 {
