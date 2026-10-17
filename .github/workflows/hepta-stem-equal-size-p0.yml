@@ -244,3 +244,14 @@ jobs:
           assert doc["disposition"] == "HOLD_NO_GO"
           print(f"{model}: genuine CPU forward observed; no accuracy or production claim")
           PYVERIFY
+      - name: Retain physical model research receipts (no weights or human labels)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-physical-${{ matrix.model }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-reviewed-${{ matrix.model }}.json
+            ${{ runner.temp }}/hepta-forward-${{ matrix.model }}.json
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 0
