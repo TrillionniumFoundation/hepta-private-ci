@@ -153,18 +153,18 @@ class TestPhysicalInterventionMechanics(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             producer=Path(root)/'sealed-interventions.json'
             seal=Path(root)/'prelabel.sha256'
-            original=b'{"source":"prelabel-only","authority":"DENY_ALL"}\\n'
+            original=b'{"source":"prelabel-only","authority":"DENY_ALL"}\n'
             producer.write_bytes(original)
-            seal.write_text(audit.sha(original)+'  '+str(producer)+'\\n',encoding='ascii')
+            seal.write_text(audit.sha(original)+'  '+str(producer)+'\n',encoding='ascii')
             self.assertEqual(audit.verify_prelabel_seal(seal,producer,original),
                              audit.sha(original))
-            for content in ('0'*64+'  '+str(producer)+'\\n',
-                            audit.sha(original)+'  '+str(producer)+'-wrong\\n',
-                            audit.sha(original)+' *'+str(producer)+'\\n'):
+            for content in ('0'*64+'  '+str(producer)+'\n',
+                            audit.sha(original)+'  '+str(producer)+'-wrong\n',
+                            audit.sha(original)+' *'+str(producer)+'\n'):
                 seal.write_text(content,encoding='ascii')
                 with self.assertRaises(audit.ReviewError):
                     audit.verify_prelabel_seal(seal,producer,original)
-            seal.write_text(audit.sha(original)+'  '+str(producer)+'\\n',encoding='ascii')
+            seal.write_text(audit.sha(original)+'  '+str(producer)+'\n',encoding='ascii')
             with self.assertRaises(audit.ReviewError):
                 audit.verify_prelabel_seal(seal,producer,original+b'drift')
             link=Path(root)/'link.sha256'
