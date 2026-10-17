@@ -189,7 +189,9 @@ fn parse_frontmatter(
         if value.1.is_some() {
             return (
                 BTreeMap::new(),
-                Some(format!("frontmatter field {key:?} has an explicit YAML tag")),
+                Some(format!(
+                    "frontmatter field {key:?} has an explicit YAML tag"
+                )),
             );
         }
         // Fail closed if two YAML-distinct keys normalize to the same
