@@ -48,6 +48,13 @@ class ShardedNativeWorkflowTests(unittest.TestCase):
         self.assertNotIn("HF_HUB_OFFLINE", self.source[stage:infer])
         self.assertIn("HF_HUB_OFFLINE: '1'", self.source[infer:])
 
+    def test_before_pairing_the_collector_checks_original_slot_order(self):
+        self.assertIn("verify_frozen_shard_attempts", self.source)
+        self.assertLess(
+            self.source.index("verify_frozen_shard_attempts(plan,reg['conditions']"),
+            self.source.index("paired=0; delta=0.0"),
+        )
+
     def test_original_failures_and_reader_pair_audited(self):
         self.assertIn("if: always()", self.source)
         self.assertIn("raw-answers.jsonl", self.source)
