@@ -192,7 +192,11 @@ impl CellSplitExecutionPortV1 for FixturePort {
             fs::write(path, b"{}").map_err(|_| "fixture could not tamper local readback frame")?;
         }
         #[cfg(unix)]
-        if let Some(path) = self.replace_identical_during_live_readback.borrow_mut().take() {
+        if let Some(path) = self
+            .replace_identical_during_live_readback
+            .borrow_mut()
+            .take()
+        {
             // Equal original bytes and mode, but a different physical inode.
             // Only source-fixture code can deliberately corrupt this directory.
             let alternative = path.with_extension("equal-byte-replacement");
@@ -200,8 +204,7 @@ impl CellSplitExecutionPortV1 for FixturePort {
             let original_mode = fs::metadata(&path)
                 .map_err(|_| "fixture metadata unavailable")?
                 .permissions();
-            fs::set_permissions(&alternative, original_mode)
-                .map_err(|_| "fixture chmod failed")?;
+            fs::set_permissions(&alternative, original_mode).map_err(|_| "fixture chmod failed")?;
             fs::rename(&alternative, &path).map_err(|_| "fixture rename failed")?;
         }
         if self.reject_signature || receipt.owner_signature_bytes.len() != 64 {
@@ -1274,7 +1277,10 @@ fn final_negative_rpc_cannot_return_healthy_incomplete_after_local_frame_mutatio
         for (filename, expected) in [
             ("cell-split-frozen-plan.json", "frozen plan drift"),
             ("cell-split-owner-trust-pins.json", "owner trust pins drift"),
-            ("cell-split-00-prepared.json", "unexpected successor frame; reopen required"),
+            (
+                "cell-split-00-prepared.json",
+                "unexpected successor frame; reopen required",
+            ),
         ] {
             let root = private_tempdir();
             let state = Rc::new(RefCell::new(Observed::default()));
@@ -2254,7 +2260,10 @@ fn post_effect_committed_frame_collision_is_ambiguous_and_never_reexecuted() {
         fs::read(&conflicting_frame).expect("injected collision evidence"),
         b"{}".to_vec()
     );
-    assert!(owner.advance().is_err(), "collision cannot trigger re-execute");
+    assert!(
+        owner.advance().is_err(),
+        "collision cannot trigger re-execute"
+    );
     assert_eq!(state.borrow().executions, 1);
 }
 
@@ -2353,17 +2362,21 @@ fn byte_identical_frame_replacement_during_effect_never_acknowledges_or_reexecut
     let mut owner =
         CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
     *replace.borrow_mut() = Some(root.path().join("cell-split-00-prepared.json"));
+    // The original external effect may already have committed. The inode
+    // replacement is a real local custody violation, but a post-effect
+    // failure is ALWAYS Ambiguous: it cannot prove safe non-execution.
     assert!(matches!(
         owner.advance(),
-        Err(CellSplitExecutionErrorV1::Invalid(
-            "original local split frame identity changed"
-        ))
+        Err(CellSplitExecutionErrorV1::Ambiguous)
     ));
     assert_eq!(state.borrow().executions, 1);
     assert_eq!(owner.completed_steps(), 0);
     assert!(root.path().join("cell-split-00-prepared.json").exists());
     assert!(!root.path().join("cell-split-00-committed.json").exists());
-    assert!(owner.advance().is_err(), "no replay after inode substitution");
+    assert!(
+        owner.advance().is_err(),
+        "no replay after inode substitution"
+    );
     assert_eq!(state.borrow().executions, 1);
 }
 
@@ -2383,7 +2396,10 @@ fn byte_identical_frame_replacement_during_transcript_denies_positive_evidence()
         let mut owner =
             CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
         for _ in 0..4 {
-            owner.advance().expect("signed operation").expect("original receipt");
+            owner
+                .advance()
+                .expect("signed operation")
+                .expect("original receipt");
         }
         *replace.borrow_mut() = Some(root.path().join(filename));
         assert!(
@@ -2419,7 +2435,10 @@ fn byte_identical_frame_replacement_during_cold_recovery_denies_rehydration() {
             )
             .expect("original owner");
             for _ in 0..4 {
-                owner.advance().expect("signed operation").expect("original receipt");
+                owner
+                    .advance()
+                    .expect("signed operation")
+                    .expect("original receipt");
             }
         }
         let port = FixturePort::new(state.clone());
