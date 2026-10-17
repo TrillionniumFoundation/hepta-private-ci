@@ -401,10 +401,13 @@ def review(original, prepared, source_run, plan_dir, qwen_dir, model_dir, spec_p
         qa = original_data[req["family"]]["qa"][int(qid.rsplit("q",1)[1])]
         refs[qid] = qa.get("answer")
     scored = score_rows(plan, rows, refs)
+    from memory_reader_source_citation import publisher_sources, audit as audit_citations
+    source_citation = audit_citations(plan, rows, publisher_sources(original_data, plan))
     report = {"schema": SCHEMA + ".postseal.v1", "plan_sha256": ph,
         "journal_sha256": seal["journal_sha256"], "model_repo": REPO,
         "model_revision": REVISION, "model_spec_digest": material,
         "questions": plan["planned_questions"], "per_arm": scored,
+        "publisher_source_citation": source_citation,
         "before_effect_custody": custody,
         "prompt_content_shared_with_135m": True,
         "native_tokenization_and_generation_budget_matched_to_135m": False,
