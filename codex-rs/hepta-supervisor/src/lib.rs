@@ -3,6 +3,7 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_signer;
+mod cell_split_owner;
 mod control;
 mod daemon;
 mod daemon_client;
@@ -175,6 +176,13 @@ pub use writer_handoff::WriterHandoffCheckpointV1;
 pub use writer_handoff::WriterHandoffErrorV1;
 pub use writer_handoff::WriterHandoffPhaseV1;
 pub use writer_handoff::WriterHandoffPlanV1;
+pub use cell_split_owner::CellSplitBindingV1;
+pub use cell_split_owner::CellSplitLookupV1;
+pub use cell_split_owner::CellSplitNativeEvidenceV1;
+pub use cell_split_owner::CellSplitNativeOwnerV1;
+pub use cell_split_owner::CellSplitObservedReceiptV1;
+pub use cell_split_owner::CellSplitOwnerErrorV1;
+pub use cell_split_owner::CellSplitOwnerV1;
 
 #[cfg(unix)]
 pub use unix::UnixManagedProcess;
