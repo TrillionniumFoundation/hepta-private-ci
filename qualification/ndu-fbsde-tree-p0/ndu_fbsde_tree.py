@@ -50,7 +50,7 @@ def _digest(name: str, value: str) -> None:
 
 
 def _identifier(name: str, value: str) -> None:
-    _require(isinstance(value, str) and 0 < len(value) <= 128 and "\\n" not in value, f"{name} is invalid")
+    _require(isinstance(value, str) and 0 < len(value) <= 128 and "\n" not in value, f"{name} is invalid")
 
 
 def _vector(name: str, value: Sequence[float], maximum: int) -> None:
