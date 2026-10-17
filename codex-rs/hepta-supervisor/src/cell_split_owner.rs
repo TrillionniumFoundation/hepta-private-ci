@@ -30,6 +30,9 @@ use crate::WriterHandoffPlanV1;
 pub struct CellSplitBindingV1 {
     pub operation_id: StableId,
     pub selected_artifact_digest: Digest32,
+    /// Opaque independently signed NDU selection digest. Product executors
+    /// must verify the token itself, not merely this checksum.
+    pub selection_digest: Digest32,
     pub predecessor_route_digest: Digest32,
     pub successor_route_digest: Digest32,
 }
@@ -41,6 +44,7 @@ impl CellSplitBindingV1 {
         push_id(&mut bytes, &self.operation_id);
         for d in [
             self.selected_artifact_digest,
+            self.selection_digest,
             self.predecessor_route_digest,
             self.successor_route_digest,
         ] {
@@ -453,6 +457,7 @@ impl<'a, N: CellSplitNativeOwnerV1> CellSplitOwnerV1<'a, N> {
         let plan = &journal.checkpoint().plan;
         if binding.operation_id != plan.operation_id
             || binding.selected_artifact_digest.is_zero()
+            || binding.selection_digest.is_zero()
             || binding.predecessor_route_digest.is_zero()
             || binding.successor_route_digest.is_zero()
             || binding.predecessor_route_digest == binding.successor_route_digest
