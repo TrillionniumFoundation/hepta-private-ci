@@ -5,6 +5,11 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      # Borrowed-Worker strict Clippy traverses these path dependencies.
+      - "codex-rs/hepta-intelligence-eval/src/**"
+      - "codex-rs/core/src/client.rs"
+      - "codex-rs/core/src/client_tests.rs"
+      - "codex-rs/core/src/client_provider_policy_tests.rs"
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/ext/hepta-memory/src/cognitive/**"
       - "codex-rs/hepta-cell-roles/src/control_wal.rs"
@@ -54,7 +59,7 @@ jobs:
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Require original Core and Worker formatting
-        run: cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check
+        run: cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-intelligence-eval -p codex-core -- --check
       - name: Check full typed V1 Core regression suite
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-all.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib -- --nocapture
       - name: Require both owned-versus-borrowed V1 digest and receipt cases
@@ -65,6 +70,10 @@ jobs:
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-original-stem.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib typed_stem_original_shared_native_batch_executes_one_backend_with_two_signed_receipts -- --nocapture --test-threads=1
       - name: Exercise real non-test Control/CNS bootstrap denial
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-deny.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --test original_control_non_test_gate -- --nocapture --test-threads=1
+      - name: Run actual typed Cell Split planner/lifecycle regressions
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-transitive-cell-split.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib cell_split_ -- --nocapture
+      - name: Run actual Core stream/provider terminal-policy regressions
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-transitive-core-provider.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-core --lib client_provider_policy_tests -- --nocapture
       - name: Verify non-test Worker library and strict all-target Clippy
         shell: bash
         run: |
