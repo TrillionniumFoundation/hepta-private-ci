@@ -44,7 +44,7 @@ jobs:
       - name: Install pinned CPU research environment
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --disable-pip-version-check 'numpy==2.3.5' 'safetensors==0.7.0' 'packaging==26.3'
           python -m pip install --disable-pip-version-check \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
       - name: Source-only mechanism and negative tests (no model-use claim)
