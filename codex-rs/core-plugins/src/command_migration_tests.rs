@@ -39,7 +39,11 @@ fn yaml_description_contract_is_frozen_before_security_parser_migration() {
         "!secret {description: Review changes}",
         "!<tag:yaml.org,2002:map> {description: Review changes}",
     ] {
-        assert_eq!(parse_command_description(raw), Err(InvalidCommandFrontmatter), "{raw}");
+        assert_eq!(
+            parse_command_description(raw),
+            Err(InvalidCommandFrontmatter),
+            "{raw}"
+        );
     }
 }
 #[test]

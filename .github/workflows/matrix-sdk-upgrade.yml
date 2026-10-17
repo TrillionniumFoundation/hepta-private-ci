@@ -270,6 +270,7 @@ jobs:
       CARGO_INCREMENTAL: "0"
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      BASE_REF: ${{ github.event.pull_request.base.ref }}
     steps:
       - name: Checkout exact source with complete history
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -277,7 +278,7 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Authenticate GitHub prospective merge tree and current main
+      - name: Authenticate GitHub prospective merge tree against live PR target
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -285,21 +286,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$SOURCE_SHA" && test -n "$PR_NUMBER"
+          test -n "$SOURCE_SHA" && test -n "$PR_NUMBER" && test -n "$BASE_REF"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          # Event base SHA is a historical snapshot. GitHub's live main,
-          # not an old webhook value, is the base we must actually qualify.
-          current_main="$(gh api "repos/$REPO/branches/main" --jq '.commit.sha')"
-          [[ "$current_main" =~ ^[0-9a-f]{40}$ ]]
-          if [[ "$BASE_SHA" != "$current_main" ]]; then
-            echo "::notice::PR event base SHA is stale; require a newly verified current-main merge"
+          # Reconfirm the LIVE PR target and source. Main-targeted PRs MUST
+          # validate live main; stacked Draft PRs must validate their actual
+          # named parent branch instead of treating main as the merge parent.
+          pr_json="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          test "$(jq -er '.head.sha' <<<"$pr_json")" = "$SOURCE_SHA"
+          test "$(jq -er '.base.ref' <<<"$pr_json")" = "$BASE_REF"
+          current_base="$(gh api "repos/$REPO/branches/$BASE_REF" --jq '.commit.sha')"
+          [[ "$current_base" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BASE_SHA" != "$current_base" ]]; then
+            echo "::notice::PR event base SHA is stale; require newly verified live target $BASE_REF"
           fi
-          BASE_SHA="$current_main"
-          # The webhook's checkout snapshot can predate the GitHub API's
-          # current main tip. Fetch the exact verified commit only when it is
-          # absent, without accepting a historical event-base substitute.
+          BASE_SHA="$current_base"
+          # The webhook checkout can predate the independently verified live
+          # PR target; obtain that exact Git object before strict merge tests.
           if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-            echo "::notice::Verified current-main SHA is absent from checkout; fetching its exact commit"
+            echo "::notice::Verified live target SHA absent; fetching its exact commit"
             git fetch --no-tags origin "$BASE_SHA"
           fi
           git cat-file -e "$BASE_SHA^{commit}"
@@ -312,8 +316,8 @@ jobs:
           test "${parents[1]}" = "$SOURCE_SHA"
           expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
           test "$expected_tree" = "$(jq -er '.tree.sha' <<<"$merge_commit")"
-          # Carry forward the *proved current* parent, never the stale event
-          # SHA, into the synthetic merge action and post-test verification.
+          # Carry forward the verified LIVE PR target, never a historical
+          # webhook base or arbitrary main SHA for a stacked candidate.
           printf 'BASE_SHA=%s\n' "$BASE_SHA" >> "$GITHUB_ENV"
           printf 'EXPECTED_MERGE_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
       - name: Construct locally verified exact prospective merge
