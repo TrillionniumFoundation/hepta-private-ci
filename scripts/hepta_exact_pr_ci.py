@@ -17,6 +17,9 @@ REQUIRED = ("Hepta architecture convergence", "blocking-ci", "v8-canary")
 MANUAL = ("hepta-architecture-convergence.yml", "v8-canary.yml")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z")
+# An explicit branch pin can qualify a modern fix/integration PR without
+# trusting a broad branch prefix or relaxing any HEAD/base/merge SHA check.
+BRANCH_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9_./-]*\Z")
 
 
 def gh(*args: str) -> str:
@@ -32,7 +35,17 @@ def gh_json(endpoint: str) -> dict:
     return payload
 
 
-def validate_pr(pr: dict, repo: str, number: int, sha: str) -> tuple[str, str]:
+def valid_branch_ref(ref: object) -> bool:
+    if not isinstance(ref, str) or not BRANCH_REF.fullmatch(ref):
+        return False
+    if not "/" in ref or ref.endswith(("/", ".", ".lock")) or ".." in ref:
+        return False
+    return all(part not in ("", ".", "..") for part in ref.split("/"))
+
+
+def validate_pr(
+    pr: dict, repo: str, number: int, sha: str, *, expected_ref: str | None = None
+) -> tuple[str, str]:
     if pr.get("number") != number or pr.get("state") != "open" or not pr.get("draft"):
         raise ValueError("expected the same open Draft pull request")
     head, base = pr.get("head", {}), pr.get("base", {})
@@ -40,8 +53,12 @@ def validate_pr(pr: dict, repo: str, number: int, sha: str) -> tuple[str, str]:
         head.get("sha") != sha
         or head.get("repo", {}).get("full_name") != repo
         or not SHA.fullmatch(base.get("sha", ""))
-        or not isinstance(head.get("ref"), str)
-        or not head["ref"].startswith("codex/")
+        or not valid_branch_ref(head.get("ref"))
+        or not (
+            head["ref"] == expected_ref
+            if expected_ref is not None
+            else head["ref"].startswith("codex/")
+        )
     ):
         raise ValueError("PR HEAD, base or repository identity differs from pin")
     return head["ref"], base["sha"]
@@ -127,8 +144,9 @@ def evaluate(
     sha: str,
     *,
     merge_created_at: str | None = None,
+    expected_ref: str | None = None,
 ) -> dict:
-    _, base = validate_pr(pr, repo, number, sha)
+    _, base = validate_pr(pr, repo, number, sha, expected_ref=expected_ref)
     statuses = {}
     for workflow in REQUIRED:
         candidates = [
@@ -162,9 +180,11 @@ def evaluate(
     }
 
 
-def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
+def current(
+    repo: str, number: int, sha: str, *, expected_ref: str | None = None
+) -> tuple[dict, dict]:
     pr = gh_json(f"repos/{repo}/pulls/{number}")
-    validate_pr(pr, repo, number, sha)
+    validate_pr(pr, repo, number, sha, expected_ref=expected_ref)
     response = gh_json(f"repos/{repo}/actions/runs?head_sha={sha}&per_page=100")
     runs = response.get("workflow_runs")
     if not isinstance(runs, list):
@@ -179,6 +199,7 @@ def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
         merge_created_at=(
             merge.get("merge_created_at") if merge["qualified"] else None
         ),
+        expected_ref=expected_ref,
     )
     report["prospective_merge_ref"] = merge
     report["qualified"] = report["qualified"] and merge["qualified"]
@@ -191,6 +212,10 @@ def main() -> int:
     parser.add_argument("--pr", type=int, required=True)
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument(
+        "--expected-ref",
+        help="exact PR head ref; required for non-codex/ branches (does not grant release)",
+    )
+    parser.add_argument(
         "--dispatch-source",
         action="store_true",
         help="dispatch two manual source workflows; never claim full PR CI green",
@@ -202,13 +227,19 @@ def main() -> int:
         or not SHA.fullmatch(args.expected_sha)
     ):
         parser.error("invalid repo, PR number or exact 40-digit lowercase SHA")
-    pr, report = current(args.repo, args.pr, args.expected_sha)
+    if args.expected_ref is not None and not valid_branch_ref(args.expected_ref):
+        parser.error("invalid exact Git branch ref")
+    pr, report = current(
+        args.repo, args.pr, args.expected_sha, expected_ref=args.expected_ref
+    )
     if args.dispatch_source:
         branch = pr["head"]["ref"]
         for name in MANUAL:
             gh("workflow", "run", name, "--repo", args.repo, "--ref", branch)
         # A concurrent branch push invalidates any submitted source-only retry.
-        current(args.repo, args.pr, args.expected_sha)
+        current(
+            args.repo, args.pr, args.expected_sha, expected_ref=args.expected_ref
+        )
         report["source_only_dispatch_submitted"] = True
         report["source_only_is_not_full_pr_ci"] = True
     print(json.dumps(report, sort_keys=True))
