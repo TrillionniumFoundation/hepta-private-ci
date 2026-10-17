@@ -253,7 +253,7 @@ jobs:
           import hashlib,json,math,os
           from pathlib import Path
           from reader_reference import PINS,MODELS
-          from stage1_reader_pair import verify_inventory,strict_json
+          from stage1_reader_pair import verify_inventory,strict_json,verify_frozen_shard_attempts
           from stage1_reader_score import answer_scores
           def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
           frozen=Path('/tmp/frozen')
@@ -282,6 +282,7 @@ jobs:
                   if not raw.endswith(b'\n'):raise ValueError('interrupted raw answer')
                   originals=[strict_json(line) for line in raw.splitlines()]
                   scored=strict_json((folder/'execution/scored-answers.json').read_bytes())
+                  verify_frozen_shard_attempts(plan,reg['conditions'],ident,originals,scored)
                   expected={(c['question']['identity'],a) for c in plan['cases'] for a in reg['conditions']}
                   if (len(originals)!=len(scored) or len(scored)!=8 or
                       {(row['question_id'],row['arm']) for row in scored}!=expected):
