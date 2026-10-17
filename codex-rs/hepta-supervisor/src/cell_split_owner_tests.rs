@@ -415,3 +415,52 @@ fn incomplete_native_cas_intent_remains_indeterminate_without_retry() {
     assert_eq!(native.execute_count, count);
     assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::OldWriterFenced);
 }
+
+#[test]
+fn corrupted_committed_cas_readback_blocks_child_migration() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    for _ in 0..4 {
+        advance(&mut journal, &mut native).expect("through committed CAS");
+    }
+    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    fs::write(native.root.join("cas-artifact"), b"tampered-object").expect("corrupt fixture");
+    assert!(matches!(
+        advance(&mut journal, &mut native),
+        Err(CellSplitOwnerErrorV1::InvalidObservation)
+    ));
+    assert_eq!(journal.checkpoint().phase, WriterHandoffPhaseV1::Snapshotted);
+    assert_eq!(native.execute_count, 4);
+}
+
+#[test]
+fn supervisor_result_fences_track_receipt_gated_cutover() {
+    let root = TempDir::new().expect("temp");
+    let mut native = FilesystemNative::open(&root);
+    let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    let old = journal
+        .checkpoint()
+        .issue_old_result_fence()
+        .expect("old fence");
+    advance(&mut journal, &mut native).expect("admission stopped");
+    journal
+        .checkpoint()
+        .validate_result_fence(&old)
+        .expect("in flight old result during drain");
+    advance(&mut journal, &mut native).expect("drained");
+    assert!(journal.checkpoint().validate_result_fence(&old).is_err());
+    assert!(journal.checkpoint().issue_new_result_fence().is_none());
+    for _ in 0..6 {
+        advance(&mut journal, &mut native).expect("through real fixture route readback");
+    }
+    let successor = journal
+        .checkpoint()
+        .issue_new_result_fence()
+        .expect("successor admitted only after route publication");
+    journal
+        .checkpoint()
+        .validate_result_fence(&successor)
+        .expect("new generation result accepted");
+    assert!(journal.checkpoint().validate_result_fence(&old).is_err());
+}
