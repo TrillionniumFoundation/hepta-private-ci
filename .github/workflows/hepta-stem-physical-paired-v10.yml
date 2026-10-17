@@ -1,0 +1,162 @@
+name: Hepta Stem V10 original same-process physical pair (DENY_ALL)
+
+on:
+  push:
+    branches: [research/stem-physical-paired-v10-20261017]
+    paths:
+      - 'qualification/stem-optimal-v10/**'
+      - '.github/workflows/hepta-stem-physical-paired-v10.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-optimal-v10/**'
+      - '.github/workflows/hepta-stem-physical-paired-v10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-original-paired-v10-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+  V10: qualification/stem-optimal-v10
+  PYTHONPATH: qualification/stem-optimal-v10:qualification/stem-optimal-v8:qualification/stem-optimal-v5:qualification/stem-optimal-v4:qualification/stem-optimal-v3:qualification/stem-optimal-v1
+
+jobs:
+  source-physical-fixture-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed Torch CPU only for real fixture Head CPU math
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check packaging==25.0
+      - name: Strict pinned-source local physics and independent cost arithmetic
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile "$V10/paired_workload_v10.py" "$V10/independent_workload_review_v10.py" "$V10/test_paired_workload_v10.py"
+          python -m unittest discover -s "$V10" -p 'test_paired_workload_v10.py' -v
+          python -O -m unittest discover -s "$V10" -p 'test_paired_workload_v10.py' -v
+
+  original-pretrained-physical-pairs:
+    needs: source-physical-fixture-tests
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-physical-paired-v10-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [granite47, granite97, mmbert140]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reopen six immutable original ZIPs before any public weight load
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role source_v3 --role source_v4 --role cheap_v4 \
+            --role granite47 --role granite97 --role mmbert140
+      - name: Install exact frozen V3 pretrained Torch CPU and HF runtime profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.57.1 huggingface_hub==0.36.0 safetensors==0.6.2 numpy==2.2.6 packaging==25.0
+      - name: Pay one original model load + 64 FIT + 100 Head updates + four counterbalanced physical query pairs
+        shell: bash
+        env:
+          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/physical"
+          python "$V10/paired_workload_v10.py" \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --zip-dir "$RUNNER_TEMP/original" \
+            --materials qualification/stem-optimal-v1/MODEL_MATERIALS.json \
+            --candidate '${{ matrix.candidate }}' \
+            --output "$RUNNER_TEMP/physical/physical-${{ matrix.candidate }}.json"
+          (cd "$RUNNER_TEMP/physical" && sha256sum 'physical-${{ matrix.candidate }}.json' > 'physical-${{ matrix.candidate }}.sha256')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v10-original-paired-${{ matrix.candidate }}-denyall
+          path: |
+            ${{ runner.temp }}/physical/physical-${{ matrix.candidate }}.json
+            ${{ runner.temp }}/physical/physical-${{ matrix.candidate }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-model-free-cost-review:
+    needs: original-pretrained-physical-pairs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stem-v10-original-paired-*-denyall
+          merge-multiple: true
+          path: ${{ runner.temp }}/physical
+      - name: Check all three original SHA sidecars and acquire archived originals
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          (cd "$RUNNER_TEMP/physical" && sha256sum --check physical-granite47.sha256 physical-granite97.sha256 physical-mmbert140.sha256)
+          python qualification/stem-optimal-v5/download_original_zip_v5.py \
+            --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+            --output-dir "$RUNNER_TEMP/original" \
+            --role granite47 --role granite97 --role mmbert140
+      - name: Independently audit complete paired cost/census; no model, no gold, no selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/review"
+          for model in granite47 granite97 mmbert140; do
+            python "$V10/independent_workload_review_v10.py" \
+              --report "$RUNNER_TEMP/physical/physical-$model.json" \
+              --manifest qualification/stem-optimal-v5/ORIGINAL_PAIR_V5.json \
+              --original-zip "$RUNNER_TEMP/original/$model.zip" \
+              --output "$RUNNER_TEMP/review/review-$model.json"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stem-v10-original-independent-cost-review-denyall
+          path: ${{ runner.temp }}/review/review-*.json
+          if-no-files-found: error
+          retention-days: 7
