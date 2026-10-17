@@ -253,15 +253,12 @@ fn validate_batch_feature_content_v2(
 
 fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
-    if requests
-        .iter()
-        .any(|item| {
-            item.principal_id != first.principal_id
-                || item.purpose_id != first.purpose_id
-                || item.scope_id != first.scope_id
-                || item.snapshot.identity.scope_id != first.snapshot.identity.scope_id
-        })
-    {
+    if requests.iter().any(|item| {
+        item.principal_id != first.principal_id
+            || item.purpose_id != first.purpose_id
+            || item.scope_id != first.scope_id
+            || item.snapshot.identity.scope_id != first.snapshot.identity.scope_id
+    }) {
         return Err(Error::FeatureContract);
     }
     Ok(())
