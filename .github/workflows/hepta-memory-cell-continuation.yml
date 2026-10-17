@@ -80,20 +80,20 @@ jobs:
           path: /tmp/mcell-native
           if-no-files-found: warn
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always() && matrix.kind == 'locomo'
+        if: success() && matrix.kind == 'locomo'
         with:
           name: memory-cell-laya-training-pairs
           path: /tmp/mcell-native/locomo/laya-pairs.json
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always() && matrix.kind == 'locomo'
+        if: success() && matrix.kind == 'locomo'
         with:
           name: memory-cell-trained-native-circuit
           path: /tmp/mcell-native/locomo/native-export
           if-no-files-found: error
   native-owner:
     needs: native-models
-    if: always() && !cancelled()
+    if: needs.native-models.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -192,7 +192,7 @@ jobs:
           if-no-files-found: warn
   laya-pretrained:
     needs: native-models
-    if: always() && !cancelled()
+    if: needs.native-models.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
