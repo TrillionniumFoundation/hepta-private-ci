@@ -660,13 +660,24 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     }
     let recorded = std::fs::read(&path).expect("durable unresolved history");
     assert_eq!(
+        recorded.iter().filter(|&&byte| byte == b'\n').count(),
+        2,
+        "the original WAL must retain exactly genesis and fsynced orphan Begin"
+    );
+    assert_eq!(
         calls, 1,
         "the model/router must never replay an unknown effect"
     );
-    assert!(matches!(
-        NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
-        Err(NduPublicationErrorV1::Indeterminate)
-    ));
+    // Report the exact cold-reopen error from a real hosted Rust runner.
+    // Checking .err() is equivalent to requiring the identical Result
+    // variant; neither a wrong failure nor an accidental healthy reopen
+    // can silently pass this original fail-closed regression.
+    let reopened = NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO);
+    assert_eq!(
+        reopened.err(),
+        Some(NduPublicationErrorV1::Indeterminate),
+        "an orphaned fsynced original Begin must remain unrecoverable"
+    );
     assert_eq!(
         std::fs::read(&path).expect("journal preserved"),
         recorded,
