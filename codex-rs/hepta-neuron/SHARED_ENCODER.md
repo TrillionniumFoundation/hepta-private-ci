@@ -21,8 +21,14 @@ The trait is an execution seam, not an execution claim. A production adapter
 must perform the real Encoder forward and attest its output. A digest-only fake
 must remain test-only and cannot be promoted as model evidence.
 
-The next integration should bind this batch to the existing
-NeuronRuntimeConfigV1 tuple and local model runtime receipt, then feed one
-shared feature slice into independent Cell heads. The head path should remain
-separate from this owner so Cell state, private replay, uncertainty, and
-optimizer state are never accidentally shared.
+The owner can be constructed from the existing NeuronRuntimeConfigV1 tuple
+with from_runtime_config, so the Encoder digest and generation are inherited
+from the runtime configuration instead of being copied into an unrelated
+policy object. The CellHeadV1 path consumes the resulting shared batch and
+keeps each Cell's parameters, uncertainty threshold, and action digest private.
+
+The next integration should bind the shared batch and Cell output to the local
+model runtime receipt plus calibrated/OOD evidence. That receipt path must
+remain independent from the shared feature artifact so one physical Encoder
+forward is reused without sharing Cell state, private replay, or optimizer
+state.
