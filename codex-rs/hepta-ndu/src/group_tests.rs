@@ -1,4 +1,13 @@
+use std::fmt::Debug;
+
 use super::*;
+
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
 
 fn digest(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
@@ -47,7 +56,7 @@ fn make_trace(subject: &GroupNduSubjectV1, candidates: &[GroupContinuationCandid
         input_digest: digest("input"),
         generation: subject.generation,
         route_digest: digest("route"),
-        complete_candidate_set_digest: group_candidate_set_digest(candidates).expect("digest"),
+        complete_candidate_set_digest: must(group_candidate_set_digest(candidates)),
         behavior_digest: digest("behavior"),
         terminal_outcome_digest: digest("terminal"),
         cells: vec![GroupCellObservationV1 {
@@ -66,12 +75,11 @@ fn make_trace(subject: &GroupNduSubjectV1, candidates: &[GroupContinuationCandid
 fn positive_continuation_is_selected() {
     let subject = subject();
     let candidates = candidates();
-    let result = decide_group_continuation_v1(
+    let result = must(decide_group_continuation_v1(
         &subject,
         &make_trace(&subject, &candidates),
         &candidates,
-    )
-    .expect("decision");
+    ));
     assert_eq!(result.selected_candidate_id, "continue");
     assert_eq!(result.net_value_q32, 17);
     assert_eq!(result.authority, AuthorityPosture::DENY_ALL);
@@ -82,12 +90,11 @@ fn non_positive_continuation_abstains() {
     let subject = subject();
     let mut candidates = candidates();
     candidates[0].continuation_value_q32 = 10;
-    let result = decide_group_continuation_v1(
+    let result = must(decide_group_continuation_v1(
         &subject,
         &make_trace(&subject, &candidates),
         &candidates,
-    )
-    .expect("decision");
+    ));
     assert_eq!(result.selected_candidate_id, "abstain");
 }
 
@@ -98,18 +105,14 @@ fn candidate_set_digest_is_bound_and_deterministic() {
     let first = make_trace(&subject, &candidates);
     let second = make_trace(&subject, &candidates);
     assert_eq!(
-        decide_group_continuation_v1(&subject, &first, &candidates)
-            .expect("decision")
-            .trace_digest,
-        decide_group_continuation_v1(&subject, &second, &candidates)
-            .expect("decision")
-            .trace_digest
+        must(decide_group_continuation_v1(&subject, &first, &candidates)).trace_digest,
+        must(decide_group_continuation_v1(&subject, &second, &candidates)).trace_digest
     );
     let mut reordered = candidates.clone();
     reordered.reverse();
     assert_ne!(
-        group_candidate_set_digest(&candidates).expect("digest"),
-        group_candidate_set_digest(&reordered).expect("digest")
+        must(group_candidate_set_digest(&candidates)),
+        must(group_candidate_set_digest(&reordered))
     );
 }
 
