@@ -463,7 +463,6 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             observed.iter().map(|item| &item.feature),
             minimum_bytes,
             selected_loaded_memory_bytes,
-            input_width,
             output_width,
             self.grant.maximum_memory_bytes,
         ) {
@@ -1073,10 +1072,10 @@ mod tests {
             maximum_tokens: 128,
         };
         // 1024 resident + 16 physical shared input + 64 retained outputs
-        // + 2 * (1544 - 48 per-row input/output) = exactly 4096 bytes.
-        // 1545 per row breaches the cohort budget, though each row fits.
-        // A 47-byte report cannot cover the 48-byte logical Cell row.
-        for (transient, permitted) in [(1544_u64, true), (1545_u64, false), (47, false)] {
+        // + 2*(1528 - 32 per-row output bytes) = exactly 4096 bytes.
+        // 1529 per row breaches the combined budget, though each row fits.
+        // A 31-byte report cannot cover the output Vecs of one Cell.
+        for (transient, permitted) in [(1528_u64, true), (1529_u64, false), (31, false)] {
             let grant = super::super::ResourceGrant {
                 grant_id: "grant.shared".into(),
                 authority_epoch: 2,

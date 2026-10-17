@@ -490,10 +490,10 @@ pub struct DriverNeuronFeatureObservation {
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     pub observed_memory_bytes: u64,
-    /// For a native Cell batch this report must cover at least the logical
-    /// Q24 input and both output buffers of this row. Shared physical inputs
-    /// are charged only once by the cohort admission floor. Extra scratch
-    /// is conservatively additive across rows; this is not measured peak RSS.
+    /// For native Cell batches, include the row's Q24 output buffers and
+    /// additional live transient buffers (including each gated intermediate).
+    /// Input source Vec/Arc memory is charged separately by physical identity.
+    /// This is a bounded backend report, not independently measured peak RSS.
     pub transient_allocation_bytes: u64,
     pub queue_age_micros: u64,
     pub latency_micros: u64,
@@ -544,25 +544,24 @@ fn neuron_feature_memory_within_grant(
 
 /// Conservative reported *cohort* envelope, not actual peak RSS.
 ///
-/// The admission floor already counts every physical input allocation (one
-/// shared Arc for V2) and all simultaneously retained output vectors. Each
-/// row's transient report MUST include those logical input/output bytes,
-/// so subtract the row's input+output floor before charging its additional
-/// scratch to the cohort. This avoids multiplying a shared Arc by Cell count.
-/// Charge a higher reported selected-model resident peak above the loaded
-/// model's baseline; keep other loaded models in the pre-dispatch floor.
+/// The admission floor counts each physical input allocation once (including
+/// shared Arc references) and all retained output vectors. The backend's
+/// per-row transient report MUST include its output bytes and any additional
+/// intermediate allocations (e.g. the independent gated feature Vec).
+/// Subtract ONLY the output bytes already in the floor, never the source
+/// input bytes: those are distinct from the temporary gated intermediate.
+/// Charge a higher selected-model resident peak above the loaded baseline;
+/// keep other loaded models in the pre-dispatch floor.
 /// Backend telemetry is not independently attested production metering.
 fn neuron_batch_reported_memory_within_grant<'a>(
     observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
     pre_dispatch_floor_bytes: u64,
     selected_loaded_memory_bytes: u64,
-    input_width: usize,
     output_width: usize,
     maximum_memory_bytes: u64,
 ) -> bool {
-    let Some(row_floor_bytes) = output_width
+    let Some(row_output_bytes) = output_width
         .checked_mul(2)
-        .and_then(|outputs| input_width.checked_add(outputs))
         .and_then(|elements| elements.checked_mul(std::mem::size_of::<i64>()))
         .and_then(|bytes| u64::try_from(bytes).ok())
     else {
@@ -574,10 +573,10 @@ fn neuron_batch_reported_memory_within_grant<'a>(
     for item in observations {
         observed_any = true;
         peak_reported_resident_bytes = peak_reported_resident_bytes.max(item.observed_memory_bytes);
-        // A driver reporting scratch-only bytes or an impossible Q24 floor
-        // cannot silently understate the physical cohort. Such telemetry
-        // must be corrected or rejected before returning a success.
-        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_floor_bytes) else {
+        // A report smaller than the row's actual output Vec footprint
+        // cannot be used to justify physical execution. Keep all extra
+        // gating/scratch allocations even when source bytes are shared.
+        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_output_bytes) else {
             return false;
         };
         let Some(total) = additional_transient_bytes.checked_add(extra) else {

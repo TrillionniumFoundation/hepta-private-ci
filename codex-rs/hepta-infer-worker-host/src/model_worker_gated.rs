@@ -919,8 +919,9 @@ mod tests {
             revoked: false,
             maximum_models: 1,
             maximum_active_requests: 4,
-            // Head tensors + two independent outputs + one shared 16-byte Arc.
-            maximum_memory_bytes: resident + 48,
+            // Head tensors + two Cell output pairs + one shared 16-byte Arc
+            // + two 16-byte gated intermediates (one conservative cohort).
+            maximum_memory_bytes: resident + 80,
             semantic_digest: "1".repeat(64),
         };
         let mut memory_worker = InferenceWorker::new(
