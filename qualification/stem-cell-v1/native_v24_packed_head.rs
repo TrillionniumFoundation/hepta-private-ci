@@ -313,8 +313,8 @@ fn execute(input: &Path, out: &Path, report: &Path) -> Result<(), String> {
         rss_after.map_or("null".into(),|v| v.to_string()),
         whole_peak_rss_bytes().map_or("null".into(),|v| v.to_string()),
         ROUNDS,WARMUPS,proof_max,format_samples(&base_ns),format_samples(&batch_ns),
-        format_samples(&active_ns),pcentile(&base_ns,.99),pcentile(&batch_ns,.99),
-        pcentile(&active_ns,.99),rolling,
+        format_samples(&active_ns),pcentile(&base_ns,0.99),pcentile(&batch_ns,0.99),
+        pcentile(&active_ns,0.99),rolling,
     );
     // No partial success report if physical numerical outputs fail to materialize.
     write_exclusive(out, &serialized)?;
