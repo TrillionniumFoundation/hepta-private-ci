@@ -1,0 +1,234 @@
+name: Hepta V22 Qwen loader recovery and root-isolated source review (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-v22-qwen-loader-root-isolation-20261016]
+    paths:
+      - 'research/hepta_v20_reader/**'
+      - 'research/hepta_v22_reader/**'
+      - 'research/hepta_v19_reader/**'
+      - '.github/workflows/hepta-v22-qwen-loader-root-isolation.yml'
+  pull_request:
+    paths:
+      - 'research/hepta_v20_reader/**'
+      - 'research/hepta_v22_reader/**'
+      - 'research/hepta_v19_reader/**'
+      - '.github/workflows/hepta-v22-qwen-loader-root-isolation.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-v22-qwen-native-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PYTHONPATH: research/hepta_v17_reader:research/hepta_v19_reader:research/hepta_v20_reader:research/hepta_v21_reader:research/hepta_v22_reader
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Exact-head original source-only adversarial tests, normal and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          python -S -m unittest discover -s research/hepta_v19_reader -p 'test_v19_qwen_reference.py' -v
+          python -O -S -m unittest discover -s research/hepta_v19_reader -p 'test_v19_qwen_reference.py' -v
+          python -S -m unittest discover -s research/hepta_v20_reader -p 'test_reference_preflight.py' -v
+          python -O -S -m unittest discover -s research/hepta_v20_reader -p 'test_reference_preflight.py' -v
+          python -S -m unittest discover -s research/hepta_v21_reader -p 'test_blinded_sufficiency.py' -v
+          python -O -S -m unittest discover -s research/hepta_v21_reader -p 'test_blinded_sufficiency.py' -v
+          python -S -m unittest discover -s research/hepta_v22_reader -p 'test_*.py' -v
+          python -O -S -m unittest discover -s research/hepta_v22_reader -p 'test_*.py' -v
+          python -S research/hepta_v22_reader/root_isolated_review.py verify-public \
+            --receipt research/hepta_v22_reader/V22_ORIGINAL_ROOT_ISOLATION_OBSERVATION_20261016.json
+          python -m compileall -q research/hepta_v19_reader research/hepta_v20_reader research/hepta_v21_reader research/hepta_v22_reader
+          git diff --exit-code
+  original-135m-and-qwen3-private-physical:
+    # Single research-branch push execution; no new model ability from fixture green.
+    if: github.event_name == 'push'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install exact CPU-only original and reference runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu'
+          python -m pip install --no-cache-dir 'safetensors==0.7.0' 'regex==2026.5.9' 'transformers==4.53.3' 'huggingface_hub==0.33.5' 'tokenizers==0.21.2' 'hf_xet==1.1.5' 'packaging==25.0'
+          python -m pip check
+      - name: Authenticate original historical archive and rebuild 30-by-4 label-blind roster
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          TMP="$RUNNER_TEMP/hepta-v19"
+          mkdir -m700 "$TMP"
+          python research/hepta_v19_reader/v19_artifact_fetch.py --out "$TMP/original.zip"
+          D=research/hepta_v19_reader; P=research/hepta_v17_reader
+          python "$D/v19_recover_original.py" --zip "$TMP/original.zip" --out "$TMP/original" \
+            --mode source-and-reader
+          python "$P/source_first.py" prepare --source "$TMP/original/locomo.json" --out "$TMP/source"
+          S="$TMP/source"
+          python "$P/source_first.py" plan --public "$S/public.json" --owner "$S/owner.json" --out "$S/plan.json"
+          python "$P/source_first.py" annotate --public "$S/public.json" --owner "$S/owner.json" \
+            --hidden "$S/hidden.json" --plan "$S/plan.json" --out "$S/annotation.json"
+          python "$P/source_first.py" requests --public "$S/public.json" --owner "$S/owner.json" \
+            --plan "$S/plan.json" --annotation "$S/annotation.json" --out "$S/requests.json"
+          python "$D/v19_qwen_reference.py" plan --public "$S/public.json" --owner "$S/owner.json" \
+            --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --v17-requests "$S/requests.json" --output "$S/qwen-plan.json"
+          # Remove gold and raw publisher corpus BEFORE any pretrained model process.
+          rm "$S/hidden.json" "$TMP/original/locomo.json" "$TMP/original.zip"
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+      - name: Fail-fast pinned Qwen3 material and full source-token admission BEFORE original 135M
+        shell: bash
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          HF_HUB_DISABLE_PROGRESS_BARS: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader;V20=research/hepta_v20_reader
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+          python "$D/v19_qwen_material.py" --cache "$TMP/qwen-cache" \
+            --model-dir "$TMP/qwen" --manifest "$TMP/qwen-source.json"
+          python "$V20/reference_preflight.py" \
+            --public "$S/public.json" --owner "$S/owner.json" \
+            --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --v17-requests "$S/requests.json" --reference-plan "$S/qwen-plan.json" \
+            --model-dir "$TMP/qwen" --model-spec "$TMP/qwen-source.json" \
+            --output "$S/qwen-token-preflight.json"
+          python - "$S/qwen-token-preflight.json" <<'PYGATE'
+          import json,sys
+          p=json.load(open(sys.argv[1]))
+          assert p['logical_model_requests']==120 and p['unique_physical_input_ids']==96
+          assert p['original_qwen_forward_executed'] is False
+          assert p['production_authorized'] is False and p['decision']=='HOLD_NO_GO'
+          PYGATE
+      - name: Physically run admitted Qwen3 0.6B on sealed source-first original inputs
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          HF_HUB_DISABLE_PROGRESS_BARS: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+          python "$D/v19_qwen_reference.py" run --public "$S/public.json" --owner "$S/owner.json" \
+            --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --v17-requests "$S/requests.json" --reference-plan "$S/qwen-plan.json" \
+            --model-dir "$TMP/qwen" --model-spec "$TMP/qwen-source.json" \
+            --output "$S/qwen-physical-private.json"
+      - name: Physically rerun frozen original 135M once on all unique requests
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";P=research/hepta_v17_reader
+          test ! -e "$S/hidden.json"
+          python "$P/physical.py" --public "$S/public.json" --owner "$S/owner.json" \
+            --plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --requests "$S/requests.json" --reader-dir "$TMP/original/reader" \
+            --private-output "$S/reader-135m-private.json"
+      - name: Independently reconcile preflight aliases and physical tokens BEFORE opening gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source"
+          test ! -e "$S/hidden.json" && test ! -e "$TMP/original/locomo.json"
+          test -s "$S/qwen-token-preflight.json" && test -s "$S/qwen-physical-private.json"
+          python research/hepta_v20_reader/reference_preflight.py \
+            --preflight "$S/qwen-token-preflight.json" \
+            --physical "$S/qwen-physical-private.json" > "$TMP/v20-reference-alias-reconciliation.json"
+          python - "$TMP/v20-reference-alias-reconciliation.json" <<'PYGATE'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['unique_tokens_paid_once']>0 and r['logical_tokens_with_aliases']>=r['unique_tokens_paid_once']
+          assert r['original_Qwen_semantic_correctness_verified'] is False
+          assert r['production_authorized'] is False and r['decision']=='HOLD_NO_GO'
+          PYGATE
+      - name: Fresh source re-open only AFTER BOTH original model seals; independent postseal evidence audit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          TMP="$RUNNER_TEMP/hepta-v19";S="$TMP/source";D=research/hepta_v19_reader;P=research/hepta_v17_reader
+          test -s "$S/reader-135m-private.json" && test -s "$S/qwen-physical-private.json"
+          test -s "$S/qwen-physical-private.json.starts.jsonl"
+          python research/hepta_v19_reader/v19_artifact_fetch.py --out "$TMP/postseal-original.zip"
+          python "$D/v19_recover_original.py" --zip "$TMP/postseal-original.zip" \
+            --out "$TMP/postseal-original" --mode source-only
+          python "$P/source_first.py" prepare --source "$TMP/postseal-original/locomo.json" \
+            --out "$TMP/held-owner"
+          python - "$S" "$TMP/held-owner" <<'PY'
+          import json,sys
+          from pathlib import Path
+          src,held=map(Path,sys.argv[1:])
+          for name in ('public.json','owner.json'):
+              if (src/name).read_bytes()!=(held/name).read_bytes():
+                  raise ValueError('original publisher/source material changed across physical runs')
+          if not (held/'hidden.json').is_file():
+              raise ValueError('postseal gold unavailable')
+          PY
+          python "$P/independent_review.py" \
+            --original "$TMP/postseal-original/locomo.json" --public "$S/public.json" \
+            --owner "$S/owner.json" --hidden "$TMP/held-owner/hidden.json" \
+            --plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --requests "$S/requests.json" --physical "$S/reader-135m-private.json" \
+            --starts "$S/reader-135m-private.json.starts.jsonl" \
+            --reader-dir "$TMP/original/reader" --output "$TMP/v19-135m-sanitized.json"
+          python "$D/v19_reference_review.py" \
+            --original "$TMP/postseal-original/locomo.json" --public "$S/public.json" \
+            --owner "$S/owner.json" --hidden "$TMP/held-owner/hidden.json" \
+            --v17-plan "$S/plan.json" --annotation "$S/annotation.json" \
+            --v17-requests "$S/requests.json" --reference-plan "$S/qwen-plan.json" \
+            --physical "$S/qwen-physical-private.json" \
+            --starts "$S/qwen-physical-private.json.starts.jsonl" \
+            --model-dir "$TMP/qwen" --model-spec "$TMP/qwen-source.json" \
+            --output "$TMP/v19-qwen-sanitized.json"
+          python - "$TMP/v19-135m-sanitized.json" "$TMP/v19-qwen-sanitized.json" <<'PY'
+          import json,sys
+          c,r=(json.load(open(p)) for p in sys.argv[1:])
+          assert c['production_authorized'] is False and c['decision']=='HOLD_NO_GO'
+          assert r['production_authorized'] is False and r['decision']=='HOLD_NO_GO'
+          assert r['original_source_first_questions']==30 and r['original_reference_physical_requests']==96
+          assert r['no_cell_learning_or_NDU_gain'] is True
+          assert r['independent_semantic_review_verified'] is False
+          assert r['model_token_budget_matched_to_135m'] is False
+          assert len(r['scores'])==4
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v22-two-readers-after-qwen-loader-fix-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-v19/v19-135m-sanitized.json
+            ${{ runner.temp }}/hepta-v19/v19-qwen-sanitized.json
+            ${{ runner.temp }}/hepta-v19/source/qwen-token-preflight.json
+            ${{ runner.temp }}/hepta-v19/v20-reference-alias-reconciliation.json
+          if-no-files-found: error
+          retention-days: 5
