@@ -1,6 +1,14 @@
 name: Hepta real Reader checkpoint intake (shadow)
 
 on:
+  push:
+    branches:
+      - research/checkpoint-resource-binding-p3-20261017
+    paths:
+      - "scripts/hepta_sngr_reader_eval.py"
+      - "scripts/hepta_sngr_reader_cases.json"
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-real-reader-intake.yml"
   pull_request:
     paths:
       - "scripts/hepta_sngr_reader_eval.py"
@@ -32,11 +40,11 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
 
       - name: Verify exact checkout
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
@@ -45,8 +53,8 @@ jobs:
       - name: Install pinned CPU runtime
         run: |
           set -euo pipefail
-          python3 -m pip install --disable-pip-version-check --only-binary=:all:             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          python3 -m pip install --disable-pip-version-check --only-binary=:all:             numpy==2.2.6 safetensors==0.8.0 transformers==4.57.6 huggingface_hub==0.36.0
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.2.6 safetensors==0.8.0 transformers==4.57.6 huggingface_hub==0.36.0
           python3 -m pip install --disable-pip-version-check --no-deps laya==0.3.20
           python3 -m pip check
 
@@ -67,13 +75,7 @@ jobs:
               repo_id=os.environ["HF_REPO"],
               revision=os.environ["HF_REVISION"],
               local_dir=str(target),
-              allow_patterns=[
-                  "model.safetensors",
-                  "rl_agent_config.json",
-                  "tokenizer/**",
-                  "encoder/**",
-                  "*.json",
-              ],
+              allow_patterns=["model.safetensors", "rl_agent_config.json", "tokenizer/**", "encoder/**", "*.json"],
               ignore_patterns=["*.bin", "*.pt", "*.pth"],
               max_workers=2,
           )
@@ -93,7 +95,7 @@ jobs:
         run: |
           set -u
           set +e
-          python3 scripts/hepta_sngr_reader_eval.py             --checkpoint-dir "$CHECKPOINT_DIR"             --source-checkout "$GITHUB_WORKSPACE"             --presentations 1             --max-calls 320             --output "$REPORT_PATH"             > "$SUMMARY_PATH"
+          python3 scripts/hepta_sngr_reader_eval.py --checkpoint-dir "$CHECKPOINT_DIR" --source-checkout "$GITHUB_WORKSPACE" --presentations 1 --max-calls 320 --output "$REPORT_PATH" > "$SUMMARY_PATH"
           status=$?
           set -e
           if [ "$status" -eq 0 ]; then
@@ -111,7 +113,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hepta-real-reader-intake-${{ github.event.pull_request.head.sha || github.sha }}
+          name: hepta-real-reader-intake-${{ github.sha }}
           path: |
             ${{ runner.temp }}/hepta-reader-report.json
             ${{ runner.temp }}/hepta-reader-summary.json
