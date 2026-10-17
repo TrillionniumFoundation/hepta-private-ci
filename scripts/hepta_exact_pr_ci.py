@@ -237,9 +237,7 @@ def main() -> int:
         for name in MANUAL:
             gh("workflow", "run", name, "--repo", args.repo, "--ref", branch)
         # A concurrent branch push invalidates any submitted source-only retry.
-        current(
-            args.repo, args.pr, args.expected_sha, expected_ref=args.expected_ref
-        )
+        current(args.repo, args.pr, args.expected_sha, expected_ref=args.expected_ref)
         report["source_only_dispatch_submitted"] = True
         report["source_only_is_not_full_pr_ci"] = True
     print(json.dumps(report, sort_keys=True))

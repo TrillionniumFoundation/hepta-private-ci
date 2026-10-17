@@ -102,9 +102,7 @@ class ExactPrCiTests(unittest.TestCase):
                 candidate = pr()
                 candidate["head"]["ref"] = unsafe
                 with self.assertRaisesRegex(ValueError, "differs from pin"):
-                    GATE.validate_pr(
-                        candidate, REPO, 1468, HEAD, expected_ref=unsafe
-                    )
+                    GATE.validate_pr(candidate, REPO, 1468, HEAD, expected_ref=unsafe)
 
     def test_full_exact_pr_workflow_set_is_required(self):
         all_runs = [run(name) for name in GATE.REQUIRED]
