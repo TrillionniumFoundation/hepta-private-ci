@@ -158,6 +158,42 @@ class ReceiptTests(unittest.TestCase):
         bad['train_only_centroid']['output_rows'][0]['case_id']='false'
         with self.assertRaises(ValueError):review.check_fourth(src,bad,g)
 
+    def test_calibrated_output_cannot_be_forged_under_identical_source_receipt(self):
+        src, receipt, gold = fixture()
+        # A forged probability can otherwise inflate quality without any
+        # observed feature or additional Encoder forward.
+        bad = copy.deepcopy(receipt)
+        bad['train_only_centroid']['output_rows'][0]['probabilities'] = [0.7, 0.1, 0.1, 0.1]
+        with self.assertRaisesRegex(ValueError, 'not derived from original'):
+            review.check_fourth(src, bad, gold)
+
+    def test_calibrated_temperature_is_bound_to_existing_centroid(self):
+        src, receipt, gold = fixture()
+        bad = copy.deepcopy(receipt)
+        # Even if a fake FIT-only loss vector is re-sealed, the heldout
+        # calibrated scores must change according to the new selected T.
+        bad['train_only_centroid']['selected_temperature'] = 0.5
+        bad['train_only_centroid']['fit_only_loocv_multiclass_brier'] = [0.4, 0.1, 0.5, 0.6, 0.7, 0.8, 0.9]
+        with self.assertRaisesRegex(ValueError, 'not derived from original'):
+            review.check_fourth(src, bad, gold)
+
+    def test_real_torch_centroid_softmax_matches_stdlib_replay(self):
+        import torch
+        import torch.nn.functional as F
+        torch.manual_seed(20261017)
+        torch.set_num_threads(2)
+        raw = F.normalize(torch.randn(32, 384, dtype=torch.float32), dim=-1)
+        centers = F.normalize(torch.randn(4, 384, dtype=torch.float32), dim=-1)
+        similarity = raw @ centers.T
+        base = torch.softmax(similarity, dim=-1).tolist()
+        for t in (1.0, 0.5, 0.25, 0.015625):
+            adjusted = torch.softmax(similarity / t, dim=-1).tolist()
+            for left, right in zip(base, adjusted):
+                review.verify_temperature_probability_link(left, right, t)
+        tampered = list(adjusted[0]); tampered[0] += 0.01; tampered[1] -= 0.01
+        with self.assertRaises(ValueError):
+            review.verify_temperature_probability_link(base[0], tampered, 0.015625)
+
     def test_missing_random_or_forged_original_parameter_census(self):
         src, r, g = fixture()
         for key, val in [

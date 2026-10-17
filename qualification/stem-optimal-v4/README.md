@@ -80,6 +80,19 @@ calibrated baseline, future task utility, nor use heldout information in any
 model producer. A future true competitor must train its calibrator on fit/cal
 only and freeze it before independent heldout labels are observed.
 
+## V6 independent calibrated-output algebraic replay
+
+The postseal observer now recomputes every EmbeddingGemma train-only control
+probability directly from the **already sealed** uncalibrated centroid vector
+using the FIT-selected temperature: `softmax(log(p_original) / T)`. It rejects
+reordered, forged, altered or substituted 32-row calibrated probabilities.
+This adds **no model forward, no training, no label access and no extra budget**
+to the original producer. The independent scorer cannot prove the FIT-only
+LOO loss curve or hidden raw pretrained features from a self-reported digest
+alone; only the algebraically checkable test-time transform is independently
+verified. A full train-only replay requires separately admitted frozen FIT
+features and their source-backed provenance. Research-only / DENY_ALL.
+
 ## Strict evidence custody and nonclaims
 
 The hosted workflow first downloads immutable publisher CSV bytes and verifies both source SHAs, exports an unlabelled heldout source roster, then runs 4 original pretrained CPU jobs on the SAME roster. It seals source and output digests, then an independent later job **re-downloads the original source** before scoring. It reuses the original three-model V3 reviewer unchanged and audits the fourth model with `review_v4.py`; missing/synthetic/queued model jobs are not marked successful. Model issuer signatures, human-independent provenance, full GPU energy, simultaneous 4096 requests, future data families, Head learned skill lift, actual Cell Split, stochastic NDU/FBSDE and multimodal decoding are **not provided**.

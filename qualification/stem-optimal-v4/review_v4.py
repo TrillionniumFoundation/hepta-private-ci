@@ -40,6 +40,33 @@ def safe_float(x, lo=0.0, hi=1e12):
     return type(x) in (float,int) and math.isfinite(x) and lo <= x <= hi
 
 
+# Original frozen V1 centroid is torch.softmax(similarity, dim=-1) at T=1.
+# Re-temperature from only the source-bound, sealed probability vectors.
+# This is algebraic identity verification, NOT verification of a claimed
+# train-only cross-validation process (that requires original FIT features).
+def verify_temperature_probability_link(base_probs, adjusted_probs, temperature):
+    core.require(type(temperature) in (int, float) and
+                 math.isfinite(temperature) and temperature > 0 and
+                 type(base_probs) is list and len(base_probs) == 4 and
+                 type(adjusted_probs) is list and len(adjusted_probs) == 4 and
+                 all(safe_float(p, 0, 1) for p in base_probs) and
+                 all(safe_float(p, 0, 1) for p in adjusted_probs) and
+                 abs(sum(base_probs) - 1) < 1e-5 and
+                 abs(sum(adjusted_probs) - 1) < 1e-5 and
+                 all(p > 0 for p in base_probs),
+                 'invalid original/proposed calibrated centroid distribution')
+    logits = [math.log(p) / temperature for p in base_probs]
+    peak = max(logits)
+    weights = [math.exp(l - peak) for l in logits]
+    total = sum(weights)
+    expected = [w / total for w in weights]
+    # FP32 original softmax and FP32 temperature softmax have finite
+    # rounding deviations. Bound per-class variation, including max-T
+    # log amplification; do not allow a forged second probability vector.
+    core.require(max(abs(a - b) for a, b in zip(expected, adjusted_probs)) <= 5e-4,
+                 'calibrated centroid output not derived from original frozen centroid')
+
+
 def check_fourth(source, receipt, gold):
     """Presealed receipt + independent heldout label mapping; no raw targets in run."""
     core.require(type(source) is dict and type(receipt) is dict and set(receipt) == FIELDS,
@@ -183,7 +210,7 @@ def check_fourth(source, receipt, gold):
     core.require(type(cal_rows) is list and len(cal_rows) == 32,
                  'missing calibrated centroid outputs')
     scored={'correct':0,'brier_sum':0.0}
-    for row, registered in zip(cal_rows,expected):
+    for i, (row, registered) in enumerate(zip(cal_rows, expected)):
         core.require(type(row) is dict and set(row) == {
             'case_id','source_sha256','probabilities'} and
             row['case_id']==registered['case_id'] and
@@ -193,6 +220,11 @@ def check_fourth(source, receipt, gold):
         core.require(type(q) is list and len(q)==4 and
                      all(safe_float(v,0,1) for v in q) and
                      abs(sum(q)-1)<1e-5, 'invalid train-only centroid scores')
+        # Verify the calibrated output is exactly the same frozen original
+        # representation/prototypes passed through the preselected temperature.
+        verify_temperature_probability_link(
+            rows[i]['scores']['centroid'],
+            q, control['selected_temperature'])
         y=gold[row['case_id']]
         scored['correct']+=int(max(range(4),key=q.__getitem__)==y)
         scored['brier_sum']+=sum((v-int(i==y))**2 for i,v in enumerate(q))
