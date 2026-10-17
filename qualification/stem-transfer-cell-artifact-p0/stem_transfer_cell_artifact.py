@@ -204,6 +204,134 @@ class TransferMatrixV1:
         }
 
 
+@dataclass(frozen=True)
+class ModalityEnvelopeV1:
+    """Digest-bound feature envelope before it enters the shared Stem."""
+
+    modality: str
+    stem_digest: str
+    raw_digest: str
+    feature_digest: str
+    projector_digest: str
+    latent_width: int
+    slots: int
+    temporal_span_ms: float | None = None
+    region_count: int = 0
+    readonly: bool = True
+
+    def __post_init__(self) -> None:
+        _require(self.modality in {"text", "image", "video", "audio"}, "unsupported modality")
+        _digest("stem_digest", self.stem_digest)
+        for name, value in (("raw_digest", self.raw_digest), ("feature_digest", self.feature_digest), ("projector_digest", self.projector_digest)):
+            _digest(name, value)
+        _require(isinstance(self.latent_width, int) and 0 < self.latent_width <= 2048, "latent_width is out of bounds")
+        _require(isinstance(self.slots, int) and 0 < self.slots <= 256, "slots are out of bounds")
+        _require(isinstance(self.region_count, int) and 0 <= self.region_count <= 4096, "region_count is invalid")
+        if self.temporal_span_ms is not None:
+            _finite_nonnegative("temporal_span_ms", self.temporal_span_ms)
+        if self.modality in {"audio", "video"}:
+            _require(self.temporal_span_ms is not None, "temporal modalities require a time span")
+        if self.modality != "image":
+            _require(self.region_count == 0, "region_count is only valid for image envelopes")
+        _require(self.readonly, "feature envelopes must be readonly")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {**asdict(self), "schema": "hepta.modality.envelope.v1"}
+
+
+@dataclass(frozen=True)
+class ResourceCostV1:
+    """Fully charged System2 cost; proxy timers or free compute are invalid."""
+
+    encoder_flops: float
+    cell_flops: float
+    controller_flops: float
+    verification_flops: float
+    latency_ms: float
+    memory_bytes: float
+    energy_mj: float
+
+    def __post_init__(self) -> None:
+        for name in ("encoder_flops", "cell_flops", "controller_flops", "verification_flops", "latency_ms", "memory_bytes", "energy_mj"):
+            _finite_nonnegative(name, getattr(self, name))
+
+    @property
+    def total_units(self) -> float:
+        # This scalar is an accounting unit for one fixed experiment; it is
+        # not a claim that unlike dimensions are physically interchangeable.
+        return sum(float(getattr(self, name)) for name in ("encoder_flops", "cell_flops", "controller_flops", "verification_flops", "latency_ms", "memory_bytes", "energy_mj"))
+
+    def to_dict(self) -> dict[str, Any]:
+        return {**asdict(self), "total_units": self.total_units}
+
+
+@dataclass(frozen=True)
+class System2CandidateV1:
+    candidate_id: str
+    stem_digest: str
+    objective_digest: str
+    utility_lcb: float
+    utility_ucb: float
+    cost: ResourceCostV1
+    evidence_digest: str
+    feasible: bool = True
+    authority: str = "DENY_ALL"
+    model_efficacy_measured: bool = False
+
+    def __post_init__(self) -> None:
+        _identifier("candidate_id", self.candidate_id)
+        _digest("stem_digest", self.stem_digest)
+        _digest("objective_digest", self.objective_digest)
+        _digest("evidence_digest", self.evidence_digest)
+        _finite_nonnegative("utility_lcb", self.utility_lcb)
+        _finite_nonnegative("utility_ucb", self.utility_ucb)
+        _require(self.utility_lcb <= self.utility_ucb, "utility interval is inverted")
+        _require(self.authority == "DENY_ALL", "System2 advisory cannot carry authority")
+        _require(not self.model_efficacy_measured, "this contract cannot certify model efficacy")
+
+    @property
+    def net_lcb(self) -> float:
+        return self.utility_lcb - self.cost.total_units
+
+    @property
+    def net_ucb(self) -> float:
+        return self.utility_ucb - self.cost.total_units
+
+
+@dataclass(frozen=True)
+class System2IntervalGateV1:
+    candidates: tuple[System2CandidateV1, ...]
+    margin: float = 0.0
+
+    def __post_init__(self) -> None:
+        _require(len(self.candidates) >= 2, "System2 needs at least two feasible alternatives")
+        _finite_nonnegative("margin", self.margin)
+        _require(len({candidate.candidate_id for candidate in self.candidates}) == len(self.candidates), "candidate_id must be unique")
+        _require(len({candidate.stem_digest for candidate in self.candidates}) == 1, "System2 candidates must share the frozen Stem")
+        _require(len({candidate.objective_digest for candidate in self.candidates}) == 1, "System2 candidates must share one fixed objective")
+
+    @property
+    def feasible(self) -> tuple[System2CandidateV1, ...]:
+        return tuple(candidate for candidate in self.candidates if candidate.feasible)
+
+    def advisory(self) -> dict[str, Any]:
+        feasible = self.feasible
+        winner: System2CandidateV1 | None = None
+        if len(feasible) >= 2:
+            for candidate in feasible:
+                if all(candidate.net_lcb > other.net_ucb + self.margin for other in feasible if other is not candidate):
+                    winner = candidate
+                    break
+        return {
+            "schema": "hepta.ndu.system2.interval-gate.v1",
+            "candidate_id": winner.candidate_id if winner else None,
+            "decision": "ADVISORY_SELECT" if winner else "NO_GO",
+            "evaluator_authority": "DENY_ALL",
+            "model_efficacy_measured": False,
+            "reason": "unique_interval_dominance" if winner else "interval_overlap_or_missing_feasible_alternative",
+        }
+
+
 def utility(case: TransferCaseV1, *, flop_penalty: float = 0.0, memory_penalty: float = 0.0, latency_penalty: float = 0.0, risk_penalty: float = 0.0) -> float:
     for name, value in (("flop_penalty", flop_penalty), ("memory_penalty", memory_penalty), ("latency_penalty", latency_penalty), ("risk_penalty", risk_penalty)):
         _finite_nonnegative(name, value)
@@ -432,7 +560,9 @@ __all__ = [
     "ARM_ORDER",
     "CellArtifactV1",
     "ContractError",
+    "ModalityEnvelopeV1",
     "ParameterLedgerV1",
+    "ResourceCostV1",
     "SCHEMA_CELL",
     "SCHEMA_MATRIX",
     "SCHEMA_READER",
@@ -441,6 +571,8 @@ __all__ = [
     "SplitGateV1",
     "SplitProposalV1",
     "StemManifestV1",
+    "System2CandidateV1",
+    "System2IntervalGateV1",
     "TransferCaseV1",
     "TransferMatrixV1",
     "build_four_condition_plan",
