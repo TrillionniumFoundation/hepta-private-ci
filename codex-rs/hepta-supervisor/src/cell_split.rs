@@ -425,6 +425,9 @@ pub enum CellSplitExecutionErrorV1 {
     ArtifactTooLarge,
     /// Native migration outcome cannot be proven; do not invoke Execute again.
     MigrationReconciliationRequired,
+    /// The real native owner lives in canonical operator acceptance; this
+    /// supervisor reference implementation must not dispatch production effects.
+    CanonicalOwnerRequired,
     Callback {
         stage: &'static str,
         message: String,
@@ -1133,6 +1136,17 @@ fn sync_directory(_path: &Path) -> Result<(), CellSplitExecutionErrorV1> {
     Ok(())
 }
 
+/// Production execution is exclusively owned by the independently reviewed
+/// canonical native owner. This secondary supervisor example is test-only.
+/// DENY_ALL in a returned receipt is not itself an execution permission check.
+fn require_fixture_execution() -> Result<(), CellSplitExecutionErrorV1> {
+    if cfg!(test) {
+        Ok(())
+    } else {
+        Err(CellSplitExecutionErrorV1::CanonicalOwnerRequired)
+    }
+}
+
 /// Only a frozen intent digest, NEVER an external operation receipt.
 fn migration_intent_digest(plan_digest: Digest32, snapshot_receipt: Digest32) -> Digest32 {
     Digest32::of_parts(&[
@@ -1167,6 +1181,7 @@ impl CellSplitExecutionOwnerV1 {
         ledger_path: impl AsRef<Path>,
         plan: CellSplitPlanV1,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
+        require_fixture_execution()?;
         let plan_digest = plan.validate()?;
         let ledger = CellSplitLedgerV1::create(ledger_path, plan.clone())?;
         Ok(Self {
@@ -1247,6 +1262,7 @@ impl CellSplitExecutionOwnerV1 {
         R: CellSplitCnsRouteOwnerV1,
         F: CellSplitGenerationFenceOwnerV1,
     {
+        require_fixture_execution()?;
         match self.phase {
             CellSplitPhaseV1::Prepared => {
                 let receipt = cas.put(&self.plan, artifact_bytes)?;
@@ -1347,6 +1363,7 @@ impl CellSplitExecutionOwnerV1 {
     where
         M: CellSplitStateMigrationOwnerV1,
     {
+        require_fixture_execution()?;
         if self.phase != CellSplitPhaseV1::StateSnapshotted {
             return Err(CellSplitExecutionErrorV1::InvalidTransition {
                 from: self.phase,
@@ -1411,6 +1428,7 @@ impl CellSplitExecutionOwnerV1 {
         snapshot: &CellSplitSnapshotReceiptV1,
         migration: &CellSplitMigrationReceiptV1,
     ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1> {
+        require_fixture_execution()?;
         if self.phase != CellSplitPhaseV1::MigrationInFlight {
             return Err(CellSplitExecutionErrorV1::InvalidTransition {
                 from: self.phase,
@@ -1434,6 +1452,7 @@ impl CellSplitExecutionOwnerV1 {
         snapshot: &CellSplitSnapshotReceiptV1,
         rollback: &CellSplitRollbackReceiptV1,
     ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1> {
+        require_fixture_execution()?;
         if self.phase != CellSplitPhaseV1::MigrationInFlight {
             return Err(CellSplitExecutionErrorV1::InvalidTransition {
                 from: self.phase,
@@ -1461,6 +1480,7 @@ impl CellSplitExecutionOwnerV1 {
         R: CellSplitCnsRouteOwnerV1,
         F: CellSplitGenerationFenceOwnerV1,
     {
+        require_fixture_execution()?;
         let migration_digest = migration.validate_for_replayed(&self.plan)?;
         if self.phase == CellSplitPhaseV1::MigrationInFlight {
             return Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired);
