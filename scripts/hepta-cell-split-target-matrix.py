@@ -235,6 +235,8 @@ def run_matrix(
             emitted = parse_workload_output(result.stdout)
             if (
                 emitted.get("caseId") != case["caseId"]
+                or emitted.get("cellCount") != case["cellCount"]
+                or emitted.get("sourceCommit") != source_commit
                 or emitted.get("workloadDigest") != workload_digest
                 or emitted.get("workloadSourceDigest") != workload_digest
             ):
@@ -343,6 +345,23 @@ def validate_report(report: dict[str, Any]) -> None:
             raise ValueError("matrix factor or Cell-count identity mismatch")
     workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
+    if (
+        not isinstance(workload, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", workload)
+        or report.get("workloadSourceDigest") != workload
+        or not isinstance(source, str)
+        or not re.fullmatch(r"[0-9a-f]{40}", source)
+    ):
+        raise ValueError("invalid source/workload identity")
+    provisional = {
+        key: report[key]
+        for key in (
+            "schema", "authority", "cellCounts", "sourceCommit",
+            "workloadDigest", "workloadSourceDigest", "host", "cases",
+        )
+    }
+    if report.get("reportDigest") != digest({**provisional, "observer": report.get("observer")}):
+        raise ValueError("report digest mismatch")
     for case in cases:
         if case.get("workloadDigest") != workload:
             raise ValueError("case workload binding mismatch")
