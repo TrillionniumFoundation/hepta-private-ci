@@ -808,6 +808,56 @@ def validate_report(
         if case["status"] == "measured" and "reason" in case:
             raise ValueError("measured matrix case contains blocked reason")
 
+    # A receipt signature binds the report bytes, not the meaning of arbitrary
+    # extension fields. Reject undeclared per-case approval/authority claims
+    # even if the caller recomputes all unsigned report digests.
+    common_case_keys = {
+        "caseId",
+        "cellCount",
+        "workloadDigest",
+        "status",
+    } | {name for name, _ in FACTORS}
+    # The runner deliberately emits no timing when it has not dispatched a
+    # worker at all. All actual executions, including failing ones, have an
+    # elapsedMicros observation. Do not invent a zero-duration measurement.
+    pre_dispatch_reasons = {
+        "workload command not supplied",
+        "frozen workload path is required",
+    }
+    for case in cases:
+        if case["status"] == "measured":
+            expected_case_keys = common_case_keys | {
+                "elapsedMicros",
+                "metrics",
+                "metricsDigest",
+            }
+        elif case["reason"] in pre_dispatch_reasons:
+            expected_case_keys = common_case_keys | {"reason"}
+        else:
+            expected_case_keys = common_case_keys | {"reason", "elapsedMicros"}
+        if set(case) != expected_case_keys:
+            raise ValueError("matrix case has unknown or missing fields")
+        if "elapsedMicros" in case:
+            elapsed = case["elapsedMicros"]
+            if (
+                isinstance(elapsed, bool)
+                or not isinstance(elapsed, int)
+                or elapsed < 0
+                or elapsed.bit_length() > 64
+            ):
+                raise ValueError("matrix elapsedMicros must be a bounded integer")
+
+    # A host fingerprint is descriptive and not a host attestation. Keep its
+    # vocabulary closed so unknown fields cannot imply production admission.
+    host = report.get("host")
+    if not isinstance(host, dict) or set(host) != {"hostId", "platform", "python"}:
+        raise ValueError("matrix host has unknown or missing fields")
+    if any(
+        not isinstance(host[key], str) or not host[key].strip() or len(host[key]) > 512
+        for key in ("hostId", "platform", "python")
+    ):
+        raise ValueError("matrix host has invalid descriptive values")
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
