@@ -661,7 +661,7 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            PersistedDispatchBinding<'_> {
+            PersistedDispatchBinding {
                 payload_digest,
                 request_digest: request_receipt.request_digest,
                 source_admission_digest,
