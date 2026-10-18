@@ -27,7 +27,8 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use codex_hepta_types::AuthorityPosture;
@@ -439,7 +440,7 @@ impl FileCellSplitArtifactCasV1 {
                 // The final digest name is occupied by this process only
                 // after an atomic rename. A crash during the write therefore
                 // cannot leave a partial object at the CAS name.
-                return self.install_new_artifact(&path, &temporary, bytes, plan);
+                self.install_new_artifact(&path, &temporary, bytes, plan)?;
             }
             Ok(_) => {
                 // `create_new` treats an existing symlink as an occupied
@@ -537,7 +538,7 @@ impl FileCellSplitArtifactCasV1 {
                         }
                         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                             let _ = fs::remove_file(temporary);
-                            let (mut existing_file, existing) = read_existing_cas_object(path)?;
+                            let (existing_file, existing) = read_existing_cas_object(path)?;
                             if existing != bytes {
                                 return Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch);
                             }
@@ -563,7 +564,7 @@ impl FileCellSplitArtifactCasV1 {
                                 }
                                 Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                                     let _ = fs::remove_file(temporary);
-                                    let (mut existing_file, existing) =
+                                    let (existing_file, existing) =
                                         read_existing_cas_object(path)?;
                                     if existing != bytes {
                                         return Err(
@@ -1453,7 +1454,8 @@ impl CellSplitMigrationReceiptV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
     fn id(value: &str) -> StableId {
