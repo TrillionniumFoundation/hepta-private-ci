@@ -575,6 +575,22 @@ def run_matrix(
                 "verified": False,
                 "reason": f"post-observer source checkout violation: {error}",
             }
+        if workload_path is not None:
+            try:
+                still_frozen = (
+                    hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                    == workload_digest
+                )
+            except OSError:
+                still_frozen = False
+            if not still_frozen:
+                blocked.append("frozen-workload")
+                # A previous signed claim cannot certify bytes that changed
+                # after the observer ran, even if its signature was valid.
+                observer_receipt = {
+                    "verified": False,
+                    "reason": "post-observer frozen workload changed or is missing",
+                }
 
     report = {
         **provisional,
