@@ -41,6 +41,13 @@ fn pin(path: &std::path::Path) -> Value {
     json!({"path":path,"digest":Digest32::of_bytes(&std::fs::read(path).unwrap()).to_string()})
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum QualificationMode<'a> {
+    SelectWithCohortControls,
+    Select,
+    ObserveInstalled(&'a crate::CognitiveModelReadback),
+}
+
 #[allow(clippy::too_many_arguments)]
 pub(super) async fn qualify(
     root: &std::path::Path, host: &Host, generation: u64,
@@ -48,6 +55,7 @@ pub(super) async fn qualify(
     expected: &crate::CognitiveModelReadback, roles: &mut Roles,
     candidate_choices: &Value, parent_choices: &Value,
     anchor: eval::FinalHoldoutCasAnchorV1,
+    source_release: &str, mode: QualificationMode<'_>,
 ) -> Value {
     let name = format!("ordinary-{generation}");
     let mut materials = admission::prepare_future(root, generation.min(3), &name, candidate,
@@ -64,7 +72,7 @@ pub(super) async fn qualify(
         minimum_dataset_records:1,minimum_future_window_micros:1,
     };
     let host_path = root.join("ordinary-host.json");
-    save(&host_path, &json!({"schema_version":1,"agent_id":owner(),"source_release":"ordinary-source",
+    save(&host_path, &json!({"schema_version":1,"agent_id":owner(),"source_release":source_release,
         "expected_predecessor":expected,"policy":SelfEvolutionSelectionPolicyV1Raw::from(policy),
         "trust":LearningEvidenceTrustV1Raw::from(roles.trust.clone()),"future_not_before_unix_micros":boundary,
         "estimand_digest":materials.raw_plan.estimand_digest.to_string(),
@@ -113,8 +121,14 @@ pub(super) async fn qualify(
         observations.push(observed); independent.push(verified);
     }
     let inputs = temporal::inputs(candidate,&name,&observations);
+    let mut retained = vec![Digest32::of_bytes(&serde_json::to_vec(&observations).unwrap())];
+    if let QualificationMode::ObserveInstalled(model) = mode {
+        let readback = serde_json::to_value(model).unwrap();
+        save(&root.join("precollection-runtime-model.json"), &readback);
+        retained.push(Digest32::of_bytes(&serde_json::to_vec(model).unwrap()));
+    }
     let context = eval::ProductQualificationContextV1 {generator:roles.principals[0].clone(),evaluator:roles.principals[1].clone(),
-        retention_receipt_digests:vec![Digest32::of_bytes(&serde_json::to_vec(&observations).unwrap())],
+        retention_receipt_digests:retained,
         unlearning_receipt_digest:Digest32::of_bytes(&std::fs::read(root.join("withdrawal-control/observed.json")).unwrap())};
     let windows: Vec<_> = observations.iter().enumerate().map(|(i,o)|eval::ObservedFutureWindowV1 {
         window_id:id(&format!("{name}-window-{}",i+1)),snapshot_id:id(&format!("{name}-snapshot-{}",i+1)),
@@ -129,7 +143,9 @@ pub(super) async fn qualify(
     save(&collection_path,&collection);
     input["stage"] = json!({"kind":"observer_statement","collection":pin(&collection_path),
         "reservation":reserved["reservation"],"acknowledgement":acknowledgement});
-    cohort_controls(root,host,&input,&collection,&product_plan.frozen_plan);
+    if matches!(mode, QualificationMode::SelectWithCohortControls) {
+        cohort_controls(root,host,&input,&collection,&product_plan.frozen_plan);
+    }
     let observer_statement = call(root,"04-observer-statement",&host.fleet_path,&input);
     input["stage"]["kind"] = json!("evaluator_statement");
     input["stage"]["observer"] = serde_json::to_value(SignedLearningEvidenceV1Raw::from(roles.evidence(/*index*/ 2,
@@ -143,9 +159,12 @@ pub(super) async fn qualify(
         predecessor_id:parent.selected.manifest.artifact_id.clone(),predecessor_generation:parent.selected.manifest.generation,
         predecessor_artifact_digest:parent.selected.manifest.content_digest,candidate_id:candidate.artifact.artifact_id.clone(),
         candidate_generation:candidate.artifact.generation,candidate_artifact_digest:candidate.pin.payload_digest};
-    input["stage"]["selection"] = json!({"kind":"candidate_binding_statement","request":SelfEvolutionSelectionRequestV1Raw::from(request)});
+    if !matches!(mode, QualificationMode::ObserveInstalled(_)) {
+        input["stage"]["selection"] = json!({"kind":"candidate_binding_statement","request":SelfEvolutionSelectionRequestV1Raw::from(request)});
+    }
     let bound = call(root,"06-qualified",&host.fleet_path,&input);
-    if bound["disposition"] != "EligibleForIndependentSelection" { return bound; }
+    if bound["disposition"] != "EligibleForIndependentSelection"
+        || matches!(mode, QualificationMode::ObserveInstalled(_)) { return bound; }
     let candidate_binding = SignedLearningEvidenceV1Raw::from(roles.evidence(/*index*/ 1,
         &support::unhex(bound["selection"]["candidate_binding_signing_payload_hex"].as_str().unwrap()),support::micros()));
     let selection_inputs = json!({"request":bound["selection"]["selection_request"],"candidate_binding":candidate_binding,
@@ -220,7 +239,8 @@ async fn actual_ordinary_cli_reserves_future_qualifies_selects_and_replays() {
     let original=eval::FencedFinalHoldoutOwnerV1::initialize(store,hash("three-generation-holdouts"),holdout_fence()).unwrap();
     let anchor=original.anchor();drop(original);File::open(&root).unwrap().sync_all().unwrap();
     let selected=qualify(&candidate_root,&host,1,&candidate,&parent,&expected,&mut roles,
-        &admission::choices(&candidate,&actions),&admission::choices(&baseline,&actions),anchor).await;
+        &admission::choices(&candidate,&actions),&admission::choices(&baseline,&actions),anchor,
+        "ordinary-source",QualificationMode::SelectWithCohortControls).await;
     assert_eq!(selected["selection"]["state"],"selected");
     let anchor:eval::FinalHoldoutCasAnchorV1=serde_json::from_value::<FinalHoldoutCasAnchorV1Raw>(selected["holdout_anchor"].clone()).unwrap().into();
     let (path,digest)=process::descriptor(&root,&published,&candidate,&view,host.launch,anchor);

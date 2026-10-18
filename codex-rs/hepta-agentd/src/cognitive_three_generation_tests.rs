@@ -34,6 +34,12 @@ mod support;
 mod temporal;
 #[path = "cognitive_ordinary_future_tests.rs"]
 mod ordinary;
+#[path = "cognitive_ordinary_native_support_tests.rs"]
+#[cfg(unix)]
+mod ordinary_native;
+#[path = "cognitive_ordinary_upgrade_tests.rs"]
+#[cfg(unix)]
+mod ordinary_upgrade;
 use support::Roles;
 use support::fit;
 use support::save;

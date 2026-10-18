@@ -14,7 +14,9 @@ SELECTOR = ('cognitive_ranker::tests::three_generation_learning::'
             'three_actual_fits_installations_future_instances_no_update_and_revocation')
 SELECTORS = {'generations': SELECTOR,
     'ordinary-future': ('cognitive_ranker::tests::three_generation_learning::ordinary::'
-                       'actual_ordinary_cli_reserves_future_qualifies_selects_and_replays')}
+                       'actual_ordinary_cli_reserves_future_qualifies_selects_and_replays'),
+    'ordinary-upgrade': ('cognitive_ranker::tests::three_generation_learning::ordinary_upgrade::'
+                        'actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update')}
 
 
 def sha(path):
