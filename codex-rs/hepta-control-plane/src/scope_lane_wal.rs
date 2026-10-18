@@ -296,12 +296,18 @@ pub struct ScopeLaneFileWalV1 {
 
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .append(true)
-            .open(path.as_ref())
-            .map_err(ScopeLaneWalError::from)?;
+        // Windows append-only handles have FILE_APPEND_DATA but not
+        // FILE_WRITE_DATA; SetEndOfFile during torn-tail recovery therefore
+        // fails with PermissionDenied. Use a read/write handle on Windows and
+        // seek-to-end under our exclusive file lock for each committed frame.
+        // Keep O_APPEND on Unix, preserving its stronger append-only semantics.
+        let mut options = OpenOptions::new();
+        options.create(true).read(true);
+        #[cfg(windows)]
+        options.write(true);
+        #[cfg(not(windows))]
+        options.append(true);
+        let file = options.open(path.as_ref()).map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
         let physical_len = file.0.metadata().map_err(ScopeLaneWalError::from)?.len();
         if physical_len == 0 {
