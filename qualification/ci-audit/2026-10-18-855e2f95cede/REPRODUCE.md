@@ -55,8 +55,17 @@ The first two post-push snapshots contain 17 queued jobs and absent aggregators.
 
 ## Memory experiment
 
-Inspect PR #1452 at 2a0e8d016f5e00359561934909e801ae26f2bfd7 and its locked strong_rag_shards.py protocol before invoking a model. Admit an adequate worker and create a fresh output batch. Complete 40 calibration calls, then 72 nine-arm inference calls, retaining per-sample answers, citation/source provenance, model/prompt/dataset hashes, device/seed/temperature and measured tokens/latency/resources. Do not append the six failed-attempt responses to a different historical batch. Independent calibration and scientific acceptance remain necessary even if counts are met.
+Inspect PR #1452 at 2a0e8d016f5e00359561934909e801ae26f2bfd7 and its locked scripts/memory_cell/strong_rag_shards.py protocol before invoking a model. Admit an adequate worker and create a fresh output batch. Complete 40 calibration calls, then 72 nine-arm inference calls, retaining per-sample answers, citation/source provenance, model/prompt/dataset hashes, device/seed/temperature and measured tokens/latency/resources. Do not append the six failed-attempt responses to a different historical batch. Independent calibration and scientific acceptance remain necessary even if counts are met.
 
 ## Archive verification
 
 FILES.json and ARCHIVES.json list file and archive SHA-256/Git blob identities. Each evidence archive includes a member manifest. Verify hashes before using its receipts; retain their original timestamps and observation scope. Source code remains recoverable from the exact pushed commits. Never upload model weights or invent missing physical measurements.
+
+For split archives, run from this checkpoint directory:
+
+~~~bash
+python3 reassemble_archives.py --verify-only
+python3 reassemble_archives.py
+~~~
+
+The script verifies every part's size, SHA-256 and Git blob identity, then verifies the complete concatenated archive against the recorded whole identities. It reconstructs the three split tar.gz archives without extracting or executing members. The runtime archive is already stored as a complete file. Existing different outputs are not overwritten. See LATEST_HEADS.jsonl for later independently moving subject heads; re-fetch again before continuing any branch mutation.

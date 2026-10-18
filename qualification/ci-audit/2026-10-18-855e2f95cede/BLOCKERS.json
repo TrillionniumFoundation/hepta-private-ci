@@ -8,11 +8,12 @@
     "location": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs:683,727",
     "run": 38827238622,
     "job": 117315617267,
-    "owner": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation",
+    "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
     "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
     "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
     "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
-    "repair_owner": "PR #2599 / root"
+    "repair_owner": "PR #2599 / root",
+    "historical_owner_note": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation"
   },
   {
     "id": "CI-002",
@@ -41,11 +42,12 @@
     "related_jobs": [
       117680668585
     ],
-    "owner": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification",
+    "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
     "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
     "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
     "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
-    "repair_owner": "PR #2599 / root"
+    "repair_owner": "PR #2599 / root",
+    "historical_owner_note": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification"
   },
   {
     "id": "CI-004",
@@ -142,7 +144,8 @@
       117680668336
     ],
     "owner": "Security owners #2695/#2790/#2789, fixed-parent semantic merge needed",
-    "next": "Run pinned cargo-deny against exact lock under available authorized runtime or retrieve bounded existing receipts; do not re-label historical 13 advisories as current verified count."
+    "next": "Run pinned cargo-deny against exact lock under available authorized runtime or retrieve bounded existing receipts; do not re-label historical 13 advisories as current verified count.",
+    "scope_notice": "Failures above belong only to their listed historical exact heads. In particular #2695 advanced to 7fe8b0eb at the later snapshot; its current checks are recorded separately in LATEST_HEADS.jsonl."
   },
   {
     "id": "CI-011",
@@ -171,13 +174,65 @@
   {
     "id": "CI-013",
     "scope": "#2688; #2695; #2790; #2805",
-    "head": "b5e61ecb07adcc7e41928a3ba27ca78dcde03aaf",
-    "status": "PENDING",
-    "root": "Required gate jobs absent/queued/in progress on updated HEADs",
+    "head": null,
+    "status": "PENDING_EXACT_HEAD_GATES",
+    "root": "At the latest recorded subject refresh, #2688 moved to 7b1e5b68 and #2695 to 7fe8b0eb. Their checks remain queued/partly in progress; older head results are not transferred. See LATEST_HEADS.jsonl for complete records.",
     "location": "GitHub Actions selected exact heads",
     "run": 39134607134,
     "owner": "Respective PR owners and runner scheduling owner",
-    "next": "Continue authorized local exact-source testing and avoid redundant matrix fanout. Required remote terminal results still needed."
+    "next": "Continue authorized local exact-source testing and avoid redundant matrix fanout. Required remote terminal results still needed.",
+    "historical_head": "b5e61ecb07adcc7e41928a3ba27ca78dcde03aaf",
+    "current_subjects": [
+      {
+        "number": 2688,
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "head": "7b1e5b68c8a94cd5af5da23409c944727b78fa37",
+        "branch": "codex/memory-cell-contracts-20261017",
+        "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "base_branch": "main",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2688",
+        "updated_at": "2026-10-18T15:24:40Z"
+      },
+      {
+        "number": 2695,
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "head": "7fe8b0eb83ad543baff860a4ff20ec73eab865c7",
+        "branch": "codex/group-ndu-deterministic-20261017",
+        "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "base_branch": "main",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2695",
+        "updated_at": "2026-10-18T14:43:26Z"
+      },
+      {
+        "number": 2790,
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "head": "55ad95747cec6d7bf122b1e825eda25fc08f4b36",
+        "branch": "fix/security-keyring-sync-no-zbus-20261018",
+        "base": "80ae29ceee332b671567a8e6fae9920291740b3b",
+        "base_branch": "integration/security-windows-baseline-20261017",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2790",
+        "updated_at": "2026-10-18T13:28:38Z"
+      },
+      {
+        "number": 2805,
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "head": "e29db69ff115d1dcf5778e84ba5ff8e715fc472b",
+        "branch": "codex/ci-2753-windows-sqlite-schema-oracle-20261018",
+        "base": "1ead6fff98e7dc84674068203a3fc575538d88c4",
+        "base_branch": "integration/security-windows-restart-fleet-clippy-20261018",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2805",
+        "updated_at": "2026-10-18T14:05:05Z"
+      }
+    ],
+    "latest_observed_utc": "2026-10-18 15:57:09 UTC"
   },
   {
     "id": "CI-014",

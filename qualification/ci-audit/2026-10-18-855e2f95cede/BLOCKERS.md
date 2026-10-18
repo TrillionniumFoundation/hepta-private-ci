@@ -1,12 +1,12 @@
 # Current blocker disposition
 
-Compiled 2026-10-18T15:42:48.243164+00:00. This is an open-blocker checkpoint.
+This checkpoint records pushed repairs and remaining gates; no all-green statement.
 
 | ID | Status | Owner | Next action |
 |---|---|---|---|
-| CI-001 | FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING | Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation | Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success. |
+| CI-001 | FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING | PR #2599 typed fixture maintenance; original donor source preserved | Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success. |
 | CI-002 | FAILED | #2800/#2805 SQLite fixture owners; semantic comparison required | Use codex_state::sqlite connect_pool with explicit in-memory SqliteConnectOptions preserving max_connections(1); execute migration/schema test plus Windows Clippy. Do not allow the forbidden method. |
-| CI-003 | FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING | Fleet authority fixture owner; historical #2746/#2735 overlap needs verification | Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success. |
+| CI-003 | FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING | PR #2599 typed fixture maintenance; original donor source preserved | Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success. |
 | CI-004 | FAILED_INFRASTRUCTURE | Runner/build footprint owner, historical #2776 disk reclaim to inspect | Inspect per-job disk before/after and Cargo test debug/link/archive layout; constrain duplicate outputs, retain full platform/test coverage, rerun same head. Do not classify as code compile failure. |
 | CI-005 | FAILED | #2789 ZIP exact-parent diagnostic owner | Review genuine diagnostic proposal artifact 12138013270 against exact Cargo/MODULE parents, regenerate lock with repository's Bazel version, commit complete lock and verify --lockfile_mode=error plus ZIP tests/security. No manual fabricated lock. |
 | CI-006 | FAILED_FAIL_CLOSED | Moving target branch owners #2789/#2790 and architecture workflow owner | Snapshot event BASE_SHA/SOURCE_SHA and current pull merge-ref parents/tree, diagnose drift, create/retest exact candidate. Preserve validation; add explicit immutable mismatch receipts if improving diagnostics. |
@@ -26,6 +26,10 @@ Compiled 2026-10-18T15:42:48.243164+00:00. This is an open-blocker checkpoint.
 | OS-FINAL-USE | UNQUALIFIED | Hepta #2815 -> Desktop #193 -> #194; A04/A05/A06/A07 | Verify the same-head stack and complete authenticated broker/Final-use positive and negative cases on real native platforms. Missing authority continues to deny effects. |
 | FULL-SEMANTIC-COVERAGE | NOT_COMPLETE | Feature and integration owners | Continue by owner DAG. Verify semantic superiority and exact current gates before closing, deleting or merging. |
 
-BLOCKERS.json retains original run/job IDs, source SHAs and failure locations. Full logs and commands are in ci-evidence.tar.gz. A repair commit is not a merge or a terminal required-check success.
+BLOCKERS.json retains historical failure run/job IDs, source SHAs and original owner notes. Current repair ownership is #2599 for CI-001/CI-003. A pushed fix is not native or required-CI success.
 
-Strict source-map qualification is a separate remaining gate. The observed blocking contract gate uses the development profile; do not assert that the 26 qualification failures caused a queued job to fail.
+Strict source-map qualification remains independently open. The observed blocking contract gate uses development profile, so the 26 strict qualification failures must not be assumed to cause a queued workflow failure.
+
+## 后续 HEAD 更新
+
+15:57:09 UTC 的再次读取确认 #2688 已前进到 `7b1e5b68c8a94cd5af5da23409c944727b78fa37`，#2695 已前进到 `7fe8b0eb83ad543baff860a4ff20ec73eab865c7`。其旧 HEAD 的失败仅用于根因线索，当前门禁见 [LATEST_HEADS.md](LATEST_HEADS.md) 与 [LATEST_HEADS.jsonl](LATEST_HEADS.jsonl)。并行分支的这些更新未被本轮覆写。

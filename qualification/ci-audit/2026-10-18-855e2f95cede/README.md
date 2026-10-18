@@ -59,3 +59,20 @@ OS 仓库在 15:22:56-15:23:29 UTC 完整清点 167 branches、185 PR；open 20�
 BLOCKERS.md/BLOCKERS.json 为未闭合清单，REPRODUCE.md 为固定 SHA 的可执行验证入口。优先在可访问且有独立磁盘的原生 worker 上完成 #2599 的 Cargo/Clippy/三平台验证，同时处理当前精确 HEAD 的真实 CI 失败；继续保持源码映射原身份、科学资格和外部 effect 权限的拒绝边界。
 
 本 checkpoint 的结论是“修复已推送、证据已归档、门禁未闭合”。没有后台本地训练或编译被宣称仍在运行。远端 queued run 仅按实际 run ID 和观测状态记录。
+
+## 归档与完整性索引
+
+| 文件 | 内容 |
+|---|---|
+| inventory-evidence.tar.gz | Hepta 全部分页、normalized branch/PR、全部分支 git graph 与依赖证据 |
+| ci-evidence.tar.gz | 已审查失败日志、独立复核、两个新 HEAD 的两次完整 CI 快照 |
+| research-os-evidence.tar.gz | 研究修复、真实测试日志、历史模型 recount、OS 全部分页及 20 个 open PR 检查 |
+| runtime-evidence.tar.gz | 遮蔽后的完整主机/dirty 文件快照、全 active-run/job 快照、源码映射原始失败归档、报告生成器 |
+
+大体积 JSON 保留在对应归档内，包含 host_snapshot.json、SCHEDULER_SOURCE_AUDIT.json 和 PR2714_PUBLISHED_CHECKPOINT.json。ARCHIVES.json / FILES.json 给出 SHA-256 与 Git blob；每包成员有独立清单。观察窗口内的其他 worktree 可能正在被其 owner 创建或写入，dirty 快照不构成允许覆盖、删除或终止任务的依据。
+
+## 后续 HEAD 与分片归档
+
+15:57:09 UTC 再次读取发现 #2688 和 #2695 的并行分支已经前进；完整新 HEAD 与检查记录见 [LATEST_HEADS.md](LATEST_HEADS.md) / [LATEST_HEADS.jsonl](LATEST_HEADS.jsonl)。以上较早快照仍保留原始观测时间，不能转作新 HEAD 的通过证明。
+
+三个较大归档以有序二进制分片保存，避免未获确认的大请求被误报成功。`ARCHIVES.json` 列出每片实际 Git blob、字节数、SHA-256，以及完整归档的身份。先运行 `python3 reassemble_archives.py --verify-only` 校验全部片与串联结果，再运行 `python3 reassemble_archives.py` 在本目录恢复原始 `.tar.gz`。脚本不解包、不执行归档内容，已有不同内容的目标文件会被拒绝覆盖。`runtime-evidence.tar.gz` 已作为完整文件保存。
