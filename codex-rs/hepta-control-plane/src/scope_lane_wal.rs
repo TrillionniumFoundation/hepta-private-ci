@@ -307,7 +307,9 @@ impl ScopeLaneFileWalV1 {
             options.custom_flags(libc::O_NOFOLLOW);
             options.mode(0o600);
         }
-        let file = options.open(path.as_ref()).map_err(ScopeLaneWalError::from)?;
+        let file = options
+            .open(path.as_ref())
+            .map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
         #[cfg(unix)]
         {
