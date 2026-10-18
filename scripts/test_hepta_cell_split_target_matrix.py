@@ -231,10 +231,15 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
         MODULE.verify_observer_signature(receipt, None)
     # A valid, different public key proves signature mismatch separately from
     # structurally invalid or small-order key rejection.
-    wrong_key = Ed25519PrivateKey.generate().public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw,
-    ).hex()
+    wrong_key = (
+        Ed25519PrivateKey.generate()
+        .public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        .hex()
+    )
     with pytest.raises(ValueError, match="signature invalid"):
         MODULE.verify_observer_signature(receipt, wrong_key)
     with pytest.raises(ValueError, match="not prime-order"):
