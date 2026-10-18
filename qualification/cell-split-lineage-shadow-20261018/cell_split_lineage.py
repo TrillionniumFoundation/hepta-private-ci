@@ -229,6 +229,23 @@ def _ledger_eligible(ledger: CellEvaluationLedgerV1, policy: CellSplitPolicyV1) 
     )
 
 
+def _ledger_payload(ledger: CellEvaluationLedgerV1) -> Mapping[str, object]:
+    return {
+        "schema": "hepta.cell-evaluation-ledger.v1",
+        "parent_cell_id": ledger.parent_cell_id,
+        "child_cell_id": ledger.child_cell_id,
+        "benchmark_digest": ledger.benchmark_digest,
+        "task_gain_lcb_ppm": ledger.task_gain_lcb_ppm,
+        "global_regression_ppm": ledger.global_regression_ppm,
+        "calibration_regression_ppm": ledger.calibration_regression_ppm,
+        "ood_delta_ppm": ledger.ood_delta_ppm,
+        "latency_delta_ns": ledger.latency_delta_ns,
+        "memory_delta_bytes": ledger.memory_delta_bytes,
+        "safety_violations": ledger.safety_violations,
+        "rollback_ready": ledger.rollback_ready,
+    }
+
+
 def decide_cell_split(
     parent: CellArtifactV1,
     split_id: str,
@@ -250,6 +267,8 @@ def decide_cell_split(
         raise ValueError("CELL_LEDGER_CHILD_IDS_MUST_BE_UNIQUE")
     if any(ledger.parent_cell_id != parent.cell_id for ledger in ledger_values):
         raise ValueError("CELL_LEDGER_PARENT_MISMATCH")
+    if any(canonical_digest(_ledger_payload(ledger)) != ledger.ledger_digest for ledger in ledger_values):
+        raise ValueError("CELL_LEDGER_DIGEST_MISMATCH")
     if set(by_child) != set(child_ids):
         raise ValueError("CELL_LEDGER_SET_MISMATCH")
     accepted = tuple(sorted(child_id for child_id in child_ids if _ledger_eligible(by_child[child_id], policy)))
