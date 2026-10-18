@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
+            .expect("valid test host observation must be admitted");
         ledger
     }
 
