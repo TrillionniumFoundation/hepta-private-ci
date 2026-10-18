@@ -64,8 +64,8 @@ With \`execute=true\`, the real-test job uses a static GitHub-readable
 matrix of 8/16/32/64/128/250 shard indexes; it has **no** \`needs: plan\`.
 GitHub can enqueue the real jobs immediately, rather than making the
 entire parallel wave wait for a single Ubuntu planning job to start.
-An explicit \`runner\` choice selects \`ubuntu-24.04\` or
-\`ubuntu-24.04-arm\`, allowing controlled OS-pool qualification.
+An explicit runner choice selects `ubuntu-24.04`, `ubuntu-24.04-arm`,
+or opt-in `ubuntu-slim` for Python tests, allowing controlled pool qualification.
 
 Each job independently checks out and verifies the same complete source SHA,
 selects one immutable real method through \`--execute --case-index\`, and
@@ -78,6 +78,25 @@ The direct job set remains 250 per cohort (not 500 in one matrix) because
 GitHub has a 256-entry matrix limit. Neither job count nor workflow queued
 state demonstrates actual 500 Runner concurrency; use the organization
 interval-overlap audit for that.
+
+## Optional `ubuntu-slim` Python-only pilot (2026-10-18)
+
+The direct-test runner selector now also accepts `ubuntu-slim`, a standard
+GitHub-hosted Linux x64 container with one vCPU, 5 GiB RAM and a 15-minute
+execution limit. The published image includes Python 3.12 and Git. This is
+**opt-in**; `ubuntu-24.04` remains the default, and Bazel, Rust builds,
+Windows/macOS jobs and release pipelines are unchanged.
+
+The pull-request fleet selftest uses `ubuntu-slim` to validate checkout and
+the Python regression suite before any wider manual pilot. Its standard-hosted
+job count shares the organization's existing 500-job quota; switching labels
+does not create extra capacity or guarantee faster admission.
+
+When the selftest passes, compare pinned eight- or sixteen-shard disjoint
+Python test slices on `ubuntu-slim` and `ubuntu-24.04` under actual queue
+conditions. Verify strict receipts, job identity, queue-delay P50/P95, and
+concurrent execution intervals. Do not add sleeps, artificial start barriers
+or duplicate tests to inflate the concurrency metric.
 
 ## Preview, pilot and full dispatch
 

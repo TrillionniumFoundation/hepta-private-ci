@@ -35,7 +35,7 @@ on:
         type: choice
         required: true
         default: ubuntu-24.04
-        options: [ubuntu-24.04, ubuntu-24.04-arm]
+        options: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-slim]
       absolute_offset:
         description: Use aligned absolute source-test slice (scatter mode)
         type: boolean
@@ -68,7 +68,7 @@ concurrency:
 jobs:
   selftest:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -122,6 +122,23 @@ class Examples(unittest.TestCase):
         self.assertIn("fromJSON(", direct)
         self.assertIn("--case-index", direct)
 
+    def test_slim_runner_is_opt_in_and_source_pinning_is_preserved(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "options: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-slim]", workflow
+        )
+        self.assertIn(
+            "  selftest:\n    if: github.event_name == 'pull_request'\n"
+            "    runs-on: ubuntu-slim\n",
+            workflow,
+        )
+        direct = workflow.split("\n  real-test:\n", 1)[1]
+        self.assertIn("    runs-on: ${{ inputs.runner }}", direct)
+        self.assertIn("    timeout-minutes: 15", direct)
+
     def test_ten_absolute_50_shard_runs_cover_exactly_500_unique_tests(self):
         cases = [f"scripts.sample.Tests.test_{i:04d}" for i in range(620)]
         seen = set()
