@@ -84,7 +84,7 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
     ensure!(success,"ordinary target inspection failed: {inspection}");
     let commitment:crate::CognitiveUpgradeCommitmentV1=serde_json::from_value(inspection["commitment"].clone())?;
     let fixture=fixture_binary.run(&root,"task-prepare",&["prepare".to_owned(),node_directory.display().to_string(),genesis.to_string(),
-        "authenticated-v1".to_owned(),commitment.output_sha256()?.to_string()])?;
+        "authenticated-v1".to_owned(),commitment.output_sha256()?.as_str().to_owned()])?;
     ensure!(fixture["acceptance_submitted"]==false,"fixture must leave exact acceptance to actual Agentd");
     let chain=Chain{binary:node,genesis,store:node_directory.join("node"),fixture};
     // Only the initial historical fixture transitions use the registry. Every

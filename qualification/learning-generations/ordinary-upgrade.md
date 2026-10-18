@@ -140,8 +140,11 @@ native test. A zero-match filter is not a successful run.
 
 The Chain build must include the original `hepta_task_fixture` example and
 `trnm-pon-node`. The fixture creates a fresh development namespace and admits only
-reserve/receipt; real Agentd submits acceptance. The Supervisor binary uses the
-existing explicit `production-authority` build feature in this isolated namespace;
+reserve/receipt; real Agentd submits acceptance. This scenario uses the existing
+`authenticated-v1` development backend without `--operator-task-*` inputs. It does
+not exercise or enable the restricted external operator task owner, whose
+authenticated-backend combination the original Chain CLI rejects. The Supervisor
+binary uses the existing explicit `production-authority` build feature in this isolated namespace;
 default release builds and production authorities are unchanged. The same-source
 Agentd and ordinary CLI binaries are resolved by `codex_utils_cargo_bin`; explicitly
 pin `CARGO_BIN_EXE_codex_hepta_agentd` and `CARGO_BIN_EXE_hepta_cognitive_upgrade`
