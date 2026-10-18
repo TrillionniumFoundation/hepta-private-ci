@@ -183,8 +183,7 @@ impl MemoryCellTickReceiptV1 {
         }
         match self.status {
             MemoryCellStatusV1::Selected => {
-                if self.successor_checkpoint_digest.is_none()
-                    || self.recall_packet_digest.is_none()
+                if self.successor_checkpoint_digest.is_none() || self.recall_packet_digest.is_none()
                 {
                     return Err(HnmfContractError::Missing(
                         "selected memory cell receipt successor",
@@ -192,8 +191,7 @@ impl MemoryCellTickReceiptV1 {
                 }
             }
             MemoryCellStatusV1::Abstained => {
-                if self.successor_checkpoint_digest.is_some()
-                    || self.recall_packet_digest.is_some()
+                if self.successor_checkpoint_digest.is_some() || self.recall_packet_digest.is_some()
                 {
                     return Err(HnmfContractError::Conflict(
                         "abstained memory cell receipt output",
@@ -201,8 +199,7 @@ impl MemoryCellTickReceiptV1 {
                 }
             }
             MemoryCellStatusV1::Unavailable => {
-                if self.successor_checkpoint_digest.is_some()
-                    || self.recall_packet_digest.is_some()
+                if self.successor_checkpoint_digest.is_some() || self.recall_packet_digest.is_some()
                 {
                     return Err(HnmfContractError::Conflict(
                         "unavailable memory cell receipt output",
@@ -261,7 +258,9 @@ impl MemoryCellSplitProposalV1 {
             return Err(HnmfContractError::Conflict("memory cell split identity"));
         }
         if self.proposal_id != self.topology.proposal_id {
-            return Err(HnmfContractError::Conflict("memory cell split proposal binding"));
+            return Err(HnmfContractError::Conflict(
+                "memory cell split proposal binding",
+            ));
         }
         if self.topology.operation != TopologyOperationV1::Split
             || self.topology.state == TopologyProposalStateV1::Rejected
