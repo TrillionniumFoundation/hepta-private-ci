@@ -18,8 +18,8 @@ on:
         description: Real hosted workers to share this 250-test cohort
         type: choice
         required: true
-        default: '16'
-        options: ['8', '16', '32']
+        default: "16"
+        options: ["8", "16", "32"]
       runner:
         description: GitHub-hosted runner pool
         type: choice
@@ -99,4 +99,3 @@ jobs:
           path: ${{ runner.temp }}/packed-result.json
           retention-days: 14
           if-no-files-found: error
-

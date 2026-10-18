@@ -207,7 +207,7 @@ jobs:
   required:
     timeout-minutes: 30
     name: CI required
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs:
       - scope
       - hepta-contract-gate

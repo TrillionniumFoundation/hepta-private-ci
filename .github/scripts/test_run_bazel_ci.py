@@ -124,6 +124,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         return result, calls
 
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
+        self.env["BAZEL_LOCAL_DISK_CACHE"] = "D:/build root/o-disk"
         result, calls = self.run_wrapper(
             "--windows-cross-compile",
             "--",
@@ -140,6 +141,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
         self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
         self.assertIn("--jobs=8", args)
+        disk_cache = "--disk_cache=D:/build root/o-disk"
+        self.assertIn(disk_cache, args)
+        self.assertLess(args.index("--config=ci-windows"), args.index(disk_cache))
+        self.assertLess(args.index(disk_cache), args.index("--"))
         self.assertIn(f"--test_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertNotIn("--config=ci-windows-cross", args)
         self.assertNotIn("--platforms=//:windows_x86_64_msvc", args)
