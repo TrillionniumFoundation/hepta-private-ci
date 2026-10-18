@@ -175,6 +175,26 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     )
 
 
+# Ed25519's cofactor-eight torsion points are not acceptable trust roots.
+# Some crypto backends accept a zero signature for some messages with these
+# public keys. Include both disallowed sign encodings for x=0 (y=+/-1).
+_ED25519_LOW_ORDER_PUBLIC_KEYS = frozenset(
+    bytes.fromhex(value)
+    for value in (
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+        "0000000000000000000000000000000000000000000000000000000000000080",
+        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+        "0100000000000000000000000000000000000000000000000000000000000080",
+        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    )
+)
+
+
 def verify_observer_signature(
     receipt: dict[str, Any],
     trusted_public_key_hex: str | None,
@@ -184,6 +204,14 @@ def verify_observer_signature(
         r"[0-9a-f]{64}", trusted_public_key_hex
     ):
         raise ValueError("trusted independent Ed25519 observer public key is required")
+    public_key = bytes.fromhex(trusted_public_key_hex)
+    # Reject noncanonical y encodings and every known order-1/2/4/8
+    # public key before invoking a library verifier.
+    if (
+        (int.from_bytes(public_key, "little") & ((1 << 255) - 1)) >= (1 << 255) - 19
+        or public_key in _ED25519_LOW_ORDER_PUBLIC_KEYS
+    ):
+        raise ValueError("trusted Ed25519 observer public key is noncanonical or small-order")
     signature = receipt.get("signatureHex")
     if not isinstance(signature, str) or not re.fullmatch(r"[0-9a-f]{128}", signature):
         raise ValueError("independent observer signature is missing or malformed")
@@ -200,9 +228,9 @@ def verify_observer_signature(
     except ImportError as error:
         raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
     try:
-        Ed25519PublicKey.from_public_bytes(
-            bytes.fromhex(trusted_public_key_hex)
-        ).verify(bytes.fromhex(signature), observer_signing_bytes(receipt))
+        Ed25519PublicKey.from_public_bytes(public_key).verify(
+            bytes.fromhex(signature), observer_signing_bytes(receipt)
+        )
     except (InvalidSignature, ValueError) as error:
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
