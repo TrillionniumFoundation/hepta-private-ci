@@ -43,10 +43,18 @@ impl<D: CompositionDriver> CompositionModelDriverAdapter<D> {
     /// Construction is explicit and requires a nonrevoked, generation-bound
     /// resource grant; actual grant expiry remains owned by InferenceWorker.
     pub fn new_qualification(
+        now_ms: u64,
         worker: CompositionWorker<D>,
         grant: &ResourceGrant,
     ) -> Result<Self, Error> {
-        if grant.revoked
+        if grant.revoked {
+            return Err(Error::GrantRevoked);
+        }
+        if now_ms >= grant.expires_at_ms {
+            return Err(Error::GrantExpired);
+        }
+        if !valid_id(&grant.grant_id)
+            || !valid_digest(&grant.semantic_digest)
             || grant.authority_epoch == 0
             || grant.generation == 0
             || grant.maximum_memory_bytes == 0
@@ -424,7 +432,7 @@ mod tests {
             semantic_digest: "6".repeat(64),
         };
         (
-            CompositionModelDriverAdapter::new_qualification(worker, &grant)
+            CompositionModelDriverAdapter::new_qualification(1, worker, &grant)
                 .expect("qualification"),
             counters,
         )
@@ -529,5 +537,34 @@ mod tests {
         cancelled.cancelled = true;
         assert_eq!(adapter.run(&handle, &cancelled), Err(Error::FeatureContract));
         adapter.unload(handle).expect("unload");
+    }
+
+    #[test]
+    fn grant_expiry_and_revocation_are_rejected_before_construction() {
+        let counter = Rc::new(RefCell::new(Counters::default()));
+        let make_worker = || CompositionWorker::new(
+            SharedEncoderPool::new(1, 1).expect("pool"),
+            CountingDriver { counters: counter.clone() },
+        );
+        let mut grant = ResourceGrant {
+            grant_id: "grant.1".into(),
+            authority_epoch: 1,
+            generation: 1,
+            expires_at_ms: 100,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 1,
+            maximum_memory_bytes: 1000,
+            semantic_digest: "6".repeat(64),
+        };
+        assert!(matches!(
+            CompositionModelDriverAdapter::new_qualification(100, make_worker(), &grant),
+            Err(Error::GrantExpired)
+        ));
+        grant.revoked = true;
+        assert!(matches!(
+            CompositionModelDriverAdapter::new_qualification(1, make_worker(), &grant),
+            Err(Error::GrantRevoked)
+        ));
     }
 }
