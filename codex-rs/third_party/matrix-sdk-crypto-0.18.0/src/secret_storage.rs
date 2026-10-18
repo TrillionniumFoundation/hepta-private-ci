@@ -272,7 +272,7 @@ impl SecretStorageKey {
                     return Err(DecodeError::IvLength(IV_SIZE, iv_length));
                 }
 
-                let mut iv_array = [0u8; 16];
+                let mut iv_array = <[u8; 16]>::default();
                 iv_array.copy_from_slice(iv);
 
                 // I'm not particularly convinced that this couldn't have been done simpler.
