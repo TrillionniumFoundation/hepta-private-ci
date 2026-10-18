@@ -1,0 +1,53 @@
+name: Hepta Stem transfer and Cell artifact (read-only)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-stem-transfer-cell-artifact-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Contract tests (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      BASE_SHA: ${{ github.event.workflow_run.base_sha || github.event.pull_request.base.sha || github.event.repository.default_branch }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+
+      - name: Bind source and synthetic merge lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          if [[ "${{ matrix.lane }}" = "synthetic-merge" ]]; then
+            git fetch --no-tags origin "${BASE_SHA}"
+            merge_tree="$(git merge-tree --write-tree "${BASE_SHA}" HEAD)"
+            git diff --exit-code HEAD "${merge_tree}"
+          fi
+
+      - name: Run deterministic contract tests
+        run: python3 -m unittest discover -v -s qualification/stem-transfer-cell-artifact-p0 -p 'test_*.py'
+
+      - name: Compile and inspect diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qualification/stem-transfer-cell-artifact-p0/stem_transfer_cell_artifact.py qualification/stem-transfer-cell-artifact-p0/test_stem_transfer_cell_artifact.py
+          git diff --check
+          git diff --exit-code
