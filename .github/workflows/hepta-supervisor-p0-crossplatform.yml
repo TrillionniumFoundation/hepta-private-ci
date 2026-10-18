@@ -32,7 +32,6 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-supervisor-p0-target
       EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     defaults:
       run:
@@ -54,6 +53,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
           git show -s --format='source=%H tree=%T parents=%P'
           git diff --check
+
+      - name: Initialize isolated Cargo target directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-p0-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Install repository CI tools
         uses: ./.github/actions/setup-ci-tools
