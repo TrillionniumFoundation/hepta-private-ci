@@ -168,7 +168,10 @@ fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
         writer.append(envelope("scope-a", "owner-a", 1, "second")),
         Err(ScopeLaneWalError::Poisoned)
     );
-    assert_eq!(writer.append(first.clone()), Err(ScopeLaneWalError::Poisoned));
+    assert_eq!(
+        writer.append(first.clone()),
+        Err(ScopeLaneWalError::Poisoned)
+    );
     assert_eq!(must(std::fs::metadata(&path)).len(), durable_len);
     drop(writer);
 
