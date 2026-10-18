@@ -37,7 +37,13 @@ def _require(condition: bool, message: str) -> None:
 
 
 def _finite(name: str, value: float) -> None:
-    _require(isinstance(value, (int, float)) and math.isfinite(float(value)), f"{name} must be finite")
+    finite = False
+    if type(value) in (int, float):
+        try:
+            finite = math.isfinite(float(value))
+        except (OverflowError, ValueError):
+            finite = False
+    _require(finite, f"{name} must be finite")
 
 
 def _nonnegative(name: str, value: float) -> None:
@@ -50,13 +56,17 @@ def _digest(name: str, value: str) -> None:
 
 
 def _identifier(name: str, value: str) -> None:
-    _require(isinstance(value, str) and 0 < len(value) <= 128 and "\n" not in value, f"{name} is invalid")
+    _require(
+        isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value) is not None,
+        f"{name} is invalid",
+    )
 
 
 def _vector(name: str, value: Sequence[float], maximum: int) -> None:
     _require(isinstance(value, (tuple, list)) and 0 < len(value) <= maximum, f"{name} has invalid dimension")
     for item in value:
-        _finite(f"{name} element", float(item))
+        _require(type(item) in (int, float), f"{name} element must be numeric")
+        _finite(f"{name} element", item)
 
 
 def digest_json(value: object) -> str:
@@ -101,7 +111,10 @@ class TreeNodeV1:
         _require(self.continuation_lcb <= self.continuation_ucb, "continuation interval is inverted")
         _nonnegative("uncertainty", self.uncertainty)
         _nonnegative("residual", self.residual)
-        _require(isinstance(self.expiry_step, int) and self.expiry_step >= self.depth, "expiry must cover node depth")
+        _require(
+            type(self.expiry_step) is int and self.depth <= self.expiry_step <= 512,
+            "expiry must cover node depth and be bounded by 512",
+        )
 
     def boundary(self) -> dict[str, object]:
         """Only bounded state crosses a Cell/organ boundary."""
@@ -148,9 +161,9 @@ class TreePlanV1:
 
     def __post_init__(self) -> None:
         _require(self.nodes, "tree requires a root")
-        _require(isinstance(self.branching_factor, int) and 1 <= self.branching_factor <= 64, "branching factor is invalid")
-        _require(isinstance(self.horizon_steps, int) and 0 <= self.horizon_steps <= 64, "horizon is invalid")
-        _require(isinstance(self.max_nodes, int) and 1 <= self.max_nodes <= 4096, "max_nodes is invalid")
+        _require(type(self.branching_factor) is int and 1 <= self.branching_factor <= 64, "branching factor is invalid")
+        _require(type(self.horizon_steps) is int and 0 <= self.horizon_steps <= 64, "horizon is invalid")
+        _require(type(self.max_nodes) is int and 1 <= self.max_nodes <= 4096, "max_nodes is invalid")
         by_id = {node.node_id: node for node in self.nodes}
         _require(len(by_id) == len(self.nodes), "node ids must be unique")
         roots = [node for node in self.nodes if node.parent_id is None]
@@ -163,6 +176,7 @@ class TreePlanV1:
         _require(len({node.objective_digest for node in self.nodes}) == 1, "all nodes must share the fixed objective")
         _require(len({node.prompt_digest for node in self.nodes}) == 1, "all nodes must share the admitted prompt digest")
         seen_edges: set[tuple[str, str]] = set()
+        children_per_parent: dict[str, int] = {}
         for edge in self.edges:
             _require(edge.parent_id in by_id and edge.child_id in by_id, "edge references an unknown node")
             key = (edge.parent_id, edge.child_id)
@@ -172,6 +186,9 @@ class TreePlanV1:
             child = by_id[edge.child_id]
             _require(child.parent_id == parent.node_id, "child parent link does not match edge")
             _require(child.depth == parent.depth + 1, "tree edges must advance one depth")
+            children_per_parent[edge.parent_id] = children_per_parent.get(edge.parent_id, 0) + 1
+            _require(children_per_parent[edge.parent_id] <= self.branching_factor, "parent exceeds local branching factor")
+            _require(child.budget <= parent.budget, "branch cannot increase resource budget")
         for node in self.nodes:
             if node.parent_id is not None:
                 _require(any(edge.child_id == node.node_id for edge in self.edges), "non-root node needs an incoming edge")
@@ -277,13 +294,59 @@ class FbsdeShadowGateV1:
         }
 
 
+_ALLOWED_PROMPT_STATE_FIELDS = frozenset(
+    {
+        "state", "x", "h", "p", "budget",
+        "continuation_lcb", "continuation_ucb",
+        "uncertainty", "residual", "expiry_step",
+        "filtration_digest", "parent_id",
+    }
+)
+
+
 def validate_prompt_boundary(prompt_digest: str, objective_digest: str, boundary: Mapping[str, object]) -> None:
-    """Accept a prompt identity, never a prompt-authored objective or solver."""
+    """Admit typed bounded state only; no prompt-authored solver or grant payload.
+
+    Unknown keys, all nested objects, free-form text, nonfinite values and
+    malformed identities are rejected, including protected keys hidden below
+    a generic "state" wrapper. This validates a shadow *state interface*,
+    not the trustworthiness of upstream raw observations.
+    """
     _digest("prompt_digest", prompt_digest)
     _digest("objective_digest", objective_digest)
     _require(isinstance(boundary, Mapping), "boundary must be a mapping")
-    _require(not (_FORBIDDEN_BOUNDARY_KEYS & set(boundary)), "prompt boundary contains a protected field")
-    _require("prompt_text" not in boundary and "raw_prompt" not in boundary, "raw prompt cannot cross the solver boundary")
+    names = set(boundary)
+    _require(all(isinstance(key, str) for key in names), "boundary field names must be strings")
+    _require(not (_FORBIDDEN_BOUNDARY_KEYS & names), "prompt boundary contains a protected field")
+    _require("prompt_text" not in names and "raw_prompt" not in names, "raw prompt cannot cross the solver boundary")
+    _require(names <= _ALLOWED_PROMPT_STATE_FIELDS, "boundary contains an unknown field")
+    for name, value in boundary.items():
+        if name in ("x", "h", "state"):
+            _vector(name, value, 256)
+        elif name == "p":
+            _vector(name, value, 64)
+        elif name == "filtration_digest":
+            _digest(name, value)
+        elif name == "parent_id":
+            if value is not None:
+                _identifier(name, value)
+        elif name == "expiry_step":
+            _require(type(value) is int and 0 <= value <= 512, "expiry_step is invalid")
+        else:
+            _require(type(value) in (int, float), f"{name} must be numeric")
+            if name in ("budget", "uncertainty", "residual"):
+                _nonnegative(name, value)
+            else:
+                _finite(name, value)
+    _require(
+        ("continuation_lcb" in names) == ("continuation_ucb" in names),
+        "continuation interval must have both bounds",
+    )
+    if "continuation_lcb" in names:
+        _require(
+            float(boundary["continuation_lcb"]) <= float(boundary["continuation_ucb"]),
+            "continuation interval is inverted",
+        )
 
 
 def branch_count_upper_bound(branching_factor: int, horizon_steps: int) -> int:
