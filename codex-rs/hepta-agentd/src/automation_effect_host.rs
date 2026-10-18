@@ -65,6 +65,11 @@ mod pon_executable;
 mod pon_process;
 #[path = "automation_effect_host_task_observation.rs"]
 mod task_observation;
+#[path = "automation_effect_reconciliation.rs"]
+mod reconciliation;
+#[path = "automation_effect_resume.rs"]
+mod resume;
+pub(crate) use resume::AgentdEffectResumeInput;
 #[path = "automation_effect_terminal_observation.rs"]
 mod terminal_observation;
 #[cfg(all(test, unix))]
@@ -825,6 +830,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     revocations_file: PathBuf,
     // Serialize refreshes; the existing durable authority owns the only head.
     revocation_refresh: Arc<Mutex<()>>,
+    resume_serial: Arc<tokio::sync::Mutex<()>>,
     adapter: AgentdProviderEffectAdapter,
 }
 
@@ -969,6 +975,7 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
+            resume_serial: Arc::new(tokio::sync::Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Http(adapter),
         })
     }
@@ -1095,6 +1102,7 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
+            resume_serial: Arc::new(tokio::sync::Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Pon(adapter),
         })
     }
@@ -1185,88 +1193,7 @@ impl AgentdAutomationEffectHost {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
         let fence = self.current_fence(&run, now_ms)?;
-        if let Some(local) = store
-            .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "settle durable authorized effect observation: {error}"
-                ))
-            })?
-        {
-            match local {
-                AuthorizedEffectRecoveryResult::Observed(receipt)
-                    if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
-                {
-                    let provider_intent = self.provider_intent(&pending)?;
-                    let chain = self
-                        .adapter
-                        .current_chain_observation(
-                            &provider_intent,
-                            pending.wire_payload.as_deref(),
-                        )
-                        .await;
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed {
-                        receipt,
-                        chain: chain.map(Box::new),
-                    });
-                }
-                AuthorizedEffectRecoveryResult::ProvenAbsent => {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
-                }
-                AuthorizedEffectRecoveryResult::Observed(_) => {}
-            }
-        }
-        let provider_intent = self.provider_intent(&pending)?;
-        match self
-            .adapter
-            .lookup_for_reconciliation(&provider_intent, pending.wire_payload.as_deref())
-            .await
-        {
-            ProviderEffectLookup::Ack(ack) => {
-                let Some(receipt) = terminal_receipt_from_ack(&ack) else {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
-                };
-                match store
-                    .recover_authorized_taskflow_effect(
-                        run_id,
-                        step_id,
-                        attempt,
-                        &fence,
-                        AuthorizedEffectRecovery::Observed(receipt),
-                        now_ms,
-                    )
-                    .await
-                    .map_err(|error| {
-                        AgentdError::Protocol(format!(
-                            "reconcile authorized effect terminal observation: {error}"
-                        ))
-                    })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        let chain = self
-                            .adapter
-                            .current_chain_observation(
-                                &provider_intent,
-                                pending.wire_payload.as_deref(),
-                            )
-                            .await;
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed {
-                            receipt,
-                            chain: chain.map(Box::new),
-                        })
-                    }
-                    AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
-                        "status lookup cannot manufacture provider absence".to_string(),
-                    )),
-                }
-            }
-            ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
-                "provider reports a same-key payload conflict".to_string(),
-            )),
-            ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => {
-                Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
-            }
-        }
+        self.reconcile_pending(store, &pending, &fence, now_ms).await
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {

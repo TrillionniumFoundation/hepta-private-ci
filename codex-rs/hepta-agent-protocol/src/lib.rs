@@ -17,6 +17,7 @@ pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use automation_chain::AutomationAcceptedTaskObservation;
 pub use automation_chain::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY;
+pub use automation_chain::AUTOMATION_EFFECT_RESUME_CAPABILITY;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -670,6 +671,12 @@ pub enum AgentdMethod {
     },
     AutomationObserveEffect {
         intent: AuthorizedEffectIntent,
+        command_id: String,
+    },
+    AutomationResumeEffect {
+        intent: AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationList {

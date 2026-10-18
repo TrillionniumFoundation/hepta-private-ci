@@ -112,7 +112,7 @@ pub async fn advance_published_cognitive_upgrade_v1(
         generation,
     )?;
 
-    if !same_operation {
+    let observation = if !same_operation {
         ensure!(
             status.current_release.as_ref() == Some(&source.source_release)
                 && !status.release_change_pending
@@ -128,24 +128,17 @@ pub async fn advance_published_cognitive_upgrade_v1(
         let packet = read_material(&plan.effect.packet_path, crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES as u64)?;
         ensure!(Sha256Digest::for_bytes(&packet) == plan.effect.intent.payload_digest,
             "task accept packet differs from the original FinalUse effect");
-        // The original durable intent handles exact retry and uncertain dispatch;
-        // this call cannot reconstruct or sign a replacement FinalUse grant.
-        client.automation_execute_effect(
+        // The original owner prepares only before its durable dispatch barrier;
+        // exact uncertain attempts enter recovery without a second submission.
+        client.automation_resume_effect(
             plan.effect.intent.clone(),
             &packet,
             plan.effect.final_use_grant.clone(),
             plan.effect.command_id.clone(),
-        ).await?;
-    }
-
-    let mut observation = client.automation_observe_effect(
-        plan.effect.intent.clone(), plan.effect.command_id.clone(),
-    ).await?;
-    if !same_operation && observation.state != AutomationEffectReconcileState::Terminal {
-        observation = client.automation_reconcile_effect(
-            plan.effect.intent.run_id.clone(), plan.effect.intent.step_id.clone(), plan.effect.intent.attempt,
-        ).await?;
-    }
+        ).await?
+    } else {
+        client.automation_observe_effect(plan.effect.intent.clone(), plan.effect.command_id.clone()).await?
+    };
     let accepted = accepted_task_chain(&observation, plan, &output)?;
     let Some(chain) = accepted else {
         return Ok(if same_operation {

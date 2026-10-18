@@ -100,6 +100,9 @@ impl AgentdState {
                 ];
                 if self.automation_effect_host().is_some() {
                     capabilities.push(crate::AgentdCapability::new(
+                        crate::AUTOMATION_EFFECT_RESUME_CAPABILITY, 1, 0,
+                    ).map_err(AgentdError::Protocol)?);
+                    capabilities.push(crate::AgentdCapability::new(
                         crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY, 1, 0,
                     ).map_err(AgentdError::Protocol)?);
                     capabilities.push(
@@ -653,6 +656,11 @@ impl AgentdState {
                     self.observe_automation_effect(&intent, &command_id).await?,
                 )
             }
+            crate::AgentdMethod::AutomationResumeEffect { intent, wire_payload_hex, signed_grant, command_id } => {
+                AgentdPayload::AutomationEffectReconcile(self.resume_automation_effect(
+                    &intent, &decode_effect_wire_hex(&wire_payload_hex)?, &signed_grant, &command_id,
+                ).await?)
+            }
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,
                 step_id,
@@ -1103,7 +1111,15 @@ fn automation_effect_unavailable() -> AgentdPayload {
 fn effect_snapshot(
     receipt: codex_hepta_automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
-    let observation = match receipt.observation {
+    let observed = match receipt.final_outcome {
+        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded) => Some(TaskFlowStepObservation::Succeeded),
+        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Failed) => Some(TaskFlowStepObservation::Failed),
+        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Cancelled) => {
+            return Err(AgentdError::Protocol("cancelled effect requires its original absence/cancellation observation".to_owned()));
+        }
+        None => receipt.observation,
+    };
+    let observation = match observed {
         Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
         Some(TaskFlowStepObservation::Failed) => crate::AutomationEffectObservation::Failed,
         Some(TaskFlowStepObservation::Indeterminate) => {

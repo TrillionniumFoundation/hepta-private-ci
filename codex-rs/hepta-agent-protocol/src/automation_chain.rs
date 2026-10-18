@@ -4,8 +4,27 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub const AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY: &str = "automation.effect.observe";
+pub const AUTOMATION_EFFECT_RESUME_CAPABILITY: &str = "automation.effect.resume";
 
 impl crate::AgentdRequest {
+    pub fn automation_resume_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        intent: codex_hepta_automation::AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: codex_hepta_contracts::SignedFinalUseGrant,
+        command_id: String,
+    ) -> Self {
+        Self {
+            schema_version: crate::AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: crate::AgentdMethod::AutomationResumeEffect {
+                intent, wire_payload_hex, signed_grant: Box::new(signed_grant), command_id,
+            },
+        }
+    }
+
     pub fn automation_observe_effect(
         request_id: u64,
         spawn_generation: u64,
