@@ -174,6 +174,69 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     )
 
 
+def _strict_ed25519_public_key(raw: bytes) -> bool:
+    """Accept only canonical, nonidentity Ed25519 prime-subgroup public keys.
+
+    Some verifiers accept trivial signatures against low-order public keys.
+    Check the independently pinned *public* point; cryptography still performs
+    the actual signature verification. No secret scalar is handled here.
+    """
+    if len(raw) != 32:
+        return False
+    prime = 2**255 - 19
+    order = 2**252 + 27742317777372353535851937790883648493
+    d = (-121665 * pow(121666, prime - 2, prime)) % prime
+    sqrt_minus_one = pow(2, (prime - 1) // 4, prime)
+    encoded = int.from_bytes(raw, "little")
+    parity = encoded >> 255
+    y = encoded & ((1 << 255) - 1)
+    if y >= prime:
+        return False
+    y_squared = y * y % prime
+    denominator = (d * y_squared + 1) % prime
+    if denominator == 0:
+        return False
+    x_squared = (y_squared - 1) * pow(denominator, prime - 2, prime) % prime
+    x = pow(x_squared, (prime + 3) // 8, prime)
+    if (x * x - x_squared) % prime:
+        x = x * sqrt_minus_one % prime
+    if (x * x - x_squared) % prime:
+        return False
+    if x & 1 != parity:
+        x = (-x) % prime
+    if x == 0 and parity:
+        return False
+    if x == 0 and y == 1:
+        return False
+
+    def add(
+        left: tuple[int, int, int, int], right: tuple[int, int, int, int]
+    ) -> tuple[int, int, int, int]:
+        x1, y1, z1, t1 = left
+        x2, y2, z2, t2 = right
+        a = (y1 - x1) * (y2 - x2) % prime
+        b = (y1 + x1) * (y2 + x2) % prime
+        c = 2 * d * t1 * t2 % prime
+        dv = 2 * z1 * z2 % prime
+        e, f, g, h = (
+            (b - a) % prime,
+            (dv - c) % prime,
+            (dv + c) % prime,
+            (b + a) % prime,
+        )
+        return e * f % prime, g * h % prime, f * g % prime, e * h % prime
+
+    point = (x, y, 1, x * y % prime)
+    acc = (0, 1, 1, 0)
+    while order:
+        if order & 1:
+            acc = add(acc, point)
+        point = add(point, point)
+        order >>= 1
+    ax, ay, az, _ = acc
+    return ax % prime == 0 and (ay - az) % prime == 0
+
+
 def verify_observer_signature(
     receipt: dict[str, Any],
     trusted_public_key_hex: str | None,
@@ -198,10 +261,13 @@ def verify_observer_signature(
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     except ImportError as error:
         raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
+    public_key = bytes.fromhex(trusted_public_key_hex)
+    if not _strict_ed25519_public_key(public_key):
+        raise ValueError("trusted Ed25519 observer public key is not prime-order")
     try:
-        Ed25519PublicKey.from_public_bytes(
-            bytes.fromhex(trusted_public_key_hex)
-        ).verify(bytes.fromhex(signature), observer_signing_bytes(receipt))
+        Ed25519PublicKey.from_public_bytes(public_key).verify(
+            bytes.fromhex(signature), observer_signing_bytes(receipt)
+        )
     except (InvalidSignature, ValueError) as error:
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
