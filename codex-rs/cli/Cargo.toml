@@ -5,10 +5,13 @@ edition.workspace = true
 license.workspace = true
 build = "build.rs"
 default-run = "codex"
+# All three binary targets are declared below. Do not auto-discover main.rs
+# as an additional fourth binary without the shared entrypoint's depth bound.
+autobins = false
 
 [[bin]]
 name = "codex"
-path = "src/main.rs"
+path = "src/codex.rs"
 
 [[bin]]
 name = "hepta"
