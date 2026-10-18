@@ -1,0 +1,87 @@
+name: Hepta P0 pinned zstd-sys MSVC Bazel qualification (no promotion)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-p0-zstd-sys-msvc.yml"
+      - "patches/zstd-sys_windows_msvc_include_dirs.patch"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "codex-rs/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-zstd-sys-msvc-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-bazel-compile:
+    name: zstd-sys exact-head Bazel compile (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: linux-gnu
+            os: ubuntu-24.04
+            triple: x86_64-unknown-linux-gnu
+          - label: windows-msvc
+            os: windows-latest
+            triple: x86_64-pc-windows-msvc
+    steps:
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Prepare pinned Bazel / rules_rs toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.triple }}
+          cache-scope: p0-zstd-212-msvc
+      - name: Verify locked crate and patch semantic boundary
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          awk '
+            /^name = "zstd-sys"$/ {
+              getline
+              if ($0 == "version = \"2.1.2+zstd.1.5.7\"") count++
+            }
+            END { exit (count == 1 ? 0 : 1) }
+          ' codex-rs/Cargo.lock
+          patch=patches/zstd-sys_windows_msvc_include_dirs.patch
+          grep -Fq '+    if target_is_msvc() {' "$patch"
+          grep -Fq '+        config.include("zstd/lib/compress");' "$patch"
+          grep -Fq '+        config.include("zstd/lib/decompress");' "$patch"
+          if grep -Fq 'fvisibility=hidden' "$patch"; then
+            echo 'Refuse stale visibility replacement; upstream 2.1.2 owns MSVC visibility' >&2
+            exit 1
+          fi
+          git diff --check
+          git diff --exit-code
+      - name: Actual pinned Bazel dependency patch and target compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-zstd-212-evidence"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/hepta-zstd-212-evidence/source-sha.txt"
+          bazel build --lockfile_mode=error //codex-rs/skills:skills 2>&1 | tee "$RUNNER_TEMP/hepta-zstd-212-evidence/bazel-build.log"
+          git diff --check
+          git diff --exit-code
+      - name: Retain real Bazel evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-zstd-msvc-${{ matrix.label }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-zstd-212-evidence/
+          if-no-files-found: warn
+          retention-days: 14
