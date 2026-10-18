@@ -13,6 +13,9 @@ pub mod model_worker;
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 
+/// Explicit ModelDriver composition bridge; no production call sites.
+pub mod composition_model_adapter;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
