@@ -655,8 +655,9 @@ lto = false
 strip = false
 
 [profile.ci-test]
-# Reduce binary size to reduce disk pressure.
+# Reduce binary size to keep multi-platform nextest archives within runner disk budgets.
 debug = "limited"
+strip = "debuginfo"
 inherits = "test"
 opt-level = 0
 
