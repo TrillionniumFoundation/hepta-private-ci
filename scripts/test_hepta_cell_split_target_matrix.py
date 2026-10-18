@@ -265,5 +265,5 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_pa
     report["reportDigest"] = MODULE.digest({**provisional, "observer": observer})
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.validate_report(report)
-    with pytest.raises(ValueError, match="signature invalid"):
+    with pytest.raises(ValueError, match="prime-order"):
         MODULE.validate_report(report, trusted_observer_public_key="00" * 32)
