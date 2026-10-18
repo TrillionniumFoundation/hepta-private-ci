@@ -3,67 +3,57 @@ on:
   push:
     branches:
       - maintenance/format-artifact-20261018
-  pull_request:
-    types: [opened, synchronize, reopened]
 permissions:
-  contents: read
+  contents: write
 jobs:
   format:
+    if: github.ref_name == 'maintenance/format-artifact-20261018'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Checkout candidate
+      - name: Checkout exact maintenance head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
+          ref: maintenance/format-artifact-20261018
+          persist-credentials: true
       - name: Setup uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
-        with:
-          activate-environment: false
-          working-directory: ${{ github.workspace }}
       - name: Format Python
         run: uv run --frozen --project scripts ruff format scripts .github
       - name: Format Rust
         working-directory: codex-rs
         run: cargo fmt -- --config imports_granularity=Item
-      - name: Capture patch
+      - name: Verify tightly scoped formatting diff and commit
         shell: bash
         run: |
           set -euo pipefail
-          git diff --binary > "${RUNNER_TEMP}/format.patch"
-          git diff --name-only > "${RUNNER_TEMP}/format.files"
-          test -s "${RUNNER_TEMP}/format.patch"
-      - name: Print filtered patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo FORMAT_PATCH_BEGIN
-          git diff --binary -- \
-            scripts/hepta_sngr_cell_pilot.py \
-            scripts/hepta_sngr_learned_shadow.py \
-            scripts/hepta_sngr_lexical_control.py \
-            scripts/hepta_sngr_nonlinear_shadow.py \
-            scripts/hepta_sngr_reader_eval.py \
-            scripts/hepta_sngr_shadow.py \
-            scripts/test_hepta_sngr_cell_pilot.py \
-            scripts/test_hepta_sngr_lexical_control.py \
-            scripts/test_hepta_sngr_nonlinear_shadow.py \
-            scripts/test_hepta_sngr_reader_eval.py \
-            scripts/test_hepta_sngr_shadow.py \
-            codex-rs/hepta-ndu/src/lib.rs \
-            codex-rs/hepta-ndu/src/sngr_affine_shadow.rs \
-            codex-rs/hepta-ndu/src/sngr_affine_shadow_tests.rs \
-            codex-rs/hepta-ndu/src/sngr_graph_shadow.rs \
-            codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs \
-            | base64 -w0
-          echo
-          echo FORMAT_PATCH_END
-      - name: Upload format patch
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: format-artifact
-          path: |
-            ${{ runner.temp }}/format.patch
-            ${{ runner.temp }}/format.files
-          if-no-files-found: error
-          retention-days: 7
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allow = {
+              "codex-rs/hepta-ndu/src/lib.rs",
+              "codex-rs/hepta-ndu/src/sngr_affine_shadow.rs",
+              "codex-rs/hepta-ndu/src/sngr_affine_shadow_tests.rs",
+              "codex-rs/hepta-ndu/src/sngr_graph_shadow.rs",
+              "codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs",
+              "scripts/hepta_sngr_cell_pilot.py",
+              "scripts/hepta_sngr_learned_shadow.py",
+              "scripts/hepta_sngr_lexical_control.py",
+              "scripts/hepta_sngr_nonlinear_shadow.py",
+              "scripts/hepta_sngr_reader_eval.py",
+              "scripts/hepta_sngr_shadow.py",
+              "scripts/test_hepta_sngr_cell_pilot.py",
+              "scripts/test_hepta_sngr_lexical_control.py",
+              "scripts/test_hepta_sngr_nonlinear_shadow.py",
+              "scripts/test_hepta_sngr_reader_eval.py",
+              "scripts/test_hepta_sngr_shadow.py",
+          }
+          paths = set(subprocess.check_output(["git", "diff", "--name-only", "-z"]).decode().strip("\\0").split("\\0"))
+          assert paths and paths <= allow, f"unexpected formatter changes: {paths - allow}"
+          print(f"Formatter touched {len(paths)} expected files")
+          PY
+          git config user.name 'hepta-formatter-ci[bot]'
+          git config user.email 'hepta-formatter-ci@users.noreply.github.com'
+          git add -- codex-rs/hepta-ndu/src/lib.rs codex-rs/hepta-ndu/src/sngr_* scripts/hepta_sngr_* scripts/test_hepta_sngr_*
+          git commit -m 'style: normalize SNGR formatter baseline'
+          git push origin HEAD:refs/heads/maintenance/format-artifact-20261018
