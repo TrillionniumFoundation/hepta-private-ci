@@ -478,9 +478,10 @@ impl LearningArtifactOwnerHost {
         options.mode(0o600);
         let (writer_fence, new_writer_store) = match options.create_new(true).open(&fence_path) {
             Ok(file) => (file, true),
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                (options.create_new(false).create(false).open(&fence_path)?, false)
-            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => (
+                options.create_new(false).create(false).open(&fence_path)?,
+                false,
+            ),
             Err(error) => return Err(error.into()),
         };
         match writer_fence.try_lock() {
@@ -648,7 +649,10 @@ impl LearningArtifactOwnerHost {
         self.persist_withdrawal_frontier(
             withdrawal_registry,
             binding,
-            transaction.intent().expected_registry_predecessor_head.is_zero(),
+            transaction
+                .intent()
+                .expected_registry_predecessor_head
+                .is_zero(),
             now,
         )?;
         let receipt = self.persist_registry_snapshot(registry, binding)?;

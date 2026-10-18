@@ -11,7 +11,8 @@ use crate::cognitive_process_evaluation::*;
 use crate::cognitive_process_evidence::*;
 use crate::cognitive_process_product::*;
 use crate::cognitive_process_product_wire::*;
-use crate::cognitive_process_wire::{Digest, Id};
+use crate::cognitive_process_wire::Digest;
+use crate::cognitive_process_wire::Id;
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -34,8 +35,15 @@ pub struct CognitiveQualificationInputV1 {
 pub(super) enum CognitiveQualificationStageV1 {
     PlanStatement,
     Reserve,
-    AcknowledgementStatement { reservation: CognitiveHoldoutReservationV1, received_at_unix_micros: u64 },
-    ObserverStatement { collection: PinnedProductFileV1, reservation: CognitiveHoldoutReservationV1, acknowledgement: TimedHoldoutAcknowledgementV1 },
+    AcknowledgementStatement {
+        reservation: CognitiveHoldoutReservationV1,
+        received_at_unix_micros: u64,
+    },
+    ObserverStatement {
+        collection: PinnedProductFileV1,
+        reservation: CognitiveHoldoutReservationV1,
+        acknowledgement: TimedHoldoutAcknowledgementV1,
+    },
     EvaluatorStatement {
         collection: PinnedProductFileV1,
         reservation: CognitiveHoldoutReservationV1,
@@ -89,9 +97,16 @@ pub(super) struct CognitiveCollectedQualificationV1 {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum CognitiveQualificationSelectionStageV1 {
-    CandidateBindingStatement { request: SelfEvolutionSelectionRequestV1Raw },
-    SelectorStatement { inputs: CognitiveQualificationSelectionInputsV1 },
-    Admit { inputs: CognitiveQualificationSelectionInputsV1, selector: SignedLearningEvidenceV1Raw },
+    CandidateBindingStatement {
+        request: SelfEvolutionSelectionRequestV1Raw,
+    },
+    SelectorStatement {
+        inputs: CognitiveQualificationSelectionInputsV1,
+    },
+    Admit {
+        inputs: CognitiveQualificationSelectionInputsV1,
+        selector: SignedLearningEvidenceV1Raw,
+    },
 }
 
 #[derive(Debug, Deserialize)]

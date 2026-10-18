@@ -20,7 +20,9 @@ pub fn inspect_published_cognitive_upgrade_v1(
     let commitment = CognitiveUpgradeCommitmentV1 {
         schema_version: 1,
         candidate_observed_at_unix_micros: u64::try_from(
-            std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_micros(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_micros(),
         )?,
         source,
         installed,
@@ -34,13 +36,23 @@ pub(super) fn inspect_model(
     source: &CognitiveUpgradeSourceV1,
 ) -> Result<CognitiveModelReadback> {
     let release = fleet.resolve_release(&source.agent_id, &source.target_release)?;
-    let descriptor_path = source.descriptor_path.to_str().context("descriptor path is not UTF-8")?;
+    let descriptor_path = source
+        .descriptor_path
+        .to_str()
+        .context("descriptor path is not UTF-8")?;
     for (flag, expected) in [
         ("--cognitive-bootstrap-descriptor", descriptor_path),
-        ("--cognitive-bootstrap-descriptor-digest", source.descriptor_sha256.as_str()),
+        (
+            "--cognitive-bootstrap-descriptor-digest",
+            source.descriptor_sha256.as_str(),
+        ),
     ] {
-        let positions: Vec<_> = release.args.iter().enumerate()
-            .filter_map(|(index, value)| (value == flag).then_some(index)).collect();
+        let positions: Vec<_> = release
+            .args
+            .iter()
+            .enumerate()
+            .filter_map(|(index, value)| (value == flag).then_some(index))
+            .collect();
         ensure!(
             positions.len() == 1
                 && release.args.get(positions[0] + 1).map(String::as_str) == Some(expected),
@@ -48,7 +60,9 @@ pub(super) fn inspect_model(
         );
     }
     let snapshot = fleet.load()?;
-    let record = snapshot.agent(&source.agent_id).context("agent is not registered")?;
+    let record = snapshot
+        .agent(&source.agent_id)
+        .context("agent is not registered")?;
     let identity = AgentdIdentity {
         agent_id: source.agent_id.clone(),
         layout: record.layout.clone(),
@@ -62,16 +76,13 @@ pub(super) fn inspect_model(
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
     let digest: Digest32 = source.descriptor_sha256.as_str().parse()?;
-    let input = crate::load_cognitive_process_bootstrap_v1(
-        &source.descriptor_path,
-        digest,
-        &identity,
-    )?;
+    let input =
+        crate::load_cognitive_process_bootstrap_v1(&source.descriptor_path, digest, &identity)?;
     let ranker = load_evaluated_cognitive_bootstrap_v1(
         source.agent_id.clone(),
         source.spawn_generation,
         input,
-    ).map_err(anyhow::Error::msg)?;
+    )
+    .map_err(anyhow::Error::msg)?;
     ranker.readback().map_err(anyhow::Error::msg)
 }
-

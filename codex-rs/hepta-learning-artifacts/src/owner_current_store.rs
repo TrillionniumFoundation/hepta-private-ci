@@ -70,7 +70,9 @@ impl CurrentArtifactStoreV1<'_> {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         let withdrawal_frontier = withdrawal_frontier::read_current_frontier(
-            self.root, current.signed.binding, current.signed.withdrawal_scope_digest,
+            self.root,
+            current.signed.binding,
+            current.signed.withdrawal_scope_digest,
         )?;
         Ok(VerifiedCurrentRegistryViewV1::new(
             receipt,
@@ -78,7 +80,8 @@ impl CurrentArtifactStoreV1<'_> {
             current.witness_digest,
             current.trust_digest,
             self.verifier.current_validity(&current.signed, now)?,
-        ).with_withdrawal_frontier(withdrawal_frontier))
+        )
+        .with_withdrawal_frontier(withdrawal_frontier))
     }
 
     pub(super) fn discover_current_head(

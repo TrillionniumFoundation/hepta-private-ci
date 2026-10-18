@@ -12,16 +12,16 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
-use codex_hepta_agentd::CognitiveUpgradeSourceV1;
 use codex_hepta_agentd::CognitiveArtifactPublicationInputV1;
 use codex_hepta_agentd::CognitiveArtifactRevocationInputV1;
+use codex_hepta_agentd::CognitiveQualificationInputV1;
+use codex_hepta_agentd::CognitiveUpgradeSourceV1;
 use codex_hepta_agentd::PublishedCognitiveUpgradePlanV1;
 use codex_hepta_agentd::advance_published_cognitive_upgrade_v1;
 use codex_hepta_agentd::inspect_published_cognitive_upgrade_v1;
 use codex_hepta_agentd::publish_cognitive_artifact_v1;
-use codex_hepta_agentd::revoke_cognitive_artifact_v1;
-use codex_hepta_agentd::CognitiveQualificationInputV1;
 use codex_hepta_agentd::qualify_cognitive_upgrade_v1;
+use codex_hepta_agentd::revoke_cognitive_artifact_v1;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -32,7 +32,9 @@ const MAX_INPUT_BYTES: u64 = 4 * 1024 * 1024;
 #[tokio::main(flavor = "multi_thread", worker_threads = 2)]
 async fn main() -> Result<()> {
     let started = Instant::now();
-    let started_at = SystemTime::now().duration_since(UNIX_EPOCH).ok()
+    let started_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
         .and_then(|duration| u64::try_from(duration.as_micros()).ok());
     let mut command = None;
     let mut expected = None;
@@ -92,23 +94,33 @@ async fn main() -> Result<()> {
     };
     Ok(output)
     }.await;
-    let finished_at = SystemTime::now().duration_since(UNIX_EPOCH).ok()
+    let finished_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
         .and_then(|duration| u64::try_from(duration.as_micros()).ok());
     let output = match &result {
         Ok(output) => output.clone(),
         Err(error) => json!({"state":"failed", "reason":format!("{error:#}")}),
     };
-    let candidate_to_install = (output.get("state").and_then(serde_json::Value::as_str) == Some("installed"))
-        .then(|| candidate_observed_at.and_then(|candidate| finished_at.and_then(|finished| finished.checked_sub(candidate)))).flatten();
-    println!("{}", serde_json::to_string(&json!({
-        "schema":"hepta.cognitive-upgrade-observation.v1", "command":command,
-        "input_sha256":expected, "observed_input_sha256":observed_input, "identity":identity,
-        "started_at_unix_micros":started_at, "finished_at_unix_micros":finished_at,
-        "monotonic_elapsed_micros":u64::try_from(started.elapsed().as_micros()).ok(),
-        "candidate_observed_at_unix_micros":candidate_observed_at,
-        "candidate_to_install_wall_clock_micros":candidate_to_install,
-        "observed_qualified_update_count":null, "independent_operator_evidence":null,
-        "result":output,
-    }))?);
+    let candidate_to_install = (output.get("state").and_then(serde_json::Value::as_str)
+        == Some("installed"))
+    .then(|| {
+        candidate_observed_at
+            .and_then(|candidate| finished_at.and_then(|finished| finished.checked_sub(candidate)))
+    })
+    .flatten();
+    println!(
+        "{}",
+        serde_json::to_string(&json!({
+            "schema":"hepta.cognitive-upgrade-observation.v1", "command":command,
+            "input_sha256":expected, "observed_input_sha256":observed_input, "identity":identity,
+            "started_at_unix_micros":started_at, "finished_at_unix_micros":finished_at,
+            "monotonic_elapsed_micros":u64::try_from(started.elapsed().as_micros()).ok(),
+            "candidate_observed_at_unix_micros":candidate_observed_at,
+            "candidate_to_install_wall_clock_micros":candidate_to_install,
+            "observed_qualified_update_count":null, "independent_operator_evidence":null,
+            "result":output,
+        }))?
+    );
     result.map(|_| ())
 }

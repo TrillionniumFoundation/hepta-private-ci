@@ -45,10 +45,10 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
-#[path = "client_cognitive_model.rs"]
-mod cognitive_model;
 #[path = "client_automation_observation.rs"]
 mod automation_observation;
+#[path = "client_cognitive_model.rs"]
+mod cognitive_model;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
@@ -723,7 +723,8 @@ impl AgentdClient {
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
         let effect_budget = request.method.effect_control_timeout_ms();
-        let response_budget = effect_budget.map(|millis| Duration::from_millis(millis) + self.timeout)
+        let response_budget = effect_budget
+            .map(|millis| Duration::from_millis(millis) + self.timeout)
             .unwrap_or(self.timeout);
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
@@ -753,7 +754,9 @@ impl AgentdClient {
         {
             return Err(AgentdError::Protocol(if effect_budget.is_some() {
                 "effect outcome unknown after incomplete response; retry the same original intent and command".to_owned()
-            } else { "agentd returned an invalid bounded response frame".to_owned() }));
+            } else {
+                "agentd returned an invalid bounded response frame".to_owned()
+            }));
         }
         if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
             return Err(AgentdError::Overloaded {

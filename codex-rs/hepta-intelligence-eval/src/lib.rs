@@ -14,8 +14,8 @@ mod closure;
 mod durable_holdout;
 mod fenced_holdout;
 mod fenced_holdout_file;
-mod holdout_journal;
 mod holdout_acknowledgement;
+mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
@@ -103,13 +103,13 @@ pub mod trusted_inprocess {
         super::decide_independently_v2(bundle, metric_roles, now)
     }
 }
+pub use holdout_acknowledgement::holdout_reservation_acknowledgement_payload_v1;
 pub use holdout_journal::FinalHoldoutJournalError;
 pub use holdout_journal::FinalHoldoutJournalReceiptV1;
 pub use holdout_journal::FinalHoldoutJournalRecordV1;
 pub use holdout_journal::FinalHoldoutJournalSnapshotV1;
 pub use holdout_journal::FinalHoldoutJournalV1;
 pub use holdout_journal::FinalHoldoutReservationTimeV1;
-pub use holdout_acknowledgement::holdout_reservation_acknowledgement_payload_v1;
 pub use ndu_convergence::NduConvergenceCertificateV1;
 pub use ndu_convergence::NduConvergenceDecisionV1;
 pub use ndu_convergence::NduConvergenceError;

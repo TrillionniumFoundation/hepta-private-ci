@@ -22,7 +22,11 @@ pub(super) fn descriptor(
     let signed = config.required_current_head.as_ref().unwrap();
     let witness = &signed.witness;
     let mut value: Value = serde_json::from_slice(
-        &std::fs::read(root.join(format!("generation-{}/evaluation-materials.json", fitted.artifact.generation.get() - 1))).unwrap(),
+        &std::fs::read(root.join(format!(
+            "generation-{}/evaluation-materials.json",
+            fitted.artifact.generation.get() - 1
+        )))
+        .unwrap(),
     )
     .unwrap();
     let object = value.as_object_mut().unwrap();

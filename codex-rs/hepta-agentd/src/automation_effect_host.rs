@@ -63,22 +63,22 @@ use crate::AgentdIdentity;
 mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
-#[path = "automation_effect_host_task_observation.rs"]
-mod task_observation;
 #[path = "automation_effect_reconciliation.rs"]
 mod reconciliation;
 #[path = "automation_effect_resume.rs"]
 mod resume;
+#[path = "automation_effect_host_task_observation.rs"]
+mod task_observation;
 pub(crate) use resume::AgentdEffectResumeInput;
 #[path = "automation_effect_budget.rs"]
 mod budget;
 use budget::AgentdEffectExecution;
 use budget::ProviderDispatchBudget;
-#[path = "automation_effect_terminal_observation.rs"]
-mod terminal_observation;
 #[cfg(all(test, unix))]
 #[path = "automation_effect_resume_tests.rs"]
 mod resume_tests;
+#[path = "automation_effect_terminal_observation.rs"]
+mod terminal_observation;
 #[cfg(all(test, unix))]
 #[path = "automation_effect_terminal_restart_tests.rs"]
 mod terminal_restart_tests;
@@ -1123,10 +1123,18 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
-        self.execute_with_budget(store, AgentdEffectExecution {
-            intent, wire_payload, signed_grant, command_id, now_ms,
-            dispatch_budget: ProviderDispatchBudget::ConfiguredProvider,
-        }).await
+        self.execute_with_budget(
+            store,
+            AgentdEffectExecution {
+                intent,
+                wire_payload,
+                signed_grant,
+                command_id,
+                now_ms,
+                dispatch_budget: ProviderDispatchBudget::ConfiguredProvider,
+            },
+        )
+        .await
     }
 
     async fn execute_with_budget(
@@ -1134,7 +1142,14 @@ impl AgentdAutomationEffectHost {
         store: &AutomationStore,
         input: AgentdEffectExecution<'_>,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
-        let AgentdEffectExecution { intent, wire_payload, signed_grant, command_id, now_ms, dispatch_budget } = input;
+        let AgentdEffectExecution {
+            intent,
+            wire_payload,
+            signed_grant,
+            command_id,
+            now_ms,
+            dispatch_budget,
+        } = input;
         self.validate_intent(intent, wire_payload)?;
         self.refresh_revocations()?;
         if let Some(receipt) = store
@@ -1213,7 +1228,8 @@ impl AgentdAutomationEffectHost {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
         let fence = self.current_fence(&run, now_ms)?;
-        self.reconcile_pending(store, &pending, &fence, now_ms).await
+        self.reconcile_pending(store, &pending, &fence, now_ms)
+            .await
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
@@ -2253,8 +2269,13 @@ mod tests {
         );
         drop(host);
         super::terminal_restart_tests::observe_reopened_terminal_through_socket(
-            &fixture.identity, &host_file, &intent, &receipt, now_ms,
-        ).await?;
+            &fixture.identity,
+            &host_file,
+            &intent,
+            &receipt,
+            now_ms,
+        )
+        .await?;
         server.verify().await;
         Ok(())
     }

@@ -48,7 +48,10 @@ pub fn future_window_signing_payload_v1(
     minimum_window_micros: u64,
 ) -> Result<Vec<u8>, SignedEvaluationError> {
     future_window_statement_payload_v1(
-        bundle, timing.frozen_unix_micros, &timing.windows, minimum_window_micros,
+        bundle,
+        timing.frozen_unix_micros,
+        &timing.windows,
+        minimum_window_micros,
     )
 }
 

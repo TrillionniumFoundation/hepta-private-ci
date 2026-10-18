@@ -22,6 +22,17 @@ use serde_json::json;
 mod admission;
 #[path = "cognitive_three_generation_controls.rs"]
 mod controls;
+#[path = "cognitive_ordinary_future_tests.rs"]
+mod ordinary;
+#[path = "cognitive_ordinary_native_support_tests.rs"]
+#[cfg(unix)]
+mod ordinary_native;
+#[path = "cognitive_ordinary_runtime_observation_tests.rs"]
+#[cfg(unix)]
+mod ordinary_runtime;
+#[path = "cognitive_ordinary_upgrade_tests.rs"]
+#[cfg(unix)]
+mod ordinary_upgrade;
 #[path = "cognitive_three_generation_process.rs"]
 mod process;
 #[path = "cognitive_three_generation_provider.rs"]
@@ -32,17 +43,6 @@ mod publication;
 mod support;
 #[path = "cognitive_three_generation_temporal.rs"]
 mod temporal;
-#[path = "cognitive_ordinary_future_tests.rs"]
-mod ordinary;
-#[path = "cognitive_ordinary_native_support_tests.rs"]
-#[cfg(unix)]
-mod ordinary_native;
-#[path = "cognitive_ordinary_upgrade_tests.rs"]
-#[cfg(unix)]
-mod ordinary_upgrade;
-#[path = "cognitive_ordinary_runtime_observation_tests.rs"]
-#[cfg(unix)]
-mod ordinary_runtime;
 use support::Roles;
 use support::fit;
 use support::save;
@@ -382,13 +382,21 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
             Some(&published.selected.manifest),
             &mut roles,
         );
-        let parent_after_publication = ranker.readback().expect("eligible predecessor survives CURRENT extension");
-        assert_eq!(parent_after_publication.model, crate::CognitiveModelIdentity {
-            artifact_id: published.selected.manifest.artifact_id.to_string(),
-            artifact_generation: published.selected.manifest.generation.get(),
-            payload_sha256: published.selected.manifest.content_digest.to_string(),
-        });
-        save(&directory.join("predecessor-after-publication.json"), &serde_json::to_value(parent_after_publication).unwrap());
+        let parent_after_publication = ranker
+            .readback()
+            .expect("eligible predecessor survives CURRENT extension");
+        assert_eq!(
+            parent_after_publication.model,
+            crate::CognitiveModelIdentity {
+                artifact_id: published.selected.manifest.artifact_id.to_string(),
+                artifact_generation: published.selected.manifest.generation.get(),
+                payload_sha256: published.selected.manifest.content_digest.to_string(),
+            }
+        );
+        save(
+            &directory.join("predecessor-after-publication.json"),
+            &serde_json::to_value(parent_after_publication).unwrap(),
+        );
         host.prove_candidate_withdrawal(&directory, &candidate, &mut roles)
             .await;
         let predicted = admission::choices(&candidate, &actions);

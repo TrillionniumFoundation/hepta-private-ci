@@ -226,7 +226,10 @@ impl VerifiedCurrentRegistryViewV1 {
         self.validity
     }
 
-    pub(crate) fn with_withdrawal_frontier(mut self, frontier: crate::DatasetWithdrawalRegistry) -> Self {
+    pub(crate) fn with_withdrawal_frontier(
+        mut self,
+        frontier: crate::DatasetWithdrawalRegistry,
+    ) -> Self {
         self.withdrawal_frontier = Some(frontier);
         self
     }
@@ -234,9 +237,18 @@ impl VerifiedCurrentRegistryViewV1 {
     /// Validate declared source datasets against the existing named writer's
     /// durable frontier. Bare signed-registry verification has no such frontier
     /// and cannot satisfy the ordinary published-model consumption boundary.
-    pub fn require_source_datasets_available(&self, datasets: &[Digest32]) -> Result<(), PinnedCandidateLoadError> {
-        let frontier = self.withdrawal_frontier.as_ref().ok_or(PinnedCandidateLoadError::FrontierMismatch)?;
-        if datasets.iter().any(|dataset| frontier.is_withdrawn(*dataset)) {
+    pub fn require_source_datasets_available(
+        &self,
+        datasets: &[Digest32],
+    ) -> Result<(), PinnedCandidateLoadError> {
+        let frontier = self
+            .withdrawal_frontier
+            .as_ref()
+            .ok_or(PinnedCandidateLoadError::FrontierMismatch)?;
+        if datasets
+            .iter()
+            .any(|dataset| frontier.is_withdrawn(*dataset))
+        {
             return Err(PinnedCandidateLoadError::Ineligible);
         }
         Ok(())

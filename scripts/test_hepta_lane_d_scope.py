@@ -436,9 +436,7 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
         # A fresh navigation observation does not renew historical execution.
         # Exercise this positive-claim guard explicitly inside the test fixture,
         # without changing the current map's execution status or the checker.
-        real_map["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = (
-            True
-        )
+        real_map["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = True
         LANE_D.verify_truth_boundary(self.row, real_map)
         real_map["productCallers"][0]["nativeSymbol"] = "missing_read_only_caller"
         with self.assertRaisesRegex(SystemExit, "missing read-only caller symbol"):

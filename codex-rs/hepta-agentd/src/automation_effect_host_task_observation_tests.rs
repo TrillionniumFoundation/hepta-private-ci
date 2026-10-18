@@ -53,6 +53,9 @@ fn accepted_task_requires_the_exact_active_settled_observation() {
     ] {
         let mut invalid_value = value.clone();
         invalid_value["result"]["accepted_task"][field] = invalid;
-        assert!(parse_pon_chain_observation(&invalid_value, 2, &work).is_none(), "{field}");
+        assert!(
+            parse_pon_chain_observation(&invalid_value, 2, &work).is_none(),
+            "{field}"
+        );
     }
 }

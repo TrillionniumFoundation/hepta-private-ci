@@ -684,7 +684,8 @@ mod tests {
         assert_eq!(
             serde_json::from_value::<SupervisordAgentStatus>(
                 serde_json::to_value(&current).expect("serialize current status"),
-            ).expect("decode exact owner revision"),
+            )
+            .expect("decode exact owner revision"),
             current,
         );
     }

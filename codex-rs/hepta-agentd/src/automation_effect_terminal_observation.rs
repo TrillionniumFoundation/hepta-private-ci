@@ -8,23 +8,32 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         self.refresh_revocations()?;
-        let Some(pending) = store.authorized_taskflow_effect_attempt(
-            &intent.run_id, &intent.step_id, intent.attempt,
-        ).await.map_err(|error| AgentdError::Protocol(error.to_string()))? else {
+        let Some(pending) = store
+            .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+            .await
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?
+        else {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         };
         let bytes = pending.wire_payload.as_deref().ok_or_else(|| {
             AgentdError::Protocol("terminal effect has no durable exact wire material".to_owned())
         })?;
         self.validate_intent(intent, bytes)?;
-        let Some(receipt) = store.read_authorized_taskflow_effect_receipt(intent, command_id)
-            .await.map_err(|error| AgentdError::Protocol(error.to_string()))? else {
+        let Some(receipt) = store
+            .read_authorized_taskflow_effect_receipt(intent, command_id)
+            .await
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?
+        else {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         };
         let provider_intent = self.provider_intent(&pending)?;
-        let chain = self.adapter.current_chain_observation(&provider_intent, Some(bytes)).await;
+        let chain = self
+            .adapter
+            .current_chain_observation(&provider_intent, Some(bytes))
+            .await;
         Ok(AgentdAutomationEffectReconcileOutcome::Observed {
-            receipt: Box::new(receipt), chain: chain.map(Box::new),
+            receipt: Box::new(receipt),
+            chain: chain.map(Box::new),
         })
     }
 }

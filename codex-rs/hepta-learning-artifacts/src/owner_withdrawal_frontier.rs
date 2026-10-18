@@ -47,7 +47,9 @@ impl LearningArtifactOwnerHost {
             let bytes = read_small_record(path, MAX_FRONTIER_BYTES)?;
             let frontier = decode_withdrawal_snapshot(&bytes, binding)?;
             if encode_withdrawal_snapshot(&frontier, binding)? != bytes
-                || previous.as_ref().is_some_and(|old| !extends(old, &frontier))
+                || previous
+                    .as_ref()
+                    .is_some_and(|old| !extends(old, &frontier))
                 || !extends(&frontier, next)
             {
                 return Err(ArtifactOwnerHostError::IdentityConflict);
@@ -62,11 +64,13 @@ impl LearningArtifactOwnerHost {
         }
         write_create_only_or_exact(&marker, &marker_bytes)?;
         if pending_exists {
-            fs::rename(&pending, &current)
-                .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+            fs::rename(&pending, &current).map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
             durability::sync_parent(&current)?;
         }
-        if previous.as_ref().is_some_and(|old| old.head_digest() == next.head_digest()) {
+        if previous
+            .as_ref()
+            .is_some_and(|old| old.head_digest() == next.head_digest())
+        {
             return Ok(());
         }
         crate::write_dataset_withdrawal_snapshot_beneath(
@@ -76,8 +80,7 @@ impl LearningArtifactOwnerHost {
             binding,
         )?;
         durability::sync_parent(&pending)?;
-        fs::rename(&pending, &current)
-            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+        fs::rename(&pending, &current).map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         durability::sync_parent(&current)
     }
 }
@@ -99,7 +102,9 @@ pub(super) fn read_current_frontier(
     let path = root.join("writer/withdrawal-frontier.snapshot");
     let bytes = read_small_record(&path, MAX_FRONTIER_BYTES)?;
     let frontier = decode_withdrawal_snapshot(&bytes, binding)?;
-    if frontier.scope_digest() != Some(scope) || encode_withdrawal_snapshot(&frontier, binding)? != bytes {
+    if frontier.scope_digest() != Some(scope)
+        || encode_withdrawal_snapshot(&frontier, binding)? != bytes
+    {
         return Err(ArtifactOwnerHostError::IdentityConflict);
     }
     durability::sync_file_and_parent(&path)?;
@@ -115,5 +120,7 @@ fn extends(previous: &DatasetWithdrawalRegistry, next: &DatasetWithdrawalRegistr
     let previous_snapshot = previous.snapshot();
     let next_snapshot = next.snapshot();
     previous.scope_digest() == next.scope_digest()
-        && next_snapshot.records().starts_with(previous_snapshot.records())
+        && next_snapshot
+            .records()
+            .starts_with(previous_snapshot.records())
 }

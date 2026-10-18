@@ -11,15 +11,30 @@ impl AgentdClient {
         command_id: String,
     ) -> Result<AutomationEffectReconcileSnapshot, AgentdError> {
         if wire_payload.is_empty() || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES {
-            return Err(AgentdError::Invalid("automation effect wire payload is empty or too large".to_owned()));
+            return Err(AgentdError::Invalid(
+                "automation effect wire payload is empty or too large".to_owned(),
+            ));
         }
-        if !self.capabilities().await?.capabilities.iter().any(|capability| {
-            capability.id == crate::AUTOMATION_EFFECT_RESUME_CAPABILITY && capability.major == 1
-        }) {
-            return Err(AgentdError::Protocol("Agentd has no original-owner effect resume capability".to_owned()));
+        if !self
+            .capabilities()
+            .await?
+            .capabilities
+            .iter()
+            .any(|capability| {
+                capability.id == crate::AUTOMATION_EFFECT_RESUME_CAPABILITY && capability.major == 1
+            })
+        {
+            return Err(AgentdError::Protocol(
+                "Agentd has no original-owner effect resume capability".to_owned(),
+            ));
         }
         let request = AgentdRequest::automation_resume_effect(
-            self.request_id(), self.spawn_generation, intent, encode_hex(wire_payload), signed_grant, command_id,
+            self.request_id(),
+            self.spawn_generation,
+            intent,
+            encode_hex(wire_payload),
+            signed_grant,
+            command_id,
         );
         match self.send(request).await?.payload {
             AgentdPayload::AutomationEffectReconcile(observation) => Ok(observation),
@@ -34,14 +49,30 @@ impl AgentdClient {
         intent: AuthorizedEffectIntent,
         command_id: String,
     ) -> Result<AutomationEffectReconcileSnapshot, AgentdError> {
-        if !self.capabilities().await?.capabilities.iter().any(|capability| {
-            capability.id == crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY && capability.major == 1
-        }) {
-            return Err(AgentdError::Protocol("Agentd has no terminal effect observation capability".to_owned()));
+        if !self
+            .capabilities()
+            .await?
+            .capabilities
+            .iter()
+            .any(|capability| {
+                capability.id == crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY
+                    && capability.major == 1
+            })
+        {
+            return Err(AgentdError::Protocol(
+                "Agentd has no terminal effect observation capability".to_owned(),
+            ));
         }
-        match self.send(AgentdRequest::automation_observe_effect(
-            self.request_id(), self.spawn_generation, intent, command_id,
-        )).await?.payload {
+        match self
+            .send(AgentdRequest::automation_observe_effect(
+                self.request_id(),
+                self.spawn_generation,
+                intent,
+                command_id,
+            ))
+            .await?
+            .payload
+        {
             AgentdPayload::AutomationEffectReconcile(observation) => Ok(observation),
             payload => unexpected(payload),
         }

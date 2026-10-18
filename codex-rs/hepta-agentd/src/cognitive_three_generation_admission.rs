@@ -49,9 +49,24 @@ pub(super) fn evaluate(
     ),
     eval::SelfEvolutionSelectionError,
 > {
-    let FutureMaterials { raw_plan, metric_roles, metric_sources, candidate_plan,
-        baseline_plan, manifest_path, manifest_bytes, material_digest } = prepare_future(
-        root, generation, name, candidate, parent, candidate_choices, parent_choices, roles,
+    let FutureMaterials {
+        raw_plan,
+        metric_roles,
+        metric_sources,
+        candidate_plan,
+        baseline_plan,
+        manifest_path,
+        manifest_bytes,
+        material_digest,
+    } = prepare_future(
+        root,
+        generation,
+        name,
+        candidate,
+        parent,
+        candidate_choices,
+        parent_choices,
+        roles,
     );
     let product_plan = eval::freeze_product_evaluation_plan_v1(
         raw_plan.clone(),
@@ -250,7 +265,6 @@ pub(super) fn evaluate(
     Ok((selected, compatibility))
 }
 
-
 pub(super) struct FutureMaterials {
     pub raw_plan: eval::CrossFoldPlanV1,
     pub metric_roles: Vec<eval::MetricRoleContractV2>,
@@ -264,9 +278,14 @@ pub(super) struct FutureMaterials {
 
 #[allow(clippy::too_many_arguments)]
 pub(super) fn prepare_future(
-    root: &std::path::Path, generation: u64, name: &str,
-    candidate: &Fitted, parent: &artifacts::ArtifactManifest,
-    candidate_choices: &Value, parent_choices: &Value, roles: &mut Roles,
+    root: &std::path::Path,
+    generation: u64,
+    name: &str,
+    candidate: &Fitted,
+    parent: &artifacts::ArtifactManifest,
+    candidate_choices: &Value,
+    parent_choices: &Value,
+    roles: &mut Roles,
 ) -> FutureMaterials {
     let table_digest = Digest32::of_bytes(&serde_json::to_vec(candidate_choices).unwrap());
     let metric_roles = vec![eval::MetricRoleContractV2 {
@@ -362,6 +381,14 @@ pub(super) fn prepare_future(
         metric_id: id("future-task-success"),
         source: eval::ProductMetricSourceV1::Ips,
     }];
-    FutureMaterials { raw_plan, metric_roles, metric_sources, candidate_plan,
-        baseline_plan, manifest_path, manifest_bytes, material_digest }
+    FutureMaterials {
+        raw_plan,
+        metric_roles,
+        metric_sources,
+        candidate_plan,
+        baseline_plan,
+        manifest_path,
+        manifest_bytes,
+        material_digest,
+    }
 }

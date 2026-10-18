@@ -29,10 +29,14 @@ pub struct FinalHoldoutReservationTimeV1 {
 
 impl FinalHoldoutReservationTimeV1 {
     #[must_use]
-    pub fn reserved_at_unix_micros(self) -> u64 { self.reserved_at_unix_micros }
+    pub fn reserved_at_unix_micros(self) -> u64 {
+        self.reserved_at_unix_micros
+    }
 
     #[must_use]
-    pub fn window_not_before_unix_micros(self) -> u64 { self.window_not_before_unix_micros }
+    pub fn window_not_before_unix_micros(self) -> u64 {
+        self.window_not_before_unix_micros
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -126,9 +130,10 @@ impl FinalHoldoutJournalV1 {
         if expected_head_digest != self.head_digest {
             return Err(FinalHoldoutJournalError::HeadMismatch);
         }
-        if reservation_time.is_some_and(|time| time.reserved_at_unix_micros == 0
-            || time.reserved_at_unix_micros >= time.window_not_before_unix_micros)
-        {
+        if reservation_time.is_some_and(|time| {
+            time.reserved_at_unix_micros == 0
+                || time.reserved_at_unix_micros >= time.window_not_before_unix_micros
+        }) {
             return Err(FinalHoldoutJournalError::SnapshotMismatch);
         }
         // Check every fallible admission condition before mutating the registry.
@@ -229,7 +234,11 @@ impl FinalHoldoutJournalV1 {
             {
                 return Err(FinalHoldoutJournalError::SnapshotMismatch);
             }
-            let receipt = journal.consume_with_time(journal.head_digest, &expected.plan, expected.reservation_time)?;
+            let receipt = journal.consume_with_time(
+                journal.head_digest,
+                &expected.plan,
+                expected.reservation_time,
+            )?;
             let actual = journal
                 .records
                 .last()

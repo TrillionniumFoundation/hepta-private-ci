@@ -16,9 +16,15 @@ pub(super) fn parse(
         || task.schema_version != 1
         || !task.accepted_in_exact_packet
         || task.current_status != "settled"
-        || [&task.task_id, &task.owner, &task.provider, &task.output_sha256, &task.accept_tx_id]
-            .into_iter()
-            .any(|value| !super::lower_hex_32(value) || value.bytes().all(|byte| byte == b'0'))
+        || [
+            &task.task_id,
+            &task.owner,
+            &task.provider,
+            &task.output_sha256,
+            &task.accept_tx_id,
+        ]
+        .into_iter()
+        .any(|value| !super::lower_hex_32(value) || value.bytes().all(|byte| byte == b'0'))
     {
         return None;
     }

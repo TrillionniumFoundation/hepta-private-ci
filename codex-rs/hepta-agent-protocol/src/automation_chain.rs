@@ -13,8 +13,11 @@ impl crate::AgentdMethod {
     /// OS preemption guarantee. Queued dispatch must retain the configured
     /// provider duration before contact. Expiry never proves provider absence.
     pub fn effect_control_timeout_ms(&self) -> Option<u64> {
-        matches!(self, Self::AutomationResumeEffect { .. } | Self::AutomationObserveEffect { .. })
-            .then_some(2 * 30_000 + 5_000)
+        matches!(
+            self,
+            Self::AutomationResumeEffect { .. } | Self::AutomationObserveEffect { .. }
+        )
+        .then_some(2 * 30_000 + 5_000)
     }
 }
 
@@ -32,7 +35,10 @@ impl crate::AgentdRequest {
             request_id,
             spawn_generation,
             method: crate::AgentdMethod::AutomationResumeEffect {
-                intent, wire_payload_hex, signed_grant: Box::new(signed_grant), command_id,
+                intent,
+                wire_payload_hex,
+                signed_grant: Box::new(signed_grant),
+                command_id,
             },
         }
     }

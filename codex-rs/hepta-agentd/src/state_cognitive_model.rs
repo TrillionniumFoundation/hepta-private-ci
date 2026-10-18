@@ -27,7 +27,9 @@ impl AgentdState {
             .get()
             .map(|ranker| ranker.readback())
             .transpose()
-            .map_err(|error| AgentdError::Protocol(format!("cognitive model readback unavailable: {error}")))?;
+            .map_err(|error| {
+                AgentdError::Protocol(format!("cognitive model readback unavailable: {error}"))
+            })?;
         ready()?;
         Ok(CognitiveModelStatus { installed })
     }

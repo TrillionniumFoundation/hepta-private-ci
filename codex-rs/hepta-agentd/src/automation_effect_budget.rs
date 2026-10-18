@@ -14,7 +14,9 @@ impl ProviderDispatchBudget {
         self,
         adapter: &AgentdProviderEffectAdapter,
     ) -> Result<(), AuthorizedEffectDriverError> {
-        let Self::ControlDeadline(deadline) = self else { return Ok(()); };
+        let Self::ControlDeadline(deadline) = self else {
+            return Ok(());
+        };
         let timeout = match adapter {
             AgentdProviderEffectAdapter::Http(adapter) => adapter.config().timeout,
             AgentdProviderEffectAdapter::Pon(adapter) => adapter.timeout,

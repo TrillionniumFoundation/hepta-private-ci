@@ -19,8 +19,11 @@ impl PinnedCognitiveRanker {
                     artifact_generation: self.model_generation,
                     payload_sha256: self.policy_digest.to_string(),
                 },
-                source_manifest_sha256: self.source_manifest_digest.map(|digest| digest.to_string()),
-                selection_sha256: selection.map(|selection| selection.selection_digest().to_string()),
+                source_manifest_sha256: self
+                    .source_manifest_digest
+                    .map(|digest| digest.to_string()),
+                selection_sha256: selection
+                    .map(|selection| selection.selection_digest().to_string()),
                 evaluated_predecessor: selection.map(|selection| {
                     let receipt = selection.receipt();
                     CognitiveModelIdentity {

@@ -45,7 +45,10 @@ pub struct CognitiveUpgradeCommitmentV1 {
 
 impl CognitiveUpgradeCommitmentV1 {
     pub fn output_sha256(&self) -> Result<Sha256Digest> {
-        ensure!(self.schema_version == 1 && self.candidate_observed_at_unix_micros != 0, "unsupported cognitive upgrade commitment");
+        ensure!(
+            self.schema_version == 1 && self.candidate_observed_at_unix_micros != 0,
+            "unsupported cognitive upgrade commitment"
+        );
         ensure!(
             self.source.source_release != self.source.target_release
                 && self.source.spawn_generation != 0

@@ -31,7 +31,13 @@ impl AgentdAutomationEffectHost {
         input: AgentdEffectResumeInput<'_>,
     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         let _serial = self.resume_serial.lock().await;
-        let AgentdEffectResumeInput { intent, wire_payload, signed_grant, command_id, deadline } = input;
+        let AgentdEffectResumeInput {
+            intent,
+            wire_payload,
+            signed_grant,
+            command_id,
+            deadline,
+        } = input;
         let now_ms = crate::state::control_time_ms()?;
         state.require_effect_ready()?;
         let identity = state.identity();
@@ -60,10 +66,14 @@ impl AgentdAutomationEffectHost {
                 TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
                 TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
             ],
-            vec![TaskFlowEdgeSpec::new("effect", "success"), TaskFlowEdgeSpec::new("effect", "failure")],
+            vec![
+                TaskFlowEdgeSpec::new("effect", "success"),
+                TaskFlowEdgeSpec::new("effect", "failure"),
+            ],
             vec![intent.operation_id.clone()],
             intent.final_use_scope_digest.clone(),
-        ).map_err(protocol)?;
+        )
+        .map_err(protocol)?;
         let thread_id = format!("agentd.external-effect:{digest_hex}");
         let existing_run = store.taskflow_run(&intent.run_id).await.map_err(protocol)?;
         if let Some(run) = &existing_run
@@ -73,33 +83,52 @@ impl AgentdAutomationEffectHost {
                 || run.definition_digest != *definition.definition_digest()
                 || run.thread_id != thread_id)
         {
-            return Err(AgentdError::GenerationFenced("run belongs to another original workflow".to_owned()));
+            return Err(AgentdError::GenerationFenced(
+                "run belongs to another original workflow".to_owned(),
+            ));
         }
         // This original read validates the exact command and FinalUse binding
         // even when it returns None for a nonterminal durable attempt.
-        if store.read_authorized_taskflow_effect_receipt(intent, command_id).await.map_err(protocol)?.is_some() {
+        if store
+            .read_authorized_taskflow_effect_receipt(intent, command_id)
+            .await
+            .map_err(protocol)?
+            .is_some()
+        {
             return self.observe_terminal(store, intent, command_id).await;
         }
-        if let Some(pending) = store.authorized_taskflow_effect_attempt(
-            &intent.run_id, &intent.step_id, intent.attempt,
-        ).await.map_err(protocol)? {
-            if pending.intent_digest != digest || pending.wire_payload.as_deref() != Some(wire_payload) {
-                return Err(AgentdError::GenerationFenced("durable attempt differs from exact effect input".to_owned()));
+        if let Some(pending) = store
+            .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+            .await
+            .map_err(protocol)?
+        {
+            if pending.intent_digest != digest
+                || pending.wire_payload.as_deref() != Some(wire_payload)
+            {
+                return Err(AgentdError::GenerationFenced(
+                    "durable attempt differs from exact effect input".to_owned(),
+                ));
             }
             self.provider_intent(&pending)?;
-            let run = existing_run.ok_or_else(|| AgentdError::Protocol("durable attempt has no TaskFlow run".to_owned()))?;
+            let run = existing_run.ok_or_else(|| {
+                AgentdError::Protocol("durable attempt has no TaskFlow run".to_owned())
+            })?;
             let historical = stored_fence(&run)?;
             if historical.owner_id != OWNER
                 || historical.owner_epoch != historical.generation
                 || historical.generation > identity.spawn_generation
                 || historical != identity_fence(&self.agent_id, historical.generation)?
             {
-                return Err(AgentdError::GenerationFenced("durable attempt has another Agentd owner fence".to_owned()));
+                return Err(AgentdError::GenerationFenced(
+                    "durable attempt has another Agentd owner fence".to_owned(),
+                ));
             }
             // The original store already permits exact historical observation
             // after lease expiry. This branch never claims or renews a lease,
             // consumes/refunds a grant, or submits provider bytes again.
-            return self.reconcile_pending(store, &pending, &historical, now_ms).await;
+            return self
+                .reconcile_pending(store, &pending, &historical, now_ms)
+                .await;
         }
 
         let fence = identity_fence(&self.agent_id, identity.spawn_generation)?;
@@ -108,53 +137,108 @@ impl AgentdAutomationEffectHost {
             "effect control budget cannot cover provider dispatch; no new attempt was prepared; retry the exact original input".to_owned(),
         ))?;
         if let Some(run) = &existing_run
-            && run.generation.is_some_and(|generation| generation != identity.spawn_generation)
+            && run
+                .generation
+                .is_some_and(|generation| generation != identity.spawn_generation)
         {
             return Err(AgentdError::GenerationFenced(
                 "undispatched prior-generation step requires original TaskFlow recovery".to_owned(),
             ));
         }
-        store.register_taskflow_definition(&definition, &fence, now_ms).await.map_err(protocol)?;
-        store.create_taskflow_run(
-            &intent.run_id, &definition.workflow_id, definition.version,
-            definition.definition_digest(), thread_id, now_ms,
-        ).await.map_err(protocol)?;
-        let run = store.claim_taskflow_run(&intent.run_id, &fence, now_ms, LEASE_MS).await.map_err(protocol)?;
+        store
+            .register_taskflow_definition(&definition, &fence, now_ms)
+            .await
+            .map_err(protocol)?;
+        store
+            .create_taskflow_run(
+                &intent.run_id,
+                &definition.workflow_id,
+                definition.version,
+                definition.definition_digest(),
+                thread_id,
+                now_ms,
+            )
+            .await
+            .map_err(protocol)?;
+        let run = store
+            .claim_taskflow_run(&intent.run_id, &fence, now_ms, LEASE_MS)
+            .await
+            .map_err(protocol)?;
         match run.state {
             TaskFlowRunState::Queued => {
                 let command = TaskFlowCommand::new(
-                    &intent.run_id, format!("agentd.effect.start:{digest_hex}"), fence.clone(),
-                    run.revision, TaskFlowTransition::Start, now_ms,
-                ).map_err(protocol)?;
-                store.apply_taskflow_command(&command).await.map_err(protocol)?;
+                    &intent.run_id,
+                    format!("agentd.effect.start:{digest_hex}"),
+                    fence.clone(),
+                    run.revision,
+                    TaskFlowTransition::Start,
+                    now_ms,
+                )
+                .map_err(protocol)?;
+                store
+                    .apply_taskflow_command(&command)
+                    .await
+                    .map_err(protocol)?;
             }
             TaskFlowRunState::Running => {}
-            TaskFlowRunState::Waiting | TaskFlowRunState::RetryBackoff | TaskFlowRunState::Succeeded
-            | TaskFlowRunState::Failed | TaskFlowRunState::Cancelled | TaskFlowRunState::Indeterminate => {
-                return Err(AgentdError::Protocol("existing TaskFlow state cannot start another dispatch".to_owned()));
+            TaskFlowRunState::Waiting
+            | TaskFlowRunState::RetryBackoff
+            | TaskFlowRunState::Succeeded
+            | TaskFlowRunState::Failed
+            | TaskFlowRunState::Cancelled
+            | TaskFlowRunState::Indeterminate => {
+                return Err(AgentdError::Protocol(
+                    "existing TaskFlow state cannot start another dispatch".to_owned(),
+                ));
             }
         }
-        let step = store.read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, &fence)
-            .await.map_err(protocol)?;
-        if step.as_ref().is_some_and(|step| step.intent_digest != digest || step.payload_digest != intent.payload_digest) {
-            return Err(AgentdError::GenerationFenced("prepared TaskFlow step differs from exact input".to_owned()));
+        let step = store
+            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, &fence)
+            .await
+            .map_err(protocol)?;
+        if step.as_ref().is_some_and(|step| {
+            step.intent_digest != digest || step.payload_digest != intent.payload_digest
+        }) {
+            return Err(AgentdError::GenerationFenced(
+                "prepared TaskFlow step differs from exact input".to_owned(),
+            ));
         }
         if step.is_none() {
-            store.prepare_taskflow_step(
-                &intent.run_id, &intent.step_id, intent.attempt, &fence, &digest, &intent.payload_digest,
-                &format!("agentd.effect.prepare:{digest_hex}"), now_ms,
-            ).await.map_err(protocol)?;
+            store
+                .prepare_taskflow_step(
+                    &intent.run_id,
+                    &intent.step_id,
+                    intent.attempt,
+                    &fence,
+                    &digest,
+                    &intent.payload_digest,
+                    &format!("agentd.effect.prepare:{digest_hex}"),
+                    now_ms,
+                )
+                .await
+                .map_err(protocol)?;
         }
         match step.as_ref().map(|step| step.state) {
             None | Some(TaskFlowStepState::Prepared) => {
-                store.claim_taskflow_step(
-                    &intent.run_id, &intent.step_id, intent.attempt, &fence, &digest, &intent.payload_digest,
-                    &format!("agentd.effect.claim:{digest_hex}"), now_ms,
-                ).await.map_err(protocol)?;
+                store
+                    .claim_taskflow_step(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        &fence,
+                        &digest,
+                        &intent.payload_digest,
+                        &format!("agentd.effect.claim:{digest_hex}"),
+                        now_ms,
+                    )
+                    .await
+                    .map_err(protocol)?;
             }
             Some(TaskFlowStepState::Claimed) => {}
             Some(TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled) => {
-                return Err(AgentdError::Protocol("observed step is missing its durable dispatch evidence".to_owned()));
+                return Err(AgentdError::Protocol(
+                    "observed step is missing its durable dispatch evidence".to_owned(),
+                ));
             }
         }
         state.require_effect_ready()?;
@@ -162,9 +246,19 @@ impl AgentdAutomationEffectHost {
         dispatch_budget.require_remaining(&self.adapter).map_err(|_| AgentdError::Protocol(
             "effect control budget expired before dispatch; original prepared step remains recoverable".to_owned(),
         ))?;
-        let receipt = self.execute_with_budget(store, AgentdEffectExecution {
-            intent, wire_payload, signed_grant, command_id, now_ms: dispatch_time_ms, dispatch_budget,
-        }).await?;
+        let receipt = self
+            .execute_with_budget(
+                store,
+                AgentdEffectExecution {
+                    intent,
+                    wire_payload,
+                    signed_grant,
+                    command_id,
+                    now_ms: dispatch_time_ms,
+                    dispatch_budget,
+                },
+            )
+            .await?;
         if receipt.observation == Some(TaskFlowStepObservation::Indeterminate) {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         }
@@ -173,21 +267,34 @@ impl AgentdAutomationEffectHost {
 }
 
 fn stored_fence(run: &TaskFlowRun) -> Result<TaskFlowFence, AgentdError> {
-    let missing = || AgentdError::GenerationFenced("pending attempt lost its original owner tuple".to_owned());
+    let missing = || {
+        AgentdError::GenerationFenced("pending attempt lost its original owner tuple".to_owned())
+    };
     TaskFlowFence::new(
-        run.owner_agent_id.clone(), run.owner_id.clone().ok_or_else(missing)?,
-        run.owner_epoch.ok_or_else(missing)?, run.generation.ok_or_else(missing)?,
+        run.owner_agent_id.clone(),
+        run.owner_id.clone().ok_or_else(missing)?,
+        run.owner_epoch.ok_or_else(missing)?,
+        run.generation.ok_or_else(missing)?,
         run.fencing_token.clone().ok_or_else(missing)?,
-    ).map_err(protocol)
+    )
+    .map_err(protocol)
 }
 
-fn identity_fence(agent: &codex_hepta_contracts::AgentId, generation: u64) -> Result<TaskFlowFence, AgentdError> {
+fn identity_fence(
+    agent: &codex_hepta_contracts::AgentId,
+    generation: u64,
+) -> Result<TaskFlowFence, AgentdError> {
     let mut bytes = b"hepta.agentd.external-effect.fence.v1\0".to_vec();
     bytes.extend_from_slice(agent.as_str().as_bytes());
     bytes.extend_from_slice(&generation.to_be_bytes());
     TaskFlowFence::new(
-        agent.clone(), OWNER, generation, generation, Sha256Digest::for_bytes(&bytes).as_str(),
-    ).map_err(protocol)
+        agent.clone(),
+        OWNER,
+        generation,
+        generation,
+        Sha256Digest::for_bytes(&bytes).as_str(),
+    )
+    .map_err(protocol)
 }
 
 fn protocol(error: impl std::fmt::Display) -> AgentdError {

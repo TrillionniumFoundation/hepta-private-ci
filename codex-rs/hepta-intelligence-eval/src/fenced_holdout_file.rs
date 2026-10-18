@@ -332,10 +332,26 @@ fn replay_event(
             let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
             let (encoded_plan, reservation_time) = if tag == EVENT_TIMED_PLAN {
                 let time = payload.get(1..17).ok_or(LockedFileCasErrorV1::Corrupt)?;
-                let reserved_at_unix_micros = u64::from_be_bytes(time[..8].try_into().map_err(|_| LockedFileCasErrorV1::Corrupt)?);
-                let window_not_before_unix_micros = u64::from_be_bytes(time[8..].try_into().map_err(|_| LockedFileCasErrorV1::Corrupt)?);
-                (&payload[17..], Some(FinalHoldoutReservationTimeV1 { reserved_at_unix_micros, window_not_before_unix_micros }))
-            } else { (&payload[1..], None) };
+                let reserved_at_unix_micros = u64::from_be_bytes(
+                    time[..8]
+                        .try_into()
+                        .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                );
+                let window_not_before_unix_micros = u64::from_be_bytes(
+                    time[8..]
+                        .try_into()
+                        .map_err(|_| LockedFileCasErrorV1::Corrupt)?,
+                );
+                (
+                    &payload[17..],
+                    Some(FinalHoldoutReservationTimeV1 {
+                        reserved_at_unix_micros,
+                        window_not_before_unix_micros,
+                    }),
+                )
+            } else {
+                (&payload[1..], None)
+            };
             let plan =
                 decode_holdout_plan(encoded_plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
             let mut journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(

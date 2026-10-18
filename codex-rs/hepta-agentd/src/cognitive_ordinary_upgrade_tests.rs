@@ -2,7 +2,9 @@
 //! This retained development study never alters the default authority build or
 //! the original service/sandbox timeouts, and retains failure before cleanup.
 use super::*;
-use anyhow::{Context, Result, ensure};
+use anyhow::Context;
+use anyhow::Result;
+use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::ReleaseId;
@@ -10,95 +12,210 @@ use codex_hepta_intelligence_eval as eval;
 use codex_hepta_supervisor::SupervisordClient;
 use core_test_support::responses;
 use ordinary::QualificationMode;
-use ordinary_native::{Binary, Chain, Daemon};
-use std::time::{Duration, Instant};
+use ordinary_native::Binary;
+use ordinary_native::Chain;
+use ordinary_native::Daemon;
+use std::time::Duration;
+use std::time::Instant;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "explicit retained real Supervisor/Agentd/Chain ordinary upgrade, future observation and no-update"]
 async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Result<()> {
-    let root=PathBuf::from(std::env::var("HEPTA_LEARNING_STUDY_DIRECTORY")?);
-    std::fs::create_dir(&root)?;let root=root.canonicalize()?;
-    let script=PathBuf::from(std::env::var("HEPTA_LEARNING_CUSTODIAN")?);
-    let mut host=Host::new(&root).await;
-    let actions=host.seed().await;
-    let mut roles=Roles::new(&script,&root);
-    let operations:Vec<_>=actions.iter().map(|(_,operation)|operation.clone()).collect();
-    let material_keys=json!({"evaluator":support::hex(&roles.processes[1].key),"future-custodian":support::hex(&roles.processes[6].key)});
-    let observer_key=support::hex(&roles.processes[2].key);
-    for role in &mut roles.processes {role.call(json!({"command":"configure","operations":operations,"material_keys":material_keys,"observer_key":observer_key}));}
-    let view=Arc::new(publication::StudyView::new(root.join("artifact-owner"),&mut roles));
-    let file=std::fs::OpenOptions::new().read(true).write(true).create_new(true).open(root.join("holdouts"))?;
-    let store=eval::LockedFileFinalHoldoutCasStoreV1::create(file,hash("three-generation-holdouts"))?;
-    let original=eval::FencedFinalHoldoutOwnerV1::initialize(store,hash("three-generation-holdouts"),holdout_fence())?;
-    let mut runner=eval::ProductEvaluationRunnerV1::new(original);
-    let baseline=root.join("generation-0");std::fs::create_dir(&baseline)?;
-    let mut source_fit=fit(&baseline,0,&mut roles,&actions);
-    let mut source=view.publish(&baseline,&source_fit,None,&mut roles);
-    let mut source_selection=None;
+    let root = PathBuf::from(std::env::var("HEPTA_LEARNING_STUDY_DIRECTORY")?);
+    std::fs::create_dir(&root)?;
+    let root = root.canonicalize()?;
+    let script = PathBuf::from(std::env::var("HEPTA_LEARNING_CUSTODIAN")?);
+    let mut host = Host::new(&root).await;
+    let actions = host.seed().await;
+    let mut roles = Roles::new(&script, &root);
+    let operations: Vec<_> = actions
+        .iter()
+        .map(|(_, operation)| operation.clone())
+        .collect();
+    let material_keys = json!({"evaluator":support::hex(&roles.processes[1].key),"future-custodian":support::hex(&roles.processes[6].key)});
+    let observer_key = support::hex(&roles.processes[2].key);
+    for role in &mut roles.processes {
+        role.call(json!({"command":"configure","operations":operations,"material_keys":material_keys,"observer_key":observer_key}));
+    }
+    let view = Arc::new(publication::StudyView::new(
+        root.join("artifact-owner"),
+        &mut roles,
+    ));
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .open(root.join("holdouts"))?;
+    let store =
+        eval::LockedFileFinalHoldoutCasStoreV1::create(file, hash("three-generation-holdouts"))?;
+    let original = eval::FencedFinalHoldoutOwnerV1::initialize(
+        store,
+        hash("three-generation-holdouts"),
+        holdout_fence(),
+    )?;
+    let mut runner = eval::ProductEvaluationRunnerV1::new(original);
+    let baseline = root.join("generation-0");
+    std::fs::create_dir(&baseline)?;
+    let mut source_fit = fit(&baseline, 0, &mut roles, &actions);
+    let mut source = view.publish(&baseline, &source_fit, None, &mut roles);
+    let mut source_selection = None;
     // Existing canonical history prepares an eligible source release. No
     // service generation is counted until Supervisord actually launches it.
     for generation in 1..=2 {
-        let directory=root.join(format!("generation-{generation}"));std::fs::create_dir(&directory)?;
-        let candidate=fit(&directory,generation,&mut roles,&actions);
-        let published=view.publish(&directory,&candidate,Some(&source.selected.manifest),&mut roles);
-        host.prove_candidate_withdrawal(&directory,&candidate,&mut roles).await;
-        let (selection,_)=admission::evaluate(&directory,generation,&format!("generation-{generation}"),&candidate,&source.selected.manifest,
-            &admission::choices(&candidate,&actions),&admission::choices(&source_fit,&actions),&mut roles,&mut runner)?;
-        source_selection=Some(selection);source_fit=candidate;source=published;
+        let directory = root.join(format!("generation-{generation}"));
+        std::fs::create_dir(&directory)?;
+        let candidate = fit(&directory, generation, &mut roles, &actions);
+        let published = view.publish(
+            &directory,
+            &candidate,
+            Some(&source.selected.manifest),
+            &mut roles,
+        );
+        host.prove_candidate_withdrawal(&directory, &candidate, &mut roles)
+            .await;
+        let (selection, _) = admission::evaluate(
+            &directory,
+            generation,
+            &format!("generation-{generation}"),
+            &candidate,
+            &source.selected.manifest,
+            &admission::choices(&candidate, &actions),
+            &admission::choices(&source_fit, &actions),
+            &mut roles,
+            &mut runner,
+        )?;
+        source_selection = Some(selection);
+        source_fit = candidate;
+        source = published;
     }
-    let source_choices=admission::choices(&source_fit,&actions);
-    let ranker=PinnedCognitiveRanker::load_evaluated_published(owner(),5,File::open(&source.snapshot)?,File::open(&source.payload)?,
-        source.selected.clone(),source_fit.pin.clone(),source.source.clone(),view.clone(),source_selection.as_ref().context("source qualification")?)
-        .map_err(anyhow::Error::msg)?;
-    let expected_source=ranker.readback().map_err(anyhow::Error::msg)?;
-    let anchor=runner.holdout_anchor();drop(runner);drop(ranker);
-    let target_root=root.join("generation-3");std::fs::create_dir(&target_root)?;
-    let target_fit=fit(&target_root,3,&mut roles,&actions);
-    let target=view.publish(&target_root,&target_fit,Some(&source.selected.manifest),&mut roles);
-    host.prove_candidate_withdrawal(&target_root,&target_fit,&mut roles).await;
-    let target_choices=admission::choices(&target_fit,&actions);
-    let selected=ordinary::qualify(&target_root,&host,3,&target_fit,&source,&expected_source,&mut roles,
-        &target_choices,&source_choices,anchor,"ordinary-source",QualificationMode::Select).await;
-    ensure!(selected["selection"]["state"]=="selected","ordinary target did not obtain original selector admission");
-    let anchor:eval::FinalHoldoutCasAnchorV1=serde_json::from_value::<crate::cognitive_process_product_wire::FinalHoldoutCasAnchorV1Raw>(selected["holdout_anchor"].clone())?.into();
-    let source_descriptor=process::descriptor(&root,&source,&source_fit,&view,5,anchor);
-    let target_descriptor=process::descriptor(&root,&target,&target_fit,&view,9,anchor);
-    let node=Binary::pinned("HEPTA_PON_NODE_BINARY")?;
-    let fixture_binary=Binary::pinned("HEPTA_PON_TASK_FIXTURE_BINARY")?;
-    let genesis=support::micros()/1_000_000-3600;
-    let node_directory=root.join("chain");
-    let host_file=ordinary_native::host_file(&root,&node,&node_directory.join("node"),genesis)?;
-    let agentd=codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
-    let source_release=ReleaseId::parse("ordinary-source")?;
-    let target_release=ReleaseId::parse("ordinary-target")?;
-    for (release,(descriptor,digest)) in [(&source_release,&source_descriptor),(&target_release,&target_descriptor)] {
-        host.fleet.install_release(release.clone(),&agentd,vec!["--cognitive-bootstrap-descriptor".to_owned(),descriptor.display().to_string(),
-            "--cognitive-bootstrap-descriptor-digest".to_owned(),digest.to_string(),"--automation-effect-host-file".to_owned(),host_file.display().to_string()])?;
-        host.fleet.allow_release(&owner(),release)?;
+    let source_choices = admission::choices(&source_fit, &actions);
+    let ranker = PinnedCognitiveRanker::load_evaluated_published(
+        owner(),
+        5,
+        File::open(&source.snapshot)?,
+        File::open(&source.payload)?,
+        source.selected.clone(),
+        source_fit.pin.clone(),
+        source.source.clone(),
+        view.clone(),
+        source_selection.as_ref().context("source qualification")?,
+    )
+    .map_err(anyhow::Error::msg)?;
+    let expected_source = ranker.readback().map_err(anyhow::Error::msg)?;
+    let anchor = runner.holdout_anchor();
+    drop(runner);
+    drop(ranker);
+    let target_root = root.join("generation-3");
+    std::fs::create_dir(&target_root)?;
+    let target_fit = fit(&target_root, 3, &mut roles, &actions);
+    let target = view.publish(
+        &target_root,
+        &target_fit,
+        Some(&source.selected.manifest),
+        &mut roles,
+    );
+    host.prove_candidate_withdrawal(&target_root, &target_fit, &mut roles)
+        .await;
+    let target_choices = admission::choices(&target_fit, &actions);
+    let selected = ordinary::qualify(
+        &target_root,
+        &host,
+        3,
+        &target_fit,
+        &source,
+        &expected_source,
+        &mut roles,
+        &target_choices,
+        &source_choices,
+        anchor,
+        "ordinary-source",
+        QualificationMode::Select,
+    )
+    .await;
+    ensure!(
+        selected["selection"]["state"] == "selected",
+        "ordinary target did not obtain original selector admission"
+    );
+    let anchor: eval::FinalHoldoutCasAnchorV1 = serde_json::from_value::<
+        crate::cognitive_process_product_wire::FinalHoldoutCasAnchorV1Raw,
+    >(selected["holdout_anchor"].clone())?
+    .into();
+    let source_descriptor = process::descriptor(&root, &source, &source_fit, &view, 5, anchor);
+    let target_descriptor = process::descriptor(&root, &target, &target_fit, &view, 9, anchor);
+    let node = Binary::pinned("HEPTA_PON_NODE_BINARY")?;
+    let fixture_binary = Binary::pinned("HEPTA_PON_TASK_FIXTURE_BINARY")?;
+    let genesis = support::micros() / 1_000_000 - 3600;
+    let node_directory = root.join("chain");
+    let host_file =
+        ordinary_native::host_file(&root, &node, &node_directory.join("node"), genesis)?;
+    let agentd = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
+    let source_release = ReleaseId::parse("ordinary-source")?;
+    let target_release = ReleaseId::parse("ordinary-target")?;
+    for (release, (descriptor, digest)) in [
+        (&source_release, &source_descriptor),
+        (&target_release, &target_descriptor),
+    ] {
+        host.fleet.install_release(
+            release.clone(),
+            &agentd,
+            vec![
+                "--cognitive-bootstrap-descriptor".to_owned(),
+                descriptor.display().to_string(),
+                "--cognitive-bootstrap-descriptor-digest".to_owned(),
+                digest.to_string(),
+                "--automation-effect-host-file".to_owned(),
+                host_file.display().to_string(),
+            ],
+        )?;
+        host.fleet.allow_release(&owner(), release)?;
     }
-    save(&root.join("native-agentd-build.json"),&json!({"binary":agentd,"binary_sha256":Digest32::of_bytes(&std::fs::read(&agentd)?).to_string(),
-        "source_release":source_release,"target_release":target_release,"source_descriptor":source_descriptor.0,"target_descriptor":target_descriptor.0}));
-    let input=json!({"agent_id":owner(),"source_release":source_release,"target_release":target_release,"spawn_generation":9,
+    save(
+        &root.join("native-agentd-build.json"),
+        &json!({"binary":agentd,"binary_sha256":Digest32::of_bytes(&std::fs::read(&agentd)?).to_string(),
+        "source_release":source_release,"target_release":target_release,"source_descriptor":source_descriptor.0,"target_descriptor":target_descriptor.0}),
+    );
+    let input = json!({"agent_id":owner(),"source_release":source_release,"target_release":target_release,"spawn_generation":9,
         "descriptor_path":target_descriptor.0,"descriptor_sha256":target_descriptor.1.to_string()});
-    let (success,inspection)=ordinary::cli(&root,"09-inspect",&host.fleet_path,"inspect",&input);
-    ensure!(success,"ordinary target inspection failed: {inspection}");
-    let commitment:crate::CognitiveUpgradeCommitmentV1=serde_json::from_value(inspection["commitment"].clone())?;
-    let fixture=fixture_binary.run(&root,"task-prepare",&["prepare".to_owned(),node_directory.display().to_string(),genesis.to_string(),
-        "authenticated-v1".to_owned(),commitment.output_sha256()?.as_str().to_owned()])?;
-    ensure!(fixture["acceptance_submitted"]==false,"fixture must leave exact acceptance to actual Agentd");
-    let chain=Chain{binary:node,genesis,store:node_directory.join("node"),fixture};
+    let (success, inspection) =
+        ordinary::cli(&root, "09-inspect", &host.fleet_path, "inspect", &input);
+    ensure!(success, "ordinary target inspection failed: {inspection}");
+    let commitment: crate::CognitiveUpgradeCommitmentV1 =
+        serde_json::from_value(inspection["commitment"].clone())?;
+    let fixture = fixture_binary.run(
+        &root,
+        "task-prepare",
+        &[
+            "prepare".to_owned(),
+            node_directory.display().to_string(),
+            genesis.to_string(),
+            "authenticated-v1".to_owned(),
+            commitment.output_sha256()?.as_str().to_owned(),
+        ],
+    )?;
+    ensure!(
+        fixture["acceptance_submitted"] == false,
+        "fixture must leave exact acceptance to actual Agentd"
+    );
+    let chain = Chain {
+        binary: node,
+        genesis,
+        store: node_directory.join("node"),
+        fixture,
+    };
     // Only the initial historical fixture transitions use the registry. Every
     // source/target service transition below goes through actual Supervisord.
     host.running();
-    host.fleet.compare_and_transition(&owner(),2,AgentLifecycle::Draining)?;
-    host.fleet.compare_and_transition(&owner(),3,AgentLifecycle::Stopped)?;
-    host.launch=5;
-    let model=responses::start_mock_server().await;
+    host.fleet
+        .compare_and_transition(&owner(), 2, AgentLifecycle::Draining)?;
+    host.fleet
+        .compare_and_transition(&owner(), 3, AgentLifecycle::Stopped)?;
+    host.launch = 5;
+    let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(host.layout.home_root())?;
-    let daemon=Daemon::start(&root,&host).await?;
-    let socket=host.fleet.layout().supervisor_socket().to_path_buf();
-    let owned_root=root.clone();
-    let local=tokio::task::LocalSet::new();
+    let daemon = Daemon::start(&root, &host).await?;
+    let socket = host.fleet.layout().supervisor_socket().to_path_buf();
+    let owned_root = root.clone();
+    let local = tokio::task::LocalSet::new();
     // A failed assertion in concrete role/owner helpers still returns through
     // this JoinHandle so cleanup uses the original Supervisor, never /proc.
     let outcome=local.run_until(local.spawn_local(async move {
@@ -207,19 +324,30 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
             "no_update":no_update,"chain_reorg_observed":true,"unavailable_data_refused":true,"installed_current_and_final_use_revocation_refused":true,
             "independent_operators":false,"general_neural_model_efficacy":false,"role_process_costs":costs}))
     })).await;
-    let cleanup=daemon.cleanup(&root).await;
+    let cleanup = daemon.cleanup(&root).await;
     daemon.binary.verify()?;
-    let result=match outcome {
-        Ok(result)=>result,
-        Err(error)=>Err(anyhow::anyhow!("actual ordinary study child task failed: {error}")),
+    let result = match outcome {
+        Ok(result) => result,
+        Err(error) => Err(anyhow::anyhow!(
+            "actual ordinary study child task failed: {error}"
+        )),
     };
-    let result=match (result,cleanup) {
-        (Ok(_),Err(error))=>Err(error.context("actual owned service cleanup failed")),
-        (result,_)=>result,
+    let result = match (result, cleanup) {
+        (Ok(_), Err(error)) => Err(error.context("actual owned service cleanup failed")),
+        (result, _) => result,
     };
     match result {
-        Ok(summary)=>{save(&root.join("summary.json"),&summary);Ok(())},
-        Err(error)=>{save(&root.join("native-failure.json"),&json!({"reason":format!("{error:#}"),"installed_service_generations":null,
-            "observed_qualified_update_count":null,"partial_observations_retained":true}));Err(error)},
+        Ok(summary) => {
+            save(&root.join("summary.json"), &summary);
+            Ok(())
+        }
+        Err(error) => {
+            save(
+                &root.join("native-failure.json"),
+                &json!({"reason":format!("{error:#}"),"installed_service_generations":null,
+            "observed_qualified_update_count":null,"partial_observations_retained":true}),
+            );
+            Err(error)
+        }
     }
 }

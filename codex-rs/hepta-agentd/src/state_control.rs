@@ -30,10 +30,10 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
-#[path = "state_cognitive_model.rs"]
-mod cognitive_model;
 #[path = "state_automation_observation.rs"]
 mod automation_observation;
+#[path = "state_cognitive_model.rs"]
+mod cognitive_model;
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -55,8 +55,9 @@ impl AgentdState {
     ) -> Result<AgentdResponse, AgentdError> {
         // This monotonic deadline is made by the server, never transported in
         // a caller's intent or grant. It includes subsequent owner queueing.
-        let effect_deadline = method.effect_control_timeout_ms()
-            .map(|milliseconds| std::time::Instant::now() + std::time::Duration::from_millis(milliseconds));
+        let effect_deadline = method.effect_control_timeout_ms().map(|milliseconds| {
+            std::time::Instant::now() + std::time::Duration::from_millis(milliseconds)
+        });
         if spawn_generation != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
                 "request spawn generation {spawn_generation} does not match {}",
@@ -103,12 +104,22 @@ impl AgentdState {
                     .map_err(AgentdError::Protocol)?,
                 ];
                 if self.automation_effect_host().is_some() {
-                    capabilities.push(crate::AgentdCapability::new(
-                        crate::AUTOMATION_EFFECT_RESUME_CAPABILITY, 1, 0,
-                    ).map_err(AgentdError::Protocol)?);
-                    capabilities.push(crate::AgentdCapability::new(
-                        crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY, 1, 0,
-                    ).map_err(AgentdError::Protocol)?);
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            crate::AUTOMATION_EFFECT_RESUME_CAPABILITY,
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            crate::AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY,
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
@@ -660,12 +671,23 @@ impl AgentdState {
                     self.observe_automation_effect(&intent, &command_id).await?,
                 )
             }
-            crate::AgentdMethod::AutomationResumeEffect { intent, wire_payload_hex, signed_grant, command_id } => {
-                AgentdPayload::AutomationEffectReconcile(self.resume_automation_effect(
-                    &intent, &decode_effect_wire_hex(&wire_payload_hex)?, &signed_grant, &command_id,
-                    effect_deadline.ok_or_else(|| AgentdError::Protocol("missing effect control budget".to_owned()))?,
-                ).await?)
-            }
+            crate::AgentdMethod::AutomationResumeEffect {
+                intent,
+                wire_payload_hex,
+                signed_grant,
+                command_id,
+            } => AgentdPayload::AutomationEffectReconcile(
+                self.resume_automation_effect(
+                    &intent,
+                    &decode_effect_wire_hex(&wire_payload_hex)?,
+                    &signed_grant,
+                    &command_id,
+                    effect_deadline.ok_or_else(|| {
+                        AgentdError::Protocol("missing effect control budget".to_owned())
+                    })?,
+                )
+                .await?,
+            ),
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,
                 step_id,
@@ -1117,10 +1139,17 @@ fn effect_snapshot(
     receipt: codex_hepta_automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
     let observed = match receipt.final_outcome {
-        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded) => Some(TaskFlowStepObservation::Succeeded),
-        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Failed) => Some(TaskFlowStepObservation::Failed),
+        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded) => {
+            Some(TaskFlowStepObservation::Succeeded)
+        }
+        Some(codex_hepta_automation::TaskFlowReconcileOutcome::Failed) => {
+            Some(TaskFlowStepObservation::Failed)
+        }
         Some(codex_hepta_automation::TaskFlowReconcileOutcome::Cancelled) => {
-            return Err(AgentdError::Protocol("cancelled effect requires its original absence/cancellation observation".to_owned()));
+            return Err(AgentdError::Protocol(
+                "cancelled effect requires its original absence/cancellation observation"
+                    .to_owned(),
+            ));
         }
         None => receipt.observation,
     };

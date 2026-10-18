@@ -175,7 +175,9 @@ impl LearningArtifactOwnerService {
         now: u64,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
         if let Some(operation) = &self.recovery_required {
-            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation.clone()));
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation.clone(),
+            ));
         }
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);

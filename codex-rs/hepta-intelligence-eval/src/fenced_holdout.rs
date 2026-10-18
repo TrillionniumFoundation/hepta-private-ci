@@ -263,21 +263,32 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         plan: &CrossFoldPlanReceiptV1,
         window_not_before_unix_micros: u64,
     ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutError> {
-        let time = if let Some(existing) = self.journal.records().iter()
+        let time = if let Some(existing) = self
+            .journal
+            .records()
+            .iter()
             .find(|record| record.plan.plan_id == plan.plan_id)
         {
-            let time = existing.reservation_time.ok_or(FencedHoldoutError::Binding)?;
-            if existing.plan != *plan || time.window_not_before_unix_micros != window_not_before_unix_micros {
+            let time = existing
+                .reservation_time
+                .ok_or(FencedHoldoutError::Binding)?;
+            if existing.plan != *plan
+                || time.window_not_before_unix_micros != window_not_before_unix_micros
+            {
                 return Err(FencedHoldoutError::Binding);
             }
             time
         } else {
             let reserved_at_unix_micros = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
-                .ok().and_then(|value| u64::try_from(value.as_micros()).ok())
+                .ok()
+                .and_then(|value| u64::try_from(value.as_micros()).ok())
                 .filter(|value| *value > 0 && *value < window_not_before_unix_micros)
                 .ok_or(FencedHoldoutError::Binding)?;
-            FinalHoldoutReservationTimeV1 { reserved_at_unix_micros, window_not_before_unix_micros }
+            FinalHoldoutReservationTimeV1 {
+                reserved_at_unix_micros,
+                window_not_before_unix_micros,
+            }
         };
         self.consume_with_time(plan, Some(time))
     }

@@ -300,7 +300,9 @@ impl PinnedCognitiveRanker {
         }
         let current_view = current.current()?;
         if let Some(datasets) = &source_datasets {
-            current_view.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+            current_view
+                .require_source_datasets_available(datasets)
+                .map_err(|error| error.to_string())?;
         }
         let current_owner_trust_digest = current_view.trust_digest();
         let mut candidate = RevalidatingCandidate::new(candidate);
@@ -504,7 +506,9 @@ impl PinnedCognitiveRanker {
         // must first issue an opaque verified CURRENT view.
         let current = self.current.current()?;
         if let Some(datasets) = &self.source_datasets {
-            current.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+            current
+                .require_source_datasets_available(datasets)
+                .map_err(|error| error.to_string())?;
         }
         let current_validity = current.validity();
         if current.trust_digest() != self.current_owner_trust_digest {
@@ -521,7 +525,9 @@ impl PinnedCognitiveRanker {
         // product FinalUse fence still owns serialization with actual effects.
         let current_after = self.current.current()?;
         if let Some(datasets) = &self.source_datasets {
-            current_after.require_source_datasets_available(datasets).map_err(|error| error.to_string())?;
+            current_after
+                .require_source_datasets_available(datasets)
+                .map_err(|error| error.to_string())?;
         }
         let validity_after = current_after.validity();
         if current_after.trust_digest() != self.current_owner_trust_digest {

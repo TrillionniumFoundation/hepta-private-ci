@@ -122,7 +122,10 @@ pub(super) fn replay_product_qualification_v1(
         ));
     }
     acknowledge_holdout_namespace(&holdout_descriptor.path)?;
-    let timed_reservation = record.journal.records.iter()
+    let timed_reservation = record
+        .journal
+        .records
+        .iter()
         .find(|record| record.plan == product_plan.frozen_plan)
         .and_then(|record| record.reservation_time);
     let mut owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence.clone())
@@ -130,22 +133,45 @@ pub(super) fn replay_product_qualification_v1(
     match (timed_reservation, descriptor.reservation_acknowledgement) {
         (None, None) => {}
         (Some(time), Some(ack)) => {
-            let receipt = owner.consume(&product_plan.frozen_plan)
-                .map_err(|error| invalid(&format!("cognitive timed reservation replay: {error}")))?;
+            let receipt = owner.consume(&product_plan.frozen_plan).map_err(|error| {
+                invalid(&format!("cognitive timed reservation replay: {error}"))
+            })?;
             let payload = eval::holdout_reservation_acknowledgement_payload_v1(
-                binding, &fence, &product_plan.frozen_plan, &receipt, ack.received_at_unix_micros,
-            ).map_err(|error| invalid(&format!("cognitive reservation ACK: {error}")))?;
+                binding,
+                &fence,
+                &product_plan.frozen_plan,
+                &receipt,
+                ack.received_at_unix_micros,
+            )
+            .map_err(|error| invalid(&format!("cognitive reservation ACK: {error}")))?;
             let signed: codex_hepta_learning_ledger::SignedLearningEvidenceV1 = ack.observer.into();
             if signed.issued_at < ack.received_at_unix_micros
                 || signed.principal_id != timing.observer.principal_id
-                || timing.windows.iter().any(|window| window.starts_unix_micros < time.window_not_before_unix_micros())
+                || timing
+                    .windows
+                    .iter()
+                    .any(|window| window.starts_unix_micros < time.window_not_before_unix_micros())
             {
-                return Err(invalid("cognitive future reservation ACK/window binding mismatch"));
+                return Err(invalid(
+                    "cognitive future reservation ACK/window binding mismatch",
+                ));
             }
-            verifier.verify(codex_hepta_learning_ledger::LearningEvidenceRoleV1::Observer, &signed, &payload, now)
-                .map_err(|error| invalid(&format!("cognitive independent reservation ACK: {error}")))?;
+            verifier
+                .verify(
+                    codex_hepta_learning_ledger::LearningEvidenceRoleV1::Observer,
+                    &signed,
+                    &payload,
+                    now,
+                )
+                .map_err(|error| {
+                    invalid(&format!("cognitive independent reservation ACK: {error}"))
+                })?;
         }
-        (None, Some(_)) | (Some(_), None) => return Err(invalid("cognitive reservation timing evidence cannot be added or stripped")),
+        (None, Some(_)) | (Some(_), None) => {
+            return Err(invalid(
+                "cognitive reservation timing evidence cannot be added or stripped",
+            ));
+        }
     }
     let pinned = eval::read_product_qualification_evidence_v1(
         &descriptor.qualification_evidence.path,
@@ -157,7 +183,13 @@ pub(super) fn replay_product_qualification_v1(
         inputs: descriptor.released_inputs,
         expected_plan_digest: product_plan.frozen_plan.plan_digest,
         released: false,
-        timed_cohort: timed_reservation.map(|time| (product_plan.frozen_plan.clone(), timing.windows.clone(), time.window_not_before_unix_micros())),
+        timed_cohort: timed_reservation.map(|time| {
+            (
+                product_plan.frozen_plan.clone(),
+                timing.windows.clone(),
+                time.window_not_before_unix_micros(),
+            )
+        }),
     };
     let mut runner = eval::ProductEvaluationRunnerV1::new(owner);
     let temporal = runner
@@ -209,7 +241,11 @@ struct PinnedReplayProviderV1 {
     inputs: PinnedProductFileV1,
     expected_plan_digest: Digest32,
     released: bool,
-    timed_cohort: Option<(eval::CrossFoldPlanReceiptV1, Vec<eval::ObservedFutureWindowV1>, u64)>,
+    timed_cohort: Option<(
+        eval::CrossFoldPlanReceiptV1,
+        Vec<eval::ObservedFutureWindowV1>,
+        u64,
+    )>,
 }
 
 impl eval::FinalHoldoutProviderV1 for PinnedReplayProviderV1 {
@@ -263,7 +299,8 @@ fn read_pinned(
 
 /// Reestablish the existing holdout directory ACK before publishing evidence.
 pub(super) fn acknowledge_holdout_namespace(path: &std::path::Path) -> Result<(), AgentdError> {
-    let parent = path.parent()
+    let parent = path
+        .parent()
         .ok_or_else(|| invalid("cognitive product holdout has no parent"))?;
     let mut options = OpenOptions::new();
     options.read(true);

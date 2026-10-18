@@ -140,9 +140,16 @@ impl Fixture {
     fn attest(&mut self) -> SignedEvaluationEvidenceV1 {
         let observed = future_window_signing_payload_v1(&self.bundle, &self.timing, 10)
             .expect("observer bytes");
-        assert_eq!(observed, future_window_statement_payload_v1(
-            &self.bundle, self.timing.frozen_unix_micros, &self.timing.windows, 10,
-        ).expect("unsigned observer statement is the same canonical domain"));
+        assert_eq!(
+            observed,
+            future_window_statement_payload_v1(
+                &self.bundle,
+                self.timing.frozen_unix_micros,
+                &self.timing.windows,
+                10,
+            )
+            .expect("unsigned observer statement is the same canonical domain")
+        );
         self.timing.observer = self.sign(2, LearningEvidenceRoleV1::Observer, &observed, 45);
         let evaluated =
             longitudinal_evaluation_signing_payload_v3(&self.bundle, &self.roles, &self.timing, 10)
