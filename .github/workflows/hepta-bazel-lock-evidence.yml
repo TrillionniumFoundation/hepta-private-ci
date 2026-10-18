@@ -1,0 +1,53 @@
+name: Hepta Bazel lockfile evidence (read-only)
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-bazel-lock-evidence.yml
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact frozen security and Windows candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 1ead6fff98e7dc84674068203a3fc575538d88c4
+          persist-credentials: false
+      - name: Prepare pinned Bazel CI toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-bazel-lock-evidence
+      - name: Regenerate lock under the actual Bazel resolver
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "1ead6fff98e7dc84674068203a3fc575538d88c4"
+          df -h .
+          bazel mod deps --lockfile_mode=update
+          python3 -m json.tool MODULE.bazel.lock >/dev/null
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if paths != ["MODULE.bazel.lock"]:
+              raise SystemExit(f"lock regeneration touched unexpected paths: {paths}")
+          PY
+          ./scripts/check-module-bazel-lock.sh
+          cp MODULE.bazel.lock "$RUNNER_TEMP/MODULE.bazel.lock"
+          git diff --binary -- MODULE.bazel.lock > "$RUNNER_TEMP/MODULE.bazel.lock.patch"
+          sha256sum MODULE.bazel.lock > "$RUNNER_TEMP/lock-sha256.txt"
+          test -s "$RUNNER_TEMP/MODULE.bazel.lock.patch"
+      - name: Upload source-bound lockfile and diff for independent review
+        if: success()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-bazel-lock-generated-1ead6fff
+          path: |
+            ${{ runner.temp }}/MODULE.bazel.lock
+            ${{ runner.temp }}/MODULE.bazel.lock.patch
+            ${{ runner.temp }}/lock-sha256.txt
+          if-no-files-found: error
+          retention-days: 14
