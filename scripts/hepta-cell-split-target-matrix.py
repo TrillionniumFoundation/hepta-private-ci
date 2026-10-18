@@ -15,6 +15,7 @@ import argparse
 import hashlib
 import itertools
 import json
+import math
 import os
 import platform
 import re
@@ -71,6 +72,10 @@ def matrix_cases() -> list[dict[str, str]]:
 def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"metric {name} must be numeric")
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError(f"metric {name} must be finite")
+    if isinstance(value, int) and value.bit_length() > 64:
+        raise ValueError(f"metric {name} exceeds the bounded counter range")
     if value < 0:
         raise ValueError(f"metric {name} must be non-negative")
     if integer and not isinstance(value, int):

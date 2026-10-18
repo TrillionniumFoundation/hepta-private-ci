@@ -56,3 +56,31 @@ def test_dry_run_is_blocked_until_workload_and_observer_receipts_exist(tmp_path:
     assert len(report["cases"]) == 16
     assert "independent-observer" in report["blockingCases"]
     MODULE.validate_report(json.loads(output.read_text(encoding="utf-8")))
+
+
+def test_measurement_rejects_nonfinite_or_unbounded_counters() -> None:
+    base = {
+        "p50Micros": 10,
+        "p95Micros": 20,
+        "p99Micros": 30,
+        "throughputPerSecond": 100.0,
+        "cpuMicros": 100,
+        "rssBytes": 200,
+        "communicationBytes": 300,
+        "fsyncCount": 1,
+        "lockWaitMicros": 2,
+        "recoveryMicros": 3,
+        "negativeMigrationQ32": 0,
+    }
+    for name, bad_value in (
+        ("throughputPerSecond", float("nan")),
+        ("p95Micros", float("inf")),
+        ("negativeMigrationQ32", float("-inf")),
+        ("rssBytes", 1 << 128),
+    ):
+        try:
+            MODULE.validate_metrics({**base, name: bad_value})
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"unbounded metric {name} was accepted")

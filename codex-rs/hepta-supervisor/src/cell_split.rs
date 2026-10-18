@@ -437,7 +437,7 @@ impl FileCellSplitArtifactCasV1 {
         match fs::symlink_metadata(&path) {
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 // The final digest name is occupied by this process only
-                // after an atomic rename. A crash during the write therefore
+                // after an atomic create-only link. A crash during the write therefore
                 // cannot leave a partial object at the CAS name.
                 self.install_new_artifact(&path, &temporary, bytes, plan)?;
             }
@@ -528,10 +528,11 @@ impl FileCellSplitArtifactCasV1 {
                     }
                     drop(file);
                     // Persist the staging directory entry before exposing it
-                    // under the final content-addressed name.
+                    // under the final content-addressed name without replacing an existing object.
                     self.root_file()?.sync_all()?;
-                    match fs::rename(temporary, path) {
+                    match fs::hard_link(temporary, path) {
                         Ok(()) => {
+                            fs::remove_file(temporary)?;
                             self.root_file()?.sync_all()?;
                             return Ok(());
                         }
@@ -542,6 +543,7 @@ impl FileCellSplitArtifactCasV1 {
                                 return Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch);
                             }
                             existing_file.sync_all()?;
+                            fs::remove_file(temporary)?;
                             self.root_file()?.sync_all()?;
                             return Ok(());
                         }
@@ -556,7 +558,7 @@ impl FileCellSplitArtifactCasV1 {
                         Ok((mut temporary_file, existing)) if existing == bytes => {
                             temporary_file.sync_all()?;
                             drop(temporary_file);
-                            match fs::rename(temporary, path) {
+                            match fs::hard_link(temporary, path) {
                                 Ok(()) => {
                                     self.root_file()?.sync_all()?;
                                     return Ok(());
