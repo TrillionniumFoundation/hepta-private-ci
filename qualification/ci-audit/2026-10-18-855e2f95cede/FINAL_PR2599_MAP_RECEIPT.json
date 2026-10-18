@@ -1,0 +1,170 @@
+{
+  "utc": "2026-10-18T15:25:19.427943+00:00",
+  "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+  "tree_sha": "4c8ad58586a50f678396dbac4df3623b8dc6f314",
+  "source_sha": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+  "original_pr_head": "1ebb9b8a9313e6504d2ebf9597412f3fe9c49d9e",
+  "repo": "/dev/shm/hepta-github-inventory-855e2f95cede/repo",
+  "full_checkout": true,
+  "clean": true,
+  "hidden_index_entries": 0,
+  "four_module_results": [
+    {
+      "module": "kernel.authority",
+      "status": "PASS_STRICT_SOURCE_IDENTITY_AND_OBJECTS",
+      "sourceBase": {
+        "commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+        "tree": "10c2b68e495646a93355e059a2573271fdd1849d"
+      },
+      "checked_source_paths": 13,
+      "executionClaimsPresent": false,
+      "source_objects_current": true
+    },
+    {
+      "module": "kernel.evidence",
+      "status": "PASS_STRICT_SOURCE_IDENTITY_AND_OBJECTS",
+      "sourceBase": {
+        "commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+        "tree": "10c2b68e495646a93355e059a2573271fdd1849d"
+      },
+      "checked_source_paths": 10,
+      "executionClaimsPresent": false,
+      "source_objects_current": true
+    },
+    {
+      "module": "runtime.agentd",
+      "status": "PASS_STRICT_SOURCE_IDENTITY_AND_OBJECTS",
+      "sourceBase": {
+        "commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+        "tree": "10c2b68e495646a93355e059a2573271fdd1849d"
+      },
+      "checked_source_paths": 16,
+      "executionClaimsPresent": false,
+      "source_objects_current": true
+    },
+    {
+      "module": "runtime.fleet",
+      "status": "PASS_STRICT_SOURCE_IDENTITY_AND_OBJECTS",
+      "sourceBase": {
+        "commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+        "tree": "10c2b68e495646a93355e059a2573271fdd1849d"
+      },
+      "checked_source_paths": 4,
+      "executionClaimsPresent": false,
+      "source_objects_current": true
+    }
+  ],
+  "global_strict_exit_code": 1,
+  "global_strict_failed_count": 26,
+  "global_strict_failed_modules": [
+    "platform.types",
+    "kernel.operations",
+    "runtime.supervisor",
+    "runtime.codex",
+    "auth.authbus",
+    "secrets.heptabao",
+    "inference.control",
+    "inference.worker",
+    "objective.compiler",
+    "utility.ndu",
+    "neuron.runtime",
+    "prompt.optimizer",
+    "intelligence.control",
+    "cognitive.store",
+    "cognitive.read",
+    "memory.retrieval",
+    "memory.federation",
+    "knowledge.graph",
+    "learning.ledger",
+    "learning.operator",
+    "learning.eval",
+    "learning.artifacts",
+    "learning.plasticity",
+    "automation.taskflow",
+    "control.runtime",
+    "control.engineering"
+  ],
+  "global_failures_equal_source_baseline_minus_four_fixed_maps": true,
+  "global_success_claimed": false,
+  "source_blob_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "blob_sha": "52db47a0fa1cb564eafbd4ee4a56127cb3ac3aba",
+      "matches_reviewed_candidate": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "blob_sha": "6d2ffd978bb926f941dd17a66011060079f2fabd",
+      "matches_reviewed_candidate": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "blob_sha": "ef9c48e12826b0d49ed5213675b2a94e58fe728a",
+      "matches_reviewed_candidate": true
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "blob_sha": "848a3e67ed96a3526c8a862d103e7946e8101845",
+      "matches_reviewed_candidate": true
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "python",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+        "--expected-tree",
+        "4c8ad58586a50f678396dbac4df3623b8dc6f314"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr_chars": 5833
+    },
+    {
+      "command": [
+        "python",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr_chars": 5878
+    },
+    {
+      "command": [
+        "python",
+        "scripts/hepta-module-docs.py",
+        "refresh-derived",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"updatedDerived\": [], \"checkOnly\": true}\n",
+      "stderr_chars": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "1ebb9b8a9313e6504d2ebf9597412f3fe9c49d9e",
+        "19c5cd41c17dd42da7afac96203a4bc7901e23a6"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr_chars": 0
+    }
+  ],
+  "validator_script_blob": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+  "validator_modified": false,
+  "native_tests_run_by_this_agent": 0,
+  "remote_ref_updated_by_this_agent": false,
+  "tmpfs_ephemeral": true,
+  "validation_scope": "Source navigation and declared evidence, not build, execution, independent acceptance, activation, release, or complete CI qualification"
+}

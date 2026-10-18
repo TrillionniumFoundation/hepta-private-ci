@@ -1,0 +1,559 @@
+{
+  "schema": "hepta.recovery-checkpoint.v1",
+  "created_utc": "2026-10-18T15:42:48.243164+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_path": "qualification/ci-audit/2026-10-18-855e2f95cede",
+  "host": "2313cba36518",
+  "source_main": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "evidence_labels": [
+    "VERIFIED_NOW",
+    "HISTORICAL_CLAIM",
+    "HISTORICAL_EXECUTION_RECOUNTED_NOW",
+    "NOT_ACCESSIBLE",
+    "INFERRED"
+  ],
+  "environment": {
+    "utc": "2026-10-18T15:30:22.998491+00:00",
+    "scope": "Accessible executor only; not independently identified as the user's Dot or dedicated Hepta host.",
+    "worktrees_observed": 16,
+    "processes_observed": 11,
+    "overlay_free_bytes": 0,
+    "external_hosts": {
+      "classification": "NOT_ACCESSIBLE",
+      "reason": "No verified project SSH endpoint or remote-exec tool discovered; prior context also provided no route."
+    }
+  },
+  "inventory": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "observed_interval_utc": [
+      "2026-10-18T14:20:04Z",
+      "2026-10-18T14:23:41.367Z"
+    ],
+    "snapshot_atomic": false,
+    "complete_enumeration": true,
+    "completion_basis": "REST collection pagination through empty page; unique PR IDs exactly 1..2846; unique branch names; no search endpoint used",
+    "branches": 2519,
+    "pull_requests": 2846,
+    "open_prs": 1553,
+    "open_draft": 1526,
+    "open_non_draft": 27,
+    "merged": 315,
+    "closed_unmerged": 978,
+    "main": {
+      "name": "main",
+      "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "protected": true,
+      "prs": [
+        542,
+        920,
+        922,
+        927,
+        980,
+        984
+      ],
+      "open_prs": []
+    },
+    "open_pr_category_counts": {
+      "INTEGRATION_CANDIDATE": 155,
+      "FEATURE_OR_UNCLASSIFIED_CANDIDATE": 230,
+      "RESEARCH_SHADOW_CANDIDATE": 581,
+      "MAINTENANCE_CANDIDATE": 577,
+      "TEMPORARY_NAMED_REVIEW_REQUIRED": 10
+    },
+    "branches_with_no_pr_in_complete_pr_inventory": 684,
+    "branches_with_multiple_open_prs": [],
+    "limitations": [
+      "Repository changed during reads. Re-fetch head/base/state/checks immediately before mutations.",
+      "Branches/PR pagination complete for observed collection, but absence of duplicates cannot prove absence of branch insertion/deletion races.",
+      "Authors and assignees do not establish a unique live development Agent owner.",
+      "Base-ref edges are verified metadata; body #mentions are not verified dependencies. No arbitrary semantic superiority or obsolescence judgment.",
+      "Not all 2846 diffs, reviews, historical workflow jobs, or scientific receipts were audited by this subtask. CI owner supplies separate matrices.",
+      "Closed/unmerged does not establish obsolete, unsafe, duplicate, or superseded semantics.",
+      "Temporary/research categories are provisional and cannot authorize deletion, merge, or production promotion."
+    ]
+  },
+  "branch_graph": {
+    "frozen_main": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "captured_branches": 2519,
+    "git_graph_verified": 2519,
+    "local_graph_verified": 2463,
+    "remote_compared_branches": 56,
+    "missing_graph": 0,
+    "equal_to_main": 2,
+    "head_contains_main": 289,
+    "behind_main_only": 28,
+    "diverged": 2200,
+    "remote_file_lists_potentially_capped": 0,
+    "note": "All 2519 originally captured exact SHAs have verified ahead/behind/merge-base; collection is not atomic and file scope comparison is not a full semantic review."
+  },
+  "published_repairs": [
+    {
+      "schema_version": 1,
+      "observed_utc": "2026-10-18 15:28:37 UTC",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr": 2599,
+      "branch": "fix/ci-clippy-expect-unwrap-20261017",
+      "old_head": "1ebb9b8a9313e6504d2ebf9597412f3fe9c49d9e",
+      "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "commits": [
+        {
+          "sha": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+          "tree": "10c2b68e495646a93355e059a2573271fdd1849d",
+          "purpose": "Typed fixture error propagation"
+        },
+        {
+          "sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "tree": "4c8ad58586a50f678396dbac4df3623b8dc6f314",
+          "purpose": "Four strict source-map updates"
+        }
+      ],
+      "branch_updated": true,
+      "remote_head_verified": true,
+      "native_tests": "BLOCKED_EXTERNAL_ENOSPC_NOT_STARTED",
+      "local_checks": {
+        "rustfmt": "PASS",
+        "diff_check": "PASS",
+        "derived_check": "PASS",
+        "four_map_source_identity": "PASS",
+        "global_map_qualification": "FAIL_26_MODULES"
+      },
+      "required_checks": "PENDING_NOT_CLOSED",
+      "merge_performed": false,
+      "source_gate_unchanged": true,
+      "detail": "github_inventory/FINAL_PR2599_MAP_RECEIPT.json"
+    },
+    {
+      "schema_version": 1,
+      "observed_utc": "2026-10-18 15:24:57 UTC",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr": 2714,
+      "old_head": "b15a9460ba3d3cdc297e6cef0742332785ed7889",
+      "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+      "branch": "research/real-reader-intake-p4-20261017",
+      "commits": [
+        {
+          "wave": 1,
+          "sha": "4fa7e393d52d23430fe7e6c0e38f31e74f5c8770",
+          "tree": "ff3debc4f221d232b7103d8ce6c6a322ad035544"
+        },
+        {
+          "wave": 2,
+          "sha": "59f701bb90fa55dd4e60595711da961c51349451",
+          "tree": "8976a5eea98a73ac46297d05c3b8b6789ceb9427"
+        },
+        {
+          "wave": 3,
+          "sha": "3d32b7b6d7896914ade4af2224ada57e6564758a",
+          "tree": "251d4e2106c59117a0df3c802b0e112430e4fd1c"
+        },
+        {
+          "wave": 4,
+          "sha": "bb20a198b850fb0f853441c3beeb5b587c92ab66",
+          "tree": "0100bcfd2884e06f6dc959b6cadfa3e994de5006"
+        },
+        {
+          "wave": 5,
+          "sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "tree": "42865df641069d9a11285038e7d75b3df9111248"
+        }
+      ],
+      "branch_updated": true,
+      "remote_head_verified": true,
+      "local_tests": {
+        "pass": 109,
+        "fail": 0,
+        "error": 0,
+        "skip": 0,
+        "type": "Python synthetic contract regression tests; not model experiments"
+      },
+      "independent_review": {
+        "wave2_tests": 98,
+        "wave3_tests": 102,
+        "wave4_calibration_focused": 5,
+        "wave5_harness_focused": 10
+      },
+      "new_model_calls": 0,
+      "posture": "SHADOW_ONLY / DENY_ALL / NO_GO",
+      "remote_pr_state": {
+        "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+        "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+        "draft": true,
+        "merged": false,
+        "verified_by": "GET /pulls/2714 after update_ref"
+      }
+    }
+  ],
+  "latest_postpush_ci": {
+    "observed_interval_utc": [
+      "2026-10-18T15:37:00Z",
+      "2026-10-18T15:38:59Z"
+    ],
+    "pr2599": {
+      "runs": 4,
+      "checks": 11,
+      "jobs": 11
+    },
+    "pr2714": {
+      "runs": 5,
+      "checks": 6,
+      "jobs": 6
+    },
+    "jobs_queued": 17,
+    "run_statuses": {
+      "queued": 8,
+      "pending": 1
+    },
+    "required_aggregators": "ABSENT; no success inferred",
+    "source": "ci-evidence.tar.gz"
+  },
+  "queue_snapshot": {
+    "observed_utc": "2026-10-18T14:32:35.155Z",
+    "status_counts": {
+      "queued|null": 494,
+      "completed|cancelled": 220,
+      "completed|success": 393,
+      "completed|failure": 137,
+      "in_progress|null": 168,
+      "completed|skipped": 175
+    },
+    "observed_active": 168,
+    "observed_queued": 494,
+    "queue_minutes": {
+      "n": 494,
+      "min": 0.45785,
+      "median": 24.55955,
+      "p95": 61.62456666666667,
+      "max": 76.98921666666666
+    },
+    "workflow_counts": {
+      "Hepta deployment handoff (read-only)": 13,
+      "Hepta durable causal ledger (read-only)": 8,
+      "Hepta pre-coding implementation readiness": 14,
+      "Hepta Lane F shadow qualification": 10,
+      "Hepta durable learning roundtrip (read-only)": 8,
+      "Lane A foundation truth and native qualification": 17,
+      "v8-canary": 38,
+      "Hepta Lane B source closure": 14,
+      "Hepta Lane D semantic conformance": 3,
+      "Hepta Lane E gap closure": 9,
+      "Hepta converged learning qualification (read-only)": 10,
+      "Hepta repository integrity": 18,
+      "Hepta self-iteration governance": 3,
+      "Hepta objective admission qualification": 3,
+      "OpenBao compatibility blocker": 17,
+      "Hepta Agentd process qualification": 11,
+      "Hepta development documents": 14,
+      "Hepta adaptive algorithm documents": 14,
+      "Hepta audit remediation (read-only)": 13,
+      "Hepta organ implementation (read-only)": 9,
+      "Hepta consolidated source qualification (read-only)": 18,
+      "blocking-ci": 80,
+      "Hepta intuition qualification": 5,
+      "Hepta Browser journal scale": 1,
+      "Hepta knowledge.graph qualification": 1,
+      "OpenBao compatibility qualification": 1,
+      "Hepta Browser Servo independent rebuild": 1,
+      "Hepta Browser Agentd composition": 1,
+      "Hepta Browser Servo worker dev": 1,
+      "memory federation v2 final verify": 1,
+      "Kernel evidence qualification": 1,
+      "Hepta memory retrieval qualification host": 1,
+      "hnmf-qualification": 1,
+      "Hepta architecture convergence": 45,
+      "Hepta NDU recursion (read-only)": 1,
+      "Hepta objective product composition": 1,
+      "Self-hosted ROG Pocket4 and Mac availability": 1,
+      "PR #2813": 1,
+      "MemoryCell calibrated strong RAG with frozen reader": 1,
+      "PR #1452": 1,
+      "PR #2735": 2,
+      "PR #2734": 6,
+      "PR #2695": 2,
+      "PR #2837": 1,
+      "PR #2717": 2,
+      "Hepta Neuron signed admission and worker qualification": 3,
+      "PR #2757": 1,
+      "Hepta shared Cell exact Ruff conformance": 3,
+      "Runner500 Windows directory contract": 1,
+      "PR #2273": 1,
+      "Hepta Neuron reference-output identity v2": 1,
+      "PR #2688": 1,
+      "Hepta Windows scope-lane WAL recovery": 1,
+      "hepta temporary Bazel lock candidate": 2,
+      "PR #2566": 1,
+      "PR #2817": 1,
+      "Hepta Keyring Sync Security Migration (Draft)": 1,
+      "GitHub Actions packed real-test throughput": 1
+    },
+    "queue_age_formula": "(job_observed_utc - job.created_at) in minutes, only queued/pending jobs; a queued job's started_at is not used as execution proof",
+    "by_label": {
+      "self-hosted,linux,x64,rog": 1,
+      "ubuntu-24.04": 235,
+      "ubuntu-latest": 78,
+      "windows-latest": 95,
+      "macos-15": 46,
+      "ubuntu-24.04-arm": 10,
+      "macos-15-intel": 1,
+      "ubuntu-slim": 28
+    },
+    "identity_mismatches": []
+  },
+  "organization_utilization": "NOT_ACCESSIBLE; observed job counts do not establish capacity",
+  "completed_new_model_receipts_this_audit": 0,
+  "model_cost_this_audit": {
+    "local_inference_calls": 0,
+    "local_tokens": 0,
+    "local_inference_seconds": 0,
+    "scope": "No local model run. The pushed existing remote Reader workflow remains queued at the recorded snapshot; future receipts require separate verification."
+  },
+  "research_posture": "SHADOW_ONLY / DENY_ALL / NO_GO",
+  "merge_count": 0,
+  "forced_ref_updates": 0,
+  "workflow_cancellations": 0,
+  "protection_or_validator_weakened": false,
+  "all_blockers_closed": false,
+  "blockers": [
+    {
+      "id": "CI-001",
+      "scope": "main",
+      "head": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "status": "FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING",
+      "root": "Source/test lint: two expect() calls forbidden by -D clippy::expect-used",
+      "location": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs:683,727",
+      "run": 38827238622,
+      "job": 117315617267,
+      "owner": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation",
+      "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
+      "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+      "repair_owner": "PR #2599 / root"
+    },
+    {
+      "id": "CI-002",
+      "scope": "main; #2813",
+      "head": "88994f6bf50e4336beca3d5ce2c760192ea523a6",
+      "status": "FAILED",
+      "root": "Source/test lint: direct PoolOptions::connect bypasses canonical SQLite shim",
+      "location": "codex-rs/hepta-automation/src/migration_convergence_tests.rs:9; codex-rs/hepta-memory/src/cognitive_schema_tests.rs:10",
+      "run": 39128125730,
+      "job": 117680668553,
+      "related_jobs": [
+        117315617169
+      ],
+      "owner": "#2800/#2805 SQLite fixture owners; semantic comparison required",
+      "next": "Use codex_state::sqlite connect_pool with explicit in-memory SqliteConnectOptions preserving max_connections(1); execute migration/schema test plus Windows Clippy. Do not allow the forbidden method."
+    },
+    {
+      "id": "CI-003",
+      "scope": "#2812; #2813",
+      "head": "20b3162b653f34bb3a0e3505b14c5fa1ecf68b89",
+      "status": "FIX_PUSHED_NATIVE_AND_REQUIRED_CI_PENDING",
+      "root": "Source/test lint: ledger.admit_host(...).unwrap() forbidden",
+      "location": "codex-rs/hepta-fleet/src/authority_port.rs:197–210",
+      "run": 39110127407,
+      "job": 117642886710,
+      "related_jobs": [
+        117680668585
+      ],
+      "owner": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification",
+      "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
+      "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+      "repair_owner": "PR #2599 / root"
+    },
+    {
+      "id": "CI-004",
+      "scope": "main",
+      "head": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "status": "FAILED_INFRASTRUCTURE",
+      "root": "macOS nextest archive exhausted disk: ld write errno=28; rustc-LLVM No space left on device; cache archive failed",
+      "location": ".github/workflows/rust-ci*.yml build-nextest-archive lane",
+      "run": 38827238622,
+      "job": 117315617022,
+      "owner": "Runner/build footprint owner, historical #2776 disk reclaim to inspect",
+      "next": "Inspect per-job disk before/after and Cargo test debug/link/archive layout; constrain duplicate outputs, retain full platform/test coverage, rerun same head. Do not classify as code compile failure."
+    },
+    {
+      "id": "CI-005",
+      "scope": "#2789",
+      "head": "59ed05c0c79ebc73834aa48ace640a86a710843b",
+      "status": "FAILED",
+      "root": "Bazel lock stale: crate extension changed facts, bazel requires mod deps --lockfile_mode=update",
+      "location": "MODULE.bazel.lock",
+      "run": 39130415282,
+      "job": 117685898172,
+      "related_jobs": [
+        117684255091
+      ],
+      "owner": "#2789 ZIP exact-parent diagnostic owner",
+      "next": "Review genuine diagnostic proposal artifact 12138013270 against exact Cargo/MODULE parents, regenerate lock with repository's Bazel version, commit complete lock and verify --lockfile_mode=error plus ZIP tests/security. No manual fabricated lock."
+    },
+    {
+      "id": "CI-006",
+      "scope": "#2789; #2790",
+      "head": "59ed05c0c79ebc73834aa48ace640a86a710843b",
+      "status": "FAILED_FAIL_CLOSED",
+      "root": "Prospective merge parent/tree identity gate failed before tests; contract gate also says checkout neither source head nor exact synthetic merge",
+      "location": ".github/workflows architecture convergence; development docs V8 validator",
+      "run": 39130415255,
+      "job": 117684255354,
+      "related_jobs": [
+        117687799401,
+        117685897987
+      ],
+      "owner": "Moving target branch owners #2789/#2790 and architecture workflow owner",
+      "next": "Snapshot event BASE_SHA/SOURCE_SHA and current pull merge-ref parents/tree, diagnose drift, create/retest exact candidate. Preserve validation; add explicit immutable mismatch receipts if improving diagnostics."
+    },
+    {
+      "id": "CI-007",
+      "scope": "#2812",
+      "head": "20b3162b653f34bb3a0e3505b14c5fa1ecf68b89",
+      "status": "FAILED",
+      "root": "Rust formatting fails even though the requested Ruff classifier patch is qualified",
+      "location": "codex-rs/hepta-neuron/src/metrics.rs,metrics_tests.rs; hepta-supervisor/src/cell_split.rs,lib.rs; additional log hunks",
+      "run": 39110127407,
+      "job": 117642886403,
+      "owner": "#2812 source owner; #2814 fix branch has different base, cannot blindly substitute",
+      "next": "Run pinned just fmt on same exact source tree and retain relevant Rust hunks; validate full scope before claiming Ruff fix closed blocking-ci."
+    },
+    {
+      "id": "CI-008",
+      "scope": "#2814",
+      "head": "8f6391412a53f60a215ed2a08153fce3d2fdde10",
+      "status": "FAILED_CAUSE_NOT_ACCESSIBLE",
+      "root": "Hepta scoped native job reports failure, log fetch returned BlobNotFound; no failed step details",
+      "location": "Hepta scoped native checks",
+      "run": 39110309530,
+      "job": 117642169810,
+      "owner": "#2814 owner",
+      "next": "Obtain runner diagnostic/retained receipt or rerun eligible exact-head job; do not assert ENOSPC/timeouts without logs."
+    },
+    {
+      "id": "CI-009",
+      "scope": "#2815",
+      "head": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+      "status": "CANCELLED_NOT_SUCCESS",
+      "root": "Scoped native job cancelled, CI required fails; logs BlobNotFound",
+      "location": "Hepta scoped native checks",
+      "run": 39114831266,
+      "job": 117665655613,
+      "owner": "#2815 Objective admission owner",
+      "next": "Run canonical local tests on exact candidate while queue is unresolved; fresh required CI remains needed. Independent Architecture success is insufficient."
+    },
+    {
+      "id": "CI-010",
+      "scope": "main; #2695; #2789; #2812; #2813",
+      "head": "29fceb086d0f8cc9073664f38ae6dd419a933f03",
+      "status": "FAILED_DETAIL_NOT_ACCESSIBLE",
+      "root": "cargo-deny job failed (and #2695 clean worktree step failed). Native log downloads repeatedly return Transport closed, so this audit has not freshly enumerated advisories.",
+      "location": "Cargo.lock / deny.toml and workflow metadata resolution",
+      "run": 39130704874,
+      "job": 117687653677,
+      "related_jobs": [
+        117315461011,
+        117685897911,
+        117642886407,
+        117680668336
+      ],
+      "owner": "Security owners #2695/#2790/#2789, fixed-parent semantic merge needed",
+      "next": "Run pinned cargo-deny against exact lock under available authorized runtime or retrieve bounded existing receipts; do not re-label historical 13 advisories as current verified count."
+    },
+    {
+      "id": "CI-011",
+      "scope": "main",
+      "head": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "status": "FAILED",
+      "root": "Windows tests fail across canonical path fixtures, git process spawn timeouts, migration reopen, supervisor restart budget and environment timing",
+      "location": "ext/hepta-memory/src/cognitive/federation.rs:1309; git-utils/src/git_process_tests.rs:75; hepta-automation/src/migration_convergence_tests.rs:154; hepta-fleet registry; hepta-supervisor/tests/restart_budget_recovery.rs:251; core/src/environment_selection.rs:1282",
+      "run": 38827238859,
+      "job": 117315461237,
+      "owner": "Windows fixture owners including #2813 and existing git/migration branches; per-failure ownership in inventory DAG",
+      "next": "Compare existing narrowly scoped patches and preserve canonical/authority boundaries; execute targeted Windows regression followed by full current required matrix."
+    },
+    {
+      "id": "CI-012",
+      "scope": "#2813",
+      "head": "88994f6bf50e4336beca3d5ce2c760192ea523a6",
+      "status": "FAILED_NEEDS_ISOLATION",
+      "root": "Windows shard3 failures: V8 configurable pool double initialization; matrixd control socket stale identity; AuthBus capacity; signed intent recovery assertion",
+      "location": "v8-poc::sandbox_feature_matches_linked_v8; hepta-matrixd control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity; hepta-evidence authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed; hepta-supervisor/tests/signed_intent_recovery.rs:162",
+      "run": 39128125730,
+      "job": 117680668639,
+      "owner": "V8/matrixd/evidence/supervisor owners; no local reproduction yet",
+      "next": "Run each isolated failed target with exact Windows toolchain and source/merge provenance. Distinguish shared-process V8 initialization from genuine ABI/feature mismatch. Do not skip tests."
+    },
+    {
+      "id": "CI-013",
+      "scope": "#2688; #2695; #2790; #2805",
+      "head": "b5e61ecb07adcc7e41928a3ba27ca78dcde03aaf",
+      "status": "PENDING",
+      "root": "Required gate jobs absent/queued/in progress on updated HEADs",
+      "location": "GitHub Actions selected exact heads",
+      "run": 39134607134,
+      "owner": "Respective PR owners and runner scheduling owner",
+      "next": "Continue authorized local exact-source testing and avoid redundant matrix fanout. Required remote terminal results still needed."
+    },
+    {
+      "id": "CI-014",
+      "scope": "repository/organization",
+      "head": null,
+      "status": "BLOCKED_EXTERNAL",
+      "root": "Full branch-protection and runner administration unavailable to GitHub integration",
+      "location": "branches/main/protection returns403; actions/runners allowlist rejects400",
+      "owner": "Connection/organization administrator",
+      "next": "Use an authorized terminal/API with administration visibility to inventory runner online/busy/groups/concurrency; never claim zero running tasks or full utilization without access."
+    },
+    {
+      "id": "MAP-QUALIFICATION",
+      "status": "FAILED_26_MODULES",
+      "owner": "Per-module source-map owners",
+      "root": "Strict global qualification still fails on 26 modules. Three affected maps retain a non-ancestor baseline anchor.",
+      "next": "Review original provenance and actual source with each owner. Do not bypass checked_identity, invent parents or transfer execution claims."
+    },
+    {
+      "id": "NATIVE-DISK",
+      "status": "BLOCKED_EXTERNAL",
+      "owner": "Accessible executor resource owner",
+      "root": "Overlay available disk is zero; the native resource preflight stopped before Cargo began.",
+      "next": "Use an accessible independent build workspace with enough disk. Preserve concurrent owners and the canonical test/Clippy/platform gates."
+    },
+    {
+      "id": "RESEARCH-DECLARATIONS",
+      "status": "FIX_PUSHED_REQUIRED_CI_PENDING",
+      "owner": "PR #2714",
+      "root": "Five stages close reproduced declaration, evidence-class overwrite and malformed boolean issues in the reviewed nine-file set.",
+      "next": "Verify exact f191cd08 required checks; contract tests and boolean statements are not independent scientific qualification."
+    },
+    {
+      "id": "MEMORY-FRESH-112",
+      "status": "BLOCKED_EXTERNAL_RESOURCE_AND_NO_GO",
+      "owner": "PR #1452 / independent evidence reviewer",
+      "root": "Historical 40+72 rows are distinct from the failed fresh attempt (6 calibration / 0 evaluation). No completed new-model receipts were created by this audit.",
+      "next": "Use a worker fitting the pinned model and locked protocol, start a new batch, finish 40 calibration then 72 nine-arm calls, independently review answers/citations/holdout/cost."
+    },
+    {
+      "id": "SHARED-STEM-EMPIRICAL",
+      "status": "SHADOW_ONLY_NO_GO",
+      "owner": "PR #2695 and Shared Stem owners",
+      "root": "Contracts and shared representation code do not establish measured capability, negative transfer, resource cost or multimodal performance.",
+      "next": "Run pinned shared-versus-replicated ablations with budget receipts, isolation, negative-transfer and forgetting measurements."
+    },
+    {
+      "id": "OS-FINAL-USE",
+      "status": "UNQUALIFIED",
+      "owner": "Hepta #2815 -> Desktop #193 -> #194; A04/A05/A06/A07",
+      "root": "Observed native effect dispatcher supports QueryAbi; remaining operations, durable delivery, G1/G2 and Final-use qualification are incomplete.",
+      "next": "Verify the same-head stack and complete authenticated broker/Final-use positive and negative cases on real native platforms. Missing authority continues to deny effects."
+    },
+    {
+      "id": "FULL-SEMANTIC-COVERAGE",
+      "status": "NOT_COMPLETE",
+      "owner": "Feature and integration owners",
+      "root": "All Hepta branch/PR metadata and branch git graph relations were enumerated; not every diff/review/historical job/scientific artifact was audited.",
+      "next": "Continue by owner DAG. Verify semantic superiority and exact current gates before closing, deleting or merging."
+    }
+  ],
+  "next_commands": "REPRODUCE.md"
+}
