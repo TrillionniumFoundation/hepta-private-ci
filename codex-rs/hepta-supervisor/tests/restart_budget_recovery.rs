@@ -308,7 +308,11 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let report = supervisor.tick(now);
     assert_eq!(report.faults.len(), 1);
     assert_eq!(report.faults[0].agent_id, agent_id);
-    assert!(report.faults[0].message.contains("exhausted its restart budget"));
+    assert!(
+        report.faults[0]
+            .message
+            .contains("exhausted its restart budget")
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
