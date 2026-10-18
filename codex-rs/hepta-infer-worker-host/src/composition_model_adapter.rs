@@ -35,6 +35,7 @@ pub struct CompositionModelDriverAdapter<D: CompositionDriver> {
     registered: BTreeMap<String, Binding>,
     active: BTreeMap<String, ActiveBinding>,
     maximum_memory_bytes: u64,
+    maximum_models: usize,
     next_handle: u64,
 }
 
@@ -59,6 +60,7 @@ impl<D: CompositionDriver> CompositionModelDriverAdapter<D> {
             registered: BTreeMap::new(),
             active: BTreeMap::new(),
             maximum_memory_bytes: grant.maximum_memory_bytes,
+            maximum_models: grant.maximum_models.min(8),
             next_handle: 0,
         })
     }
@@ -173,6 +175,9 @@ impl<D: CompositionDriver> ModelDriver for CompositionModelDriverAdapter<D> {
     fn load(&mut self, model: &ModelManifest) -> Result<DriverModelHandle, Error> {
         if self.active.contains_key(&model.model_id) {
             return Err(Error::ModelAlreadyLoaded);
+        }
+        if self.active.len() >= self.maximum_models {
+            return Err(Error::ModelCapacity);
         }
         let binding = self
             .registered
