@@ -1,4 +1,4 @@
-//! Explicit operator entry for an ordinary, already-published cognitive upgrade.
+//! Explicit operator entry for ordinary cognitive qualification and upgrades.
 //! The exact input digest is independently pinned on the command line. Original
 //! signed CURRENT, selector, FinalUse and Supervisord gates remain mandatory.
 
@@ -32,25 +32,40 @@ const MAX_INPUT_BYTES: u64 = 4 * 1024 * 1024;
 #[tokio::main(flavor = "multi_thread", worker_threads = 2)]
 async fn main() -> Result<()> {
     let started = Instant::now();
-    let started_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
-    let mut args = std::env::args_os().skip(1);
+    let started_at = SystemTime::now().duration_since(UNIX_EPOCH).ok()
+        .and_then(|duration| u64::try_from(duration.as_micros()).ok());
+    let mut command = None;
+    let mut expected = None;
+    let mut observed_input = None;
+    let mut candidate_observed_at = None;
+    let mut identity = json!(null);
     let usage = "usage: hepta-cognitive-upgrade qualify|inspect|publish|revoke|advance FLEET_ROOT INPUT_SHA256 < input.json";
-    let command = args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?;
+    let result: Result<serde_json::Value> = async {
+    let mut args = std::env::args_os().skip(1);
+    command = Some(args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?);
+    let command = command.as_deref().context(usage)?;
     let fleet_path = PathBuf::from(args.next().context(usage)?);
-    let expected = args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?;
+    let digest = args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?;
     ensure!(args.next().is_none(), "{usage}");
-    ensure!(matches!(command.as_str(), "qualify" | "inspect" | "publish" | "revoke" | "advance"), "{usage}");
-    let expected = Sha256Digest::parse(expected).map_err(anyhow::Error::msg)?;
+    ensure!(matches!(command, "qualify" | "inspect" | "publish" | "revoke" | "advance"), "{usage}");
+    expected = Some(Sha256Digest::parse(digest).map_err(anyhow::Error::msg)?);
     let mut bytes = Vec::new();
     std::io::stdin().lock().take(MAX_INPUT_BYTES + 1).read_to_end(&mut bytes)?;
     ensure!(!bytes.is_empty() && bytes.len() as u64 <= MAX_INPUT_BYTES, "upgrade input is empty or too large");
-    ensure!(Sha256Digest::for_bytes(&bytes) == expected, "upgrade input digest mismatch");
+    observed_input = Some(Sha256Digest::for_bytes(&bytes));
+    ensure!(observed_input == expected, "upgrade input digest mismatch");
+    let raw: serde_json::Value = serde_json::from_slice(&bytes)?;
+    identity = json!({"agent_id":raw.get("agent_id").or_else(|| raw.get("owner").and_then(|owner| owner.get("agent_id"))),
+        "operation_id":raw.get("operation_id"), "artifact_id":raw.get("artifact_id")
+            .or_else(||raw.get("source_manifest").and_then(|manifest|manifest.get("artifact_id"))),
+        "artifact_generation":raw.get("source_manifest").and_then(|manifest|manifest.get("generation"))});
     let fleet = FleetRegistry::open_existing(HeptaFleetRoot::parse(fleet_path)?)?;
-    let mut candidate_observed_at = None;
-    let mut identity = json!(null);
-    let result: Result<serde_json::Value> = async {
-    let output = match command.as_str() {
-        "qualify" => qualify_cognitive_upgrade_v1(&fleet, serde_json::from_slice::<CognitiveQualificationInputV1>(&bytes)?).await?,
+    let output = match command {
+        "qualify" => {
+            let output = qualify_cognitive_upgrade_v1(&fleet, serde_json::from_value::<CognitiveQualificationInputV1>(raw)?).await?;
+            if let Some(observed) = output.get("identity") { identity = observed.clone(); }
+            output
+        },
         "inspect" => {
             let source: CognitiveUpgradeSourceV1 = serde_json::from_slice(&bytes)?;
             let commitment = inspect_published_cognitive_upgrade_v1(&fleet, source)?;
@@ -77,18 +92,19 @@ async fn main() -> Result<()> {
     };
     Ok(output)
     }.await;
-    let finished_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
+    let finished_at = SystemTime::now().duration_since(UNIX_EPOCH).ok()
+        .and_then(|duration| u64::try_from(duration.as_micros()).ok());
     let output = match &result {
         Ok(output) => output.clone(),
         Err(error) => json!({"state":"failed", "reason":format!("{error:#}")}),
     };
     let candidate_to_install = (output.get("state").and_then(serde_json::Value::as_str) == Some("installed"))
-        .then(|| candidate_observed_at.and_then(|candidate| finished_at.checked_sub(candidate))).flatten();
+        .then(|| candidate_observed_at.and_then(|candidate| finished_at.and_then(|finished| finished.checked_sub(candidate)))).flatten();
     println!("{}", serde_json::to_string(&json!({
         "schema":"hepta.cognitive-upgrade-observation.v1", "command":command,
-        "input_sha256":expected, "identity":identity,
+        "input_sha256":expected, "observed_input_sha256":observed_input, "identity":identity,
         "started_at_unix_micros":started_at, "finished_at_unix_micros":finished_at,
-        "monotonic_elapsed_micros":u64::try_from(started.elapsed().as_micros())?,
+        "monotonic_elapsed_micros":u64::try_from(started.elapsed().as_micros()).ok(),
         "candidate_observed_at_unix_micros":candidate_observed_at,
         "candidate_to_install_wall_clock_micros":candidate_to_install,
         "observed_qualified_update_count":null, "independent_operator_evidence":null,
