@@ -39,11 +39,16 @@ resource cost from execution time plus queue age. This is the first executable
 bridge from shared Encoder/per-Cell head evidence into the group continuation
 gate; it still grants no authority and does not make a learned System2 claim.
 
-## Next integration
+## Shadow depth controller
 
-The next implementation slice should add a real shared Encoder owner and an
-artifact CAS/final-use binding. Its output should populate the Cell observations
-without duplicating the encoder per Cell. After that, add a shadow-only learned
-critic and bounded depth/continue controller; promote neither until it beats this
-deterministic baseline on replayable utility, risk, resource, abstention, and
-OOD slices.
+`NDU_SHADOW_SYSTEM2.md` and `shadow_system2.rs` add the next owner-local seam:
+`NduShadowRequestV1` binds the input, stem, shared Encoder, group adapter,
+critic, trajectory, and policy digests. The pure fixture controller can hold,
+spend one bounded depth step, or abstain when depth, budget, risk, or
+uncertainty fences require it. The result carries replayable request and receipt
+digests and remains `AuthorityPosture::DENY_ALL`.
+
+This fixture is not a learned critic and does not mutate runtime state. The
+future learned critic and adaptive-depth model should be trained offline and
+promoted only after it beats this deterministic baseline on replayable utility,
+risk, resource, abstention, calibration, and OOD slices.
