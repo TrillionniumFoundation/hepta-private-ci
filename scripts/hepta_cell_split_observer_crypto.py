@@ -86,12 +86,16 @@ def verify_observer_receipt_signature(
         with tempfile.TemporaryDirectory(prefix="hepta-observer-verify-") as directory:
             message_path = Path(directory) / "message.json"
             signature_path = Path(directory) / "signature.bin"
+            key_path = Path(directory) / "pinned-public-key.pem"
             message_path.write_bytes(payload)
             signature_path.write_bytes(signature)
+            # Verify against exactly the bytes already hash-pinned above.
+            # Reopening the external path here would create a key-swap TOCTOU.
+            key_path.write_bytes(key_bytes)
             verification = subprocess.run(
                 [
                     "openssl", "pkeyutl", "-verify", "-rawin", "-pubin", "-inkey",
-                    str(trusted_public_key_path.resolve()), "-in", str(message_path),
+                    str(key_path), "-in", str(message_path),
                     "-sigfile", str(signature_path),
                 ],
                 capture_output=True,
