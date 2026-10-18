@@ -1,12 +1,22 @@
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
-async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+async fn historical_pool(displaced: bool) -> (SqlitePool, tempfile::TempDir) {
+    // Keep the test's actual SQLite file and WAL alive until after pool.close().
+    // Routing through the canonical shim preserves strict Clippy on Windows.
+    let directory = tempfile::tempdir().expect("private historical SQLite fixture");
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical SQLite fixture root");
+    let db_path = root.join("historical-automation.sqlite3");
+    let config = codex_state::SqliteConfig::new_for_testing(
+        codex_utils_absolute_path::AbsolutePathBuf::try_from(root)
+            .expect("canonical fixture root must be absolute"),
+    );
+    let pool = config
+        .open_read_write_pool(&db_path)
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -46,13 +56,41 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
             .expect("historical branch migration");
     }
     drop(connection);
-    pool
+    (pool, directory)
+}
+
+#[tokio::test]
+async fn historical_sqlite_shim_keeps_parallel_owner_fixtures_isolated() {
+    let (canonical, canonical_root) = historical_pool(false).await;
+    let (displaced, displaced_root) = historical_pool(true).await;
+    assert_ne!(canonical_root.path(), displaced_root.path());
+    assert!(canonical_root.path().join("historical-automation.sqlite3").is_file());
+    assert!(displaced_root.path().join("historical-automation.sqlite3").is_file());
+
+    let original_displaced: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&displaced)
+            .await
+            .expect("independent displaced migration history");
+    sqlx::query("UPDATE _sqlx_migrations SET checksum = x'00' WHERE version = 4")
+        .execute(&canonical)
+        .await
+        .expect("corrupt only the canonical test fixture");
+    let still_displaced: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&displaced)
+            .await
+            .expect("unchanged independent migration history");
+    assert_eq!(still_displaced, original_displaced);
+
+    canonical.close().await;
+    displaced.close().await;
 }
 
 #[tokio::test]
 async fn both_historical_branches_converge_without_rewriting_checksums() {
     for displaced in [false, true] {
-        let pool = historical_pool(displaced).await;
+        let (pool, _source_root) = historical_pool(displaced).await;
         let before: Vec<Vec<u8>> =
             sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
                 .fetch_all(&pool)
@@ -106,7 +144,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         "UPDATE _sqlx_migrations SET checksum = x'00' WHERE version=4",
         "UPDATE _sqlx_migrations SET success=0 WHERE version=5",
     ] {
-        let pool = historical_pool(true).await;
+        let (pool, _source_root) = historical_pool(true).await;
         sqlx::query(mutation)
             .execute(&pool)
             .await
@@ -131,7 +169,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     std::fs::create_dir(&root).expect("owner directory");
     // The persisted SQLite owner requires the exact canonical root on Windows.
     let root = root.canonicalize().expect("canonical private owner root");
-    let pool = historical_pool(displaced).await;
+    let (pool, _source_root) = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&pool)
@@ -193,7 +231,7 @@ async fn displaced_cut_after_rebind_reopens() {
 
 #[tokio::test]
 async fn occupied_relocation_rolls_back_all_history_rebinding() {
-    let pool = historical_pool(/*displaced*/ true).await;
+    let (pool, _source_root) = historical_pool(/*displaced*/ true).await;
     sqlx::query("INSERT INTO _sqlx_migrations(version,description,installed_on,success,checksum,execution_time) SELECT 17,description,installed_on,success,checksum,execution_time FROM _sqlx_migrations WHERE version=4")
         .execute(&pool).await.expect("inject conflicting target identity");
     let before: Vec<(i64, Vec<u8>)> =
