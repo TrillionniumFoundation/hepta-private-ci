@@ -117,7 +117,9 @@ def test_pretty_json_workload_receipt_is_parsed() -> None:
     assert MODULE.parse_workload_output(json.dumps(receipt, indent=2)) == receipt
 
 
-def test_isolated_process_rejects_timeouts_and_leftover_descendants(tmp_path: Path) -> None:
+def test_isolated_process_rejects_timeouts_and_leftover_descendants(
+    tmp_path: Path,
+) -> None:
     env = os.environ.copy()
     healthy = MODULE.run_isolated_command(
         [sys.executable, "-c", "print('healthy')"],
@@ -210,7 +212,9 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
     MODULE.validate_report(report)
 
 
-def isolated_checkout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, str]:
+def isolated_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, str]:
     """Make a real, isolated Git fixture; never dirty the project checkout."""
     root = tmp_path / "checkout"
     scripts = root / "scripts"
@@ -232,7 +236,11 @@ def isolated_checkout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[
         ),
     )
     for command in commands:
-        subprocess.run(["git", "-C", str(root), *command], check=True, capture_output=True)
+        subprocess.run(
+            ["git", "-C", str(root), *command],
+            check=True,
+            capture_output=True,
+        )
     monkeypatch.setattr(MODULE, "__file__", str(fake_script))
     head = subprocess.run(
         ["git", "-C", str(root), "rev-parse", "HEAD"],
@@ -287,7 +295,9 @@ def test_worker_source_mutation_blocks_every_case(
     assert report["status"] == "blocked"
     assert len(report["cases"]) == 16
     assert all(row["status"] == "blocked" for row in report["cases"])
-    assert all("repository checkout is dirty" in row["reason"] for row in report["cases"])
+    assert all(
+        "repository checkout is dirty" in row["reason"] for row in report["cases"]
+    )
     assert "source-checkout" in report["blockingCases"]
     MODULE.validate_report(report)
 
