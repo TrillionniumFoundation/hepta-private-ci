@@ -13,7 +13,8 @@ pub mod model_worker;
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 
-/// Explicit ModelDriver composition bridge; no production call sites.
+/// Explicit qualification-only bridge; excluded from default production builds.
+#[cfg(any(test, feature = "composition-model-driver-qualification"))]
 pub mod composition_model_adapter;
 
 pub mod final_use_authorizer;
