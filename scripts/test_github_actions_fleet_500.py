@@ -122,7 +122,7 @@ class Examples(unittest.TestCase):
         self.assertIn("fromJSON(", direct)
         self.assertIn("--case-index", direct)
 
-    def test_cross_platform_runner_options_are_opt_in_and_source_pinning_is_preserved(self):
+    def test_cross_pool_options_are_opt_in_and_source_pinned(self):
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text(
             encoding="utf-8"
@@ -132,10 +132,18 @@ class Examples(unittest.TestCase):
         )[0]
         self.assertIn("        default: ubuntu-24.04\n", runner_choice)
         self.assertEqual(
-            [line.strip().removeprefix("- ") for line in runner_choice.splitlines()
-             if line.startswith("          - ")],
-            ["ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-slim",
-             "windows-latest", "macos-15"],
+            [
+                line.strip().removeprefix("- ")
+                for line in runner_choice.splitlines()
+                if line.startswith("          - ")
+            ],
+            [
+                "ubuntu-24.04",
+                "ubuntu-24.04-arm",
+                "ubuntu-slim",
+                "windows-latest",
+                "macos-15",
+            ],
         )
         self.assertIn(
             "  selftest:\n    if: github.event_name == 'pull_request'\n"
