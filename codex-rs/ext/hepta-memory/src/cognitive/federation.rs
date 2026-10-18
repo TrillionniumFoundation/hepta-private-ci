@@ -1214,6 +1214,9 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        // Resolve temporary-directory aliases before the store's canonical-root
+        // guard; the provider workspace below has its own PathUri wire identity.
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
@@ -1265,10 +1268,12 @@ mod tests {
         // path at the attachment boundary. On Windows, the canonical \\?\ prefix
         // may be normalized during this round trip. Grant the exact workspace
         // identity used at physical-send time; do not weaken the scope check.
-        let workspace_uri =
-            PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
         let workspace = workspace_uri.to_path_buf();
-        assert!(workspace.is_absolute(), "provider workspace must stay absolute");
+        assert!(
+            workspace.is_absolute(),
+            "provider workspace must stay absolute"
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
