@@ -504,16 +504,30 @@ fn fixture() -> Fixture {
         }],
     };
 
-    let intuition_candidates = vec![CalibratedActionCandidateV1 {
-        candidate_id: id("action.read"),
-        legal: true,
-        hard_veto: false,
-        utility: FixedQ32::ONE,
-        calibrated_confidence: ProbabilityQ32::ONE,
-        ood_score: ProbabilityQ32::ZERO,
-        assignment_probability: ProbabilityQ32::ZERO,
-        support_digest: digest("action-support"),
-    }];
+    let intuition_candidates = vec![
+        CalibratedActionCandidateV1 {
+            candidate_id: id("abstain"),
+            legal: true,
+            hard_veto: false,
+            utility: FixedQ32::ZERO,
+            calibrated_confidence: ProbabilityQ32::ONE,
+            ood_score: ProbabilityQ32::ZERO,
+            assignment_probability: ProbabilityQ32::ZERO,
+            support_digest: digest("abstain-support"),
+        },
+        CalibratedActionCandidateV1 {
+            candidate_id: id("action.read"),
+            legal: true,
+            hard_veto: false,
+            utility: FixedQ32::ONE,
+            calibrated_confidence: ProbabilityQ32::ONE,
+            ood_score: ProbabilityQ32::ZERO,
+            assignment_probability: ProbabilityQ32::ZERO,
+            support_digest: digest("action-support"),
+        },
+    ];
+    let intuition_candidate_count =
+        u32::try_from(intuition_candidates.len()).expect("bounded candidate count");
     let intuition_candidate_digest =
         canonical_candidate_set_digest_v1(&intuition_candidates).expect("candidate digest");
     let intuition_order_digest =
@@ -540,7 +554,7 @@ fn fixture() -> Fixture {
             truncation_digest: digest("truncation"),
             candidate_set_digest: intuition_candidate_digest,
             canonical_order_digest: intuition_order_digest,
-            candidate_count: 1,
+            candidate_count: intuition_candidate_count,
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -621,10 +635,16 @@ fn fixture() -> Fixture {
                 state_digest: objective_digest,
                 generator_id: id("intelligence.control"),
                 grammar_digest: digest("legal-grammar"),
-                candidates: vec![LegalActionCandidateV1 {
-                    candidate_id: id("action.read"),
-                    support_digest: digest("action-support"),
-                }],
+                candidates: vec![
+                    LegalActionCandidateV1 {
+                        candidate_id: id("abstain"),
+                        support_digest: digest("abstain-support"),
+                    },
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.read"),
+                        support_digest: digest("action-support"),
+                    },
+                ],
                 support_floor_ppm: 1,
             },
             budget: CanonicalBudgetV1 {
