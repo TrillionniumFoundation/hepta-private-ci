@@ -296,13 +296,17 @@ pub struct ScopeLaneFileWalV1 {
 
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            // Windows append-only handles cannot truncate a torn WAL tail.
-            // Request write access as well, while retaining append semantics.
-            .write(true)
-            .append(true)
+        // Windows FILE_APPEND_DATA alone cannot truncate incomplete WAL tails.
+        // Request FILE_WRITE_DATA on Windows and seek-to-end under the
+        // exclusive owner lock before every committed append.
+        // Preserve the Unix O_APPEND authority and durability semantics.
+        let mut options = OpenOptions::new();
+        options.create(true).read(true).truncate(false);
+        #[cfg(windows)]
+        options.write(true);
+        #[cfg(not(windows))]
+        options.append(true);
+        let file = options
             .open(path.as_ref())
             .map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
