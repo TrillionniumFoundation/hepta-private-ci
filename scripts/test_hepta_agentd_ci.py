@@ -130,10 +130,13 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
+        # The checked-in workflow keeps this YAML flow sequence multiline for
+        # readability; parse the complete sequence rather than one line.
+        matched = re.search(r"(?ms)^    needs:\s*\[([^\]]+)\]", job)
         self.assertIsNotNone(matched)
         self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
+            {name.strip() for name in matched.group(1).split(",") if name.strip()},
+            set(LANES),
         )
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
@@ -185,7 +188,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        self.assertIn("process-qualification", terminal)
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

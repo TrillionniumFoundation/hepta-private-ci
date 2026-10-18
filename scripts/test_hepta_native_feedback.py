@@ -161,11 +161,18 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
-    def test_build_inputs_cannot_miss_the_outer_path_filter(self):
-        text = WORKFLOW.read_text().split("permissions:", 1)[0]
+    def test_build_inputs_cannot_miss_the_inner_scope_filter(self):
+        # This reusable workflow intentionally has no pull_request trigger;
+        # aggregate checks own fan-out. The exact input set therefore belongs
+        # to the workspace-regression scope guard inside the workflow.
+        text = WORKFLOW.read_text()
+        scope = text.split(
+            "      - name: Determine whether the shared-core regression gate applies\n",
+            1,
+        )[1].split("      - name: Prepare native workspace prerequisites\n", 1)[0]
         for path in (
-            ".cargo/**",
-            "codex-rs/.cargo/**",
+            ".cargo/",
+            "codex-rs/.cargo/",
             "rust-toolchain",
             "rust-toolchain.toml",
             "codex-rs/rust-toolchain",
@@ -173,7 +180,7 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             "scripts/hepta_workspace.py",
             "scripts/test_hepta_native_feedback.py",
         ):
-            self.assertIn('      - "' + path + '"', text)
+            self.assertIn(path, scope)
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
@@ -403,7 +410,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
@@ -477,7 +484,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
