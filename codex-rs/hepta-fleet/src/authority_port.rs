@@ -207,25 +207,25 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("test fixture should succeed");
+            .unwrap_or_else(|e| panic!("{e:?}"));
         ledger
     }
 
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
-        let directory = tempfile::tempdir().expect("test fixture should succeed");
+        let directory = tempfile::tempdir().unwrap_or_else(|e| panic!("{e:?}"));
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .expect("test fixture should succeed");
+            .unwrap_or_else(|e| panic!("{e:?}"));
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).expect("test fixture should succeed"),
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|e| panic!("{e:?}")),
             Arc::new(FixedClock(2_000)),
         )
-        .expect("test fixture should succeed");
+        .unwrap_or_else(|e| panic!("{e:?}"));
         let grant = grant();
         let binding =
-            FleetAuthorityPort::binding_for_issue(&grant).expect("test fixture should succeed");
+            FleetAuthorityPort::binding_for_issue(&grant).unwrap_or_else(|e| panic!("{e:?}"));
         registry
             .put_lease(
                 AuthorityLease {
@@ -239,12 +239,12 @@ mod tests {
                 },
                 0,
             )
-            .expect("test fixture should succeed");
+            .unwrap_or_else(|e| panic!("{e:?}"));
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
-            .expect("test fixture should succeed");
+            .unwrap_or_else(|e| panic!("{e:?}"));
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
@@ -260,11 +260,10 @@ mod tests {
 
         registry
             .revoke("fleet-issue-one", 1, [9; 32])
-            .expect("test fixture should succeed");
+            .unwrap_or_else(|e| panic!("{e:?}"));
         assert_eq!(
-            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
-                .unwrap_err(),
-            FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
+            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant).err(),
+            Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))
         );
     }
 
@@ -272,11 +271,11 @@ mod tests {
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
         let first_binding =
-            FleetAuthorityPort::binding_for_issue(&first).expect("test fixture should succeed");
+            FleetAuthorityPort::binding_for_issue(&first).unwrap_or_else(|e| panic!("{e:?}"));
         let mut changed = first;
         changed.resources.cpu_millis += 1;
         let changed_binding =
-            FleetAuthorityPort::binding_for_issue(&changed).expect("test fixture should succeed");
+            FleetAuthorityPort::binding_for_issue(&changed).unwrap_or_else(|e| panic!("{e:?}"));
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
