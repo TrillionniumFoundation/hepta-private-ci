@@ -1037,7 +1037,11 @@ fn digest_output(
     bytes.extend_from_slice(encoder_digest.as_array());
     bytes.extend_from_slice(input_digest.as_array());
     bytes.extend_from_slice(identity_digest.as_array());
-    bytes.extend_from_slice(&u64::try_from(output.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u64::try_from(output.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
     for value in output {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
