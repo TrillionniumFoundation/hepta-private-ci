@@ -7,6 +7,7 @@
 
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellManifestV1;
+use codex_hepta_cognitive_types::memory_cell::MemoryCellRoleV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellStatusV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellTickInputV1;
 use codex_hepta_cognitive_types::memory_cell::MemoryCellTickReceiptV1;
@@ -143,7 +144,7 @@ pub fn run_memory_cell_tick(
         .transpose()?;
     let candidate_digest = contract_digest(recall.receipt_digest)?;
     let successor_checkpoint_digest = selected
-        .then(|| shadow_checkpoint_digest(input, &recall))
+        .then(|| shadow_checkpoint_digest(manifest, input, recall.receipt_digest))
         .transpose()?;
 
     let (coverage_ppm, confidence_ppm) = recall
@@ -188,21 +189,42 @@ fn contract_digest(value: Digest32) -> Result<ContractDigestV1, MemoryCellRuntim
 }
 
 fn shadow_checkpoint_digest(
+    manifest: &MemoryCellManifestV1,
     input: &MemoryCellTickInputV1,
-    recall: &GeneratedRecallV1,
+    recall_receipt_digest: Digest32,
 ) -> Result<ContractDigestV1, MemoryCellRuntimeErrorV1> {
-    let mut bytes = b"hepta.memory-cell.shadow-checkpoint.v1".to_vec();
-    let cell_id = input.cell_id.as_str().as_bytes();
-    bytes.extend_from_slice(
-        &u64::try_from(cell_id.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
-    bytes.extend_from_slice(cell_id);
+    // v2 also commits to the cell's artifact identity, declared roles and
+    // budgets. This remains a candidate digest, never a persisted checkpoint.
+    let mut bytes = b"hepta.memory-cell.shadow-checkpoint.v2".to_vec();
+    push_shadow_frame(&mut bytes, input.cell_id.as_str().as_bytes());
     bytes.extend_from_slice(&input.logical_sequence.to_be_bytes());
     bytes.extend_from_slice(&input.graph_generation.get().to_be_bytes());
     bytes.extend_from_slice(&input.model_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&input.resource_budget_units.to_be_bytes());
+    bytes.extend_from_slice(&manifest.max_active_cells.to_be_bytes());
+    bytes.extend_from_slice(&manifest.max_state_bytes.to_be_bytes());
+    bytes.push(match manifest.role {
+        MemoryCellRoleV1::Episodic => 1,
+        MemoryCellRoleV1::Semantic => 2,
+        MemoryCellRoleV1::Procedural => 3,
+        MemoryCellRoleV1::Predictive => 4,
+        MemoryCellRoleV1::CrossModal => 5,
+        MemoryCellRoleV1::MetaMemory => 6,
+        MemoryCellRoleV1::Utility => 7,
+    });
+    bytes.push(u8::from(manifest.parent_cell_id.is_some()));
+    if let Some(parent_id) = &manifest.parent_cell_id {
+        push_shadow_frame(&mut bytes, parent_id.as_str().as_bytes());
+    }
     for digest in [
+        manifest.shared_base_digest.digest(),
+        manifest.encoder_digest.digest(),
+        manifest.adapter_artifact_digest.digest(),
+        manifest.head_artifact_digest.digest(),
+        manifest.state_schema_digest.digest(),
+        manifest.lineage_digest.digest(),
+        manifest.source_frontier_digest.digest(),
+        manifest.forget_frontier_digest.digest(),
         input.input_digest.digest(),
         input.ndu_state_digest.digest(),
         input.cue_digest.digest(),
@@ -213,12 +235,33 @@ fn shadow_checkpoint_digest(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    bytes.extend_from_slice(
+        &u64::try_from(manifest.modalities.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    for modality in &manifest.modalities {
+        push_shadow_frame(&mut bytes, modality.as_str().as_bytes());
+    }
+    bytes.extend_from_slice(
+        &u64::try_from(manifest.populations.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    for population in &manifest.populations {
+        push_shadow_frame(&mut bytes, population.as_str().as_bytes());
+    }
     bytes.push(u8::from(input.predecessor_checkpoint_digest.is_some()));
-    if let Some(predecessor) = input.predecessor_checkpoint_digest {
+    if let Some(predecessor) = &input.predecessor_checkpoint_digest {
         bytes.extend_from_slice(predecessor.digest().as_array());
     }
-    bytes.extend_from_slice(recall.receipt_digest.as_array());
+    bytes.extend_from_slice(recall_receipt_digest.as_array());
     contract_digest(Digest32::of_bytes(&bytes))
+}
+
+fn push_shadow_frame(bytes: &mut Vec<u8>, value: &[u8]) {
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(value);
 }
 
 fn probability_ppm(value: ProbabilityQ32) -> u32 {
@@ -228,3 +271,7 @@ fn probability_ppm(value: ProbabilityQ32) -> u32 {
         .unwrap_or(1_000_000);
     u32::try_from(scaled.min(1_000_000)).unwrap_or(1_000_000)
 }
+
+#[cfg(test)]
+#[path = "memory_cell_tests.rs"]
+mod tests;
