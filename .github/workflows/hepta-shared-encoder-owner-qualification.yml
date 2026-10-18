@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - qualification/shared-encoder-owner-native-20261018
+      # Independent exact-SHA qualification for the user-namespace repair.
+      - qualification/shared-encoder-owner-userns-20261018
 
 permissions:
   contents: read
@@ -37,7 +39,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF" = refs/heads/qualification/shared-encoder-owner-native-20261018
+          case "$GITHUB_REF" in
+            refs/heads/qualification/shared-encoder-owner-native-20261018|refs/heads/qualification/shared-encoder-owner-userns-20261018) ;;
+            *) echo "::error::Unexpected native owner qualification ref: $GITHUB_REF"; exit 1 ;;
+          esac
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$RUNNER_OS" = Linux
           test "$RUNNER_ENVIRONMENT" = github-hosted
@@ -52,6 +57,19 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          # Native App Server integration uses bubblewrap user namespaces.
+          # GitHub-hosted Ubuntu 24.04 can restrict these through AppArmor.
+          # These settings apply only to this ephemeral CI runner, never a
+          # production host or an untrusted third-party machine.
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          test "$(sysctl -n kernel.unprivileged_userns_clone)" = 1
+          if ! unshare --user --map-root-user true; then
+            echo "::error::Native App Server test runner lacks unprivileged user namespaces"
+            exit 1
+          fi
           rustc --version
           cargo --version
 
