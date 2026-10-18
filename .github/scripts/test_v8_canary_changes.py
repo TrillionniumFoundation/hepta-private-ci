@@ -4,6 +4,8 @@ import unittest
 from pathlib import Path
 
 from v8_canary_changes import changed_files
+from v8_canary_changes import historical_v8_version_at_revision
+from v8_canary_changes import v8_version_at_revision
 from v8_canary_changes import canary_required
 from v8_canary_changes import merge_base
 from v8_canary_changes import resolved_v8_version
@@ -92,6 +94,34 @@ version = "149.2.0"
                 {"feature-only.txt"},
             )
             self.assertEqual(merge_base(base, head, root=root), common)
+
+    def test_invalid_merge_base_is_full_canary_not_a_skip(self) -> None:
+        # An earlier security repair can leave malformed TOML on the
+        # historical merge base. It must force both V8 matrices, while a
+        # malformed candidate HEAD must still fail loudly.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "codex-rs").mkdir()
+            self.run_git(root, "init", "--initial-branch=main")
+            self.run_git(root, "config", "user.name", "Test User")
+            self.run_git(root, "config", "user.email", "test@example.com")
+            self.write_and_commit(root, "rama-macros block not found", "codex-rs/Cargo.lock")
+            base = self.run_git(root, "rev-parse", "HEAD")
+            valid = (
+                '[[package]]\\nname = "v8"\\nversion = "149.2.0"\\n'
+            ).replace("\\n", "\n")
+            self.write_and_commit(root, valid, "codex-rs/Cargo.lock")
+            head = self.run_git(root, "rev-parse", "HEAD")
+            common = merge_base(base, head, root=root)
+            self.assertEqual(common, base)
+            self.assertIsNone(historical_v8_version_at_revision(common, root=root))
+            version = v8_version_at_revision(head, root=root)
+            self.assertEqual(version, "149.2.0")
+            changed = changed_files(base, head, root=root)
+            self.assertTrue(canary_required(changed, None, version))
+            self.assertTrue(windows_source_required(changed, None, version))
+            with self.assertRaises(ValueError):
+                v8_version_at_revision(base, root=root)
 
     def write_and_commit(self, root: Path, contents: str, path: str) -> None:
         (root / path).write_text(contents)
