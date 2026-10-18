@@ -74,7 +74,7 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
         }
     }
@@ -97,7 +97,8 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame)).await
+        .map_err(|_| AgentdError::Protocol("agentd control frame read timed out".to_owned()))??;
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
@@ -113,18 +114,23 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
+        let effect_budget = request.method.effect_control_timeout_ms();
+        let budget = effect_budget.map(Duration::from_millis).unwrap_or(IO_TIMEOUT);
+        match timeout(budget, state.response(request.request_id, request.spawn_generation, request.method)).await
         {
-            Ok(response) => response,
-            Err(error) => error_response(
+            Ok(Ok(response)) => response,
+            Ok(Err(error)) => error_response(
                 &state,
                 request.request_id,
                 request.spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),
+            Err(_) if effect_budget.is_some() => error_response(
+                &state, request.request_id, request.spawn_generation, "effect_outcome_unknown",
+                "effect operation deadline elapsed; outcome is unknown; retry the same original intent and command to observe or reconcile durable owner evidence",
+            ),
+            Err(_) => return Err(AgentdError::Protocol("agentd control operation timed out".to_owned())),
         }
     };
     let mut bytes = serde_json::to_vec(&response)?;
@@ -134,8 +140,10 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "agentd control response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, async {
+        writer.write_all(&bytes).await?;
+        writer.shutdown().await
+    }).await.map_err(|_| AgentdError::Protocol("agentd control frame write timed out".to_owned()))??;
     Ok(())
 }
 

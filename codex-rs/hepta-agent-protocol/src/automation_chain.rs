@@ -6,6 +6,16 @@ use serde::Serialize;
 pub const AUTOMATION_TERMINAL_OBSERVATION_CAPABILITY: &str = "automation.effect.observe";
 pub const AUTOMATION_EFFECT_RESUME_CAPABILITY: &str = "automation.effect.resume";
 
+impl crate::AgentdMethod {
+    /// Two provider operations, each bounded by the host's 30-second maximum,
+    /// plus five seconds for the original durable owners. Frame I/O has its
+    /// separate existing bound. Expiry never proves provider absence.
+    pub fn effect_control_timeout_ms(&self) -> Option<u64> {
+        matches!(self, Self::AutomationResumeEffect { .. } | Self::AutomationObserveEffect { .. })
+            .then_some(2 * 30_000 + 5_000)
+    }
+}
+
 impl crate::AgentdRequest {
     pub fn automation_resume_effect(
         request_id: u64,

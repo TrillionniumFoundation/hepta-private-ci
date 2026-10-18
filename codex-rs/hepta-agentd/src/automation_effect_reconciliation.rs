@@ -2,7 +2,7 @@
 use super::*;
 
 impl AgentdAutomationEffectHost {
-    async fn reconcile_pending(
+    pub(super) async fn reconcile_pending(
         &self,
         store: &AutomationStore,
         pending: &AuthorizedEffectPending,

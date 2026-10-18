@@ -29,6 +29,7 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+pub(crate) use control::now_ms as control_time_ms;
 
 pub(crate) struct AgentdState {
     pub(crate) intelligence_product:

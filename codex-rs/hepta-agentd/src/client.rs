@@ -722,6 +722,9 @@ impl AgentdClient {
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
+        let effect_budget = request.method.effect_control_timeout_ms();
+        let response_budget = effect_budget.map(|millis| Duration::from_millis(millis) + self.timeout)
+            .unwrap_or(self.timeout);
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
@@ -738,14 +741,19 @@ impl AgentdClient {
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+        let count = timeout(response_budget, reader.read_until(b'\n', &mut response_bytes))
             .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
+            .map_err(|_| AgentdError::Protocol(if effect_budget.is_some() {
+                "effect outcome unknown after control deadline; retry the same intent and command through the original owner".to_owned()
+            } else { "agentd control read timed out".to_owned() }))?
+            .map_err(|error| if effect_budget.is_some() {
+                AgentdError::Protocol(format!("effect outcome unknown after transport loss: {error}; retry the same original intent and command"))
+            } else { AgentdError::Io(error) })?;
         if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
         {
-            return Err(AgentdError::Protocol(
-                "agentd returned an invalid bounded response frame".to_string(),
-            ));
+            return Err(AgentdError::Protocol(if effect_budget.is_some() {
+                "effect outcome unknown after incomplete response; retry the same original intent and command".to_owned()
+            } else { "agentd returned an invalid bounded response frame".to_owned() }));
         }
         if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
             return Err(AgentdError::Overloaded {

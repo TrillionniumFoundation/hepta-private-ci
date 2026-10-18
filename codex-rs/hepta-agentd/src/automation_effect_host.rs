@@ -73,6 +73,9 @@ pub(crate) use resume::AgentdEffectResumeInput;
 #[path = "automation_effect_terminal_observation.rs"]
 mod terminal_observation;
 #[cfg(all(test, unix))]
+#[path = "automation_effect_resume_tests.rs"]
+mod resume_tests;
+#[cfg(all(test, unix))]
 #[path = "automation_effect_terminal_restart_tests.rs"]
 mod terminal_restart_tests;
 
@@ -1574,16 +1577,16 @@ mod tests {
     use super::*;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c52";
-    const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
+    pub(super) const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
 
-    struct Fixture {
+    pub(super) struct Fixture {
         _temp: tempfile::TempDir,
-        identity: AgentdIdentity,
-        store: AutomationStore,
+        pub(super) identity: AgentdIdentity,
+        pub(super) store: AutomationStore,
     }
 
     impl Fixture {
-        async fn new() -> anyhow::Result<Self> {
+        pub(super) async fn new() -> anyhow::Result<Self> {
             let temp = tempfile::tempdir().context("temp root")?;
             let root = temp.path().canonicalize().context("canonical temp root")?;
             let fleet_path = root.join("fleet");
@@ -1649,7 +1652,7 @@ mod tests {
         .context("definition")
     }
 
-    fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
+    pub(super) fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
         AuthorizedEffectIntent {
             run_id: "agentd-product-effect-run".to_string(),
             step_id: "effect".to_string(),
@@ -1749,7 +1752,7 @@ mod tests {
         Ok(fence)
     }
 
-    fn signed_final_use(
+    pub(super) fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
         signing_key: &SigningKey,
@@ -1776,7 +1779,7 @@ mod tests {
         decode_hex_array::<32>(digest.as_str(), "digest").context("digest bytes")
     }
 
-    fn hex(bytes: &[u8]) -> String {
+    pub(super) fn hex(bytes: &[u8]) -> String {
         const HEX: &[u8; 16] = b"0123456789abcdef";
         let mut output = String::with_capacity(bytes.len() * 2);
         for byte in bytes {

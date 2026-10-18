@@ -20,7 +20,6 @@ pub(crate) struct AgentdEffectResumeInput<'a> {
     pub wire_payload: &'a [u8],
     pub signed_grant: &'a SignedFinalUseGrant,
     pub command_id: &'a str,
-    pub now_ms: u64,
 }
 
 impl AgentdAutomationEffectHost {
@@ -31,7 +30,8 @@ impl AgentdAutomationEffectHost {
         input: AgentdEffectResumeInput<'_>,
     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         let _serial = self.resume_serial.lock().await;
-        let AgentdEffectResumeInput { intent, wire_payload, signed_grant, command_id, now_ms } = input;
+        let AgentdEffectResumeInput { intent, wire_payload, signed_grant, command_id } = input;
+        let now_ms = crate::state::control_time_ms()?;
         state.require_effect_ready()?;
         let identity = state.identity();
         self.validate_intent(intent, wire_payload)?;
@@ -153,7 +153,8 @@ impl AgentdAutomationEffectHost {
             }
         }
         state.require_effect_ready()?;
-        let receipt = self.execute(store, intent, wire_payload, signed_grant, command_id, now_ms).await?;
+        let dispatch_time_ms = crate::state::control_time_ms()?;
+        let receipt = self.execute(store, intent, wire_payload, signed_grant, command_id, dispatch_time_ms).await?;
         if receipt.observation == Some(TaskFlowStepObservation::Indeterminate) {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         }

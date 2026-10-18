@@ -1434,7 +1434,7 @@ fn require_automation_ready(
     }
 }
 
-fn now_ms() -> Result<u64, AgentdError> {
+pub(crate) fn now_ms() -> Result<u64, AgentdError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?

@@ -24,7 +24,7 @@ impl AgentdState {
         let host = self.automation_effect_host()
             .ok_or_else(|| AgentdError::Protocol(AUTOMATION_EFFECT_UNAVAILABLE_MESSAGE.to_owned()))?;
         let result = host.resume_effect(&store, self, crate::automation_effect_host::AgentdEffectResumeInput {
-            intent, wire_payload, signed_grant, command_id, now_ms: now_ms()?,
+            intent, wire_payload, signed_grant, command_id,
         }).await?;
         self.require_effect_ready()?;
         use crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome as Outcome;
