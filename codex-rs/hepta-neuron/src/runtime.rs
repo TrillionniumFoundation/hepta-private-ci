@@ -245,7 +245,6 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
-
     /// Canonical, fully scoped request to the independently operated final-use
     /// issuer. This value is NOT a grant: only its matching, signed, current,
     /// single-use token can authorize model invocation.
@@ -350,7 +349,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let expected = self.final_use_binding(&input)?;
         let token = claim_final_use(authority, signed, &expected)?;
-        authority.with_verified_effect(token, &expected, || self.tick(model, input))
+        authority
+            .with_verified_effect(token, &expected, || self.tick(model, input))
             .map_err(NeuronRuntimeError::FinalUse)?
     }
 
