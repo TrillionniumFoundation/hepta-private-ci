@@ -121,6 +121,17 @@ pub struct CircuitCompilationReceiptV1 {
     pub authority_granted: bool,
 }
 
+/// Declared configuration bindings for a circuit candidate.
+///
+/// These inputs grant no authority and are validated with the circuit shape
+/// before the candidate's canonical digest is computed.
+pub struct NeuralCircuitBindingsV1 {
+    pub capability_set: Vec<String>,
+    pub route_policy_digest: Sha256Digest,
+    pub parameter_bundle_digest: Sha256Digest,
+    pub resource_profile_digest: Sha256Digest,
+}
+
 impl NeuralCircuitCandidateV1 {
     pub fn new(
         circuit_id: impl Into<String>,
@@ -129,11 +140,14 @@ impl NeuralCircuitCandidateV1 {
         entry_node: impl Into<String>,
         mut nodes: Vec<CircuitNodeV1>,
         mut edges: Vec<CircuitEdgeV1>,
-        mut capability_set: Vec<String>,
-        route_policy_digest: Sha256Digest,
-        parameter_bundle_digest: Sha256Digest,
-        resource_profile_digest: Sha256Digest,
+        bindings: NeuralCircuitBindingsV1,
     ) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitBindingsV1 {
+            mut capability_set,
+            route_policy_digest,
+            parameter_bundle_digest,
+            resource_profile_digest,
+        } = bindings;
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         edges.sort_by(|left, right| {
             left.from
@@ -447,10 +461,12 @@ mod tests {
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            vec![],
-            digest("route-v1"),
-            digest("parameters-v1"),
-            digest("resources-v1"),
+            NeuralCircuitBindingsV1 {
+                capability_set: vec![],
+                route_policy_digest: digest("route-v1"),
+                parameter_bundle_digest: digest("parameters-v1"),
+                resource_profile_digest: digest("resources-v1"),
+            },
         )
         .expect("v1 circuit")
     }
@@ -491,10 +507,12 @@ mod tests {
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
+            NeuralCircuitBindingsV1 {
+                capability_set: vec![],
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
         )
         .expect("successor");
         validate_circuit_successor_v1(&current, &successor).expect("admitted successor");
@@ -511,10 +529,12 @@ mod tests {
             "observe",
             current.nodes.clone(),
             current.edges.clone(),
-            vec![],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
+            NeuralCircuitBindingsV1 {
+                capability_set: vec![],
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
         )
         .expect("wrong successor shape");
         assert!(validate_circuit_successor_v1(&current, &wrong).is_err());
@@ -536,10 +556,12 @@ mod tests {
                 CircuitEdgeV1::new("effect", "success"),
                 CircuitEdgeV1::new("effect", "failure"),
             ],
-            vec!["network.http".to_string()],
-            digest("route-v2"),
-            digest("parameters-v2"),
-            digest("resources-v1"),
+            NeuralCircuitBindingsV1 {
+                capability_set: vec!["network.http".to_string()],
+                route_policy_digest: digest("route-v2"),
+                parameter_bundle_digest: digest("parameters-v2"),
+                resource_profile_digest: digest("resources-v1"),
+            },
         )
         .expect("widened successor shape");
         assert!(validate_circuit_successor_v1(&current, &widened).is_err());
@@ -564,10 +586,12 @@ mod tests {
                 CircuitEdgeV1::new("a", "success"),
                 CircuitEdgeV1::new("b", "failure"),
             ],
-            vec![],
-            digest("route"),
-            digest("params"),
-            digest("resources"),
+            NeuralCircuitBindingsV1 {
+                capability_set: vec![],
+                route_policy_digest: digest("route"),
+                parameter_bundle_digest: digest("params"),
+                resource_profile_digest: digest("resources"),
+            },
         );
         assert!(result.is_err());
     }

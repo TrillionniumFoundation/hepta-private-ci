@@ -263,6 +263,7 @@ impl From<codex_hepta_intelligence_eval::CrossFoldPlanV1> for CrossFoldPlanV1Raw
     }
 }
 
+#[cfg(test)]
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct IndependentEvaluationBundleV1Raw {
@@ -287,6 +288,7 @@ pub(super) struct IndependentEvaluationBundleV1Raw {
     pub metrics: Vec<MetricGateV1Raw>,
 }
 
+#[cfg(test)]
 impl From<codex_hepta_intelligence_eval::IndependentEvaluationBundleV1>
     for IndependentEvaluationBundleV1Raw
 {

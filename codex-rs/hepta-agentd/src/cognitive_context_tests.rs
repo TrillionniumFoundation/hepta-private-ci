@@ -80,18 +80,7 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert!(context.plan.as_ref().unwrap().read_allowed);
     assert_eq!(context.items[0].memory_id, memory.id.memory_id.as_str());
     assert_eq!(context.items[0].content, "verified lemon orchard");
-    let current = revalidate(
-        &store,
-        &owner,
-        &context.snapshot_digest,
-        &context.read_digest,
-        context.omitted_records,
-        &context.items,
-        context.plan.as_ref(),
-        None,
-    )
-    .await
-    .unwrap();
+    let current = revalidate(&store, &owner, &context, None).await.unwrap();
     assert_eq!(current.snapshot_digest, context.snapshot_digest);
     assert_eq!(current.read_digest, context.read_digest);
     assert_eq!(
@@ -104,11 +93,10 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            Some(&tampered_plan),
+            &crate::CognitiveContextSnapshot {
+                plan: Some(tampered_plan),
+                ..context.clone()
+            },
             None,
         )
         .await
@@ -119,11 +107,10 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &"11".repeat(32),
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
+            &crate::CognitiveContextSnapshot {
+                read_digest: "11".repeat(32),
+                ..context.clone()
+            },
             None,
         )
         .await
@@ -145,18 +132,7 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         .await
         .unwrap();
     assert!(
-        revalidate(
-            &store,
-            &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
-            None,
-        )
-        .await
-        .is_err(),
+        revalidate(&store, &owner, &context, None,).await.is_err(),
         "a committed tombstone must invalidate the historical read receipt"
     );
     let withdrawn = read(&store, &owner, 1, "lemon", 4, None).await.unwrap();
@@ -245,18 +221,7 @@ async fn final_use_binds_complete_owner_cut_not_only_memory_snapshot() {
     assert_ne!(after.cut_digest(), before.cut_digest());
 
     assert!(
-        revalidate(
-            &store,
-            &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
-            None,
-        )
-        .await
-        .is_err(),
+        revalidate(&store, &owner, &context, None,).await.is_err(),
         "source/KG/tombstone frontier drift must stale the final-use packet even when memory heads are unchanged"
     );
 }

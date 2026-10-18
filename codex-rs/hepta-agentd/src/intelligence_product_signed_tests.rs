@@ -2,7 +2,7 @@ use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {

@@ -20,6 +20,7 @@ use std::time::Instant;
 
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
+use codex_hepta_automation::AuthorizedEffectExecutionInput;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
@@ -795,8 +796,8 @@ fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Dige
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
     Observed {
-        receipt: TaskFlowStepReceipt,
-        chain: Option<crate::AutomationEffectChainObservation>,
+        receipt: Box<TaskFlowStepReceipt>,
+        chain: Option<Box<crate::AutomationEffectChainObservation>>,
     },
     Indeterminate,
     ProvenAbsent,
@@ -1126,13 +1127,15 @@ impl AgentdAutomationEffectHost {
             .execute_authorized_taskflow_effect(
                 &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectExecutionInput {
+                    intent,
+                    wire_payload,
+                    fence: &fence,
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -1191,7 +1194,10 @@ impl AgentdAutomationEffectHost {
                             pending.wire_payload.as_deref(),
                         )
                         .await;
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain });
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed {
+                        receipt,
+                        chain: chain.map(Box::new),
+                    });
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -1232,7 +1238,10 @@ impl AgentdAutomationEffectHost {
                                 pending.wire_payload.as_deref(),
                             )
                             .await;
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain })
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed {
+                            receipt,
+                            chain: chain.map(Box::new),
+                        })
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
