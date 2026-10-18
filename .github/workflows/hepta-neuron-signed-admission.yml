@@ -8,6 +8,9 @@ on:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/Cargo.lock"
+      - "CALLERS.toml"
+      - "scripts/verify_hepta_callers.py"
+      - "scripts/hepta_typed_callers.py"
       - ".github/workflows/hepta-neuron-signed-admission.yml"
   workflow_dispatch:
 
