@@ -440,6 +440,28 @@ run_bazel_with_startup_args \
 bazel_status=${PIPESTATUS[0]}
 set -e
 
+# Bazel 9 can crash in ActionInputMap before reporting any failed target on
+# macOS (exit 37, JVM NullPointerException). Retry the IDENTICAL invocation
+# once after server shutdown, but only for that specific internal crash.
+# Never retry compiler, linker, test or ordinary infrastructure failures;
+# a second failure remains fatal and uses the usual diagnostic path below.
+if [[ "${RUNNER_OS:-}" == "macOS" && "${bazel_status}" -eq 37 ]] &&
+  grep -q '^FATAL: bazel crashed due to an internal error' "$bazel_console_log" &&
+  grep -q 'java.lang.NullPointerException:' "$bazel_console_log"; then
+  echo "Bazel JVM exit 37 on macOS; restarting server and repeating the complete identical CI command once." >&2
+  run_bazel_with_startup_args --noexperimental_remote_repo_contents_cache shutdown >/dev/null 2>&1 || true
+  : > "$bazel_console_log"
+  set +e
+  run_bazel_with_startup_args \
+    --noexperimental_remote_repo_contents_cache \
+    "${bazel_run_args[@]}" \
+    -- \
+    "${bazel_targets[@]}" \
+    2>&1 | tee "$bazel_console_log"
+  bazel_status=${PIPESTATUS[0]}
+  set -e
+fi
+
 if [[ ${bazel_status:-0} -ne 0 ]]; then
   if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
     print_bazel_action_failure_summary "$bazel_console_log"
