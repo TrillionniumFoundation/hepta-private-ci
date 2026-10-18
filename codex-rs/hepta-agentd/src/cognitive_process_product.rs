@@ -38,6 +38,14 @@ pub(super) struct ProductReplayDescriptorV1 {
     pub released_inputs: PinnedProductFileV1,
     pub holdout_material: PinnedProductFileV1,
     pub qualification_evidence: PinnedProductFileV1,
+    pub reservation_acknowledgement: Option<TimedHoldoutAcknowledgementV1>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct TimedHoldoutAcknowledgementV1 {
+    pub received_at_unix_micros: u64,
+    pub observer: super::cognitive_process_evidence::SignedLearningEvidenceV1Raw,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -114,8 +122,31 @@ pub(super) fn replay_product_qualification_v1(
         ));
     }
     acknowledge_holdout_namespace(&holdout_descriptor.path)?;
-    let owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence)
+    let timed_reservation = record.journal.records.iter()
+        .find(|record| record.plan == product_plan.frozen_plan)
+        .and_then(|record| record.reservation_time);
+    let mut owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence.clone())
         .map_err(|error| invalid(&format!("cognitive product owner: {error}")))?;
+    match (timed_reservation, descriptor.reservation_acknowledgement) {
+        (None, None) => {}
+        (Some(time), Some(ack)) => {
+            let receipt = owner.consume(&product_plan.frozen_plan)
+                .map_err(|error| invalid(&format!("cognitive timed reservation replay: {error}")))?;
+            let payload = eval::holdout_reservation_acknowledgement_payload_v1(
+                binding, &fence, &product_plan.frozen_plan, &receipt, ack.received_at_unix_micros,
+            ).map_err(|error| invalid(&format!("cognitive reservation ACK: {error}")))?;
+            let signed: codex_hepta_learning_ledger::SignedLearningEvidenceV1 = ack.observer.into();
+            if signed.issued_at < ack.received_at_unix_micros
+                || signed.principal_id != timing.observer.principal_id
+                || timing.windows.iter().any(|window| window.starts_unix_micros < time.window_not_before_unix_micros())
+            {
+                return Err(invalid("cognitive future reservation ACK/window binding mismatch"));
+            }
+            verifier.verify(codex_hepta_learning_ledger::LearningEvidenceRoleV1::Observer, &signed, &payload, now)
+                .map_err(|error| invalid(&format!("cognitive independent reservation ACK: {error}")))?;
+        }
+        (None, Some(_)) | (Some(_), None) => return Err(invalid("cognitive reservation timing evidence cannot be added or stripped")),
+    }
     let pinned = eval::read_product_qualification_evidence_v1(
         &descriptor.qualification_evidence.path,
         descriptor.qualification_evidence.digest.0,

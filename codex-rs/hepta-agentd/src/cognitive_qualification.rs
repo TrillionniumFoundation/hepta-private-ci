@@ -62,8 +62,12 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
         && policy.no_change_baseline_digest.to_string() == host.expected_predecessor.model.payload_sha256
         && policy.minimum_future_window_micros > 0,
         "qualification policy/objective/current predecessor binding mismatch");
-    let candidate_plan = input.candidate_plan.into();
-    let baseline_plan = input.baseline_plan.into();
+    let candidate_plan: eval::TemporalEvaluationPlan = input.candidate_plan.into();
+    let baseline_plan: eval::TemporalEvaluationPlan = input.baseline_plan.into();
+    ensure!(host.future_not_before_unix_micros > 0
+        && candidate_plan.fold.evaluation_start >= host.future_not_before_unix_micros
+        && baseline_plan.fold.evaluation_start >= host.future_not_before_unix_micros,
+        "temporal plans must start after the pinned future boundary");
     let product_plan = eval::freeze_product_evaluation_plan_v1(
         raw_plan.clone(), input.metric_roles.into_iter().map(Into::into).collect(),
         input.metric_sources.into_iter().map(Into::into).collect(), &candidate_plan, &baseline_plan,
@@ -94,6 +98,10 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
         && current.journal.records.last().is_some_and(|record| record.plan == product_plan.frozen_plan);
     ensure!(store.anchor() == Some(expected_anchor) || exact_reservation_tail,
         "qualification holdout has an unacknowledged unrelated tail");
+    if !matches!(&input.stage, CognitiveQualificationStageV1::Reserve) {
+        ensure!(current.journal.records.iter().any(|record| record.plan == product_plan.frozen_plan
+            && record.reservation_time.is_some()), "future qualification requires an existing timed reservation");
+    }
     crate::cognitive_process_product::acknowledge_holdout_namespace(&host.holdout.path)?;
     let mut owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence.clone())?;
     let identity = json!({"agent_id":input.agent_id, "operation_id":input.operation_id.0.as_str(),
@@ -101,25 +109,53 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
         "plan_sha256":product_plan.frozen_plan.plan_digest.to_string(), "trust_sha256":verifier.trust_digest().to_string(),
         "frozen_unix_micros":generator.issued_at});
     if matches!(&input.stage, CognitiveQualificationStageV1::Reserve) {
-        let receipt = owner.consume(&product_plan.frozen_plan)?;
+        let receipt = owner.reserve_before_window(&product_plan.frozen_plan, host.future_not_before_unix_micros)?;
+        let acknowledged_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
+        ensure!(receipt.disposition == eval::HoldoutUseDispositionV1::IdempotentReplay
+            || acknowledged_at < host.future_not_before_unix_micros,
+            "timed reservation consumed, but its durable ACK missed the future boundary");
+        let time = receipt.reservation_time.context("timed reservation did not persist its clock")?;
         return Ok(json!({"state":"awaiting_independent_collection", "identity":identity,
             "reservation":{"sequence":receipt.sequence,"record_digest":receipt.record_digest.to_string(),
                 "use_digest":receipt.use_receipt.use_digest.to_string()},
             "holdout_anchor":FinalHoldoutCasAnchorV1Raw::from(owner.anchor()),
             "journal_head_sha256":receipt.head_digest.to_string(), "disposition":format!("{:?}",receipt.disposition),
-            "observed_at_unix_micros":now, "authority_granted":false}));
+            "reservation_time":{"reserved_at_unix_micros":time.reserved_at_unix_micros(),
+                "window_not_before_unix_micros":time.window_not_before_unix_micros()},
+            "observed_at_unix_micros":acknowledged_at,
+            "requires_independent_durable_acknowledgement":true,"authority_granted":false}));
+    }
+    let reserved = owner.reserve_before_window(&product_plan.frozen_plan, host.future_not_before_unix_micros)?;
+    if let CognitiveQualificationStageV1::AcknowledgementStatement { reservation, received_at_unix_micros } = &input.stage {
+        ensure!(reserved.sequence == reservation.sequence && reserved.record_digest == reservation.record_digest.0
+            && reserved.use_receipt.use_digest == reservation.use_digest.0, "acknowledgement reservation mismatch");
+        let payload = eval::holdout_reservation_acknowledgement_payload_v1(
+            binding, &fence, &product_plan.frozen_plan, &reserved, *received_at_unix_micros,
+        )?;
+        return Ok(json!({"state":"awaiting_independent_acknowledgement_signature", "identity":identity,
+            "acknowledgement_signing_payload_hex":hex(&payload),"received_at_unix_micros":received_at_unix_micros,
+            "authority_granted":false}));
     }
     let mut selection = None;
-    let (collection, reservation, observer, evaluator, evidence_path) = match input.stage {
-        CognitiveQualificationStageV1::PlanStatement | CognitiveQualificationStageV1::Reserve => unreachable!("preparation returned above"),
-        CognitiveQualificationStageV1::ObserverStatement { collection, reservation } => (collection, reservation, None, None, None),
-        CognitiveQualificationStageV1::EvaluatorStatement { collection, reservation, observer } => (collection, reservation, Some(observer), None, None),
-        CognitiveQualificationStageV1::Finalize { collection, reservation, observer, evaluator, qualification_evidence_path, selection: selected_stage } => {
+    let (collection, reservation, acknowledgement, observer, evaluator, evidence_path) = match input.stage {
+        CognitiveQualificationStageV1::PlanStatement | CognitiveQualificationStageV1::Reserve | CognitiveQualificationStageV1::AcknowledgementStatement { .. } => unreachable!("preparation returned above"),
+        CognitiveQualificationStageV1::ObserverStatement { collection, reservation, acknowledgement } => (collection, reservation, acknowledgement, None, None, None),
+        CognitiveQualificationStageV1::EvaluatorStatement { collection, reservation, acknowledgement, observer } => (collection, reservation, acknowledgement, Some(observer), None, None),
+        CognitiveQualificationStageV1::Finalize { collection, reservation, acknowledgement, observer, evaluator, qualification_evidence_path, selection: selected_stage } => {
             external(&qualification_evidence_path)?;
             selection = selected_stage;
-            (collection, reservation, Some(observer), Some(evaluator), Some(qualification_evidence_path))
+            (collection, reservation, acknowledgement, Some(observer), Some(evaluator), Some(qualification_evidence_path))
         }
     };
+    let acknowledgement_material = serde_json::to_value(&acknowledgement)?;
+    let acknowledged_at = acknowledgement.received_at_unix_micros;
+    let acknowledgement: SignedLearningEvidenceV1 = acknowledgement.observer.into();
+    let ack_payload = eval::holdout_reservation_acknowledgement_payload_v1(
+        binding, &fence, &product_plan.frozen_plan, &reserved, acknowledged_at,
+    )?;
+    ensure!(acknowledgement.issued_at >= acknowledged_at, "observer cannot sign before receiving the durable reservation ACK");
+    verifier.verify(LearningEvidenceRoleV1::Observer, &acknowledgement, &ack_payload,
+        u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?)?;
     external(&collection.path)?;
     // The required reservation is established above before this callback can
     // open released data. No replay descriptor is upgraded to acquire rights.
@@ -130,6 +166,8 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     let mut runner = eval::ProductEvaluationRunnerV1::new(owner);
     let temporal = runner.evaluate_temporal_comparison(&product_plan, &candidate_plan, &baseline_plan, &mut provider)?;
     let observed = provider.observed.context("original holdout callback did not release observations")?;
+    ensure!(observed.windows.iter().all(|window| window.starts_unix_micros >= host.future_not_before_unix_micros),
+        "observed window began before the preregistered and independently acknowledged reservation boundary");
     let bundle = runner.qualification_bundle(&temporal, &observed.context)?;
     let observer_payload = eval::future_window_statement_payload_v1(
         &bundle, generator.issued_at, &observed.windows, policy.minimum_future_window_micros,
@@ -146,7 +184,9 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
         "observer_signing_payload_hex":hex(&observer_payload), "authority_granted":false,
         "observed_qualified_update_count":null,"independent_operator_evidence":null});
     let Some(observer) = observer else { return Ok(output); };
-    let observer = observer.into();
+    let observer: SignedLearningEvidenceV1 = observer.into();
+    ensure!(observer.principal_id == acknowledgement.principal_id,
+        "the future-window observer must also attest the retained durable reservation ACK");
     verifier.verify(LearningEvidenceRoleV1::Observer, &observer, &observer_payload, now)?;
     let timing = eval::LongitudinalTimeEvidenceV1 {
         frozen_unix_micros: generator.issued_at, windows: observed.windows, observer,
@@ -190,6 +230,7 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
             "baseline_plan":TemporalEvaluationPlanRaw::from(baseline_plan),
             "metric_sources":product_plan.metric_sources.iter().cloned().map(ProductMetricSourceContractV1Raw::from).collect::<Vec<_>>(),
             "context":ProductQualificationContextV1Raw::from(observed.context.clone()),
+            "reservation_acknowledgement":acknowledgement_material,
             "released_inputs":output["released_inputs"],"holdout_material":provider.material,
             "qualification_evidence":{"path":path,"digest":output["qualification_evidence_sha256"]}}});
     output["disposition"] = json!(format!("{:?}", decision.disposition));

@@ -51,15 +51,22 @@ async fn ordinary_qualification_reserves_once_and_missing_release_preserves_orig
     fleet.register(AgentManifest::new(agent.clone(), WorkspaceBinding::new(&workspace, &fleet_root)?, ResourceBudget::local_default())?)?;
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
     let key = SigningKey::from_bytes(&[91; 32]);
+    let observer_key = SigningKey::from_bytes(&[92; 32]);
     let principal = ledger::AuthenticatedPrincipalV1 {
         principal_id: id("fixture-generator"), credential_chain_digest: digest("generator-credential"),
         signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()), scope_digest: digest("scope"),
         authority_epoch: 1, authenticated_at: now - 1_000_000, expires_at: now + 600_000_000,
     };
+    let observer_principal = ledger::AuthenticatedPrincipalV1 {
+        principal_id:id("fixture-observer"), signing_key_digest:Digest32::of_bytes(&observer_key.verifying_key().to_bytes()),
+        ..principal.clone()
+    };
     let trust = ledger::LearningEvidenceTrustV1 {
         scope_digest: digest("scope"), objective_digest: digest("objective"), authority_epoch: 1,
         signers: vec![ledger::TrustedLearningSignerV1 { principal: principal.clone(), controller_id: id("fixture-controller"),
-            verifying_key: key.verifying_key().to_bytes(), roles: vec![LearningEvidenceRoleV1::Generator], revoked_at: None }],
+            verifying_key: key.verifying_key().to_bytes(), roles: vec![LearningEvidenceRoleV1::Generator], revoked_at: None },
+            ledger::TrustedLearningSignerV1 { principal:observer_principal.clone(), controller_id:id("fixture-observer-controller"),
+                verifying_key:observer_key.verifying_key().to_bytes(), roles:vec![LearningEvidenceRoleV1::Observer], revoked_at:None }],
     };
     let verifier = LearningEvidenceVerifierV1::new(trust.clone())?;
     let material = write(&root.join("sealed-material.json"), &json!({"fixture":"sealed unknown future inputs"}));
@@ -80,8 +87,14 @@ async fn ordinary_qualification_reserves_once_and_missing_release_preserves_orig
     };
     let roles = vec![eval::MetricRoleContractV2 { metric_id: id("utility"), role: eval::MetricRoleV2::PrimarySuperiority { minimum_improvement: FixedQ32::ZERO } }];
     let sources = vec![eval::ProductMetricSourceContractV1 { metric_id: id("utility"), source: eval::ProductMetricSourceV1::Ips }];
-    let candidate = plan("candidate-plan", digest("objective"));
-    let baseline = plan("baseline-plan", digest("objective"));
+    let future_boundary = now + 60_000_000;
+    let mut candidate = plan("candidate-plan", digest("objective"));
+    let mut baseline = plan("baseline-plan", digest("objective"));
+    for plan in [&mut candidate, &mut baseline] {
+        plan.fold.evaluation_start = future_boundary;
+        plan.ope.outcome_watermark = future_boundary + 600_000_000;
+        plan.plan_digest = plan.canonical_digest()?;
+    }
     let frozen = eval::freeze_product_evaluation_plan_v1(raw.clone(), roles.clone(), sources.clone(), &candidate, &baseline)?;
     let mut signed = ledger::SignedLearningEvidenceV1 {
         evidence_id: id("generator-plan"), principal_id: principal.principal_id, role: LearningEvidenceRoleV1::Generator,
@@ -103,6 +116,7 @@ async fn ordinary_qualification_reserves_once_and_missing_release_preserves_orig
             "payload_sha256":digest("baseline-payload").to_string()},"source_manifest_sha256":null,"selection_sha256":null,
             "evaluated_predecessor":null,"current_owner_trust_sha256":digest("current-trust").to_string()},
         "estimand_digest":digest("future-utility").to_string(),
+        "future_not_before_unix_micros":future_boundary,
         "policy":SelfEvolutionSelectionPolicyV1Raw::from(eval::SelfEvolutionSelectionPolicyV1 {
             no_change_baseline_id:id("baseline"), no_change_baseline_digest:digest("baseline-payload"), minimum_dataset_records:1,
             minimum_future_window_micros:1_000_000 }), "trust":LearningEvidenceTrustV1Raw::from(trust),
@@ -127,8 +141,21 @@ async fn ordinary_qualification_reserves_once_and_missing_release_preserves_orig
     assert_eq!(first["holdout_anchor"], second["holdout_anchor"]);
     assert_eq!(first["disposition"], json!("Recorded"));
     assert_eq!(second["disposition"], json!("IdempotentReplay"));
+    let received_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
+    let mut ack_request = input.clone();
+    ack_request["stage"] = json!({"kind":"acknowledgement_statement","reservation":first["reservation"],"received_at_unix_micros":received_at});
+    let ack_statement = qualify_cognitive_upgrade_v1(&fleet, serde_json::from_value(ack_request)?).await?;
+    let payload = ack_statement["acknowledgement_signing_payload_hex"].as_str().unwrap().as_bytes().chunks_exact(2)
+        .map(|bytes| u8::from_str_radix(std::str::from_utf8(bytes).unwrap(),16).unwrap()).collect::<Vec<_>>();
+    let mut ack_signed = ledger::SignedLearningEvidenceV1 {
+        evidence_id:id("observed-reservation-ack"),principal_id:observer_principal.principal_id,role:LearningEvidenceRoleV1::Observer,
+        trust_digest:verifier.trust_digest(),scope_digest:digest("scope"),objective_digest:digest("objective"),authority_epoch:1,
+        issued_at:received_at,expires_at:now+600_000_000,payload_digest:Digest32::of_bytes(&payload),signature:[0;64],
+    };
+    ack_signed.signature=observer_key.sign(&ack_signed.signing_bytes()).to_bytes();
     let mut unavailable = input.clone();
     unavailable["stage"] = json!({"kind":"observer_statement","reservation":first["reservation"],
+        "acknowledgement":{"received_at_unix_micros":received_at,"observer":SignedLearningEvidenceV1Raw::from(ack_signed)},
         "collection":{"path":root.join("not-released.json"),"digest":digest("not-released").to_string()}});
     assert!(qualify_cognitive_upgrade_v1(&fleet, serde_json::from_value(unavailable)?).await.is_err());
     let mut tampered = input.clone();

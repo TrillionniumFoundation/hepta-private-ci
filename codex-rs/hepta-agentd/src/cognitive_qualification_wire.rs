@@ -34,15 +34,18 @@ pub struct CognitiveQualificationInputV1 {
 pub(super) enum CognitiveQualificationStageV1 {
     PlanStatement,
     Reserve,
-    ObserverStatement { collection: PinnedProductFileV1, reservation: CognitiveHoldoutReservationV1 },
+    AcknowledgementStatement { reservation: CognitiveHoldoutReservationV1, received_at_unix_micros: u64 },
+    ObserverStatement { collection: PinnedProductFileV1, reservation: CognitiveHoldoutReservationV1, acknowledgement: TimedHoldoutAcknowledgementV1 },
     EvaluatorStatement {
         collection: PinnedProductFileV1,
         reservation: CognitiveHoldoutReservationV1,
+        acknowledgement: TimedHoldoutAcknowledgementV1,
         observer: SignedLearningEvidenceV1Raw,
     },
     Finalize {
         collection: PinnedProductFileV1,
         reservation: CognitiveHoldoutReservationV1,
+        acknowledgement: TimedHoldoutAcknowledgementV1,
         observer: SignedLearningEvidenceV1Raw,
         evaluator: SignedLearningEvidenceV1Raw,
         qualification_evidence_path: PathBuf,
@@ -72,6 +75,7 @@ pub(super) struct CognitiveQualificationHostV1 {
     pub trust: LearningEvidenceTrustV1Raw,
     pub holdout: FencedHoldoutDescriptorV1,
     pub estimand_digest: Digest,
+    pub future_not_before_unix_micros: u64,
 }
 
 #[derive(Debug, Deserialize)]
