@@ -1948,4 +1948,255 @@ mod tests {
             Err(CellSplitExecutionErrorV1::CorruptJournal)
         ));
     }
+
+    #[derive(Clone, Copy, Debug)]
+    enum RollbackMode {
+        Unavailable,
+        Malformed,
+        Verified,
+    }
+
+    #[derive(Debug)]
+    struct LostMigrationReply {
+        inner: Migration,
+        rollback_mode: RollbackMode,
+    }
+
+    impl CellSplitStateMigrationOwnerV1 for LostMigrationReply {
+        fn snapshot(
+            &mut self,
+            plan: &CellSplitPlanV1,
+        ) -> Result<CellSplitSnapshotReceiptV1, CellSplitExecutionErrorV1> {
+            self.inner.snapshot(plan)
+        }
+
+        fn migrate(
+            &mut self,
+            _plan: &CellSplitPlanV1,
+            _snapshot: &CellSplitSnapshotReceiptV1,
+        ) -> Result<CellSplitMigrationReceiptV1, CellSplitExecutionErrorV1> {
+            // The native owner may have committed before the response was lost.
+            self.inner.migrations.fetch_add(1, Ordering::SeqCst);
+            Err(CellSplitExecutionErrorV1::Callback {
+                stage: "migration",
+                message: "original native effect may have committed".to_string(),
+            })
+        }
+
+        fn rollback(
+            &mut self,
+            plan: &CellSplitPlanV1,
+            snapshot: &CellSplitSnapshotReceiptV1,
+        ) -> Result<CellSplitRollbackReceiptV1, CellSplitExecutionErrorV1> {
+            if matches!(self.rollback_mode, RollbackMode::Unavailable) {
+                self.inner.rollbacks.fetch_add(1, Ordering::SeqCst);
+                return Err(CellSplitExecutionErrorV1::Callback {
+                    stage: "rollback",
+                    message: "durable rollback readback unavailable".to_string(),
+                });
+            }
+            let mut receipt = self.inner.rollback(plan, snapshot)?;
+            if matches!(self.rollback_mode, RollbackMode::Malformed) {
+                receipt.verified = false;
+            }
+            Ok(receipt)
+        }
+    }
+
+    fn lost_reply_owner(mode: RollbackMode) -> LostMigrationReply {
+        LostMigrationReply {
+            inner: Migration {
+                snapshots: AtomicUsize::new(0),
+                migrations: AtomicUsize::new(0),
+                rollbacks: AtomicUsize::new(0),
+            },
+            rollback_mode: mode,
+        }
+    }
+
+    fn native_snapshot(plan: &CellSplitPlanV1) -> CellSplitSnapshotReceiptV1 {
+        let bytes = b"real-child-state".to_vec();
+        CellSplitSnapshotReceiptV1 {
+            operation_id: plan.operation_id.clone(),
+            source_generation: plan.source_generation,
+            schema_digest: plan.state_schema_digest,
+            snapshot_digest: digest(&bytes),
+            bytes,
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
+    #[test]
+    fn missing_or_malformed_rollback_never_invents_quarantine_or_reexecutes_migration() {
+        for mode in [RollbackMode::Unavailable, RollbackMode::Malformed] {
+            let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
+            let bytes = b"candidate-artifact";
+            let plan = plan(bytes);
+            let path = directory.path().join("split.ledger");
+            let cas = FileCellSplitArtifactCasV1::open(directory.path().join("cas"))
+                .unwrap_or_else(|error| panic!("cas: {error:?}"));
+            let mut owner = CellSplitExecutionOwnerV1::create(&path, plan.clone())
+                .unwrap_or_else(|error| panic!("owner: {error:?}"));
+            let mut original = lost_reply_owner(mode);
+            let mut route = Route;
+            let mut fence = Fence;
+            for _ in 0..2 {
+                owner
+                    .execute_next(&cas, bytes, &mut original, &mut route, &mut fence)
+                    .unwrap_or_else(|error| panic!("prepare: {error:?}"));
+            }
+            assert_eq!(owner.phase(), CellSplitPhaseV1::StateSnapshotted);
+            let snapshot = native_snapshot(&plan);
+            assert!(matches!(
+                owner.resume_with_snapshot(&mut original, snapshot.clone()),
+                Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired)
+            ));
+            assert_eq!(owner.phase(), CellSplitPhaseV1::MigrationInFlight);
+            assert_eq!(original.inner.migrations.load(Ordering::SeqCst), 1);
+            assert_eq!(original.inner.rollbacks.load(Ordering::SeqCst), 1);
+            drop(owner);
+
+            let mut recovered = CellSplitExecutionOwnerV1::recover(&path, plan.clone())
+                .unwrap_or_else(|error| panic!("recover: {error:?}"));
+            assert_eq!(recovered.phase(), CellSplitPhaseV1::MigrationInFlight);
+            assert!(matches!(
+                recovered.execute_next(&cas, bytes, &mut original, &mut route, &mut fence),
+                Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired)
+            ));
+            assert_eq!(original.inner.migrations.load(Ordering::SeqCst), 1);
+            let readback = CellSplitMigrationReceiptV1 {
+                operation_id: plan.operation_id.clone(),
+                source_generation: plan.source_generation,
+                child_generation: plan.child_generation,
+                snapshot_digest: snapshot.snapshot_digest,
+                state_partition_digest: plan.state_partition_digest,
+                verification_digest: plan.migration_verification_digest,
+                child_state_digest: digest(b"native-committed-child"),
+                committed: true,
+                authority: AuthorityPosture::DENY_ALL,
+            };
+            assert!(matches!(
+                recovered.advance_with_receipts(&readback, &mut route, &mut fence),
+                Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired)
+            ));
+            let mut wrong_snapshot = snapshot.clone();
+            wrong_snapshot.bytes = b"different-state".to_vec();
+            wrong_snapshot.snapshot_digest = digest(&wrong_snapshot.bytes);
+            assert!(matches!(
+                recovered.reconcile_migration_with_receipt(&wrong_snapshot, &readback),
+                Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                    "migration intent snapshot"
+                ))
+            ));
+            assert_eq!(recovered.phase(), CellSplitPhaseV1::MigrationInFlight);
+            assert_eq!(
+                recovered
+                    .reconcile_migration_with_receipt(&snapshot, &readback)
+                    .unwrap_or_else(|error| panic!("verified readback: {error:?}")),
+                CellSplitPhaseV1::StateMigrated
+            );
+            assert_eq!(original.inner.migrations.load(Ordering::SeqCst), 1);
+            drop(recovered);
+            let reopened = CellSplitExecutionOwnerV1::recover(&path, plan)
+                .unwrap_or_else(|error| panic!("final reopen: {error:?}"));
+            assert_eq!(reopened.phase(), CellSplitPhaseV1::StateMigrated);
+        }
+    }
+
+    #[test]
+    fn only_a_distinct_verified_rollback_receipt_can_quarantine_pending_migration() {
+        let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
+        let bytes = b"candidate-artifact";
+        let plan = plan(bytes);
+        let path = directory.path().join("split.ledger");
+        let cas = FileCellSplitArtifactCasV1::open(directory.path().join("cas"))
+            .unwrap_or_else(|error| panic!("cas: {error:?}"));
+        let mut owner = CellSplitExecutionOwnerV1::create(&path, plan.clone())
+            .unwrap_or_else(|error| panic!("owner: {error:?}"));
+        let mut original = lost_reply_owner(RollbackMode::Unavailable);
+        let mut route = Route;
+        let mut fence = Fence;
+        for _ in 0..2 {
+            owner
+                .execute_next(&cas, bytes, &mut original, &mut route, &mut fence)
+                .unwrap_or_else(|error| panic!("prepare: {error:?}"));
+        }
+        let snapshot = native_snapshot(&plan);
+        assert!(matches!(
+            owner.resume_with_snapshot(&mut original, snapshot.clone()),
+            Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired)
+        ));
+        drop(owner);
+        let mut recovered = CellSplitExecutionOwnerV1::recover(&path, plan.clone())
+            .unwrap_or_else(|error| panic!("recover: {error:?}"));
+        let mut verified = CellSplitRollbackReceiptV1 {
+            operation_id: plan.operation_id.clone(),
+            source_generation: plan.source_generation,
+            child_generation: plan.child_generation,
+            snapshot_digest: snapshot.snapshot_digest,
+            restored_state_digest: digest(b"native-restored-state"),
+            durable: true,
+            verified: true,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        verified.verified = false;
+        assert!(matches!(
+            recovered.reconcile_rollback_with_receipt(&snapshot, &verified),
+            Err(CellSplitExecutionErrorV1::InvalidReceipt("state rollback"))
+        ));
+        assert_eq!(recovered.phase(), CellSplitPhaseV1::MigrationInFlight);
+        verified.verified = true;
+        let expected = verified
+            .validate_for(&plan, &snapshot)
+            .unwrap_or_else(|error| panic!("rollback receipt: {error:?}"));
+        assert_eq!(
+            recovered
+                .reconcile_rollback_with_receipt(&snapshot, &verified)
+                .unwrap_or_else(|error| panic!("verified rollback: {error:?}")),
+            CellSplitPhaseV1::Quarantined
+        );
+        assert_eq!(recovered.last_receipt_digest(), expected);
+        assert_ne!(recovered.last_receipt_digest(), snapshot.digest());
+        drop(recovered);
+        let reopened = CellSplitExecutionOwnerV1::recover(&path, plan)
+            .unwrap_or_else(|error| panic!("reopen: {error:?}"));
+        assert_eq!(reopened.phase(), CellSplitPhaseV1::Quarantined);
+    }
+
+    #[test]
+    fn verified_rollback_callback_uses_rollback_receipt_instead_of_snapshot_digest() {
+        let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
+        let bytes = b"candidate-artifact";
+        let plan = plan(bytes);
+        let path = directory.path().join("split.ledger");
+        let cas = FileCellSplitArtifactCasV1::open(directory.path().join("cas"))
+            .unwrap_or_else(|error| panic!("cas: {error:?}"));
+        let mut owner = CellSplitExecutionOwnerV1::create(&path, plan.clone())
+            .unwrap_or_else(|error| panic!("owner: {error:?}"));
+        let mut original = lost_reply_owner(RollbackMode::Verified);
+        let mut route = Route;
+        let mut fence = Fence;
+        for _ in 0..2 {
+            owner
+                .execute_next(&cas, bytes, &mut original, &mut route, &mut fence)
+                .unwrap_or_else(|error| panic!("prepare: {error:?}"));
+        }
+        let snapshot = native_snapshot(&plan);
+        assert!(matches!(
+            owner.resume_with_snapshot(&mut original, snapshot.clone()),
+            Err(CellSplitExecutionErrorV1::Callback {
+                stage: "migration",
+                ..
+            })
+        ));
+        assert_eq!(owner.phase(), CellSplitPhaseV1::Quarantined);
+        assert_ne!(owner.last_receipt_digest(), snapshot.digest());
+        assert_eq!(original.inner.migrations.load(Ordering::SeqCst), 1);
+        assert_eq!(original.inner.rollbacks.load(Ordering::SeqCst), 1);
+        drop(owner);
+        let recovered = CellSplitExecutionOwnerV1::recover(&path, plan)
+            .unwrap_or_else(|error| panic!("recover: {error:?}"));
+        assert_eq!(recovered.phase(), CellSplitPhaseV1::Quarantined);
+    }
+
 }
