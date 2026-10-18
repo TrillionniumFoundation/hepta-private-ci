@@ -125,14 +125,18 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 90
     # Do not reduce affected-owner/reverse-consumer coverage to fit a small
     # hosted runner. Drop debug artifacts/incremental state instead.
+    # Exact-head scoped CI currently compiles 298 binaries / 17,915 tests;
+    # limit nextest process fan-out to avoid oversubscribed loopback tests.
+    # This changes only execution parallelism and the time budget, not selection.
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
+      NEXTEST_TEST_THREADS: "2"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
