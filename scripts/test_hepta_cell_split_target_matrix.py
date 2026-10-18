@@ -515,13 +515,38 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
     MODULE.verify_observer_signature(receipt, trusted_key)
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.verify_observer_signature(receipt, None)
-    with pytest.raises(ValueError, match="signature invalid"):
+    with pytest.raises(ValueError, match="small-order"):
         MODULE.verify_observer_signature(receipt, "00" * 32)
     tampered = {**receipt, "metricsDigest": "e" * 64}
     with pytest.raises(ValueError, match="signature invalid"):
         MODULE.verify_observer_signature(tampered, trusted_key)
     with pytest.raises(ValueError, match="missing or malformed"):
         MODULE.verify_observer_signature({**receipt, "signatureHex": None}, trusted_key)
+
+
+@pytest.mark.parametrize(
+    "key_hex",
+    (
+        "00" * 32,  # cofactor-eight torsion point (previous CI failure)
+        "01" + "00" * 31,  # identity public key
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+        "ed" + "ff" * 30 + "7f",  # noncanonical y=p
+        "01" + "00" * 30 + "80",  # disallowed x=0 sign encoding
+    ),
+)
+def test_observer_rejects_torsion_and_noncanonical_keys(key_hex: str) -> None:
+    receipt = {
+        "schema": MODULE.OBSERVER_SCHEMA,
+        "verified": True,
+        "sourceCommit": "a" * 40,
+        "workloadDigest": "b" * 64,
+        "reportDigest": "c" * 64,
+        "metricsDigest": "d" * 64,
+        "observerId": "untrusted",
+        "signatureHex": "00" * 64,
+    }
+    with pytest.raises(ValueError, match="noncanonical or small-order"):
+        MODULE.verify_observer_signature(receipt, key_hex)
 
 
 def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_path: Path) -> None:
@@ -564,5 +589,5 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_pa
     report["reportDigest"] = MODULE.digest({**provisional, "observer": observer})
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.validate_report(report)
-    with pytest.raises(ValueError, match="signature invalid"):
+    with pytest.raises(ValueError, match="small-order"):
         MODULE.validate_report(report, trusted_observer_public_key="00" * 32)
