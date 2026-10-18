@@ -126,3 +126,7 @@ At 2026-10-18 15:13 UTC, twelve audit-owned large job logs were losslessly gzip-
 ## Final published-head observation
 
 At 16:24:26-16:25:06 UTC, the same two repair heads have 17 jobs: 2 success, 14 queued, 1 in_progress, 0 failure and 0 skipped. The f191cd08 Stem/Reader contract job actually ran 27 + 109 Python contract tests successfully. The 19c5cd41 Actions CodeQL analysis completed; the other four languages are queued and the additional CodeQL summary is neutral. Both expected workflow aggregator checks remain absent. Main's required context names were verified; complete protection for the research target was not accessible. No merge qualification or model experiment completion is inferred.
+
+## Later terminal Reader observation (separate from the full matrix snapshot)
+
+At 2026-10-18 16:46 UTC, exact-source run 39140341757 attempt 1 and both jobs were completed/success. Reader job 117713314446 actually executed 64 frozen Laya typed-choice calls from 16:24:39 to 16:27:02 UTC on f191cd081ba16fed8827a18093b5a5b39e9a36cd. Artifact 12143240868 and its three JSON receipts were hash-verified; root independently recomputed row counts/scores/tokens. No full required-check matrix refresh was performed, so earlier 17-job snapshot totals retain their original observation time. See LAYA_TERMINAL_CHECKPOINT.json / ROOT_LAYA_VERIFICATION.json. The 40+72 nine-arm qualification and all production gates remain open.

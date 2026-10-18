@@ -33,3 +33,7 @@ Strict source-map qualification remains independently open. The observed blockin
 ## 后续 HEAD 更新
 
 15:57:09 UTC 的再次读取确认 #2688 已前进到 `7b1e5b68c8a94cd5af5da23409c944727b78fa37`，#2695 已前进到 `7fe8b0eb83ad543baff860a4ff20ec73eab865c7`。其旧 HEAD 的失败仅用于根因线索，当前门禁见 [LATEST_HEADS.md](LATEST_HEADS.md) 与 [LATEST_HEADS.jsonl](LATEST_HEADS.jsonl)。并行分支的这些更新未被本轮覆写。
+
+## Later Reader observation — 16:46 UTC
+
+Run 39140341757 completed 64 fresh frozen Laya four-arm calls on f191cd081ba16fed8827a18093b5a5b39e9a36cd. Three artifact receipts and their per-row arithmetic were verified. MEMORY-FRESH-112 remains open: this run contains neither the required 40 independent calibration calls nor the 72 nine-arm evaluation calls. See LAYA_TERMINAL_CHECKPOINT.json and ROOT_LAYA_VERIFICATION.json.

@@ -269,7 +269,7 @@
     "id": "MEMORY-FRESH-112",
     "status": "BLOCKED_EXTERNAL_RESOURCE_AND_NO_GO",
     "owner": "PR #1452 / independent evidence reviewer",
-    "root": "Historical 40+72 rows are distinct from the failed fresh attempt (6 calibration / 0 evaluation). No completed new-model receipts were created by this audit.",
+    "root": "Historical 40+72 rows are distinct from the failed fresh #1452 attempt (6 calibration / 0 evaluation). A later exact-f191cd Reader CI execution produced 64 fresh four-arm calls; this is a separate diagnostic and does not satisfy 40 calibration + 72 nine-arm acceptance.",
     "next": "Use a worker fitting the pinned model and locked protocol, start a new batch, finish 40 calibration then 72 nine-arm calls, independently review answers/citations/holdout/cost."
   },
   {

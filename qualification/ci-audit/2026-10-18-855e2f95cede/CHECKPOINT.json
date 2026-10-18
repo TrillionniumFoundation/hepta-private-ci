@@ -182,7 +182,8 @@
         "draft": true,
         "merged": false,
         "verified_by": "GET /pulls/2714 after update_ref"
-      }
+      },
+      "new_model_calls_scope": "Zero local calls at this code-publication checkpoint. Later remote run 39140341757 completed 64 calls, separately recorded in remote_model_intake."
     }
   ],
   "latest_postpush_ci": {
@@ -361,12 +362,22 @@
     "identity_mismatches": []
   },
   "organization_utilization": "NOT_ACCESSIBLE; observed job counts do not establish capacity",
-  "completed_new_model_receipts_this_audit": 0,
+  "completed_new_model_receipts_this_audit": 3,
   "model_cost_this_audit": {
     "local_inference_calls": 0,
     "local_tokens": 0,
     "local_inference_seconds": 0,
-    "scope": "Zero local inference calls. The existing remote Laya Reader intake job was in_progress at the final CI observation; completed physical receipts and their costs were not yet independently verified."
+    "remote_reader_predict_calls": 64,
+    "remote_reader_reported_input_tokens": 12422,
+    "remote_reader_prediction_wall_seconds": 63.78450276,
+    "remote_reader_evaluation_total_wall_seconds": 63.7905,
+    "remote_reader_calibration_calls": 0,
+    "remote_reader_nine_arm_calls": 0,
+    "flops": null,
+    "peak_memory_bytes": null,
+    "energy_joules": null,
+    "monetary_cost": null,
+    "scope": "Zero local inference. Existing CI run 39140341757 performed 64 fresh frozen Laya typed-choice calls on exact f191cd081 source. Missing physical measures remain unknown; no estimated cost substituted."
   },
   "research_posture": "SHADOW_ONLY / DENY_ALL / NO_GO",
   "merge_count": 0,
@@ -645,7 +656,7 @@
       "id": "MEMORY-FRESH-112",
       "status": "BLOCKED_EXTERNAL_RESOURCE_AND_NO_GO",
       "owner": "PR #1452 / independent evidence reviewer",
-      "root": "Historical 40+72 rows are distinct from the failed fresh attempt (6 calibration / 0 evaluation). No completed new-model receipts were created by this audit.",
+      "root": "Historical 40+72 rows are distinct from the failed fresh #1452 attempt (6 calibration / 0 evaluation). A later exact-f191cd Reader CI execution produced 64 fresh four-arm calls; this is a separate diagnostic and does not satisfy 40 calibration + 72 nine-arm acceptance.",
       "next": "Use a worker fitting the pinned model and locked protocol, start a new batch, finish 40 calibration then 72 nine-arm calls, independently review answers/citations/holdout/cost."
     },
     {
@@ -794,7 +805,7 @@
   ],
   "latest_subject_evidence": "LATEST_HEADS.jsonl",
   "snapshot_policy": "Every fact retains its observation time and exact source SHA. Later heads do not inherit earlier CI or test results.",
-  "updated_utc": "2026-10-18 16:40:32 UTC",
+  "updated_utc": "2026-10-18 16:55:56 UTC",
   "earlier_postpush_ci_snapshots": [
     {
       "observed_interval_utc": [
@@ -860,6 +871,41 @@
     "scope": "Actual new-head contract regression tests; no new model calls, native Rust qualification or production promotion."
   },
   "remote_model_intake": {
+    "observed_utc": "2026-10-18T16:46:01Z",
+    "root_rechecked_utc": "2026-10-18 16:54:25 UTC",
+    "run_id": 39140341757,
+    "job_id": 117713314446,
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "run_attempt": 1,
+    "observed_status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-18T16:24:39Z",
+    "completed_at": "2026-10-18T16:27:02Z",
+    "fresh_execution_confirmed": true,
+    "physical_call_count": 64,
+    "unique_tasks": 16,
+    "arms": [
+      "none",
+      "distractor",
+      "withheld",
+      "full"
+    ],
+    "completed_receipt_files_verified": 3,
+    "artifact_id": 12143240868,
+    "artifact_sha256": "ef233e2a0fdd42359d62b577a65fccd879c02d75ecabce73a1693c26858424d8",
+    "model_revision": "c5d78730f3493e4fe16d61507ef4b78eef7318cf",
+    "model_snapshot_sha256": "ac8e18d65b026edf4d2c856ba7e3aa72df28fc8ec0f6a771f3b7ff1f372da036",
+    "manifest_sha256": "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89",
+    "seed": 17,
+    "root_row_arithmetic_verification": "ROOT_LAYA_VERIFICATION.json",
+    "terminal_evidence": "LAYA_TERMINAL_CHECKPOINT.json",
+    "full_ci_matrix_refreshed": false,
+    "calibration_40_and_nine_arm_72_completed": false,
+    "independent_factual_gold_or_source_review_performed": false,
+    "promotion_allowed": false
+  },
+  "completed_new_model_receipts_definition": "Three non-weight JSON receipt files for one verified fresh remote Reader execution; these contain 64 typed-choice inference rows. The 40-calibration + 72-nine-arm acceptance batch remains incomplete.",
+  "earlier_remote_model_intake": {
     "run_id": 39140341757,
     "job_id": 117713314446,
     "observed_status": "in_progress",
@@ -867,5 +913,28 @@
     "completed_receipts_verified": 0,
     "physical_call_count": "UNKNOWN_PENDING_RECEIPTS",
     "promotion_allowed": false
+  },
+  "prepublication_pr_ref_observation": {
+    "observed_utc": "2026-10-18 16:49:40 UTC",
+    "subjects": [
+      {
+        "pr": 2599,
+        "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+        "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "draft": false,
+        "state": "open",
+        "merged": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2599"
+      },
+      {
+        "pr": 2714,
+        "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+        "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+        "draft": true,
+        "state": "open",
+        "merged": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2714"
+      }
+    ]
   }
 }

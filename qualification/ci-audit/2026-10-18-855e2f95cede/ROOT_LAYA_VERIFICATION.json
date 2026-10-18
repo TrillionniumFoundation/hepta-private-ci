@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.root-laya-receipt-verification.v1",
+  "verified_utc": "2026-10-18T16:55:22.312626+00:00",
+  "verifier": "/root",
+  "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+  "run_id": 39140341757,
+  "job_id": 117713314446,
+  "artifact_id": 12143240868,
+  "artifact_bytes": 58507,
+  "artifact_sha256": "ef233e2a0fdd42359d62b577a65fccd879c02d75ecabce73a1693c26858424d8",
+  "artifact_zip_matches_exact_api_digest": true,
+  "artifact_members_match_extracted_bytes": true,
+  "row_arithmetic_result": "PASS",
+  "rows": 64,
+  "unique_tasks": 16,
+  "arm_metrics": {
+    "none": {
+      "samples": 16,
+      "evidence_condition_accuracy": 0.125,
+      "top1_gold_fraction": 0.4375,
+      "reported_input_tokens": 2683
+    },
+    "distractor": {
+      "samples": 16,
+      "evidence_condition_accuracy": 0.375,
+      "top1_gold_fraction": 0.3125,
+      "reported_input_tokens": 3063
+    },
+    "withheld": {
+      "samples": 16,
+      "evidence_condition_accuracy": 0.125,
+      "top1_gold_fraction": 0.5625,
+      "reported_input_tokens": 3163
+    },
+    "full": {
+      "samples": 16,
+      "evidence_condition_accuracy": 1.0,
+      "top1_gold_fraction": 1.0,
+      "reported_input_tokens": 3513
+    }
+  },
+  "reported_input_tokens": 12422,
+  "prediction_wall_seconds": 63.78450276,
+  "evaluation_total_wall_seconds": 63.7905,
+  "independent_factual_gold_or_source_review_performed": false,
+  "new_local_model_calls": 0,
+  "calibration_40_and_nine_arm_72_completed_by_this_run": false,
+  "production_activation_allowed": false,
+  "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO"
+}

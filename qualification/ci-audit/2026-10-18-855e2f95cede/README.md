@@ -46,9 +46,9 @@ PON 对比实际确认 #1504 的 wrapper 通过 4/4 故障注入单元测试，#
 
 ## 模型实验和 OS 联动
 
-本轮没有启动本地真实模型推理，新增完成的模型 receipts 为 0。历史档案确有 40 calibration + 72 nine-arm 行，但属于 10 月 13-14 日运行；不能替代新 HEAD 的新实验。另一 owner 的 10 月 18 日 fresh attempt 完成 6 个 calibration 答案、0 evaluation，第七次没有返回后 watchdog 终止。两个批次不得拼接。本轮推送触发的既有远端 Reader intake 在 16:24-16:25 UTC 末次 job 读取时已进入运行，尚无本轮独立复核的完整物理 receipts；后续须按实际产物单独核验。
+本轮没有启动本地真实模型推理。推送触发的既有远端 Reader intake 随后在精确 f191cd081… 上完成 64 次新鲜 Laya typed-choice 推理，三份非权重 receipts 已下载并校验；终态观察与复算见下节。历史档案确有 40 calibration + 72 nine-arm 行，但属于 10 月 13-14 日运行，不能替代新 HEAD 的新实验。另一 owner 的 10 月 18 日 fresh attempt 完成 6 个 calibration 答案、0 evaluation，第七次没有返回后 watchdog 终止。历史批次、该未完成批次与新的 64 次四臂诊断都保持独立，不拼接充数。
 
-64 次 Laya Reader / 四臂指标保留为历史局部证据。缺独立 heldout calibration、完整设备/概率/FLOPs/内存/能源 join，继续 HOLD_NO_GO。共享 Encoder、NDU/System2 和多模态方向仍需真实受控消融与预算测量，不能用这 109 项契约测试证明能力提升。
+较早的 64 次 Laya Reader / 四臂指标保留为历史局部证据；本轮新执行的 64 次单独绑定新 HEAD、run 和 artifact。两者均缺完整独立 heldout calibration、设备/概率/FLOPs/内存/能源 join，继续 HOLD_NO_GO。共享 Encoder、NDU/System2 和多模态方向仍需真实受控消融与预算测量，不能用这 109 项契约测试证明能力提升。
 
 OS 仓库在 15:22:56-15:23:29 UTC 完整清点 167 branches、185 PR；open 20（Draft 16、非 Draft 4）、merged 109、closed-unmerged 56。main 为 f9e306f76154590e096a42f70ce9de0a7c859e60。#193 在所观察 HEAD 有 7 checks / 4 runs success；#194 是 0 checks / 0 runs，不能计绿。仍是 Hepta #2815 -> Desktop #193 -> #194 的未合并依赖栈。
 
@@ -68,6 +68,8 @@ BLOCKERS.md/BLOCKERS.json 为未闭合清单，REPRODUCE.md 为固定 SHA 的可
 | ci-evidence.tar.gz | 已审查失败日志、独立复核、两个新 HEAD 的两次完整 CI 快照 |
 | research-os-evidence.tar.gz | 研究修复、真实测试日志、历史模型 recount、OS 全部分页及 20 个 open PR 检查 |
 | runtime-evidence.tar.gz | 遮蔽后的完整主机/dirty 文件快照、全 active-run/job 快照、源码映射原始失败归档、报告生成器 |
+| final-ci-addendum.tar.gz | 16:24-16:25 UTC 完整两 PR CI 快照与已完成 job 日志 |
+| laya-terminal-evidence.tar.gz | 新 HEAD 上实际 64 次 Laya 调用的原始 artifact、receipts、API、源码与执行日志证据 |
 
 大体积 JSON 保留在对应归档内，包含 host_snapshot.json、SCHEDULER_SOURCE_AUDIT.json 和 PR2714_PUBLISHED_CHECKPOINT.json。ARCHIVES.json / FILES.json 给出 SHA-256 与 Git blob；每包成员有独立清单。观察窗口内的其他 worktree 可能正在被其 owner 创建或写入，dirty 快照不构成允许覆盖、删除或终止任务的依据。
 
@@ -82,3 +84,18 @@ BLOCKERS.md/BLOCKERS.json 为未闭合清单，REPRODUCE.md 为固定 SHA 的可
 [FINAL_CI_ADDENDUM.md](FINAL_CI_ADDENDUM.md) / [final-ci-checkpoint.json](final-ci-checkpoint.json) 保留随后一次完整分页快照：两个已推送 HEAD 未变，17 个 jobs 中 2 success、14 queued、1 in_progress，0 failure、0 skipped。#2714 的 Stem/Reader bridge 在精确 `f191cd08…` 上实际完成 27 + 109 项 Python 契约测试；#2599 只完成 Actions 语言 CodeQL，其他四种语言仍 queued，额外 CodeQL 汇总为 neutral。两个工作流汇总均未生成，不能计作完整 required CI 通过。新增完整 raw JSON 与两份执行日志在 `final-ci-addendum.tar.gz`。
 
 16:37:01 UTC 对同一主机再次只读采样，观察到 12 个可见进程，工作区磁盘可用字节仍为 0；见 [FINAL_EXECUTOR_STATE.json](FINAL_EXECUTOR_STATE.json)。16 个 worktree 和完整 dirty-path 清单仍明确标注为 15:30:22 UTC 的较早快照，没有用新的进程时间覆盖它们。三个协作审查任务已完成，未遗留本审计启动的原生构建或本地模型任务。
+
+## 随后确认的新鲜 Reader 执行（16:46-16:55 UTC）
+
+[LAYA_TERMINAL_CHECKPOINT.json](LAYA_TERMINAL_CHECKPOINT.json) 与 [ROOT_LAYA_VERIFICATION.json](ROOT_LAYA_VERIFICATION.json) 记录对单个 Reader run 的终态读取和两次独立计数/计分复算；这不是完整 CI 矩阵的再次刷新。[run 39140341757](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39140341757) 的两个 jobs 均 success，Reader job 117713314446 在 16:24:39-16:27:02 UTC 实际执行，exact source 为 f191cd081ba16fed8827a18093b5a5b39e9a36cd。日志为 `reader_status=evaluated`，没有走允许标记 INCOMPLETE 的 exit-2 fallback。58,507 字节 artifact 12143240868 的 SHA-256 与 API 和上传日志三方一致。
+
+本次为 16 个任务 × none/distractor/withheld/full 四臂 = 64 次冻结模型 `predict`，seed 17。模型为 convaiinnovations/laya，固定 revision c5d78730f3493e4fe16d61507ef4b78eef7318cf；snapshot SHA-256 为 ac8e18d65b026edf4d2c856ba7e3aa72df28fc8ec0f6a771f3b7ff1f372da036。报告输入 token 合计 12,422；逐次预测 wall 合计 63.78450276 秒，evaluator 总计 63.7905 秒。未报告的 FLOPs、峰值内存、能源和金钱成本保持未知。
+
+| 臂 | 样本数 | 按证据条件回答/弃答正确率 | top1 命中仓库 gold 比例 |
+|---|---:|---:|---:|
+| none | 16 | 0.125 | 0.4375 |
+| distractor | 16 | 0.375 | 0.3125 |
+| withheld | 16 | 0.125 | 0.5625 |
+| full | 16 | 1.0 | 1.0 |
+
+前一指标在证据不足的三臂要求 UNKNOWN；后一指标只比较 gold，不能混称。复核确认了 artifact 完整性及 64 行的唯一性、算术和计分一致性，尚未完成独立事实 gold/引用链与科学置信资格审查。运行警告具体涉及 `choice:11+` 温度夹取至 0.5，不能直接断言本次选项头必然受其影响；独立校准 receipts 仍缺失。本批没有 40 次独立校准或 72 次九臂实验，也不证明参数学习、NDU/System2 或生产选择资格。研究继续 SHADOW_ONLY / DENY_ALL / NO_GO。
