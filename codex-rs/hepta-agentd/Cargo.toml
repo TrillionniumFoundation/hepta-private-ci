@@ -30,6 +30,11 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+
+[[bin]]
+name = "hepta-cognitive-upgrade"
+path = "src/bin/hepta-cognitive-upgrade.rs"
+test = false
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -47,6 +52,7 @@ codex-arg0 = { workspace = true }
 codex-config = { workspace = true }
 codex-features = { workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
+codex-hepta-supervisor = { workspace = true }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
@@ -106,7 +112,6 @@ codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
 sqlx = { workspace = true }
