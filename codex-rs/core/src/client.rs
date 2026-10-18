@@ -3063,6 +3063,10 @@ fn provider_http_dispatch_metadata(headers: &ApiHeaderMap) -> RequestDispatchMet
 const RESPONSE_STREAM_CHANNEL_CAPACITY: usize = 1600;
 const STREAM_DROPPED_REASON: &str = "response stream dropped before provider terminal event";
 
+// Provider error redaction and encoded-body observation are privacy-coupled
+// choices; retain both explicitly but avoid an eight-argument call boundary.
+type ResponseEventPrivacy = (bool, Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>);
+
 fn map_response_stream(
     api_stream: codex_api::ResponseStream,
     session_telemetry: SessionTelemetry,
@@ -3092,8 +3096,7 @@ fn map_response_stream(
         inference_trace_attempt,
         provider,
         provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        (redact_provider_errors, encoded_request_observer),
     )
 }
 
@@ -3104,8 +3107,7 @@ fn map_response_events<S>(
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
-    redact_provider_errors: bool,
-    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+    privacy: ResponseEventPrivacy,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3115,7 @@ where
         + Send
         + 'static,
 {
+    let (redact_provider_errors, encoded_request_observer) = privacy;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
