@@ -84,8 +84,6 @@ ignore = [
     { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 is unmaintained; pulled in via i18n-embed-fl/age used by codex-secrets local storage; remove when codex-secrets migrates off age or age drops i18n-embed-fl" },
     { id = "RUSTSEC-2026-0194", reason = "quick-xml v0.39.4 remains via plist/syntect and wayland-scanner; plist does not exercise the affected APIs and wayland-scanner parses trusted build-time XML; remove when rust-plist#191 and wayland-rs#938 are released" },
     { id = "RUSTSEC-2026-0195", reason = "quick-xml v0.39.4 remains via plist/syntect and wayland-scanner; plist does not exercise the affected APIs and wayland-scanner parses trusted build-time XML; remove when rust-plist#191 and wayland-rs#938 are released" },
-    { id = "RUSTSEC-2026-0370", reason = "zvariant 4.2.0 is pulled via keyring 3.6.3 optional Linux zbus backend; application does not use zvariant APIs directly; remove when the keyring/zbus chain moves to zbus >= 6" },
-    # The ID-level exception is global in cargo-deny; review it against this lock path (keyring 3.6.3 -> zbus 4.4 -> zvariant 4.2) and remove it when the keyring/zbus chain reaches zbus >= 6. Re-open review if any other dependency path introduces this advisory.
 ]
 # If this is true, then cargo deny will use the git executable to fetch advisory database.
 # If this is false, then it uses a built-in git library.
