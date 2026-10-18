@@ -131,6 +131,32 @@ fn file_wal_syncs_frames_and_repairs_torn_tail() {
 }
 
 #[test]
+fn file_wal_repairs_incomplete_length_before_new_commits() {
+    let directory = must(tempdir());
+    let path = directory.path().join("partial-length-scope-lanes.wal");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        must(writer.append(envelope("scope-a", "owner-a", 1, "first")));
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    {
+        let mut interrupted = must(OpenOptions::new().append(true).open(&path));
+        must(interrupted.write_all(&[0, 0, 0]));
+        must(interrupted.sync_all());
+    }
+
+    // Reopening must truncate an incomplete frame-length prefix on Windows
+    // as well as Unix, and it must not acknowledge the uncommitted tail.
+    let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+    assert_eq!(recovered.wal().record_count(), 1);
+    must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
+    drop(recovered);
+    let reopened = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(reopened.wal().record_count(), 2);
+}
+
+#[test]
 fn incremental_scope_lanes_replay_many_distinct_committed_frames() {
     let directory = must(tempdir());
     let path = directory.path().join("incremental-scope-lanes.wal");

@@ -297,7 +297,8 @@ pub struct ScopeLaneFileWalV1 {
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
         let mut options = OpenOptions::new();
-        options.create(true).read(true).append(true);
+        // Windows recovery must be able to truncate an incomplete WAL tail.
+        options.create(true).read(true).write(true).append(true);
         // Never follow an attacker-swapped final component into an unrelated
         // file. This is defense in depth: callers still must own a trusted
         // parent directory and validate their run-root lineage.
