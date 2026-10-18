@@ -1014,6 +1014,11 @@ fn append_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(raw);
 }
 
+/// Reference backend evidence v2. Every variable-length field is length
+/// prefixed. v1 concatenated request/model identifiers without delimiters, so
+/// ("a", "bc") and ("ab", "c") hashed identical preimages for equal outputs.
+/// The domain changes deliberately: old v1 evidence cannot be reinterpreted
+/// as v2 without explicit, independently reviewed compatibility admission.
 fn digest_output(
     request_id: &StableId,
     model_id: &StableId,
@@ -1024,14 +1029,15 @@ fn digest_output(
     identity_digest: Digest32,
     output: &[i64],
 ) -> Digest32 {
-    let mut bytes = b"hepta.neuron.reference-backend-output.v1\0".to_vec();
-    bytes.extend_from_slice(request_id.as_str().as_bytes());
-    bytes.extend_from_slice(model_id.as_str().as_bytes());
+    let mut bytes = b"hepta.neuron.reference-backend-output.v2\0".to_vec();
+    append_stable_id(&mut bytes, request_id);
+    append_stable_id(&mut bytes, model_id);
     bytes.extend_from_slice(&generation.get().to_be_bytes());
     bytes.extend_from_slice(head_digest.as_array());
     bytes.extend_from_slice(encoder_digest.as_array());
     bytes.extend_from_slice(input_digest.as_array());
     bytes.extend_from_slice(identity_digest.as_array());
+    bytes.extend_from_slice(&u64::try_from(output.len()).unwrap_or(u64::MAX).to_be_bytes());
     for value in output {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
