@@ -454,6 +454,33 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
         MODULE.verify_observer_signature({**receipt, "signatureHex": None}, trusted_key)
 
 
+def test_ed25519_observer_key_must_have_prime_order() -> None:
+    """Strict key validation prevents low-order and mixed-order acceptance."""
+    private = Ed25519PrivateKey.generate()
+    trusted_key = private.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    assert MODULE._ed25519_prime_order_public_key(trusted_key)
+    field = 2**255 - 19
+    low_order_and_noncanonical = (
+        bytes(32),
+        b"\x01" + bytes(31),
+        field.to_bytes(32, "little"),
+        b"\xff" * 32,
+    )
+    for key in low_order_and_noncanonical:
+        assert not MODULE._ed25519_prime_order_public_key(key)
+
+    # On twisted Edwards25519, adding its order-2 point (0, -1)
+    # changes (x, y) to (-x, -y), preserving the curve but adding torsion.
+    encoded = int.from_bytes(trusted_key, "little")
+    y = encoded & ((1 << 255) - 1)
+    x_sign = encoded >> 255
+    mixed = (((-y) % field) | ((1 - x_sign) << 255)).to_bytes(32, "little")
+    assert not MODULE._ed25519_prime_order_public_key(mixed)
+
+
 def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_path: Path) -> None:
     report = MODULE.run_matrix(
         workload_command=None,
