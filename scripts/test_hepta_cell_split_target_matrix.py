@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shlex
 import subprocess
 import sys
@@ -116,6 +117,42 @@ def test_pretty_json_workload_receipt_is_parsed() -> None:
     assert MODULE.parse_workload_output(json.dumps(receipt, indent=2)) == receipt
 
 
+def test_isolated_process_rejects_timeouts_and_leftover_descendants(
+    tmp_path: Path,
+) -> None:
+    env = os.environ.copy()
+    healthy = MODULE.run_isolated_command(
+        [sys.executable, "-c", "print('healthy')"],
+        env=env,
+        timeout_seconds=5,
+    )
+    assert healthy.returncode == 0
+    assert healthy.stdout.strip() == "healthy"
+
+    with pytest.raises(ValueError, match="deadline; process group terminated"):
+        MODULE.run_isolated_command(
+            [sys.executable, "-c", "import time; time.sleep(30)"],
+            env=env,
+            timeout_seconds=0.2,
+        )
+
+    leaky = tmp_path / "leaky-worker.py"
+    leaky.write_text(
+        "import subprocess, sys\n"
+        "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'],"
+        " stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,"
+        " stderr=subprocess.DEVNULL)\n"
+        "print('launcher finished')\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="descendant processes"):
+        MODULE.run_isolated_command(
+            [sys.executable, str(leaky)],
+            env=env,
+            timeout_seconds=5,
+        )
+
+
 def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) -> None:
     output = tmp_path / "matrix.json"
     report = MODULE.run_matrix(
@@ -172,6 +209,96 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
     assert report["status"] == "blocked"
     assert "full-scale-matrix" in report["blockingCases"]
     assert "independent-observer" in report["blockingCases"]
+    MODULE.validate_report(report)
+
+
+def isolated_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, str]:
+    """Make a real, isolated Git fixture; never dirty the project checkout."""
+    root = tmp_path / "checkout"
+    scripts = root / "scripts"
+    scripts.mkdir(parents=True)
+    fake_script = scripts / "hepta-cell-split-target-matrix.py"
+    fake_script.write_text("# fixture only\n", encoding="utf-8")
+    (root / "tracked.py").write_text("VERSION = 1\n", encoding="utf-8")
+    commands = (
+        ("init", "-q"),
+        ("add", "."),
+        (
+            "-c",
+            "user.name=P4 Fixture",
+            "-c",
+            "user.email=p4-fixture@example.invalid",
+            "commit",
+            "-qm",
+            "isolated source fixture",
+        ),
+    )
+    for command in commands:
+        subprocess.run(
+            ["git", "-C", str(root), *command],
+            check=True,
+            capture_output=True,
+        )
+    monkeypatch.setattr(MODULE, "__file__", str(fake_script))
+    head = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    return root, head
+
+
+@pytest.mark.parametrize("dirty_kind", ("tracked", "untracked"))
+def test_measured_source_rejects_dirty_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, dirty_kind: str
+) -> None:
+    root, head = isolated_checkout(tmp_path, monkeypatch)
+    if dirty_kind == "tracked":
+        (root / "tracked.py").write_text("VERSION = 2\n", encoding="utf-8")
+    else:
+        (root / "untracked.py").write_text("UNTRACKED = True\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="repository checkout is dirty"):
+        MODULE.run_matrix(
+            workload_command="python --version",
+            observer_command=None,
+            workload_digest="a" * 64,
+            source_commit=head,
+            output=tmp_path / "dirty.json",
+            cell_count=64,
+        )
+
+
+def test_worker_source_mutation_blocks_every_case(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, head = isolated_checkout(tmp_path, monkeypatch)
+    workload = tmp_path / "frozen-workload"
+    workload.write_bytes(b"synthetic fixture only")
+    worker = tmp_path / "source-mutation.py"
+    worker.write_text(
+        "from pathlib import Path\n"
+        f"Path({str(root / 'tracked.py')!r}).write_text('VERSION = 3\\n')\n",
+        encoding="utf-8",
+    )
+    report = MODULE.run_matrix(
+        workload_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))}",
+        observer_command=None,
+        workload_digest=hashlib.sha256(workload.read_bytes()).hexdigest(),
+        source_commit=head,
+        output=tmp_path / "source-mutation-report.json",
+        workload_path=workload,
+        cell_count=64,
+    )
+    assert report["status"] == "blocked"
+    assert len(report["cases"]) == 16
+    assert all(row["status"] == "blocked" for row in report["cases"])
+    assert all(
+        "repository checkout is dirty" in row["reason"] for row in report["cases"]
+    )
+    assert "source-checkout" in report["blockingCases"]
     MODULE.validate_report(report)
 
 
