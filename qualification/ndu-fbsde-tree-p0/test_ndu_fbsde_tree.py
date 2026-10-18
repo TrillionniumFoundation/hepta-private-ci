@@ -71,6 +71,44 @@ class TreeContractTests(unittest.TestCase):
                 horizon_steps=1,
             )
 
+    def test_rejects_local_fanout_even_within_global_node_envelope(self):
+        root = node("root", None, 0)
+        leaves = tuple(node(f"leaf-{i}", "root", 1) for i in range(3))
+        edges = tuple(
+            TreeEdgeV1("root", leaf.node_id, 0.1, 0.0, 0.0) for leaf in leaves
+        )
+        # Four nodes fit the global b=2,H=2 envelope (1+2+4=7),
+        # but a root with three children violates the actual local fanout.
+        with self.assertRaisesRegex(ContractError, "local branching factor"):
+            TreePlanV1(
+                nodes=(root, *leaves),
+                edges=edges,
+                branching_factor=2,
+                horizon_steps=2,
+            )
+
+    def test_budget_cannot_increase_across_tree_edge(self):
+        root = node("root", None, 0, budget=4.0)
+        child = node("child", "root", 1, budget=5.0)
+        with self.assertRaisesRegex(ContractError, "increase resource budget"):
+            TreePlanV1(
+                nodes=(root, child),
+                edges=(TreeEdgeV1("root", "child", 0.1, 0.0, 0.0),),
+                branching_factor=2,
+                horizon_steps=1,
+            )
+
+    def test_boolean_tree_size_fields_fail_closed(self):
+        root = node("root", None, 0)
+        for keyword in (
+            {"branching_factor": True, "horizon_steps": 0},
+            {"branching_factor": 1, "horizon_steps": False},
+            {"branching_factor": 1, "horizon_steps": 0, "max_nodes": True},
+        ):
+            with self.subTest(keyword=keyword):
+                with self.assertRaises(ContractError):
+                    TreePlanV1(nodes=(root,), edges=(), **keyword)
+
     def test_prompt_boundary_rejects_injection(self):
         with self.assertRaises(ContractError):
             validate_prompt_boundary(
