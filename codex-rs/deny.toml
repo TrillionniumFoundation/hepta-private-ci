@@ -158,6 +158,12 @@ exceptions = [
     # Each entry is the crate and version constraint, and its specific allow
     # list
     #{ allow = ["Zlib"], crate = "adler32" },
+    # Reviewed against SPDX bzip2-1.0.6: permissive redistribution requiring
+    # preservation of upstream copyright/conditions and source attribution.
+    # Only libbz2-rs-sys 0.2.5 (zip 9.0.5 -> bzip2 0.6.1), not a global
+    # license allowance. Retain license notices in distributions.
+    # https://spdx.org/licenses/bzip2-1.0.6.html
+    { allow = ["bzip2-1.0.6"], crate = "libbz2-rs-sys@0.2.5" },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
