@@ -56,12 +56,15 @@ def test_default_matrix_is_64_unique_cases_across_four_cell_counts() -> None:
     assert len(cases) == 64
     assert [count for count in MODULE.CELL_COUNTS] == [64, 256, 1024, 4096]
     assert len({case["caseId"] for case in cases}) == 64
-    assert len(
-        {
-            (case["cellCount"], *(case[name] for name, _ in MODULE.FACTORS))
-            for case in cases
-        }
-    ) == 64
+    assert (
+        len(
+            {
+                (case["cellCount"], *(case[name] for name, _ in MODULE.FACTORS))
+                for case in cases
+            }
+        )
+        == 64
+    )
     for count in MODULE.CELL_COUNTS:
         one = MODULE.matrix_cases(count)
         assert len(one) == 16
@@ -75,7 +78,13 @@ def test_measurement_requires_all_metrics_and_monotonic_quantiles() -> None:
     assert MODULE.validate_metrics(metrics) == metrics
     with pytest.raises(ValueError, match="quantiles"):
         MODULE.validate_metrics({**metrics, "p95Micros": 40})
-    for missing in ("walBytes", "walFsyncCount", "gpuObserved", "gpuMicros", "gpuBytes"):
+    for missing in (
+        "walBytes",
+        "walFsyncCount",
+        "gpuObserved",
+        "gpuMicros",
+        "gpuBytes",
+    ):
         incomplete = dict(metrics)
         del incomplete[missing]
         with pytest.raises(ValueError, match="missing metrics"):
@@ -134,7 +143,9 @@ def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) ->
     MODULE.validate_report(json.loads(output.read_text(encoding="utf-8")))
 
 
-def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Path) -> None:
+def test_single_count_workload_passes_count_and_remains_diagnostic(
+    tmp_path: Path,
+) -> None:
     workload = tmp_path / "frozen-tasks"
     workload.write_bytes(b"fixture only: not a production task corpus")
     frozen_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
@@ -299,10 +310,14 @@ def test_full_scale_cannot_be_forged_from_one_count(tmp_path: Path) -> None:
 
 def test_signed_observer_requires_out_of_band_trust_root() -> None:
     private = Ed25519PrivateKey.generate()
-    trusted_key = private.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw,
-    ).hex()
+    trusted_key = (
+        private.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        .hex()
+    )
     receipt = {
         "schema": MODULE.OBSERVER_SCHEMA,
         "verified": True,
@@ -312,9 +327,7 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
         "metricsDigest": "d" * 64,
         "observerId": "independent-observer",
     }
-    receipt["signatureHex"] = private.sign(
-        MODULE.observer_signing_bytes(receipt)
-    ).hex()
+    receipt["signatureHex"] = private.sign(MODULE.observer_signing_bytes(receipt)).hex()
     MODULE.verify_observer_signature(receipt, trusted_key)
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.verify_observer_signature(receipt, None)
@@ -348,7 +361,9 @@ def test_rejects_low_order_and_noncanonical_pinned_ed25519_keys() -> None:
             MODULE.verify_observer_signature(receipt, weak_key)
 
 
-def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_path: Path) -> None:
+def test_forged_verified_observer_cannot_qualify_report_without_signature(
+    tmp_path: Path,
+) -> None:
     report = MODULE.run_matrix(
         workload_command=None,
         observer_command=None,
@@ -364,8 +379,14 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_pa
     provisional = {
         key: report[key]
         for key in (
-            "schema", "authority", "cellCounts", "sourceCommit",
-            "workloadDigest", "workloadSourceDigest", "host", "cases",
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
         )
     }
     observer = {
@@ -374,10 +395,12 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_pa
         "sourceCommit": report["sourceCommit"],
         "workloadDigest": report["workloadDigest"],
         "reportDigest": MODULE.digest(provisional),
-        "metricsDigest": MODULE.digest([
-            {"caseId": row["caseId"], "metricsDigest": row["metricsDigest"]}
-            for row in report["cases"]
-        ]),
+        "metricsDigest": MODULE.digest(
+            [
+                {"caseId": row["caseId"], "metricsDigest": row["metricsDigest"]}
+                for row in report["cases"]
+            ]
+        ),
         "observerId": "untrusted",
     }
     observer["signatureHex"] = "00" * 64
