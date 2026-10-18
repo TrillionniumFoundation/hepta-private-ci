@@ -7,7 +7,6 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::claim_final_use;
-use codex_hepta_contracts::deliver_final_use;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -341,7 +340,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
 
     /// The only product-facing tick entrypoint. The independent authority
     /// authenticates the exact NDU/current generation and durably claims its
-    /// nonce. The delivery guard revalidates before any model/journal action.
+    /// nonce. The effect guard revalidates and fences revocation across the model/journal call.
     pub fn tick_authorized(
         &mut self,
         authority: &FinalUseAuthority,
@@ -351,7 +350,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let expected = self.final_use_binding(&input)?;
         let token = claim_final_use(authority, signed, &expected)?;
-        deliver_final_use(authority, token, &expected, || self.tick(model, input))
+        authority.with_verified_effect(token, &expected, || self.tick(model, input))
             .map_err(NeuronRuntimeError::FinalUse)?
     }
 

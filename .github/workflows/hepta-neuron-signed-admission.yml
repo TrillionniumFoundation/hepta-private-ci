@@ -1,0 +1,92 @@
+name: Hepta Neuron signed admission and worker qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-neuron-signed-admission.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-signed-admission-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  exact-source:
+    name: Neuron signed entrypoint + worker compile (non-authorizing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+      - name: Verify exact checkout and Rust toolchain
+        shell: bash
+        env:
+          EXPECTED: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED"
+          rustc --version
+          cargo --version
+          cargo fmt --version
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Check locked workspace graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-neuron-metadata.json"
+      - name: Check source formatting (no mutation)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-neuron --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+      - name: Run neuron + intelligence signed-authority tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-neuron -p codex-hepta-intelligence
+      - name: Compile worker, agentd and model owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-infer-worker-host -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-intelligence
+      - name: Strict focused Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-neuron -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Verify no test mutated source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain locked graph and exact checkout
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hepta-neuron-signed-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-neuron-metadata.json
+          if-no-files-found: warn
+          retention-days: 14
