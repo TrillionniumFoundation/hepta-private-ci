@@ -438,25 +438,30 @@ jobs:
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture || failed=1
           done
           exit "$failed"
-      - name: Build and pin the actual ordinary binaries and explicit learning study library
+      - name: Require all fourteen source Start observation reader controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ordinary-start-reader-controls.json" --minimum-tests 14 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/test_ordinary_start_observation.py -v
+      - name: Build, package and pin the actual ordinary binaries and explicit learning study library
         env:
           CARGO_NET_OFFLINE: "true"
           RUSTUP_TOOLCHAIN: "1.96.0"
+          CARGO_PROFILE_RELEASE_DEBUG: "0"
         run: |
           set -euo pipefail
-          # Product CLI and Agentd keep their defaults. The library feature only
-          # supplies the original qualification fixture write seam.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-product-binaries-build.json" -- cargo +1.96.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --bin hepta-cognitive-upgrade --bin codex-hepta-agentd
+          # GNU native product packaging uses the explicit release/debug0 build.
+          # The library feature only supplies the original qualification fixture write seam.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-product-binaries-build.json" -- cargo +1.96.0 build --locked --release --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --bin hepta-cognitive-upgrade --bin codex-hepta-agentd
           # The original nextest list command builds and discovers the selected
-          # library. Do not pass --no-run through the run-only just test wrapper.
+          # debug library. Do not pass --no-run through the run-only just test wrapper.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-study-inventory.json" -- bash -c 'cargo +1.96.0 nextest list --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib --features qualification-legacy-learning-write --list-type binaries-only --message-format json > "$RUNNER_TEMP/pon-pair/hepta-study-binaries.json"'
           # Only this separately built private-study daemon enables the original
           # signed grant gate. Default Supervisor builds and controls remain unchanged.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-private-supervisor-build.json" -- cargo +1.96.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --bin hepta-supervisord --features production-authority
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-private-supervisor-build.json" -- cargo +1.96.0 build --locked --release --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --bin hepta-supervisord --features production-authority
           python3 - <<'PYSTUDYPINS'
-          import hashlib, json, os
+          import hashlib, json, os, platform, shutil, subprocess, sys
           from pathlib import Path
-          directory = Path(os.environ['RUNNER_TEMP']) / 'pon-pair'
+          temporary = Path(os.environ['RUNNER_TEMP']).resolve(strict=True)
+          directory = temporary / 'pon-pair'
           listing = json.loads((directory / 'hepta-study-binaries.json').read_text())
           rows = [row for row in listing['rust-binaries'].values()
                   if row['kind'] == 'lib' and row['binary-name'] == 'codex_hepta_agentd']
@@ -464,24 +469,86 @@ jobs:
               raise ValueError('one exact compiled Agentd library artifact required')
           native = Path(rows[0]['binary-path']).resolve(strict=True)
           target = Path(listing['rust-build-meta']['target-directory']).resolve(strict=True)
-          if not native.is_relative_to(target) or native.parent.name != 'deps' or native.parent.parent.name != 'debug':
-              raise ValueError('native study must use the actual selected debug artifact')
-          cli = (native.parent.parent / 'hepta-cognitive-upgrade').resolve(strict=True)
-          agentd = (native.parent.parent / 'codex-hepta-agentd').resolve(strict=True)
-          supervisor = (native.parent.parent / 'hepta-supervisord').resolve(strict=True)
-          pins = []
-          for role, executable in (('study-test-library', native), ('ordinary-cognitive-cli', cli),
-                                   ('ordinary-agentd', agentd), ('private-signed-supervisor', supervisor)):
-              if not executable.is_file() or not os.access(executable, os.X_OK):
-                  raise ValueError('actual executable required')
-              if any(c in str(executable) for c in '\r\n\0'):
-                  raise ValueError('invalid executable environment path')
-              with executable.open('rb') as stream:
+          if not native.is_relative_to(target) or native.parent.name != 'deps' or native.parent.parent != target / 'debug':
+              raise ValueError('native study must use the actual selected host debug artifact')
+          rustc = directory / 'hepta-rustc.txt'
+          hosts = [line.removeprefix('host: ') for line in rustc.read_text().splitlines() if line.startswith('host: ')]
+          expected_host = {'x86_64': 'x86_64-unknown-linux-gnu', 'aarch64': 'aarch64-unknown-linux-gnu'}.get(platform.machine())
+          if platform.system() != 'Linux' or len(hosts) != 1 or hosts[0] != expected_host:
+              raise ValueError('exact GNU native Rust host and operating-system architecture required')
+          host = hosts[0]
+          def measured(path, executable=False):
+              path = path.resolve(strict=True)
+              if not path.is_file() or (executable and not os.access(path, os.X_OK)):
+                  raise ValueError('actual file or executable required')
+              if any(c in str(path) for c in '\r\n\0'):
+                  raise ValueError('invalid observed path')
+              with path.open('rb') as stream:
                   digest = hashlib.file_digest(stream, 'sha256').hexdigest()
-              pins.append({'role': role, 'path': str(executable), 'sha256': digest})
-          with (directory / 'hepta-study-executable-pins.json').open('x') as stream:
-              json.dump(pins, stream, indent=2)
-              stream.write('\n')
+              return {'path': str(path), 'sha256': digest, 'bytes': path.stat().st_size}
+          def save_record(name, value):
+              with (directory / name).open('x') as stream:
+                  json.dump(value, stream, indent=2)
+                  stream.write('\n')
+          # The original owner modifies its inputs and symbols scratch directory.
+          # Give it independent copies and a fresh namespace; keep Cargo outputs intact.
+          packaging = temporary / 'pon-ordinary-release-packaging'
+          packaging.mkdir()
+          stage = packaging / 'bin'
+          stage.mkdir()
+          scratch = packaging / 'scratch'
+          scratch.mkdir()
+          symbols = directory / 'ordinary-release-symbols'
+          symbols.mkdir()
+          artifact_name = f"hepta-ordinary-{host}-{os.environ['HEPTA_CI_LANE']}-{os.environ['TESTED_SHA']}"
+          packager_relative = '.github/scripts/archive-release-symbols-and-strip-binaries.sh'
+          packager = Path(packager_relative).resolve(strict=True)
+          packager_blob = subprocess.check_output(['git', 'rev-parse', f'HEAD:{packager_relative}'], text=True).strip()
+          if subprocess.check_output(['git', 'hash-object', str(packager)], text=True).strip() != packager_blob:
+              raise ValueError('packaging owner differs from the exact committed script')
+          tools = {}
+          for name in ('objcopy', 'strip'):
+              selected = shutil.which(name)
+              if selected is None:
+                  raise ValueError(f'original native packaging tool is missing: {name}')
+              tools[name] = measured(Path(selected), executable=True)
+              tools[name]['version'] = subprocess.check_output([selected, '--version'], text=True).splitlines()[0]
+          inputs = []
+          products = (('ordinary-cognitive-cli', 'hepta-cognitive-upgrade'),
+                      ('ordinary-agentd', 'codex-hepta-agentd'), ('private-signed-supervisor', 'hepta-supervisord'))
+          for role, basename in products:
+              source = measured(target / 'release' / basename, executable=True)
+              copied = stage / basename
+              shutil.copy2(source['path'], copied)
+              copy = measured(copied, executable=True)
+              if any(copy[key] != source[key] for key in ('sha256', 'bytes')):
+                  raise ValueError('independent packaging copy differs from original release bytes')
+              inputs.append({'role': role, 'unstripped': source, 'staged_copy': copy})
+          scope = 'GNU native release/debug0 packaging observation; not original MUSL release acceptance. No product execution or service installation is proved by packaging.'
+          metadata = {'schema': 'hepta.ordinary-native-release-packaging.v1',
+                      'candidate': {'commit': os.environ['TESTED_SHA'], 'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()},
+                      'host': {'system': platform.system(), 'machine': platform.machine(), 'platform': platform.platform(), 'rust_target': host, 'rustc_observation': measured(rustc)},
+                      'profile': 'release', 'profile_environment': {'CARGO_PROFILE_RELEASE_DEBUG': os.environ['CARGO_PROFILE_RELEASE_DEBUG']},
+                      'packaging_owner': {**measured(packager), 'git_blob': packager_blob},
+                      'tools': tools, 'inputs': inputs, 'scope': scope,
+                      'native_product_execution_performed': False, 'execution_acceptance_granted': False}
+          save_record('hepta-release-packaging-inputs.json', metadata)
+          command = [sys.executable, 'scripts/hepta_ci_exec.py', '--output', str(directory / 'hepta-release-packaging-execution.json'),
+                     '--', 'bash', str(packager), '--target', host, '--artifact-name', artifact_name,
+                     '--release-dir', str(stage), '--archive-dir', str(symbols),
+                     '--binaries', ' '.join(basename for _, basename in products)]
+          subprocess.run(command, check=True, env={**os.environ, 'RUNNER_TEMP': str(scratch),
+                         'OBJCOPY': tools['objcopy']['path'], 'STRIP': tools['strip']['path']})
+          for row in inputs:
+              if measured(Path(row['unstripped']['path']), executable=True) != row['unstripped']:
+                  raise ValueError('original Cargo release bytes changed during packaging')
+          cli, agentd, supervisor = [stage / basename for _, basename in products]
+          pins = [{'role': 'study-test-library', **measured(native, executable=True)}]
+          pins.extend({'role': role, **measured(stage / basename, executable=True)} for role, basename in products)
+          archive = measured(symbols / f'codex-symbols-{artifact_name}.tar.gz')
+          save_record('hepta-release-packaging-result.json', {**metadata, 'status': 'packaged',
+                      'original_inputs_unchanged': True, 'packaged_executables': pins[1:], 'symbols_archive': archive})
+          save_record('hepta-study-executable-pins.json', pins)
           with open(os.environ['GITHUB_ENV'], 'a') as environment:
               environment.write(f'HEPTA_LEARNING_NATIVE_BINARY={native}\n')
               environment.write(f'CARGO_BIN_EXE_hepta_cognitive_upgrade={cli}\n')
