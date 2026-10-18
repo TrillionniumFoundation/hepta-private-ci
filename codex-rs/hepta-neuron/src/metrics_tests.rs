@@ -62,27 +62,30 @@ fn event(value: u8) -> NeuronBatchMetricV1 {
 #[test]
 fn group_commit_and_reopen_preserve_sequence_chain() {
     let fixture = Fixture::new();
-    let mut writer =
-        NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
-            .expect("open");
+    let mut writer = NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+        .expect("open");
     let receipt = writer.append_group(&[event(1), event(2)]).expect("commit");
     assert_eq!(receipt.committed_events, 2);
     assert_eq!(receipt.first_sequence, 1);
     assert_eq!(receipt.final_sequence, 2);
     assert_eq!(receipt.data_syncs, 1);
     drop(writer);
-    let mut replay =
-        NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
-            .expect("reopen");
-    assert_eq!(replay.append_group(&[event(3)]).expect("append").final_sequence, 3);
+    let mut replay = NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+        .expect("reopen");
+    assert_eq!(
+        replay
+            .append_group(&[event(3)])
+            .expect("append")
+            .final_sequence,
+        3
+    );
 }
 
 #[test]
 fn partial_tail_is_recovered_but_complete_corruption_is_not() {
     let fixture = Fixture::new();
-    let mut writer =
-        NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
-            .expect("open");
+    let mut writer = NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
+        .expect("open");
     writer.append_group(&[event(1)]).expect("commit");
     drop(writer);
 
@@ -94,7 +97,12 @@ fn partial_tail_is_recovered_but_complete_corruption_is_not() {
     let mut reopened =
         NeuronMetricsGroupCommitWriterV1::open(fixture.file(), scope(), generation())
             .expect("recover");
-    assert!(reopened.append_group(&[event(2)]).expect("commit").recovered_partial_tail);
+    assert!(
+        reopened
+            .append_group(&[event(2)])
+            .expect("commit")
+            .recovered_partial_tail
+    );
     drop(reopened);
 
     let mut file = fixture.file();
