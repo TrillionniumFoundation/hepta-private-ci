@@ -132,6 +132,8 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
 
 
 def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | None]:
+    if not isinstance(metrics, dict):
+        raise ValueError("metrics must be a JSON object")
     missing = [name for name in REQUIRED_METRICS if name not in metrics]
     if missing:
         raise ValueError(f"missing metrics: {','.join(missing)}")

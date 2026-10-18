@@ -773,3 +773,51 @@ def test_report_validator_rejects_unknown_case_status_even_if_rehashed(
     )
     with pytest.raises(ValueError, match="invalid matrix case status"):
         MODULE.validate_report(forged)
+
+
+@pytest.mark.parametrize(
+    "bad_metrics", (None, 7, True, "".join(MODULE.REQUIRED_METRICS))
+)
+def test_malformed_worker_metrics_block_all_cases_instead_of_crashing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, bad_metrics: object
+) -> None:
+    frozen = tmp_path / "frozen-tasks"
+    frozen.write_bytes(b"malformed worker metrics fixture only")
+    frozen_digest = hashlib.sha256(frozen.read_bytes()).hexdigest()
+
+    def malformed_worker(
+        argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+    ) -> subprocess.CompletedProcess[str]:
+        assert argv == ["fixture-worker"]
+        assert timeout_seconds > 0
+        receipt = {
+            "caseId": env["HEPTA_MATRIX_CASE_ID"],
+            "cellCount": int(env["HEPTA_MATRIX_CELL_COUNT"]),
+            "sourceCommit": env["HEPTA_MATRIX_SOURCE_COMMIT"],
+            "workloadDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+            "workloadSourceDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+            "metrics": bad_metrics,
+        }
+        for name, _ in MODULE.FACTORS:
+            receipt[name] = env[f"HEPTA_MATRIX_{name.upper()}"]
+        return subprocess.CompletedProcess(argv, 0, json.dumps(receipt), "")
+
+    monkeypatch.setattr(MODULE, "run_isolated_command", malformed_worker)
+    report = MODULE.run_matrix(
+        workload_command="fixture-worker",
+        observer_command=None,
+        workload_digest=frozen_digest,
+        source_commit=current_checkout_sha(),
+        output=tmp_path / "malformed-report.json",
+        workload_path=frozen,
+        cell_count=64,
+    )
+    assert report["status"] == "blocked"
+    assert len(report["cases"]) == 16
+    assert all(case["status"] == "blocked" for case in report["cases"])
+    assert all(
+        "metrics must be a JSON object" in case["reason"]
+        for case in report["cases"]
+    )
+    MODULE.validate_report(report)
+
