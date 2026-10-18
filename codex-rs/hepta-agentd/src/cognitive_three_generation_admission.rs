@@ -49,100 +49,10 @@ pub(super) fn evaluate(
     ),
     eval::SelfEvolutionSelectionError,
 > {
-    let table_digest = Digest32::of_bytes(&serde_json::to_vec(candidate_choices).unwrap());
-    let metric_roles = vec![eval::MetricRoleContractV2 {
-        metric_id: id("future-task-success"),
-        role: eval::MetricRoleV2::PrimarySuperiority {
-            minimum_improvement: FixedQ32::ZERO,
-        },
-    }];
-    // Each custodian draws actual tasks after candidate commitment, then seals
-    // them locally and returns only a signed material commitment. The original
-    // holdout owner consumes the exact composite material manifest before release.
-    let mut materials = Vec::new();
-    for i in 1..=2 {
-        let role_index = if i == 1 { 1 } else { 6 };
-        materials.push(roles.processes[role_index].call(json!({"command":"prepare_future",
-            "generation":generation, "name":format!("{name}-window-{i}"),
-            "candidate":root.join("payload"), "candidate_sha256":candidate.pin.payload_digest.to_string(),
-            "choices":candidate_choices, "parent_choices":parent_choices})));
-    }
-    let manifest_path = root.join(format!("{name}-holdout-material.json"));
-    save(
-        &manifest_path,
-        &json!({"schema":"hepta.local-sealed-holdout-material.v1",
-        "name":name, "candidate":candidate.pin.payload_digest.to_string(),
-        "generation":generation, "instances_per_family_per_custodian":2048, "materials":materials}),
+    let FutureMaterials { raw_plan, metric_roles, metric_sources, candidate_plan,
+        baseline_plan, manifest_path, manifest_bytes, material_digest } = prepare_future(
+        root, generation, name, candidate, parent, candidate_choices, parent_choices, roles,
     );
-    let manifest_bytes = std::fs::read(&manifest_path).unwrap();
-    let material_digest = Digest32::of_bytes(&manifest_bytes);
-    let raw_plan = eval::CrossFoldPlanV1 {
-        plan_id: id(&format!("{name}-plan")),
-        claim_scope: eval::EvaluationClaimScopeV1::SystemLongitudinal,
-        candidate_id: candidate.artifact.artifact_id.clone(),
-        baseline_id: parent.artifact_id.clone(),
-        objective_digest: roles.trust.objective_digest,
-        dataset_digest: candidate.dataset.snapshot.dataset_digest,
-        estimand_digest: hash(
-            "final-future-custodian-a-mod4-equals2-uniform-family-correctness-v1",
-        ),
-        metric_contracts: vec![eval::MetricContractV1 {
-            metric_id: id("future-task-success"),
-            direction: eval::EvaluationDirectionV1::Maximize,
-            safety_floor: None,
-        }],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        folds: (1..=2)
-            .map(|i| eval::CrossFoldPartitionV1 {
-                fold_id: id(&format!("{name}-fold-{i}")),
-                training_principals: vec![id("generator-training")],
-                training_episodes: candidate
-                    .temporal_training
-                    .iter()
-                    .map(|row| row.episode_lineage.clone())
-                    .collect(),
-                training_windows: candidate
-                    .temporal_training
-                    .iter()
-                    .map(|row| row.window_id.clone())
-                    .collect::<std::collections::BTreeSet<_>>()
-                    .into_iter()
-                    .collect(),
-                holdout_principals: materials[i - 1]["body"]["task_ids"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|task| id(&format!("synthetic-task-{}", task.as_str().unwrap())))
-                    .collect(),
-                holdout_episodes: materials[i - 1]["body"]["task_ids"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|task| id(&format!("synthetic-task-{}", task.as_str().unwrap())))
-                    .collect(),
-                holdout_windows: vec![id(&format!("{name}-window-{i}"))],
-                model_digest: candidate.pin.payload_digest,
-                predictions_digest: table_digest,
-            })
-            .collect(),
-        final_holdout_window_id: id(&format!("{name}-window-2")),
-        final_holdout_digest: material_digest,
-    };
-    let candidate_plan = temporal::plan(
-        &format!("{name}-candidate"),
-        roles.trust.objective_digest,
-        candidate,
-    );
-    let baseline_plan = temporal::plan(
-        &format!("{name}-baseline"),
-        roles.trust.objective_digest,
-        candidate,
-    );
-    let metric_sources = vec![eval::ProductMetricSourceContractV1 {
-        metric_id: id("future-task-success"),
-        source: eval::ProductMetricSourceV1::Ips,
-    }];
     let product_plan = eval::freeze_product_evaluation_plan_v1(
         raw_plan.clone(),
         metric_roles.clone(),
@@ -338,4 +248,120 @@ pub(super) fn evaluate(
         serde_json::to_value(SignedLearningEvidenceV1Raw::from(selector)).unwrap();
     save(&root.join("evaluation-materials.json"), &material);
     Ok((selected, compatibility))
+}
+
+
+pub(super) struct FutureMaterials {
+    pub raw_plan: eval::CrossFoldPlanV1,
+    pub metric_roles: Vec<eval::MetricRoleContractV2>,
+    pub metric_sources: Vec<eval::ProductMetricSourceContractV1>,
+    pub candidate_plan: eval::TemporalEvaluationPlan,
+    pub baseline_plan: eval::TemporalEvaluationPlan,
+    pub manifest_path: PathBuf,
+    pub manifest_bytes: Vec<u8>,
+    pub material_digest: Digest32,
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(super) fn prepare_future(
+    root: &std::path::Path, generation: u64, name: &str,
+    candidate: &Fitted, parent: &artifacts::ArtifactManifest,
+    candidate_choices: &Value, parent_choices: &Value, roles: &mut Roles,
+) -> FutureMaterials {
+    let table_digest = Digest32::of_bytes(&serde_json::to_vec(candidate_choices).unwrap());
+    let metric_roles = vec![eval::MetricRoleContractV2 {
+        metric_id: id("future-task-success"),
+        role: eval::MetricRoleV2::PrimarySuperiority {
+            minimum_improvement: FixedQ32::ZERO,
+        },
+    }];
+    // Each custodian draws actual tasks after candidate commitment, then seals
+    // them locally and returns only a signed material commitment. The original
+    // holdout owner consumes the exact composite material manifest before release.
+    let mut materials = Vec::new();
+    for i in 1..=2 {
+        let role_index = if i == 1 { 1 } else { 6 };
+        materials.push(roles.processes[role_index].call(json!({"command":"prepare_future",
+            "generation":generation, "name":format!("{name}-window-{i}"),
+            "candidate":root.join("payload"), "candidate_sha256":candidate.pin.payload_digest.to_string(),
+            "choices":candidate_choices, "parent_choices":parent_choices})));
+    }
+    let manifest_path = root.join(format!("{name}-holdout-material.json"));
+    save(
+        &manifest_path,
+        &json!({"schema":"hepta.local-sealed-holdout-material.v1",
+        "name":name, "candidate":candidate.pin.payload_digest.to_string(),
+        "generation":generation, "instances_per_family_per_custodian":2048, "materials":materials}),
+    );
+    let manifest_bytes = std::fs::read(&manifest_path).unwrap();
+    let material_digest = Digest32::of_bytes(&manifest_bytes);
+    let raw_plan = eval::CrossFoldPlanV1 {
+        plan_id: id(&format!("{name}-plan")),
+        claim_scope: eval::EvaluationClaimScopeV1::SystemLongitudinal,
+        candidate_id: candidate.artifact.artifact_id.clone(),
+        baseline_id: parent.artifact_id.clone(),
+        objective_digest: roles.trust.objective_digest,
+        dataset_digest: candidate.dataset.snapshot.dataset_digest,
+        estimand_digest: hash(
+            "final-future-custodian-a-mod4-equals2-uniform-family-correctness-v1",
+        ),
+        metric_contracts: vec![eval::MetricContractV1 {
+            metric_id: id("future-task-success"),
+            direction: eval::EvaluationDirectionV1::Maximize,
+            safety_floor: None,
+        }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds: (1..=2)
+            .map(|i| eval::CrossFoldPartitionV1 {
+                fold_id: id(&format!("{name}-fold-{i}")),
+                training_principals: vec![id("generator-training")],
+                training_episodes: candidate
+                    .temporal_training
+                    .iter()
+                    .map(|row| row.episode_lineage.clone())
+                    .collect(),
+                training_windows: candidate
+                    .temporal_training
+                    .iter()
+                    .map(|row| row.window_id.clone())
+                    .collect::<std::collections::BTreeSet<_>>()
+                    .into_iter()
+                    .collect(),
+                holdout_principals: materials[i - 1]["body"]["task_ids"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|task| id(&format!("synthetic-task-{}", task.as_str().unwrap())))
+                    .collect(),
+                holdout_episodes: materials[i - 1]["body"]["task_ids"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|task| id(&format!("synthetic-task-{}", task.as_str().unwrap())))
+                    .collect(),
+                holdout_windows: vec![id(&format!("{name}-window-{i}"))],
+                model_digest: candidate.pin.payload_digest,
+                predictions_digest: table_digest,
+            })
+            .collect(),
+        final_holdout_window_id: id(&format!("{name}-window-2")),
+        final_holdout_digest: material_digest,
+    };
+    let candidate_plan = temporal::plan(
+        &format!("{name}-candidate"),
+        roles.trust.objective_digest,
+        candidate,
+    );
+    let baseline_plan = temporal::plan(
+        &format!("{name}-baseline"),
+        roles.trust.objective_digest,
+        candidate,
+    );
+    let metric_sources = vec![eval::ProductMetricSourceContractV1 {
+        metric_id: id("future-task-success"),
+        source: eval::ProductMetricSourceV1::Ips,
+    }];
+    FutureMaterials { raw_plan, metric_roles, metric_sources, candidate_plan,
+        baseline_plan, manifest_path, manifest_bytes, material_digest }
 }

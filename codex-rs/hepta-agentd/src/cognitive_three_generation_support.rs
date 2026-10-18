@@ -23,7 +23,7 @@ pub(super) fn micros() -> u64 {
 pub(super) fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|x| format!("{x:02x}")).collect()
 }
-fn unhex(value: &str) -> Vec<u8> {
+pub(super) fn unhex(value: &str) -> Vec<u8> {
     assert!(value.len().is_multiple_of(2));
     value
         .as_bytes()

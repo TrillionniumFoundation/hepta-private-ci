@@ -12,6 +12,9 @@ import time
 
 SELECTOR = ('cognitive_ranker::tests::three_generation_learning::'
             'three_actual_fits_installations_future_instances_no_update_and_revocation')
+SELECTORS = {'generations': SELECTOR,
+    'ordinary-future': ('cognitive_ranker::tests::three_generation_learning::ordinary::'
+                       'actual_ordinary_cli_reserves_future_qualifies_selects_and_replays')}
 
 
 def sha(path):
@@ -26,6 +29,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--scenario', choices=SELECTORS, default='generations')
     args = parser.parse_args()
     binary, output = args.binary.resolve(strict=True), args.output.absolute()
     if output.exists() or output.is_symlink() or not binary.is_file():
@@ -41,7 +45,7 @@ def main():
         os.fsync(handle.fileno())
     environment = dict(os.environ, HEPTA_LEARNING_STUDY_DIRECTORY=str(output),
         HEPTA_LEARNING_CUSTODIAN=str(frozen_custodian), HEPTA_LEARNING_STUDY_PYTHON=sys.executable)
-    command = [str(binary), '--exact', SELECTOR, '--ignored', '--nocapture', '--test-threads=1']
+    command = [str(binary), '--exact', SELECTORS[args.scenario], '--ignored', '--nocapture', '--test-threads=1']
     before = resource.getrusage(resource.RUSAGE_CHILDREN)
     wall, cpu = time.monotonic_ns(), time.process_time_ns()
     binary_hash = sha(binary)
@@ -64,6 +68,7 @@ def main():
     after = resource.getrusage(resource.RUSAGE_CHILDREN)
     files = sorted(path for path in output.rglob('*') if path.is_file()) if output.exists() else []
     receipt = dict(schema='hepta.local-learning-whole-process-cost.v1', command=command,
+        scenario=args.scenario,
         binary_sha256=binary_hash, binary_unchanged=sha(binary) == binary_hash, native_exit_code=code,
         custodian_source=str(frozen_custodian), custodian_sha256=sha(frozen_custodian),
         wall_ns=time.monotonic_ns()-wall, observer_cpu_ns=time.process_time_ns()-cpu,
@@ -89,7 +94,8 @@ def main():
     print(json.dumps(receipt), flush=True)
     if code or not receipt['binary_unchanged'] or not (output/'summary.json').is_file():
         raise SystemExit('native study failed; exact failure and partial artifacts retained')
-    subprocess.run([sys.executable, str(source.with_name('verify_study.py')), str(output)], check=True)
+    if args.scenario == 'generations':
+        subprocess.run([sys.executable, str(source.with_name('verify_study.py')), str(output)], check=True)
 
 
 if __name__ == '__main__':

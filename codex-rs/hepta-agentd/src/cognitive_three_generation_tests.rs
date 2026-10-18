@@ -32,6 +32,8 @@ mod publication;
 mod support;
 #[path = "cognitive_three_generation_temporal.rs"]
 mod temporal;
+#[path = "cognitive_ordinary_future_tests.rs"]
+mod ordinary;
 use support::Roles;
 use support::fit;
 use support::save;

@@ -130,6 +130,21 @@ class Custodian:
             self.record('native-signature', dict(payload_sha256=hashlib.sha256(raw).hexdigest(),
                         payload_hex=raw.hex(), signature=signature))
             return dict(signature=signature)
+        if command == 'observe_reservation':
+            if self.role != 'observer':
+                raise ValueError('durable reservation observation role')
+            observed = request['observation']
+            received_at = time.time_ns()//1000
+            timing = observed['reservation_time']
+            if (observed['state'] != 'awaiting_independent_collection'
+                    or observed['disposition'] != 'Recorded'
+                    or not timing['reserved_at_unix_micros'] <= observed['observed_at_unix_micros'] <= received_at
+                    or received_at >= timing['window_not_before_unix_micros']):
+                raise ValueError('actual timely durable reservation ACK required')
+            return self.record('actual-reservation-ack-observation', dict(
+                reservation_observation_sha256=digest(observed),
+                received_at_unix_micros=received_at,
+                reservation=observed['reservation'], timing=timing))
         if command == 'training':
             if self.role != 'generator':
                 raise ValueError('training custodian role')
