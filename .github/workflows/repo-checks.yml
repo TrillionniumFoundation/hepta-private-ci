@@ -92,7 +92,20 @@ jobs:
           exit 1
 
       - name: Prettier (run `pnpm run format:fix` to fix)
-        run: pnpm run format
+        run: |
+          if pnpm run format; then
+            exit 0
+          fi
+          # Diagnostic only: retain the strict formatting failure. Print
+          # actual formatter output against the original tracked bytes, never
+          # silently rewrite files or bless an unaudited markdown table.
+          echo "::group::Exact Prettier difference for Cell Split readiness docs"
+          for path in docs/CELL_SPLIT_ACCEPTANCE.md docs/HEPTA_BASE_MERGE_AUDIT_20261013.md; do
+            echo "--- original: $path"
+            pnpm exec prettier "$path" | diff -u "$path" - || true
+          done
+          echo "::endgroup::"
+          exit 1
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
