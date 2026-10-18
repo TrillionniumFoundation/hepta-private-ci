@@ -71,22 +71,17 @@ pub fn run_memory_cell_tick(
     input
         .validate()
         .map_err(|error| MemoryCellRuntimeErrorV1::Contract(format!("{error:?}")))?;
-    cue
-        .validate()
+    cue.validate()
         .map_err(|error| MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Recall(error)))?;
     retrieval_policy
         .validate()
         .map_err(|error| MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Recall(error)))?;
-    engram_snapshot
-        .validate()
-        .map_err(|error| MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Engram(
-            error.to_string(),
-        )))?;
-    dynamics_policy
-        .validate()
-        .map_err(|error| MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Engram(
-            error.to_string(),
-        )))?;
+    engram_snapshot.validate().map_err(|error| {
+        MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Engram(error.to_string()))
+    })?;
+    dynamics_policy.validate().map_err(|error| {
+        MemoryCellRuntimeErrorV1::Retrieval(GeneratorErrorV1::Engram(error.to_string()))
+    })?;
 
     if input.cell_id != manifest.cell_id {
         return Err(MemoryCellRuntimeErrorV1::Binding("cell_id"));
@@ -113,7 +108,9 @@ pub fn run_memory_cell_tick(
         return Err(MemoryCellRuntimeErrorV1::Binding("snapshot_digest"));
     }
     if engram_snapshot.generation_vector_digest != cue.snapshot_key.vector_digest {
-        return Err(MemoryCellRuntimeErrorV1::Binding("generation_vector_digest"));
+        return Err(MemoryCellRuntimeErrorV1::Binding(
+            "generation_vector_digest",
+        ));
     }
 
     let generated_union =
