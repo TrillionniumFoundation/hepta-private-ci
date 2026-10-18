@@ -910,9 +910,7 @@ def test_measured_case_extension_is_rejected_even_with_rehashed_report(
 
 
 @pytest.mark.parametrize("invalid", (None, True, 1.5, -1, 1 << 65))
-def test_elapsed_time_requires_bounded_integer(
-    tmp_path: Path, invalid: object
-) -> None:
+def test_elapsed_time_requires_bounded_integer(tmp_path: Path, invalid: object) -> None:
     report = MODULE.run_matrix(
         workload_command=None,
         observer_command=None,
