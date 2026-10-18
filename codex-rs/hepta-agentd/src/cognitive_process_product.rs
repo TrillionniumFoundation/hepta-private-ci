@@ -113,39 +113,7 @@ pub(super) fn replay_product_qualification_v1(
             "cognitive bootstrap may only replay an exact recorded plan and fence",
         ));
     }
-    let parent = holdout_descriptor
-        .path
-        .parent()
-        .ok_or_else(|| invalid("cognitive product holdout has no parent"))?;
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(target_os = "linux")]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0x20000 | 0x800);
-    }
-    #[cfg(target_os = "macos")]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0x100 | 0x4);
-    }
-    let parent_file = options.open(parent)?;
-    let opened_parent = parent_file.metadata()?;
-    if !opened_parent.is_dir() || parent.canonicalize()? != parent {
-        return Err(invalid("cognitive product holdout parent changed"));
-    }
-    parent_file.sync_all()?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        let named_parent = std::fs::symlink_metadata(parent)?;
-        if !named_parent.is_dir()
-            || (opened_parent.dev(), opened_parent.ino())
-                != (named_parent.dev(), named_parent.ino())
-        {
-            return Err(invalid("cognitive product holdout parent identity changed"));
-        }
-    }
+    acknowledge_holdout_namespace(&holdout_descriptor.path)?;
     let owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence)
         .map_err(|error| invalid(&format!("cognitive product owner: {error}")))?;
     let pinned = eval::read_product_qualification_evidence_v1(
@@ -253,4 +221,40 @@ fn read_pinned(
         return Err(eval::ProductProviderErrorV1::Rejected);
     }
     Ok(bytes)
+}
+
+/// Reestablish the existing holdout directory ACK before publishing evidence.
+pub(super) fn acknowledge_holdout_namespace(path: &std::path::Path) -> Result<(), AgentdError> {
+    let parent = path.parent()
+        .ok_or_else(|| invalid("cognitive product holdout has no parent"))?;
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0x20000 | 0x800);
+    }
+    #[cfg(target_os = "macos")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0x100 | 0x4);
+    }
+    let parent_file = options.open(parent)?;
+    let opened_parent = parent_file.metadata()?;
+    if !opened_parent.is_dir() || parent.canonicalize()? != parent {
+        return Err(invalid("cognitive product holdout parent changed"));
+    }
+    parent_file.sync_all()?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let named_parent = std::fs::symlink_metadata(parent)?;
+        if !named_parent.is_dir()
+            || (opened_parent.dev(), opened_parent.ino())
+                != (named_parent.dev(), named_parent.ino())
+        {
+            return Err(invalid("cognitive product holdout parent identity changed"));
+        }
+    }
+    Ok(())
 }

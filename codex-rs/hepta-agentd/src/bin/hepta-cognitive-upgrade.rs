@@ -20,6 +20,8 @@ use codex_hepta_agentd::advance_published_cognitive_upgrade_v1;
 use codex_hepta_agentd::inspect_published_cognitive_upgrade_v1;
 use codex_hepta_agentd::publish_cognitive_artifact_v1;
 use codex_hepta_agentd::revoke_cognitive_artifact_v1;
+use codex_hepta_agentd::CognitiveQualificationInputV1;
+use codex_hepta_agentd::qualify_cognitive_upgrade_v1;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -32,12 +34,12 @@ async fn main() -> Result<()> {
     let started = Instant::now();
     let started_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
     let mut args = std::env::args_os().skip(1);
-    let usage = "usage: hepta-cognitive-upgrade inspect|publish|revoke|advance FLEET_ROOT INPUT_SHA256 < input.json";
+    let usage = "usage: hepta-cognitive-upgrade qualify|inspect|publish|revoke|advance FLEET_ROOT INPUT_SHA256 < input.json";
     let command = args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?;
     let fleet_path = PathBuf::from(args.next().context(usage)?);
     let expected = args.next().context(usage)?.into_string().map_err(|_| anyhow::anyhow!(usage))?;
     ensure!(args.next().is_none(), "{usage}");
-    ensure!(matches!(command.as_str(), "inspect" | "publish" | "revoke" | "advance"), "{usage}");
+    ensure!(matches!(command.as_str(), "qualify" | "inspect" | "publish" | "revoke" | "advance"), "{usage}");
     let expected = Sha256Digest::parse(expected).map_err(anyhow::Error::msg)?;
     let mut bytes = Vec::new();
     std::io::stdin().lock().take(MAX_INPUT_BYTES + 1).read_to_end(&mut bytes)?;
@@ -48,6 +50,7 @@ async fn main() -> Result<()> {
     let mut identity = json!(null);
     let result: Result<serde_json::Value> = async {
     let output = match command.as_str() {
+        "qualify" => qualify_cognitive_upgrade_v1(&fleet, serde_json::from_slice::<CognitiveQualificationInputV1>(&bytes)?).await?,
         "inspect" => {
             let source: CognitiveUpgradeSourceV1 = serde_json::from_slice(&bytes)?;
             let commitment = inspect_published_cognitive_upgrade_v1(&fleet, source)?;

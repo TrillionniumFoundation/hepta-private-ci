@@ -47,9 +47,22 @@ pub fn future_window_signing_payload_v1(
     timing: &LongitudinalTimeEvidenceV1,
     minimum_window_micros: u64,
 ) -> Result<Vec<u8>, SignedEvaluationError> {
+    future_window_statement_payload_v1(
+        bundle, timing.frozen_unix_micros, &timing.windows, minimum_window_micros,
+    )
+}
+
+/// Prepare the existing observer statement before any signature exists. This
+/// does not construct an attestation, authenticate a clock, or admit evidence.
+pub fn future_window_statement_payload_v1(
+    bundle: &IndependentEvaluationBundleV1,
+    frozen_unix_micros: u64,
+    windows: &[ObservedFutureWindowV1],
+    minimum_window_micros: u64,
+) -> Result<Vec<u8>, SignedEvaluationError> {
     if bundle.claim_scope != EvaluationClaimScopeV1::SystemLongitudinal
         || minimum_window_micros == 0
-        || !(2..=32).contains(&timing.windows.len())
+        || !(2..=32).contains(&windows.len())
     {
         return Err(SignedEvaluationError::Timing("scope_or_bounds"));
     }
@@ -62,9 +75,9 @@ pub fn future_window_signing_payload_v1(
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&minimum_window_micros.to_be_bytes());
-    bytes.extend_from_slice(&timing.frozen_unix_micros.to_be_bytes());
-    bytes.extend_from_slice(&(timing.windows.len() as u64).to_be_bytes());
-    for window in &timing.windows {
+    bytes.extend_from_slice(&frozen_unix_micros.to_be_bytes());
+    bytes.extend_from_slice(&(windows.len() as u64).to_be_bytes());
+    for window in windows {
         for id in [&window.window_id, &window.snapshot_id] {
             bytes.extend_from_slice(&(id.as_str().len() as u16).to_be_bytes());
             bytes.extend_from_slice(id.as_str().as_bytes());

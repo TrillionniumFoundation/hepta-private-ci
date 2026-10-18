@@ -383,6 +383,7 @@ pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
 pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
+pub use longitudinal_time::future_window_statement_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 
 #[cfg(test)]
