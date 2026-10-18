@@ -56,7 +56,7 @@ jobs:
           git worktree add --detach "$candidate" "$EXPECTED_SHA"
           echo "KEYRING4_CANDIDATE=$candidate" >> "$GITHUB_ENV"
           echo "KEYRING4_EVIDENCE=$evidence" >> "$GITHUB_ENV"
-          python3 - "$candidate/codex-rs/Cargo.toml" "$candidate/codex-rs/keyring-store/Cargo.toml" <<'PY'
+          python3 - "$candidate/codex-rs/Cargo.toml" "$candidate/codex-rs/keyring-store/Cargo.toml" "$candidate/codex-rs/rmcp-client/Cargo.toml" <<'PY'
           import sys
           from pathlib import Path
           workspace = Path(sys.argv[1])
@@ -89,7 +89,24 @@ jobs:
           if s.count(previous) != 1:
               raise SystemExit("keyring platform policy source drift; abort candidate")
           store.write_text(s.replace(previous, updated), encoding="utf-8")
-          print("Staged v4 v1-compatible backend features only inside detached worktree")
+          # OAuth owns another independent keyring dependency. Retain all
+          # other target-specific dependencies, including Windows filesystem APIs.
+          oauth = Path(sys.argv[3])
+          text = oauth.read_text(encoding="utf-8")
+          replacements = [
+              ('keyring = { workspace = true, features = ["crypto-rust"] }',
+               'keyring = { workspace = true }'),
+              ('keyring = { workspace = true, features = ["linux-native-async-persistent"] }' + '\n', ''),
+              ('keyring = { workspace = true, features = ["apple-native"] }' + '\n', ''),
+              ('keyring = { workspace = true, features = ["windows-native"] }' + '\n', ''),
+              ('keyring = { workspace = true, features = ["sync-secret-service"] }' + '\n', ''),
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f"OAuth keyring dependency drift: {old!r}")
+              text = text.replace(old, new)
+          oauth.write_text(text, encoding="utf-8")
+          print("Staged v4 v1-native credential backends across both Keyring/OAuth owners only in detached worktree")
           PY
 
       - name: Real keyring4 Cargo graph and compiler qualifications
@@ -109,8 +126,8 @@ jobs:
               if pkg["name"] in {"keyring", "zbus", "zbus_names", "zvariant", "zvariant_derive"}:
                   print(f'{pkg["name"]} {pkg["version"]}')
           PY
-          cargo check --locked -p codex-keyring-store -p codex-login --all-targets 2>&1 | tee "$KEYRING4_EVIDENCE/cargo-check.txt"
-          cargo clippy --locked -p codex-keyring-store -p codex-login --all-targets -- -D clippy::correctness 2>&1 | tee "$KEYRING4_EVIDENCE/clippy.txt"
+          cargo check --locked -p codex-keyring-store -p codex-login -p codex-rmcp-client --all-targets 2>&1 | tee "$KEYRING4_EVIDENCE/cargo-check.txt"
+          cargo clippy --locked -p codex-keyring-store -p codex-login -p codex-rmcp-client --all-targets -- -D clippy::correctness 2>&1 | tee "$KEYRING4_EVIDENCE/clippy.txt"
 
       - name: Independently audit entire candidate dependency graph
         if: always() && !cancelled()
@@ -127,8 +144,11 @@ jobs:
             set -e
             printf '%s\n' "$result" > "$evidence/cargo-deny.exit"
             git diff --check
-            git diff --binary -- codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/keyring-store/Cargo.toml > "$evidence/actual-migration.patch"
-            cp codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/keyring-store/Cargo.toml "$evidence/" || true
+            git diff --binary -- codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/keyring-store/Cargo.toml codex-rs/rmcp-client/Cargo.toml > "$evidence/actual-migration.patch"
+            install -D codex-rs/Cargo.toml "$evidence/manifests/workspace/Cargo.toml"
+            install -D codex-rs/keyring-store/Cargo.toml "$evidence/manifests/keyring-store/Cargo.toml"
+            install -D codex-rs/rmcp-client/Cargo.toml "$evidence/manifests/rmcp-client/Cargo.toml"
+            cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
           fi
           cd "$GITHUB_WORKSPACE"
           git diff --check
