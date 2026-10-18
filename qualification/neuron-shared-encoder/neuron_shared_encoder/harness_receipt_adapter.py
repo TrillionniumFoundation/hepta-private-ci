@@ -63,8 +63,14 @@ def adapt_reader_report(
     """
     if not isinstance(report, Mapping):
         raise HarnessReceiptAdapterError("report must be a mapping")
-    if report.get("production_selection_authority") not in (False, None):
-        raise HarnessReceiptAdapterError("production authority is forbidden")
+    # This optional report marker never supplies the adapter's own authority.
+    if (
+        "production_selection_authority" in report
+        and report["production_selection_authority"] is not False
+    ):
+        raise HarnessReceiptAdapterError(
+            "production authority marker must be boolean false"
+        )
     for name, expected in (
         ("independent_new_source", True),
         ("model_input_gold_visible", False),

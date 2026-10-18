@@ -139,6 +139,21 @@ class HarnessReceiptAdapterTests(unittest.TestCase):
                 report, independent_new_source=True, **CONTEXT
             )
 
+    def test_production_authority_marker_must_be_boolean_false(self):
+        for value in (None, True, 0, 0.0, 1, 1.0, "false", "true", [], {}):
+            with self.subTest(value=value):
+                with self.assertRaises(HarnessReceiptAdapterError):
+                    require_real_shadow_from_report(
+                        complete(production_selection_authority=value), **CONTEXT
+                    )
+
+    def test_absent_optional_production_marker_keeps_adapter_denied(self):
+        report = complete()
+        report.pop("production_selection_authority")
+        receipt = require_real_shadow_from_report(report, **CONTEXT)
+        self.assertTrue(receipt.complete)
+        self.assertEqual(receipt.authority, "DENY_ALL")
+
 
 if __name__ == "__main__":
     unittest.main()
