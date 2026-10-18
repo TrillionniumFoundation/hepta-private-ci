@@ -3,7 +3,6 @@ name: Hepta diagnostic source export
 on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
-  pull_request: {}
   workflow_call:
   workflow_dispatch:
 
