@@ -174,7 +174,6 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     )
 
 
-
 def _strict_ed25519_public_key(raw: bytes) -> bool:
     """Accept only canonical, nonidentity Ed25519 prime-subgroup public keys.
 
@@ -210,14 +209,21 @@ def _strict_ed25519_public_key(raw: bytes) -> bool:
     if x == 0 and y == 1:
         return False
 
-    def add(left: tuple[int, int, int, int], right: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    def add(
+        left: tuple[int, int, int, int], right: tuple[int, int, int, int]
+    ) -> tuple[int, int, int, int]:
         x1, y1, z1, t1 = left
         x2, y2, z2, t2 = right
         a = (y1 - x1) * (y2 - x2) % prime
         b = (y1 + x1) * (y2 + x2) % prime
         c = 2 * d * t1 * t2 % prime
         dv = 2 * z1 * z2 % prime
-        e, f, g, h = (b - a) % prime, (dv - c) % prime, (dv + c) % prime, (b + a) % prime
+        e, f, g, h = (
+            (b - a) % prime,
+            (dv - c) % prime,
+            (dv + c) % prime,
+            (b + a) % prime,
+        )
         return e * f % prime, g * h % prime, f * g % prime, e * h % prime
 
     point = (x, y, 1, x * y % prime)
