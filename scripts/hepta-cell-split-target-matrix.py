@@ -561,8 +561,15 @@ def run_matrix(
     if workload_command is not None:
         try:
             assert_exact_source_checkout(repo_root, source_commit)
-        except ValueError:
+        except ValueError as error:
             blocked.append("source-checkout")
+            # This failure happened after the signer saw the provisional
+            # report. Its otherwise-valid signature must never survive as
+            # attachable proof that the now-dirty execution was qualified.
+            observer_receipt = {
+                "verified": False,
+                "reason": f"post-observer source checkout violation: {error}",
+            }
 
     report = {
         **provisional,
