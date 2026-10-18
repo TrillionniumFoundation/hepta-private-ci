@@ -11,6 +11,7 @@ on:
       - "CALLERS.toml"
       - "scripts/verify_hepta_callers.py"
       - "scripts/hepta_typed_callers.py"
+      - "qa/b4-no-bypass/**"
       - ".github/workflows/hepta-neuron-signed-admission.yml"
   workflow_dispatch:
 
@@ -74,6 +75,8 @@ jobs:
             cat "$RUNNER_TEMP/hepta-neuron-evidence/caller-proof.log"
             exit 1
           fi
+          python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/hepta-neuron-evidence/kernel-authority-tests.log"
       - name: Check source formatting (no mutation)
         id: format
         continue-on-error: true
