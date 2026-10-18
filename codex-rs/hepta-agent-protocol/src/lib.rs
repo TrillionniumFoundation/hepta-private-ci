@@ -3,7 +3,9 @@
 #![forbid(unsafe_code)]
 
 mod authbus;
+mod automation_chain;
 mod capabilities;
+mod cognitive_model;
 mod evidence;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -13,6 +15,7 @@ pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
+pub use automation_chain::AutomationAcceptedTaskObservation;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -21,6 +24,10 @@ pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
 pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
+pub use cognitive_model::COGNITIVE_MODEL_STATUS_CAPABILITY;
+pub use cognitive_model::CognitiveModelIdentity;
+pub use cognitive_model::CognitiveModelReadback;
+pub use cognitive_model::CognitiveModelStatus;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
 pub use evidence::KernelEvidenceQueryV1;
@@ -599,6 +606,7 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveModelStatus,
     CognitiveContextRevalidate {
         snapshot_digest: String,
         read_digest: String,
@@ -748,6 +756,10 @@ pub struct AutomationEffectChainObservation {
     /// This is an effect binding only; it grants no selection or final-use authority.
     #[serde(default)]
     pub payload_sha256: Option<String>,
+    /// Present only for one exact active packet's unique successful task accept.
+    /// Older observers omit it; omission cannot satisfy a task-bound upgrade.
+    #[serde(default)]
+    pub accepted_task: Option<AutomationAcceptedTaskObservation>,
     pub owner_generation: u64,
     pub local_target_only: bool,
     pub global_absence_authority: bool,
@@ -791,6 +803,7 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveModelStatus(CognitiveModelStatus),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     KernelEvidenceResult(KernelEvidenceResult),

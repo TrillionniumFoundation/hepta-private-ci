@@ -45,6 +45,9 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "client_cognitive_model.rs"]
+mod cognitive_model;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,

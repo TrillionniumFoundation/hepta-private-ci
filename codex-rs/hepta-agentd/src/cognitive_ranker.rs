@@ -32,6 +32,9 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
+#[path = "cognitive_ranker_readback.rs"]
+mod readback;
+
 enum RankerEvaluationAdmission {
     HostPinned,
     Selected(Box<VerifiedSelfEvolutionSelectionV1>),
@@ -176,11 +179,13 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     policy_digest: Digest32,
+    model_generation: u64,
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
     current_owner_trust_digest: Digest32,
     admission: RankerEvaluationAdmission,
     source_window: Option<(u64, u64)>,
+    source_manifest_digest: Option<Digest32>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
 
@@ -247,7 +252,7 @@ impl PinnedCognitiveRanker {
         current: Arc<dyn CurrentCognitiveRegistry>,
         source: Option<LearningArtifactManifestV2>,
     ) -> Result<Self, String> {
-        let source_window = match source {
+        let (source_window, source_manifest_digest) = match source {
             Some(source) => {
                 let validated = validate_published_artifact_manifest_v2(
                     &selected.manifest,
@@ -264,13 +269,16 @@ impl PinnedCognitiveRanker {
                         "published ranker source does not include the model dataset".to_owned()
                     );
                 }
-                Some((validated.manifest.created_at, validated.manifest.expires_at))
+                (
+                    Some((validated.manifest.created_at, validated.manifest.expires_at)),
+                    Some(validated.manifest_digest),
+                )
             }
             None => {
                 if selected.manifest.support_digest != model_pin.dataset_digest {
                     return Err("legacy ranker dataset pin mismatch".to_owned());
                 }
-                None
+                (None, None)
             }
         };
         if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
@@ -298,11 +306,13 @@ impl PinnedCognitiveRanker {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
+            model_generation: model_pin.generation.get(),
             model,
             current,
             current_owner_trust_digest,
             admission: RankerEvaluationAdmission::HostPinned,
             source_window,
+            source_manifest_digest,
             cache: Mutex::new(Some(candidate)),
         })
     }

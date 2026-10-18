@@ -30,6 +30,9 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+#[path = "state_cognitive_model.rs"]
+mod cognitive_model;
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -116,6 +119,10 @@ impl AgentdState {
                         0,
                     )
                     .map_err(AgentdError::Protocol)?,
+                );
+                capabilities.push(
+                    crate::AgentdCapability::new(crate::COGNITIVE_MODEL_STATUS_CAPABILITY, 1, 0)
+                        .map_err(AgentdError::Protocol)?,
                 );
                 capabilities.push(
                     crate::AgentdCapability::new(
@@ -249,6 +256,9 @@ impl AgentdState {
                 AgentdPayload::KernelEvidenceResult(
                     crate::evidence_host::verify(self, request).await?,
                 )
+            }
+            crate::AgentdMethod::CognitiveModelStatus => {
+                AgentdPayload::CognitiveModelStatus(self.cognitive_model_status()?)
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(

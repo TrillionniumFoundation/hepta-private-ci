@@ -721,6 +721,22 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         "lifecycle epoch must not become a substitute launch identity"
     );
     assert!(client.health().await.unwrap().ready);
+    assert_eq!(
+        client.cognitive_model_status().await.unwrap().installed,
+        Some(crate::CognitiveModelReadback {
+            spawn_generation: 1,
+            model: crate::CognitiveModelIdentity {
+                artifact_id: fixture.selected.manifest.artifact_id.to_string(),
+                artifact_generation: fixture.model_pin.generation.get(),
+                payload_sha256: fixture.model_pin.payload_digest.to_string(),
+            },
+            source_manifest_sha256: None,
+            selection_sha256: None,
+            evaluated_predecessor: None,
+            current_owner_trust_sha256: fixture.view.current().unwrap().trust_digest().to_string(),
+        }),
+        "the public socket must report the actually loaded model under its launch fence"
+    );
     let capabilities = client.capabilities().await.unwrap();
     assert!(capabilities.capabilities.iter().any(|capability| {
         capability.id == crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
@@ -785,6 +801,10 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     )
     .unwrap();
     *fixture.view.0.lock().unwrap() = Some((revoked, receipt, predecessor_head));
+    assert!(
+        client.cognitive_model_status().await.is_err(),
+        "a revoked installed model cannot retain a successful readback"
+    );
     assert!(
         client
             .revalidate_cognitive_context(&after_tombstone)

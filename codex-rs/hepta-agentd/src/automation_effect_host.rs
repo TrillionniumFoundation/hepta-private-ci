@@ -63,6 +63,12 @@ use crate::AgentdIdentity;
 mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
+#[path = "automation_effect_host_task_observation.rs"]
+mod task_observation;
+
+#[cfg(test)]
+#[path = "automation_effect_host_task_observation_tests.rs"]
+mod task_observation_tests;
 
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_pon_tests.rs"]
@@ -641,6 +647,7 @@ fn parse_pon_chain_observation(
         confirmation_policy_satisfied,
         provider_effect_key: None,
         payload_sha256: None,
+        accepted_task: task_observation::parse(result, stored_exact, active_chain_member)?,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
