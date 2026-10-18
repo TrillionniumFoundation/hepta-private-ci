@@ -106,6 +106,38 @@ class SignedObserverProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "principal"):
             self.verify(expected_observer_id="wrong-principal")
 
+    def test_zero_point_cannot_be_trusted_by_pinning_its_pem_hash(self) -> None:
+        der = bytes.fromhex("302a300506032b6570032100") + bytes(32)
+        key = self.directory / "test-only-low-order.pem"
+        key.write_bytes(
+            b"-----BEGIN PUBLIC KEY-----\n"
+            + base64.b64encode(der)
+            + b"\n-----END PUBLIC KEY-----\n"
+        )
+        pinned = hashlib.sha256(key.read_bytes()).hexdigest()
+        self.observer["publicKeySha256"] = pinned
+        self.observer["signatureBase64"] = base64.b64encode(bytes(64)).decode()
+        self.reseal_digests_only()
+        with self.assertRaisesRegex(ValueError, "not prime-order"):
+            self.verify(observer_public_key=key, observer_key_sha256=pinned)
+
+    def test_identity_and_noncanonical_points_are_rejected(self) -> None:
+        prefix = bytes.fromhex("302a300506032b6570032100")
+        invalid = (bytes([1]) + bytes(31), bytes.fromhex("ed" + "ff" * 30 + "7f"))
+        for index, point in enumerate(invalid):
+            key = self.directory / f"test-only-bad-point-{index}.pem"
+            key.write_bytes(
+                b"-----BEGIN PUBLIC KEY-----\n"
+                + base64.b64encode(prefix + point)
+                + b"\n-----END PUBLIC KEY-----\n"
+            )
+            pinned = hashlib.sha256(key.read_bytes()).hexdigest()
+            self.observer["publicKeySha256"] = pinned
+            self.observer["signatureBase64"] = base64.b64encode(bytes(64)).decode()
+            self.reseal_digests_only()
+            with self.assertRaisesRegex(ValueError, "not prime-order"):
+                self.verify(observer_public_key=key, observer_key_sha256=pinned)
+
     def test_bad_signature_with_resealed_digests_fails(self) -> None:
         self.observer["signatureBase64"] = base64.b64encode(b"\x01" * 64).decode()
         self.reseal_digests_only()
