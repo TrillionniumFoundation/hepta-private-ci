@@ -48,7 +48,7 @@ jobs:
               "scripts/test_hepta_sngr_reader_eval.py",
               "scripts/test_hepta_sngr_shadow.py",
           }
-          paths = set(subprocess.check_output(["git", "diff", "--name-only", "-z"]).decode().strip("\\0").split("\\0"))
+          paths = set(subprocess.check_output(["git", "diff", "--name-only", "-z"]).decode().strip(chr(0)).split(chr(0)))
           assert paths and paths <= allow, f"unexpected formatter changes: {paths - allow}"
           print(f"Formatter touched {len(paths)} expected files")
           PY
