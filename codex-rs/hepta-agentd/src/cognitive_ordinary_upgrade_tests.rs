@@ -213,6 +213,7 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(host.layout.home_root())?;
     let daemon = Daemon::start(&root, &host).await?;
+    let supervisor_epoch = daemon.epoch()?.clone();
     let socket = host.fleet.layout().supervisor_socket().to_path_buf();
     let owned_root = root.clone();
     let local = tokio::task::LocalSet::new();
@@ -220,9 +221,7 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
     // this JoinHandle so cleanup uses the original Supervisor, never /proc.
     let outcome=local.run_until(local.spawn_local(async move {
         let client=SupervisordClient::new(socket)?;
-        let status=client.snapshot(owner()).await?;
-        client.start(status.control_fence,source_release.clone()).await?;
-        let ready=ordinary_native::running(&client,&source_release,5).await?;
+        let ready=ordinary_native::start_once_and_running(&owned_root,&client,&supervisor_epoch,&source_release,5).await?;
         save(&owned_root.join("source-service-status.json"),&serde_json::to_value(ready)?);
         let source_agent=crate::AgentdClient::new(host.layout.agentd_control_socket().to_path_buf(),owner(),5)?;
         let actual_source=source_agent.cognitive_model_status().await?.installed.context("real source ranker")?;

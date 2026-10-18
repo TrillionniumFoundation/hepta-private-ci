@@ -18,8 +18,12 @@ use codex_hepta_memory::H7SignedArtifactTransition;
 use codex_hepta_memory::H7TrajectoryEvent;
 use codex_hepta_supervisor::H7H89ProductionGrantSigner;
 use codex_hepta_supervisor::H7H89ProductionTransition;
+use codex_hepta_supervisor::SupervisorEpoch;
+use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisordAgentStatus;
 use codex_hepta_supervisor::SupervisordClient;
+use codex_hepta_supervisor::SupervisordMutation;
+use codex_hepta_supervisor::SupervisordMutationAccepted;
 use codex_model_provider::HttpProviderEffectContractAttestation;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -204,6 +208,7 @@ pub(super) struct Daemon {
     child: Child,
     pub client: SupervisordClient,
     pub binary: Binary,
+    epoch: Option<SupervisorEpoch>,
 }
 
 impl Daemon {
@@ -233,6 +238,7 @@ impl Daemon {
             child,
             client,
             binary,
+            epoch: None,
         };
         let deadline = Instant::now() + Duration::from_secs(15);
         loop {
@@ -251,38 +257,125 @@ impl Daemon {
             );
             tokio::time::sleep(Duration::from_millis(50)).await;
         }
+        let health = result.client.health().await?;
+        ensure!(
+            health.process_id == result.child.id(),
+            "actual Supervisor health belongs to another process"
+        );
+        result.epoch = Some(health.supervisor_epoch.clone());
         save(
             &root.join("supervisor-process.json"),
             &json!({"binary":result.binary.path,"binary_sha256":result.binary.digest,
-            "process_id":result.child.id(),"health":result.client.health().await?,"production_authority_build_required":true,
+            "process_id":result.child.id(),"health":health,"production_authority_build_required":true,
             "operator_scope":"ephemeral single study namespace"}),
         );
         Ok(result)
     }
 
+    pub fn epoch(&self) -> Result<&SupervisorEpoch> {
+        self.epoch.as_ref().context("actual owned Supervisor epoch")
+    }
+
     pub async fn cleanup(&self, root: &std::path::Path) -> Result<()> {
-        let result: Result<Value> = async {
-            for _ in 0..3 {
-                let status = self.client.snapshot(owner()).await?;
+        let started = Instant::now();
+        let at = support::micros();
+        let deadline = tokio::time::Instant::from_std(started + Duration::from_secs(60));
+        let mut rounds = Vec::<Value>::new();
+        let mut kill_calls = 0_u64;
+        let mut accepted: Option<SupervisordAgentStatus> = None;
+        let result = tokio::time::timeout_at(deadline, async {
+            let epoch = self.epoch()?;
+            for round in 0..3 {
+                rounds.push(json!({"round":round + 1}));
+                let status = match self.client.snapshot(owner()).await {
+                    Ok(status) => status,
+                    Err(error) => {
+                        rounds[round]["snapshot_error"] = json!(error.to_string());
+                        return Err(error.into());
+                    }
+                };
+                rounds[round]["status"] = serde_json::to_value(&status)?;
+                ensure!(
+                    status.agent_id == owner()
+                        && status.control_fence.agent_id == owner()
+                        && &status.control_fence.supervisor_epoch == epoch,
+                    "cleanup snapshot belongs to another Agent or Supervisor epoch"
+                );
+                let revision = status.control_revision.context("actual cleanup control revision")?;
+                if let Some(prior) = &accepted {
+                    ensure!(
+                        status.control_revision == prior.control_revision,
+                        "another control mutation followed the accepted cleanup Kill"
+                    );
+                }
                 if !status.active {
+                    ensure!(
+                        status.lifecycle == AgentLifecycle::Stopped
+                            && status.spawn_generation.is_none()
+                            && status.runtime_generation.is_none()
+                            && status.process_id.is_none()
+                            && !status.release_change_pending
+                            && !status.matrix.active,
+                        "inactive cleanup snapshot is not a completed stop"
+                    );
                     return Ok(json!({"state":"stopped","status":status}));
                 }
-                match self.client.kill(status.control_fence).await {
-                    Ok(_) => {
-                        tokio::time::sleep(Duration::from_millis(100)).await;
+                if let Some(prior) = &accepted {
+                    ensure!(
+                        status.spawn_generation == prior.spawn_generation
+                            && status.current_release == prior.current_release
+                            && status.process_id == prior.process_id,
+                        "another runtime followed the accepted cleanup Kill"
+                    );
+                    rounds[round]["action"] = json!("observe_accepted_kill_only");
+                } else {
+                    let expected_revision = revision.checked_add(1).context("cleanup revision overflow")?;
+                    rounds[round]["submitted_fence"] = serde_json::to_value(&status.control_fence)?;
+                    kill_calls += 1;
+                    match self.client.kill(status.control_fence.clone()).await {
+                        Ok(receipt) => {
+                            rounds[round]["kill_response"] = mutation_observation(&receipt);
+                            ensure!(
+                                receipt.operation == SupervisordMutation::Kill
+                                    && receipt.accepted_state_digest == status.control_fence.state_digest
+                                    && receipt.agent.agent_id == owner()
+                                    && &receipt.agent.control_fence.supervisor_epoch == epoch
+                                    && receipt.agent.control_revision == Some(expected_revision),
+                                "cleanup Kill receipt differs from the original request"
+                            );
+                            accepted = Some(receipt.agent);
+                        }
+                        Err(error) => {
+                            rounds[round]["kill_error"] = json!(error.to_string());
+                            if !is_original_stale_fence(&error) {
+                                return Err(error.into());
+                            }
+                            // The original CAS rejected this request before mutation.
+                            // Only this exact rejection permits a fresh fenced attempt.
+                            rounds[round]["action"] = json!("refresh_after_original_stale_fence");
+                        }
                     }
-                    Err(error) => return Err(error.into()),
                 }
+                tokio::time::sleep(Duration::from_millis(100)).await;
             }
-            anyhow::bail!("original Supervisor did not stop the owned study Agent")
-        }
-        .await;
+            anyhow::bail!("original Supervisor did not stop the owned study Agent within three rounds")
+        }).await;
+        let result: Result<Value> = match result {
+            Ok(result) => result,
+            Err(_) => Err(anyhow::anyhow!("owned cleanup exceeded the absolute 60s observation bound")),
+        };
+        let mut observation = match &result {
+            Ok(value) => value.clone(),
+            Err(error) => json!({"state":"failed","reason":format!("{error:#}")}),
+        };
+        observation["rounds"] = json!(rounds);
+        observation["kill_calls"] = json!(kill_calls);
+        observation["kill_accepted"] = json!(accepted.is_some());
+        observation["started_at_unix_micros"] = json!(at);
+        observation["monotonic_elapsed_micros"] = json!(started.elapsed().as_micros());
         save(
             &root.join("native-cleanup.json"),
-            &match &result {
-                Ok(value) => value.clone(),
-                Err(error) => json!({"state":"failed","reason":format!("{error:#}")}),
-            },
+            &observation,
         );
         result.map(|_| ())
     }
@@ -297,28 +390,164 @@ impl Drop for Daemon {
     }
 }
 
-pub(super) async fn running(
+fn is_original_read_timeout(error: &SupervisorError) -> bool {
+    matches!(error, SupervisorError::Invalid(message) if message == "supervisord read timed out")
+}
+
+fn is_original_stale_fence(error: &SupervisorError) -> bool {
+    matches!(error, SupervisorError::Invalid(message) if message ==
+        "supervisord rejected request (stale_control_fence): selected Agent changed; refresh before retry")
+}
+
+fn mutation_observation(receipt: &SupervisordMutationAccepted) -> Value {
+    json!({"operation":receipt.operation,"accepted_state_digest":receipt.accepted_state_digest,
+        "agent":receipt.agent,"production_receipt":receipt.production_receipt})
+}
+
+pub(super) async fn start_once_and_running(
+    root: &std::path::Path,
     client: &SupervisordClient,
+    epoch: &SupervisorEpoch,
     release: &ReleaseId,
     generation: u64,
 ) -> Result<SupervisordAgentStatus> {
-    let deadline = Instant::now() + Duration::from_secs(60);
-    loop {
-        let status = client.snapshot(owner()).await?;
-        if status.active
-            && status.healthy
-            && status.lifecycle == AgentLifecycle::Running
-            && status.current_release.as_ref() == Some(release)
-            && status.spawn_generation == Some(generation)
-        {
-            return Ok(status);
-        }
+    let started = Instant::now();
+    let deadline = tokio::time::Instant::from_std(started + Duration::from_secs(60));
+    let path = root.join("source-start-observation.json");
+    let mut trace = json!({"schema":"hepta.ordinary-source-start-observation.v1",
+        "started_at_unix_micros":support::micros(),"supervisor_epoch":epoch,
+        "release":release,"spawn_generation":generation,"start_calls":0,"readbacks":[]});
+    let result = tokio::time::timeout_at(deadline, async {
+        let before = client.snapshot(owner()).await?;
+        trace["before"] = serde_json::to_value(&before)?;
+        let revision = before.control_revision.context("actual pre-Start control revision")?;
+        let next_revision = revision.checked_add(1).context("source Start revision overflow")?;
+        let running_generation = generation.checked_add(1).context("source running generation overflow")?;
         ensure!(
-            Instant::now() < deadline,
-            "actual Agentd did not reach the original 60s ready boundary: {status:?}"
+            before.agent_id == owner()
+                && before.control_fence.agent_id == owner()
+                && &before.control_fence.supervisor_epoch == epoch,
+            "pre-Start snapshot belongs to another Agent or Supervisor epoch"
         );
-        tokio::time::sleep(Duration::from_millis(100)).await;
-    }
+        ensure!(
+            before.lifecycle == AgentLifecycle::Stopped
+                && before.lifecycle_generation.checked_add(1) == Some(generation)
+                && !before.active
+                && !before.healthy
+                && before.process_id.is_none()
+                && before.spawn_generation.is_none()
+                && before.runtime_generation.is_none()
+                && before.current_release.is_none()
+                && before.previous_release.is_none()
+                && !before.release_change_pending,
+            "source Start requires the original inactive fixture generation"
+        );
+        trace["request"] = json!({"fence":before.control_fence,"release_id":release});
+        trace["start_calls"] = json!(1);
+        save(&path, &trace);
+        let mut revision_observed = false;
+        // This is the only Start call. A read timeout is retained as Unknown;
+        // neither it nor an unchanged snapshot authorizes another dispatch.
+        match client.start(before.control_fence.clone(), release.clone()).await {
+            Ok(receipt) => {
+                trace["start_result"] = json!({"state":"accepted","response":mutation_observation(&receipt)});
+                ensure!(
+                    receipt.operation == SupervisordMutation::Start
+                        && receipt.accepted_state_digest == before.control_fence.state_digest
+                        && receipt.agent.agent_id == owner()
+                        && &receipt.agent.control_fence.supervisor_epoch == epoch
+                        && receipt.agent.control_revision == Some(next_revision),
+                    "source Start receipt differs from the original request"
+                );
+                revision_observed = true;
+            }
+            Err(error) => {
+                trace["start_result"] = json!({"state":if is_original_read_timeout(&error) {"unknown"} else {"rejected"},
+                    "error":error.to_string()});
+                if !is_original_read_timeout(&error) {
+                    return Err(error.into());
+                }
+            }
+        }
+        save(&path, &trace);
+        loop {
+            let observed = client.snapshot(owner()).await;
+            trace["readbacks"].as_array_mut().context("source readback observations")?.push(
+                match &observed {
+                    Ok(status) => json!({"monotonic_elapsed_micros":started.elapsed().as_micros(),"status":status}),
+                    Err(error) => json!({"monotonic_elapsed_micros":started.elapsed().as_micros(),"error":error.to_string()}),
+                }
+            );
+            let status = match observed {
+                Ok(status) => status,
+                Err(error) if is_original_read_timeout(&error) => {
+                    // Read-only observations may wait for the original owner;
+                    // the one absolute readiness deadline is never reset.
+                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    continue;
+                }
+                Err(error) => return Err(error.into()),
+            };
+            ensure!(
+                status.agent_id == owner()
+                    && status.control_fence.agent_id == owner()
+                    && &status.control_fence.supervisor_epoch == epoch,
+                "source readback belongs to another Agent or Supervisor epoch"
+            );
+            let current_revision = status.control_revision.context("actual source readback control revision")?;
+            if current_revision == revision {
+                ensure!(
+                    !revision_observed && status == before,
+                    "source state changed without the exact Start revision"
+                );
+            } else {
+                ensure!(
+                    current_revision == next_revision,
+                    "source readback crossed the one expected Start revision"
+                );
+                revision_observed = true;
+                ensure!(
+                    status.active
+                        && status.process_id.is_some_and(|pid| pid > 0)
+                        && status.current_release.as_ref() == Some(release)
+                        && status.previous_release == before.previous_release
+                        && status.spawn_generation == Some(generation)
+                        && !status.release_change_pending,
+                    "consumed Start revision does not identify the intended source runtime"
+                );
+                match status.lifecycle {
+                    AgentLifecycle::Starting => ensure!(
+                        status.lifecycle_generation == generation
+                            && status.runtime_generation == Some(generation),
+                        "source Starting state differs from its original spawn"
+                    ),
+                    AgentLifecycle::Running => {
+                        ensure!(
+                            status.lifecycle_generation == running_generation
+                                && status.runtime_generation == Some(running_generation),
+                            "source Running state differs from its original spawn"
+                        );
+                        if status.healthy {
+                            return Ok(status);
+                        }
+                    }
+                    _ => anyhow::bail!("source Start reached an unexpected lifecycle: {:?}", status.lifecycle),
+                }
+            }
+            tokio::time::sleep(Duration::from_millis(100)).await;
+        }
+    }).await;
+    let result: Result<SupervisordAgentStatus> = match result {
+        Ok(result) => result,
+        Err(_) => Err(anyhow::anyhow!("source Start/readback exceeded the original absolute 60s ready boundary")),
+    };
+    trace["result"] = match &result {
+        Ok(status) => json!({"state":"ready","status":status}),
+        Err(error) => json!({"state":"failed","reason":format!("{error:#}")}),
+    };
+    trace["monotonic_elapsed_micros"] = json!(started.elapsed().as_micros());
+    save(&path, &trace);
+    result
 }
 
 pub(super) async fn plan(
