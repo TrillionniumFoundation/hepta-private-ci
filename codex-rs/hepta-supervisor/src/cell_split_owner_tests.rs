@@ -709,4 +709,3 @@ fn externally_retained_minimum_rejects_old_complete_journal_backup() {
     assert_eq!(native.execute_count, effects);
     assert!(!native.stage(WriterHandoffPhaseV1::Drained).exists());
 }
-
