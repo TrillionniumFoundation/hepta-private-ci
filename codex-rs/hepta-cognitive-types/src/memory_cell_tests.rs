@@ -2,10 +2,13 @@ use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 
-use super::{
-    MemoryCellManifestV1, MemoryCellRoleV1, MemoryCellSplitProposalV1, MemoryCellStatusV1,
-    MemoryCellTickInputV1, MemoryCellTickReceiptV1, MAX_MEMORY_CELL_STATE_BYTES,
-};
+use super::MAX_MEMORY_CELL_STATE_BYTES;
+use super::MemoryCellManifestV1;
+use super::MemoryCellRoleV1;
+use super::MemoryCellSplitProposalV1;
+use super::MemoryCellStatusV1;
+use super::MemoryCellTickInputV1;
+use super::MemoryCellTickReceiptV1;
 use crate::hnmf::ContractDigestV1;
 use crate::hnmf::ContractGenerationV1;
 use crate::hnmf::ContractIdV1;
@@ -31,8 +34,7 @@ fn digest(value: &str) -> ContractDigestV1 {
 }
 
 fn generation(value: u64) -> ContractGenerationV1 {
-    ContractGenerationV1::new(value)
-        .unwrap_or_else(|error| panic!("valid generation: {error:?}"))
+    ContractGenerationV1::new(value).unwrap_or_else(|error| panic!("valid generation: {error:?}"))
 }
 
 fn valid_manifest() -> MemoryCellManifestV1 {

@@ -59,9 +59,14 @@ fn zip_archive_rejects_preexisting_symlink_path() {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
     writer
-        .start_file("repo-root/plugins/untrusted.txt", SimpleFileOptions::default())
+        .start_file(
+            "repo-root/plugins/untrusted.txt",
+            SimpleFileOptions::default(),
+        )
         .expect("start zip file");
-    writer.write_all(b"should not escape").expect("write zip file");
+    writer
+        .write_all(b"should not escape")
+        .expect("write zip file");
     let archive = writer.finish().expect("finish zip").into_inner();
 
     let error = extract_zipball_to_dir(&archive, &destination)
