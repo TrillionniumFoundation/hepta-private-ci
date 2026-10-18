@@ -24,17 +24,21 @@ fn generation(value: u64) -> Generation {
 
 fn identity(label: &str) -> FeatureSnapshotIdentityV1 {
     FeatureSnapshotIdentityV1::new_with_question_options(
-        id(&format!("scope-{label}")),
-        id(&format!("workspace-{label}")),
-        id(&format!("purpose-{label}")),
+        FeatureSnapshotScopeV1 {
+            scope: id(&format!("scope-{label}")),
+            workspace: id(&format!("workspace-{label}")),
+            purpose: id(&format!("purpose-{label}")),
+        },
         digest(&format!("question-{label}")),
         digest(&format!("options-{label}")),
-        digest(&format!("frontier-{label}")),
-        digest(&format!("model-{label}")),
-        digest(&format!("adapter-{label}")),
-        digest(&format!("tokenizer-{label}")),
-        digest(&format!("normalizer-{label}")),
-        digest(&format!("calibration-{label}")),
+        FeatureSnapshotLineageV1 {
+            source_frontier: digest(&format!("frontier-{label}")),
+            model: digest(&format!("model-{label}")),
+            adapter: digest(&format!("adapter-{label}")),
+            tokenizer: digest(&format!("tokenizer-{label}")),
+            normalizer: digest(&format!("normalizer-{label}")),
+            calibration: digest(&format!("calibration-{label}")),
+        },
     )
     .expect("identity")
 }
@@ -571,13 +575,15 @@ fn reference_output_digest_v2_fences_ambiguous_request_model_pairs() {
 
     let bind = |request: &StableId, model: &StableId, values: &[i64]| {
         digest_output(
-            request,
-            model,
-            generation(1),
-            digest("same-head"),
-            digest("same-encoder"),
-            digest("same-features"),
-            digest("same-identity"),
+            OutputDigestIdentityV2 {
+                request_id: request,
+                model_id: model,
+                generation: generation(1),
+                head_digest: digest("same-head"),
+                encoder_digest: digest("same-encoder"),
+                input_digest: digest("same-features"),
+                identity_digest: digest("same-identity"),
+            },
             values,
         )
     };
