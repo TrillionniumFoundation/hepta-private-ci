@@ -367,6 +367,10 @@ impl DurableOperationStore {
             .map_err(sqlx_error)?;
         let now = now_millis()?;
         let status = require_current_lease(&mut tx, claim, now).await?;
+        if status.intent != claim.intent {
+            return Err(DurableOperationError::StaleLease);
+        }
+        ensure_clock_not_behind(&mut tx, now).await?;
         let fence = status
             .fence
             .checked_add(1)
