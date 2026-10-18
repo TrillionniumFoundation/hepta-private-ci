@@ -6,6 +6,8 @@ on:
       - "scripts/hepta-cell-split-target-matrix.py"
       - "scripts/test_hepta_cell_split_target_matrix.py"
       - "scripts/test_hepta_cell_split_matrix_integrity.py"
+      - "scripts/hepta_cell_split_observer_crypto.py"
+      - "scripts/test_hepta_cell_split_signed_observer.py"
       - ".github/workflows/hepta-cell-split-matrix-integrity.yml"
   workflow_dispatch: {}
 
@@ -30,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.test_hepta_cell_split_matrix_integrity
+          python3 -m unittest -v scripts.test_hepta_cell_split_matrix_integrity scripts.test_hepta_cell_split_signed_observer
           python3 - <<'PY'
           import tempfile
           from pathlib import Path
