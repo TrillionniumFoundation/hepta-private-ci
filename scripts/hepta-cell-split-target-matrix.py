@@ -517,6 +517,14 @@ def run_matrix(
             assert_exact_source_checkout(repo_root, source_commit)
         except ValueError:
             blocked.append("source-checkout")
+        # The independent observer may modify or remove the frozen workload
+        # after the worker cases. Recheck it before issuing the final report.
+        if workload_path is not None:
+            try:
+                if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
+                    blocked.append("frozen-workload")
+            except OSError:
+                blocked.append("frozen-workload")
 
     report = {
         **provisional,
