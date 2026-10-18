@@ -325,7 +325,7 @@ jobs:
       - name: Score and seal after all 72 generated answer rows have been committed
         run: |
           set -euo pipefail
-          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/prepared /tmp/original/plan /tmp/original/observations /tmp/calibration /tmp/eval-shards /tmp/evaluation --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --policy-sha "$(sha256sum /tmp/calibration/frozen-policy.json | cut -d' ' -f1)"
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/original/plan /tmp/original/observations /tmp/prepared /tmp/calibration /tmp/eval-shards /tmp/evaluation --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --policy-sha "$(sha256sum /tmp/calibration/frozen-policy.json | cut -d' ' -f1)"
           mkdir -p /tmp/finished/prep /tmp/finished/shards
           cp -a /tmp/calibration /tmp/finished/calibration
           cp -a /tmp/evaluation /tmp/finished/evaluation

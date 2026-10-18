@@ -231,6 +231,44 @@ class ShardedReaderContractTests(unittest.TestCase):
             ),
         )
 
+    def test_cpu_workflow_collection_cli_routes_frozen_inputs(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        import shlex
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-memory-strong-rag-cpu-shards.yml"
+        ).read_text(encoding="utf-8")
+        commands = [
+            shlex.split(line.strip())[1:]
+            for line in workflow.splitlines()
+            if "strong_rag_shards.py evaluation-collect " in line
+        ]
+        self.assertEqual(len(commands), 1)
+        # Execute the real argparse/dispatch path; the collector stand-in avoids
+        # inference or opening task labels. This is an engineering regression.
+        with (
+            patch.object(self.shards, "collect_evaluation", return_value={}) as collect,
+            patch.object(sys, "argv", commands[0]),
+            redirect_stdout(StringIO()),
+        ):
+            self.shards.main()
+        self.assertEqual(
+            collect.call_args.args,
+            tuple(
+                Path(path)
+                for path in (
+                    "/tmp/original/plan",
+                    "/tmp/original/observations",
+                    "/tmp/prepared",
+                    "/tmp/calibration",
+                    "/tmp/eval-shards",
+                    "/tmp/evaluation",
+                )
+            ),
+        )
+
     def test_exact_frozen_calibration_40_and_evaluation_72(self):
         s = self.shards
         self.assertEqual(sum(len(x) for x in s.groups("calibration")), 5)
