@@ -457,7 +457,6 @@ fn reference_worker_rejects_native_dispatch_without_pinned_verifier() {
     let mut owner = make_worker(&fixture);
     let mut custom_backend = BadBackend { invocations: 0 };
     let frozen = plan();
-    let signing = SigningKey::from_bytes(&[45_u8; 32]);
     let signed = SignedFinalUseGrant {
         grant: FinalUseGrant {
             schema_version: 1,
@@ -480,5 +479,93 @@ fn reference_worker_rejects_native_dispatch_without_pinned_verifier() {
     );
     assert!(matches!(error, Err(NeuronMicrobatchErrorV1::MissingAuthority)));
     assert_eq!(custom_backend.invocations, 0);
-    let _ = signing;
+}
+
+#[test]
+fn failed_signed_native_batch_leaves_durable_pending_intent_and_poisoned_owner() {
+    let root = tempfile::tempdir().expect("authority directory");
+    let fixture = Fixture::new();
+    let signing = SigningKey::from_bytes(&[66_u8; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &root.path().join("authority"),
+        "neuron.batch.issuer".to_owned(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("verifier");
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("epoch")
+            .as_millis(),
+    )
+    .expect("millis");
+    let frozen = NeuronMicrobatchPlanV1::freeze(
+        id("worker.1"),
+        snapshot(),
+        now + 60_000,
+        heads(),
+    )
+    .expect("plan");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "neuron.batch.issuer".into(),
+        authority_epoch: 1,
+        grant_id: "neuron.batch.indeterminate".into(),
+        nonce: [67_u8; 32],
+        binding: frozen.final_use_binding(),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 20_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let mut owner = make_authorized_worker(&fixture, authority);
+    let mut malformed = BadBackend { invocations: 0 };
+    assert!(matches!(
+        owner.run_authorized(
+            now,
+            &frozen,
+            &signed,
+            &mut malformed,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::BackendOutputMismatch)
+    ));
+    assert_eq!(malformed.invocations, 1);
+
+    // A failed native outcome poisons this process owner.
+    let mut reference = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        owner.run_reference(
+            now,
+            &frozen,
+            &mut reference,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::Poisoned)
+    ));
+    drop(owner);
+
+    // The pre-dispatch intent was synced before invocation and survived
+    // restart, so a new process cannot silently repeat unknown work.
+    let mut recovered = make_worker(&fixture);
+    assert!(matches!(
+        recovered.run_reference(
+            now,
+            &frozen,
+            &mut reference,
+            NeuronHostResourceSampleV1::default(),
+        ),
+        Err(NeuronMicrobatchErrorV1::PlanReplayed)
+    ));
+    assert_eq!(reference.batch_invocations, 0);
 }
