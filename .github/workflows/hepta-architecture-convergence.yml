@@ -59,16 +59,44 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
+          # Record the exact event identity before any network call: even
+          # stale/missing GitHub merge refs must leave a non-authorizing
+          # diagnostic artifact instead of an opaque exit 1 / empty upload.
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          identity_log="$RUNNER_TEMP/hepta-command-records/prospective-merge-identity.txt"
+          printf 'evidence_type=diagnostic_only\nverified=false\npr_number=%s\nsource_sha=%s\nbase_sha=%s\n' \
+            "$PR_NUMBER" "$SOURCE_SHA" "$BASE_SHA" > "$identity_log"
           ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
-          test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
-          test "${parents[1]}" = "$SOURCE_SHA"
+          printf 'actual_merge_sha=%s\nactual_parent_count=%s\n' \
+            "$actual_sha" "${#parents[@]}" >> "$identity_log"
+          if ! test "${#parents[@]}" -eq 2; then
+            echo "::error title=Architecture merge-ref parent mismatch::Expected exactly 2 parents; found ${#parents[@]} for $actual_sha"
+            exit 1
+          fi
+          printf 'actual_base_sha=%s\nactual_source_sha=%s\n' \
+            "${parents[0]}" "${parents[1]}" >> "$identity_log"
+          if ! test "${parents[0]}" = "$BASE_SHA"; then
+            echo "::error title=Architecture base SHA drift::Frozen event base $BASE_SHA differs from live GitHub merge base ${parents[0]}; reject this event and requalify the new exact base"
+            exit 1
+          fi
+          if ! test "${parents[1]}" = "$SOURCE_SHA"; then
+            echo "::error title=Architecture source SHA drift::Frozen event source $SOURCE_SHA differs from live GitHub merge source ${parents[1]}; reject this event and requalify the new exact source"
+            exit 1
+          fi
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$actual_tree" = "$expected_tree"
+          if ! expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"; then
+            echo "::error title=Architecture merge tree computation failed::Cannot construct the frozen source/base merge; keep this gate failed"
+            exit 1
+          fi
+          printf 'actual_tree=%s\nexpected_tree=%s\n' "$actual_tree" "$expected_tree" >> "$identity_log"
+          if ! test "$actual_tree" = "$expected_tree"; then
+            echo "::error title=Architecture merge tree mismatch::GitHub merge tree is not the deterministic frozen source/base merge; keep this gate failed"
+            exit 1
+          fi
+          printf 'verified=true\n' >> "$identity_log"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
       - name: Construct the canonical prospective merge
