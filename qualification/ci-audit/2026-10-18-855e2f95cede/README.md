@@ -1,0 +1,61 @@
+# HEPTA 开发接力执行 checkpoint — 2026-10-18
+
+## 本轮已经写入远端的结果
+
+本轮共向两个既有 PR 快进推送 7 个提交，未强推、未合并、未修改保护规则或校验器。两条修复都保持原分支和实际依赖关系。所有尚未完成的门禁继续计为未闭合。
+
+| 修复线 | 当前 HEAD | 已实施变更 | 本地验证 |
+|---|---|---|---|
+| [#2599](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2599) | 19c5cd41c17dd42da7afac96203a4bc7901e23a6 | 四份 Rust 测试文件/测试区块改用 typed Result 传递错误；原严格 CLI 更新四份源码映射 | Rustfmt、diff、derived check 通过；4 maps 通过；原生测试未启动 |
+| [#2714](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2714) | f191cd081ba16fed8827a18093b5a5b39e9a36cd | Reader/Harness/Stem 显式证据声明、校准等级不可覆盖、拒绝非布尔 authority marker；5 个可审查阶段、9 文件 | 最终 109 项 Python 契约测试通过；独立分阶段复核通过 |
+
+#2599 保留全部断言和平台限制，未引入 #1350 所依赖的 218 个 Intuition 功能提交。四份映射仅更新 sourceBase/sourceObjects，执行、激活与验收声明完全不变。三个旧映射的锚点不在 main 祖先链上，原迁移器正确拒绝；本轮保留其原文和失败证据。全库严格资格结果是 main 29 个失败模块、源码候选 30 个、最终候选 26 个，不能称为全库通过。详细对象与原始日志见 PR2599_MAP_FINAL.md、FINAL_PR2599_MAP_RECEIPT.json 和归档。
+
+#2714 修复了可实际复现的证据完整性问题：缺失声明曾被有利默认值填充；caller 曾能把明确 LOCAL 的 calibration 改为 REAL_SHADOW；Stem 曾接受字符串或未知值；可选 authority marker 曾接受 null、整数 0、浮点 0.0。新行为明确拒绝这些情况。布尔声明本身不证明科学独立性，全部输出仍 DENY_ALL，研究继续 SHADOW_ONLY / NO_GO。
+
+## 真实环境与权限
+
+可访问主机是 2313cba36518。15:30:22 UTC 快照观察到 16 个 worktree 和 11 个可见进程；进程、cwd、dirty 文件、输出位置及遮蔽后的 argv 在 RUNNING_TASKS.md 和 host_snapshot.json。该主机未被独立识别为用户指定的 Dot/Hepta 专用工作机；没有已验证的项目 SSH 路径，因此其他主机状态为 NOT_ACCESSIBLE。
+
+本会话已实际验证 GitHub 读、创建 Git 对象和按 expected SHA 快进更新既有分支的能力。完整 branch protection 读取返回 403，runner 管理端点不在插件允许范围内；无法据此统计 org 的 online/busy、runner groups、并发配额或利用率。
+
+主机可见 9 CPU、cgroup 配额 8 核、内存上限 8 GiB。overlay 可用空间为 0。原生构建预检在 Cargo 启动前拒绝，因此没有把“未执行”计为通过。独占 tmpfs 完整 checkout 用于真实提交与源码映射验证；未删除并行 owner 的工作区、模型权重或缓存。该临时目录易失，唯一证据已归档入仓。
+
+## 全量基础清点及其边界
+
+Hepta 在 14:20:04-14:23:41 UTC 的完整分页快照为：
+
+- 2,519 个唯一分支；26 个数据页，随后空页。
+- 2,846 个 PR；29 个数据页，随后空页。
+- Open 1,553，其中 Draft 1,526、非 Draft 27。
+- Closed 1,293，其中 merged 315、closed-unmerged 978。
+- 2,519 条分支相对 main 的 git 图关系全部核验：same 2、包含 main 且 ahead 289、only-behind 28、divergent 2,200。
+- Open PR base-ref DAG 共 1,250 条边，未发现环；684 个分支未关联 PR，仅记录事实，不判定应删除。
+
+完整 raw 页、页哈希、normalized inventory、git graph 与 DAG 在 inventory-evidence.tar.gz。BRANCH_PR_DAG.md 说明了实际依赖。该结果不等于完成 2,846 个 PR 的逐 diff/review/历史 CI/科学材料语义审查；名称分类只作候选，不能授权淘汰或合并。
+
+PON 对比实际确认 #1504 的 wrapper 通过 4/4 故障注入单元测试，#1501 同组为 2 pass / 2 fail；这证明了该 wrapper 在日志管道错误传播上的改进，未证明完整 Bazel/PoN/平台资格。#1508 对当前 #1468 缺少大量基线提交，#1509 的两份自有提交只改两文件格式。旧 PR 顺序不能替代当前语义与依赖核验。
+
+## CI 与队列
+
+15:37-15:38 UTC 第二次新 HEAD 快照：#2599 的 11 个 jobs 与 #2714 的 6 个 jobs 全部 queued；两项 required 汇总检查均未生成。没有任何一条达到可合并条件。详细新旧 SHA、run/job IDs、错误日志和根因见 CI_MATRIX.md、BLOCKERS.json 和 ci-evidence.tar.gz。
+
+14:31:49-14:32:35 UTC 对 441 个非终态 run 的完整 latest-attempt job 分页读取，共 1,587 个 jobs：494 queued、168 in_progress、393 success、137 failure、220 cancelled、175 skipped。队列年龄中位数 24.56 分钟、p95 61.62 分钟、最大 76.99 分钟。成功数包含各 job 的局部结果，绝不是完整 required-CI 通过数。
+
+其中 296 个非终态 run 没有 job 记录；它们不是 runner 占用证明。所有队列数都是有明确时间窗口的观测，不能推出 org 空闲容量。对 exact main 的 51 份 workflow concurrency 源码已校验，当前证据不足以安全改变 org 资源策略；未执行取消、重跑、改 labels 或减平台覆盖率。
+
+## 模型实验和 OS 联动
+
+本轮没有启动本地真实模型推理，新增完成的模型 receipts 为 0。历史档案确有 40 calibration + 72 nine-arm 行，但属于 10 月 13-14 日运行；不能替代新 HEAD 的新实验。另一 owner 的 10 月 18 日 fresh attempt 完成 6 个 calibration 答案、0 evaluation，第七次没有返回后 watchdog 终止。两个批次不得拼接。本轮推送触发的既有远端 Reader workflow 仍处于排队观测，后续须按其实际 receipts 单独核验。
+
+64 次 Laya Reader / 四臂指标保留为历史局部证据。缺独立 heldout calibration、完整设备/概率/FLOPs/内存/能源 join，继续 HOLD_NO_GO。共享 Encoder、NDU/System2 和多模态方向仍需真实受控消融与预算测量，不能用这 109 项契约测试证明能力提升。
+
+OS 仓库在 15:22:56-15:23:29 UTC 完整清点 167 branches、185 PR；open 20（Draft 16、非 Draft 4）、merged 109、closed-unmerged 56。main 为 f9e306f76154590e096a42f70ce9de0a7c859e60。#193 在所观察 HEAD 有 7 checks / 4 runs success；#194 是 0 checks / 0 runs，不能计绿。仍是 Hepta #2815 -> Desktop #193 -> #194 的未合并依赖栈。
+
+该桌面项目具备可继续整合的接口与权限契约基础。当前被审查 native effect dispatcher 只支持 QueryAbi，其他控制操作返回不支持；G1/G2、生产 issuer、持久递交/撤销和 Final-use 资格未完整闭合。因此目前不能将其当作已具生产资格的桌面/移动端控制器。详见 research-os-evidence.tar.gz 中的完整审计与 20 个 open PR 的检查表。
+
+## 下一阶段
+
+BLOCKERS.md/BLOCKERS.json 为未闭合清单，REPRODUCE.md 为固定 SHA 的可执行验证入口。优先在可访问且有独立磁盘的原生 worker 上完成 #2599 的 Cargo/Clippy/三平台验证，同时处理当前精确 HEAD 的真实 CI 失败；继续保持源码映射原身份、科学资格和外部 effect 权限的拒绝边界。
+
+本 checkpoint 的结论是“修复已推送、证据已归档、门禁未闭合”。没有后台本地训练或编译被宣称仍在运行。远端 queued run 仅按实际 run ID 和观测状态记录。
