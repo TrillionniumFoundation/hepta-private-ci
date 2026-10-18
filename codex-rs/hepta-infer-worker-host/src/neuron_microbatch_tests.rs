@@ -1,6 +1,16 @@
 use super::*;
 
+use std::collections::BTreeSet;
 use std::fs::OpenOptions;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -186,4 +196,117 @@ fn adversarial_backend_reordering_fails_closed_and_never_commits_metric() {
             .expect("metric not acknowledged").metric_sequence,
         1
     );
+}
+
+#[test]
+fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use() {
+    let root = tempfile::tempdir().expect("authority directory");
+    let fixture = Fixture::new();
+    let signing = SigningKey::from_bytes(&[12_u8; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &root.path().join("authority"),
+        "neuron.batch.issuer".to_owned(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    ).expect("trusted verifier");
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)
+        .expect("epoch").as_millis()).expect("millis");
+    let plan = NeuronMicrobatchPlanV1::freeze(
+        id("worker.1"), snapshot(), now + 60_000, heads()
+    ).expect("plan");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "neuron.batch.issuer".into(),
+        authority_epoch: 1,
+        grant_id: "neuron.batch.grant.1".into(),
+        nonce: [27; 32],
+        binding: plan.final_use_binding(),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing.sign(&grant.signing_bytes().expect("bytes"))
+            .to_bytes().to_vec(),
+        grant,
+    };
+    let mut owner = make_worker(&fixture);
+    let mut backend = ReferenceNeuronBatchBackendV1::default();
+
+    let mut altered = snapshot().identity().clone();
+    altered.ndu_snapshot_digest = Digest32::of_bytes(b"ndu.tampered");
+    let altered_snapshot = NeuronFrozenFeatureV1::freeze(altered, vec![11, 22, 33])
+        .expect("altered snapshot");
+    let tampered = NeuronMicrobatchPlanV1::freeze(
+        id("worker.1"), Arc::new(altered_snapshot), now + 60_000, heads()
+    ).expect("altered plan");
+    assert!(owner.run_authorized(
+        now, &tampered, &authority, &signed, &mut backend,
+        NeuronHostResourceSampleV1::default()
+    ).is_err());
+    assert_eq!(backend.batch_invocations, 0);
+
+    let output = owner.run_authorized(
+        now, &plan, &authority, &signed, &mut backend,
+        NeuronHostResourceSampleV1::default()
+    ).expect("signed final-use");
+    assert_eq!(backend.batch_invocations, 1);
+    assert_eq!(output.metric_sequence, 1);
+    assert!(!output.authority.grants_any());
+
+    assert!(owner.run_authorized(
+        now, &plan, &authority, &signed, &mut backend,
+        NeuronHostResourceSampleV1::default()
+    ).is_err());
+    assert_eq!(backend.batch_invocations, 1);
+}
+
+#[test]
+fn signed_batch_expiry_must_not_outlive_plan_deadline() {
+    let root = tempfile::tempdir().expect("authority");
+    let fixture = Fixture::new();
+    let signing = SigningKey::from_bytes(&[13_u8; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &root.path().join("authority"),
+        "neuron.batch.issuer".to_owned(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    ).expect("verifier");
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)
+        .expect("epoch").as_millis()).expect("millis");
+    let plan = NeuronMicrobatchPlanV1::freeze(
+        id("worker.1"), snapshot(), now + 10_000, heads()
+    ).expect("plan");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "neuron.batch.issuer".into(),
+        authority_epoch: 1,
+        grant_id: "neuron.batch.late".into(),
+        nonce: [28; 32],
+        binding: plan.final_use_binding(),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 20_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing.sign(&grant.signing_bytes().expect("bytes"))
+            .to_bytes().to_vec(),
+        grant,
+    };
+    let mut owner = make_worker(&fixture);
+    let mut backend = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        owner.run_authorized(
+            now, &plan, &authority, &signed, &mut backend,
+            NeuronHostResourceSampleV1::default()
+        ),
+        Err(NeuronMicrobatchErrorV1::InvalidPlan)
+    ));
+    assert_eq!(backend.batch_invocations, 0);
 }

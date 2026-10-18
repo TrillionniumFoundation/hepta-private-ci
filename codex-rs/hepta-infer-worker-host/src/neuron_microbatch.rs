@@ -42,6 +42,7 @@ pub enum NeuronMicrobatchErrorV1 {
     BackendOutputMismatch,
     FinalUse(FinalUseError),
     Metrics(NeuronMetricsErrorV1),
+    ClockUnavailable,
     Poisoned,
 }
 
@@ -361,12 +362,28 @@ impl NeuronMicrobatchWorkerV1 {
         backend: &mut B,
         resources: NeuronHostResourceSampleV1,
     ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
-        self.preflight(now_unix_ms, plan)?;
+        // Reject an expired plan even if a caller supplied an old timestamp.
+        // The signed grant must expire no later than the batch deadline;
+        // FinalUseAuthority independently verifies its own protected clock.
+        let now_from_system = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|_| NeuronMicrobatchErrorV1::ClockUnavailable)?;
+        let system_unix_ms = u64::try_from(now_from_system.as_millis())
+            .map_err(|_| NeuronMicrobatchErrorV1::ClockUnavailable)?;
+        let effective_now_ms = now_unix_ms.max(system_unix_ms);
+        self.preflight(effective_now_ms, plan)?;
+        if signed.grant.authority_epoch != plan.snapshot.identity.authority_epoch
+            || signed.grant.expires_at_unix_ms > plan.deadline_unix_ms
+            || authority.revocation_head()?.authority_epoch
+                != plan.snapshot.identity.authority_epoch
+        {
+            return Err(NeuronMicrobatchErrorV1::InvalidPlan);
+        }
         let expected = plan.final_use_binding();
         let token = claim_final_use(authority, signed, &expected)?;
         authority
             .with_verified_effect(token, &expected, || {
-                self.execute(now_unix_ms, plan, backend, resources)
+                self.execute(effective_now_ms, plan, backend, resources)
             })
             .map_err(NeuronMicrobatchErrorV1::FinalUse)?
     }
