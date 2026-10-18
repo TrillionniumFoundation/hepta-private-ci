@@ -71,6 +71,7 @@ pub use error::ArtifactRegistryError;
 pub use iteration::IterationCandidateStateV1;
 pub use iteration::IterationCandidateV1;
 pub use iteration::IterationEnvelopeV1;
+pub use iteration::iteration_envelope_digest_v1;
 pub use iteration::validate_iteration_transition;
 pub use iteration_ledger::IterationEvidenceKindV1;
 pub use iteration_ledger::IterationEvidenceV1;
