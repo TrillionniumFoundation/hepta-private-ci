@@ -107,7 +107,7 @@ class SignedObserverProtocolTests(unittest.TestCase):
             self.verify(expected_observer_id="wrong-principal")
 
     def test_bad_signature_with_resealed_digests_fails(self) -> None:
-        self.observer["signatureBase64"] = base64.b64encode(b"\\x01" * 64).decode()
+        self.observer["signatureBase64"] = base64.b64encode(b"\x01" * 64).decode()
         self.reseal_digests_only()
         with self.assertRaisesRegex(ValueError, "signature verification failed"):
             self.verify()
