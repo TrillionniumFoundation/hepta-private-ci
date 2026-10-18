@@ -238,8 +238,12 @@ def run_isolated_command(
             try:
                 child.communicate(timeout=5)
             except subprocess.TimeoutExpired as stuck:
-                raise RuntimeError("process descendants escaped cleanup; stop matrix") from stuck
-            raise ValueError("subprocess exceeded deadline; process group terminated") from error
+                raise RuntimeError(
+                    "process descendants escaped cleanup; stop matrix"
+                ) from stuck
+            raise ValueError(
+                "subprocess exceeded deadline; process group terminated"
+            ) from error
         if _terminate_process_group(child.pid):
             raise ValueError("subprocess left descendant processes")
     return subprocess.CompletedProcess(
