@@ -554,6 +554,56 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
         MODULE.verify_observer_signature({**receipt, "signatureHex": None}, trusted_key)
 
 
+def test_observer_signature_does_not_authorize_unsigned_extensions() -> None:
+    private = Ed25519PrivateKey.generate()
+    trusted_key = (
+        private.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        .hex()
+    )
+    claim = {
+        "schema": MODULE.OBSERVER_SCHEMA,
+        "verified": True,
+        "sourceCommit": "a" * 40,
+        "workloadDigest": "b" * 64,
+        "reportDigest": "c" * 64,
+        "metricsDigest": "d" * 64,
+        "observerId": "test-signer-not-independent",
+    }
+    claim["signatureHex"] = private.sign(MODULE.observer_signing_bytes(claim)).hex()
+    MODULE.verify_observer_signature(claim, trusted_key)
+    complete = {**claim, "receiptDigest": MODULE.digest(claim)}
+    MODULE.verify_observer_signature(complete, trusted_key)
+
+    # The original signature authenticates only the v1 fields. Recomputing
+    # the unsigned receipt digest must not make a forged approval valid.
+    for unauthorized in ("authority", "productionApproved", "keyRotation"):
+        forged = {**claim, unauthorized: "ALLOW"}
+        forged["receiptDigest"] = MODULE.digest(forged)
+        with pytest.raises(ValueError, match="unknown or missing fields"):
+            MODULE.verify_observer_signature(forged, trusted_key)
+
+
+def test_report_rejects_unsigned_top_level_extensions(tmp_path: Path) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "matrix.json",
+    )
+    MODULE.validate_report(report)
+    with pytest.raises(ValueError, match="unknown or missing fields"):
+        MODULE.validate_report({**report, "physicalSplitApproved": True})
+    incomplete = dict(report)
+    del incomplete["blockingCases"]
+    with pytest.raises(ValueError, match="unknown or missing fields"):
+        MODULE.validate_report(incomplete)
+
+
 def test_ed25519_observer_key_must_have_prime_order() -> None:
     """Strict key validation prevents low-order and mixed-order acceptance."""
     private = Ed25519PrivateKey.generate()

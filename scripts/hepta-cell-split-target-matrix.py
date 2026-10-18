@@ -32,6 +32,34 @@ from typing import Any
 SCHEMA = "hepta.cell-split.target-matrix.v1"
 AUTHORITY = "DENY_ALL"
 OBSERVER_SCHEMA = "hepta.cell-split.observer.ed25519.v1"
+OBSERVER_RECEIPT_KEYS = frozenset(
+    {
+        "schema",
+        "verified",
+        "sourceCommit",
+        "workloadDigest",
+        "reportDigest",
+        "metricsDigest",
+        "observerId",
+        "signatureHex",
+    }
+)
+MATRIX_REPORT_KEYS = frozenset(
+    {
+        "schema",
+        "authority",
+        "cellCounts",
+        "sourceCommit",
+        "workloadDigest",
+        "workloadSourceDigest",
+        "host",
+        "cases",
+        "observer",
+        "blockingCases",
+        "status",
+        "reportDigest",
+    }
+)
 CELL_COUNTS: tuple[int, ...] = (64, 256, 1024, 4096)
 FACTORS: tuple[tuple[str, tuple[str, str]], ...] = (
     ("encoder_topology", ("shared", "replicated")),
@@ -278,6 +306,15 @@ def verify_observer_signature(
         or not receipt["observerId"].strip()
     ):
         raise ValueError("invalid signed observer claim")
+    # Only the v1 schema's named fields are signature-bound. A caller
+    # may not attach a new "approval" or "authority" field under an
+    # existing valid signature and then recompute the unsigned receipt hash.
+    actual_fields = set(receipt)
+    if actual_fields not in (
+        OBSERVER_RECEIPT_KEYS,
+        OBSERVER_RECEIPT_KEYS | {"receiptDigest"},
+    ):
+        raise ValueError("signed observer receipt has unknown or missing fields")
     try:
         from cryptography.exceptions import InvalidSignature
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -613,6 +650,10 @@ def validate_report(
     report: dict[str, Any],
     trusted_observer_public_key: str | None = None,
 ) -> None:
+    # reportDigest deliberately hashes the provisional evidence and observer,
+    # not status/blockers; reject extra unsigned extension fields separately.
+    if not isinstance(report, dict) or set(report) != MATRIX_REPORT_KEYS:
+        raise ValueError("matrix report has unknown or missing fields")
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
     cases = report.get("cases")
