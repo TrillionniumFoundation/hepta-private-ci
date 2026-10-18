@@ -1,20 +1,25 @@
-from pathlib import Path
 import hashlib
 import sys
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "stem-transfer-cell-artifact-p0"))
+sys.path.insert(
+    0, str(Path(__file__).resolve().parents[2] / "stem-transfer-cell-artifact-p0")
+)
 
 from neuron_shared_encoder.stem_bridge import (  # noqa: E402
     ArtifactIdentityV1,
-    FeatureKeyV1,
     QualificationReceiptV1,
     ReaderGateReceiptV1,
     feature_key_for_artifact,
     transfer_matrix_from_receipts,
 )
-from stem_transfer_cell_artifact import CellArtifactV1, ContractError, StemManifestV1  # noqa: E402
+from stem_transfer_cell_artifact import (  # noqa: E402
+    CellArtifactV1,
+    ContractError,
+    StemManifestV1,
+)
 
 
 def digest(seed: str) -> str:
@@ -86,6 +91,7 @@ def receipt(**overrides):
         evidence_class="REAL_SHADOW",
         independent_new_source=True,
         reader_citations=4,
+        model_input_gold_visible=False,
     )
     values.update(overrides)
     return QualificationReceiptV1(**values)
@@ -113,7 +119,11 @@ class StemBridgeTests(unittest.TestCase):
         self.assertEqual(ledger.active_params, 121)
 
     def test_incomplete_receipt_is_preserved_and_cannot_be_zero_filled(self):
-        incomplete = receipt(stem_params=None, receipt_status="INCOMPLETE", missing_fields=("stem_params",))
+        incomplete = receipt(
+            stem_params=None,
+            receipt_status="INCOMPLETE",
+            missing_fields=("stem_params",),
+        )
         with self.assertRaises(ContractError):
             incomplete.to_ledger()
         with self.assertRaises(ContractError):
@@ -127,36 +137,125 @@ class StemBridgeTests(unittest.TestCase):
 
     def test_transfer_matrix_rejects_budget_mismatch(self):
         with self.assertRaises(ContractError):
-            transfer_matrix_from_receipts(STEM, (receipt(), receipt(task_id="task.reader.b", budget_digest=digest("other-budget"))), digest("budget"))
+            transfer_matrix_from_receipts(
+                STEM,
+                (
+                    receipt(),
+                    receipt(
+                        task_id="task.reader.b", budget_digest=digest("other-budget")
+                    ),
+                ),
+                digest("budget"),
+            )
 
     def test_transfer_matrix_keeps_one_frozen_stem(self):
-        matrix = transfer_matrix_from_receipts(STEM, (receipt(), receipt(task_id="task.reader.b")), digest("budget"))
+        matrix = transfer_matrix_from_receipts(
+            STEM, (receipt(), receipt(task_id="task.reader.b")), digest("budget")
+        )
         self.assertEqual(matrix.stem.stem_digest, STEM.stem_digest)
         self.assertEqual(len(matrix.cases), 2)
 
     def test_synthetic_reader_receipt_cannot_pass_split_gate(self):
-        gate = ReaderGateReceiptV1("SYNTHETIC_SMOKE", True, True, 1.0, 0.9, 0.8, 0.01, 0.02, 0.001, 1.0, 1.0, 0).to_split_gate()
+        gate = ReaderGateReceiptV1(
+            "SYNTHETIC_SMOKE",
+            True,
+            True,
+            1.0,
+            0.9,
+            0.8,
+            0.01,
+            0.02,
+            0.001,
+            1.0,
+            1.0,
+            0,
+            model_input_gold_visible=False,
+        ).to_split_gate()
         self.assertFalse(gate.passes)
         self.assertIn("reader_evidence_insufficient", gate.reasons())
 
     def test_historical_replay_cannot_pass_split_gate(self):
-        gate = ReaderGateReceiptV1("HISTORICAL_REPLAY", True, True, 1.0, 0.9, 0.8, 0.01, 0.02, 0.001, 1.0, 1.0, 0).to_split_gate()
+        gate = ReaderGateReceiptV1(
+            "HISTORICAL_REPLAY",
+            True,
+            True,
+            1.0,
+            0.9,
+            0.8,
+            0.01,
+            0.02,
+            0.001,
+            1.0,
+            1.0,
+            0,
+            model_input_gold_visible=False,
+        ).to_split_gate()
         self.assertFalse(gate.passes)
 
     def test_real_reader_receipt_can_become_a_candidate_gate(self):
-        gate = ReaderGateReceiptV1("REAL_SHADOW", True, True, 1.0, 0.9, 0.8, 0.01, 0.02, 0.001, 1.0, 1.0, 0).to_split_gate()
+        gate = ReaderGateReceiptV1(
+            "REAL_SHADOW",
+            True,
+            True,
+            1.0,
+            0.9,
+            0.8,
+            0.01,
+            0.02,
+            0.001,
+            1.0,
+            1.0,
+            0,
+            model_input_gold_visible=False,
+        ).to_split_gate()
         self.assertTrue(gate.passes)
 
     def test_gold_visible_to_model_is_rejected(self):
         with self.assertRaises(ContractError):
             receipt(model_input_gold_visible=True)
         with self.assertRaises(ContractError):
-            ReaderGateReceiptV1("REAL_SHADOW", True, True, 1.0, 0.9, 0.8, 0.01, 0.02, 0.001, 1.0, 1.0, 0, True)
+            ReaderGateReceiptV1(
+                "REAL_SHADOW",
+                True,
+                True,
+                1.0,
+                0.9,
+                0.8,
+                0.01,
+                0.02,
+                0.001,
+                1.0,
+                1.0,
+                0,
+                True,
+            )
 
     def test_incomplete_reader_evidence_cannot_become_a_gate(self):
         evidence = ReaderGateReceiptV1(
-            "INCOMPLETE", True, False, None, None, None, None, None, None, None, None, None,
-            missing_fields=("baseline_ucb", "citation_coverage", "deleted_replay", "ece", "fallback_coverage", "future_lcb", "old_task_degradation", "ood_false_acceptance", "rollback_recovery"),
+            "INCOMPLETE",
+            True,
+            False,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            model_input_gold_visible=False,
+            missing_fields=(
+                "baseline_ucb",
+                "citation_coverage",
+                "deleted_replay",
+                "ece",
+                "fallback_coverage",
+                "future_lcb",
+                "old_task_degradation",
+                "ood_false_acceptance",
+                "rollback_recovery",
+            ),
         )
         with self.assertRaises(ContractError):
             evidence.to_split_gate()

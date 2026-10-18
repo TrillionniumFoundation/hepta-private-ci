@@ -69,12 +69,8 @@ fn one_shot_and_ten_short_slices_agree_with_nonzero_intercept() {
         slope: 0.25,
         intercept: 0.75,
     };
-    let full = solve_sngr_affine_shadow(&request(
-        /*initial_state*/ 0.2,
-        vec![1.0],
-        terminal,
-    ))
-    .expect("one-shot solution");
+    let full = solve_sngr_affine_shadow(&request(/*initial_state*/ 0.2, vec![1.0], terminal))
+        .expect("one-shot solution");
     let split = solve_sngr_affine_shadow(&request(
         /*initial_state*/ 0.2,
         vec![0.1; 10],
@@ -139,12 +135,14 @@ fn fail_closed_on_bad_inputs_instead_of_nan_receipts() {
         intercept: 0.2,
     };
     for duration in [0.0, -1.0, f64::NAN, f64::INFINITY, 4000.0] {
-        assert!(solve_sngr_affine_shadow(&request(
-            /*initial_state*/ 0.0,
-            vec![duration],
-            valid_terminal,
-        ))
-        .is_err());
+        assert!(
+            solve_sngr_affine_shadow(&request(
+                /*initial_state*/ 0.0,
+                vec![duration],
+                valid_terminal,
+            ))
+            .is_err()
+        );
     }
     for count in [0_usize, 65] {
         assert_eq!(
