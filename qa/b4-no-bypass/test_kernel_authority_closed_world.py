@@ -1077,6 +1077,69 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "deterministic Unix postcheck directory-rebind fixture missing",
         )
 
+    def test_orphan_control_cns_join_does_not_gain_mutation_authority(self) -> None:
+        source = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        start = source.find("pub fn inspect_orphan_control_and_signed_cns_v1(")
+        helper_start = source.find(
+            "fn signed_route_with_current_original_commit(", start
+        )
+        end = source.find("fn live_runtime(", helper_start)
+        self.assertGreater(start, 0, "read-only orphan join must exist")
+        self.assertGreater(helper_start, start, "post-route durable CNS check missing")
+        self.assertGreater(end, helper_start, "read-only join must be scoped")
+        observation = source[start:helper_start]
+        helper = source[helper_start:end]
+        audit = source[start:end]
+        self.assertIn(
+            "pub posture: NonAuthorizingPosture,",
+            source,
+            "successful forensic diagnostics must carry a sealed no-authority type",
+        )
+        self.assertIn(
+            "posture: NonAuthorizingPosture::DENY_ALL,",
+            observation,
+            "the only successful forensic result must deny all effect authority",
+        )
+        for forbidden in (
+            "apply_governed_topology(",
+            "publish_cutover_with_external_effect(",
+            "publish_once(",
+            "take_admitted_successor(",
+            "persist_actual_runtime_receipt(",
+        ):
+            self.assertNotIn(
+                forbidden,
+                audit,
+                "orphan evidence and its helper must never mutate or grant Final-use",
+            )
+        # Lexical code strips comments and string literals deliberately.
+        # Count genuine original-owner calls, not diagnostic message text.
+        self.assertGreaterEqual(
+            observation.count("inspect_original_pending_begin_v1("),
+            3,
+            "the three original WAL reads must remain",
+        )
+        self.assertEqual(
+            observation.count("signed_route_with_current_original_commit("),
+            2,
+            "each signed route RPC must revalidate original CNS revision",
+        )
+        self.assertEqual(
+            helper.count("verify_original_commit("),
+            2,
+            "exact CNS original revision must be checked twice per route",
+        )
+        self.assertLess(
+            helper.find("verify_original_commit("),
+            helper.find("signed_route("),
+        )
+        self.assertGreater(
+            helper.rfind("verify_original_commit("),
+            helper.find("signed_route("),
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()

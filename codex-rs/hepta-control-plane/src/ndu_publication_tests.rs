@@ -754,12 +754,9 @@ fn original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine() {
         let migrated = Digest32::of_bytes(b"repeated-orphan-migration");
         let mut external_calls = 0_usize;
         {
-            let owner = NduPublicationOwnerV1::open_production(
-                &path,
-                predecessor.clone(),
-                Digest32::ZERO,
-            )
-            .expect("fsynced original Control genesis");
+            let owner =
+                NduPublicationOwnerV1::open_production(&path, predecessor.clone(), Digest32::ZERO)
+                    .expect("fsynced original Control genesis");
             assert_eq!(
                 owner.publish_cutover_with_external_effect(
                     &predecessor,

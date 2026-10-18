@@ -153,6 +153,28 @@ class ScopeTests(unittest.TestCase):
             "the compiled product-feature library must be checked before external denial",
         )
 
+    def test_orphan_control_cns_signed_read_only_owner_is_native(self):
+        scope = select(["codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"])
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["effects"])
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text(encoding="utf-8")
+        gate = "cns-orphan-control-readonly-join.json"
+        self.assertEqual(workflow.count(gate), 1)
+        self.assertIn(
+            "--minimum-tests 3 -- cargo test --locked --manifest-path "
+            "codex-rs/Cargo.toml -p codex-hepta-runtime "
+            "--features cell-split-cns-port --lib orphan_control_cns_read_only_",
+            workflow,
+        )
+        self.assertLess(
+            workflow.index("cns-prod-feature-compile.json"),
+            workflow.index(gate),
+        )
+
     def test_original_control_abrupt_process_exit_recovery_native_gate(self):
         # Genuine Control B and an external test marker must survive process
         # exit without being promoted by a cold-start counterfeit Control C.
@@ -202,6 +224,17 @@ class ScopeTests(unittest.TestCase):
         self.assertLess(
             gate.index("control-ndu-atomic-owner.json"),
             gate.index("control-ndu-process-exit-between-b-c.json"),
+        )
+        # The original suite exercises real process exit/SIGKILL under OS
+        # file locks. Do not race its 33 native cases within one test binary.
+        # WriterUnavailable from overlapping fork windows is NOT permission
+        # to change orphan-B Indeterminate semantics or retry the effect.
+        owner_key = "control-ndu-atomic-owner.json"
+        owner_line = next(line for line in gate.splitlines() if owner_key in line)
+        self.assertIn("--minimum-tests 33", owner_line)
+        self.assertIn(
+            "--lib ndu_publication -- --nocapture --test-threads=1",
+            owner_line,
         )
 
     def test_neuron_original_effect_non_test_denial_gate(self):
@@ -345,8 +378,7 @@ class ScopeTests(unittest.TestCase):
         # expensive native canary work without weakening any CI command.
         fmt_step = "      - name: Early locked CellSplit Control/CNS Rustfmt preflight"
         canary_step = (
-            "      - name: Early CellSplit canary and evaluator compile "
-            "regression"
+            "      - name: Early CellSplit canary and evaluator compile regression"
         )
         product_step = (
             "      - name: Early original Control WAL recovery observer "
