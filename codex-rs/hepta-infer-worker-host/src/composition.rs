@@ -245,6 +245,17 @@ impl SharedEncoderPool {
         if self.cells.len() >= self.max_cells {
             return Err(CompositionError::CellCapacity);
         }
+        // Reject bad memory receipts before changing references or Cell bindings.
+        // A resident encoder is charged only once; every new head is private.
+        let additional_shared_bytes = match self.encoders.get(&key) {
+            Some(encoder) if encoder.shared_memory_bytes == shared_memory_bytes => 0,
+            Some(_) => return Err(CompositionError::EncoderIdentityMismatch),
+            None => shared_memory_bytes,
+        };
+        self.total_resident_memory_bytes()?
+            .checked_add(additional_shared_bytes)
+            .and_then(|bytes| bytes.checked_add(head.private_memory_bytes))
+            .ok_or(CompositionError::ArithmeticOverflow)?;
 
         let encoder_loaded = match self.encoders.get_mut(&key) {
             Some(encoder) => {
@@ -511,10 +522,16 @@ impl<D: CompositionDriver> CompositionWorker<D> {
                     self.handles.insert(key, handle);
                 }
                 Err(error) => {
-                    let _ = self.pool.detach_cell(&cell_id);
+                    // Rollback failure is an invariant failure, never silently discard it.
+                    self.pool.detach_cell(&cell_id)?;
                     return Err(error);
                 }
             }
+        } else if !self.handles.contains_key(&key) {
+            // A logical reference without a resident driver handle must not
+            // produce a successful attach observation.
+            self.pool.detach_cell(&cell_id)?;
+            return Err(CompositionError::DriverFailure("missing encoder handle"));
         }
         Ok(receipt)
     }
@@ -522,6 +539,10 @@ impl<D: CompositionDriver> CompositionWorker<D> {
     pub fn detach_cell(&mut self, cell_id: &str) -> Result<CompositionReceipt, CompositionError> {
         let key = self.pool.key_for_cell(cell_id)?;
         let references = self.pool.encoder_reference_count(&key)?;
+        if !self.handles.contains_key(&key) {
+            // Do not remove the Cell if its encoder has already been lost.
+            return Err(CompositionError::DriverFailure("missing encoder handle"));
+        }
         if references == 1 {
             let handle = self
                 .handles
@@ -838,5 +859,42 @@ mod tests {
             pool.attach_cell(key("cuda-0"), head("cell-c", 20), 100),
             Err(CompositionError::CellCapacity)
         );
+    }
+    #[test]
+    fn attachment_rejects_memory_overflow_without_mutation() {
+        let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
+        let maximum_shared_bytes = u64::MAX - 20;
+        pool.attach_cell(key("cuda-0"), head("cell-a", 20), maximum_shared_bytes)
+            .expect("first");
+        assert_eq!(
+            pool.attach_cell(key("cuda-0"), head("cell-b", 20), maximum_shared_bytes),
+            Err(CompositionError::ArithmeticOverflow)
+        );
+        assert_eq!(pool.active_cell_count(), 1);
+        assert_eq!(pool.encoder_reference_count(&key("cuda-0")), Ok(1));
+        assert_eq!(pool.total_resident_memory_bytes(), Ok(u64::MAX));
+    }
+
+    #[test]
+    fn missing_handle_blocks_attach_and_detach_without_dropping_cell() {
+        let mut worker = CompositionWorker::new(
+            SharedEncoderPool::new(2, 8).expect("pool"),
+            WorkerDriver::default(),
+        );
+        worker.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+            .expect("first");
+        // Deliberately corrupt the internal driver map to test fail-closed handling.
+        worker.handles.clear();
+        assert_eq!(
+            worker.attach_cell(key("cuda-0"), head("cell-b", 20), 100),
+            Err(CompositionError::DriverFailure("missing encoder handle"))
+        );
+        assert_eq!(worker.active_cell_count(), 1);
+        assert_eq!(
+            worker.detach_cell("cell-a"),
+            Err(CompositionError::DriverFailure("missing encoder handle"))
+        );
+        assert_eq!(worker.active_cell_count(), 1);
+        assert_eq!(worker.resident_encoder_count(), 1);
     }
 }
