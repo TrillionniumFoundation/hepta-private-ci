@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Run and validate the target-host Cell Split qualification matrix.
 
-The matrix is deliberately four-dimensional and therefore has exactly sixteen
-rows.  Every row receives the same frozen workload digest.  A row is accepted
+The matrix evaluates a four-dimensional factor grid at 64, 256, 1024, and
+4096 Cells (64 unique cases). Single-count runs are diagnostics only.
+Every row receives the same frozen workload digest.  A row is accepted
 only after the workload emits measured metrics and an independent observer
 returns a receipt binding the case, source commit, workload and metric digest.
 This harness never grants execution authority; the report is DENY_ALL evidence
@@ -29,6 +30,7 @@ from typing import Any
 
 SCHEMA = "hepta.cell-split.target-matrix.v1"
 AUTHORITY = "DENY_ALL"
+CELL_COUNTS: tuple[int, ...] = (64, 256, 1024, 4096)
 FACTORS: tuple[tuple[str, tuple[str, str]], ...] = (
     ("encoder_topology", ("shared", "replicated")),
     ("execution", ("scalar", "batch")),
@@ -42,8 +44,13 @@ REQUIRED_METRICS = (
     "throughputPerSecond",
     "cpuMicros",
     "rssBytes",
+    "gpuObserved",
+    "gpuMicros",
+    "gpuBytes",
     "communicationBytes",
     "fsyncCount",
+    "walBytes",
+    "walFsyncCount",
     "lockWaitMicros",
     "recoveryMicros",
     "negativeMigrationQ32",
@@ -58,14 +65,21 @@ def digest(value: Any) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
 
 
-def matrix_cases() -> list[dict[str, str]]:
+def matrix_cases(cell_count: int | None = None) -> list[dict[str, Any]]:
+    if cell_count is not None and cell_count not in CELL_COUNTS:
+        raise ValueError("unsupported Cell count")
     names = [name for name, _ in FACTORS]
     choices = [values for _, values in FACTORS]
-    cases: list[dict[str, str]] = []
-    for index, values in enumerate(itertools.product(*choices), start=1):
-        case = {"caseId": f"cell-split-{index:02d}"}
-        case.update(dict(zip(names, values, strict=True)))
-        cases.append(case)
+    counts = CELL_COUNTS if cell_count is None else (cell_count,)
+    cases: list[dict[str, Any]] = []
+    for count in counts:
+        for index, values in enumerate(itertools.product(*choices), start=1):
+            case: dict[str, Any] = {
+                "caseId": f"cell-split-c{count:04d}-{index:02d}",
+                "cellCount": count,
+            }
+            case.update(dict(zip(names, values, strict=True)))
+            cases.append(case)
     return cases
 
 
@@ -83,13 +97,31 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
     return value
 
 
-def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
+def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | None]:
     missing = [name for name in REQUIRED_METRICS if name not in metrics]
     if missing:
         raise ValueError(f"missing metrics: {','.join(missing)}")
-    normalized: dict[str, int | float] = {}
+    normalized: dict[str, int | float | bool | None] = {}
     for name in REQUIRED_METRICS:
-        normalized[name] = _number(metrics[name], name, integer=name in {"fsyncCount", "rssBytes"})
+        if name in {"gpuObserved", "gpuMicros", "gpuBytes"}:
+            continue
+        normalized[name] = _number(
+            metrics[name],
+            name,
+            integer=name in {"fsyncCount", "rssBytes", "walBytes", "walFsyncCount"},
+        )
+    observed = metrics["gpuObserved"]
+    if not isinstance(observed, bool):
+        raise ValueError("gpuObserved must be a boolean")
+    normalized["gpuObserved"] = observed
+    if observed:
+        normalized["gpuMicros"] = _number(metrics["gpuMicros"], "gpuMicros", integer=True)
+        normalized["gpuBytes"] = _number(metrics["gpuBytes"], "gpuBytes", integer=True)
+    else:
+        if metrics["gpuMicros"] is not None or metrics["gpuBytes"] is not None:
+            raise ValueError("unobserved GPU metrics must be null, not zero")
+        normalized["gpuMicros"] = None
+        normalized["gpuBytes"] = None
     if not (normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]):
         raise ValueError("latency quantiles are not monotonic")
     if normalized["throughputPerSecond"] <= 0:
@@ -99,6 +131,12 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
 
 def parse_json_object(stdout: str) -> dict[str, Any]:
     """Read the final JSON object emitted by a worker."""
+    try:
+        complete = json.loads(stdout.strip())
+        if isinstance(complete, dict):
+            return complete
+    except json.JSONDecodeError:
+        pass
     for line in reversed(stdout.splitlines()):
         line = line.strip()
         if not line:
@@ -119,7 +157,7 @@ def parse_workload_output(stdout: str) -> dict[str, Any]:
     return value
 
 
-def _command(argv: str, case: dict[str, str]) -> list[str]:
+def _command(argv: str, case: dict[str, Any]) -> list[str]:
     tokens = shlex.split(argv)
     return [token.format(**case) for token in tokens]
 
@@ -134,6 +172,7 @@ def run_matrix(
     workload_path: Path | None = None,
     host_id: str | None = None,
     timeout_seconds: int = 1800,
+    cell_count: int | None = None,
 ) -> dict[str, Any]:
     if len(workload_digest) != 64 or any(char not in "0123456789abcdef" for char in workload_digest):
         raise ValueError("workload digest must be a lowercase sha256")
@@ -149,7 +188,8 @@ def run_matrix(
         "platform": platform.platform(),
         "python": sys.version.split()[0],
     }
-    cases = matrix_cases()
+    cases = matrix_cases(cell_count)
+    selected_counts = list(CELL_COUNTS if cell_count is None else (cell_count,))
     rows: list[dict[str, Any]] = []
     blocked: list[str] = []
     for case in cases:
@@ -171,7 +211,8 @@ def run_matrix(
             "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
             "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
             "HEPTA_MATRIX_WORKLOAD_PATH": str(workload_path),
-            **{f"HEPTA_MATRIX_{key.upper()}": value for key, value in case.items() if key != "caseId"},
+            "HEPTA_MATRIX_CELL_COUNT": str(case["cellCount"]),
+            **{f"HEPTA_MATRIX_{key.upper()}": str(value) for key, value in case.items() if key != "caseId"},
         })
         try:
             result = subprocess.run(
@@ -206,9 +247,12 @@ def run_matrix(
         row["elapsedMicros"] = (time.monotonic_ns() - started) // 1_000
         rows.append(row)
 
+    if cell_count is not None:
+        blocked.append("full-scale-matrix")
     provisional = {
         "schema": SCHEMA,
         "authority": AUTHORITY,
+        "cellCounts": selected_counts,
         "sourceCommit": source_commit,
         "workloadDigest": workload_digest,
         "workloadSourceDigest": workload_digest,
@@ -278,9 +322,25 @@ def validate_report(report: dict[str, Any]) -> None:
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
     cases = report.get("cases")
-    expected = {case["caseId"] for case in matrix_cases()}
-    if not isinstance(cases, list) or {case.get("caseId") for case in cases} != expected:
-        raise ValueError("report must contain exactly the sixteen matrix cases")
+    counts = report.get("cellCounts")
+    if counts != list(CELL_COUNTS) and (
+        not isinstance(counts, list) or len(counts) != 1 or counts[0] not in CELL_COUNTS
+    ):
+        raise ValueError("invalid matrix Cell-count coverage")
+    expected = {
+        case["caseId"]: case
+        for case in matrix_cases(counts[0] if len(counts) == 1 else None)
+    }
+    if (
+        not isinstance(cases, list)
+        or len(cases) != len(expected)
+        or any(not isinstance(case, dict) for case in cases)
+        or {case.get("caseId") for case in cases} != set(expected)
+    ):
+        raise ValueError("report must contain unique and complete matrix cases")
+    for case in cases:
+        if any(case.get(name) != value for name, value in expected[case["caseId"]].items()):
+            raise ValueError("matrix factor or Cell-count identity mismatch")
     workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
     for case in cases:
@@ -291,6 +351,8 @@ def validate_report(report: dict[str, Any]) -> None:
             if case.get("metricsDigest") != digest(metrics):
                 raise ValueError("metric digest mismatch")
     if report.get("status") == "qualified":
+        if counts != list(CELL_COUNTS) or report.get("blockingCases") != []:
+            raise ValueError("qualified report needs full scale and zero blockers")
         if any(case.get("status") != "measured" for case in cases):
             raise ValueError("qualified report contains an unmeasured case")
         observer = report.get("observer")
@@ -300,7 +362,7 @@ def validate_report(report: dict[str, Any]) -> None:
             raise ValueError("observer binding mismatch")
         provisional = {
             key: report[key]
-            for key in ("schema", "authority", "sourceCommit", "workloadDigest", "workloadSourceDigest", "host", "cases")
+            for key in ("schema", "authority", "cellCounts", "sourceCommit", "workloadDigest", "workloadSourceDigest", "host", "cases")
         }
         if observer.get("reportDigest") != digest(provisional):
             raise ValueError("observer report digest mismatch")
@@ -322,6 +384,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--host-id")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
+    parser.add_argument("--cell-count", type=int, choices=CELL_COUNTS, help="single-count diagnostic only")
     parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
     if args.validate:
@@ -336,6 +399,7 @@ def main() -> int:
         workload_path=args.workload_path,
         host_id=args.host_id,
         timeout_seconds=args.timeout_seconds,
+        cell_count=args.cell_count,
     )
     print(json.dumps({"status": report["status"], "blockingCases": report["blockingCases"]}, sort_keys=True))
     return 0 if report["status"] == "qualified" else 2
