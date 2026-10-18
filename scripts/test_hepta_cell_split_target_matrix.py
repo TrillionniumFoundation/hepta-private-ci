@@ -821,3 +821,25 @@ def test_malformed_worker_metrics_block_all_cases_instead_of_crashing(
     )
     MODULE.validate_report(report)
 
+
+@pytest.mark.parametrize("bad_id", ([], {}, ["forged-case-id"]))
+def test_report_rejects_nonstring_case_ids_without_unhandled_error(
+    tmp_path: Path, bad_id: object
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "invalid-case-id.json",
+    )
+    report["cases"][0]["caseId"] = bad_id
+    with pytest.raises(ValueError, match="unique and complete matrix cases"):
+        MODULE.validate_report(report)
+
+
+def test_metrics_reject_unrecognized_claim_fields() -> None:
+    metrics = {**example_metrics(), "productionQualified": True}
+    with pytest.raises(ValueError, match="unrecognized fields"):
+        MODULE.validate_metrics(metrics)
+
