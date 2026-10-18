@@ -39,14 +39,18 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('{child_command}')); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded) -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('{child_command}')); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded) -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
+        // Start-Process -NoNewWindow is unreliable in non-interactive Windows
+        // test hosts. Launch through .NET directly, keeping the child in the
+        // wrapper's process tree so the JobObject cleanup is still exercised.
+        let mut wrapper_command = format!(
+            "$ErrorActionPreference = 'Stop'; $encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('{child_command}')); $start = [System.Diagnostics.ProcessStartInfo]::new(); $start.FileName = 'powershell.exe'; $start.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $encoded; $start.UseShellExecute = $false; $start.CreateNoWindow = $true; $child = [System.Diagnostics.Process]::Start($start); if ($null -eq $child) {{ throw 'failed to start Git wrapper child' }}; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id)"
+        );
+        wrapper_command.push_str(match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "; $child.WaitForExit()",
+            GitWrapperLifetime::ExitBeforeTimeout => {
+                "; while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
+            }
+        });
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
             .arg(wrapper_command);
