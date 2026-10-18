@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import time
@@ -206,6 +207,46 @@ def verify_observer_signature(
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
 
+def _terminate_process_group(pid: int) -> bool:
+    """Kill the entire isolated process group; refuse unsafe cleanup."""
+    try:
+        os.killpg(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return False
+    except OSError as error:
+        raise RuntimeError("cannot safely terminate isolated process group") from error
+    return True
+
+
+def run_isolated_command(
+    argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+) -> subprocess.CompletedProcess[str]:
+    """Prevent timed-out or orphaned workers from contaminating later cases."""
+    if os.name != "posix" or timeout_seconds <= 0:
+        raise ValueError("POSIX process-group isolation and positive timeout required")
+    with subprocess.Popen(
+        argv,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        start_new_session=True,
+    ) as child:
+        try:
+            stdout, stderr = child.communicate(timeout=timeout_seconds)
+        except subprocess.TimeoutExpired as error:
+            _terminate_process_group(child.pid)
+            try:
+                child.communicate(timeout=5)
+            except subprocess.TimeoutExpired as stuck:
+                raise RuntimeError("process descendants escaped cleanup; stop matrix") from stuck
+            raise ValueError("subprocess exceeded deadline; process group terminated") from error
+        if _terminate_process_group(child.pid):
+            raise ValueError("subprocess left descendant processes")
+    return subprocess.CompletedProcess(
+        argv, child.returncode, stdout.decode("utf-8"), stderr.decode("utf-8")
+    )
+
+
 def assert_exact_source_checkout(repo_root: Path, source_commit: str) -> None:
     """Reject uncommitted source changes as well as a mismatched Git HEAD."""
     command = ["git", "-C", str(repo_root)]
@@ -297,7 +338,7 @@ def run_matrix(
             # Recheck the actual frozen bytes for every case, not only at entry.
             if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
                 raise ValueError("frozen workload changed before case execution")
-            result = subprocess.run(
+            result = run_isolated_command(
                 _command(
                     workload_command,
                     {
@@ -306,10 +347,7 @@ def run_matrix(
                         "sourceCommit": source_commit,
                     },
                 ),
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
+                timeout_seconds=timeout_seconds,
                 env=env,
             )
             assert_exact_source_checkout(repo_root, source_commit)
@@ -368,12 +406,9 @@ def run_matrix(
             "HEPTA_MATRIX_METRICS_DIGEST": metrics_digest,
         })
         try:
-            result = subprocess.run(
+            result = run_isolated_command(
                 shlex.split(observer_command),
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
+                timeout_seconds=timeout_seconds,
                 env=env,
             )
             if result.returncode != 0:
