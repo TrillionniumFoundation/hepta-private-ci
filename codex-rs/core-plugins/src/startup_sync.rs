@@ -1146,7 +1146,11 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
         return Ok(());
     };
     // Never propagate archive-controlled setuid, setgid, sticky or type bits.
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(safe_zip_file_mode(mode))).map_err(|err| {
+    std::fs::set_permissions(
+        output_path,
+        std::fs::Permissions::from_mode(safe_zip_file_mode(mode)),
+    )
+    .map_err(|err| {
         format!(
             "failed to set permissions on curated plugins file {}: {err}",
             output_path.display()
