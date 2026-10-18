@@ -33,6 +33,31 @@ jobs:
           git diff --binary > "${RUNNER_TEMP}/format.patch"
           git diff --name-only > "${RUNNER_TEMP}/format.files"
           test -s "${RUNNER_TEMP}/format.patch"
+      - name: Print filtered patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo FORMAT_PATCH_BEGIN
+          git diff --binary -- \
+            scripts/hepta_sngr_cell_pilot.py \
+            scripts/hepta_sngr_learned_shadow.py \
+            scripts/hepta_sngr_lexical_control.py \
+            scripts/hepta_sngr_nonlinear_shadow.py \
+            scripts/hepta_sngr_reader_eval.py \
+            scripts/hepta_sngr_shadow.py \
+            scripts/test_hepta_sngr_cell_pilot.py \
+            scripts/test_hepta_sngr_lexical_control.py \
+            scripts/test_hepta_sngr_nonlinear_shadow.py \
+            scripts/test_hepta_sngr_reader_eval.py \
+            scripts/test_hepta_sngr_shadow.py \
+            codex-rs/hepta-ndu/src/lib.rs \
+            codex-rs/hepta-ndu/src/sngr_affine_shadow.rs \
+            codex-rs/hepta-ndu/src/sngr_affine_shadow_tests.rs \
+            codex-rs/hepta-ndu/src/sngr_graph_shadow.rs \
+            codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs \
+            | base64 -w0
+          echo
+          echo FORMAT_PATCH_END
       - name: Upload format patch
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
