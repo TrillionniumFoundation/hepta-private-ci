@@ -123,6 +123,10 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the production Agentd bootstrap prerequisite seal before
+        // publishing App Server readiness. Without this the real control
+        // socket correctly denies ready=true regardless of its transport.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
