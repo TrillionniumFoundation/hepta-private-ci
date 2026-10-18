@@ -1036,6 +1036,17 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    // Do not trust the extraction root itself: checking only child components
+    // would still permit writes through a symlinked destination directory.
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
+
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",

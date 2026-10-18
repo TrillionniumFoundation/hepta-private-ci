@@ -31,6 +31,22 @@ fn zip_archive_permissions_cannot_enable_privileged_bits() {
 
 #[cfg(unix)]
 #[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let tmp = tempdir().expect("create tempdir");
+    let destination = tmp.path().join("staging");
+    let outside = tmp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("create symlink root");
+
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("symlinked extraction root must be rejected");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
 fn zip_archive_rejects_preexisting_symlink_path() {
     let tmp = tempdir().expect("create tempdir");
     let destination = tmp.path().join("staging");
