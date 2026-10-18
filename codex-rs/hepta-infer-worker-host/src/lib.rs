@@ -10,6 +10,12 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+/// Shared-feature neuron microbatch planning and production execution owner.
+pub mod neuron_microbatch;
+pub use neuron_microbatch::NeuronMicrobatchExecutionV1;
+pub use neuron_microbatch::NeuronMicrobatchWorkerError;
+pub use neuron_microbatch::NeuronMicrobatchWorkerV1;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
