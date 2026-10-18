@@ -23,14 +23,8 @@ fn projector(modality: &str, weight: i64) -> ModalityProjectorV1 {
     let modality_id = id(modality);
     let weights = vec![weight, 0];
     let bias = vec![0];
-    let digest = canonical_modality_projector_digest_v1(
-        &modality_id,
-        generation(),
-        2,
-        1,
-        &weights,
-        &bias,
-    );
+    let digest =
+        canonical_modality_projector_digest_v1(&modality_id, generation(), 2, 1, &weights, &bias);
     must(ModalityProjectorV1::new(
         modality_id,
         generation(),
@@ -45,7 +39,10 @@ fn projector(modality: &str, weight: i64) -> ModalityProjectorV1 {
 fn stem() -> MultimodalStemProjectionV1 {
     must(MultimodalStemProjectionV1::new(
         generation(),
-        vec![projector("modality:text", Q24), projector("modality:image", Q24 / 2)],
+        vec![
+            projector("modality:text", Q24),
+            projector("modality:image", Q24 / 2),
+        ],
     ))
 }
 

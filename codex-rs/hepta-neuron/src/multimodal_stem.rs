@@ -162,8 +162,8 @@ impl ModalityProjectorV1 {
             let value = accumulator
                 .checked_div(MULTIMODAL_Q24_SCALE)
                 .ok_or(MultimodalStemError::ArithmeticOverflow)?;
-            let value = i64::try_from(value)
-                .map_err(|_| MultimodalStemError::ArithmeticOverflow)?;
+            let value =
+                i64::try_from(value).map_err(|_| MultimodalStemError::ArithmeticOverflow)?;
             if !(-MAX_MULTIMODAL_Q24_V1..=MAX_MULTIMODAL_Q24_V1).contains(&value) {
                 return Err(MultimodalStemError::OutputRangeViolation {
                     modality: self.modality_id.to_string(),
@@ -280,7 +280,10 @@ impl MultimodalStemProjectionV1 {
             if projector.generation != generation {
                 return Err(MultimodalStemError::GenerationMismatch);
             }
-            if seen.iter().any(|id: &StableId| id == projector.modality_id()) {
+            if seen
+                .iter()
+                .any(|id: &StableId| id == projector.modality_id())
+            {
                 return Err(MultimodalStemError::DuplicateModality(
                     projector.modality_id.to_string(),
                 ));
@@ -352,7 +355,9 @@ impl MultimodalStemProjectionV1 {
             return Err(MultimodalStemError::NoModalitiesPresent);
         }
         if request.inputs.len() > self.projectors.len() {
-            return Err(MultimodalStemError::InputLimitExceeded(request.inputs.len()));
+            return Err(MultimodalStemError::InputLimitExceeded(
+                request.inputs.len(),
+            ));
         }
         validate_inputs(self, &request.inputs)?;
         let expected_source_digest = canonical_multimodal_source_digest_v1(&request.inputs);
@@ -474,9 +479,9 @@ fn validate_projector_shape(
     if !(1..=MAX_MULTIMODAL_OUTPUT_WIDTH_V1).contains(&output_width) {
         return Err(MultimodalStemError::InvalidOutputWidth);
     }
-    let parameter_count = output_width
-        .checked_mul(input_width)
-        .ok_or(MultimodalStemError::ProjectorParameterLimitExceeded(usize::MAX))?;
+    let parameter_count = output_width.checked_mul(input_width).ok_or(
+        MultimodalStemError::ProjectorParameterLimitExceeded(usize::MAX),
+    )?;
     if parameter_count > MAX_MULTIMODAL_PROJECTOR_PARAMS_V1 {
         return Err(MultimodalStemError::ProjectorParameterLimitExceeded(
             parameter_count,
@@ -514,7 +519,9 @@ fn validate_inputs(
             .find(|candidate| candidate.modality_id == input.modality_id)
             .ok_or_else(|| MultimodalStemError::UnknownModality(input.modality_id.to_string()))?;
         if input.features_q24.is_empty() {
-            return Err(MultimodalStemError::EmptyInput(input.modality_id.to_string()));
+            return Err(MultimodalStemError::EmptyInput(
+                input.modality_id.to_string(),
+            ));
         }
         if input.features_q24.len() != projector.input_width {
             return Err(MultimodalStemError::InputWidthMismatch {

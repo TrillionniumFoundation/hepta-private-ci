@@ -152,11 +152,15 @@ pub fn suggest_ndu_shadow_v1(
         let projected_value_q32 = i128::from(request.value_q32)
             .checked_add(i128::from(policy.value_gain_q32))
             .ok_or(NduShadowError::ArithmeticOverflow)?;
-        let projected_value_q32 = i64::try_from(projected_value_q32)
-            .map_err(|_| NduShadowError::ArithmeticOverflow)?;
+        let projected_value_q32 =
+            i64::try_from(projected_value_q32).map_err(|_| NduShadowError::ArithmeticOverflow)?;
         (next_depth, remaining_budget_micros, projected_value_q32)
     } else {
-        (request.current_depth, request.remaining_budget_micros, request.value_q32)
+        (
+            request.current_depth,
+            request.remaining_budget_micros,
+            request.value_q32,
+        )
     };
 
     let proposed_uncertainty_q32 = if proposed_deepen {
@@ -175,8 +179,7 @@ pub fn suggest_ndu_shadow_v1(
     } else {
         request.risk_q32
     };
-    let unsafe_after_available_step = proposed_uncertainty_q32
-        >= policy.abstain_uncertainty_q32
+    let unsafe_after_available_step = proposed_uncertainty_q32 >= policy.abstain_uncertainty_q32
         || proposed_risk_q32 >= policy.abstain_risk_q32;
     let should_deepen = proposed_deepen && !unsafe_after_available_step;
     let abstain = unsafe_after_available_step;

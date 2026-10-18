@@ -141,7 +141,10 @@ fn exhausted_depth_abstains_without_budget_mutation() {
     let result = must(suggest_ndu_shadow_v1(&policy, &input));
     assert_eq!(result.action, NduShadowActionV1::Abstain);
     assert_eq!(result.recommended_depth, policy.max_depth);
-    assert_eq!(result.remaining_budget_micros, input.remaining_budget_micros);
+    assert_eq!(
+        result.remaining_budget_micros,
+        input.remaining_budget_micros
+    );
 }
 
 #[test]

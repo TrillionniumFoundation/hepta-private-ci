@@ -113,7 +113,10 @@ fn corrupted_or_indeterminate_control_receipt_fails_closed() {
         status: NeuronFeatureTerminalStatusV1::Succeeded,
     };
     let mut port = InferenceControlModelPort::new(&mut control);
-    assert_eq!(port.execute(&inference_request()), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute(&inference_request()),
+        Err(NeuronModelError::Rejected)
+    );
 
     let mut control = Control {
         corrupt_receipt: false,
