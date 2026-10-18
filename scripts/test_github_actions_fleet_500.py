@@ -122,13 +122,20 @@ class Examples(unittest.TestCase):
         self.assertIn("fromJSON(", direct)
         self.assertIn("--case-index", direct)
 
-    def test_slim_runner_is_opt_in_and_source_pinning_is_preserved(self):
+    def test_cross_platform_runner_options_are_opt_in_and_source_pinning_is_preserved(self):
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github/workflows/github-actions-fleet-500.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn(
-            "options: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-slim]", workflow
+        runner_choice = workflow.split("\n      runner:\n", 1)[1].split(
+            "\n      absolute_offset:\n", 1
+        )[0]
+        self.assertIn("        default: ubuntu-24.04\n", runner_choice)
+        self.assertEqual(
+            [line.strip().removeprefix("- ") for line in runner_choice.splitlines()
+             if line.startswith("          - ")],
+            ["ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-slim",
+             "windows-latest", "macos-15"],
         )
         self.assertIn(
             "  selftest:\n    if: github.event_name == 'pull_request'\n"
@@ -138,6 +145,8 @@ class Examples(unittest.TestCase):
         direct = workflow.split("\n  real-test:\n", 1)[1]
         self.assertIn("    runs-on: ${{ inputs.runner }}", direct)
         self.assertIn("    timeout-minutes: 15", direct)
+        self.assertIn("          ref: ${{ github.sha }}", direct)
+        self.assertIn("          persist-credentials: false", direct)
 
     def test_ten_absolute_50_shard_runs_cover_exactly_500_unique_tests(self):
         cases = [f"scripts.sample.Tests.test_{i:04d}" for i in range(620)]
