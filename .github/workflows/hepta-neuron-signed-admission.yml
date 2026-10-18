@@ -70,6 +70,14 @@ jobs:
         run: |
           set -euo pipefail
           cargo check --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-infer-worker-host -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-intelligence
+      - name: Reference microbatch and durable metrics qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-infer-worker-host neuron_microbatch
+          for cells in 64 256 1024 4096; do
+            cargo run --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-worker-host --bin hepta-neuron-microbatch-qualification -- --cells "$cells"
+          done
       - name: Strict focused Clippy
         shell: bash
         run: |

@@ -294,6 +294,14 @@ impl NeuronMetricsGroupCommitWriterV1 {
     pub fn generation(&self) -> Generation {
         self.generation
     }
+
+    pub fn recorded_sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn recovered_partial_tail(&self) -> bool {
+        self.recovered_partial_tail
+    }
 }
 
 impl Drop for NeuronMetricsGroupCommitWriterV1 {
