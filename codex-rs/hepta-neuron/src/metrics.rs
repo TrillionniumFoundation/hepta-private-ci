@@ -17,7 +17,7 @@ use codex_hepta_types::Generation;
 
 const MAGIC: &[u8; 8] = b"HNMTV001";
 const HEADER_LEN: usize = 48;
-const FRAME_BODY_LEN: usize = 156;
+const FRAME_BODY_LEN: usize = 157;
 const FRAME_LEN: usize = 4 + FRAME_BODY_LEN + 32;
 const MAX_LEDGER_BYTES: usize = 64 * 1024 * 1024;
 const MAX_GROUP_EVENTS: usize = 256;
@@ -59,6 +59,9 @@ pub struct NeuronBatchMetricV1 {
     pub p95_micros: u64,
     pub p99_micros: u64,
     pub lock_wait_micros: u64,
+    /// Bit 0=CPU, bit 1=RSS, bit 2=lock wait were really sampled.
+    /// Unset means unavailable; the corresponding numeric field must be zero.
+    pub measurements_mask: u8,
 }
 
 impl NeuronBatchMetricV1 {
@@ -67,6 +70,10 @@ impl NeuronBatchMetricV1 {
             || self.execution_digest.is_zero()
             || !(1..=256).contains(&self.request_count)
             || self.p95_micros > self.p99_micros
+            || self.measurements_mask & !0b111 != 0
+            || (self.measurements_mask & 0b001 == 0 && self.observed_cpu_micros != 0)
+            || (self.measurements_mask & 0b010 == 0 && self.observed_rss_bytes != 0)
+            || (self.measurements_mask & 0b100 == 0 && self.lock_wait_micros != 0)
         {
             return Err(NeuronMetricsErrorV1::InvalidEvent);
         }
@@ -246,6 +253,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
             ] {
                 body.extend_from_slice(&value.to_be_bytes());
             }
+            body.push(event.measurements_mask);
             if body.len() != FRAME_BODY_LEN {
                 return Err(NeuronMetricsErrorV1::Corrupt);
             }

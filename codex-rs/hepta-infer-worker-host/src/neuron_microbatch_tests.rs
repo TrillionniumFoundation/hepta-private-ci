@@ -72,7 +72,7 @@ fn plan() -> NeuronMicrobatchPlanV1 {
     ).expect("plan")
 }
 
-fn worker(fixture: &Fixture) -> NeuronMicrobatchWorkerV1 {
+fn make_worker(fixture: &Fixture) -> NeuronMicrobatchWorkerV1 {
     NeuronMicrobatchWorkerV1::new(
         id("worker.1"), generation(), scope(),
         NeuronMetricsGroupCommitWriterV1::open(
@@ -84,7 +84,7 @@ fn worker(fixture: &Fixture) -> NeuronMicrobatchWorkerV1 {
 #[test]
 fn reference_worker_executes_exactly_one_batch_and_commits_metrics() {
     let fixture = Fixture::new();
-    let mut worker = worker(&fixture);
+    let mut worker = make_worker(&fixture);
     let mut backend = ReferenceNeuronBatchBackendV1::default();
     let plan = plan();
     let result = worker.run_reference(
@@ -100,13 +100,13 @@ fn reference_worker_executes_exactly_one_batch_and_commits_metrics() {
     ));
     assert_eq!(backend.batch_invocations, 1);
     drop(worker);
-    let _new_owner = worker(&fixture);
+    let _new_owner = make_worker(&fixture);
 }
 
 #[test]
 fn rejects_generation_deadline_and_duplicate_reservations_before_backend() {
     let fixture = Fixture::new();
-    let mut worker = worker(&fixture);
+    let mut worker = make_worker(&fixture);
     let mut backend = ReferenceNeuronBatchBackendV1::default();
     let p = plan();
     assert!(matches!(
@@ -120,8 +120,10 @@ fn rejects_generation_deadline_and_duplicate_reservations_before_backend() {
         NeuronMicrobatchPlanV1::freeze(id("worker.1"), snapshot(), 3_000, duplicate),
         Err(NeuronMicrobatchErrorV1::DuplicateReservation)
     ));
-    let mut different = (*snapshot()).clone();
-    different.identity.generation = Generation::new(2).expect("gen2");
+    let mut other_identity = snapshot().identity().clone();
+    other_identity.generation = Generation::new(2).expect("gen2");
+    let different = NeuronFrozenFeatureV1::freeze(other_identity, vec![11, 22, 33])
+        .expect("new generation snapshot");
     let alternate = NeuronMicrobatchPlanV1::freeze(
         id("worker.1"), Arc::new(different), 3_000, heads()
     ).expect("plan");
@@ -155,7 +157,7 @@ impl NeuronMicrobatchBackendV1 for BadBackend {
 #[test]
 fn adversarial_backend_reordering_fails_closed_and_never_commits_metric() {
     let fixture = Fixture::new();
-    let mut worker = worker(&fixture);
+    let mut worker = make_worker(&fixture);
     let mut backend = BadBackend { invocations: 0 };
     let p = plan();
     assert!(matches!(
@@ -168,7 +170,7 @@ fn adversarial_backend_reordering_fails_closed_and_never_commits_metric() {
         Err(NeuronMicrobatchErrorV1::PlanReplayed)
     ));
     drop(worker);
-    let mut reopened = worker(&fixture);
+    let mut reopened = make_worker(&fixture);
     let mut fixture_backend = ReferenceNeuronBatchBackendV1::default();
     assert_eq!(
         reopened.run_reference(1_000, &p, &mut fixture_backend, NeuronHostResourceSampleV1::default())

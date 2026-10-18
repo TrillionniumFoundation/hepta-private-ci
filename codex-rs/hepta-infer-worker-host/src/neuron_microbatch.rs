@@ -81,9 +81,9 @@ pub struct NeuronSnapshotIdentityV1 {
 
 #[derive(Clone, Debug)]
 pub struct NeuronFrozenFeatureV1 {
-    pub identity: NeuronSnapshotIdentityV1,
-    pub features_q24: Arc<[i64]>,
-    pub semantic_digest: Digest32,
+    identity: NeuronSnapshotIdentityV1,
+    features_q24: Arc<[i64]>,
+    semantic_digest: Digest32,
 }
 
 impl NeuronFrozenFeatureV1 {
@@ -127,6 +127,18 @@ impl NeuronFrozenFeatureV1 {
             features_q24: Arc::from(features),
             semantic_digest: Digest32::of_bytes(&bytes),
         })
+    }
+
+    pub fn identity(&self) -> &NeuronSnapshotIdentityV1 {
+        &self.identity
+    }
+
+    pub fn features_q24(&self) -> &[i64] {
+        &self.features_q24
+    }
+
+    pub fn semantic_digest(&self) -> Digest32 {
+        self.semantic_digest
     }
 }
 
@@ -438,6 +450,9 @@ impl NeuronMicrobatchWorkerV1 {
             p95_micros: percentile(95),
             p99_micros: percentile(99),
             lock_wait_micros: resources.lock_wait_micros.unwrap_or(0),
+            measurements_mask: u8::from(resources.process_cpu_micros.is_some())
+                | (u8::from(resources.resident_bytes.is_some()) << 1)
+                | (u8::from(resources.lock_wait_micros.is_some()) << 2),
         };
         let commit = match self.metrics.append_group(&[metric]) {
             Ok(commit) => commit,

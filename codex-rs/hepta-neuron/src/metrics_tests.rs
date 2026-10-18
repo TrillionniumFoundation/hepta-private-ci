@@ -55,6 +55,7 @@ fn event(value: u8) -> NeuronBatchMetricV1 {
         p95_micros: 20,
         p99_micros: 20,
         lock_wait_micros: 1,
+        measurements_mask: 0b100,
     }
 }
 
