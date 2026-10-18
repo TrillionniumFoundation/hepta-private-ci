@@ -63,10 +63,12 @@ jobs:
           manifest = Path(sys.argv[1])
           text = manifest.read_text(encoding="utf-8")
           old = 'zip = "2.4.2"'
-          if text.count(old) != 1:
-              raise SystemExit("expected one exact legacy ZIP pin; failing closed on source drift")
-          manifest.write_text(text.replace(old, 'zip = "=9.0.4"'), encoding="utf-8")
-          print("staged ZIP =9.0.4 solely in disposable Git worktree")
+          pinned = 'zip = "=9.0.4"'
+          if text.count(old) == 1 and pinned not in text:
+              manifest.write_text(text.replace(old, pinned), encoding="utf-8")
+          elif text.count(pinned) != 1 or old in text:
+              raise SystemExit("unexpected ZIP package pin; failing closed on source drift")
+          print("verified exact ZIP =9.0.4 in detached Git worktree")
           PY
           # ZIP 9 changed ZipFile::name() from &str to Result<Cow<str>, ZipError>.
           # Adapt only the disposable candidate so the real compiler can expose
@@ -85,10 +87,11 @@ jobs:
               '                })?\n'
               '            ));'
           )
-          if original.count(old) != 1:
+          if original.count(old) == 1 and replacement not in original:
+              source.write_text(original.replace(old, replacement), encoding="utf-8")
+          elif original.count(replacement) != 1 or old in original:
               raise SystemExit("ZIP9 ZipFile::name API site drifted; aborting candidate")
-          source.write_text(original.replace(old, replacement), encoding="utf-8")
-          print("staged ZIP9 fallible entry-name handling solely in disposable worktree")
+          print("verified fail-closed ZIP9 entry-name handling in detached worktree")
           PY
 
       - name: Resolve genuine locked security upgrade using Cargo
