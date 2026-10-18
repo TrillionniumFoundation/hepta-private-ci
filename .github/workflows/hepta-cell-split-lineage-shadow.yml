@@ -1,0 +1,30 @@
+name: hepta-cell-split-lineage-shadow
+
+on:
+  pull_request:
+    paths:
+      - "qualification/cell-split-lineage-shadow-20261018/**"
+      - "qualification/cell-fast-path-actionir-p0/**"
+      - ".github/workflows/hepta-cell-split-lineage-shadow.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cell-split-lineage:
+    name: cell-split-lineage-shadow-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile contracts
+        run: |
+          python -m py_compile qualification/cell-fast-path-actionir-p0/cell_fast_path_actionir.py
+          python -m py_compile qualification/cell-split-lineage-shadow-20261018/cell_split_lineage.py
+      - name: Run contract tests
+        run: |
+          export PYTHONPATH=qualification/cell-fast-path-actionir-p0:qualification/cell-split-lineage-shadow-20261018
+          python -m unittest discover -s qualification/cell-split-lineage-shadow-20261018 -p 'test_*.py' -v
