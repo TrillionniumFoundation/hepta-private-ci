@@ -546,3 +546,45 @@ fn microbatch_plan_rejects_mixed_snapshot_identity_or_generation() {
         Err(DataPlaneError::InvalidMicrobatchPlan)
     );
 }
+
+
+/// The legacy v1 layout did not delimit consecutive request/model StableIds.
+/// This regression proves that distinct legal identities never share a v2
+/// evidence digest even when the head, feature input and output are identical.
+#[test]
+fn reference_output_digest_v2_fences_ambiguous_request_model_pairs() {
+    let first_request = id("a");
+    let first_model = id("bc");
+    let second_request = id("ab");
+    let second_model = id("c");
+
+    let old_first = [
+        first_request.as_str().as_bytes(),
+        first_model.as_str().as_bytes(),
+    ]
+    .concat();
+    let old_second = [
+        second_request.as_str().as_bytes(),
+        second_model.as_str().as_bytes(),
+    ]
+    .concat();
+    assert_eq!(old_first, old_second);
+
+    let bind = |request: &StableId, model: &StableId, values: &[i64]| {
+        digest_output(
+            request,
+            model,
+            generation(1),
+            digest("same-head"),
+            digest("same-encoder"),
+            digest("same-features"),
+            digest("same-identity"),
+            values,
+        )
+    };
+    let first = bind(&first_request, &first_model, &[Q / 2, -Q / 4]);
+    let different_pair = bind(&second_request, &second_model, &[Q / 2, -Q / 4]);
+    assert_ne!(first, different_pair);
+    assert_eq!(first, bind(&first_request, &first_model, &[Q / 2, -Q / 4]));
+    assert_ne!(first, bind(&first_request, &first_model, &[Q / 2]));
+}
