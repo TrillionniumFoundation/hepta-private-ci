@@ -61,6 +61,7 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    withdrawal_frontier_failed: bool,
     // Writer -> observation lock order. Retained while any publication is
     // uncertain so another process cannot turn a readable ACK into success.
     observation_guard: Option<std::fs::File>,
@@ -109,6 +110,12 @@ impl LearningArtifactOwnerService {
         // their durability before interpreting a readable ACK as settled.
         host.reconcile_readable_acknowledgements()?;
         let registry = host.recover_current_registry(config.now)?;
+        host.persist_withdrawal_frontier(
+            &config.withdrawal_registry,
+            config.storage_binding,
+            registry.records().is_empty(),
+            config.now,
+        )?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
             return Err(LearningArtifactOwnerServiceError::RecoveryConflict);
@@ -123,6 +130,7 @@ impl LearningArtifactOwnerService {
             storage_binding: config.storage_binding,
             observation_guard: recovery_required.as_ref().map(|_| observation_guard),
             recovery_required,
+            withdrawal_frontier_failed: false,
         })
     }
 
@@ -138,6 +146,9 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        if self.withdrawal_frontier_failed {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierRecoveryRequired);
+        }
         if let Some(operation_id) = &self.recovery_required {
             return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
                 operation_id.clone(),
@@ -161,6 +172,7 @@ impl LearningArtifactOwnerService {
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
+        now: u64,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
@@ -172,7 +184,17 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
+        if let Err(error) = self.host.persist_withdrawal_frontier(
+            &next,
+            self.storage_binding,
+            self.registry.records().is_empty(),
+            now,
+        ) {
+            self.withdrawal_frontier_failed = true;
+            return Err(error.into());
+        }
         self.withdrawal_registry = next;
+        self.withdrawal_frontier_failed = false;
         Ok(())
     }
 
@@ -237,6 +259,9 @@ impl LearningArtifactOwnerService {
     }
 
     fn ensure_observation_guard(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.withdrawal_frontier_failed {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierRecoveryRequired);
+        }
         if self.observation_guard.is_none() {
             self.observation_guard = Some(self.host.acquire_current_observation_exclusive()?);
         }
@@ -452,6 +477,7 @@ pub enum LearningArtifactOwnerServiceError {
     Publication(ArtifactPublicationError),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
+    WithdrawalFrontierRecoveryRequired,
     RecoveryConflict,
     RecoveryRequired(StableId),
     RequestMismatch,
@@ -483,6 +509,10 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 #[cfg(test)]
 #[path = "owner_revocation_tests.rs"]
 mod revocation_tests;
+
+#[cfg(test)]
+#[path = "owner_withdrawal_frontier_tests.rs"]
+mod withdrawal_frontier_tests;
 
 #[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "owner_reader_tests.rs"]

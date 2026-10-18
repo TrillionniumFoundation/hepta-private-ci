@@ -71,6 +71,8 @@ mod revocation;
 pub use revocation::ArtifactRevocationBindingV2;
 #[path = "owner_durability.rs"]
 mod durability;
+#[path = "owner_withdrawal_frontier.rs"]
+mod withdrawal_frontier;
 const CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-V1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
