@@ -30,15 +30,10 @@ class LexicalNegativeControlTests(unittest.TestCase):
         self.assertTrue(result["no_model_checkpoint_or_training_used"])
         self.assertIn("post_hoc", result["evidence_class"])
         self.assertIn("not_a_preregistered", result["post_hoc_rule_warning"])
-        self.assertEqual(
-            result["summaries"]["full"],
-            {
-                "cases": 16,
-                "gold_matches": 14,
-                "evidence_condition_matches": 14,
-                "abstentions": 2,
-            },
-        )
+        self.assertEqual(result["summaries"]["full"], {
+            "cases": 16, "gold_matches": 14,
+            "evidence_condition_matches": 14, "abstentions": 2,
+        })
         for arm in ("none", "distractor", "withheld"):
             self.assertEqual(result["summaries"][arm]["evidence_condition_matches"], 16)
             self.assertEqual(result["summaries"][arm]["abstentions"], 16)
@@ -64,43 +59,29 @@ class LexicalNegativeControlTests(unittest.TestCase):
                 other, _ = option_presentation(mutated, 17, variant, presentations=4)
                 self.assertEqual(choices, other)
                 for arm in ARM_NAMES + ("injection",):
-                    state, questions = construct_request(
-                        self.corpus, task, arm, choices_override=choices
-                    )
+                    state, questions = construct_request(self.corpus, task, arm,
+                                                         choices_override=choices)
                     mutated_state, mutated_questions = construct_request(
-                        self.corpus, mutated, arm, choices_override=other
-                    )
-                    self.assertEqual(
-                        (state, questions), (mutated_state, mutated_questions)
-                    )
-                    self.assertEqual(
-                        lexical_decision(state, questions),
-                        lexical_decision(mutated_state, mutated_questions),
-                    )
+                        self.corpus, mutated, arm, choices_override=other)
+                    self.assertEqual((state, questions), (mutated_state, mutated_questions))
+                    self.assertEqual(lexical_decision(state, questions),
+                                     lexical_decision(mutated_state, mutated_questions))
 
     def test_command_emits_explicit_non_neural_evidence_and_is_deterministic(self):
         with tempfile.TemporaryDirectory() as d:
             outfile = Path(d) / "lexical.json"
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
-                self.assertEqual(
-                    main(["--presentations", "4", "--output", str(outfile)]), 0
-                )
+                self.assertEqual(main(["--presentations", "4", "--output", str(outfile)]), 0)
             receipt = json.loads(outfile.read_text())
-            self.assertEqual(
-                json.loads(output.getvalue())["status"],
-                "post_hoc_negative_control_only",
-            )
+            self.assertEqual(json.loads(output.getvalue())["status"],
+                             "post_hoc_negative_control_only")
             self.assertEqual(receipt["presentations"], 4)
-            self.assertEqual(
-                receipt["source_verification"],
-                "manifest_bytes_only_unless_external_checkout_explicitly_verified",
-            )
+            self.assertEqual(receipt["source_verification"],
+                             "manifest_bytes_only_unless_external_checkout_explicitly_verified")
             first = outfile.read_bytes()
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(
-                    main(["--presentations", "4", "--output", str(outfile)]), 0
-                )
+                self.assertEqual(main(["--presentations", "4", "--output", str(outfile)]), 0)
             self.assertEqual(outfile.read_bytes(), first)
 
     def test_wrong_corpus_fails_and_output_symlink_is_rejected(self):

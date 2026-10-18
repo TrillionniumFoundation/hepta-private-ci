@@ -100,7 +100,6 @@ class MultipleShootingTests(unittest.TestCase):
         # Independent seeded sample paths: RMS of LOCAL residuals should shrink
         # under finer dt. This is not an empirical learned-FBSDE performance claim.
         terminal = AffineBoundary(0.4, 0.3)
-
         def aggregate(steps):
             values = []
             for seed in range(48):
@@ -111,35 +110,19 @@ class MultipleShootingTests(unittest.TestCase):
                 self.assertLess(r.max_boundary_residual, 1e-12)
                 values.append(r.backward_euler_residual_rms)
             return sum(values) / len(values)
-
         self.assertLess(aggregate(64), aggregate(8) * 0.3)
 
     def test_noise_and_seed_guards(self):
-        for sigma, steps, seed in [
-            (-0.1, 8, 1),
-            (math.nan, 8, 1),
-            (0.1, 0, 1),
-            (0.1, 5000, 1),
-            (0.1, 8, -1),
-        ]:
-            with (
-                self.subTest(sigma=sigma, steps=steps, seed=seed),
-                self.assertRaises(ShadowError),
-            ):
-                stochastic_manufactured_fixture(
-                    0.0, (0.1,), AffineBoundary(0.3, 0.1), sigma, steps, seed
-                )
+        for sigma, steps, seed in [(-0.1, 8, 1), (math.nan, 8, 1), (0.1, 0, 1), (0.1, 5000, 1), (0.1, 8, -1)]:
+            with self.subTest(sigma=sigma, steps=steps, seed=seed), self.assertRaises(ShadowError):
+                stochastic_manufactured_fixture(0.0, (0.1,), AffineBoundary(0.3, 0.1), sigma, steps, seed)
 
 
 class DagBackupTests(unittest.TestCase):
     def test_control_max_but_chance_expectation(self):
         graph = {
-            "root": DecisionNode(
-                (
-                    ActionEdge("guess", "guess", 0.0),
-                    ActionEdge("inspect", "chance", 0.5),
-                )
-            ),
+            "root": DecisionNode((ActionEdge("guess", "guess", 0.0),
+                                  ActionEdge("inspect", "chance", 0.5))),
             "guess": TerminalNode(1.0),
             "chance": ChanceNode((ChanceEdge("good", 0.5), ChanceEdge("bad", 0.5))),
             "good": TerminalNode(5.0),
@@ -151,19 +134,11 @@ class DagBackupTests(unittest.TestCase):
 
     def test_legal_action_mask_and_order_invariance(self):
         actions = (ActionEdge("a", "first", 0.1), ActionEdge("b", "second", 0.1))
-        graph = {
-            "root": DecisionNode(actions),
-            "first": TerminalNode(3.0),
-            "second": TerminalNode(3.0),
-        }
+        graph = {"root": DecisionNode(actions), "first": TerminalNode(3.0), "second": TerminalNode(3.0)}
         reversed_graph = dict(graph, root=DecisionNode(tuple(reversed(actions))))
         allowed = frozenset({"a", "b"})
-        self.assertEqual(
-            backup_dag(graph, "root", allowed).selected_actions["root"], "a"
-        )
-        self.assertEqual(
-            backup_dag(reversed_graph, "root", allowed).selected_actions["root"], "a"
-        )
+        self.assertEqual(backup_dag(graph, "root", allowed).selected_actions["root"], "a")
+        self.assertEqual(backup_dag(reversed_graph, "root", allowed).selected_actions["root"], "a")
         masked = backup_dag(graph, "root", frozenset({"b"}))
         self.assertEqual(masked.selected_actions["root"], "b")
         with self.assertRaises(ShadowError):
@@ -183,73 +158,34 @@ class DagBackupTests(unittest.TestCase):
 
     def test_unknown_target_cycle_and_overbudget_fail(self):
         with self.assertRaisesRegex(ShadowError, "missing"):
-            backup_dag(
-                {"root": DecisionNode((ActionEdge("a", "gone", 0.0),))},
-                "root",
-                frozenset({"a"}),
-            )
+            backup_dag({"root": DecisionNode((ActionEdge("a", "gone", 0.0),))}, "root", frozenset({"a"}))
         with self.assertRaisesRegex(ShadowError, "cycle"):
-            backup_dag(
-                {"root": DecisionNode((ActionEdge("a", "root", 0.0),))},
-                "root",
-                frozenset({"a"}),
-            )
+            backup_dag({"root": DecisionNode((ActionEdge("a", "root", 0.0),))}, "root", frozenset({"a"}))
         with self.assertRaisesRegex(ShadowError, "size"):
-            backup_dag(
-                {str(n): TerminalNode(1.0) for n in range(MAX_GRAPH_NODES + 1)},
-                "0",
-                frozenset(),
-            )
+            backup_dag({str(n): TerminalNode(1.0) for n in range(MAX_GRAPH_NODES + 1)}, "0", frozenset())
 
     def test_bad_probabilities_missing_evidence_and_cost_fail(self):
         for probs in ((0.3, 0.3), (-0.1, 1.1), (math.nan, 1.0)):
-            graph = {
-                "root": ChanceNode(
-                    (ChanceEdge("a", probs[0]), ChanceEdge("b", probs[1]))
-                ),
-                "a": TerminalNode(1.0),
-                "b": TerminalNode(2.0),
-            }
+            graph = {"root": ChanceNode((ChanceEdge("a", probs[0]), ChanceEdge("b", probs[1]))),
+                     "a": TerminalNode(1.0), "b": TerminalNode(2.0)}
             with self.subTest(probs=probs), self.assertRaises(ShadowError):
                 backup_dag(graph, "root", frozenset())
         with self.assertRaises(ShadowError):
             backup_dag({"root": TerminalNode(math.nan)}, "root", frozenset())
         with self.assertRaises(ShadowError):
-            backup_dag(
-                {
-                    "root": DecisionNode((ActionEdge("a", "t", -1.0),)),
-                    "t": TerminalNode(1.0),
-                },
-                "root",
-                frozenset({"a"}),
-            )
+            backup_dag({"root": DecisionNode((ActionEdge("a", "t", -1.0),)),
+                        "t": TerminalNode(1.0)}, "root", frozenset({"a"}))
 
     def test_duplicate_action_identifier_rejected(self):
         with self.assertRaisesRegex(ShadowError, "duplicate"):
-            backup_dag(
-                {
-                    "root": DecisionNode(
-                        (ActionEdge("a", "x", 0.0), ActionEdge("a", "x", 0.0))
-                    ),
-                    "x": TerminalNode(1.0),
-                },
-                "root",
-                frozenset({"a"}),
-            )
+            backup_dag({"root": DecisionNode((ActionEdge("a", "x", 0.0), ActionEdge("a", "x", 0.0))),
+                        "x": TerminalNode(1.0)}, "root", frozenset({"a"}))
 
     def test_missing_zero_weight_chance_branch_rejected(self):
         # Do not silently erase possible unsupported graph state by a zero weight.
         with self.assertRaisesRegex(ShadowError, "missing"):
-            backup_dag(
-                {
-                    "root": ChanceNode(
-                        (ChanceEdge("safe", 1.0), ChanceEdge("missing", 0.0))
-                    ),
-                    "safe": TerminalNode(1.0),
-                },
-                "root",
-                frozenset(),
-            )
+            backup_dag({"root": ChanceNode((ChanceEdge("safe", 1.0), ChanceEdge("missing", 0.0))),
+                        "safe": TerminalNode(1.0)}, "root", frozenset())
 
 
 class CommandLineTests(unittest.TestCase):
@@ -260,9 +196,7 @@ class CommandLineTests(unittest.TestCase):
         second = subprocess.check_output(command, text=True)
         self.assertEqual(first, second)
         payload = json.loads(first)
-        self.assertEqual(
-            payload["evidence_class"], "synthetic_analytic_fixture_not_learned_fbsde"
-        )
+        self.assertEqual(payload["evidence_class"], "synthetic_analytic_fixture_not_learned_fbsde")
         self.assertTrue(payload["correct"]["accepted"])
         self.assertFalse(payload["naive_reset"]["accepted"])
 

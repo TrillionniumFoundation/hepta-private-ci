@@ -171,10 +171,9 @@ fn validate_shape(graph: &SngrGraphShadowV1) -> Result<(), SngrGraphShadowError>
 fn successors(node: &SngrGraphNodeShadowV1) -> Vec<&str> {
     match node {
         SngrGraphNodeShadowV1::Terminal { .. } => Vec::new(),
-        SngrGraphNodeShadowV1::Chance { outcomes } => outcomes
-            .iter()
-            .map(|edge| edge.successor.as_str())
-            .collect(),
+        SngrGraphNodeShadowV1::Chance { outcomes } => {
+            outcomes.iter().map(|edge| edge.successor.as_str()).collect()
+        }
         SngrGraphNodeShadowV1::Decision { actions } => {
             actions.iter().map(|edge| edge.successor.as_str()).collect()
         }
@@ -196,10 +195,7 @@ fn check_cycle(
         Some(_) | None => {}
     }
     state.insert(id.to_owned(), 1);
-    let node = graph
-        .nodes
-        .get(id)
-        .ok_or(SngrGraphShadowError::MissingSuccessor)?;
+    let node = graph.nodes.get(id).ok_or(SngrGraphShadowError::MissingSuccessor)?;
     for next in successors(node) {
         check_cycle(graph, next, state, depth + 1)?;
     }
@@ -222,23 +218,13 @@ fn score(
         *cache_hits += 1;
         return Ok(*value);
     }
-    let node = graph
-        .nodes
-        .get(id)
-        .ok_or(SngrGraphShadowError::MissingSuccessor)?;
+    let node = graph.nodes.get(id).ok_or(SngrGraphShadowError::MissingSuccessor)?;
     let value = match node {
         SngrGraphNodeShadowV1::Terminal { utility } => *utility,
         SngrGraphNodeShadowV1::Chance { outcomes } => {
             let mut result = 0.0;
             for edge in outcomes {
-                let next = score(
-                    graph,
-                    &edge.successor,
-                    depth + 1,
-                    values,
-                    choices,
-                    cache_hits,
-                )?;
+                let next = score(graph, &edge.successor, depth + 1, values, choices, cache_hits)?;
                 result = finite(result + edge.probability * next)?;
             }
             result
@@ -249,14 +235,7 @@ fn score(
                 if !graph.legal_actions.contains(&edge.name) {
                     continue;
                 }
-                let next = score(
-                    graph,
-                    &edge.successor,
-                    depth + 1,
-                    values,
-                    choices,
-                    cache_hits,
-                )?;
+                let next = score(graph, &edge.successor, depth + 1, values, choices, cache_hits)?;
                 let value = finite(edge.task_reward - edge.compute_cost + next)?;
                 match best {
                     Some((previous, action))
@@ -293,14 +272,7 @@ pub fn evaluate_sngr_graph_shadow(
     let mut values = BTreeMap::new();
     let mut choices = BTreeMap::new();
     let mut cache_hits = 0;
-    let root_utility = score(
-        graph,
-        &graph.root,
-        0,
-        &mut values,
-        &mut choices,
-        &mut cache_hits,
-    )?;
+    let root_utility = score(graph, &graph.root, 0, &mut values, &mut choices, &mut cache_hits)?;
 
     let mut bytes = b"hepta.ndu.sngr-additive-dag.synthetic.shadow.v1".to_vec();
     add_name(&mut bytes, &graph.root);

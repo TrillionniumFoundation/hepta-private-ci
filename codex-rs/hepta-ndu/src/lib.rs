@@ -24,9 +24,9 @@ mod projection_journal;
 mod projection_store;
 mod protocol;
 mod recursive;
-mod scoring;
 mod sngr_affine_shadow;
 mod sngr_graph_shadow;
+mod scoring;
 mod z_conversion;
 
 pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
