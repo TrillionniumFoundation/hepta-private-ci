@@ -10,7 +10,7 @@
 use super::*;
 use std::fs;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -460,7 +460,13 @@ impl ScopedControlWalOwnerV1 {
                 .and_then(|parent| parent.sync_all())
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         }
-        let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        // Read via the locked writer handle. Windows enforces file locks against
+        // a separate fs::read handle, even when this process owns the lock.
+        let mut bytes = Vec::new();
+        writer
+            .seek(SeekFrom::Start(0))
+            .and_then(|_| writer.read_to_end(&mut bytes))
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         let (inner, head, sequence) = replay_wal(&bytes, &cell_id, scope_digest)?;
         let mut owner = Self {
             cell_id,
