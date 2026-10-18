@@ -126,6 +126,13 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    env:
+      # Apply the same small-artifact profile already used by existing
+      # Hepta native qualification workflows. This does not skip tests.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +140,23 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused preinstalled SDK disk before native reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Runner disk before unused SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
+          # Linux native Rust owners neither build Android apps nor compile
+          # Haskell. Only remove preinstalled hosted runner SDK directories,
+          # never repository sources, Cargo.lock or compiler/test artifacts.
+          for unused_sdk in /usr/local/lib/android /opt/ghc; do
+            if [ -d "$unused_sdk" ]; then
+              sudo rm -rf -- "$unused_sdk"
+            fi
+          done
+          echo "Runner disk after unused SDK reclamation:"
+          df -h "$GITHUB_WORKSPACE"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -163,6 +187,16 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Record disk evidence after complete reverse-consumer qualification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target || true
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
