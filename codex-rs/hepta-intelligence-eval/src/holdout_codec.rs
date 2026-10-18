@@ -49,7 +49,7 @@ pub(crate) fn decode(mut bytes: &[u8]) -> Result<CrossFoldPlanReceiptV1, Evaluat
         Ok(head)
     }
     fn id(bytes: &mut &[u8]) -> Result<StableId, EvaluationClosureError> {
-        let raw = take(bytes, 2)?;
+        let raw = take(bytes, /*count*/ 2)?;
         let size = usize::from(u16::from_be_bytes([raw[0], raw[1]]));
         if !(1..=128).contains(&size) {
             return Err(EvaluationClosureError::FrozenPlanReceiptIntegrity);
@@ -62,7 +62,7 @@ pub(crate) fn decode(mut bytes: &[u8]) -> Result<CrossFoldPlanReceiptV1, Evaluat
     let candidate_id = id(&mut bytes)?;
     let baseline_id = id(&mut bytes)?;
     let final_holdout_window_id = id(&mut bytes)?;
-    let claim_scope = match take(&mut bytes, 1)?[0] {
+    let claim_scope = match take(&mut bytes, /*count*/ 1)?[0] {
         0 => EvaluationClaimScopeV1::Qualification,
         1 => EvaluationClaimScopeV1::SystemLongitudinal,
         _ => return Err(EvaluationClosureError::FrozenPlanReceiptIntegrity),
@@ -70,13 +70,13 @@ pub(crate) fn decode(mut bytes: &[u8]) -> Result<CrossFoldPlanReceiptV1, Evaluat
     let mut digests = [Digest32::ZERO; 7];
     for value in &mut digests {
         let mut raw = [0; 32];
-        raw.copy_from_slice(take(&mut bytes, 32)?);
+        raw.copy_from_slice(take(&mut bytes, /*count*/ 32)?);
         *value = Digest32::from_array(raw);
     }
     let mut values = [0; 3];
     for value in &mut values {
         let mut raw = [0; 4];
-        raw.copy_from_slice(take(&mut bytes, 4)?);
+        raw.copy_from_slice(take(&mut bytes, /*count*/ 4)?);
         *value = u32::from_be_bytes(raw);
     }
     if !bytes.is_empty() {

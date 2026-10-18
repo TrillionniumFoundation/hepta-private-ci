@@ -33,9 +33,9 @@ pub fn retrieval_assignment_event(
         episode_id,
         observation,
         &[],
-        false,
-        None,
-        None,
+        /*context_exposed*/ false,
+        /*published_context_digest*/ None,
+        /*downstream_policy_digest*/ None,
         ProbabilityQ32::ONE,
     )
 }
@@ -55,7 +55,7 @@ pub fn retrieval_assignment_event_with_delivery(
         delivered_candidates,
         context_exposed,
         published_context_digest,
-        None,
+        /*downstream_policy_digest*/ None,
         ProbabilityQ32::ONE,
     )
 }

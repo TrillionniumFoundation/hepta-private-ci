@@ -210,7 +210,8 @@ def codex_rust_crate(
         unit_test_timeout = None,
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        binary_required_features = None):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -238,6 +239,10 @@ def codex_rust_crate(
         compile_data: Non-Rust compile-time data for the library target.
         binary_compile_data_extra: Mapping from binary names to extra non-Rust
             compile-time data for those binary targets.
+        binary_required_features: Optional complete binary-name mapping of Cargo
+            required-features lists. Omit binaries whose requirements are not in
+            crate_features, including their test and integration-data references.
+            This does not enable additional features.
         lib_data_extra: Extra runtime data for the library target.
         binary_rustc_flags_extra: Mapping from binary names to extra rustc
             flags for those binary targets.
@@ -305,6 +310,13 @@ def codex_rust_crate(
     manifest_path = manifest_relpath + "/Cargo.toml"
 
     binaries = DEP_DATA.get(native.package_name())["binaries"]
+
+    if binary_required_features != None:
+        if type(binary_required_features) != "dict" or len(binary_required_features) != len(binaries) or any([binary not in binaries for binary in binary_required_features]):
+            fail("binary_required_features must match all binary names")
+        for required in binary_required_features.values():
+            if type(required) != "list" or any([type(feature) != "string" or not feature for feature in required]):
+                fail("binary_required_features requires lists of nonempty feature names")
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
@@ -410,6 +422,9 @@ def codex_rust_crate(
     cargo_env = {}
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
+        if binary_required_features != None and not all([feature in crate_features for feature in binary_required_features[binary]]):
+            continue
+
         #binary = binary.replace("-", "_")
         sanitized_binaries.append(binary)
         cargo_env_runfiles[":" + binary] = "CARGO_BIN_EXE_" + binary
@@ -418,6 +433,7 @@ def codex_rust_crate(
             name = binary,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
+            crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching

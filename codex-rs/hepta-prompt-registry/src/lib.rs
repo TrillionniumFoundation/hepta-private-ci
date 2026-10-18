@@ -408,14 +408,14 @@ impl PromptRegistry {
             next_revision,
             factor.factor_id.clone(),
             LifecycleEventKind::Registered,
-            None,
+            /*from*/ None,
             Lifecycle::Draft,
             factor.proposer_id.clone(),
-            None,
+            /*admission_grant_id*/ None,
             factor.content_digest,
-            None,
-            None,
-            None,
+            /*scope_digest*/ None,
+            /*reason_digest*/ None,
+            /*cutoff_unix_ms*/ None,
         );
         self.factors.insert(factor.factor_id.clone(), factor);
         self.lifecycle_events.push(event);
@@ -513,8 +513,8 @@ impl PromptRegistry {
             Some(admission.grant_id().clone()),
             admission.evidence_digest(),
             Some(admission.reviewed_scope_digest()),
-            None,
-            None,
+            /*reason_digest*/ None,
+            /*cutoff_unix_ms*/ None,
         );
         self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
@@ -740,11 +740,11 @@ impl PromptRegistry {
             Some(Lifecycle::Admitted),
             Lifecycle::Retired,
             actor_id.clone(),
-            None,
+            /*admission_grant_id*/ None,
             evidence_digest,
-            None,
+            /*scope_digest*/ None,
             Some(reason_digest),
-            None,
+            /*cutoff_unix_ms*/ None,
         ));
         self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Transitioned))
@@ -784,9 +784,9 @@ impl PromptRegistry {
             Some(from),
             Lifecycle::Revoked,
             actor_id.clone(),
-            None,
+            /*admission_grant_id*/ None,
             evidence_digest,
-            None,
+            /*scope_digest*/ None,
             Some(reason_digest),
             Some(cutoff_unix_ms),
         ));

@@ -193,7 +193,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         let journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
             .map_err(FencedHoldoutError::Journal)?;
         let record = FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
-        apply_cas(&mut store, binding, None, &record)?;
+        apply_cas(&mut store, binding, /*expected*/ None, &record)?;
         Ok(Self {
             store,
             binding,

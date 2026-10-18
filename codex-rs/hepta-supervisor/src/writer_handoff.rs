@@ -268,7 +268,7 @@ impl DurableWriterHandoffJournalV1 {
     /// entry point cannot detect restoration to an older, valid prefix. A
     /// product handoff with acknowledged progress must use `recover_at_least`.
     pub fn recover(file: File) -> Result<Self, WriterHandoffErrorV1> {
-        Self::recover_with_minimum(file, None)
+        Self::recover_with_minimum(file, /*minimum*/ None)
     }
 
     /// Recover only if the exact independently retained checkpoint occurs in

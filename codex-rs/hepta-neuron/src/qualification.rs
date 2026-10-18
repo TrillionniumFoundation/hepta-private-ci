@@ -108,8 +108,8 @@ pub fn summarize_resource_samples(
         .map(|sample| sample.receipt.execution_micros)
         .collect::<Vec<_>>();
     execution.sort_unstable();
-    let p95 = nearest_rank(&execution, 95)?;
-    let p99 = nearest_rank(&execution, 99)?;
+    let p95 = nearest_rank(&execution, /*percentile*/ 95)?;
+    let p99 = nearest_rank(&execution, /*percentile*/ 99)?;
     let maximum_transient_allocation_bytes = samples
         .iter()
         .map(|sample| sample.receipt.transient_allocation_bytes)

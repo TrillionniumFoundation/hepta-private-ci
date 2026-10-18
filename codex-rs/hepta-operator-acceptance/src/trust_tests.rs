@@ -53,6 +53,40 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 }
 
 #[test]
+fn mutable_binding_cannot_replace_the_privately_pinned_signer() {
+    let fixture = TrustFixture::new();
+    let other = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.key_fingerprint = other.policy_value.key_fingerprint.clone();
+    let statement = b"pinned signer must survive mutable display metadata";
+    let signature = other.sign(statement, SSHSIG_NAMESPACE, "other-signer");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_relabel_the_pinned_principal() {
+    let fixture = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.principal = "other@example".to_string();
+    let statement = b"pinned principal must survive mutable display metadata";
+    let signature = fixture.sign(statement, SSHSIG_NAMESPACE, "other-principal");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn stored_signature_base64_is_bounded_before_decoding() {
+    let fixture = TrustFixture::new();
+    let anchor = fixture.load_anchor();
+    let encoded = STANDARD.encode(vec![0; super::MAX_SIGNATURE_BYTES + 4]);
+    let error = anchor
+        .verify_base64(b"statement", &encoded)
+        .err()
+        .expect("reject oversized persisted signature before base64 allocation");
+    assert!(matches!(error, crate::AcceptanceError::Invalid(message)
+        if message == "stored SSHSIG base64 exceeds its read bound"));
+}
+
+#[test]
 fn trust_policy_digest_is_external_and_fail_closed() {
     let fixture = TrustFixture::new();
     let error = TrustAnchor::load(TrustInputs {
@@ -119,6 +153,24 @@ struct TrustFixture {
     root: PathBuf,
 }
 
+fn ssh_keygen_command() -> Command {
+    #[cfg(windows)]
+    {
+        let ssh_keygen = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("ssh-keygen.exe"))
+            .find(|candidate| candidate.is_file())
+            .unwrap_or_else(|| panic!("trust tests require a real ssh-keygen.exe on PATH"));
+        Command::new(ssh_keygen)
+    }
+    #[cfg(not(windows))]
+    {
+        Command::new("/usr/bin/ssh-keygen")
+    }
+}
+
 impl TrustFixture {
     fn new() -> Self {
         let temporary = private_tempdir("temporary trust directory");
@@ -127,7 +179,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = ssh_keygen_command()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -144,7 +196,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = ssh_keygen_command()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -209,7 +261,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = ssh_keygen_command()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])

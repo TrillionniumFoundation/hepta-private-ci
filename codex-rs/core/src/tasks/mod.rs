@@ -63,6 +63,7 @@ use codex_otel::TURN_TOKEN_USAGE_METRIC;
 use codex_otel::TURN_TOOL_CALL_METRIC;
 use codex_otel::TURN_UNIFIED_EXEC_RUNNING_PROCESSES_METRIC;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::MultiAgentVersion;
 use codex_protocol::protocol::TokenUsage;
@@ -131,6 +132,7 @@ struct RecoverySeed {
 #[derive(Default)]
 struct TaskAbortOutcome {
     task_quiesced: bool,
+    terminal_event: Option<Event>,
     terminal_persistence_generation: Option<u64>,
     recovery_seed: Option<RecoverySeed>,
 }
@@ -384,6 +386,7 @@ enum StartTransitionClearOutcome {
     Stale,
     Cleared {
         deferred_idle_cause: Option<ThreadIdleCause>,
+        completion: Arc<StartTransitionCompletion>,
     },
 }
 
@@ -1063,21 +1066,30 @@ impl Session {
                 panic!("start transition completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _cleanup)| {
-                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
+            .any(|(identity, completion, _cleanup)| {
+                completion.blocks_admission()
+                    && ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
-    /// Returns true while any task finish/abort/suspend owner still has
-    /// post-terminal work outstanding.  The marker is intentionally kept in
-    /// an independent registry after the active slot CAS so idle observers
-    /// cannot admit history mutation or a replacement in the clear→publish
-    /// window.
+    /// Returns true until all terminal work, including idle callbacks, has
+    /// drained. Shutdown and residency use this completion boundary even when
+    /// durable terminal publication has already reopened turn admission.
     pub(crate) fn has_pending_task_terminalization(&self) -> bool {
-        self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
+        !self
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
+            .is_empty()
     }
 
-    pub(crate) fn has_pending_task_terminalization_except(
+    pub(crate) fn has_task_terminalization_admission_fence(&self) -> bool {
+        self.has_task_terminalization_admission_fence_except(/*ignored_identity*/ None)
+    }
+
+    pub(crate) fn has_task_terminalization_admission_fence_except(
         &self,
         ignored_identity: Option<&Arc<()>>,
     ) -> bool {
@@ -1087,15 +1099,15 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
+            .any(|(identity, completion, _, _, _, _)| {
+                completion.blocks_admission()
+                    && ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
-    /// Admission-facing fence for host starts.  Keep the legacy
-    /// `has_pending_start_transition` semantics for shutdown's dedicated
-    /// transition drain, while all normal starts also respect task
-    /// terminalizers that have already cleared the active slot.
+    /// Admission-facing fence for host starts. Terminalizers retain this
+    /// fence across the active slot clear and durable recovery publication,
+    /// then release it before invoking contributors that may start work.
     pub(crate) fn has_pending_admission_fence(&self) -> bool {
         self.has_pending_admission_fence_except(/*ignored_terminalization*/ None)
     }
@@ -1105,7 +1117,7 @@ impl Session {
         ignored_terminalization: Option<&Arc<()>>,
     ) -> bool {
         self.has_pending_start_transition()
-            || self.has_pending_task_terminalization_except(ignored_terminalization)
+            || self.has_task_terminalization_admission_fence_except(ignored_terminalization)
     }
 
     pub(crate) fn begin_shutdown(&self) {
@@ -1697,17 +1709,17 @@ impl Session {
         })
     }
 
-    /// Emits one terminal event exactly once and proves that both its append
+    /// Prepares one terminal event exactly once and proves that both its append
     /// and the following durability barrier completed without any swallowed
     /// persistence failure. The returned generation is later matched against
     /// the exact generation bound into the task's durable Ready authority.
-    async fn send_terminal_event_and_flush(
+    async fn prepare_terminal_event_and_flush(
         &self,
         turn_context: &TurnContext,
         event: EventMsg,
-    ) -> Option<u64> {
+    ) -> (Event, Option<u64>) {
         let before = self.rollout_persistence_failure_generation();
-        self.send_event(turn_context, event).await;
+        let event = self.prepare_terminal_event(turn_context, event).await;
         let after_append = self.rollout_persistence_failure_generation();
         let flush_succeeded = match self.flush_rollout().await {
             Ok(()) => true,
@@ -1717,8 +1729,9 @@ impl Session {
             }
         };
         let after_flush = self.rollout_persistence_failure_generation();
-        (flush_succeeded && before == after_append && after_append == after_flush)
-            .then_some(after_flush)
+        let generation = (flush_succeeded && before == after_append && after_append == after_flush)
+            .then_some(after_flush);
+        (event, generation)
     }
 
     /// Revokes any task-owned Ready marker before controlled detach. Only an
@@ -3456,8 +3469,8 @@ impl Session {
             })
         };
         handoff.phase = TaskFinishHandoffPhase::PersistencePublishing;
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(turn_context.as_ref(), event)
+        let (terminal_event, terminal_persistence_generation) = self
+            .prepare_terminal_event_and_flush(turn_context.as_ref(), event)
             .await;
         self.services
             .guardian_rejection_circuit_breaker
@@ -3491,6 +3504,11 @@ impl Session {
         .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
+            // The finished task must give back its execution slot before an
+            // idle contributor starts a replacement at the same agent limit.
+            handoff.task.take();
+            self.publish_terminal_event_and_release_admission(Some(terminal_event), completion)
+                .await;
             self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
                 idle_cause,
                 Some(&handoff.terminalization_identity),
@@ -3502,7 +3520,6 @@ impl Session {
             .await;
             self.finish_task_terminalization(&handoff.terminalization_identity, completion);
             handoff.phase = TaskFinishHandoffPhase::Complete;
-            handoff.task.take();
         }
     }
 
@@ -3703,6 +3720,8 @@ impl Session {
         .await;
 
         handoff.phase = TaskAbortHandoffPhase::PendingWorkStarting;
+        self.publish_terminal_event_and_release_admission(outcome.terminal_event, &completion)
+            .await;
         if handoff.reason == TurnAbortReason::Interrupted {
             self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
                 &handoff.terminalization_identity,
@@ -3935,12 +3954,24 @@ impl Session {
             .await;
         let StartTransitionClearOutcome::Cleared {
             deferred_idle_cause,
+            completion,
         } = clear_outcome
         else {
             // A stale start future must not publish recovery or wake another
             // turn after its reservation has been replaced or fenced.
             return false;
         };
+        self.publish_recovery_seed_after_terminal(
+            abort_outcome.recovery_seed,
+            abort_outcome.task_quiesced,
+            abort_outcome.terminal_persistence_generation,
+        )
+        .await;
+        self.publish_terminal_event_and_release_admission(
+            abort_outcome.terminal_event,
+            &completion,
+        )
+        .await;
         if let Some(cause) = deferred_idle_cause {
             self.emit_thread_idle_lifecycle_if_idle_after_start_transition(
                 cause,
@@ -3948,12 +3979,6 @@ impl Session {
             )
             .await;
         }
-        self.publish_recovery_seed_after_terminal(
-            abort_outcome.recovery_seed,
-            abort_outcome.task_quiesced,
-            abort_outcome.terminal_persistence_generation,
-        )
-        .await;
         true
     }
 
@@ -4142,11 +4167,19 @@ impl Session {
             .start_transition
             .as_mut()
             .and_then(StartTransition::take_deferred_idle);
+        let completion = Arc::clone(
+            &active_turn
+                .start_transition
+                .as_ref()
+                .unwrap_or_else(|| panic!("transition identity was checked above"))
+                .completion,
+        );
         // Keep the marker installed until all terminal side effects above
         // have completed; only this final identity check may release it.
         *active = None;
         StartTransitionClearOutcome::Cleared {
             deferred_idle_cause,
+            completion,
         }
     }
 
@@ -4321,8 +4354,8 @@ impl Session {
             completed_at,
             duration_ms,
         });
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(task.turn_context.as_ref(), event)
+        let (terminal_event, terminal_persistence_generation) = self
+            .prepare_terminal_event_and_flush(task.turn_context.as_ref(), event)
             .await;
         self.services
             .guardian_rejection_circuit_breaker
@@ -4331,6 +4364,7 @@ impl Session {
             .clear_turn(&task.turn_context.sub_id);
         TaskAbortOutcome {
             task_quiesced,
+            terminal_event: Some(terminal_event),
             terminal_persistence_generation,
             recovery_seed,
         }

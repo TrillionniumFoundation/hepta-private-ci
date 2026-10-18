@@ -60,6 +60,8 @@ use codex_thread_store::ThreadStoreError;
 use codex_thread_store::ThreadStoreFuture;
 use codex_utils_absolute_path::test_support::PathExt;
 use core_test_support::hooks::trust_discovered_hooks;
+#[cfg(windows)]
+use core_test_support::powershell_encoded_command;
 use core_test_support::responses;
 use core_test_support::responses::start_mock_server;
 use core_test_support::streaming_sse::StreamingSseChunk;
@@ -153,8 +155,31 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        let python = python.to_string_lossy().replace('\'', "''");
+        let script_path = script_path.to_string_lossy().replace('\'', "''");
+        // Hook execution follows the selected environment shell, which can be
+        // either PowerShell or cmd on Windows. Encode the nested PowerShell
+        // body so cmd's outer `/C "..."` wrapper cannot consume its quoting.
+        let script = format!("& '{python}' '{script_path}'");
+        return powershell_encoded_command(&script);
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
+    let script_path = home.join("queue prompt hook.py");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
         r#"import json
@@ -176,7 +201,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -186,7 +211,7 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
+    let script_path = home.join("queue blocking prompt hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
     let script = format!(
@@ -216,7 +241,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }

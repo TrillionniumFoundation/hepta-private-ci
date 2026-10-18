@@ -9,6 +9,12 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 
 class ScopeTests(unittest.TestCase):
+    def test_shared_git_object_reader_keeps_full_repository_coverage(self):
+        selected = select(["scripts/hepta_ci_git_objects.py"])
+        self.assertTrue(selected["full_repo"])
+        self.assertTrue(selected["native"])
+        self.assertTrue(selected["derived"])
+
     def test_repository_policy_regressions_keep_their_python_scope(self):
         paths = [
             "scripts/hepta_repository_controls.py",

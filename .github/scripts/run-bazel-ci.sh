@@ -278,7 +278,7 @@ post_config_bazel_args=()
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do
-    if [[ "$arg" == --host_platform=* ]]; then
+    if [[ "$arg" == --host_platform || "$arg" == --host_platform=* ]]; then
       has_host_platform_override=1
       break
     fi

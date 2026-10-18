@@ -482,7 +482,7 @@ def main():
     )
     p.add_argument("--check", action="store_true")
     p.add_argument(
-        "--profile", choices=["development", "qualification"], default="qualification"
+        "--profile", choices=["development", "qualification"], default="development"
     )
     args = p.parse_args()
     if args.command == "refresh-indexes":

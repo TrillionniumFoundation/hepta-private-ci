@@ -1541,7 +1541,7 @@ def main():
     parser.add_argument(
         "--require-current-source",
         action="store_true",
-        help="Compatibility alias: verify always requires clean, exact mapped source; not execution qualification.",
+        help="Require clean, exact mapped source using the qualification profile; not execution qualification.",
     )
     parser.add_argument(
         "--expected-sha",
@@ -1554,10 +1554,11 @@ def main():
     parser.add_argument(
         "--profile",
         choices=["development", "qualification"],
-        default="qualification",
-        help="Development validates current navigation; qualification also revalidates exact source evidence.",
+        help="Defaults to development navigation checks; qualification also revalidates exact source evidence.",
     )
     args = parser.parse_args()
+    if args.profile is None:
+        args.profile = "qualification" if args.require_current_source else "development"
     if args.require_current_source and args.profile != "qualification":
         parser.error("--require-current-source requires the qualification profile")
     if args.require_current_source and args.command != "verify":

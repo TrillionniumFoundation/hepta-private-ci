@@ -586,6 +586,7 @@ impl AgentdState {
             return Ok(None);
         };
 
+        self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
 

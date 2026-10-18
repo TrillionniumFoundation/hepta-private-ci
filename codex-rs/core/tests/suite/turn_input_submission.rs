@@ -117,44 +117,61 @@ async fn recover_turn_if_idle_requires_hepta_turn_recovery_feature() {
 
 #[tokio::test]
 async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
-    let (first_response_release, first_response_gate) = oneshot::channel();
-    let (server, _completions) = start_streaming_sse_server(vec![
+    let server = responses::start_mock_server().await;
+    let response_mock = responses::mount_response_sequence(
+        &server,
         vec![
-            StreamingSseChunk {
-                gate: None,
-                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
-            },
-            StreamingSseChunk {
-                gate: Some(first_response_gate),
-                body: responses::sse(vec![ev_completed("resp-interrupted")]),
-            },
-        ],
-        vec![StreamingSseChunk {
-            gate: None,
-            body: responses::sse(vec![
+            // HTTP headers already produce a rate-limit event, so keep the
+            // entire response behind the pre-output recovery boundary.
+            responses::sse_response(responses::sse(vec![
+                ev_response_created("resp-interrupted"),
+                ev_completed("resp-interrupted"),
+            ]))
+            .set_delay(Duration::from_secs(60)),
+            responses::sse_response(responses::sse(vec![
                 ev_response_created("resp-recovered"),
                 ev_completed("resp-recovered"),
-            ]),
-        }],
-    ])
+            ])),
+        ],
+    )
     .await;
     let test = test_codex()
         .with_config(|config| {
             let _ = config.features.enable(Feature::HeptaTurnRecovery);
         })
-        .build_with_streaming_server(&server)
+        .build_with_auto_env(&server)
         .await
         .expect("build recovered turn session");
 
-    let initial_submission = submit_user_message(&test.codex, "recoverable user input")
+    let initial_submission = test
+        .codex
+        .start_or_steer_turn(
+            user_message_request("recoverable user input").with_thread_settings(
+                ThreadSettingsOverrides {
+                    collaboration_mode: Some(CollaborationMode {
+                        mode: ModeKind::Plan,
+                        settings: Settings {
+                            model: test.session_configured.model.clone(),
+                            reasoning_effort: None,
+                            developer_instructions: None,
+                        },
+                    }),
+                    ..Default::default()
+                },
+            ),
+        )
         .await
         .expect("initial turn should start");
     let TurnInputSubmission::Started { turn_id } = initial_submission else {
         panic!("initial recovery fixture turn must start: {initial_submission:?}");
     };
-    timeout(Duration::from_secs(5), server.wait_for_request_count(1))
-        .await
-        .expect("initial turn should reach the model");
+    timeout(Duration::from_secs(5), async {
+        while response_mock.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("initial turn should reach the model");
     let rollout_path = test.codex.rollout_path().expect("recovery rollout path");
     let (rollout_items, _, parse_errors) =
         codex_rollout::RolloutRecorder::load_rollout_items(&rollout_path)
@@ -197,7 +214,6 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         matches!(event, EventMsg::TurnAborted(_))
     })
     .await;
-    drop(first_response_release);
     let expected_epoch = timeout(Duration::from_secs(5), async {
         loop {
             if let Some(epoch) = test.codex.recovery_epoch_if_idle(&turn_id).await {
@@ -208,23 +224,15 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     })
     .await
     .expect("interrupted idle turn should expose its recovery epoch");
+    let interrupted_mode = test.codex.config_snapshot().await.collaboration_mode;
+    assert_eq!(interrupted_mode.mode, ModeKind::Plan);
 
     let submission = test
         .codex
         .recover_turn_if_idle(RecoverTurnRequest {
             turn_id: turn_id.clone(),
             expected_epoch,
-            thread_settings: ThreadSettingsOverrides {
-                collaboration_mode: Some(CollaborationMode {
-                    mode: ModeKind::Plan,
-                    settings: Settings {
-                        model: test.session_configured.model.clone(),
-                        reasoning_effort: None,
-                        developer_instructions: None,
-                    },
-                }),
-                ..Default::default()
-            },
+            thread_settings: ThreadSettingsOverrides::default(),
             trace: None,
         })
         .await
@@ -244,19 +252,23 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(started.turn_id, turn_id);
+    assert_eq!(started.collaboration_mode_kind, ModeKind::Plan);
+    assert_eq!(
+        test.codex.config_snapshot().await.collaboration_mode,
+        interrupted_mode
+    );
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
 
-    let requests = server.requests().await;
+    let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
-    let recovered_request = String::from_utf8_lossy(&requests[1]);
+    let recovered_request = requests[1].body_json().to_string();
     assert_eq!(
         recovered_request.matches("recoverable user input").count(),
         1
     );
-    server.shutdown().await;
 }
 
 /// Concurrent submissions must start exactly one turn and steer the other message.

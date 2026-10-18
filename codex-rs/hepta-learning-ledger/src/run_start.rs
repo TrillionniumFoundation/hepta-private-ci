@@ -532,7 +532,7 @@ impl RunStartJournal for DurableRunStartJournal {
 }
 
 fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> {
-    validate_record_compat(record, true)
+    validate_record_compat(record, /*require_protocol*/ true)
 }
 
 fn validate_record_compat(
@@ -762,7 +762,7 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         scope_digest: reader.digest()?,
         signed_body_digest: reader.digest()?,
         signature: reader
-            .bytes(64)?
+            .bytes(/*count*/ 64)?
             .try_into()
             .map_err(|_| RunStartStoreError::Corrupt)?,
     };
@@ -842,7 +842,7 @@ fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunS
         scope_digest: reader.digest()?,
         signed_body_digest: reader.digest()?,
         signature: reader
-            .bytes(64)?
+            .bytes(/*count*/ 64)?
             .try_into()
             .map_err(|_| RunStartStoreError::Corrupt)?,
     };

@@ -42,6 +42,12 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // startup paths may otherwise consume several transport attempts and their
 // individual timeouts before matrixd can bind its control socket.
 const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
+// Opening the four encrypted SDK stores performs local passphrase derivation
+// and schema migration. It can legitimately take longer than a network request.
+// A failed restore followed by a fresh login allows two 20-second opens and
+// two 5-second authentication attempts. Supervisor still enforces its full
+// health deadline, including the subsequent initial sync and control binding.
+const MATRIX_STORE_OPEN_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(20);
 const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
 
 pub struct MatrixSdkClient {
@@ -60,7 +66,7 @@ impl MatrixSdkClient {
     ) -> Result<Self, MatrixSdkError> {
         verify_session_identity(&config, &session)?;
         let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+            MATRIX_STORE_OPEN_TIMEOUT,
             Self::build(layout, config, store_passphrase),
         )
         .await
@@ -84,7 +90,7 @@ impl MatrixSdkClient {
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
         let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+            MATRIX_STORE_OPEN_TIMEOUT,
             Self::build(layout, config, store_passphrase),
         )
         .await
@@ -127,7 +133,7 @@ impl MatrixSdkClient {
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
         let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
+            MATRIX_STORE_OPEN_TIMEOUT,
             Self::build(layout, config.clone(), store_passphrase),
         )
         .await
@@ -232,7 +238,7 @@ impl MatrixSdkClient {
     /// Run `/sync` using the Hepta durable cursor as the only ingress
     /// authority.
     ///
-    /// matrix-sdk 0.18 persists its internal `next_batch` before awaiting
+    /// The Matrix SDK persists its internal `next_batch` before awaiting
     /// application event handlers.  An ordinary handler can therefore lose a
     /// message if the process dies after the SDK cursor commit but before the
     /// Hepta inbox write.  This loop always supplies the Hepta cursor

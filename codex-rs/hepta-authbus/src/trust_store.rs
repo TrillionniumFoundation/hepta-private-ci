@@ -232,7 +232,7 @@ async fn insert_issuer(
     .bind(purpose_text(purpose))
     .bind(spec.key_epoch.get().to_be_bytes().as_slice())
     .bind(spec.verifying_key.to_bytes().as_slice())
-    .bind(u64_bytes(1).as_slice())
+    .bind(u64_bytes(/*value*/ 1).as_slice())
     .execute(&mut **tx)
     .await
     .map_err(|error| {

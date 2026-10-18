@@ -88,7 +88,7 @@ pub fn build_writer_handoff_plan_v1(
         acknowledgement_contract_digest,
         plan_digest: Digest32::ZERO,
     };
-    validate_writer_handoff_plan_v1(&plan, None)?;
+    validate_writer_handoff_plan_v1(&plan, /*expected_digest*/ None)?;
     plan.plan_digest = digest_handoff(&plan)?;
     Ok(plan)
 }

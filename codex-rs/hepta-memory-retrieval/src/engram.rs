@@ -292,7 +292,7 @@ impl EngramDynamicsPolicyV1 {
             maximum_activation_paths: u32::try_from(MAX_ACTIVATION_PATHS).unwrap_or(u32::MAX),
             leak: FixedQ32::from_raw(1_i64 << 30),
             lateral_inhibition: FixedQ32::from_raw(1_i64 << 26),
-            minimum_activation: FixedQ32::from_raw(1),
+            minimum_activation: FixedQ32::from_raw(/*raw*/ 1),
             contradiction_forces_abstention: true,
         };
         value.validate()?;

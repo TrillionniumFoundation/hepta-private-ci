@@ -1,4 +1,5 @@
 use super::*;
+use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
 
 fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
@@ -9,10 +10,9 @@ fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
     };
     let thread_id = ThreadId::new();
     app.active_thread_id = Some(thread_id);
-    app.chat_widget.handle_thread_session(test_thread_session(
-        thread_id,
-        test_path_buf("/tmp/project"),
-    ));
+    let mut session = test_thread_session(thread_id, app.config.cwd.to_path_buf());
+    session.runtime_workspace_roots = app.config.workspace_roots.clone();
+    app.chat_widget.handle_thread_session(session);
     Ok(thread_id)
 }
 
@@ -145,6 +145,13 @@ async fn run_in_background_detaches_without_interrupting_main_or_side_threads() 
 #[tokio::test]
 async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
     let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
+    let workspace = tempfile::tempdir()?;
+    app.config.cwd = workspace.path().abs();
+    app.launch_cwd = app.config.cwd.to_path_buf();
+    app.config.workspace_roots = vec![app.config.cwd.clone()];
+    app.config
+        .permissions
+        .set_workspace_roots(app.config.workspace_roots.clone());
     prepare_running_local_daemon(&mut app)?;
     app.chat_widget
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
@@ -179,26 +186,55 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         ),
         /*replay_kind*/ None,
     );
+    const READY: &str = "background-exit-ready";
     let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
+        "Write-Output 'background-exit-ready'; Start-Sleep -Seconds 30"
     } else {
-        "sleep 30"
+        "printf 'background-exit-ready\\n'; sleep 30"
     };
     app_server
         .thread_shell_command(thread_id, command.to_string())
         .await?;
-    let turn_id = loop {
-        let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
-            .await
-            .expect("app-server should emit a turn/start event")
-            .expect("app-server event stream should remain open");
-        if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
-            && let ServerNotification::TurnStarted(notification) = notification.as_ref()
-            && notification.thread_id == thread_id.to_string()
-        {
-            break notification.turn.id.clone();
+    // TurnStarted precedes shell spawning. Only real output proves that this
+    // command reached the live turn that Exit must interrupt.
+    let turn_id = time::timeout(Duration::from_secs(/*secs*/ 5), async {
+        let mut started_turn_id = None;
+        let mut output = String::new();
+        loop {
+            let event = app_server
+                .next_event()
+                .await
+                .expect("app-server event stream should remain open");
+            let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
+            else {
+                continue;
+            };
+            match notification.as_ref() {
+                ServerNotification::TurnStarted(notification)
+                    if notification.thread_id == thread_id.to_string() =>
+                {
+                    started_turn_id = Some(notification.turn.id.clone());
+                }
+                ServerNotification::CommandExecutionOutputDelta(notification)
+                    if notification.thread_id == thread_id.to_string()
+                        && started_turn_id.as_ref() == Some(&notification.turn_id) =>
+                {
+                    output.push_str(&notification.delta);
+                    if output.contains(READY) {
+                        break notification.turn_id.clone();
+                    }
+                }
+                ServerNotification::TurnCompleted(notification)
+                    if notification.thread_id == thread_id.to_string() =>
+                {
+                    panic!("shell turn completed before becoming ready: {notification:?}");
+                }
+                _ => {}
+            }
         }
-    };
+    })
+    .await
+    .expect("shell should emit its ready marker before Exit");
     app.thread_event_channels.insert(
         thread_id,
         ThreadEventChannel::new_with_session(
@@ -230,12 +266,20 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         app_event_rx.try_recv(),
         Ok(AppEvent::Exit(ExitMode::ShutdownFirst))
     );
+    app_server.shutdown().await?;
     Ok(())
 }
 
 #[tokio::test]
 async fn daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent() -> Result<()> {
     let (mut app, mut app_event_rx, mut op_rx) = make_test_app_with_channels().await;
+    let workspace = tempfile::tempdir()?;
+    app.config.cwd = workspace.path().abs();
+    app.launch_cwd = app.config.cwd.to_path_buf();
+    app.config.workspace_roots = vec![app.config.cwd.clone()];
+    app.config
+        .permissions
+        .set_workspace_roots(app.config.workspace_roots.clone());
     let side_thread_id = prepare_running_local_daemon(&mut app)?;
     let (mut app_server, mut tui) =
         prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
@@ -261,6 +305,7 @@ async fn daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent() -> Res
     assert_eq!(app.active_thread_id, Some(parent_thread_id));
     assert!(!app.side_threads.contains_key(&side_thread_id));
     assert!(op_rx.try_recv().is_err());
+    app_server.shutdown().await?;
     Ok(())
 }
 

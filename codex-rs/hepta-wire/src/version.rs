@@ -152,7 +152,7 @@ impl NegotiationOffer {
         if encoded[..4] != NEGOTIATION_MAGIC {
             return Err(NegotiationError::Magic);
         }
-        let format = read_u16(encoded, 4)?;
+        let format = read_u16(encoded, /*start*/ 4)?;
         if format != NEGOTIATION_FORMAT_VERSION {
             return Err(NegotiationError::Format(format));
         }
@@ -166,7 +166,7 @@ impl NegotiationOffer {
         if encoded[7] != 0 {
             return Err(NegotiationError::Reserved(encoded[7]));
         }
-        let capabilities = WireCapabilities::from_bits(read_u64(encoded, 8)?)?;
+        let capabilities = WireCapabilities::from_bits(read_u64(encoded, /*start*/ 8)?)?;
         let expected = NEGOTIATION_FIXED_BYTES
             .checked_add(
                 count

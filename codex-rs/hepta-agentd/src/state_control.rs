@@ -88,8 +88,8 @@ impl AgentdState {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
                         crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2,
-                        1,
-                        0,
+                        /*major*/ 1,
+                        /*minor*/ 0,
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
@@ -97,23 +97,27 @@ impl AgentdState {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
-                            1,
-                            0,
+                            /*major*/ 1,
+                            /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.evidence.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("kernel.evidence", 1, 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "kernel.evidence",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 capabilities.push(
                     crate::AgentdCapability::new(
                         crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
-                        1,
-                        0,
+                        /*major*/ 1,
+                        /*minor*/ 0,
                     )
                     .map_err(AgentdError::Protocol)?,
                 );
@@ -127,16 +131,20 @@ impl AgentdState {
                 );
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("objective.start", 1, 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "objective.start",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1,
-                            1,
-                            0,
+                            /*major*/ 1,
+                            /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
