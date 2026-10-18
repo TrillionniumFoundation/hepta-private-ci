@@ -75,13 +75,17 @@ class ContinuationOracle:
             raise ShadowError("negative remaining horizon")
         q = abs(self.slope) * remaining
         if q >= CONTRACTION_CEILING:
-            raise ShadowError("nonlinear terminal is outside certified contraction region")
+            raise ShadowError(
+                "nonlinear terminal is outside certified contraction region"
+            )
         y = self.terminal.evaluate(state)
         _finite(y, "initial continuation")
         for _ in range(MAX_FIXED_POINT_STEPS):
             if self.calls >= self.budget:
                 raise ShadowError("continuation oracle budget exhausted")
-            next_y = self.terminal.evaluate(_finite(state + remaining * y, "continuation argument"))
+            next_y = self.terminal.evaluate(
+                _finite(state + remaining * y, "continuation argument")
+            )
             self.calls += 1
             self.steps += 1
             _finite(next_y, "continuation")
@@ -92,7 +96,9 @@ class ContinuationOracle:
         raise ShadowError("fixed-point iterations exhausted")
 
 
-def _validate_problem(initial_state: float, durations: tuple[float, ...], terminal: TanhTerminal) -> float:
+def _validate_problem(
+    initial_state: float, durations: tuple[float, ...], terminal: TanhTerminal
+) -> float:
     _finite(initial_state, "initial state")
     _valid_slices(durations)
     _finite(terminal.slope, "terminal slope")
@@ -137,15 +143,22 @@ def nonlinear_shoot(
             next_y = oracle.value(next_state, max(0.0, total - elapsed))
             interface_residual = abs(next_y - y)
         max_jump = max(max_jump, interface_residual)
-        reports.append(NonlinearSlice(duration, state, next_state, y, next_y, interface_residual))
+        reports.append(
+            NonlinearSlice(duration, state, next_state, y, next_y, interface_residual)
+        )
         last_utility = y if reset_terminal else next_y
         state = next_state
     terminal_residual = abs(reports[-1].utility_out - terminal.evaluate(state))
     _finite(terminal_residual, "terminal residual")
     threshold = max(1e-9, tolerance * 16)
     return NonlinearReceipt(
-        reports[0].utility_in, state, terminal_residual, max_jump,
-        oracle.calls, oracle.steps, max(max_jump, terminal_residual) <= threshold,
+        reports[0].utility_in,
+        state,
+        terminal_residual,
+        max_jump,
+        oracle.calls,
+        oracle.steps,
+        max(max_jump, terminal_residual) <= threshold,
         tuple(reports),
     )
 
@@ -161,8 +174,12 @@ def matched_budget_comparison(
     Returns actual call counts; no zero-noise fixture is a reasoning benchmark.
     """
     correct = nonlinear_shoot(initial_state, durations, terminal, budget=budget)
-    wrong = nonlinear_shoot(initial_state, durations, terminal, budget=budget, reset_terminal=True)
-    direct = nonlinear_shoot(initial_state, (math.fsum(durations),), terminal, budget=budget)
+    wrong = nonlinear_shoot(
+        initial_state, durations, terminal, budget=budget, reset_terminal=True
+    )
+    direct = nonlinear_shoot(
+        initial_state, (math.fsum(durations),), terminal, budget=budget
+    )
     return {
         "evidence_class": "synthetic_nonlinear_zero_noise_not_model_efficacy",
         "oracle_budget_each_arm": budget,
@@ -186,17 +203,25 @@ def manufactured_sweep(case_count: int = 24, budget: int = 512) -> dict[str, obj
         initial_state = (k % 7 - 3) * 0.2
         terminal = TanhTerminal((k % 11 - 5) * 0.14, (k % 5 - 2) * 0.15)
         sections = (0.2, 0.3, 0.5) if k % 2 else (0.1, 0.1, 0.3, 0.5)
-        comparison = matched_budget_comparison(initial_state, sections, terminal, budget)
-        results.append({
-            "case": k,
-            "single_calls": comparison["single_shoot"]["oracle_calls"],
-            "segmented_calls": comparison["segmented_continuation"]["oracle_calls"],
-            "reset_calls": comparison["naive_terminal_reset"]["oracle_calls"],
-            "segmented_accepted": comparison["segmented_continuation"]["accepted"],
-            "reset_accepted": comparison["naive_terminal_reset"]["accepted"],
-            "segmented_interface": comparison["segmented_continuation"]["maximum_interface_residual"],
-            "reset_interface": comparison["naive_terminal_reset"]["maximum_interface_residual"],
-        })
+        comparison = matched_budget_comparison(
+            initial_state, sections, terminal, budget
+        )
+        results.append(
+            {
+                "case": k,
+                "single_calls": comparison["single_shoot"]["oracle_calls"],
+                "segmented_calls": comparison["segmented_continuation"]["oracle_calls"],
+                "reset_calls": comparison["naive_terminal_reset"]["oracle_calls"],
+                "segmented_accepted": comparison["segmented_continuation"]["accepted"],
+                "reset_accepted": comparison["naive_terminal_reset"]["accepted"],
+                "segmented_interface": comparison["segmented_continuation"][
+                    "maximum_interface_residual"
+                ],
+                "reset_interface": comparison["naive_terminal_reset"][
+                    "maximum_interface_residual"
+                ],
+            }
+        )
     return {
         "evidence_class": "deterministic_manufactured_zero_noise_heterogeneity",
         "case_count": case_count,
@@ -204,7 +229,8 @@ def manufactured_sweep(case_count: int = 24, budget: int = 512) -> dict[str, obj
         "segmented_passes": sum(item["segmented_accepted"] for item in results),
         "reset_passes": sum(item["reset_accepted"] for item in results),
         "mean_single_calls": sum(item["single_calls"] for item in results) / case_count,
-        "mean_segmented_calls": sum(item["segmented_calls"] for item in results) / case_count,
+        "mean_segmented_calls": sum(item["segmented_calls"] for item in results)
+        / case_count,
         "cases": results,
     }
 
@@ -216,7 +242,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not (args.demo or args.sweep) or (args.demo and args.sweep):
         parser.error("choose exactly one of --demo and --sweep")
-    report = manufactured_sweep() if args.sweep else matched_budget_comparison(
-        0.4, (0.25, 0.25, 0.5), TanhTerminal(0.6, 0.25), budget=2048,
+    report = (
+        manufactured_sweep()
+        if args.sweep
+        else matched_budget_comparison(
+            0.4,
+            (0.25, 0.25, 0.5),
+            TanhTerminal(0.6, 0.25),
+            budget=2048,
+        )
     )
     print(json.dumps(report, sort_keys=True, indent=2, allow_nan=False))
