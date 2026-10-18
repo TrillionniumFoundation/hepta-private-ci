@@ -841,3 +841,111 @@ def test_metrics_reject_unrecognized_claim_fields() -> None:
     metrics = {**example_metrics(), "productionQualified": True}
     with pytest.raises(ValueError, match="unrecognized fields"):
         MODULE.validate_metrics(metrics)
+
+
+def rehash_non_authorizing_report(report: dict[str, object]) -> None:
+    """Rehash an attacker-controlled report without forging observer signatures."""
+    provisional = {
+        key: report[key]
+        for key in (
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
+        )
+    }
+    report["reportDigest"] = MODULE.digest(
+        {**provisional, "observer": report["observer"]}
+    )
+
+
+@pytest.mark.parametrize(
+    "extension", ("physicalSplitApproved", "authority", "finalUseAdmitted")
+)
+def test_case_extension_cannot_change_closed_report_schema(
+    tmp_path: Path, extension: str
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "blocked-extension.json",
+    )
+    MODULE.validate_report(report)
+    report["cases"][0][extension] = True
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="case has unknown or missing fields"):
+        MODULE.validate_report(report)
+
+
+def test_measured_case_extension_is_rejected_even_with_rehashed_report(
+    tmp_path: Path,
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "mixed-extension.json",
+    )
+    first = report["cases"][0]
+    first["status"] = "measured"
+    first.pop("reason")
+    first["metrics"] = example_metrics()
+    first["metricsDigest"] = MODULE.digest(first["metrics"])
+    report["blockingCases"].remove(first["caseId"])
+    rehash_non_authorizing_report(report)
+    MODULE.validate_report(report)
+
+    first["productionApproved"] = True
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="case has unknown or missing fields"):
+        MODULE.validate_report(report)
+
+
+@pytest.mark.parametrize("invalid", (None, True, 1.5, -1, 1 << 65))
+def test_elapsed_time_requires_bounded_integer(
+    tmp_path: Path, invalid: object
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "elapsed.json",
+    )
+    report["cases"][0]["elapsedMicros"] = invalid
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="elapsedMicros must be a bounded integer"):
+        MODULE.validate_report(report)
+
+
+def test_missing_case_elapsed_and_host_extension_fail_closed(tmp_path: Path) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "missing-elapsed.json",
+    )
+    report["cases"][0].pop("elapsedMicros")
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="case has unknown or missing fields"):
+        MODULE.validate_report(report)
+
+    report["cases"][0]["elapsedMicros"] = 0
+    report["host"]["physicalSplitApproved"] = True
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="host has unknown or missing fields"):
+        MODULE.validate_report(report)
+
+    report["host"].pop("physicalSplitApproved")
+    report["host"]["hostId"] = ""
+    rehash_non_authorizing_report(report)
+    with pytest.raises(ValueError, match="host has invalid descriptive values"):
+        MODULE.validate_report(report)
