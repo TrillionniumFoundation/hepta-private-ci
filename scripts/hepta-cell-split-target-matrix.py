@@ -571,6 +571,7 @@ def run_matrix(
             assert_exact_source_checkout(repo_root, source_commit)
         except ValueError as error:
             blocked.append("source-checkout")
+            blocked.append("independent-observer")
             # This failure happened after the signer saw the provisional
             # report. Its otherwise-valid signature must never survive as
             # attachable proof that the now-dirty execution was qualified.
@@ -588,6 +589,7 @@ def run_matrix(
                 still_frozen = False
             if not still_frozen:
                 blocked.append("frozen-workload")
+                blocked.append("independent-observer")
                 # A previous signed claim cannot certify bytes that changed
                 # after the observer ran, even if its signature was valid.
                 observer_receipt = {
