@@ -114,8 +114,9 @@ class MatrixIntegrityTests(unittest.TestCase):
         platform_stub.start()
         self.addCleanup(platform_stub.stop)
 
-    def test_synthetic_schema_roundtrip_not_host_qualification(self) -> None:
-        MATRIX.validate_report(self.report)
+    def test_synthetic_claim_without_independent_signer_is_denied(self) -> None:
+        with self.assertRaisesRegex(ValueError, "independently pinned observer trust"):
+            MATRIX.validate_report(self.report)
         self.assertEqual(self.report["authority"], "DENY_ALL")
 
     def test_repeated_case_with_same_sixteen_id_set_fails(self) -> None:
