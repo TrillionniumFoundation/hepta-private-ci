@@ -90,7 +90,10 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
         raise ValueError(f"metric {name} must be numeric")
     if isinstance(value, float) and not math.isfinite(value):
         raise ValueError(f"metric {name} must be finite")
-    if isinstance(value, int) and value.bit_length() > 64:
+    if (
+        (isinstance(value, int) and value.bit_length() > 64)
+        or (isinstance(value, float) and value > (1 << 64) - 1)
+    ):
         raise ValueError(f"metric {name} exceeds the bounded counter range")
     if value < 0:
         raise ValueError(f"metric {name} must be non-negative")
@@ -110,7 +113,7 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | 
         normalized[name] = _number(
             metrics[name],
             name,
-            integer=name in {"fsyncCount", "rssBytes", "walBytes", "walFsyncCount"},
+            integer=name != "throughputPerSecond",
         )
     observed = metrics["gpuObserved"]
     if not isinstance(observed, bool):

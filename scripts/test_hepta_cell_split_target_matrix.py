@@ -112,6 +112,29 @@ def test_measurement_rejects_nonfinite_or_unbounded_counters() -> None:
             MODULE.validate_metrics({**base, name: bad_value})
 
 
+
+def test_integer_measurement_units_reject_fractional_counter_values() -> None:
+    base = example_metrics()
+    for name in (
+        "p50Micros",
+        "p95Micros",
+        "p99Micros",
+        "cpuMicros",
+        "rssBytes",
+        "communicationBytes",
+        "fsyncCount",
+        "walBytes",
+        "walFsyncCount",
+        "lockWaitMicros",
+        "recoveryMicros",
+        "negativeMigrationQ32",
+    ):
+        with pytest.raises(ValueError, match="must be an integer"):
+            MODULE.validate_metrics({**base, name: 1.5})
+    with pytest.raises(ValueError, match="bounded counter range"):
+        MODULE.validate_metrics({**base, "throughputPerSecond": 1e100})
+
+
 def test_pretty_json_workload_receipt_is_parsed() -> None:
     receipt = {"caseId": "case-1", "metrics": example_metrics()}
     assert MODULE.parse_workload_output(json.dumps(receipt, indent=2)) == receipt
