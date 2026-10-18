@@ -568,7 +568,19 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+# Preserve ZIP codecs and the existing native bzip2-sys integration.
+# zip 9's bzip2-rs feature selects bzip2/bzip2-sys.
+zip = { version = "9.0.4", default-features = false, features = [
+    "aes-crypto",
+    "bzip2-rs",
+    "deflate64",
+    "deflate",
+    "lzma",
+    "ppmd",
+    "time",
+    "zstd",
+    "xz",
+] }
 zstd = "0.13"
 
 wiremock = "0.6"
