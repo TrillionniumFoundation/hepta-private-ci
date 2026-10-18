@@ -26,6 +26,16 @@ on:
       # Transitive real signed-owner Clippy consumers must not skip native CI
       # when changed in isolation; they failed on the exact 2026-10-17 runner.
       - "codex-rs/hepta-intelligence-eval/**"
+      # These exact public wire / canonical / Agentd / response-stream
+      # reverse consumers are compiled by the strict original-owner Clippy
+      # job. A standalone change must never silently skip that gate.
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
+      - "codex-rs/core/src/client.rs"
+      - "codex-rs/core/src/client_tests.rs"
+      - "codex-rs/core/src/client_provider_policy_tests.rs"
+      - "codex-rs/exec-server-protocol/src/protocol.rs"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/config/**"
       - "codex-rs/hepta-learning-artifacts/**"
