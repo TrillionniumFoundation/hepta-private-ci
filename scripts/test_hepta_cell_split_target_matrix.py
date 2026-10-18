@@ -896,6 +896,7 @@ def test_measured_case_extension_is_rejected_even_with_rehashed_report(
     first = report["cases"][0]
     first["status"] = "measured"
     first.pop("reason")
+    first["elapsedMicros"] = 0  # structural fixture, not measured host telemetry
     first["metrics"] = example_metrics()
     first["metricsDigest"] = MODULE.digest(first["metrics"])
     report["blockingCases"].remove(first["caseId"])
@@ -919,6 +920,7 @@ def test_elapsed_time_requires_bounded_integer(
         source_commit="f" * 40,
         output=tmp_path / "elapsed.json",
     )
+    report["cases"][0]["reason"] = "workload exited 1: test fixture only"
     report["cases"][0]["elapsedMicros"] = invalid
     rehash_non_authorizing_report(report)
     with pytest.raises(ValueError, match="elapsedMicros must be a bounded integer"):
@@ -933,6 +935,13 @@ def test_missing_case_elapsed_and_host_extension_fail_closed(tmp_path: Path) -> 
         source_commit="f" * 40,
         output=tmp_path / "missing-elapsed.json",
     )
+    # A pre-dispatch refusal does not have an elapsed observation; only
+    # executing cases must have one. Model an executed-but-blocked case here.
+    report["cases"][0]["reason"] = "workload exited 1: test fixture only"
+    report["cases"][0]["elapsedMicros"] = 5
+    rehash_non_authorizing_report(report)
+    MODULE.validate_report(report)
+
     report["cases"][0].pop("elapsedMicros")
     rehash_non_authorizing_report(report)
     with pytest.raises(ValueError, match="case has unknown or missing fields"):
