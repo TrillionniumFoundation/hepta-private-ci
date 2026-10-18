@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -17,6 +18,16 @@ SPEC = importlib.util.spec_from_file_location("cell_split_matrix", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+
+def current_checkout_sha() -> str:
+    return subprocess.run(
+        ["git", "-C", str(SCRIPT.resolve().parent.parent), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    ).stdout.strip()
 
 
 def example_metrics() -> dict[str, object]:
@@ -138,6 +149,10 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
         "'sourceCommit': os.environ['HEPTA_MATRIX_SOURCE_COMMIT'],"
         "'workloadDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
         "'workloadSourceDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
+        "'encoder_topology': os.environ['HEPTA_MATRIX_ENCODER_TOPOLOGY'],"
+        "'execution': os.environ['HEPTA_MATRIX_EXECUTION'],"
+        "'feature_materialization': os.environ['HEPTA_MATRIX_FEATURE_MATERIALIZATION'],"
+        "'persistence': os.environ['HEPTA_MATRIX_PERSISTENCE'],"
         "'metrics': METRICS"
         "}))\n",
         encoding="utf-8",
@@ -146,7 +161,7 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
         workload_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))} {{cellCount}}",
         observer_command=None,
         workload_digest=frozen_digest,
-        source_commit="e" * 40,
+        source_commit=current_checkout_sha(),
         output=tmp_path / "matrix.json",
         workload_path=workload,
         host_id="fixture-only",
@@ -157,6 +172,96 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
     assert report["status"] == "blocked"
     assert "full-scale-matrix" in report["blockingCases"]
     assert "independent-observer" in report["blockingCases"]
+    MODULE.validate_report(report)
+
+
+
+def test_live_worker_must_match_actual_source_checkout(tmp_path: Path) -> None:
+    workload = tmp_path / "frozen"
+    workload.write_bytes(b"fixture only")
+    with pytest.raises(ValueError, match="does not match repository HEAD"):
+        MODULE.run_matrix(
+            workload_command="python --version",
+            observer_command=None,
+            workload_digest=hashlib.sha256(workload.read_bytes()).hexdigest(),
+            source_commit="e" * 40,
+            output=tmp_path / "mismatch.json",
+            workload_path=workload,
+            cell_count=64,
+        )
+
+
+def test_live_worker_must_echo_actual_factor_tuple(tmp_path: Path) -> None:
+    workload = tmp_path / "frozen"
+    workload.write_bytes(b"fixture only")
+    worker = tmp_path / "missing-factor.py"
+    worker.write_text(
+        "import json, os\n"
+        f"metrics = {example_metrics()!r}\n"
+        "print(json.dumps({"
+        "'caseId': os.environ['HEPTA_MATRIX_CASE_ID'],"
+        "'cellCount': int(os.environ['HEPTA_MATRIX_CELL_COUNT']),"
+        "'sourceCommit': os.environ['HEPTA_MATRIX_SOURCE_COMMIT'],"
+        "'workloadDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
+        "'workloadSourceDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
+        "'metrics': metrics"
+        "}))\n",
+        encoding="utf-8",
+    )
+    report = MODULE.run_matrix(
+        workload_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))}",
+        observer_command=None,
+        workload_digest=hashlib.sha256(workload.read_bytes()).hexdigest(),
+        source_commit=current_checkout_sha(),
+        output=tmp_path / "missing-factor-report.json",
+        workload_path=workload,
+        cell_count=64,
+    )
+    assert report["status"] == "blocked"
+    assert all(row["status"] == "blocked" for row in report["cases"])
+    assert all(
+        "identity does not bind" in row["reason"] for row in report["cases"]
+    )
+    MODULE.validate_report(report)
+
+
+def test_live_worker_cannot_mutate_frozen_workload(tmp_path: Path) -> None:
+    workload = tmp_path / "frozen"
+    workload.write_bytes(b"immutable fixture")
+    original_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
+    worker = tmp_path / "tamper.py"
+    worker.write_text(
+        "import json, os\n"
+        "with open(os.environ['HEPTA_MATRIX_WORKLOAD_PATH'], 'ab') as out:\n"
+        "    out.write(b'tamper')\n"
+        f"metrics = {example_metrics()!r}\n"
+        "print(json.dumps({"
+        "'caseId': os.environ['HEPTA_MATRIX_CASE_ID'],"
+        "'cellCount': int(os.environ['HEPTA_MATRIX_CELL_COUNT']),"
+        "'sourceCommit': os.environ['HEPTA_MATRIX_SOURCE_COMMIT'],"
+        "'workloadDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
+        "'workloadSourceDigest': os.environ['HEPTA_MATRIX_WORKLOAD_DIGEST'],"
+        "'encoder_topology': os.environ['HEPTA_MATRIX_ENCODER_TOPOLOGY'],"
+        "'execution': os.environ['HEPTA_MATRIX_EXECUTION'],"
+        "'feature_materialization': os.environ['HEPTA_MATRIX_FEATURE_MATERIALIZATION'],"
+        "'persistence': os.environ['HEPTA_MATRIX_PERSISTENCE'],"
+        "'metrics': metrics"
+        "}))\n",
+        encoding="utf-8",
+    )
+    report = MODULE.run_matrix(
+        workload_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))}",
+        observer_command=None,
+        workload_digest=original_digest,
+        source_commit=current_checkout_sha(),
+        output=tmp_path / "tamper-report.json",
+        workload_path=workload,
+        cell_count=64,
+    )
+    assert report["status"] == "blocked"
+    assert all(row["status"] == "blocked" for row in report["cases"])
+    assert "changed during" in report["cases"][0]["reason"]
+    assert "changed before" in report["cases"][1]["reason"]
     MODULE.validate_report(report)
 
 
