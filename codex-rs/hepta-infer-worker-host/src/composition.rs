@@ -903,4 +903,44 @@ mod tests {
         assert_eq!(worker.active_cell_count(), 1);
         assert_eq!(worker.resident_encoder_count(), 1);
     }
+
+    #[test]
+    fn logical_cell_scale_has_one_resident_encoder_and_exact_head_charges() {
+        // Logical lifecycle/ledger proof only. No physical GPU residency,
+        // model accuracy, feature cache or measured inference throughput.
+        for count in [8_usize, 64, 256, 1024] {
+            let mut worker = CompositionWorker::new(
+                SharedEncoderPool::new(1, count).expect("pool"),
+                WorkerDriver::default(),
+            );
+            let mut cell_ids = Vec::new();
+            for index in 0..count {
+                let cell_id = format!("cell-{index}");
+                worker
+                    .attach_cell(key("cuda-0"), head(&cell_id, 20), 100)
+                    .expect("attach");
+                cell_ids.push(cell_id);
+            }
+            assert_eq!(worker.driver.loads, 1, "{count} logical Cells");
+            assert_eq!(worker.resident_encoder_count(), 1);
+            assert_eq!(worker.active_cell_count(), count);
+            assert_eq!(
+                worker.total_resident_memory_bytes(),
+                Ok(100 + 20 * (count as u64)),
+            );
+
+            for cell_id in &cell_ids[..count - 1] {
+                worker.detach_cell(cell_id).expect("detach nonfinal");
+            }
+            assert_eq!(worker.driver.unloads, 0, "{count} logical Cells");
+            assert_eq!(worker.resident_encoder_count(), 1);
+            worker
+                .detach_cell(&cell_ids[count - 1])
+                .expect("detach final");
+            assert_eq!(worker.driver.unloads, 1);
+            assert_eq!(worker.active_cell_count(), 0);
+            assert_eq!(worker.resident_encoder_count(), 0);
+            assert_eq!(worker.total_resident_memory_bytes(), Ok(0));
+        }
+    }
 }
