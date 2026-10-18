@@ -213,5 +213,8 @@ fn newly_created_scope_wal_is_owner_only_on_unix() {
     let path = directory.path().join("secure-scope.wal");
     let wal = must(ScopeLaneFileWalV1::open(&path));
     assert_eq!(wal.wal().record_count(), 0);
-    assert_eq!(must(std::fs::metadata(path)).permissions().mode() & 0o077, 0);
+    assert_eq!(
+        must(std::fs::metadata(path)).permissions().mode() & 0o077,
+        0
+    );
 }
