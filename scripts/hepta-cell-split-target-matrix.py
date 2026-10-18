@@ -621,6 +621,52 @@ def validate_report(
             raise ValueError("observer receipt digest mismatch")
 
 
+    status = report.get("status")
+    if status not in ("blocked", "qualified"):
+        raise ValueError("invalid matrix report status")
+    blockers = report.get("blockingCases")
+    if (
+        not isinstance(blockers, list)
+        or any(not isinstance(blocker, str) for blocker in blockers)
+        or blockers != sorted(set(blockers))
+    ):
+        raise ValueError("noncanonical matrix blocker list")
+    case_blockers = {
+        case["caseId"] for case in cases if case.get("status") == "blocked"
+    }
+    if any(case.get("status") not in ("blocked", "measured") for case in cases):
+        raise ValueError("invalid matrix case status")
+    allowed_blockers = set(expected) | {
+        "independent-observer",
+        "full-scale-matrix",
+        "source-checkout",
+        "frozen-workload",
+    }
+    observer = report.get("observer")
+    missing_observer = (
+        not isinstance(observer, dict) or observer.get("verified") is not True
+    )
+    blocker_set = set(blockers)
+    if (
+        not blocker_set <= allowed_blockers
+        or case_blockers != blocker_set.intersection(expected)
+        or (len(counts) == 1 and "full-scale-matrix" not in blocker_set)
+        or (missing_observer and "independent-observer" not in blocker_set)
+        or (status == "qualified") != (not blockers)
+    ):
+        raise ValueError("matrix blocker list/status inconsistent with evidence")
+    for case in cases:
+        if case["status"] == "blocked" and (
+            not isinstance(case.get("reason"), str)
+            or not case["reason"]
+            or "metrics" in case
+            or "metricsDigest" in case
+        ):
+            raise ValueError("blocked matrix case has invalid reason or metrics")
+        if case["status"] == "measured" and "reason" in case:
+            raise ValueError("measured matrix case contains blocked reason")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workload-command", help="argv template; {caseId} may be interpolated")
