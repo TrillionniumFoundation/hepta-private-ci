@@ -31,7 +31,7 @@ impl FileSnapshot {
     pub(super) fn capture(file: &File, label: &str) -> Result<Self, AcceptanceError> {
         // The safe wrapper queries GetFileInformationByHandle on this exact
         // borrowed handle; a separate pathname lookup cannot validate its links.
-        let information = winapi_util::file::information(file)?;
+        let information = super::windows_file_information(file)?;
         let attributes = information.file_attributes();
         if attributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT) != 0 {
             return Err(invalid(format!(

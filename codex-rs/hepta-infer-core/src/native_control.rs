@@ -218,6 +218,8 @@ pub struct NativeRunRecord {
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    /// Incremental count of non-released reservations, reconstructed by replay.
+    in_flight_count: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -483,17 +485,32 @@ impl DurableInferenceControl {
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
-        let mut next = self.native.clone();
-        next.apply(event.clone())?;
+        // Validate against the exact affected record without cloning the
+        // entire native history. Publish only after durable append.
+        let mut candidate = NativeJournal {
+            maximum_in_flight: self.native.maximum_in_flight,
+            in_flight_count: self.native.in_flight_count,
+            records: BTreeMap::new(),
+        };
+        if let Some(current) = self.native.records.get(request_id) {
+            candidate
+                .records
+                .insert(request_id.to_string(), current.clone());
+        }
+        candidate.apply(event.clone())?;
+        let next_record = candidate
+            .records
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
         self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
+        self.native.maximum_in_flight = candidate.maximum_in_flight;
+        self.native.in_flight_count = candidate.in_flight_count;
         self.native
             .records
-            .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+            .insert(request_id.to_string(), next_record.clone());
+        Ok(next_record)
     }
 }
 
@@ -529,15 +546,13 @@ impl NativeJournal {
             {
                 return Err(Error::Conflict);
             }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
+            if self.in_flight_count >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
             self.maximum_in_flight = Some(maximum_in_flight);
             self.records.insert(
                 request.request_id.clone(),
@@ -566,6 +581,7 @@ impl NativeJournal {
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
+        let was_in_flight = record.state != NativeReservationState::Released;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { dispatch, .. } => {
@@ -746,6 +762,18 @@ impl NativeJournal {
             .revision
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        let now_in_flight = record.state != NativeReservationState::Released;
+        if was_in_flight && !now_in_flight {
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_sub(1)
+                .ok_or(Error::CorruptJournal("native in-flight counter underflow"))?;
+        } else if !was_in_flight && now_in_flight {
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        }
         Ok(())
     }
 }
