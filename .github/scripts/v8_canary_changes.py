@@ -175,9 +175,7 @@ def main() -> None:
         raise SystemExit("--base and --head are required unless --force is set")
     else:
         files = changed_files(args.base, args.head)
-        base_version = historical_v8_version_at_revision(
-            merge_base(args.base, args.head)
-        )
+        base_version = historical_v8_version_at_revision(merge_base(args.base, args.head))
         # Never downgrade a broken candidate HEAD to a passing canary.
         head_version = v8_version_at_revision(args.head)
 
