@@ -714,22 +714,34 @@ mod tests {
     impl Fixture {
         async fn new() -> Self {
             let temp = tempfile::tempdir().unwrap_or_else(|_| panic!("temp root"));
-            let root = temp.path().canonicalize().unwrap_or_else(|_| panic!("canonical temp root"));
+            let root = temp
+                .path()
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical temp root"));
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|_| panic!("fleet root"));
-            let registry = FleetRegistry::initialize(fleet_root.clone()).unwrap_or_else(|_| panic!("fleet registry"));
+            let fleet_root =
+                HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|_| panic!("fleet root"));
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .unwrap_or_else(|_| panic!("fleet registry"));
             let workspace = root.join("workspace");
             fs::create_dir(&workspace).unwrap_or_else(|_| panic!("workspace"));
-            let workspace = workspace.canonicalize().unwrap_or_else(|_| panic!("canonical workspace"));
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).unwrap_or_else(|_| panic!("agent id"));
+            let workspace = workspace
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical workspace"));
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .unwrap_or_else(|_| panic!("agent id"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).unwrap_or_else(|_| panic!("workspace binding")),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .unwrap_or_else(|_| panic!("workspace binding")),
                 resources.clone(),
             )
             .unwrap_or_else(|_| panic!("manifest"));
-            let layout = registry.register(manifest).unwrap_or_else(|_| panic!("register agent")).layout;
+            let layout = registry
+                .register(manifest)
+                .unwrap_or_else(|_| panic!("register agent"))
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -878,7 +890,9 @@ mod tests {
         now_ms: u64,
         signing_key: &SigningKey,
     ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().unwrap_or_else(|_| panic!("final-use binding"));
+        let binding = intent
+            .final_use_binding()
+            .unwrap_or_else(|_| panic!("final-use binding"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -890,7 +904,11 @@ mod tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().unwrap_or_else(|_| panic!("signing bytes")))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|_| panic!("signing bytes")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
@@ -1018,8 +1036,8 @@ mod tests {
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .unwrap_or_else(|_| panic!("host file permissions"));
 
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).unwrap_or_else(|_| panic!("effect host"));
+        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .unwrap_or_else(|_| panic!("effect host"));
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
         let receipt = host
             .execute(
