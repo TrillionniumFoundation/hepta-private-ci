@@ -83,6 +83,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
     selected = set(GROUPS) if force_full else set()
     derived = force_full
     full_repo = force_full
+    cargo_audit = force_full
 
     for path in paths:
         parts = PurePosixPath(path).parts
@@ -94,6 +95,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or "\x00" in path
         ):
             raise ValueError(f"invalid repository path: {path!r}")
+
+        # Cargo advisory checks are independent of CI infrastructure and
+        # application changes. Preserve auditing on main pushes (force_full)
+        # and on any workspace manifest, lockfile, or audit policy change.
+        if (
+            path in {
+                "codex-rs/Cargo.toml",
+                "codex-rs/Cargo.lock",
+                "codex-rs/deny.toml",
+                ".github/workflows/cargo-deny.yml",
+            }
+            or (len(parts) >= 3 and parts[0] == "codex-rs" and parts[-1] == "Cargo.toml")
+        ):
+            cargo_audit = True
 
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
@@ -185,6 +200,7 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         "native": bool(selected),
         "derived": derived,
         "full_repo": full_repo,
+        "cargo_audit": cargo_audit,
     }
 
 
