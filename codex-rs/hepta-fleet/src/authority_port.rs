@@ -214,7 +214,8 @@ mod tests {
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
         let directory = tempfile::tempdir().expect("test fixture should succeed");
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).expect("test fixture should succeed");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("test fixture should succeed");
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
@@ -223,7 +224,8 @@ mod tests {
         )
         .expect("test fixture should succeed");
         let grant = grant();
-        let binding = FleetAuthorityPort::binding_for_issue(&grant).expect("test fixture should succeed");
+        let binding =
+            FleetAuthorityPort::binding_for_issue(&grant).expect("test fixture should succeed");
         registry
             .put_lease(
                 AuthorityLease {
@@ -256,7 +258,9 @@ mod tests {
             other => panic!("unexpected authority witness: {other:?}"),
         }
 
-        registry.revoke("fleet-issue-one", 1, [9; 32]).expect("test fixture should succeed");
+        registry
+            .revoke("fleet-issue-one", 1, [9; 32])
+            .expect("test fixture should succeed");
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
                 .unwrap_err(),
@@ -267,10 +271,12 @@ mod tests {
     #[test]
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
-        let first_binding = FleetAuthorityPort::binding_for_issue(&first).expect("test fixture should succeed");
+        let first_binding =
+            FleetAuthorityPort::binding_for_issue(&first).expect("test fixture should succeed");
         let mut changed = first;
         changed.resources.cpu_millis += 1;
-        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed).expect("test fixture should succeed");
+        let changed_binding =
+            FleetAuthorityPort::binding_for_issue(&changed).expect("test fixture should succeed");
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
