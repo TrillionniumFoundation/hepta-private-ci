@@ -312,6 +312,77 @@ def test_worker_source_mutation_blocks_every_case(
     MODULE.validate_report(report)
 
 
+def test_post_observer_source_drift_revokes_signed_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root, head = isolated_checkout(tmp_path, monkeypatch)
+    workload = tmp_path / "frozen-workload"
+    workload.write_bytes(b"fixture only, no production measurements")
+    workload_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
+    private = Ed25519PrivateKey.generate()
+    public_key = private.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+    observer_was_signed = False
+
+    def fixture_runner(
+        argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+    ) -> subprocess.CompletedProcess[str]:
+        nonlocal observer_was_signed
+        if argv == ["fixture-observer"]:
+            claim = {
+                "schema": MODULE.OBSERVER_SCHEMA,
+                "verified": True,
+                "sourceCommit": env["HEPTA_MATRIX_SOURCE_COMMIT"],
+                "workloadDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+                "reportDigest": env["HEPTA_MATRIX_PROVISIONAL_DIGEST"],
+                "metricsDigest": env["HEPTA_MATRIX_METRICS_DIGEST"],
+                "observerId": "signed-fixture-not-independent",
+            }
+            claim["signatureHex"] = private.sign(
+                MODULE.observer_signing_bytes(claim)
+            ).hex()
+            observer_was_signed = True
+            (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
+            return subprocess.CompletedProcess(argv, 0, json.dumps(claim), "")
+        assert argv == ["fixture-worker"]
+        case = {
+            "caseId": env["HEPTA_MATRIX_CASE_ID"],
+            "cellCount": int(env["HEPTA_MATRIX_CELL_COUNT"]),
+            "sourceCommit": env["HEPTA_MATRIX_SOURCE_COMMIT"],
+            "workloadDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+            "workloadSourceDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+            "metrics": example_metrics(),
+        }
+        for name, _ in MODULE.FACTORS:
+            case[name] = env[f"HEPTA_MATRIX_{name.upper()}"]
+        return subprocess.CompletedProcess(argv, 0, json.dumps(case), "")
+
+    monkeypatch.setattr(MODULE, "run_isolated_command", fixture_runner)
+    report = MODULE.run_matrix(
+        workload_command="fixture-worker",
+        observer_command="fixture-observer",
+        workload_digest=workload_digest,
+        source_commit=head,
+        output=tmp_path / "report.json",
+        workload_path=workload,
+        trusted_observer_public_key=public_key,
+    )
+    assert observer_was_signed
+    assert len(report["cases"]) == 64
+    assert all(case["status"] == "measured" for case in report["cases"])
+    assert report["status"] == "blocked"
+    assert "source-checkout" in report["blockingCases"]
+    assert report["observer"]["verified"] is False
+    assert "signatureHex" not in report["observer"]
+    MODULE.validate_report(report)
+
+    forged = {**report, "status": "qualified", "blockingCases": []}
+    with pytest.raises(ValueError, match="lacks an independent observer receipt"):
+        MODULE.validate_report(forged, trusted_observer_public_key=public_key)
+
+
 def test_live_worker_must_match_actual_source_checkout(tmp_path: Path) -> None:
     workload = tmp_path / "frozen"
     workload.write_bytes(b"fixture only")
