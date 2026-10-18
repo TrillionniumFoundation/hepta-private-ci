@@ -112,6 +112,29 @@ def test_measurement_rejects_nonfinite_or_unbounded_counters() -> None:
             MODULE.validate_metrics({**base, name: bad_value})
 
 
+
+def test_integer_measurement_units_reject_fractional_counter_values() -> None:
+    base = example_metrics()
+    for name in (
+        "p50Micros",
+        "p95Micros",
+        "p99Micros",
+        "cpuMicros",
+        "rssBytes",
+        "communicationBytes",
+        "fsyncCount",
+        "walBytes",
+        "walFsyncCount",
+        "lockWaitMicros",
+        "recoveryMicros",
+        "negativeMigrationQ32",
+    ):
+        with pytest.raises(ValueError, match="must be an integer"):
+            MODULE.validate_metrics({**base, name: 1.5})
+    with pytest.raises(ValueError, match="bounded counter range"):
+        MODULE.validate_metrics({**base, "throughputPerSecond": 1e100})
+
+
 def test_pretty_json_workload_receipt_is_parsed() -> None:
     receipt = {"caseId": "case-1", "metrics": example_metrics()}
     assert MODULE.parse_workload_output(json.dumps(receipt, indent=2)) == receipt
@@ -597,3 +620,67 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_pa
         MODULE.validate_report(report)
     with pytest.raises(ValueError, match="signature invalid"):
         MODULE.validate_report(report, trusted_observer_public_key="00" * 32)
+
+
+def test_report_validator_rejects_unknown_status_and_removed_blockers(
+    tmp_path: Path,
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "matrix.json",
+    )
+    # The current reportDigest does not bind status/blockingCases; validation
+    # must independently enforce canonical fail-closed classification.
+    assert MODULE.validate_report(report) is None
+    for invalid in ("released", "ready", "", None):
+        with pytest.raises(ValueError, match="invalid matrix report status"):
+            MODULE.validate_report({**report, "status": invalid})
+    with pytest.raises(ValueError, match="blocker list/status inconsistent"):
+        MODULE.validate_report({**report, "blockingCases": []})
+    with pytest.raises(ValueError, match="blocker list/status inconsistent"):
+        MODULE.validate_report(
+            {**report, "blockingCases": ["independent-observer"]}
+        )
+    with pytest.raises(ValueError, match="noncanonical matrix blocker list"):
+        MODULE.validate_report(
+            {
+                **report,
+                "blockingCases": report["blockingCases"] + [report["blockingCases"][0]],
+            }
+        )
+    with pytest.raises(ValueError, match="blocker list/status inconsistent"):
+        MODULE.validate_report(
+            {
+                **report,
+                "blockingCases": sorted(report["blockingCases"] + ["unexpected"]),
+            }
+        )
+
+
+def test_report_validator_rejects_unknown_case_status_even_if_rehashed(
+    tmp_path: Path,
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "matrix.json",
+    )
+    forged = {**report, "cases": [dict(row) for row in report["cases"]]}
+    forged["cases"][0]["status"] = "skipped"
+    provisional = {
+        key: forged[key]
+        for key in (
+            "schema", "authority", "cellCounts", "sourceCommit",
+            "workloadDigest", "workloadSourceDigest", "host", "cases",
+        )
+    }
+    forged["reportDigest"] = MODULE.digest(
+        {**provisional, "observer": forged["observer"]}
+    )
+    with pytest.raises(ValueError, match="invalid matrix case status"):
+        MODULE.validate_report(forged)

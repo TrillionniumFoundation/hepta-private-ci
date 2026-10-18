@@ -90,7 +90,10 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
         raise ValueError(f"metric {name} must be numeric")
     if isinstance(value, float) and not math.isfinite(value):
         raise ValueError(f"metric {name} must be finite")
-    if isinstance(value, int) and value.bit_length() > 64:
+    if (
+        (isinstance(value, int) and value.bit_length() > 64)
+        or (isinstance(value, float) and value > (1 << 64) - 1)
+    ):
         raise ValueError(f"metric {name} exceeds the bounded counter range")
     if value < 0:
         raise ValueError(f"metric {name} must be non-negative")
@@ -110,7 +113,7 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | 
         normalized[name] = _number(
             metrics[name],
             name,
-            integer=name in {"fsyncCount", "rssBytes", "walBytes", "walFsyncCount"},
+            integer=name != "throughputPerSecond",
         )
     observed = metrics["gpuObserved"]
     if not isinstance(observed, bool):
@@ -619,6 +622,52 @@ def validate_report(
             key: value for key, value in observer.items() if key != "receiptDigest"
         }):
             raise ValueError("observer receipt digest mismatch")
+
+
+    status = report.get("status")
+    if status not in ("blocked", "qualified"):
+        raise ValueError("invalid matrix report status")
+    blockers = report.get("blockingCases")
+    if (
+        not isinstance(blockers, list)
+        or any(not isinstance(blocker, str) for blocker in blockers)
+        or blockers != sorted(set(blockers))
+    ):
+        raise ValueError("noncanonical matrix blocker list")
+    case_blockers = {
+        case["caseId"] for case in cases if case.get("status") == "blocked"
+    }
+    if any(case.get("status") not in ("blocked", "measured") for case in cases):
+        raise ValueError("invalid matrix case status")
+    allowed_blockers = set(expected) | {
+        "independent-observer",
+        "full-scale-matrix",
+        "source-checkout",
+        "frozen-workload",
+    }
+    observer = report.get("observer")
+    missing_observer = (
+        not isinstance(observer, dict) or observer.get("verified") is not True
+    )
+    blocker_set = set(blockers)
+    if (
+        not blocker_set <= allowed_blockers
+        or case_blockers != blocker_set.intersection(expected)
+        or (len(counts) == 1 and "full-scale-matrix" not in blocker_set)
+        or (missing_observer and "independent-observer" not in blocker_set)
+        or (status == "qualified") != (not blockers)
+    ):
+        raise ValueError("matrix blocker list/status inconsistent with evidence")
+    for case in cases:
+        if case["status"] == "blocked" and (
+            not isinstance(case.get("reason"), str)
+            or not case["reason"]
+            or "metrics" in case
+            or "metricsDigest" in case
+        ):
+            raise ValueError("blocked matrix case has invalid reason or metrics")
+        if case["status"] == "measured" and "reason" in case:
+            raise ValueError("measured matrix case contains blocked reason")
 
 
 def main() -> int:
