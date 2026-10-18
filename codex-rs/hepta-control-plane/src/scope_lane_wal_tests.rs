@@ -131,6 +131,32 @@ fn file_wal_syncs_frames_and_repairs_torn_tail() {
 }
 
 #[test]
+fn file_wal_repairs_incomplete_length_before_new_commits() {
+    let directory = must(tempdir());
+    let path = directory.path().join("partial-length-scope-lanes.wal");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        must(writer.append(envelope("scope-a", "owner-a", 1, "first")));
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    {
+        let mut interrupted = must(OpenOptions::new().append(true).open(&path));
+        must(interrupted.write_all(&[0, 0, 0]));
+        must(interrupted.sync_all());
+    }
+
+    // Reopening must truncate an incomplete frame-length prefix on Windows
+    // as well as Unix, and it must not acknowledge the uncommitted tail.
+    let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+    assert_eq!(recovered.wal().record_count(), 1);
+    must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
+    drop(recovered);
+    let reopened = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(reopened.wal().record_count(), 2);
+}
+
+#[test]
 fn incremental_scope_lanes_replay_many_distinct_committed_frames() {
     let directory = must(tempdir());
     let path = directory.path().join("incremental-scope-lanes.wal");
@@ -179,4 +205,75 @@ fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
     assert_eq!(recovered.wal().record_count(), 1);
     must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
     assert_eq!(recovered.wal().record_count(), 2);
+}
+
+#[test]
+fn torn_tail_recovery_can_append_again_without_overwriting_predecessor() {
+    let directory = must(tempdir());
+    let path = directory.path().join("scope-lanes-reappend.wal");
+    let first = envelope("scope-a", "owner-a", 1, "first");
+    let second = envelope("scope-a", "owner-a", 1, "after-recovery");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(writer.append(first.clone())).sequence, 1);
+    }
+    let committed_len = must(std::fs::metadata(&path)).len();
+    // Simulate an interrupted, fsynced partial physical frame.
+    {
+        let mut partial = must(OpenOptions::new().append(true).open(&path));
+        must(partial.write_all(&[0, 0, 0, 64, 0xab]));
+        must(partial.sync_all());
+    }
+    {
+        let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+        assert_eq!(must(std::fs::metadata(&path)).len(), committed_len);
+        assert_eq!(recovered.wal().record_count(), 1);
+        assert_eq!(must(recovered.append(second.clone())).sequence, 2);
+    }
+    let replay = must(ScopeLaneFileWalV1::open(&path));
+    let entries = replay
+        .wal()
+        .entries(digest("scope-a"))
+        .expect("scope present");
+    assert_eq!(entries.len(), 2);
+    assert_eq!(entries[0].envelope, first);
+    assert_eq!(entries[1].envelope, second);
+}
+
+#[cfg(unix)]
+#[test]
+fn file_wal_rejects_symlink_and_hardlink_before_writing_header() {
+    use std::os::unix::fs::symlink;
+
+    let directory = must(tempdir());
+    let target = directory.path().join("unrelated-target");
+    must(std::fs::write(&target, []));
+    let symlink_path = directory.path().join("scope-symlink.wal");
+    must(symlink(&target, &symlink_path));
+
+    assert!(ScopeLaneFileWalV1::open(&symlink_path).is_err());
+    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
+
+    let hardlink_path = directory.path().join("scope-hardlink.wal");
+    must(std::fs::hard_link(&target, &hardlink_path));
+    assert!(matches!(
+        ScopeLaneFileWalV1::open(&hardlink_path),
+        Err(ScopeLaneWalError::NotRegular)
+    ));
+    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
+}
+
+#[cfg(unix)]
+#[test]
+fn newly_created_scope_wal_is_owner_only_on_unix() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = must(tempdir());
+    let path = directory.path().join("secure-scope.wal");
+    let wal = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(wal.wal().record_count(), 0);
+    assert_eq!(
+        must(std::fs::metadata(path)).permissions().mode() & 0o077,
+        0
+    );
 }

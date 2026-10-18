@@ -16,6 +16,7 @@ workspace = true
 [dependencies]
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
+libc = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-contracts = { workspace = true }
