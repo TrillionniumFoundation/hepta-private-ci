@@ -1303,7 +1303,8 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    // Exercise DEFLATE decoding; the backup archive fixture still covers stored entries.
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
     let root = format!("openai-plugins-{sha}");
     writer
         .start_file(format!("{root}/.agents/plugins/marketplace.json"), options)
