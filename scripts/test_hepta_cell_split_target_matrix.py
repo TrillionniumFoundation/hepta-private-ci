@@ -816,8 +816,7 @@ def test_malformed_worker_metrics_block_all_cases_instead_of_crashing(
     assert len(report["cases"]) == 16
     assert all(case["status"] == "blocked" for case in report["cases"])
     assert all(
-        "metrics must be a JSON object" in case["reason"]
-        for case in report["cases"]
+        "metrics must be a JSON object" in case["reason"] for case in report["cases"]
     )
     MODULE.validate_report(report)
 
@@ -842,4 +841,3 @@ def test_metrics_reject_unrecognized_claim_fields() -> None:
     metrics = {**example_metrics(), "productionQualified": True}
     with pytest.raises(ValueError, match="unrecognized fields"):
         MODULE.validate_metrics(metrics)
-
