@@ -82,6 +82,13 @@ class FBSDEShortHorizonTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RECEIPT_DIGEST"):
             append_verified_step(p, t, bad)
 
+    def test_prior_trajectory_digest_drift_is_rejected(self):
+        p = problem()
+        first = append_verified_step(p, None, step(p, 0, D, E))
+        drifted = type(first)(**{**first.__dict__, "trajectory_digest": H})
+        with self.assertRaisesRegex(ValueError, "TRAJECTORY_DIGEST"):
+            append_verified_step(p, drifted, step(p, 1, E, F))
+
     def test_authority_and_effect_are_structurally_denied(self):
         p = problem()
         with self.assertRaises(ValueError):
