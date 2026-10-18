@@ -206,8 +206,7 @@ mod tests {
                     memory_bytes: 1 << 20,
                     accelerator_millis: 1_000,
                 },
-            })
-            ?;
+            })?;
         Ok(ledger)
     }
 
