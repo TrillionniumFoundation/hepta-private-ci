@@ -59,21 +59,29 @@ jobs:
           rustc --version --verbose > "$RUNNER_TEMP/hepta-neuron-evidence/toolchain.txt"
           cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-neuron-evidence/cargo-metadata.json"
       - name: Check source formatting (no mutation)
+        id: format
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-neuron --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-neuron --package codex-hepta-intelligence --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
       - name: Run neuron + intelligence signed-authority tests
+        id: tests
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           cargo test --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-neuron -p codex-hepta-intelligence
       - name: Compile worker, agentd and model owner
+        id: compile
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           cargo check --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-infer-worker-host -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-intelligence
       - name: Reference microbatch and durable metrics qualification
+        id: qualification
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -99,10 +107,26 @@ jobs:
           PY
           done
       - name: Strict focused Clippy
+        id: clippy
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-neuron -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Enforce every exact-head gate (no bypass from diagnostic continuation)
+        if: always()
+        shell: bash
+        env:
+          FORMAT: ${{ steps.format.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          COMPILE: ${{ steps.compile.outcome }}
+          QUALIFICATION: ${{ steps.qualification.outcome }}
+          CLIPPY: ${{ steps.clippy.outcome }}
+        run: |
+          set -euo pipefail
+          for result in "$FORMAT" "$TESTS" "$COMPILE" "$QUALIFICATION" "$CLIPPY"; do
+            test "$result" = 'success' || { echo "required gate is not success: $result"; exit 1; }
+          done
       - name: Verify no test mutated source
         if: always()
         shell: bash
