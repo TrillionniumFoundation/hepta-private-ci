@@ -4,6 +4,7 @@
 //! records, and only a physically incomplete trailing frame may be truncated.
 //! This is not an external anti-rollback oracle or a production release gate.
 
+use std::collections::BTreeSet;
 use std::fmt;
 use std::fs::File;
 use std::fs::TryLockError;
@@ -29,6 +30,7 @@ pub enum NeuronMetricsErrorV1 {
     ScopeMismatch,
     Corrupt,
     InvalidEvent,
+    DuplicatePlan,
     Capacity,
     Poisoned,
     Io(std::io::ErrorKind),
@@ -100,6 +102,7 @@ pub struct NeuronMetricsGroupCommitWriterV1 {
     length: usize,
     sequence: u64,
     head: Digest32,
+    seen_plans: BTreeSet<Digest32>,
     recovered_partial_tail: bool,
     poisoned: bool,
 }
@@ -141,6 +144,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 length: HEADER_LEN,
                 sequence: 0,
                 head: Digest32::ZERO,
+                seen_plans: BTreeSet::new(),
                 recovered_partial_tail: false,
                 poisoned: false,
             });
@@ -159,6 +163,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
         let mut offset = HEADER_LEN;
         let mut sequence = 0_u64;
         let mut head = Digest32::ZERO;
+        let mut seen_plans = BTreeSet::new();
         while offset < data.len() {
             if data.len() - offset < 4 {
                 break;
@@ -187,6 +192,32 @@ impl NeuronMetricsGroupCommitWriterV1 {
             if stored_sequence != sequence + 1 || &body[8..40] != head.as_array() {
                 return Err(NeuronMetricsErrorV1::Corrupt);
             }
+            // Complete durable frames must have unique batch identities and
+            // valid shape, not merely a syntactically correct frame checksum.
+            let plan_digest = Digest32::from_array(
+                body[40..72].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let execution_digest = Digest32::from_array(
+                body[72..104].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let requests = u32::from_be_bytes(
+                body[104..108].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let latency_p95 = u64::from_be_bytes(
+                body[132..140].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let latency_p99 = u64::from_be_bytes(
+                body[140..148].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let mask = body[156];
+            if plan_digest.is_zero() || execution_digest.is_zero()
+                || !(1..=256).contains(&requests)
+                || latency_p95 > latency_p99
+                || mask & !0b111 != 0
+                || !seen_plans.insert(plan_digest)
+            {
+                return Err(NeuronMetricsErrorV1::Corrupt);
+            }
             sequence = stored_sequence;
             head = checksum;
             offset += FRAME_LEN;
@@ -205,6 +236,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
             length: offset,
             sequence,
             head,
+            seen_plans,
             recovered_partial_tail: recovered,
             poisoned: false,
         })
@@ -220,8 +252,14 @@ impl NeuronMetricsGroupCommitWriterV1 {
         if events.is_empty() || events.len() > MAX_GROUP_EVENTS {
             return Err(NeuronMetricsErrorV1::Capacity);
         }
+        let mut batch_plans = BTreeSet::new();
         for event in events {
             event.validate()?;
+            if self.seen_plans.contains(&event.plan_digest)
+                || !batch_plans.insert(event.plan_digest)
+            {
+                return Err(NeuronMetricsErrorV1::DuplicatePlan);
+            }
         }
         let bytes_needed = events
             .len()
@@ -277,6 +315,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
         self.length = bytes_needed;
         self.sequence = sequence;
         self.head = previous;
+        self.seen_plans.extend(batch_plans);
         Ok(NeuronMetricsCommitV1 {
             first_sequence: first,
             final_sequence: sequence,
@@ -297,6 +336,10 @@ impl NeuronMetricsGroupCommitWriterV1 {
 
     pub fn recorded_sequence(&self) -> u64 {
         self.sequence
+    }
+
+    pub fn contains_committed_plan(&self, plan_digest: Digest32) -> bool {
+        self.seen_plans.contains(&plan_digest)
     }
 
     pub fn recovered_partial_tail(&self) -> bool {

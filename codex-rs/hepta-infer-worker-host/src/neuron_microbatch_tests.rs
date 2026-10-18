@@ -100,7 +100,16 @@ fn reference_worker_executes_exactly_one_batch_and_commits_metrics() {
     ));
     assert_eq!(backend.batch_invocations, 1);
     drop(worker);
-    let _new_owner = make_worker(&fixture);
+    let mut reopened = make_worker(&fixture);
+    let mut after_restart_backend = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        reopened.run_reference(
+            1_000, &plan, &mut after_restart_backend,
+            NeuronHostResourceSampleV1::default()
+        ),
+        Err(NeuronMicrobatchErrorV1::PlanReplayed)
+    ));
+    assert_eq!(after_restart_backend.batch_invocations, 0);
 }
 
 #[test]

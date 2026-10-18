@@ -391,7 +391,9 @@ impl NeuronMicrobatchWorkerV1 {
         if now_unix_ms >= plan.deadline_unix_ms {
             return Err(NeuronMicrobatchErrorV1::DeadlineExpired);
         }
-        if self.attempted.contains(&plan.digest) {
+        if self.attempted.contains(&plan.digest)
+            || self.metrics.contains_committed_plan(plan.digest)
+        {
             return Err(NeuronMicrobatchErrorV1::PlanReplayed);
         }
         Ok(())
