@@ -595,6 +595,12 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         self.pool.resident_encoder_count()
     }
 
+    /// Logical resident byte accounting for qualification only. A real
+    /// backend must independently report physical allocations.
+    pub fn total_resident_memory_bytes(&self) -> Result<u64, CompositionError> {
+        self.pool.total_resident_memory_bytes()
+    }
+
     pub fn active_cell_count(&self) -> usize {
         self.pool.active_cell_count()
     }
