@@ -125,11 +125,13 @@ impl ScopeLaneWalV1 {
         self.lanes.get(&scope_digest).map(Vec::as_slice)
     }
 
-    pub fn append(
-        &mut self,
-        envelope: ScopeOwnerEnvelopeV1,
-    ) -> Result<ScopeLaneReceiptV1, ScopeLaneWalError> {
-        validate_envelope(&envelope)?;
+    /// Pure preflight. The file owner can encode and sync the exact entry
+    /// without cloning all previously committed lanes and records.
+    fn prepare_append(
+        &self,
+        envelope: &ScopeOwnerEnvelopeV1,
+    ) -> Result<(ScopeLaneReceiptV1, Option<ScopeLaneEntryV1>), ScopeLaneWalError> {
+        validate_envelope(envelope)?;
         let scope = envelope.scope_digest;
         let envelope_digest = envelope.envelope_digest();
         if self.identities.contains_key(&(scope, envelope_digest)) {
@@ -142,10 +144,10 @@ impl ScopeLaneWalV1 {
                         .find(|entry| entry.envelope.envelope_digest() == envelope_digest)
                 })
                 .ok_or(ScopeLaneWalError::CorruptEntryDigest)?;
-            if entry.envelope != envelope {
+            if &entry.envelope != envelope {
                 return Err(ScopeLaneWalError::EnvelopeConflict);
             }
-            return Ok(receipt_from_entry(entry));
+            return Ok((receipt_from_entry(entry), None));
         }
         if !self.lanes.contains_key(&scope) && self.lanes.len() >= MAX_LANES {
             return Err(ScopeLaneWalError::LaneLimitExceeded);
@@ -153,11 +155,12 @@ impl ScopeLaneWalV1 {
         if self.identities.len() >= MAX_RECORDS {
             return Err(ScopeLaneWalError::RecordLimitExceeded);
         }
-        let entries = self.lanes.entry(scope).or_default();
-        if entries.len() >= MAX_RECORDS_PER_LANE {
+        let entries = self.lanes.get(&scope);
+        if entries.is_some_and(|records| records.len() >= MAX_RECORDS_PER_LANE) {
             return Err(ScopeLaneWalError::LaneRecordLimitExceeded);
         }
-        if let Some(previous) = entries.last() {
+        let previous = entries.and_then(|records| records.last());
+        if let Some(previous) = previous {
             if previous.envelope.owner_id != envelope.owner_id {
                 return Err(ScopeLaneWalError::OwnerConflict);
             }
@@ -165,23 +168,35 @@ impl ScopeLaneWalV1 {
                 return Err(ScopeLaneWalError::GenerationRegression);
             }
         }
-        let sequence = u64::try_from(entries.len())
+        let sequence = u64::try_from(entries.map_or(0, Vec::len))
             .ok()
             .and_then(|value| value.checked_add(1))
             .ok_or(ScopeLaneWalError::LaneRecordLimitExceeded)?;
-        let predecessor_entry_digest = entries
-            .last()
-            .map_or(Digest32::ZERO, |entry| entry.entry_digest);
-        let entry_digest = digest_entry(sequence, &envelope, predecessor_entry_digest);
+        let predecessor_entry_digest = previous.map_or(Digest32::ZERO, |entry| entry.entry_digest);
+        let entry_digest = digest_entry(sequence, envelope, predecessor_entry_digest);
         let entry = ScopeLaneEntryV1 {
             sequence,
-            envelope,
+            envelope: envelope.clone(),
             predecessor_entry_digest,
             entry_digest,
         };
-        self.identities.insert((scope, envelope_digest), ());
-        entries.push(entry.clone());
-        Ok(receipt_from_entry(&entry))
+        Ok((receipt_from_entry(&entry), Some(entry)))
+    }
+
+    pub fn append(
+        &mut self,
+        envelope: ScopeOwnerEnvelopeV1,
+    ) -> Result<ScopeLaneReceiptV1, ScopeLaneWalError> {
+        let (receipt, pending) = self.prepare_append(&envelope)?;
+        if let Some(entry) = pending {
+            self.identities
+                .insert((envelope.scope_digest, envelope.envelope_digest()), ());
+            self.lanes
+                .entry(envelope.scope_digest)
+                .or_default()
+                .push(entry);
+        }
+        Ok(receipt)
     }
 
     #[must_use]
@@ -276,6 +291,7 @@ impl ScopeLaneWalV1 {
 pub struct ScopeLaneFileWalV1 {
     file: LockedFile,
     wal: ScopeLaneWalV1,
+    poisoned: bool,
 }
 
 impl ScopeLaneFileWalV1 {
@@ -291,6 +307,18 @@ impl ScopeLaneFileWalV1 {
         if physical_len == 0 {
             file.0.write_all(MAGIC).map_err(ScopeLaneWalError::from)?;
             file.0.sync_all().map_err(ScopeLaneWalError::from)?;
+            // Persist the filename itself, not merely its inode contents.
+            #[cfg(unix)]
+            {
+                let parent = path
+                    .as_ref()
+                    .parent()
+                    .filter(|parent| !parent.as_os_str().is_empty())
+                    .unwrap_or_else(|| Path::new("."));
+                File::open(parent)
+                    .and_then(|directory| directory.sync_all())
+                    .map_err(ScopeLaneWalError::from)?;
+            }
         } else {
             if physical_len < HEADER_BYTES as u64 {
                 return Err(ScopeLaneWalError::CorruptHeader);
@@ -367,7 +395,11 @@ impl ScopeLaneFileWalV1 {
         file.0
             .seek(SeekFrom::End(0))
             .map_err(ScopeLaneWalError::from)?;
-        Ok(Self { file, wal })
+        Ok(Self {
+            file,
+            wal,
+            poisoned: false,
+        })
     }
 
     #[must_use]
@@ -379,18 +411,23 @@ impl ScopeLaneFileWalV1 {
         &mut self,
         envelope: ScopeOwnerEnvelopeV1,
     ) -> Result<ScopeLaneReceiptV1, ScopeLaneWalError> {
-        let mut candidate = self.wal.clone();
-        let receipt = candidate.append(envelope)?;
-        if candidate.record_count() == self.wal.record_count() {
-            return Ok(receipt);
+        if self.poisoned {
+            return Err(ScopeLaneWalError::Poisoned);
         }
-        let entry = candidate
-            .entries(receipt.scope_digest)
-            .and_then(|entries| entries.last())
-            .ok_or(ScopeLaneWalError::CorruptEntryDigest)?;
-        let body = encode_entry_body(entry);
+        let (receipt, pending) = self.wal.prepare_append(&envelope)?;
+        let Some(entry) = pending else {
+            return Ok(receipt);
+        };
+        let body = encode_entry_body(&entry);
+        // If write/fsync fails, a partial physical frame may be present.
+        // Poison this open handle until a fresh locked reopen repairs its tail.
+        self.poisoned = true;
         append_frame(&mut self.file.0, &body)?;
-        self.wal = candidate;
+        let committed = self.wal.append(envelope)?;
+        if committed != receipt {
+            return Err(ScopeLaneWalError::CorruptEntryDigest);
+        }
+        self.poisoned = false;
         Ok(receipt)
     }
 }
@@ -640,6 +677,7 @@ pub enum ScopeLaneWalError {
     FrameTooLarge,
     Truncated,
     TrailingBytes,
+    Poisoned,
     Busy,
     NotRegular,
     Io(std::io::ErrorKind),
