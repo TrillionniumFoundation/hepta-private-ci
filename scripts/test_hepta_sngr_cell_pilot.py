@@ -75,9 +75,15 @@ class ConditionalOracleTests(unittest.TestCase):
         self.assertGreaterEqual(low, high)
 
     def test_reject_invalid_context_and_unauthorized_tokens(self):
-        bad = ((0.9, 0.04, ()), (0.7, -0.1, ()), (0.7, 0.04, (2,)),
-               (0.7, 0.04, (True,)), (0.7, 0.04, (1,) * 6),
-               (math.nan, 0.04, ()), (0.7, math.inf, ()))
+        bad = (
+            (0.9, 0.04, ()),
+            (0.7, -0.1, ()),
+            (0.7, 0.04, (2,)),
+            (0.7, 0.04, (True,)),
+            (0.7, 0.04, (1,) * 6),
+            (math.nan, 0.04, ()),
+            (0.7, math.inf, ()),
+        )
         for p, c, obs in bad:
             with self.subTest(p=p, c=c, obs=obs), self.assertRaises(PilotError):
                 check_context(p, c, obs)
@@ -96,12 +102,15 @@ class ConditionalOracleTests(unittest.TestCase):
         self.assertEqual(oracle_action(0.74, 0.02, ()), "probe")
 
 
-@unittest.skipUnless(HAS_TORCH, "optional PyTorch not installed; train only in explicitly opted-in pilot")
+@unittest.skipUnless(
+    HAS_TORCH, "optional PyTorch not installed; train only in explicitly opted-in pilot"
+)
 class NeuralServingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.model, cls.training = train_network(seed=41, train_samples=512, steps=60)
         import torch
+
         cls.torch = torch
 
     def test_single_physical_encoder_shared_by_three_heads(self):
@@ -154,45 +163,91 @@ class NeuralServingTests(unittest.TestCase):
 
     def test_actual_episode_runs_with_independently_hidden_answer(self):
         hidden, obs = sample_episode(random.Random(31), 0.73)
-        for policy in ("oracle_full", "oracle_policy_neural_answer", "stop_now",
-                       "fixed_3", "bellman_h2", "ndu_h2", "value_bellman_h2", "ndu_adaptive_h2", "value_bellman_adaptive_h2"):
-            output = run_episode(self.model, self.torch, hidden, obs, 0.73, 0.06, policy)
+        for policy in (
+            "oracle_full",
+            "oracle_policy_neural_answer",
+            "stop_now",
+            "fixed_3",
+            "bellman_h2",
+            "ndu_h2",
+            "value_bellman_h2",
+            "ndu_adaptive_h2",
+            "value_bellman_adaptive_h2",
+        ):
+            output = run_episode(
+                self.model, self.torch, hidden, obs, 0.73, 0.06, policy
+            )
             self.assertIn(output["correct"], (0, 1))
             self.assertGreaterEqual(output["probes"], 0)
             self.assertLessEqual(output["probes"], MAX_PROBES)
             self.assertLessEqual(output["encoder_calls"], 63)
-        self.assertEqual(run_episode(self.model, self.torch, hidden, obs, 0.73, 0.06, "oracle_full")["encoder_calls"], 0)
+        self.assertEqual(
+            run_episode(self.model, self.torch, hidden, obs, 0.73, 0.06, "oracle_full")[
+                "encoder_calls"
+            ],
+            0,
+        )
 
     def test_compute_gated_policy_reuses_shared_head(self):
         hidden, obs = sample_episode(random.Random(99), 0.77)
-        a = run_episode(self.model, self.torch, hidden, obs, 0.77, 0.08, "ndu_adaptive_h2")
-        b = run_episode(self.model, self.torch, hidden, obs, 0.77, 0.08, "value_bellman_adaptive_h2")
+        a = run_episode(
+            self.model, self.torch, hidden, obs, 0.77, 0.08, "ndu_adaptive_h2"
+        )
+        b = run_episode(
+            self.model, self.torch, hidden, obs, 0.77, 0.08, "value_bellman_adaptive_h2"
+        )
         self.assertEqual(a, b)
         self.assertLessEqual(a["encoder_calls"], 63)
 
     def test_bellman_ndu_additive_value_parity(self):
         hidden, obs = sample_episode(random.Random(99), 0.77)
         a = run_episode(self.model, self.torch, hidden, obs, 0.77, 0.08, "ndu_h2")
-        b = run_episode(self.model, self.torch, hidden, obs, 0.77, 0.08, "value_bellman_h2")
+        b = run_episode(
+            self.model, self.torch, hidden, obs, 0.77, 0.08, "value_bellman_h2"
+        )
         self.assertEqual(a, b)
 
 
-@unittest.skipUnless(HAS_TORCH, "optional PyTorch not installed; synthetic learning omitted")
+@unittest.skipUnless(
+    HAS_TORCH, "optional PyTorch not installed; synthetic learning omitted"
+)
 class EndToEndPilotTests(unittest.TestCase):
     def test_end_to_end_neural_training_receipt_has_reproducible_weights(self):
-        first = run_pilot(seed=121, train_samples=256, steps=80, episodes=16, heldout_examples=128)
-        second = run_pilot(seed=121, train_samples=256, steps=80, episodes=16, heldout_examples=128)
-        self.assertEqual(first["model_snapshot_sha256"], second["model_snapshot_sha256"])
-        self.assertEqual(first["training"]["synthetic_training_dataset_sha256"], second["training"]["synthetic_training_dataset_sha256"])
-        self.assertEqual(first["results"]["ndu_h2"]["mean_net_reward"],
-                         second["results"]["ndu_h2"]["mean_net_reward"])
-        self.assertEqual(first["paired_reward_delta_bootstrap_ci_95pct"]["ndu_minus_identical_value_bellman"], [0.0, 0.0])
-        self.assertGreater(first["shared_stem_parameters"], first["exclusive_heads_parameters"])
+        first = run_pilot(
+            seed=121, train_samples=256, steps=80, episodes=16, heldout_examples=128
+        )
+        second = run_pilot(
+            seed=121, train_samples=256, steps=80, episodes=16, heldout_examples=128
+        )
+        self.assertEqual(
+            first["model_snapshot_sha256"], second["model_snapshot_sha256"]
+        )
+        self.assertEqual(
+            first["training"]["synthetic_training_dataset_sha256"],
+            second["training"]["synthetic_training_dataset_sha256"],
+        )
+        self.assertEqual(
+            first["results"]["ndu_h2"]["mean_net_reward"],
+            second["results"]["ndu_h2"]["mean_net_reward"],
+        )
+        self.assertEqual(
+            first["paired_reward_delta_bootstrap_ci_95pct"][
+                "ndu_minus_identical_value_bellman"
+            ],
+            [0.0, 0.0],
+        )
+        self.assertGreater(
+            first["shared_stem_parameters"], first["exclusive_heads_parameters"]
+        )
         self.assertFalse(first["real_laya_execution"])
         self.assertIsNone(first["continuous_time_fbsde_convergence"])
 
     def test_evaluation_budget_preflight(self):
-        for parameters in ({"heldout_examples":127}, {"episodes":0}, {"max_calls":0}):
+        for parameters in (
+            {"heldout_examples": 127},
+            {"episodes": 0},
+            {"max_calls": 0},
+        ):
             with self.subTest(parameters=parameters), self.assertRaises(PilotError):
                 run_pilot(steps=1, train_samples=256, **parameters)
 
