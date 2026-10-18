@@ -1,10 +1,11 @@
 //! Public compilation contract for named shared-feature identity parameters.
 //! This integration test sits outside the library's private data_plane module.
 
-use codex_hepta_neuron::{
-    FeatureSnapshotIdentityV1, FeatureSnapshotLineageV1, FeatureSnapshotScopeV1,
-};
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_neuron::FeatureSnapshotIdentityV1;
+use codex_hepta_neuron::FeatureSnapshotLineageV1;
+use codex_hepta_neuron::FeatureSnapshotScopeV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
