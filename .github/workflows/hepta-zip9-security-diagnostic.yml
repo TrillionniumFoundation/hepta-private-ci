@@ -91,3 +91,57 @@ jobs:
             exit 1
           fi
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  bazel-lock-proposal:
+    name: Genuine ZIP 9 Bazel module lock proposal (not acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact security candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prepare Bazel CI and pinned toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: zip9-lock-proposal
+      - name: Generate and retain real Bazel module lock diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          mkdir -p "$RUNNER_TEMP/hepta-zip9-bazel"
+          just bazel-lock-update > "$RUNNER_TEMP/hepta-zip9-bazel/bazel-update.log" 2>&1 || {
+            tail -n 250 "$RUNNER_TEMP/hepta-zip9-bazel/bazel-update.log"
+            exit 1
+          }
+          git diff --check
+          git diff --binary -- MODULE.bazel.lock > "$RUNNER_TEMP/hepta-zip9-bazel/MODULE.bazel.lock.patch"
+          printf 'BAZEL_LOCK_PROPOSED_GIT_BLOB=%s\n' "$(git hash-object MODULE.bazel.lock)"
+          printf 'BAZEL_LOCK_PATCH_BYTES=%s\n' "$(wc -c < "$RUNNER_TEMP/hepta-zip9-bazel/MODULE.bazel.lock.patch")"
+          if [ "$(wc -c < "$RUNNER_TEMP/hepta-zip9-bazel/MODULE.bazel.lock.patch")" -le 2500000 ]; then
+            cat "$RUNNER_TEMP/hepta-zip9-bazel/MODULE.bazel.lock.patch"
+          fi
+      - name: Preserve genuine Bazel lock diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-zip9-bazel-lock-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-zip9-bazel/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail closed until independently reviewed lock is committed
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          if ! git diff --quiet -- MODULE.bazel.lock; then
+            echo "::error::Genuine ZIP 9 Bazel lock diff remains uncommitted; review and commit exact proposal before qualification."
+            exit 1
+          fi
+          test -z "$(git status --porcelain --untracked-files=no)"
