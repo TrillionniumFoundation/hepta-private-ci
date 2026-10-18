@@ -1,0 +1,106 @@
+name: Hepta P0 original Bazel lock evidence
+
+# Source-only lock regeneration proposal: no automated repository writes,
+# no advisory waivers, and no physical Cell Split/Final-use permissions.
+on:
+  pull_request:
+    branches:
+      - integration/hepta-cell-split-p0-orphan-audit-frozen-3d3deddd-20261017
+    paths:
+      - .github/workflows/hepta-cell-split-p0-bazel-lock-evidence.yml
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-bazel-lock-\${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  original-lock-candidate:
+    name: Exact-source original Bazel lock proposal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout frozen original PR source HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: \${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Bind original source and lock bytes before setup
+        shell: bash
+        env:
+          EXPECTED_SHA: \${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=normal)"
+          test -f MODULE.bazel.lock
+          test -f codex-rs/Cargo.lock
+          mkdir -p "$RUNNER_TEMP/hepta-p0-original-bazel-lock"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/hepta-p0-original-bazel-lock/MODULE.original.bazel.lock"
+          printf '%s\n' "$EXPECTED_SHA" > "$RUNNER_TEMP/hepta-p0-original-bazel-lock/SOURCE_HEAD_SHA"
+          sha256sum MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            > "$RUNNER_TEMP/hepta-p0-original-bazel-lock/frozen-input.sha256"
+
+      - name: Prepare original Bazel runner
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-p0-lock-proposal-\${{ github.run_id }}
+
+      - name: Compute candidate from actual locked Cargo and Bazel graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/hepta-p0-original-bazel-lock"
+          # This modifies the ephemeral checkout ONLY and never pushes a ref.
+          # Keep raw resolver failures: no invented candidate or checksum.
+          set +e
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps \
+            --lockfile_mode=update > "$output/original-resolver.log" 2>&1
+          update_status=$?
+          set -e
+          printf 'update_exit=%s\n' "$update_status" > "$output/verification.status"
+          if [ "$update_status" -ne 0 ]; then
+            echo "::error::Original Bazel module resolver failed; lock candidate is NOT qualified"
+            tail -n 45 "$output/original-resolver.log"
+            exit "$update_status"
+          fi
+
+          set +e
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps \
+            --lockfile_mode=error > "$output/current-lock-check.log" 2>&1
+          check_status=$?
+          set -e
+          printf 'check_exit=%s\n' "$check_status" >> "$output/verification.status"
+          if [ "$check_status" -ne 0 ]; then
+            echo "::error::Regenerated Bazel lock is not self-consistent"
+            tail -n 45 "$output/current-lock-check.log"
+            exit "$check_status"
+          fi
+          # A resolver must not silently rewrite source or its Cargo graph.
+          changed="$(git diff --name-only)"
+          if [ "$changed" != "MODULE.bazel.lock" ]; then
+            echo "::error::Unexpected worktree mutation during original lock generation: $changed"
+            exit 1
+          fi
+          cp MODULE.bazel.lock "$output/MODULE.candidate.bazel.lock"
+          git diff --no-ext-diff --binary -- MODULE.bazel.lock \
+            > "$output/original-lock.patch"
+          sha256sum MODULE.bazel.lock > "$output/candidate.sha256"
+          printf 'state=SOURCE_ONLY_UNQUALIFIED\n' >> "$output/verification.status"
+
+      - name: Retain independently hashable candidate (never auto-adopt)
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-p0-original-bazel-lock-\${{ github.run_id }}-\${{ github.run_attempt }}
+          path: \${{ runner.temp }}/hepta-p0-original-bazel-lock/
+          if-no-files-found: error
+          retention-days: 30
