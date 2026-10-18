@@ -46,6 +46,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Emit the exact non-mutating formatter diff before checking. This
+          # preserves the fail-closed gate and makes native-runner drift actionable.
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py || true
           uv run --frozen --project scripts ruff format --check \
             scripts/hepta-cell-split-target-matrix.py \
             scripts/test_hepta_cell_split_target_matrix.py
