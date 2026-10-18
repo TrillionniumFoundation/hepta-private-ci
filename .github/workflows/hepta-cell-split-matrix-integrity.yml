@@ -1,0 +1,45 @@
+name: Hepta Cell Split matrix evidence integrity
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta-cell-split-target-matrix.py"
+      - "scripts/test_hepta_cell_split_target_matrix.py"
+      - "scripts/test_hepta_cell_split_matrix_integrity.py"
+      - ".github/workflows/hepta-cell-split-matrix-integrity.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  offline-evidence-integrity:
+    name: Validate exact-source matrix fail-closed protocol
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source head, not a guessed main branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify matrix integrity and legacy 16-row regressions
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_cell_split_matrix_integrity
+          python3 - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from scripts import test_hepta_cell_split_target_matrix as legacy
+
+          legacy.test_matrix_is_exactly_sixteen_cases_with_unique_factor_tuples()
+          legacy.test_measurement_receipt_requires_all_metrics_and_monotonic_quantiles()
+          legacy.test_measurement_rejects_nonfinite_or_unbounded_counters()
+          with tempfile.TemporaryDirectory() as path:
+              legacy.test_dry_run_is_blocked_until_workload_and_observer_receipts_exist(Path(path))
+          print("Four existing matrix regressions passed")
+          PY
