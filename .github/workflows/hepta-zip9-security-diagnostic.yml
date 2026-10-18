@@ -1,0 +1,93 @@
+name: Hepta ZIP 9 RustSec resolution (diagnostic only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/core-plugins/src/startup_sync.rs"
+      - "codex-rs/core-plugins/src/startup_sync_tests.rs"
+      - "MODULE.bazel.lock"
+      - ".github/workflows/hepta-zip9-security-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-zip9-security-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || 'manual' }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  resolved-lock-proposal:
+    name: Real ZIP 9 Cargo lock and security-test proposal (not acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact proposed source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify exact source and installed Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          rustc --version --verbose
+          cargo --version
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: rustfmt
+      - name: Generate real secure ZIP Cargo.lock using Cargo resolver
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-zip9"
+          cargo update --manifest-path codex-rs/Cargo.toml -p zip --precise 9.0.4
+          git diff --binary -- codex-rs/Cargo.lock > "$RUNNER_TEMP/hepta-zip9/Cargo.lock.patch"
+          # After the reviewed authentic Cargo.lock has been committed, a
+          # fresh resolver run must produce precisely zero changes.
+          git diff --exit-code -- codex-rs/Cargo.lock
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --no-deps > "$RUNNER_TEMP/hepta-zip9/metadata.json"
+      - name: Compile the actual upgraded ZIP consumer with the generated lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins --all-targets
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-core-plugins -- --check
+      - name: Require and execute real unsafe-ZIP rejection tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          listed="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins --lib -- --list)"
+          grep -Fx "startup_sync::tests::curated_zipball_rejects_symlink_metadata_before_publication: test" <<< "$listed"
+          grep -Fx "startup_sync::tests::curated_zip_permissions_strip_privileged_and_untrusted_write_bits: test" <<< "$listed"
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins --lib startup_sync::tests:: -- --test-threads=1
+      - name: Publish actual Cargo resolver patch for independent review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-zip9-cargo-lock-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-zip9/Cargo.lock.patch
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail closed on any uncommitted resolver or source drift
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          if ! git diff --quiet -- codex-rs/Cargo.lock; then
+            echo "::error::ZIP 9 lock proposal is not committed. Review and commit actual Cargo.lock bytes; this diagnostic is NOT production qualification."
+            exit 1
+          fi
+          test -z "$(git status --porcelain --untracked-files=no)"
