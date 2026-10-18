@@ -106,7 +106,9 @@ impl NeuronFrozenFeatureV1 {
                 identity.tokenizer_digest,
                 identity.normalizer_digest,
                 identity.source_digest,
-            ].iter().any(|digest| digest.is_zero())
+            ]
+            .iter()
+            .any(|digest| digest.is_zero())
         {
             return Err(NeuronMicrobatchErrorV1::InvalidSnapshot);
         }
@@ -219,9 +221,7 @@ impl NeuronMicrobatchPlanV1 {
         let mut scope = b"hepta.neuron.microbatch-scope.v1\0".to_vec();
         scope.extend_from_slice(self.snapshot.identity.scope_digest.as_array());
         scope.extend_from_slice(self.snapshot.identity.ndu_snapshot_digest.as_array());
-        scope.extend_from_slice(
-            &self.snapshot.identity.generation.get().to_be_bytes()
-        );
+        scope.extend_from_slice(&self.snapshot.identity.generation.get().to_be_bytes());
         scope.extend_from_slice(&self.snapshot.identity.authority_epoch.to_be_bytes());
         let mut payload = b"hepta.neuron.microbatch-payload.v1\0".to_vec();
         payload.extend_from_slice(self.snapshot.semantic_digest.as_array());
@@ -278,16 +278,15 @@ impl NeuronMicrobatchBackendV1 for ReferenceNeuronBatchBackendV1 {
         let mut outputs = Vec::with_capacity(heads.len());
         for head in heads {
             let began = Instant::now();
-            let drive = (0..head.expected_width).map(|index| {
-                snapshot.features_q24[index % snapshot.features_q24.len()]
-            }).collect::<Vec<_>>();
+            let drive = (0..head.expected_width)
+                .map(|index| snapshot.features_q24[index % snapshot.features_q24.len()])
+                .collect::<Vec<_>>();
             outputs.push(NeuronBatchHeadResultV1 {
                 request_id: head.request_id.clone(),
                 head_digest: head.head_digest,
                 prediction_q24: vec![0; head.expected_width],
                 drive_q24: drive,
-                elapsed_micros: u64::try_from(began.elapsed().as_micros())
-                    .unwrap_or(u64::MAX),
+                elapsed_micros: u64::try_from(began.elapsed().as_micros()).unwrap_or(u64::MAX),
             });
         }
         Ok(outputs)
