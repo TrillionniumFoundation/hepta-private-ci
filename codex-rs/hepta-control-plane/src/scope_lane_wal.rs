@@ -300,7 +300,7 @@ impl ScopeLaneFileWalV1 {
             .create(true)
             .read(true)
             .append(true)
-            .open(path)
+            .open(path.as_ref())
             .map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
         let physical_len = file.0.metadata().map_err(ScopeLaneWalError::from)?.len();
