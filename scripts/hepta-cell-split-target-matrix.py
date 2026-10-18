@@ -92,7 +92,9 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
     normalized: dict[str, int | float] = {}
     for name in REQUIRED_METRICS:
         normalized[name] = _number(
-            metrics[name], name, integer=name in {"fsyncCount", "rssBytes"}
+            metrics[name],
+            name,
+            integer=name in {"fsyncCount", "rssBytes", "negativeMigrationQ32"},
         )
     if not (
         normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]
@@ -147,6 +149,23 @@ def run_matrix(
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
+    if workload_command is not None:
+        # A caller-provided SHA is not proof that the measured checkout is that SHA.
+        # Dry-run reports remain possible without a git checkout, but no real
+        # worker can be admitted without verifying the exact local source HEAD.
+        repo_root = Path(__file__).resolve().parent.parent
+        try:
+            checkout = subprocess.run(
+                ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ValueError("cannot verify measured repository HEAD") from error
+        if checkout.stdout.strip() != source_commit:
+            raise ValueError("measured source commit does not match repository HEAD")
     if workload_path is not None:
         actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
         if actual_workload_digest != workload_digest:
@@ -192,6 +211,11 @@ def run_matrix(
             }
         )
         try:
+            if (
+                hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                != workload_digest
+            ):
+                raise ValueError("frozen workload changed before case execution")
             result = subprocess.run(
                 _command(
                     workload_command,
@@ -207,6 +231,11 @@ def run_matrix(
                 timeout=timeout_seconds,
                 env=env,
             )
+            if (
+                hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                != workload_digest
+            ):
+                raise ValueError("frozen workload changed during case execution")
             if result.returncode != 0:
                 raise ValueError(
                     f"workload exited {result.returncode}: {result.stderr[-512:]}"
@@ -216,6 +245,12 @@ def run_matrix(
                 emitted.get("caseId") != case["caseId"]
                 or emitted.get("workloadDigest") != workload_digest
                 or emitted.get("workloadSourceDigest") != workload_digest
+                or emitted.get("sourceCommit") != source_commit
+                or any(
+                    emitted.get(name) != value
+                    for name, value in case.items()
+                    if name != "caseId"
+                )
             ):
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
@@ -317,61 +352,122 @@ def run_matrix(
 
 
 def validate_report(report: dict[str, Any]) -> None:
+    """Validate report consistency; this is NOT observer authentication or split authority."""
+    if not isinstance(report, dict):
+        raise ValueError("report must be an object")
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
-    cases = report.get("cases")
-    expected = {case["caseId"] for case in matrix_cases()}
-    if (
-        not isinstance(cases, list)
-        or {case.get("caseId") for case in cases} != expected
-    ):
-        raise ValueError("report must contain exactly the sixteen matrix cases")
-    workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
+    workload = report.get("workloadDigest")
+    if not isinstance(source, str) or not re.fullmatch(r"[0-9a-f]{40}", source):
+        raise ValueError("invalid source commit identity")
+    if not isinstance(workload, str) or not re.fullmatch(r"[0-9a-f]{64}", workload):
+        raise ValueError("invalid workload digest")
+    if report.get("workloadSourceDigest") != workload:
+        raise ValueError("workload source digest mismatch")
+    if not isinstance(report.get("host"), dict):
+        raise ValueError("host fingerprint missing")
+
+    expected = {case["caseId"]: case for case in matrix_cases()}
+    cases = report.get("cases")
+    if not isinstance(cases, list) or len(cases) != len(expected):
+        raise ValueError("report must contain exactly sixteen matrix rows")
+    seen: set[str] = set()
+    unmeasured: set[str] = set()
     for case in cases:
+        if not isinstance(case, dict):
+            raise ValueError("matrix row must be an object")
+        case_id = case.get("caseId")
+        if not isinstance(case_id, str) or case_id not in expected or case_id in seen:
+            raise ValueError("unknown or repeated matrix case ID")
+        seen.add(case_id)
+        if any(case.get(field) != value for field, value in expected[case_id].items()):
+            raise ValueError(
+                "matrix case factor tuple does not match canonical case ID"
+            )
         if case.get("workloadDigest") != workload:
             raise ValueError("case workload binding mismatch")
         if case.get("status") == "measured":
-            metrics = validate_metrics(case.get("metrics", {}))
+            raw_metrics = case.get("metrics")
+            if not isinstance(raw_metrics, dict):
+                raise ValueError("measured row lacks metrics object")
+            metrics = validate_metrics(raw_metrics)
             if case.get("metricsDigest") != digest(metrics):
                 raise ValueError("metric digest mismatch")
-    if report.get("status") == "qualified":
-        if any(case.get("status") != "measured" for case in cases):
-            raise ValueError("qualified report contains an unmeasured case")
-        observer = report.get("observer")
-        if not isinstance(observer, dict) or observer.get("verified") is not True:
-            raise ValueError("qualified report lacks an independent observer receipt")
+        elif case.get("status") == "blocked":
+            unmeasured.add(case_id)
+            if not isinstance(case.get("reason"), str) or not case["reason"].strip():
+                raise ValueError("blocked row requires a reason")
+        else:
+            raise ValueError("unknown matrix row status")
+
+    observer = report.get("observer")
+    if observer is not None and not isinstance(observer, dict):
+        raise ValueError("observer receipt must be an object or null")
+    verified = isinstance(observer, dict) and observer.get("verified") is True
+    provisional = {
+        key: report[key]
+        for key in (
+            "schema",
+            "authority",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
+        )
+    }
+    if report.get("reportDigest") != digest({**provisional, "observer": observer}):
+        raise ValueError("final report digest mismatch")
+    if verified:
+        assert isinstance(observer, dict)
         if (
             observer.get("sourceCommit") != source
             or observer.get("workloadDigest") != workload
         ):
-            raise ValueError("observer binding mismatch")
-        provisional = {
-            key: report[key]
-            for key in (
-                "schema",
-                "authority",
-                "sourceCommit",
-                "workloadDigest",
-                "workloadSourceDigest",
-                "host",
-                "cases",
-            )
-        }
+            raise ValueError("observer source/workload binding mismatch")
         if observer.get("reportDigest") != digest(provisional):
-            raise ValueError("observer report digest mismatch")
+            raise ValueError("observer provisional report binding mismatch")
         metrics_digest = digest(
             [
                 {"caseId": case["caseId"], "metricsDigest": case.get("metricsDigest")}
                 for case in cases
             ]
         )
+        if observer.get("metricsDigest") != metrics_digest:
+            raise ValueError("observer metrics binding mismatch")
         if (
-            observer.get("metricsDigest") != metrics_digest
-            or not isinstance(observer.get("observerId"), str)
+            not isinstance(observer.get("observerId"), str)
             or not observer["observerId"].strip()
         ):
-            raise ValueError("observer metrics or identity binding mismatch")
+            raise ValueError("observer identity missing")
+        if observer.get("receiptDigest") != digest(
+            {key: value for key, value in observer.items() if key != "receiptDigest"}
+        ):
+            raise ValueError("observer receipt digest mismatch")
+
+    blocked = report.get("blockingCases")
+    if (
+        not isinstance(blocked, list)
+        or any(not isinstance(value, str) for value in blocked)
+        or blocked != sorted(set(blocked))
+    ):
+        raise ValueError("blockingCases must be sorted and unique")
+    expected_blocked = unmeasured | (set() if verified else {"independent-observer"})
+    if set(blocked) != expected_blocked:
+        raise ValueError("blockingCases do not match measured rows and observer")
+
+    status = report.get("status")
+    if status == "qualified":
+        if blocked:
+            raise ValueError("qualified report contains unresolved blockers")
+        if not verified:
+            raise ValueError("qualified report lacks an observer receipt")
+    elif status == "blocked":
+        if not blocked:
+            raise ValueError("blocked report has no blocking evidence")
+    else:
+        raise ValueError("unknown matrix report status")
 
 
 def main() -> int:
