@@ -72,7 +72,7 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         bound = workflow[start:history]
         self.assertIn('test "${parents[0]}" = "$live_base"', bound)
         self.assertIn('test "${parents[1]}" = "$SOURCE_SHA"', bound)
-        self.assertIn('printf \'BASE_SHA=%s', bound)
+        self.assertIn("printf 'BASE_SHA=%s", bound)
         self.assertIn("live-base-binding.json", bound)
         self.assertIn("github.event.pull_request.base.ref", bound)
         final_guard = workflow[final:].split("      - name:", 2)[1]
