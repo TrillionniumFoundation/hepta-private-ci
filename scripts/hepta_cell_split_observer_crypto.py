@@ -18,6 +18,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from scripts.hepta_ed25519_public_key import require_strict_ed25519_public_key_pem
+
 
 SIGNATURE_DOMAIN = "hepta.cell-split.target-matrix.observer.ed25519.v1"
 SIGNATURE_ALGORITHM = "Ed25519"
@@ -72,6 +74,8 @@ def verify_observer_receipt_signature(
         raise ValueError("unable to read pinned observer public key") from error
     if hashlib.sha256(key_bytes).hexdigest() != trusted_key_sha256:
         raise ValueError("observer public key does not match independently pinned SHA256")
+    # A pinned PEM fingerprint alone does not exclude public-key torsion.
+    require_strict_ed25519_public_key_pem(key_bytes)
     encoded = observer.get("signatureBase64")
     if not isinstance(encoded, str):
         raise ValueError("observer signature missing")
