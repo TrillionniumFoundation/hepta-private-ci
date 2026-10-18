@@ -205,7 +205,10 @@ fn torn_tail_recovery_can_append_again_without_overwriting_predecessor() {
         assert_eq!(must(recovered.append(second.clone())).sequence, 2);
     }
     let replay = must(ScopeLaneFileWalV1::open(&path));
-    let entries = replay.wal().entries(digest("scope-a")).expect("scope present");
+    let entries = replay
+        .wal()
+        .entries(digest("scope-a"))
+        .expect("scope present");
     assert_eq!(entries.len(), 2);
     assert_eq!(entries[0].envelope, first);
     assert_eq!(entries[1].envelope, second);
