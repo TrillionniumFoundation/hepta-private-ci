@@ -58,6 +58,13 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain)"
+      - name: Select compatible Python for pinned CPU Reader
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify Python and Torch Inductor generic typing
+        run: |
+          python3 -c 'import sys; assert sys.version_info >= (3, 13), sys.version'
       - name: Install pinned CPU runtime
         run: |
           set -euo pipefail
