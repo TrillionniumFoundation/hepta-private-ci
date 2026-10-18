@@ -209,7 +209,6 @@ fn tick() -> NeuronTickInputV1 {
     }
 }
 
-
 fn signed_authority(root: &std::path::Path, signing: &SigningKey) -> FinalUseAuthority {
     checked(FinalUseAuthority::open_state_dir(
         &root.join("authority"),
@@ -240,7 +239,10 @@ fn sign_tick(
         expires_at_unix_ms: now + 20_000,
     };
     SignedFinalUseGrant {
-        signature: signing.sign(&checked(grant.signing_bytes())).to_bytes().to_vec(),
+        signature: signing
+            .sign(&checked(grant.signing_bytes()))
+            .to_bytes()
+            .to_vec(),
         grant,
     }
 }
@@ -288,13 +290,7 @@ fn named_product_caller_requires_signed_ndu_final_use_authority() {
     assert!(checked(runtime.current_anchor()).is_some());
 
     // A nonce cannot authorize another model/journal call even for identical input.
-    assert!(run_neuron_tick_v1(
-        &mut runtime,
-        &authority,
-        &signed,
-        &mut model,
-        tick,
-    ).is_err());
+    assert!(run_neuron_tick_v1(&mut runtime, &authority, &signed, &mut model, tick,).is_err());
     assert_eq!(model.calls, 1);
 }
 
@@ -310,13 +306,7 @@ fn tampered_ndu_binding_is_rejected_before_model_execution() {
     changed.ndu_snapshot_digest = Digest32::of_bytes(b"other-ndu");
     let mut model = Model::default();
 
-    assert!(run_neuron_tick_v1(
-        &mut runtime,
-        &authority,
-        &signed,
-        &mut model,
-        changed,
-    ).is_err());
+    assert!(run_neuron_tick_v1(&mut runtime, &authority, &signed, &mut model, changed,).is_err());
     assert_eq!(model.calls, 0);
     assert!(checked(runtime.current_anchor()).is_none());
 }
