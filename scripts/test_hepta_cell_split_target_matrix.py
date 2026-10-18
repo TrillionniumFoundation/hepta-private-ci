@@ -391,7 +391,9 @@ def test_live_worker_cannot_mutate_frozen_workload(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize("mutation", ("overwrite", "unlink"))
 def test_signed_observer_cannot_change_frozen_workload(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
 ) -> None:
     workload = tmp_path / "frozen-workload"
     workload.write_bytes(b"frozen source tasks")
@@ -403,7 +405,10 @@ def test_signed_observer_cannot_change_frozen_workload(
     ).hex()
 
     def signed_fixture_process(
-        argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+        argv: list[str],
+        *,
+        env: dict[str, str],
+        timeout_seconds: int | float,
     ) -> subprocess.CompletedProcess[str]:
         assert timeout_seconds > 0
         if argv == ["fixture-worker"]:
@@ -430,9 +435,8 @@ def test_signed_observer_cannot_change_frozen_workload(
             "metricsDigest": env["HEPTA_MATRIX_METRICS_DIGEST"],
             "observerId": "fixture-independent-signer",
         }
-        receipt["signatureHex"] = private_key.sign(
-            MODULE.observer_signing_bytes(receipt)
-        ).hex()
+        signature = private_key.sign(MODULE.observer_signing_bytes(receipt))
+        receipt["signatureHex"] = signature.hex()
         if mutation == "overwrite":
             workload.write_bytes(b"observer changed the frozen workload")
         else:
