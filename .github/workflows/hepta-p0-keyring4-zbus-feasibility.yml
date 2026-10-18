@@ -1,0 +1,144 @@
+name: P0 Keyring 4 / zbus security migration feasibility (research only)
+
+on:
+  push:
+    branches:
+      - "research/p0-keyring4-zbus-compat-20261017"
+    paths:
+      - ".github/workflows/hepta-p0-keyring4-zbus-feasibility.yml"
+      - "codex-rs/keyring-store/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keyring4-candidate:
+    name: Genuine Cargo keyring4 compile and RustSec diagnostic (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout immutable source without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Pin existing Rust toolchain
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: "1.96.0"
+          components: clippy, rustfmt
+      - name: Install pinned advisory evaluator
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-deny@0.19.0
+      - name: Create isolated keyring4 candidate with unchanged runtime policies
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          evidence="$RUNNER_TEMP/keyring4-evidence"
+          candidate="$(mktemp -d "$RUNNER_TEMP/keyring4-candidate.XXXXXXXX")"
+          mkdir -p "$evidence"
+          printf '%s\n' "$EXPECTED_SHA" > "$evidence/source-sha.txt"
+          git worktree add --detach "$candidate" "$EXPECTED_SHA"
+          echo "KEYRING4_CANDIDATE=$candidate" >> "$GITHUB_ENV"
+          echo "KEYRING4_EVIDENCE=$evidence" >> "$GITHUB_ENV"
+          python3 - "$candidate/codex-rs/Cargo.toml" "$candidate/codex-rs/keyring-store/Cargo.toml" <<'PY'
+          import sys
+          from pathlib import Path
+          workspace = Path(sys.argv[1])
+          src = workspace.read_text(encoding="utf-8")
+          old = 'keyring = { version = "3.6", default-features = false }'
+          new = 'keyring = { version = "=4.2.0", default-features = false, features = ["v1"] }'
+          if src.count(old) != 1:
+              raise SystemExit("keyring workspace source drift; abort candidate")
+          workspace.write_text(src.replace(old, new), encoding="utf-8")
+          store = Path(sys.argv[2])
+          s = store.read_text(encoding="utf-8")
+          previous = '''[dependencies]
+          keyring = { workspace = true, features = ["crypto-rust"] }
+          tracing = { workspace = true }
+
+          [target.'cfg(target_os = "linux")'.dependencies]
+          keyring = { workspace = true, features = ["linux-native-async-persistent"] }
+
+          [target.'cfg(target_os = "macos")'.dependencies]
+          keyring = { workspace = true, features = ["apple-native"] }
+
+          [target.'cfg(target_os = "windows")'.dependencies]
+          keyring = { workspace = true, features = ["windows-native"] }
+
+          [target.'cfg(any(target_os = "freebsd", target_os = "openbsd"))'.dependencies]
+          keyring = { workspace = true, features = ["sync-secret-service"] }'''
+          updated = '''[dependencies]
+          keyring = { workspace = true }
+          tracing = { workspace = true }'''
+          if s.count(previous) != 1:
+              raise SystemExit("keyring platform policy source drift; abort candidate")
+          store.write_text(s.replace(previous, updated), encoding="utf-8")
+          print("Staged v4 v1-compatible backend features only inside detached worktree")
+          PY
+
+      - name: Real keyring4 Cargo graph and compiler qualifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$KEYRING4_CANDIDATE/codex-rs"
+          rustc --version --verbose > "$KEYRING4_EVIDENCE/rustc-version.txt"
+          cargo --version > "$KEYRING4_EVIDENCE/cargo-version.txt"
+          cargo update --manifest-path Cargo.toml -p keyring --precise 4.2.0 2>&1 | tee "$KEYRING4_EVIDENCE/cargo-update.txt"
+          cargo metadata --locked --format-version 1 --no-deps > "$KEYRING4_EVIDENCE/cargo-metadata.json"
+          python3 - <<'PY' | tee "$KEYRING4_EVIDENCE/legacy-dependencies.txt"
+          from pathlib import Path
+          import tomllib
+          packages = tomllib.loads(Path("Cargo.lock").read_text())["package"]
+          for pkg in packages:
+              if pkg["name"] in {"keyring", "zbus", "zbus_names", "zvariant", "zvariant_derive"}:
+                  print(f'{pkg["name"]} {pkg["version"]}')
+          PY
+          cargo check --locked -p codex-keyring-store -p codex-login --all-targets 2>&1 | tee "$KEYRING4_EVIDENCE/cargo-check.txt"
+          cargo clippy --locked -p codex-keyring-store -p codex-login --all-targets -- -D clippy::correctness 2>&1 | tee "$KEYRING4_EVIDENCE/clippy.txt"
+
+      - name: Independently audit entire candidate dependency graph
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/keyring4-evidence"
+          mkdir -p "$evidence"
+          if [[ -n "${KEYRING4_CANDIDATE:-}" ]]; then
+            cd "$KEYRING4_CANDIDATE"
+            set +e
+            cargo deny --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check > "$evidence/cargo-deny.txt" 2>&1
+            result=$?
+            set -e
+            printf '%s\n' "$result" > "$evidence/cargo-deny.exit"
+            git diff --check
+            git diff --binary -- codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/keyring-store/Cargo.toml > "$evidence/actual-migration.patch"
+            cp codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/keyring-store/Cargo.toml "$evidence/" || true
+          fi
+          cd "$GITHUB_WORKSPACE"
+          git diff --check
+          git diff --exit-code
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Retain truthful compiler, policy and credential graph evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-keyring4-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/keyring4-evidence/
+          if-no-files-found: error
+          retention-days: 14
