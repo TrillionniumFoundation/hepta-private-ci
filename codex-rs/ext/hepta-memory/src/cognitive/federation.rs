@@ -1261,6 +1261,14 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        // Model observations carry a PathUri, which is rendered back to a native
+        // path at the attachment boundary. On Windows, the canonical \\?\ prefix
+        // may be normalized during this round trip. Grant the exact workspace
+        // identity used at physical-send time; do not weaken the scope check.
+        let workspace_uri =
+            PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        let workspace = workspace_uri.to_path_buf();
+        assert!(workspace.is_absolute(), "provider workspace must stay absolute");
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1302,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri.clone(),
                     is_primary: true,
                 }],
             },
