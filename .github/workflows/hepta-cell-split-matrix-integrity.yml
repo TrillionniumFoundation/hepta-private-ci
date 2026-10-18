@@ -6,6 +6,8 @@ on:
       - "scripts/hepta-cell-split-target-matrix.py"
       - "scripts/test_hepta_cell_split_target_matrix.py"
       - "scripts/test_hepta_cell_split_matrix_integrity.py"
+      - "scripts/hepta_cell_split_observer_crypto.py"
+      - "scripts/test_hepta_cell_split_signed_observer.py"
       - ".github/workflows/hepta-cell-split-matrix-integrity.yml"
   workflow_dispatch: {}
 
@@ -15,6 +17,8 @@ permissions:
 jobs:
   offline-evidence-integrity:
     name: Validate exact-source matrix fail-closed protocol
+    # Lightweight security protocol tests: no Cargo/Bazel or model run.
+    # Use the independent slim pool to avoid consuming scarce native runners.
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
@@ -30,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.test_hepta_cell_split_matrix_integrity
+          python3 -m unittest -v scripts.test_hepta_cell_split_matrix_integrity scripts.test_hepta_cell_split_signed_observer
           python3 - <<'PY'
           import tempfile
           from pathlib import Path
@@ -43,13 +47,18 @@ jobs:
               legacy.test_dry_run_is_blocked_until_workload_and_observer_receipts_exist(Path(path))
           print("Four existing matrix regressions passed")
           PY
-      - name: Install pinned uv
+      - name: Verify pinned Ruff formatting on current matrix interfaces
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "0.11.3"
-      - name: Exact Ruff source style (diff then fail on drift)
+
+      - name: Enforce baseline Ruff format without modifying the checkout
         shell: bash
         run: |
           set -euo pipefail
-          uv run --frozen --project scripts ruff format --diff scripts/hepta-cell-split-target-matrix.py scripts/test_hepta_cell_split_target_matrix.py || true
-          uv run --frozen --project scripts ruff format --check scripts/hepta-cell-split-target-matrix.py scripts/test_hepta_cell_split_target_matrix.py
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py || true
+          uv run --frozen --project scripts ruff format --check \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py

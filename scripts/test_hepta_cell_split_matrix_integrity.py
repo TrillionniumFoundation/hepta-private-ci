@@ -114,9 +114,22 @@ class MatrixIntegrityTests(unittest.TestCase):
         platform_stub.start()
         self.addCleanup(platform_stub.stop)
 
-    def test_synthetic_schema_roundtrip_not_host_qualification(self) -> None:
-        MATRIX.validate_report(self.report)
+    def test_synthetic_claim_without_independent_signer_is_denied(self) -> None:
+        with self.assertRaisesRegex(ValueError, "independently pinned observer trust"):
+            MATRIX.validate_report(self.report)
         self.assertEqual(self.report["authority"], "DENY_ALL")
+
+    def test_large_workload_hash_is_streamed_without_read_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "large-frozen-workload.bin"
+            chunk = b"x" * (1024 * 1024)
+            expected = MATRIX.hashlib.sha256()
+            with path.open("wb") as stream:
+                for _ in range(12):
+                    stream.write(chunk)
+                    expected.update(chunk)
+            with patch.object(Path, "read_bytes", side_effect=AssertionError("whole-file copy forbidden")):
+                self.assertEqual(MATRIX.sha256_file(path), expected.hexdigest())
 
     def test_repeated_case_with_same_sixteen_id_set_fails(self) -> None:
         self.report["cases"].append(copy.deepcopy(self.report["cases"][0]))
