@@ -196,11 +196,13 @@ def verify_observer_signature(
     try:
         from cryptography.exceptions import InvalidSignature
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-
+    except ImportError as error:
+        raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
+    try:
         Ed25519PublicKey.from_public_bytes(
             bytes.fromhex(trusted_public_key_hex)
         ).verify(bytes.fromhex(signature), observer_signing_bytes(receipt))
-    except (ImportError, InvalidSignature, ValueError) as error:
+    except (InvalidSignature, ValueError) as error:
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
 
