@@ -37,7 +37,13 @@ def _require(condition: bool, message: str) -> None:
 
 
 def _finite(name: str, value: float) -> None:
-    _require(isinstance(value, (int, float)) and math.isfinite(float(value)), f"{name} must be finite")
+    finite = False
+    if type(value) in (int, float):
+        try:
+            finite = math.isfinite(float(value))
+        except (OverflowError, ValueError):
+            finite = False
+    _require(finite, f"{name} must be finite")
 
 
 def _nonnegative(name: str, value: float) -> None:
@@ -105,7 +111,10 @@ class TreeNodeV1:
         _require(self.continuation_lcb <= self.continuation_ucb, "continuation interval is inverted")
         _nonnegative("uncertainty", self.uncertainty)
         _nonnegative("residual", self.residual)
-        _require(isinstance(self.expiry_step, int) and self.expiry_step >= self.depth, "expiry must cover node depth")
+        _require(
+            type(self.expiry_step) is int and self.depth <= self.expiry_step <= 512,
+            "expiry must cover node depth and be bounded by 512",
+        )
 
     def boundary(self) -> dict[str, object]:
         """Only bounded state crosses a Cell/organ boundary."""
@@ -318,7 +327,7 @@ def validate_prompt_boundary(prompt_digest: str, objective_digest: str, boundary
             if value is not None:
                 _identifier(name, value)
         elif name == "expiry_step":
-            _require(type(value) is int and value >= 0, "expiry_step is invalid")
+            _require(type(value) is int and 0 <= value <= 512, "expiry_step is invalid")
         else:
             _require(type(value) in (int, float), f"{name} must be numeric")
             if name in ("budget", "uncertainty", "residual"):
