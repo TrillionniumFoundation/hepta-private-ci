@@ -6531,6 +6531,7 @@ dependencies = [
  "hkdf 0.12.4",
  "num",
  "once_cell",
+ "openssl",
  "sha2 0.10.9",
  "zeroize",
 ]
@@ -10218,6 +10219,7 @@ dependencies = [
  "dbus-secret-service",
  "linux-keyutils",
  "log",
+ "openssl",
  "secret-service",
  "security-framework 2.11.1",
  "security-framework 3.7.0",
@@ -10327,6 +10329,7 @@ version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "328c4789d42200f1eeec05bd86c9c13c7f091d2ba9a6ea35acdf51f31bc0f043"
 dependencies = [
+ "cc",
  "pkg-config",
 ]
 
