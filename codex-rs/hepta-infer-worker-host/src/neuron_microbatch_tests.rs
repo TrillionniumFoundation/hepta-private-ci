@@ -147,7 +147,9 @@ fn rejects_generation_deadline_and_duplicate_reservations_before_backend() {
         id("worker.1"), Arc::new(different), 3_000, heads()
     ).expect("plan");
     assert!(matches!(
-        worker.run_reference(1_000, &alternate, &mut backend, NeuronHostResourceSampleV1::default()),
+        worker.run_reference(
+            1_000, &alternate, &mut backend, NeuronHostResourceSampleV1::default()
+        ),
         Err(NeuronMicrobatchErrorV1::GenerationMismatch)
     ));
 }
@@ -192,7 +194,9 @@ fn adversarial_backend_reordering_fails_closed_and_never_commits_metric() {
     let mut reopened = make_worker(&fixture);
     let mut fixture_backend = ReferenceNeuronBatchBackendV1::default();
     assert_eq!(
-        reopened.run_reference(1_000, &p, &mut fixture_backend, NeuronHostResourceSampleV1::default())
+        reopened.run_reference(
+            1_000, &p, &mut fixture_backend, NeuronHostResourceSampleV1::default()
+        )
             .expect("metric not acknowledged").metric_sequence,
         1
     );

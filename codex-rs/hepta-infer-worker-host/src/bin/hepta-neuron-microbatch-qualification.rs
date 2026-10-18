@@ -195,7 +195,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             "batchWallP95Micros": percentile(95),
             "batchWallP99Micros": percentile(99),
             "hostCpuSource": "linux_proc_task_schedstat_cumulative_ns",
-            "hostCpuDeltaNanos": cpu_before.zip(cpu_after).and_then(|(before, after)| after.checked_sub(before)),
+            "hostCpuDeltaNanos": cpu_before.zip(cpu_after)
+                .and_then(|(before, after)| after.checked_sub(before)),
             "rssBeforeBytes": rss_before,
             "rssAfterBytes": rss_after,
             "rssPeakSampledBytes": rss_peak,

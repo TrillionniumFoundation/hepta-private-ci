@@ -99,7 +99,10 @@ fn partial_tail_is_recovered_but_complete_corruption_is_not() {
 
     let mut file = fixture.file();
     file.seek(SeekFrom::End(-1)).expect("seek");
-    file.write_all(&[0xFF]).expect("tamper");
+    let mut old_byte = [0_u8; 1];
+    file.read_exact(&mut old_byte).expect("read");
+    file.seek(SeekFrom::End(-1)).expect("seek");
+    file.write_all(&[old_byte[0] ^ 0xFF]).expect("tamper");
     file.sync_data().expect("sync");
     drop(file);
     assert!(matches!(

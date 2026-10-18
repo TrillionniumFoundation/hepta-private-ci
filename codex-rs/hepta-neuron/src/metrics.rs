@@ -155,7 +155,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
         file.read_to_end(&mut data)?;
         if data.len() != size || size < HEADER_LEN || &data[..8] != MAGIC
             || &data[8..40] != scope_digest.as_array()
-            || data[40..48] != generation.get().to_be_bytes()
+            || &data[40..48] != generation.get().to_be_bytes().as_slice()
         {
             return Err(NeuronMetricsErrorV1::ScopeMismatch);
         }
@@ -210,10 +210,22 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 body[140..148].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let mask = body[156];
+            let cpu = u64::from_be_bytes(
+                body[116..124].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let rss = u64::from_be_bytes(
+                body[124..132].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
+            let lock_wait = u64::from_be_bytes(
+                body[148..156].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+            );
             if plan_digest.is_zero() || execution_digest.is_zero()
                 || !(1..=256).contains(&requests)
                 || latency_p95 > latency_p99
                 || mask & !0b111 != 0
+                || (mask & 0b001 == 0 && cpu != 0)
+                || (mask & 0b010 == 0 && rss != 0)
+                || (mask & 0b100 == 0 && lock_wait != 0)
                 || !seen_plans.insert(plan_digest)
             {
                 return Err(NeuronMetricsErrorV1::Corrupt);
