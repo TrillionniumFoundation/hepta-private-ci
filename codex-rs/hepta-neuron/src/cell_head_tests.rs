@@ -115,7 +115,7 @@ fn each_cell_gets_private_head_outputs_from_one_shared_feature_artifact() {
     assert_eq!(first.value_q24, 23);
     assert_eq!(first.uncertainty_q24, 13);
     assert!(first.abstain);
-    assert_eq!(first.head_digest, second.head_digest);
+    assert_ne!(first.head_digest, second.head_digest);
     assert_ne!(first.action_digest, second.action_digest);
     assert_eq!(first.cell_id, id("cell:0"));
     assert_eq!(second.cell_id, id("cell:1"));
