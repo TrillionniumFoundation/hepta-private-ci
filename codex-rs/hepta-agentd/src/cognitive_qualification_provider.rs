@@ -25,6 +25,7 @@ pub(super) struct CollectedObservationV1 {
     pub candidate_pending_rows: usize,
     pub baseline_terminal_rows: usize,
     pub baseline_pending_rows: usize,
+    pub bootstrap_inputs: Vec<u8>,
 }
 
 impl eval::FinalHoldoutProviderV1 for CollectedInputsProviderV1 {
@@ -53,6 +54,8 @@ impl eval::FinalHoldoutProviderV1 for CollectedInputsProviderV1 {
         let raw: CognitiveCollectedQualificationV1 = serde_json::from_slice(&bytes)
             .map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
         let inputs: eval::TemporalComparisonInputsV1 = raw.inputs.into();
+        let bootstrap_inputs = serde_json::to_vec(&crate::cognitive_process_product_wire::TemporalComparisonInputsV1Raw::from(inputs.clone()))
+            .map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
         self.observed = Some(CollectedObservationV1 {
             context: raw.context.into(), windows: raw.windows.into_iter().map(Into::into).collect(),
             offered_rows: inputs.targets.len(),
@@ -60,6 +63,7 @@ impl eval::FinalHoldoutProviderV1 for CollectedInputsProviderV1 {
             candidate_pending_rows: inputs.candidate_observations.iter().filter(|row| row.finalized_outcome.is_none()).count(),
             baseline_terminal_rows: inputs.baseline_observations.iter().filter(|row| row.finalized_outcome.is_some()).count(),
             baseline_pending_rows: inputs.baseline_observations.iter().filter(|row| row.finalized_outcome.is_none()).count(),
+            bootstrap_inputs,
         });
         Ok(inputs)
     }

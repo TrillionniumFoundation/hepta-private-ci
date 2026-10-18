@@ -46,6 +46,7 @@ pub(super) enum CognitiveQualificationStageV1 {
         observer: SignedLearningEvidenceV1Raw,
         evaluator: SignedLearningEvidenceV1Raw,
         qualification_evidence_path: PathBuf,
+        selection: Option<CognitiveQualificationSelectionStageV1>,
     },
 }
 
@@ -79,4 +80,31 @@ pub(super) struct CognitiveCollectedQualificationV1 {
     pub inputs: TemporalComparisonInputsV1Raw,
     pub context: ProductQualificationContextV1Raw,
     pub windows: Vec<ObservedFutureWindowV1Raw>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub(super) enum CognitiveQualificationSelectionStageV1 {
+    CandidateBindingStatement { request: SelfEvolutionSelectionRequestV1Raw },
+    SelectorStatement { inputs: CognitiveQualificationSelectionInputsV1 },
+    Admit { inputs: CognitiveQualificationSelectionInputsV1, selector: SignedLearningEvidenceV1Raw },
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct CognitiveQualificationSelectionInputsV1 {
+    pub request: SelfEvolutionSelectionRequestV1Raw,
+    pub candidate_binding: SignedLearningEvidenceV1Raw,
+    pub dataset_receipt: DatasetSnapshotReceiptV3Raw,
+    pub ledger: CognitiveQualificationLedgerV1,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct CognitiveQualificationLedgerV1 {
+    pub path: PathBuf,
+    pub binding: Digest,
+    pub max_records: usize,
+    pub anchor_sequence: u64,
+    pub anchor_chain_digest: Digest,
 }

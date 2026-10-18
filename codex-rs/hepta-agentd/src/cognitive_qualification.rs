@@ -13,8 +13,9 @@ use serde_json::{Value, json};
 
 use crate::AgentdClient;
 use crate::cognitive_process_bootstrap::{FileAccess, open_bounded_regular};
-use crate::cognitive_process_evaluation::{CrossFoldPlanV1Raw, MetricGateV1Raw, ObservedFutureWindowV1Raw};
-use crate::cognitive_process_product_wire::FinalHoldoutCasAnchorV1Raw;
+use crate::cognitive_process_evaluation::{CrossFoldPlanV1Raw, LongitudinalTimeEvidenceV1Raw, MetricGateV1Raw, MetricRoleContractV2Raw, ObservedFutureWindowV1Raw, SelfEvolutionSelectionPolicyV1Raw, SignedEvaluationEvidenceV1Raw};
+use crate::cognitive_process_evidence::LearningEvidenceTrustV1Raw;
+use crate::cognitive_process_product_wire::{FinalHoldoutCasAnchorV1Raw, HoldoutWriterFenceV1Raw, ProductMetricSourceContractV1Raw, ProductQualificationContextV1Raw, TemporalEvaluationPlanRaw};
 use crate::cognitive_qualification_provider::{CollectedInputsProviderV1, read_pinned};
 use crate::cognitive_qualification_wire::*;
 
@@ -39,7 +40,8 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     ensure!(host.schema_version == 1 && host.agent_id == input.agent_id, "qualification host subject/schema mismatch");
     external(&host.holdout.path)?;
     let policy: eval::SelfEvolutionSelectionPolicyV1 = host.policy.into();
-    let verifier = LearningEvidenceVerifierV1::new(host.trust.into())?;
+    let trust: codex_hepta_learning_ledger::LearningEvidenceTrustV1 = host.trust.into();
+    let verifier = LearningEvidenceVerifierV1::new(trust.clone())?;
     let mut raw_plan: eval::CrossFoldPlanV1 = input.frozen_plan.into();
     // The signed original plan also commits the operator's exact policy,
     // verifier and retained owner anchor. They cannot be refitted after looking
@@ -93,7 +95,7 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     ensure!(store.anchor() == Some(expected_anchor) || exact_reservation_tail,
         "qualification holdout has an unacknowledged unrelated tail");
     crate::cognitive_process_product::acknowledge_holdout_namespace(&host.holdout.path)?;
-    let mut owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence)?;
+    let mut owner = eval::FencedFinalHoldoutOwnerV1::recover(store, binding, fence.clone())?;
     let identity = json!({"agent_id":input.agent_id, "operation_id":input.operation_id.0.as_str(),
         "candidate_id":product_plan.frozen_plan.candidate_id.as_str(), "baseline_id":product_plan.frozen_plan.baseline_id.as_str(),
         "plan_sha256":product_plan.frozen_plan.plan_digest.to_string(), "trust_sha256":verifier.trust_digest().to_string(),
@@ -107,12 +109,14 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
             "journal_head_sha256":receipt.head_digest.to_string(), "disposition":format!("{:?}",receipt.disposition),
             "observed_at_unix_micros":now, "authority_granted":false}));
     }
+    let mut selection = None;
     let (collection, reservation, observer, evaluator, evidence_path) = match input.stage {
         CognitiveQualificationStageV1::PlanStatement | CognitiveQualificationStageV1::Reserve => unreachable!("preparation returned above"),
         CognitiveQualificationStageV1::ObserverStatement { collection, reservation } => (collection, reservation, None, None, None),
         CognitiveQualificationStageV1::EvaluatorStatement { collection, reservation, observer } => (collection, reservation, Some(observer), None, None),
-        CognitiveQualificationStageV1::Finalize { collection, reservation, observer, evaluator, qualification_evidence_path } => {
+        CognitiveQualificationStageV1::Finalize { collection, reservation, observer, evaluator, qualification_evidence_path, selection: selected_stage } => {
             external(&qualification_evidence_path)?;
+            selection = selected_stage;
             (collection, reservation, Some(observer), Some(evaluator), Some(qualification_evidence_path))
         }
     };
@@ -155,16 +159,39 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     let Some(evaluator) = evaluator else { return Ok(output); };
     let path = evidence_path.context("qualification publication path is required")?;
     let mut sink = eval::FileProductQualificationEvidenceSinkV1::new(&path)?;
+    let evidence = eval::SignedEvaluationEvidenceV1 { generator_plan: generator, evaluator_bundle: evaluator.into() };
     let qualification = runner.qualify_and_persist(
         &temporal, &observed.context,
-        &eval::SignedEvaluationEvidenceV1 { generator_plan: generator, evaluator_bundle: evaluator.into() },
+        &evidence,
         eval::ProductTimingEvidenceV1::SystemLongitudinal { timing: &timing, minimum_window_micros: policy.minimum_future_window_micros },
         &verifier, u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?, &mut sink,
     )?;
     let decision = &qualification.decision.decision;
+    let bootstrap_inputs_path = path.with_extension("released-inputs.json");
+    external(&bootstrap_inputs_path)?;
+    crate::cognitive_materials_io::persist_material(&bootstrap_inputs_path, &observed.bootstrap_inputs, 32 * 1024 * 1024)?;
+    output["released_inputs"] = json!({"path":bootstrap_inputs_path,
+        "digest":codex_hepta_types::Digest32::of_bytes(&observed.bootstrap_inputs).to_string()});
     output["publication_sha256"] = json!(qualification.publication_digest.to_string());
     output["qualification_evidence_path"] = json!(path);
     output["qualification_evidence_sha256"] = json!(codex_hepta_types::Digest32::of_bytes(&crate::cognitive_materials_io::read_material(&path, 4 * 1024 * 1024)?).to_string());
+    // These are plain inputs for the existing process loader, which must replay
+    // the original evaluator and selector again. No sealed token is exported.
+    output["bootstrap_evaluation_materials"] = json!({
+        "frozen_plan":CrossFoldPlanV1Raw::from(raw_plan),
+        "policy":SelfEvolutionSelectionPolicyV1Raw::from(policy.clone()),
+        "metric_roles":product_plan.metric_roles.iter().cloned().map(MetricRoleContractV2Raw::from).collect::<Vec<_>>(),
+        "evaluation_evidence":SignedEvaluationEvidenceV1Raw::from(evidence.clone()),
+        "longitudinal_time":LongitudinalTimeEvidenceV1Raw::from(timing.clone()),
+        "trust":LearningEvidenceTrustV1Raw::from(trust),
+        "holdout":{"path":host.holdout.path,"binding":binding.to_string(),
+            "fence":HoldoutWriterFenceV1Raw::from(fence),"anchor":FinalHoldoutCasAnchorV1Raw::from(runner.holdout_anchor())},
+        "product":{"candidate_plan":TemporalEvaluationPlanRaw::from(candidate_plan),
+            "baseline_plan":TemporalEvaluationPlanRaw::from(baseline_plan),
+            "metric_sources":product_plan.metric_sources.iter().cloned().map(ProductMetricSourceContractV1Raw::from).collect::<Vec<_>>(),
+            "context":ProductQualificationContextV1Raw::from(observed.context.clone()),
+            "released_inputs":output["released_inputs"],"holdout_material":provider.material,
+            "qualification_evidence":{"path":path,"digest":output["qualification_evidence_sha256"]}}});
     output["disposition"] = json!(format!("{:?}", decision.disposition));
     output["failed_metrics"] = json!(decision.failed_metrics.iter().map(codex_hepta_types::StableId::as_str).collect::<Vec<_>>());
     output["state"] = json!(match decision.disposition {
@@ -172,6 +199,22 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
         eval::IndependentEvaluationDispositionV1::Ineligible => "no_update",
         eval::IndependentEvaluationDispositionV1::InsufficientEvidence => "insufficient_evidence",
     });
+    if decision.disposition == eval::IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        && let Some(stage) = selection
+    {
+        output["selection"] = crate::cognitive_qualification_selection::select(
+            crate::cognitive_qualification_selection::SelectionContextV1 {
+                qualification: &qualification, policy: &policy, bundle: &bundle, metric_roles: &product_plan.metric_roles,
+                evidence: &evidence, timing: &timing, verifier: &verifier,
+                now: u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?,
+                forbidden_roots: [agent.layout.home_root(), agent.layout.run_root(), agent.manifest.workspace.as_path()],
+            }, stage,
+        )?;
+        if let Some(materials) = output["selection"]["materials"].as_object().cloned() {
+            let bootstrap = output["bootstrap_evaluation_materials"].as_object_mut().context("missing exported bootstrap materials")?;
+            bootstrap.extend(materials);
+        }
+    }
     if decision.disposition != eval::IndependentEvaluationDispositionV1::EligibleForIndependentSelection {
         let retained: Result<_> = async {
             let supervisor = SupervisordClient::new(fleet.layout().supervisor_socket().to_path_buf())?;
@@ -197,7 +240,7 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     Ok(output)
 }
 
-fn hex(bytes: &[u8]) -> String {
+pub(super) fn hex(bytes: &[u8]) -> String {
     use std::fmt::Write;
     let mut output = String::with_capacity(bytes.len() * 2);
     for byte in bytes { let _ = write!(&mut output, "{byte:02x}"); }
