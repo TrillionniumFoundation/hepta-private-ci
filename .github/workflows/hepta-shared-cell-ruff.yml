@@ -1,0 +1,49 @@
+name: Hepta shared Cell exact Ruff conformance
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta-cell-split-target-matrix.py"
+      - "scripts/test_hepta_cell_split_target_matrix.py"
+      - ".github/workflows/hepta-shared-cell-ruff.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-ruff:
+    name: Frozen Ruff style of shared Cell baseline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Install Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Emit exact non-mutating Ruff patch then fail if unformatted
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py || true
+          uv run --frozen --project scripts ruff format --check \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py
+      - name: Confirm checked source remained unchanged
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
