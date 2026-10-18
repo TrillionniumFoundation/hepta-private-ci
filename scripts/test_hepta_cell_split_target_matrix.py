@@ -315,8 +315,9 @@ def test_worker_source_mutation_blocks_every_case(
     MODULE.validate_report(report)
 
 
-def test_post_observer_source_drift_revokes_signed_receipt(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("mutation", ("source", "overwrite", "unlink"))
+def test_post_observer_mutation_revokes_signed_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
 ) -> None:
     root, head = isolated_checkout(tmp_path, monkeypatch)
     workload = tmp_path / "frozen-workload"
@@ -351,7 +352,12 @@ def test_post_observer_source_drift_revokes_signed_receipt(
                 MODULE.observer_signing_bytes(claim)
             ).hex()
             observer_was_signed = True
-            (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
+            if mutation == "source":
+                (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
+            elif mutation == "overwrite":
+                workload.write_bytes(b"observer overwrote frozen tasks")
+            else:
+                workload.unlink()
             return subprocess.CompletedProcess(argv, 0, json.dumps(claim), "")
         assert argv == ["fixture-worker"]
         case = {
@@ -380,7 +386,8 @@ def test_post_observer_source_drift_revokes_signed_receipt(
     assert len(report["cases"]) == 64
     assert all(case["status"] == "measured" for case in report["cases"])
     assert report["status"] == "blocked"
-    assert "source-checkout" in report["blockingCases"]
+    expected_blocker = "source-checkout" if mutation == "source" else "frozen-workload"
+    assert expected_blocker in report["blockingCases"]
     assert report["observer"]["verified"] is False
     assert "signatureHex" not in report["observer"]
     MODULE.validate_report(report)
