@@ -246,13 +246,8 @@ mod tests {
         ));
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
-        let (receipt, witness) = must(port.issue_with_witness(
-            &mut ledger,
-            "fleet-issue-one",
-            1,
-            2_000,
-            grant.clone(),
-        ));
+        let (receipt, witness) =
+            must(port.issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone()));
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
