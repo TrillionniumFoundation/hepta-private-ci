@@ -1,5 +1,76 @@
 # GitHub Actions fleet: 500-job real test fanout
 
+
+## 2026-10-18 terminal ALL/32 and external 500-concurrency blockers
+
+**Immutable source**: `1b2a24b727511220724418bc057f031e81ba5eea`.
+**Authentic GitHub-hosted execution**: [run 39135901235](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39135901235), attempt 1, status `completed/success`.
+All **32/32** real worker jobs succeeded; one PR-only selftest was skipped.
+An independent verifier downloaded and checked **32/32 original GitHub artifact
+ZIPs** against GitHub's official SHA-256 digest and byte-size metadata. It
+parsed all receipts for source identity, cohort/worker identity, disjoint
+case-set hashes, exact unittest start/stop/success, one run per method,
+successful exit, and zero skip, failure, error, expected failure or unexpected
+success. **Exactly 500/500 distinct strict Python unittests passed.**
+
+Evidence fingerprints (raw private inventories are retained with the operator,
+not copied into this public repository):
+
+- Original first-party 33-job API JSON SHA-256:
+  `99f11dcd31d2662f0554851b96084f4d616a1a4ef46f9c39e478a9e6be220784`.
+- Original first-party 32-artifact list API SHA-256:
+  `7e416721b79a6be7aebb2df58d30245c57739a5f0975e1803ac1432e929c9d89`.
+- Independent strict-artifact verification report SHA-256:
+  `2f5403c86697cced454ef484f7781ce45ba7fe868581a00c8cedeb70aa00aad4`.
+- Independent completed runner-interval report SHA-256:
+  `4af9fa25dda06ed35d4ba9a7abf19bbe7fa8ce117fc4ca2a7be58ef6a099e423`.
+
+Half-open terminal `[started_at,completed_at)` intervals on **distinct positive
+runner IDs** give a maximum of **2 concurrent assigned runner jobs**, first at
+`2026-10-18T14:40:11Z`; the positive-duration execution-step interval maximum
+was also **2**. Job queue wait P50/P95 = **1226.5/2384.5 seconds** (20m26.5s/
+39m44.5s), while runner job runtime P50/P95 = **17/20.8 seconds**. This exposes
+minute-scale admission overhead for second-scale work, not a source test failure.
+A successful 500-test run, 32 runner allocations across time, and a configured
+Enterprise Maximum of 500 **must not** be described as 500 simultaneous runners.
+
+**External authority boundary**: Pocket4's authenticated GitHub CLI token has
+`gist,read:org,repo,workflow`, **not** `admin:org`. Current organization
+Actions policy and runner-group readbacks each returned HTTP **403**. The
+repository-scoped GitHub App administrator permission is not the missing
+organization-level Actions control-plane permission. An authorized organization
+owner should inspect the effective Actions policy, enabled standard runner
+labels, group routing, enterprise/org budgets, concurrency and queue
+performance. Use *Organization → Insights → Actions Performance Metrics* (owner
+or delegated **View organization Actions metrics** role), inspect `queued`
+versus materialized worker jobs, and open an Enterprise GitHub Support ticket
+with immutable [run 39135901235](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39135901235),
+individual job IDs, the source-pinned YAML and job logs. Other meaningful pool
+probes are recorded on [PR 2566](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2566);
+do not put credentials, secret billing data or private repository inventories
+in a public ticket/comment.
+
+Published GitHub limits: an Enterprise standard-hosted organization may have
+500 concurrent jobs, **including at most 50 macOS jobs**, a job matrix has at
+most 256 entries, and `concurrency.queue: max` retains at most 100 queued
+runs per group (it does not create new runner capacity). See
+[GitHub Actions limits](https://docs.github.com/en/actions/reference/limits),
+[Actions performance metrics](https://docs.github.com/en/actions/concepts/metrics)
+and [Support diagnostics](https://docs.github.com/en/actions/how-tos/get-support).
+
+**Do not chase a false completion** by artificially delaying jobs, duplicating
+tests to pad durations, creating 500 unbounded self-hosted registrations,
+canceling others' business CI, suppressing real advisory/build failures, or
+increasing paid budget without a reviewed allocation. The acceptance proof
+remains **500 unique completed runner IDs with real useful work and a shared
+overlapping terminal execution interval**, separately reporting job/step
+overlap, queue percentiles, cases, failure rate and cost. At this checkpoint:
+`verified_real_cases=500/500`, `verified_500_running=false`. The
+[isolated optional cross-pool branch](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/feat/runner500-crosspool-20261018)
+adds Windows/macOS choices without changing core runner policy or forcing a
+new expensive required-CI run while the parent PR is in flight.
+
+
 ## What is implemented
 
 - A default-off manually dispatched workflow:

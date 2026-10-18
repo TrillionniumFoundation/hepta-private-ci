@@ -35,7 +35,12 @@ on:
         type: choice
         required: true
         default: ubuntu-24.04
-        options: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-slim]
+        options:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - ubuntu-slim
+          - windows-latest
+          - macos-15
       absolute_offset:
         description: Use aligned absolute source-test slice (scatter mode)
         type: boolean

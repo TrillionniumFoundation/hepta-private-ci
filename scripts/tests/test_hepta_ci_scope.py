@@ -80,6 +80,41 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(lock_scope[key] for key in GROUPS))
         self.assertTrue(lock_scope["full_repo"])
 
+    def test_standalone_fleet_diagnostics_keep_lightweight_required_ci(self):
+        from scripts.hepta_ci_scope import FLEET_SELFTEST_PATHS
+
+        for path in sorted(FLEET_SELFTEST_PATHS):
+            with self.subTest(path=path):
+                result = select([path])
+                self.assertTrue(result["derived"])
+                self.assertFalse(result["native"])
+                self.assertFalse(result["full_repo"])
+                self.assertFalse(result["cargo_audit"])
+
+        combined = select(sorted(FLEET_SELFTEST_PATHS))
+        self.assertTrue(combined["derived"])
+        self.assertFalse(combined["native"] or combined["full_repo"])
+
+        with_native = select(
+            sorted(FLEET_SELFTEST_PATHS)
+            + ["codex-rs/hepta-infer-core/src/lib.rs"]
+        )
+        self.assertTrue(with_native["inference"])
+        self.assertTrue(with_native["native"])
+        self.assertFalse(with_native["full_repo"])
+
+        for unknown in [
+            ".github/workflows/new-fleet-500.yml",
+            "scripts/github_actions_unknown.py",
+            ".github/workflows/bazel.yml",
+            ".bazelrc",
+        ]:
+            with self.subTest(unknown=unknown):
+                self.assertTrue(select([unknown])["full_repo"])
+
+        # The main push path must continue to run complete checks.
+        self.assertTrue(all(select(FLEET_SELFTEST_PATHS, force_full=True).values()))
+
     def test_cargo_advisories_run_only_on_supply_chain_changes_in_pull_requests(self):
         for path in [
             "codex-rs/Cargo.lock",
