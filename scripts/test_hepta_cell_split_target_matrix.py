@@ -676,9 +676,7 @@ def test_report_validator_rejects_unknown_status_and_removed_blockers(
     with pytest.raises(ValueError, match="blocker list/status inconsistent"):
         MODULE.validate_report({**report, "blockingCases": []})
     with pytest.raises(ValueError, match="blocker list/status inconsistent"):
-        MODULE.validate_report(
-            {**report, "blockingCases": ["independent-observer"]}
-        )
+        MODULE.validate_report({**report, "blockingCases": ["independent-observer"]})
     with pytest.raises(ValueError, match="noncanonical matrix blocker list"):
         MODULE.validate_report(
             {
@@ -710,8 +708,14 @@ def test_report_validator_rejects_unknown_case_status_even_if_rehashed(
     provisional = {
         key: forged[key]
         for key in (
-            "schema", "authority", "cellCounts", "sourceCommit",
-            "workloadDigest", "workloadSourceDigest", "host", "cases",
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
         )
     }
     forged["reportDigest"] = MODULE.digest(
