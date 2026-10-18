@@ -7,7 +7,22 @@ inputs:
   cache-scope:
     description: Logical namespace used to keep concurrent Bazel jobs from reserving the same repository cache key.
     required: true
+  local-disk-cache:
+    description: Restore a compiled-action cache for a job without BuildBuddy credentials.
+    default: "false"
+  disk-cache-scope:
+    description: Optional action-cache namespace, including the shard when jobs share a repository cache.
+    default: ""
 outputs:
+  disk-cache-path:
+    description: Filesystem path used for the local Bazel action cache.
+    value: ${{ steps.setup_bazel.outputs.disk-cache-path }}
+  disk-cache-key:
+    description: Source-specific Actions cache key for compiled actions.
+    value: ${{ steps.cache_bazel_disk_key.outputs.disk-cache-key }}
+  disk-cache-hit:
+    description: Whether the compiled-action cache restore found the current source key.
+    value: ${{ steps.cache_bazel_disk_restore.outputs.cache-hit }}
   repository-cache-path:
     description: Filesystem path used for the Bazel repository cache.
     value: ${{ steps.setup_bazel.outputs.repository-cache-path }}
@@ -26,6 +41,38 @@ runs:
       uses: ./.github/actions/setup-bazel-ci
       with:
         target: ${{ inputs.target }}
+
+    - name: Configure local Bazel action cache
+      id: cache_bazel_disk_key
+      if: inputs.local-disk-cache == 'true'
+      shell: bash
+      env:
+        CACHE_SCOPE: ${{ inputs.disk-cache-scope || inputs.cache-scope }}
+        TARGET: ${{ inputs.target }}
+        BAZEL_VERSION_HASH: ${{ hashFiles('.bazelversion') }}
+        CACHE_HASH: ${{ hashFiles('MODULE.bazel', 'MODULE.bazel.lock', 'codex-rs/Cargo.lock', '**/BUILD.bazel', '**/BUILD') }}
+        DISK_CACHE_PATH: ${{ steps.setup_bazel.outputs.disk-cache-path }}
+      run: |
+        set -euo pipefail
+        namespace="bazel-disk-v1-${RUNNER_OS}-${RUNNER_ARCH}-${CACHE_SCOPE}-${TARGET}-${BAZEL_VERSION_HASH}"
+        # A source generation can restore its predecessors and then save newly
+        # compiled actions. Bazel's action digests validate restored outputs.
+        echo "disk-cache-key=${namespace}-${CACHE_HASH}-${GITHUB_SHA}" >> "${GITHUB_OUTPUT}"
+        echo "disk-cache-graph-prefix=${namespace}-${CACHE_HASH}-" >> "${GITHUB_OUTPUT}"
+        echo "disk-cache-restore-prefix=${namespace}-" >> "${GITHUB_OUTPUT}"
+        echo "BAZEL_LOCAL_DISK_CACHE=${DISK_CACHE_PATH}" >> "${GITHUB_ENV}"
+
+    - name: Restore local Bazel action cache
+      id: cache_bazel_disk_restore
+      if: inputs.local-disk-cache == 'true'
+      continue-on-error: true
+      uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ${{ steps.setup_bazel.outputs.disk-cache-path }}
+        key: ${{ steps.cache_bazel_disk_key.outputs.disk-cache-key }}
+        restore-keys: |
+          ${{ steps.cache_bazel_disk_key.outputs.disk-cache-graph-prefix }}
+          ${{ steps.cache_bazel_disk_key.outputs.disk-cache-restore-prefix }}
 
     - name: Configure fail-closed release lockdown root
       if: github.job == 'verify-release-build'

@@ -1,0 +1,251 @@
+name: GitHub Actions fleet audit and real-test fanout
+
+on:
+  pull_request:
+    paths:
+      - scripts/github_actions_fleet_500.py
+      - scripts/github_actions_packed_ci.py
+      - scripts/github_actions_runner_audit.py
+      - scripts/test_github_actions_fleet_500.py
+      - scripts/test_github_actions_packed_ci.py
+      - scripts/github_actions_org_capacity.py
+      - scripts/test_github_actions_org_capacity.py
+      - .github/workflows/github-actions-fleet-500.yml
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Audit live queue or plan/execute actual unittest methods
+        type: choice
+        required: true
+        default: audit
+        options: [audit, fanout]
+      cohort:
+        description: First or second non-overlapping set
+        type: choice
+        required: true
+        default: A
+        options: [A, B]
+      per_cohort:
+        description: Direct test shards; supported 8, 16, 32, 50, 64, 128, 250
+        type: number
+        required: true
+        default: 250
+      runner:
+        description: Hosted runner pool for real test execution
+        type: choice
+        required: true
+        default: ubuntu-24.04
+        options: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-slim]
+      absolute_offset:
+        description: Use aligned absolute source-test slice (scatter mode)
+        type: boolean
+        required: true
+        default: false
+      start_index:
+        description: Start of aligned absolute slice; independent runs use distinct values
+        type: number
+        required: true
+        default: 0
+      source_sha:
+        description: Exact 40-hex commit SHA; REQUIRED when execute=true
+        type: string
+        required: false
+      execute:
+        description: False plans only; True executes pinned real tests
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: gh-fleet-${{ github.ref }}-${{ inputs.mode || 'selftest' }}-${{ inputs.cohort || 'none' }}-${{ inputs.runner || 'default' }}-${{ inputs.per_cohort || 'none' }}-${{ inputs.absolute_offset || 'false' }}-${{ inputs.start_index || 'zero' }}-${{ inputs.source_sha || github.sha }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  selftest:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Verify fleet planning and telemetry regressions
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v scripts.test_github_actions_fleet_500 scripts.test_github_actions_org_capacity scripts.test_github_actions_packed_ci
+
+  capacity-audit:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'audit'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Count observed workflow runs and actual running jobs separately
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 scripts/github_actions_runner_audit.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --active-runs 60 \
+            --output "$RUNNER_TEMP/github-actions-capacity.json"
+      - name: Retain read-only capacity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-capacity-${{ github.run_id }}
+          path: ${{ runner.temp }}/github-actions-capacity.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  plan:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && !inputs.execute
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    outputs:
+      matrix: ${{ steps.shards.outputs.matrix }}
+      ready: ${{ steps.shards.outputs.ready }}
+      count: ${{ steps.shards.outputs.count }}
+      manifest_sha256: ${{ steps.shards.outputs.manifest_sha256 }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Build non-overlapping manifest from actual unittest methods
+        id: shards
+        env:
+          COHORT: ${{ inputs.cohort }}
+          ABSOLUTE_OFFSET: ${{ inputs.absolute_offset }}
+          START_INDEX: ${{ inputs.start_index }}
+          PER_COHORT: ${{ inputs.per_cohort }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+          EXECUTE: ${{ inputs.execute }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--root . --cohort "$COHORT" --per-cohort "$PER_COHORT"
+                --github-output "$GITHUB_OUTPUT" --receipt "$RUNNER_TEMP/fleet-shards.json")
+          if [[ -n "$PINNED_SHA" ]]; then
+            args+=(--expected-sha "$PINNED_SHA")
+          fi
+          if [[ "$EXECUTE" == "true" ]]; then
+            args+=(--execute)
+          fi
+          if [[ "$ABSOLUTE_OFFSET" == "true" ]]; then
+            args+=(--absolute-offset --start-index "$START_INDEX")
+          fi
+          python3 scripts/github_actions_fleet_500.py "${args[@]}"
+          python3 -c 'import json,sys; x=json.load(open(sys.argv[1])); print(json.dumps({k:v for k,v in x.items() if k != "matrix"},indent=2))' "$RUNNER_TEMP/fleet-shards.json"
+      - name: Retain source-bound plan even in preview
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-fleet-plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/fleet-shards.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  real-test:
+    # No planning-runner prerequisite; matrix is available at dispatch time.
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'fanout' && inputs.execute
+    name: cohort-${{ inputs.cohort }}-shard-${{ matrix.shard }}
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 250
+      matrix:
+        shard: >-
+          ${{ fromJSON(
+          inputs.per_cohort == 250 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249]' ||
+          inputs.per_cohort == 128 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127]' ||
+          inputs.per_cohort == 50 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49]' ||
+          inputs.per_cohort == 64 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63]' ||
+          inputs.per_cohort == 32 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]' ||
+          inputs.per_cohort == 16 && '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]' ||
+          inputs.per_cohort == 8 && '[0,1,2,3,4,5,6,7]' ||
+          '[0]'
+          ) }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin source identity and resolve assigned real unittest
+        id: selected
+        shell: bash
+        env:
+          COHORT: ${{ inputs.cohort }}
+          ABSOLUTE_OFFSET: ${{ inputs.absolute_offset }}
+          START_INDEX: ${{ inputs.start_index }}
+          PER_COHORT: ${{ inputs.per_cohort }}
+          SHARD_INDEX: ${{ matrix.shard }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test -n "$PINNED_SHA"
+          test "$(git rev-parse HEAD)" = "$PINNED_SHA"
+          args=(--root . --cohort "$COHORT" --per-cohort "$PER_COHORT"
+                --expected-sha "$PINNED_SHA" --execute --case-index "$SHARD_INDEX"
+                --github-output "$GITHUB_OUTPUT" --receipt "$RUNNER_TEMP/real-shard.json")
+          if [[ "$ABSOLUTE_OFFSET" == "true" ]]; then
+            args+=(--absolute-offset --start-index "$START_INDEX")
+          fi
+          python3 scripts/github_actions_fleet_500.py "${args[@]}"
+      - name: Execute one real unittest method with a strict result receipt
+        env:
+          TEST_CASE: ${{ steps.selected.outputs.case }}
+          PINNED_SHA: ${{ inputs.source_sha }}
+          SHARD_INDEX: ${{ matrix.shard }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$TEST_CASE"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          from scripts.github_actions_fleet_500 import select_direct_case
+          from scripts.github_actions_packed_ci import run_cases
+
+          root = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          plan = json.loads((temporary / "real-shard.json").read_text())
+          index = int(os.environ["SHARD_INDEX"])
+          case = select_direct_case(plan, index)
+          expected_sha = os.environ["PINNED_SHA"]
+          if plan["source_sha"] != expected_sha:
+              raise ValueError("direct plan source SHA mismatch")
+          if case != plan["selected_case"] or case != os.environ["TEST_CASE"]:
+              raise ValueError("direct plan selected case mismatch")
+          schedule = {
+              "cohort": plan["cohort"],
+              "worker_count": plan["per_cohort"],
+              "worker_index": index,
+              "selected_cases": [case],
+              "manifest_sha256": plan["manifest_sha256"],
+              "case_set_sha256": hashlib.sha256(case.encode()).hexdigest(),
+          }
+          receipt = run_cases(root, expected_sha, schedule, temporary / "real-result.json")
+          print(json.dumps(receipt, sort_keys=True))
+          raise SystemExit(0 if receipt["status"] == "passed" else 1)
+          PY
+      - name: Retain source plan and strict execution result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: github-actions-fleet-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.cohort }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/real-shard.json
+            ${{ runner.temp }}/real-result.json
+          if-no-files-found: warn
+          retention-days: 7

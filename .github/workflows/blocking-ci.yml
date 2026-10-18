@@ -15,7 +15,7 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
@@ -26,6 +26,7 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      cargo_audit: ${{ steps.scope.outputs.cargo_audit }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -90,7 +91,7 @@ jobs:
   cargo-deny:
     name: cargo-deny
     needs: scope
-    if: needs.scope.outputs.full_repo == 'true'
+    if: needs.scope.outputs.cargo_audit == 'true'
     uses: ./.github/workflows/cargo-deny.yml
     secrets: inherit
 
@@ -205,9 +206,9 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   required:
-    timeout-minutes: 30
+    timeout-minutes: 8
     name: CI required
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs:
       - scope
       - hepta-contract-gate
@@ -220,7 +221,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -231,6 +232,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          CARGO_AUDIT: ${{ needs.scope.outputs.cargo_audit }}
         shell: bash
         run: |
           set -euo pipefail
@@ -244,7 +246,9 @@ jobs:
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:
-              allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+              allowed += ["bazel", "repo-checks", "rust-ci", "sdk"]
+          if os.environ["CARGO_AUDIT"] != "true":
+              allowed.append("cargo-deny")
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):

@@ -270,6 +270,29 @@ def bazel_args_with_remote_config(
             arg.startswith(option_prefix) for arg in configured_args[:separator_idx]
         )
     ]
+    if (
+        config is None
+        and args[command_idx] in {"build", "test"}
+        and env.get("BAZEL_LOCAL_DISK_CACHE")
+        and not any(
+            arg == "--disk_cache" or arg.startswith("--disk_cache=")
+            for arg in configured_args[:separator_idx]
+        )
+    ):
+        # CI configs can disable the disk cache. Put the restored local path
+        # after those configs, while respecting an explicit caller override.
+        cache_args.append(f"--disk_cache={env['BAZEL_LOCAL_DISK_CACHE']}")
+        # Keep each role/shard's seed modest. This is an idle-GC target, not
+        # a repository quota; Actions may still evict older cache generations.
+        for option, value in (
+            ("--experimental_disk_cache_gc_max_size", "512M"),
+            ("--experimental_disk_cache_gc_idle_delay", "0s"),
+        ):
+            if not any(
+                arg == option or arg.startswith(f"{option}=")
+                for arg in configured_args[:separator_idx]
+            ):
+                cache_args.append(f"{option}={value}")
     return [
         *configured_args[:separator_idx],
         *cache_args,

@@ -289,6 +289,75 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             ],
         )
 
+    def test_keyless_compilation_uses_restored_cache_after_ci_configuration(
+        self,
+    ) -> None:
+        for runner_os, cache_path in (
+            ("Linux", "/home/runner/.cache/bazel-disk"),
+            ("macOS", "/Users/runner/.cache/bazel-disk"),
+            ("Windows", "D:/build root/o-disk"),
+        ):
+            for command in ("build", "test"):
+                with self.subTest(runner_os=runner_os, command=command):
+                    args = run_bazel_with_buildbuddy.bazel_command(
+                        command,
+                        "--config=ci",
+                        "--",
+                        "//codex-rs/...",
+                        env={
+                            "RUNNER_OS": runner_os,
+                            "BAZEL_LOCAL_DISK_CACHE": cache_path,
+                        },
+                    )
+                    self.assertEqual(
+                        args,
+                        [
+                            "bazel",
+                            command,
+                            "--config=ci",
+                            f"--disk_cache={cache_path}",
+                            "--experimental_disk_cache_gc_max_size=512M",
+                            "--experimental_disk_cache_gc_idle_delay=0s",
+                            "--",
+                            "//codex-rs/...",
+                        ],
+                    )
+
+    def test_local_cache_defaults_preserve_caller_policy(self) -> None:
+        for options in (
+            ["--disk_cache="],
+            ["--disk_cache=/caller/cache"],
+            ["--disk_cache", "/caller/cache"],
+        ):
+            with self.subTest(options=options):
+                args = ["build", "--config=ci", *options, "--", "//..."]
+                self.assertEqual(
+                    run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                        args, {"BAZEL_LOCAL_DISK_CACHE": "/restored/cache"}
+                    ),
+                    args,
+                )
+        args = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+            ["test", "--experimental_disk_cache_gc_max_size", "128M", "//..."],
+            {"BAZEL_LOCAL_DISK_CACHE": "/restored/cache"},
+        )
+        self.assertEqual(args[1:3], ["--experimental_disk_cache_gc_max_size", "128M"])
+        self.assertFalse(any(arg.endswith("=512M") for arg in args))
+
+    def test_restored_cache_is_only_selected_for_keyless_compilation(self) -> None:
+        for args, env in (
+            (["query", "//..."], {}),
+            (["info", "output_base"], {}),
+            (["build", "--config=ci-linux", "//..."], {"BUILDBUDDY_API_KEY": "token"}),
+        ):
+            with self.subTest(args=args, authenticated=bool(env)):
+                self.assertEqual(
+                    run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                        args, {**env, "BAZEL_LOCAL_DISK_CACHE": "/restored/cache"}
+                    ),
+                    run_bazel_with_buildbuddy.bazel_args_with_remote_config(args, env),
+                )
+
     def test_main_preserves_spaced_argument_and_child_exit_status(self) -> None:
         spaced_arg = (
             r"--test_env=PATH=C:\Program Files\PowerShell\7;C:\Program Files\Git\bin"
