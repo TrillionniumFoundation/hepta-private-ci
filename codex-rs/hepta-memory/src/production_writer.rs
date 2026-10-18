@@ -47,6 +47,7 @@ use crate::LocalReconcileOutcome;
 use crate::LocalReplayFinalization;
 use crate::MemoryDraft;
 use crate::MemoryRevisionDraft;
+use crate::MemoryRevisionId;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
@@ -1608,8 +1609,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    &MemoryRevisionId {
+                        memory_id: memory_id.clone(),
+                        revision: expected_revision,
+                    },
                     source,
                     draft,
                     facts,
