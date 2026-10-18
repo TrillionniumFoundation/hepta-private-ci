@@ -348,13 +348,31 @@ def validate_report(report: dict[str, Any]) -> None:
         if key in report
     }):
         raise ValueError("report digest mismatch")
+    if report.get("status") not in {"blocked", "qualified"}:
+        raise ValueError("invalid report status")
+    expected_cases = {case["caseId"]: case for case in matrix_cases()}
     cases = report.get("cases")
-    expected = {case["caseId"] for case in matrix_cases()}
-    if not isinstance(cases, list) or {case.get("caseId") for case in cases} != expected:
+    if not isinstance(cases, list) or len(cases) != len(expected_cases) or not all(
+        isinstance(case, dict) for case in cases
+    ):
+        raise ValueError("report must contain exactly the sixteen matrix cases")
+    case_ids = [case.get("caseId") for case in cases]
+    if len(set(case_ids)) != len(expected_cases) or set(case_ids) != set(expected_cases):
         raise ValueError("report must contain exactly the sixteen matrix cases")
     workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
+    if not isinstance(workload, str) or not re.fullmatch(r"[0-9a-f]{64}", workload):
+        raise ValueError("invalid frozen workload digest")
+    if not isinstance(source, str) or not re.fullmatch(r"[0-9a-f]{40}", source):
+        raise ValueError("invalid exact source commit")
+    if report.get("workloadSourceDigest") != workload:
+        raise ValueError("source workload digest drift")
     for case in cases:
+        frozen = expected_cases[case["caseId"]]
+        if any(case.get(name) != frozen[name] for name, _ in FACTORS):
+            raise ValueError("matrix factor drift")
+        if case.get("status") not in {"measured", "blocked"}:
+            raise ValueError("invalid matrix case status")
         if case.get("workloadDigest") != workload:
             raise ValueError("case workload binding mismatch")
         if case.get("status") == "measured":

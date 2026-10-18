@@ -158,7 +158,7 @@ def test_observer_self_assertion_cannot_qualify_without_trusted_signature(
 def test_signed_observer_receipt_is_exactly_bound_to_pinned_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    cryptography = pytest.importorskip("cryptography")
+    pytest.importorskip("cryptography")
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
     from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
@@ -190,3 +190,36 @@ def test_signed_observer_receipt_is_exactly_bound_to_pinned_key(
     changed = {**receipt, "signatureEd25519": "0" * 128}
     with pytest.raises(ValueError, match="signature verification failed"):
         MODULE.verify_signed_observer_receipt(changed, **kwargs)
+
+
+
+def test_matrix_validator_rejects_duplicate_rows_and_factor_drift(
+    tmp_path: Path,
+) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="b" * 64,
+        source_commit="a" * 40,
+        output=tmp_path / "blocked-matrix.json",
+        host_id="fixture-host",
+    )
+
+    def rehash_report() -> None:
+        report["reportDigest"] = MODULE.digest({
+            key: report[key]
+            for key in (
+                "schema", "authority", "sourceCommit", "workloadDigest",
+                "workloadSourceDigest", "host", "cases", "observer",
+            )
+        })
+
+    report["cases"].append({**report["cases"][0]})
+    rehash_report()
+    with pytest.raises(ValueError, match="exactly the sixteen"):
+        MODULE.validate_report(report)
+    report["cases"].pop()
+    report["cases"][0]["encoder_topology"] = "replicated"
+    rehash_report()
+    with pytest.raises(ValueError, match="factor drift"):
+        MODULE.validate_report(report)
