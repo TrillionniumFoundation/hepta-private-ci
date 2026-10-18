@@ -57,8 +57,7 @@ fn digest(value: &str) -> ContractDigestV1 {
 }
 
 fn generation(value: u64) -> ContractGenerationV1 {
-    ContractGenerationV1::new(value)
-        .unwrap_or_else(|error| panic!("generation: {error:?}"))
+    ContractGenerationV1::new(value).unwrap_or_else(|error| panic!("generation: {error:?}"))
 }
 
 fn manifest() -> MemoryCellManifestV1 {
@@ -170,7 +169,9 @@ fn checkpoint_binds_population_modality_and_resource_limits() {
     assert_ne!(original, checkpoint(&changed, &input));
 
     let mut changed = manifest.clone();
-    changed.populations.insert(EngramPopulationV1::SemanticConcept);
+    changed
+        .populations
+        .insert(EngramPopulationV1::SemanticConcept);
     assert_ne!(original, checkpoint(&changed, &input));
 
     let mut changed = manifest.clone();
@@ -340,9 +341,15 @@ fn execute(fixture: &ShadowFixture) -> Result<MemoryCellShadowTickV1, MemoryCell
 fn shadow_runtime_selected_tick_is_deterministic() {
     let fixture = shadow_fixture(true);
     let first = execute(&fixture).unwrap_or_else(|error| panic!("selected tick: {error:?}"));
-    assert_eq!(first, execute(&fixture).unwrap_or_else(|error| panic!("replay: {error:?}")));
+    assert_eq!(
+        first,
+        execute(&fixture).unwrap_or_else(|error| panic!("replay: {error:?}"))
+    );
     assert_eq!(first.receipt.status, MemoryCellStatusV1::Selected);
-    assert_eq!(first.recall.packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(
+        first.recall.packet.disposition,
+        RecallDispositionV1::Recalled
+    );
     assert!(first.receipt.recall_packet_digest.is_some());
     assert!(first.receipt.successor_checkpoint_digest.is_some());
 }
