@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.pr2599-post-context-repair-ci.v1",
+  "observation_start_utc": "2026-10-18 17:56:13 UTC",
+  "observation_end_utc": "2026-10-18 18:00:30 UTC",
+  "head": "a4728553d2f09242640400719d82257bc9c63c73",
+  "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "draft": false,
+  "merged": false,
+  "source_run_list_observed_utc": "2026-10-18 17:56:13 UTC",
+  "runs_at_list_read": [
+    {
+      "id": 39151714945,
+      "name": "blocking-ci",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+      "run_attempt": 1
+    },
+    {
+      "id": 39151714876,
+      "name": "Hepta architecture convergence",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+      "run_attempt": 1
+    },
+    {
+      "id": 39151715018,
+      "name": "v8-canary",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+      "run_attempt": 1
+    },
+    {
+      "id": 39151711639,
+      "name": "PR #2599",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+      "run_attempt": 1
+    }
+  ],
+  "total_checks": 6,
+  "total_jobs": 6,
+  "total_legacy_statuses": 0,
+  "job_states": {
+    "queued": 6
+  },
+  "required_contexts": [
+    {
+      "name": "CI required",
+      "matches": []
+    },
+    {
+      "name": "Architecture required",
+      "matches": []
+    }
+  ],
+  "required_ci_complete": false,
+  "old_source_success_transferred": false,
+  "full_pagination_complete": true,
+  "jobs_checks_observation_start_utc": "2026-10-18 18:00:29 UTC",
+  "snapshot_note": "Non-atomic snapshot: run collection at 17:56 UTC; source checks/jobs and PR lease at 18:00 UTC. Every collected endpoint is individually complete; no old-source success is credited."
+}

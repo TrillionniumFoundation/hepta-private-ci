@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.pr2599-context-repair.v1",
+  "created_utc": "2026-10-18 18:02:15 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 2599,
+  "branch": "fix/ci-clippy-expect-unwrap-20261017",
+  "status": "FIX_PUSHED_EXACT_HEAD_CI_PENDING",
+  "old_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+  "source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+  "source_tree": "9823647309a471e44d695744536ef0090584d705",
+  "head": "a4728553d2f09242640400719d82257bc9c63c73",
+  "tree": "1f12d27a969695123fdc14ad33fd0422e9facf2a",
+  "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "introduced_regression": {
+    "introduced_in_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
+    "failure_source_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "run_id": 39140469435,
+    "job_id": 117713683668,
+    "step": "Converged authority and browser semantics",
+    "captured_ci_command": "cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo",
+    "exit_code": 101,
+    "errors": [
+      "automation_effect_host.rs:939: ProviderEffectBindingError lacks StdError",
+      "automation_effect_host.rs:971: String lacks StdError"
+    ],
+    "prior_static_review_missed_type_constraints": true,
+    "prior_workspace_native_preflight_stopped_before_compilation": true
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "previous_blob": "52db47a0fa1cb564eafbd4ee4a56127cb3ac3aba",
+      "blob": "8dd84058c7a6be291e41983f8182e4411a6e5b35",
+      "insertions": 2,
+      "deletions": 0,
+      "purpose": "Explicitly convert debug-only binding errors and String to anyhow::Error before retaining context."
+    },
+    {
+      "path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "blob": "b25bc61a57341b6e17507899527977fd95eef1db",
+      "insertions": 3,
+      "deletions": 3,
+      "purpose": "Original strict CLI updates only sourceBase/sourceObjects for runtime.agentd."
+    }
+  ],
+  "checks": {
+    "just_fmt_exit_code": 0,
+    "diff_check_exit_code": 0,
+    "production_prefix_byte_equal": true,
+    "wiremock_expect_one_retained": true,
+    "locked_compiler_reproducer": {
+      "schema": "hepta.locked-anyhow-type-probe.v1",
+      "utc": "2026-10-18T17:57:38.928242+00:00",
+      "source_head": "a4728553d2f09242640400719d82257bc9c63c73",
+      "before_source_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "scope": "Reduced compiler reproducer only; not the complete Hepta workspace or native integration gate",
+      "anyhow_version": "1.0.103",
+      "repository_lock_checksum": "2a4385e2e34eb35d6b3efe798b9eb88096925d87726c0798709bf56d9ed84af3",
+      "cached_crate_checksum_verified": true,
+      "all_cached_source_files_match_verified_crate": 54,
+      "offline": true,
+      "cargo_locked_check": true,
+      "network_downloads": 0,
+      "before_reproduces_two_e0599": true,
+      "after_compiles": true,
+      "runs": [
+        {
+          "case": "before",
+          "command": [
+            "/workspace/scratch/96b7abe29372/hepta-runtime/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "check",
+            "--offline",
+            "--locked",
+            "--manifest-path",
+            "/dev/shm/hepta-pr2599-context-fix-855e2f95cede/locked-probe/Cargo.toml"
+          ],
+          "exit_code": 101,
+          "e0599_count": 2,
+          "log": "locked-probe-before.log"
+        },
+        {
+          "case": "after",
+          "command": [
+            "/workspace/scratch/96b7abe29372/hepta-runtime/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "check",
+            "--offline",
+            "--locked",
+            "--manifest-path",
+            "/dev/shm/hepta-pr2599-context-fix-855e2f95cede/locked-probe/Cargo.toml"
+          ],
+          "exit_code": 0,
+          "e0599_count": 0,
+          "log": "locked-probe-after.log"
+        }
+      ],
+      "supersedes_unlocked_1_0_104_probe_for_dependency_identity": true,
+      "workspace_native_tests_executed": 0
+    },
+    "independent_static_review": {
+      "reviewer": "/root/github_inventory",
+      "added_context_calls_examined": 43,
+      "known_errors_found": 2,
+      "remaining_calls_without_same_type_gap": 41,
+      "workspace_compilation_claimed": false
+    },
+    "source_import": {
+      "sha": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+      "tree": "9823647309a471e44d695744536ef0090584d705",
+      "api_sha_matches_exact_raw_commit": true,
+      "timezone": "+0800",
+      "extra_message_newline": false,
+      "clean_full_checkout": true,
+      "tracked_files": 8665
+    },
+    "maps_import": {
+      "sha": "a4728553d2f09242640400719d82257bc9c63c73",
+      "tree": "1f12d27a969695123fdc14ad33fd0422e9facf2a",
+      "api_sha_matches_exact_raw_commit": true,
+      "clean_full_checkout": true,
+      "tracked_files": 8665
+    },
+    "strict_global_failed_module_count": 26,
+    "strict_global_failure_set_equals_19c5_baseline": true,
+    "runtime_agentd_original_strict_migration_exit_code": 0,
+    "migration_command": "python3 -B scripts/hepta-implementation-maps.py migrate --module runtime.agentd",
+    "non_identity_map_fields_unchanged": true,
+    "nonancestor_anchors_preserved": true,
+    "validator_blob": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "validator_modified": false,
+    "module_docs_qualification_exit_code": 1,
+    "derived_check_exit_code": 0,
+    "workspace_native_tests_executed": 0,
+    "workspace_disk_free_bytes_at_1753": 0,
+    "shm_free_bytes_at_1753": 782688256
+  },
+  "publication": {
+    "expected_old_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "force": false,
+    "update_ref_success": true,
+    "remote_readback_utc": "2026-10-18 17:56:13 UTC",
+    "remote_head_verified": true
+  },
+  "postpush_ci": {
+    "source": "POST_REPAIR_CI_CHECKPOINT.json",
+    "head": "a4728553d2f09242640400719d82257bc9c63c73",
+    "run_ids": [
+      39151714945,
+      39151714876,
+      39151715018,
+      39151711639
+    ],
+    "total_checks": 6,
+    "total_jobs": 6,
+    "job_states": {
+      "queued": 6
+    },
+    "required_contexts": [
+      {
+        "name": "CI required",
+        "matches": []
+      },
+      {
+        "name": "Architecture required",
+        "matches": []
+      }
+    ],
+    "required_ci_complete": false
+  },
+  "new_local_model_calls": 0,
+  "remote_research_calls_this_session": 64,
+  "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO",
+  "merge_performed": false
+}
