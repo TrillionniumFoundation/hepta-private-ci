@@ -85,3 +85,66 @@ jobs:
           path: ${{ runner.temp }}/hepta-zstd-212-evidence/
           if-no-files-found: warn
           retention-days: 14
+
+  isolate-windows-lock:
+    name: Diagnostic Windows exact solver and zstd patch (no promotion)
+    runs-on: windows-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Prepare pinned Windows Bazel and repository cache
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: p0-zstd-windows-lock-diagnostic
+      - name: Create isolated exact-HEAD candidate
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --exit-code
+          git diff --check
+          evidence="$RUNNER_TEMP/hepta-zstd-lock-diagnostic"
+          candidate="$RUNNER_TEMP/zstd-lock-candidate"
+          mkdir -p "$evidence"
+          git worktree add --detach "$candidate" "$EXPECTED_SHA"
+          echo "HEPTA_ZSTD_EVIDENCE=$evidence" >> "$GITHUB_ENV"
+          echo "HEPTA_ZSTD_CANDIDATE=$candidate" >> "$GITHUB_ENV"
+          printf '%s\n' "$EXPECTED_SHA" > "$evidence/source-sha.txt"
+          test "$(git -C "$candidate" rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Generate real Windows Bazel lock facts and compile pinned target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$HEPTA_ZSTD_CANDIDATE"
+          # This solver updates only the disposable worktree. Official
+          # --lockfile_mode=error on the source HEAD remains mandatory.
+          bazel mod deps --lockfile_mode=update 2>&1 | tee "$HEPTA_ZSTD_EVIDENCE/solver.log"
+          git diff --check
+          if [[ -n "$(git diff --name-only -- . ':(exclude)MODULE.bazel.lock')" ]]; then
+            echo 'Unexpected tracked modification outside Bazel lock' >&2
+            exit 1
+          fi
+          git diff --binary -- MODULE.bazel.lock > "$HEPTA_ZSTD_EVIDENCE/actual-lock.patch"
+          sha256sum MODULE.bazel.lock > "$HEPTA_ZSTD_EVIDENCE/generated-lock.sha256"
+          cp MODULE.bazel.lock "$HEPTA_ZSTD_EVIDENCE/MODULE.bazel.lock"
+          bazel build --lockfile_mode=error //codex-rs/skills:skills 2>&1 | tee "$HEPTA_ZSTD_EVIDENCE/target-build.log"
+          cd "$GITHUB_WORKSPACE"
+          git diff --check
+          git diff --exit-code
+          test "$(git rev-parse HEAD)" = "$(cat "$HEPTA_ZSTD_EVIDENCE/source-sha.txt")"
+      - name: Keep real Windows solver/patch/build artifacts
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-zstd-windows-lock-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-zstd-lock-diagnostic/
+          if-no-files-found: warn
+          retention-days: 14
