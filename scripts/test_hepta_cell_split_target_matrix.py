@@ -175,7 +175,6 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
     MODULE.validate_report(report)
 
 
-
 def test_live_worker_must_match_actual_source_checkout(tmp_path: Path) -> None:
     workload = tmp_path / "frozen"
     workload.write_bytes(b"fixture only")
@@ -219,9 +218,7 @@ def test_live_worker_must_echo_actual_factor_tuple(tmp_path: Path) -> None:
     )
     assert report["status"] == "blocked"
     assert all(row["status"] == "blocked" for row in report["cases"])
-    assert all(
-        "identity does not bind" in row["reason"] for row in report["cases"]
-    )
+    assert all("identity does not bind" in row["reason"] for row in report["cases"])
     MODULE.validate_report(report)
 
 
