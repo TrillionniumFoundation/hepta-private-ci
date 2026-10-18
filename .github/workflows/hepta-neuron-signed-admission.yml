@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-neuron --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-neuron --package codex-hepta-intelligence --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
       - name: Run neuron + intelligence signed-authority tests
         shell: bash
         run: |
