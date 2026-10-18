@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("host observation should be admissible");
+            .unwrap_or_else(|err| panic!("admissible host observation: {err}"));
         ledger
     }
 
