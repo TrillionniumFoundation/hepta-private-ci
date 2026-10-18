@@ -24,17 +24,21 @@ fn generation(value: u64) -> Generation {
 
 fn identity(label: &str) -> FeatureSnapshotIdentityV1 {
     FeatureSnapshotIdentityV1::new_with_question_options(
-        id(&format!("scope-{label}")),
-        id(&format!("workspace-{label}")),
-        id(&format!("purpose-{label}")),
+        FeatureSnapshotScopeV1 {
+            scope: id(&format!("scope-{label}")),
+            workspace: id(&format!("workspace-{label}")),
+            purpose: id(&format!("purpose-{label}")),
+        },
         digest(&format!("question-{label}")),
         digest(&format!("options-{label}")),
-        digest(&format!("frontier-{label}")),
-        digest(&format!("model-{label}")),
-        digest(&format!("adapter-{label}")),
-        digest(&format!("tokenizer-{label}")),
-        digest(&format!("normalizer-{label}")),
-        digest(&format!("calibration-{label}")),
+        FeatureSnapshotLineageV1 {
+            source_frontier: digest(&format!("frontier-{label}")),
+            model: digest(&format!("model-{label}")),
+            adapter: digest(&format!("adapter-{label}")),
+            tokenizer: digest(&format!("tokenizer-{label}")),
+            normalizer: digest(&format!("normalizer-{label}")),
+            calibration: digest(&format!("calibration-{label}")),
+        },
     )
     .expect("identity")
 }
@@ -545,4 +549,47 @@ fn microbatch_plan_rejects_mixed_snapshot_identity_or_generation() {
         plan_microbatch_v1(id("worker"), generation(1), 10, 20, requests),
         Err(DataPlaneError::InvalidMicrobatchPlan)
     );
+}
+
+/// The legacy v1 layout did not delimit consecutive request/model StableIds.
+/// This regression proves that distinct legal identities never share a v2
+/// evidence digest even when the head, feature input and output are identical.
+#[test]
+fn reference_output_digest_v2_fences_ambiguous_request_model_pairs() {
+    let first_request = id("a");
+    let first_model = id("bc");
+    let second_request = id("ab");
+    let second_model = id("c");
+
+    let old_first = [
+        first_request.as_str().as_bytes(),
+        first_model.as_str().as_bytes(),
+    ]
+    .concat();
+    let old_second = [
+        second_request.as_str().as_bytes(),
+        second_model.as_str().as_bytes(),
+    ]
+    .concat();
+    assert_eq!(old_first, old_second);
+
+    let bind = |request: &StableId, model: &StableId, values: &[i64]| {
+        digest_output(
+            OutputDigestIdentityV2 {
+                request_id: request,
+                model_id: model,
+                generation: generation(1),
+                head_digest: digest("same-head"),
+                encoder_digest: digest("same-encoder"),
+                input_digest: digest("same-features"),
+                identity_digest: digest("same-identity"),
+            },
+            values,
+        )
+    };
+    let first = bind(&first_request, &first_model, &[Q / 2, -Q / 4]);
+    let different_pair = bind(&second_request, &second_model, &[Q / 2, -Q / 4]);
+    assert_ne!(first, different_pair);
+    assert_eq!(first, bind(&first_request, &first_model, &[Q / 2, -Q / 4]));
+    assert_ne!(first, bind(&first_request, &first_model, &[Q / 2]));
 }

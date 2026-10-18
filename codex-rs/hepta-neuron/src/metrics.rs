@@ -144,6 +144,8 @@ impl NeuronMetricsGroupCommitWriterV1 {
             .read(true)
             .write(true)
             .create(true)
+            // Reopening a metrics WAL must never erase acknowledged history.
+            .truncate(false)
             .open(path)?;
         let mut locked = LockedMetricFile::acquire(file)?;
         let header = header(scope_digest, generation);

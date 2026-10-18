@@ -64,60 +64,58 @@ pub struct FeatureSnapshotIdentityV1 {
     pub calibration: Digest32,
 }
 
+/// Named principal and scope dimensions of a shared feature snapshot.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct FeatureSnapshotScopeV1 {
+    pub scope: StableId,
+    pub workspace: StableId,
+    pub purpose: StableId,
+}
+
+/// Explicit model and input lineage. Named fields prevent positional mix-ups.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct FeatureSnapshotLineageV1 {
+    pub source_frontier: Digest32,
+    pub model: Digest32,
+    pub adapter: Digest32,
+    pub tokenizer: Digest32,
+    pub normalizer: Digest32,
+    pub calibration: Digest32,
+}
+
 impl FeatureSnapshotIdentityV1 {
     pub fn new(
-        scope: StableId,
-        workspace: StableId,
-        purpose: StableId,
-        source_frontier: Digest32,
-        model: Digest32,
-        adapter: Digest32,
-        tokenizer: Digest32,
-        normalizer: Digest32,
-        calibration: Digest32,
+        scope: FeatureSnapshotScopeV1,
+        lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
         Self::new_with_question_options(
             scope,
-            workspace,
-            purpose,
-            tagged_digest(b"legacy.question", source_frontier, model),
-            tagged_digest(b"legacy.options", source_frontier, adapter),
-            source_frontier,
-            model,
-            adapter,
-            tokenizer,
-            normalizer,
-            calibration,
+            tagged_digest(b"legacy.question", lineage.source_frontier, lineage.model),
+            tagged_digest(b"legacy.options", lineage.source_frontier, lineage.adapter),
+            lineage,
         )
     }
 
     /// Builds a fully explicit cache identity, including the question and
     /// options that produced the shared feature request.
     pub fn new_with_question_options(
-        scope: StableId,
-        workspace: StableId,
-        purpose: StableId,
+        scope: FeatureSnapshotScopeV1,
         question: Digest32,
         options: Digest32,
-        source_frontier: Digest32,
-        model: Digest32,
-        adapter: Digest32,
-        tokenizer: Digest32,
-        normalizer: Digest32,
-        calibration: Digest32,
+        lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
         let identity = Self {
-            scope,
-            workspace,
-            purpose,
+            scope: scope.scope,
+            workspace: scope.workspace,
+            purpose: scope.purpose,
             question,
             options,
-            source_frontier,
-            model,
-            adapter,
-            tokenizer,
-            normalizer,
-            calibration,
+            source_frontier: lineage.source_frontier,
+            model: lineage.model,
+            adapter: lineage.adapter,
+            tokenizer: lineage.tokenizer,
+            normalizer: lineage.normalizer,
+            calibration: lineage.calibration,
         };
         identity.validate()?;
         Ok(identity)
@@ -878,13 +876,15 @@ impl ReferenceBackendBatchV1 {
             }
             let output_q24 = model.head.execute(request.snapshot.features_q24())?;
             let output_digest = digest_output(
-                &request.request_id,
-                &request.model_id,
-                request.generation,
-                model.head.head_digest,
-                request.snapshot.encoder_digest,
-                request.snapshot.input_digest,
-                request.snapshot.identity.semantic_digest(),
+                OutputDigestIdentityV2 {
+                    request_id: &request.request_id,
+                    model_id: &request.model_id,
+                    generation: request.generation,
+                    head_digest: model.head.head_digest,
+                    encoder_digest: request.snapshot.encoder_digest,
+                    input_digest: request.snapshot.input_digest,
+                    identity_digest: request.snapshot.identity.semantic_digest(),
+                },
                 &output_q24,
             );
             outputs.push(HeadExecutionOutputV1 {
@@ -1014,24 +1014,35 @@ fn append_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(raw);
 }
 
-fn digest_output(
-    request_id: &StableId,
-    model_id: &StableId,
+/// Reference backend evidence v2. Every variable-length field is length
+/// prefixed. v1 concatenated request/model identifiers without delimiters, so
+/// ("a", "bc") and ("ab", "c") hashed identical preimages for equal outputs.
+/// The domain changes deliberately: old v1 evidence cannot be reinterpreted
+/// as v2 without explicit, independently reviewed compatibility admission.
+struct OutputDigestIdentityV2<'a> {
+    request_id: &'a StableId,
+    model_id: &'a StableId,
     generation: Generation,
     head_digest: Digest32,
     encoder_digest: Digest32,
     input_digest: Digest32,
     identity_digest: Digest32,
-    output: &[i64],
-) -> Digest32 {
-    let mut bytes = b"hepta.neuron.reference-backend-output.v1\0".to_vec();
-    bytes.extend_from_slice(request_id.as_str().as_bytes());
-    bytes.extend_from_slice(model_id.as_str().as_bytes());
-    bytes.extend_from_slice(&generation.get().to_be_bytes());
-    bytes.extend_from_slice(head_digest.as_array());
-    bytes.extend_from_slice(encoder_digest.as_array());
-    bytes.extend_from_slice(input_digest.as_array());
-    bytes.extend_from_slice(identity_digest.as_array());
+}
+
+fn digest_output(identity: OutputDigestIdentityV2<'_>, output: &[i64]) -> Digest32 {
+    let mut bytes = b"hepta.neuron.reference-backend-output.v2\0".to_vec();
+    append_stable_id(&mut bytes, identity.request_id);
+    append_stable_id(&mut bytes, identity.model_id);
+    bytes.extend_from_slice(&identity.generation.get().to_be_bytes());
+    bytes.extend_from_slice(identity.head_digest.as_array());
+    bytes.extend_from_slice(identity.encoder_digest.as_array());
+    bytes.extend_from_slice(identity.input_digest.as_array());
+    bytes.extend_from_slice(identity.identity_digest.as_array());
+    bytes.extend_from_slice(
+        &u64::try_from(output.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
     for value in output {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
