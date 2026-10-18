@@ -416,14 +416,24 @@ def adapt_calibration_receipt(
     source_split: str,
     raw_evidence_class: str | None = None,
 ) -> CalibrationReceiptV1:
-    """Adapt calibration evidence; absent or invalid values fail closed."""
+    """Adapt calibration evidence; caller class may only corroborate the payload."""
     data = payload if isinstance(payload, Mapping) else {}
-    raw = raw_evidence_class or data.get("evidence_class")
-    raw_class = (
-        raw
-        if raw in {REAL_SHADOW, REAL_MODEL_LOCAL_QUALIFICATION, INCOMPLETE}
-        else INCOMPLETE
+    raw = data.get("evidence_class")
+    classes = {REAL_SHADOW, REAL_MODEL_LOCAL_QUALIFICATION, INCOMPLETE}
+    _require(
+        raw is None or (type(raw) is str and raw in classes),
+        "payload calibration evidence class is invalid",
     )
+    if raw_evidence_class is not None:
+        _require(
+            type(raw_evidence_class) is str and raw_evidence_class in classes,
+            "caller calibration evidence class is invalid",
+        )
+        _require(
+            raw_evidence_class == raw,
+            "caller calibration evidence class must match payload evidence",
+        )
+    raw_class = raw if raw in classes else INCOMPLETE
     vals = {name: data.get(name) for name in CalibrationReceiptV1._REQUIRED}
     missing = _missing(vals, CalibrationReceiptV1._REQUIRED)
     if data.get("heldout") is not True:
