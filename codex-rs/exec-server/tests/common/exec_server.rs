@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -51,6 +53,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _windows_helper_dir: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +73,30 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    // Windows locates sandbox helpers beside the running executable. Keep the
+    // real test binary and helpers together for both local and remote filesystems.
+    #[cfg(windows)]
+    let windows_helper_dir = TempDir::new()?;
+    #[cfg(windows)]
+    let helper_binary = {
+        let staged_binary = windows_helper_dir.path().join("codex-test-helper.exe");
+        std::fs::hard_link(&helper_binary, &staged_binary)
+            .or_else(|_| std::fs::copy(&helper_binary, &staged_binary).map(|_| ()))
+            .context("stage the Windows exec-server test executable")?;
+        for helper in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            let destination = windows_helper_dir.path().join(format!("{helper}.exe"));
+            std::fs::hard_link(&source, &destination)
+                .or_else(|_| std::fs::copy(&source, &destination).map(|_| ()))
+                .with_context(|| format!("stage Windows sandbox helper {helper}"))?;
+        }
+        staged_binary
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _windows_helper_dir: windows_helper_dir,
     })
 }
 

@@ -44,6 +44,12 @@ pub enum SignedIntentStatus {
     Aborted,
 }
 
+impl SignedIntentStatus {
+    pub(crate) fn terminal(self) -> bool {
+        matches!(self, Self::Committed | Self::RolledBack | Self::Aborted)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SignedSupervisorIntent {
@@ -250,12 +256,7 @@ pub fn write_intent(
 ) -> Result<(), SignedIntentError> {
     intent.validate()?;
     if let Some(existing) = read_intent(run_root)?
-        && matches!(
-            existing.status,
-            SignedIntentStatus::Prepared
-                | SignedIntentStatus::Queued
-                | SignedIntentStatus::RecoveryRequired
-        )
+        && !existing.status.terminal()
         && existing.grant_sha256 != intent.grant_sha256
     {
         return Err(SignedIntentError::Invalid(

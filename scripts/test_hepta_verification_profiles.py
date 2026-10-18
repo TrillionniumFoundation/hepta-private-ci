@@ -25,10 +25,58 @@ def verifier(name):
 
 DOCS = verifier("hepta-docs.py")
 MODULES = verifier("hepta-module-docs.py")
+MAPS = verifier("hepta-implementation-maps.py")
 GAP = verifier("hepta-gap-closure.py")
 
 
 class VerificationProfileTests(unittest.TestCase):
+    def test_cli_routes_ordinary_checks_and_explicit_qualification(self):
+        for module in (DOCS, MODULES, MAPS):
+            for arguments, expected in (
+                ([], "development"),
+                (["--profile", "qualification"], "qualification"),
+            ):
+                with (
+                    self.subTest(module=module.__name__, arguments=arguments),
+                    patch.object(sys, "argv", [module.__file__, "verify", *arguments]),
+                    patch.object(module, "verify", return_value=0) as verify,
+                ):
+                    module.main()
+                    if module is MAPS:
+                        self.assertEqual(verify.call_args.kwargs["profile"], expected)
+                    else:
+                        verify.assert_called_once_with(expected)
+
+    def test_legacy_exact_source_cli_keeps_qualification_semantics(self):
+        with (
+            patch.object(
+                sys, "argv", [MAPS.__file__, "verify", "--require-current-source"]
+            ),
+            patch.object(MAPS, "verify", return_value=0) as verify,
+        ):
+            MAPS.main()
+            self.assertEqual(verify.call_args.kwargs["profile"], "qualification")
+
+    def test_exact_source_cli_rejects_an_explicit_conflicting_profile(self):
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    MAPS.__file__,
+                    "verify",
+                    "--require-current-source",
+                    "--profile",
+                    "development",
+                ],
+            ),
+            patch.object(MAPS, "verify") as verify,
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(SystemExit),
+        ):
+            MAPS.main()
+        verify.assert_not_called()
+
     def test_real_development_tree_reports_a_shared_path_touch_without_activating_the_lease(
         self,
     ):

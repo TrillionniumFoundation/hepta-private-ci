@@ -123,6 +123,8 @@ impl RuntimeModuleSupervisorV1 {
         }
     }
 
+    /// Publish initial modules in dependency order. Rejected publication leaves
+    /// the registry, generation fences and selected writer reservations unchanged.
     pub fn register_bootstrap(
         &mut self,
         abi: RuntimeModuleAbiV1,
@@ -132,6 +134,7 @@ impl RuntimeModuleSupervisorV1 {
         let mut staged = self.registry.clone();
         staged.register_candidate(abi)?;
         let snapshot = staged.activate_bootstrap(&module_id, generation)?;
+        validate_runtime_dependency_graph(&snapshot)?;
         self.registry = staged;
         self.prune_lifecycle_metadata();
         Ok(snapshot)
@@ -735,6 +738,8 @@ impl RuntimeModuleSupervisorV1 {
         Ok(snapshot)
     }
 
+    /// Restore only stateless, effect-free content. The verified regression
+    /// token does not replace a current domain-owner migration/handoff witness.
     pub fn rollback_verified(
         &mut self,
         module_id: &StableId,
@@ -778,6 +783,15 @@ impl RuntimeModuleSupervisorV1 {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition.into());
         }
         witness.validate_for(&record.abi)?;
+        // Staging is not publication, but must not record a ready witness that
+        // omits the incumbent's state, writer or external-effect obligations.
+        if let Some(predecessor) = record.abi.predecessor_generation {
+            let previous = self
+                .registry
+                .record(module_id, predecessor)
+                .ok_or(RuntimeModuleRegistryError::UnknownPredecessor)?;
+            witness.validate_for(&previous.abi)?;
+        }
         let candidate_digest = record.abi.candidate_artifact_digest;
         let pending_topology = self
             .pending_topologies
@@ -1058,3 +1072,11 @@ mod tests {
 #[cfg(test)]
 #[path = "module_runtime_safety_tests.rs"]
 mod safety_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_predecessor_tests.rs"]
+mod predecessor_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_bootstrap_tests.rs"]
+mod bootstrap_tests;

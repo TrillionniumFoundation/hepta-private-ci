@@ -66,7 +66,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             "GITHUB_REPOSITORY": repository,
         }
 
-    def test_keyless_invocation_drops_remote_ci_configuration(self) -> None:
+    def test_keyless_invocation_retains_endpoint_free_ci_configuration(self) -> None:
         self.assertIsNone(
             run_bazel_with_buildbuddy.remote_config(
                 ["build", "--config=ci-linux", "//codex-rs/cli:codex"],
@@ -78,7 +78,63 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
                 ["build", "--config=ci-linux", "--", "//codex-rs/cli:codex"],
                 {},
             ),
-            ["build", "--", "//codex-rs/cli:codex"],
+            ["build", "--config=ci", "--", "//codex-rs/cli:codex"],
+        )
+
+    def test_keyless_unix_ci_defaults_precede_explicit_overrides(self) -> None:
+        for config, runner in (
+            ("ci-linux", "Linux"),
+            ("ci-v8", "Linux"),
+            ("ci-macos", "macOS"),
+        ):
+            with self.subTest(config=config):
+                self.assertEqual(
+                    run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                        [
+                            "--output_user_root=/tmp/build",
+                            "build",
+                            f"--config={config}",
+                            "--platforms=@llvm//platforms:linux_arm64",
+                            "--config=rusty-v8-upstream-libcxx",
+                            "--disk_cache=/tmp/persistent-cache",
+                            "--",
+                            "//third_party/v8:pair",
+                        ],
+                        {"RUNNER_OS": runner},
+                    ),
+                    [
+                        "--output_user_root=/tmp/build",
+                        "build",
+                        "--config=ci",
+                        "--platforms=@llvm//platforms:linux_arm64",
+                        "--config=rusty-v8-upstream-libcxx",
+                        "--disk_cache=/tmp/persistent-cache",
+                        "--",
+                        "//third_party/v8:pair",
+                    ],
+                )
+
+    def test_keyless_unix_ci_is_not_injected_twice(self) -> None:
+        self.assertEqual(
+            run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                ["build", "--config=ci", "--config=ci-v8", "//third_party/v8:pair"],
+                {"RUNNER_OS": "Linux"},
+            ),
+            ["build", "--config=ci", "//third_party/v8:pair"],
+        )
+
+    def test_program_ci_argument_does_not_enable_ci_defaults(self) -> None:
+        args = ["run", "//codex-rs/cli:codex", "--", "--config=ci-linux"]
+        self.assertEqual(
+            run_bazel_with_buildbuddy.bazel_args_with_remote_config(args, {}), args
+        )
+
+    def test_keyless_unix_administrative_command_has_no_build_defaults(self) -> None:
+        self.assertEqual(
+            run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                ["shutdown", "--config=ci-v8"], {"RUNNER_OS": "Linux"}
+            ),
+            ["shutdown"],
         )
 
     def test_program_arguments_after_separator_do_not_select_or_lose_rbe(self) -> None:

@@ -14,6 +14,12 @@ import subprocess
 import sys
 import unittest
 
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    workflow_commands,
+    workflow_needs,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
 WORKFLOW = ROOT / ".github/workflows/hepta-gap-agentd-process.yml"
@@ -130,11 +136,8 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
-        self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
+        parsed = load_workflow(self.text)["jobs"]["qualification-result"]
+        self.assertEqual(workflow_needs(parsed), set(LANES))
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
@@ -158,6 +161,40 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("refresh-derived --check", self.jobs["derived-projections"])
         self.assertIn("cargo fmt", self.jobs["owner-formatting"])
         self.assertIn("-- --check", self.jobs["owner-formatting"])
+
+    def test_real_host_reconciliation_runs_in_the_feature_enabled_command(self):
+        commands = workflow_commands(self.jobs["process-qualification"])
+        host_commands = [
+            command
+            for command in commands
+            if command[:2] == ["just", "test"]
+            and any(
+                command[index : index + 2] == ["--test", "production_reconcile_host"]
+                for index in range(len(command) - 1)
+            )
+        ]
+        self.assertEqual(len(host_commands), 1)
+        command = host_commands[0]
+        self.assertIn("--locked", command)
+        self.assertIn("--test-threads=1", command)
+        for option, value in (
+            ("-p", "codex-hepta-agentd"),
+            ("--features", "qualification-cognitive-write"),
+            ("--test", "cognitive_product_e2e"),
+            ("--test", "plasticity_process_e2e"),
+            ("--test", "runtime_codex_product_e2e"),
+            ("--test", "supervised_two_agents"),
+            ("--test", "supervisord_product_e2e"),
+            ("--test", "queue_capacity_product"),
+            ("--test", "five_agent_rolling_upgrade"),
+        ):
+            with self.subTest(option=option, value=value):
+                self.assertTrue(
+                    any(
+                        command[index : index + 2] == [option, value]
+                        for index in range(len(command) - 1)
+                    )
+                )
 
     def test_checkout_and_candidate_permissions_remain_read_only(self):
         self.assertIn("permissions:\n  contents: read", self.text)
@@ -184,8 +221,8 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn('--github-output "$GITHUB_OUTPUT"', process)
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
-        terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        terminal = load_workflow(self.text)["jobs"]["qualification-result"]
+        self.assertIn("process-qualification", workflow_needs(terminal))
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

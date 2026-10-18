@@ -195,7 +195,16 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            // The ledger flushes this retained directory handle before it can
+            // acknowledge a durable frontier.
+            options.write(true).custom_flags(0x0200_0000);
+        }
+        options.open(&self.root).unwrap()
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {

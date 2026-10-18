@@ -168,6 +168,24 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 ## 8. Failure semantics, recovery and rollback
 
+On Linux, each externally adopted Agentd/Matrixd process receives a private
+`pidfd` before its kernel-authenticated control handshake. The pinned task is
+checked again after that handshake. Stop/kill and subsequent exit observation
+use this same descriptor, not a fresh lookup of the numeric PID. An exited
+non-child is terminal even while its foreign parent retains a zombie; its exit
+code remains unknown rather than being invented. Child exit codes that are
+actually available through `waitid` remain stable across repeated observations.
+The descriptor is process-local and is never serialized into a durable lease;
+a new Supervisor must reopen and reauthenticate it during recovery. Missing
+pidfd support or permission/resource errors reject Linux adoption instead of
+falling back to PID-based signaling. Linux requires the pidfd open/signal and
+`waitid(P_PIDFD)` interfaces (Linux 5.4 or newer). Non-Linux process custody and
+newly spawned `std::process::Child` handles retain their existing behavior;
+this does not assert a cross-platform lifetime-identity qualification. Tests
+use actual authenticated child processes with a deliberately non-reaping
+foreign parent and retain the ordinary restart, peer and writer-fence checks.
+
+
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
@@ -175,6 +193,19 @@ Unexpected Agent exits use a durable bounded restart window with exponential bac
 Rollback and automatic rollback are fresh admissions. Immediately before process start the supervisor re-resolves the release through Fleet, so revoked or no-longer-allowed releases fail closed, then compares current manifest/program digests and the complete allow/revoke admission frontier against the durable transaction. A changed policy frontier is not silently accepted because the predecessor was valid earlier.
 
 Ambiguous signed transitions become `recovery_required`. Supervisord remains reachable for read-only transaction/status queries and the signed recovery ceremony, but reports not-ready and rejects ordinary mutation of that Agent except emergency kill. Recovery may become `committed` or `rolled_back` only when an independently signed decision binds the grant, intent digest, transaction digest, observed immutable release bytes, current lifecycle generation and current daemon authority epoch; the current Fleet admission frontier is revalidated once more before terminalization.
+
+Native Agentd health, Matrixd health and Agentd drain exchanges use one
+monotonic 200 ms transport deadline across connection, authenticated request
+transmission and bounded response framing. Nonblocking Unix socket creation
+prevents a saturated accept queue from blocking lifecycle observation. A full
+Linux accept queue returns unavailable; neither that result nor a partial frame
+acknowledges readiness or drain. Kernel peer PID/effective-UID verification still
+runs before request bytes, and the existing envelope, generation and frame-size
+checks remain mandatory. Interrupted or partial I/O does not renew the deadline.
+The owning real-socket regressions cover queue saturation, trickled input, blocked
+writes, zero-budget non-dispatch and successful fragmented framing. These checks
+do not qualify installed-product recovery, large-release performance, or later
+numeric-PID signal authority.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -191,6 +222,15 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 ## 10. Performance, capacity and hot-path policy
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components.
+
+Development and test profiles optimize the SHA-2 dependency while retaining
+ordinary debug assertions and the existing test deadlines. Fleet still hashes
+the complete currently admitted program bytes at each required boundary; no
+cached success, skipped digest or lighter identity proof substitutes for that
+validation. The real-process pair tests include fixture installation in their
+elapsed time, so unoptimized hashing of a large test executable can otherwise
+consume the lifecycle test budget before the scenario starts. This build-profile
+choice is not an installed-release performance or production-qualification claim.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -394,6 +434,15 @@ This receipt records repository source bindings for the current documentation ca
 | `signed_upgrade` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
+
+`Supervisor::recover` also calls the startup reconciliation owner in
+`codex-rs/hepta-supervisor/src/signed_intent_recovery.rs`. It consumes the
+exact-digest abort directive, cancels pending automatic restarts without clearing
+charged attempts, and keeps both main and Matrix children fenced until exit is
+observed. Only then can the matching release transaction and signed intent become
+`Aborted`. `signed_abort_recovery_tests.rs` covers repeated recovery, the two-journal
+terminal publication boundary, stale directives, and a main process that exits
+while its Matrix companion remains alive.
 
 - `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.

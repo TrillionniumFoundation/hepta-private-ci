@@ -433,7 +433,13 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
+        Err(error) => return Err(error.into()),
+    }
+    // Windows can report ConnectionRefused for a path that does not exist.
+    // Inspect the entry itself so lookup errors and dangling links stay errors.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) => return Err(error.into()),
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
@@ -449,6 +455,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         )))
     }
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
 
 #[cfg(unix)]
 async fn set_owner_only(path: &Path) -> Result<(), MatrixdControlError> {
@@ -534,6 +544,7 @@ mod tests {
     use std::error::Error;
     use std::fs;
 
+    use anyhow::Context;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_matrix_protocol::PendingApproval;
     use codex_hepta_matrix_store::MatrixDurableConfig;
@@ -866,11 +877,14 @@ mod tests {
             .matrixd_control_socket()
             .to_path_buf();
         let cancel = CancellationToken::new();
-        let server =
-            MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone()).await?;
+        let server = MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone())
+            .await
+            .context("bind matrixd control server")?;
         let task = tokio::spawn(server.run());
 
-        let mut stream = UnixStream::connect(&socket).await?;
+        let mut stream = UnixStream::connect(&socket)
+            .await
+            .context("connect matrixd control client")?;
         let request = MatrixdRequest {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: 41,
@@ -880,10 +894,20 @@ mod tests {
         };
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
-        stream.write_all(&bytes).await?;
+        stream
+            .write_all(&bytes)
+            .await
+            .context("write matrixd health request")?;
+        stream
+            .shutdown()
+            .await
+            .context("finish matrixd health request")?;
         let mut reader = BufReader::new(stream);
         let mut response = Vec::new();
-        reader.read_until(b'\n', &mut response).await?;
+        reader
+            .read_until(b'\n', &mut response)
+            .await
+            .context("read matrixd health response")?;
         let response: MatrixdResponse = serde_json::from_slice(&response)?;
         assert_eq!(response.release_id, "release-1");
         assert!(matches!(
@@ -901,8 +925,9 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
         connections.set_fenced();
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        drop(reader);
         cancel.cancel();
-        task.await??;
+        task.await.context("join matrixd control server")??;
         Ok(())
     }
 }

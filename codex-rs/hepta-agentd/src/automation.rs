@@ -251,6 +251,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     tick_interval: Duration,
 ) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
+    let mut uncertainty_scan = scheduler.store().uncertain_dispatch_scan();
     loop {
         tokio::select! {
             biased;
@@ -279,9 +280,14 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // Reconcile one durable historical occurrence before admitting new
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
-        if let Err(error) =
-            automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
-                .await
+        if let Err(error) = automation_recovery::reconcile_one(
+            scheduler.store(),
+            &state,
+            state.identity(),
+            now_ms,
+            &mut uncertainty_scan,
+        )
+        .await
         {
             return stop_after_recovery_error(error, &state, &cancellation).await;
         }

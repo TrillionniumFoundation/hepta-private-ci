@@ -51,7 +51,7 @@ use codex_sandboxing::resolve_windows_elevated_filesystem_overrides;
 use codex_sandboxing::resolve_windows_restricted_token_filesystem_overrides;
 #[cfg(test)]
 use codex_sandboxing::unsupported_windows_restricted_token_sandbox_reason;
-#[cfg(any(test, target_os = "windows"))]
+#[cfg(test)]
 use codex_sandboxing::windows_sandbox_uses_elevated_backend;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
@@ -574,8 +574,7 @@ async fn exec_windows_sandbox(
     windows_sandbox_filesystem_overrides: Option<&WindowsSandboxFilesystemOverrides>,
 ) -> Result<RawExecToolCallOutput> {
     use crate::config::find_codex_home;
-    use codex_windows_sandbox::run_windows_sandbox_capture_for_permission_profile_elevated;
-    use codex_windows_sandbox::run_windows_sandbox_capture_with_filesystem_overrides;
+    use codex_windows_sandbox::run_windows_sandbox_capture_for_level;
 
     let ExecParams {
         command,
@@ -635,7 +634,6 @@ async fn exec_windows_sandbox(
     let command_path = command.first().cloned();
     let sandbox_level = windows_sandbox_level;
     let proxy_enforced = network.is_some();
-    let use_elevated = windows_sandbox_uses_elevated_backend(sandbox_level);
     let additional_deny_write_paths = windows_sandbox_filesystem_overrides
         .map(|overrides| overrides.additional_deny_write_paths.clone())
         .unwrap_or_default();
@@ -649,43 +647,27 @@ async fn exec_windows_sandbox(
     let elevated_write_roots_override = windows_sandbox_filesystem_overrides
         .and_then(|overrides| overrides.write_roots_override.clone());
     let spawn_res = tokio::task::spawn_blocking(move || {
-        if use_elevated {
-            run_windows_sandbox_capture_for_permission_profile_elevated(
-                codex_windows_sandbox::ElevatedSandboxProfileCaptureRequest {
-                    permission_profile: &permission_profile,
-                    workspace_roots: workspace_roots.as_slice(),
-                    codex_home: codex_home.as_ref(),
-                    command,
-                    cwd: &cwd,
-                    env_map: env,
-                    timeout_ms,
-                    cancellation,
-                    use_private_desktop: windows_sandbox_private_desktop,
-                    proxy_enforced,
-                    network_proxy_restricting_sid,
-                    read_roots_override: elevated_read_roots_override.as_deref(),
-                    read_roots_include_platform_defaults:
-                        elevated_read_roots_include_platform_defaults,
-                    write_roots_override: elevated_write_roots_override.as_deref(),
-                    deny_read_paths_override: &additional_deny_read_paths,
-                    deny_write_paths_override: &additional_deny_write_paths,
-                },
-            )
-        } else {
-            run_windows_sandbox_capture_with_filesystem_overrides(
-                &permission_profile,
-                workspace_roots.as_slice(),
-                codex_home.as_ref(),
+        run_windows_sandbox_capture_for_level(
+            codex_windows_sandbox::ElevatedSandboxProfileCaptureRequest {
+                permission_profile: &permission_profile,
+                workspace_roots: workspace_roots.as_slice(),
+                codex_home: codex_home.as_ref(),
                 command,
-                &cwd,
-                env,
+                cwd: &cwd,
+                env_map: env,
                 timeout_ms,
                 cancellation,
-                &additional_deny_read_paths,
-                &additional_deny_write_paths,
-                windows_sandbox_private_desktop,
-            )
-        }
+                use_private_desktop: windows_sandbox_private_desktop,
+                proxy_enforced,
+                network_proxy_restricting_sid,
+                read_roots_override: elevated_read_roots_override.as_deref(),
+                read_roots_include_platform_defaults: elevated_read_roots_include_platform_defaults,
+                write_roots_override: elevated_write_roots_override.as_deref(),
+                deny_read_paths_override: &additional_deny_read_paths,
+                deny_write_paths_override: &additional_deny_write_paths,
+            },
+            sandbox_level,
+        )
     })
     .await;
 

@@ -1,15 +1,203 @@
+# Scope: skip only transient Windows linker outputs during dependency consolidation.
+# Upstream: hermeticbuild/rules_rust f19661ba71f77c993ce1eb082053692610fe4313.
+diff --git a/util/process_wrapper/main.rs b/util/process_wrapper/main.rs
+index 3139b45..1d12c8a 100644
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
-             let file_name_lower = file_name
-                 .to_string_lossy()
-                 .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
+@@ -198,6 +198,26 @@
+                     e
+                 ))
+             })?;
++            let file_name = entry.file_name();
++            let file_name_lower = file_name
++                .to_string_lossy()
++                .to_ascii_lowercase();
++            let is_temporary_archive = file_name_lower
++                .rsplit_once(".temp-archive-")
++                .and_then(|(_, suffix)| suffix.strip_suffix(".a"))
++                .is_some_and(|nonce| {
++                    nonce.len() == 7 && nonce.bytes().all(|byte| byte.is_ascii_hexdigit())
++                });
++            if file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++                || is_temporary_archive
++            {
++                // Native Windows link actions leave transient executable, codegen, and
++                // LLVM `*.temp-archive-%%%%%%%.a` outputs (seven hex digits).
++                // Skip them before metadata or copying: the producer can rename or
++                // delete them at any time while finishing the final artifact.
 +                continue;
 +            }
+             let file_type = entry.file_type().map_err(|e| {
+                 ProcessWrapperError(format!(
+                     "unable to inspect dependency search path {}: {}",
+@@ -209,10 +229,6 @@
+                 continue;
+             }
+
+-            let file_name = entry.file_name();
+-            let file_name_lower = file_name
+-                .to_string_lossy()
+-                .to_ascii_lowercase();
              if !seen.insert(file_name_lower) {
                  continue;
              }
+@@ -246,6 +262,10 @@
+
+     Ok((filtered_args, Some(unified_dir)))
+ }
++
++#[cfg(all(test, windows))]
++#[path = "dependency_search_paths_tests.rs"]
++mod dependency_search_paths_tests;
+
+ #[cfg(not(windows))]
+ fn consolidate_dependency_search_paths(
+diff --git a/util/process_wrapper/dependency_search_paths_tests.rs b/util/process_wrapper/dependency_search_paths_tests.rs
+new file mode 100644
+index 0000000..34bd0b4
+--- /dev/null
++++ b/util/process_wrapper/dependency_search_paths_tests.rs
+@@ -0,0 +1,142 @@
++use super::{consolidate_dependency_search_paths, ProcessWrapperError, TemporaryDirectoryGuard};
++use std::collections::{BTreeMap, HashSet};
++use std::fs;
++use std::path::PathBuf;
++use std::sync::Mutex;
++use std::time::{SystemTime, UNIX_EPOCH};
++
++// The production consolidator names its output using the process ID and time.
++// Serialize these filesystem tests so even calls in the same millisecond do
++// not share an output directory.
++static CONSOLIDATION_TEST_LOCK: Mutex<()> = Mutex::new(());
++
++#[test]
++fn skips_transient_linker_outputs_and_keeps_stable_dependency_files() {
++    let _lock = CONSOLIDATION_TEST_LOCK.lock().unwrap();
++    let source = test_directory();
++    let source_path = source.path.as_ref().unwrap();
++    let stable = [
++        "libdependency.rlib",
++        "libdependency.rmeta",
++        "dependency.lib",
++        "libdependency.a",
++        "dependency.dll",
++        "dependency.exe",
++        "dependency.pdb",
++        "dependency.obj",
++        "dependency.temp-archive-helper.lib",
++        "dependency.temp-archive-helper.a",
++        "dependency.temp-archive-abc123.a",
++        "dependency.temp-archive-abc12345.a",
++        "dependency.temp-archive-abc123g.a",
++    ];
++    let expected: BTreeMap<_, _> = stable
++        .iter()
++        .map(|name| ((*name).to_owned(), format!("stable {name}").into_bytes()))
++        .collect();
++    for (name, bytes) in &expected {
++        fs::write(source_path.join(name), bytes).unwrap();
++    }
++    for name in [
++        "cli-debug_clear_memories-test.lib.temp-archive-c0b5e9b.a",
++        "OTHER.LIB.TEMP-ARCHIVE-ABC1234.A",
++        "dependency.exe.tmp123",
++        "dependency.123.rcgu.o",
++    ] {
++        fs::write(source_path.join(name), "transient output").unwrap();
++    }
++    fs::create_dir(source_path.join("nested-directory")).unwrap();
++
++    let (args, directory) = consolidate_dependency_search_paths(&[
++        "--crate-type=lib".to_owned(),
++        format!("-Ldependency={}", source_path.display()),
++    ])
++    .unwrap();
++    let output = TemporaryDirectoryGuard::new(directory);
++    let output_path = output.path.as_ref().unwrap();
++    assert_eq!(
++        args,
++        vec![
++            "--crate-type=lib".to_owned(),
++            format!("-Ldependency={}", output_path.display()),
++        ]
++    );
++    let actual: BTreeMap<_, _> = fs::read_dir(output_path)
++        .unwrap()
++        .map(|entry| {
++            let entry = entry.unwrap();
++            (
++                entry.file_name().into_string().unwrap(),
++                fs::read(entry.path()).unwrap(),
++            )
++        })
++        .collect();
++    assert_eq!(actual, expected);
++}
++
++#[test]
++fn case_insensitive_duplicate_keeps_the_first_search_path() {
++    let _lock = CONSOLIDATION_TEST_LOCK.lock().unwrap();
++    let first = test_directory();
++    let second = test_directory();
++    let first_path = first.path.as_ref().unwrap();
++    let second_path = second.path.as_ref().unwrap();
++    fs::write(first_path.join("Shared.lib"), "first").unwrap();
++    fs::write(second_path.join("SHARED.LIB"), "second").unwrap();
++    let (_, directory) = consolidate_dependency_search_paths(&[
++        "-L".to_owned(),
++        format!("dependency={}", first_path.display()),
++        format!("-Ldependency={}", second_path.display()),
++    ])
++    .unwrap();
++    let output = TemporaryDirectoryGuard::new(directory);
++    let entries: Vec<_> = fs::read_dir(output.path.as_ref().unwrap())
++        .unwrap()
++        .map(|entry| {
++            let entry = entry.unwrap();
++            (entry.file_name(), fs::read(entry.path()).unwrap())
++        })
++        .collect();
++    assert_eq!(entries, vec![("Shared.lib".into(), b"first".to_vec())]);
++}
++
++#[test]
++fn missing_dependency_search_path_still_fails() {
++    let _lock = CONSOLIDATION_TEST_LOCK.lock().unwrap();
++    let source = test_directory();
++    let missing = source.path.as_ref().unwrap().join("missing");
++    let existing = dependency_directories();
++    let result =
++        consolidate_dependency_search_paths(&[format!("-Ldependency={}", missing.display())]);
++    // The upstream error path does not return its newly created output for
++    // cleanup. Remove only directories created by this call in this process.
++    for directory in dependency_directories().difference(&existing) {
++        fs::remove_dir_all(directory).unwrap();
++    }
++    let ProcessWrapperError(message) = result.unwrap_err();
++    assert!(message.contains("unable to read dependency search path"));
++    assert!(message.contains(&missing.display().to_string()));
++}
++
++fn test_directory() -> TemporaryDirectoryGuard {
++    let directory = std::env::temp_dir().join(format!(
++        "rules_rust_dependency_test_{}_{}",
++        std::process::id(),
++        SystemTime::now()
++            .duration_since(UNIX_EPOCH)
++            .unwrap()
++            .as_nanos()
++    ));
++    fs::create_dir(&directory).unwrap();
++    TemporaryDirectoryGuard::new(Some(directory))
++}
++
++fn dependency_directories() -> HashSet<PathBuf> {
++    let prefix = format!("rules_rust_process_wrapper_deps_{}_", std::process::id());
++    fs::read_dir(std::env::current_dir().unwrap())
++        .unwrap()
++        .map(Result::unwrap)
++        .filter(|entry| entry.file_name().to_string_lossy().starts_with(&prefix))
++        .map(|entry| entry.path())
++        .collect()
++}

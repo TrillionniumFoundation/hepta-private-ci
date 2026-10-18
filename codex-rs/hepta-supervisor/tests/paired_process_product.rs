@@ -6,16 +6,17 @@ use std::io::Write;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -46,13 +47,6 @@ const IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd5",
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
-
-// Both product tests spawn real agentd+matrixd pairs. Running them in parallel
-// can make one test's bounded shutdown compete with the other's ten-child
-// adoption workload, which turns a lifecycle assertion into host-load timing.
-// Keep the product scenarios isolated while leaving their child processes and
-// all supervisor behavior unchanged.
-static PAIR_PRODUCT_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct PairRuntimeFence {
@@ -85,9 +79,6 @@ impl PairRuntimeFence {
 
 #[test]
 fn two_real_pairs_restart_one_without_peer_pid_churn() -> Result<()> {
-    let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut fixture = PairFleet::new(2)?;
     fixture.start_all()?;
     fixture.wait_ready(Duration::from_secs(60))?;
@@ -129,9 +120,6 @@ fn two_real_pairs_restart_one_without_peer_pid_churn() -> Result<()> {
 
 #[test]
 fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Result<()> {
-    let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut fixture = PairFleet::new(5)?;
     let started = Instant::now();
     fixture.warm_first_pair()?;
@@ -551,16 +539,35 @@ fn run_agent_child() -> Result<()> {
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload: match request.method {
+                AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
+                    promotion_ready: true,
+                    ready: running,
+                    fenced: false,
+                    lifecycle: lifecycle.lifecycle,
+                    process_id: std::process::id(),
+                    workspace,
+                    home_root,
+                    run_root,
+                }),
+                // This controlled child has no turns or effect work. Report
+                // drain only after the real Supervisor's durable lifecycle has
+                // reached Draining; a health reply cannot acknowledge a drain.
+                AgentdMethod::Drain => {
+                    let draining = lifecycle.lifecycle == AgentLifecycle::Draining;
+                    AgentdPayload::Drain(DrainSnapshot {
+                        admission_closed: draining,
+                        running_turns: 0,
+                        drained: draining,
+                        lifecycle: lifecycle.lifecycle,
+                        fenced: false,
+                    })
+                }
+                _ => AgentdPayload::Error {
+                    code: "fixture_unsupported_method".to_string(),
+                    message: "controlled pair child implements health and drain only".to_string(),
+                },
+            },
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

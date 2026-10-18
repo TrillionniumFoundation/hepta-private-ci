@@ -25,6 +25,7 @@ use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::AutomationUncertainDispatchScan;
 use codex_hepta_contracts::Sha256Digest;
 use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -48,8 +49,9 @@ pub(crate) async fn reconcile_one(
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
+    uncertainty_scan: &mut AutomationUncertainDispatchScan,
 ) -> Result<bool, AgentdError> {
-    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
+    if reconcile_one_unknown_dispatch(store, state, identity, now_ms, uncertainty_scan).await? {
         return Ok(true);
     }
     let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
@@ -64,8 +66,9 @@ async fn reconcile_one_unknown_dispatch(
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
+    uncertainty_scan: &mut AutomationUncertainDispatchScan,
 ) -> Result<bool, AgentdError> {
-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
+    let Some(uncertain) = store.next_uncertain_dispatch(uncertainty_scan).await? else {
         return Ok(false);
     };
     let task = store

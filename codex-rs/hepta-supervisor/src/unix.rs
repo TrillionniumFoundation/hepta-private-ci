@@ -1,8 +1,4 @@
-use std::io::BufRead;
-use std::io::BufReader;
 use std::io::Read;
-use std::io::Write;
-use std::net::Shutdown;
 use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
@@ -14,6 +10,8 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::SyncSender;
 use std::sync::mpsc::TryRecvError;
 use std::time::Duration;
+
+use rustix::process::Signal;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
@@ -48,8 +46,22 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[cfg(target_os = "linux")]
+#[path = "unix_pidfd.rs"]
+mod pidfd;
+
+#[path = "unix_peer.rs"]
+mod peer;
+
+#[path = "unix_transport.rs"]
+mod transport;
+
+#[path = "unix_drain_transport.rs"]
+mod drain_transport;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
+// Shared deadline for connect, peer verification, complete write and bounded read.
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
 const ADOPTION_PROBE_ATTEMPTS: u64 = 3;
 
@@ -82,13 +94,29 @@ pub struct UnixManagedProcess {
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    #[cfg(target_os = "linux")]
+    PinnedAdopted(pidfd::PinnedProcess),
+    #[cfg(not(target_os = "linux"))]
+    Adopted {
+        process_id: u32,
+    },
 }
 
 impl UnixProcessHandle {
+    fn signal(&self, signal: Signal) -> Result<(), ProcessDriverError> {
+        #[cfg(target_os = "linux")]
+        if let Self::PinnedAdopted(process) = self {
+            return process.signal(signal).map_err(Into::into);
+        }
+        send_signal(self.process_id(), signal.as_raw())
+    }
+
     fn process_id(&self) -> u32 {
         match self {
             Self::Child(child) => child.id(),
+            #[cfg(target_os = "linux")]
+            Self::PinnedAdopted(process) => process.process_id,
+            #[cfg(not(target_os = "linux"))]
             Self::Adopted { process_id } => *process_id,
         }
     }
@@ -117,6 +145,18 @@ impl ManagedProcess for UnixManagedProcess {
                 }
                 None => true,
             },
+            #[cfg(target_os = "linux")]
+            UnixProcessHandle::PinnedAdopted(process) => {
+                if let Some(exit) = process.poll()? {
+                    self.health_probe.shutdown();
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(exit),
+                        logs,
+                    });
+                }
+                true
+            }
+            #[cfg(not(target_os = "linux"))]
             UnixProcessHandle::Adopted { process_id } => {
                 if let Some(exit) = poll_adopted_process(*process_id)? {
                     self.health_probe.shutdown();
@@ -164,11 +204,11 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        self.handle.signal(Signal::TERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGKILL)
+        self.handle.signal(Signal::KILL)
     }
 }
 
@@ -240,10 +280,23 @@ impl ProcessDriver for UnixProcessDriver {
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
         let agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
         let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
+        // Pin the task before authenticating the socket so PID reuse cannot
+        // change the process that later receives lifecycle signals.
+        #[cfg(target_os = "linux")]
+        let Some(mut pinned) = pidfd::PinnedProcess::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
         if prove_adoption_identity(&health_identity) {
+            #[cfg(target_os = "linux")]
+            if pinned.poll()?.is_some() {
+                return Ok(Adoption::Missing);
+            }
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
+                #[cfg(target_os = "linux")]
+                handle: UnixProcessHandle::PinnedAdopted(pinned),
+                #[cfg(not(target_os = "linux"))]
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
@@ -345,10 +398,23 @@ impl ProcessDriver for UnixProcessDriver {
             .map_err(|_| ProcessDriverError::new("stored matrixd PID does not fit u32"))?;
         let health_identity =
             HealthProbeIdentity::Matrixd(MatrixHealthProbeIdentity::from_adopt(spec, process_id));
+        // Pin the task before authenticating the socket so PID reuse cannot
+        // change the process that later receives lifecycle signals.
+        #[cfg(target_os = "linux")]
+        let Some(mut pinned) = pidfd::PinnedProcess::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
         if prove_adoption_identity(&health_identity) {
+            #[cfg(target_os = "linux")]
+            if pinned.poll()?.is_some() {
+                return Ok(Adoption::Missing);
+            }
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
+                #[cfg(target_os = "linux")]
+                handle: UnixProcessHandle::PinnedAdopted(pinned),
+                #[cfg(not(target_os = "linux"))]
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
@@ -559,15 +625,14 @@ fn query_agent_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = transport::exchange(
+        &identity.control_socket,
+        identity.process_id,
+        &bytes,
+        MAX_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
         return Ok(HealthProbeObservation {
             exact_identity: false,
@@ -619,15 +684,13 @@ fn read_agent_drain_frame(
     identity: &AgentHealthProbeIdentity,
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(request)?;
-    stream.shutdown(Shutdown::Write)?;
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response = Vec::new();
-    reader.read_until(b'\n', &mut response)?;
-    Ok(response)
+    transport::exchange(
+        &identity.control_socket,
+        identity.process_id,
+        request,
+        MAX_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )
 }
 
 fn query_agent_drain_once(
@@ -644,20 +707,7 @@ fn query_agent_drain_once(
     }
     let response_bytes = match read_agent_drain_frame(identity, &bytes) {
         Ok(response) => response,
-        Err(error)
-            if matches!(
-                error.kind(),
-                std::io::ErrorKind::NotFound
-                    | std::io::ErrorKind::ConnectionRefused
-                    | std::io::ErrorKind::ConnectionReset
-                    | std::io::ErrorKind::ConnectionAborted
-                    | std::io::ErrorKind::BrokenPipe
-                    | std::io::ErrorKind::TimedOut
-                    | std::io::ErrorKind::WouldBlock
-                    | std::io::ErrorKind::UnexpectedEof
-                    | std::io::ErrorKind::Interrupted
-            ) =>
-        {
+        Err(error) if drain_transport::is_unavailable(&error) => {
             // Shutdown can remove the control socket before waitpid sees exit.
             // No response is NOT a drain acknowledgement. Preserve the existing
             // deadline/escalation path instead of aborting lifecycle observation.
@@ -719,15 +769,14 @@ fn query_matrix_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-
-    let mut reader = BufReader::new(stream).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    let response_bytes = transport::exchange(
+        &identity.control_socket,
+        identity.process_id,
+        &bytes,
+        MAX_MATRIXD_CONTROL_FRAME_BYTES,
+        HEALTH_PROBE_IO_TIMEOUT,
+    )?;
+    let count = response_bytes.len();
     if count == 0
         || count as u64 > MAX_MATRIXD_CONTROL_FRAME_BYTES
         || !response_bytes.ends_with(b"\n")
@@ -830,6 +879,7 @@ fn process_exists(system_id: u64) -> Result<bool, ProcessDriverError> {
 /// child, in which case `waitpid` returns `ECHILD` and the exact UDS adoption
 /// proof remains the sole source of signal authority; here we only observe its
 /// continued existence with signal 0.
+#[cfg(not(target_os = "linux"))]
 fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessDriverError> {
     let pid = i32::try_from(process_id)
         .map_err(|_| ProcessDriverError::new("adopted child PID does not fit Unix pid_t"))?;
@@ -867,3 +917,25 @@ mod tests;
 #[cfg(test)]
 #[path = "unix_drain_tests.rs"]
 mod drain_tests;
+
+#[cfg(all(
+    test,
+    any(target_os = "linux", target_os = "android", target_vendor = "apple")
+))]
+#[path = "unix_matrix_peer_tests.rs"]
+mod matrix_peer_tests;
+
+#[cfg(all(
+    test,
+    any(target_os = "linux", target_os = "android", target_vendor = "apple")
+))]
+#[path = "unix_agent_peer_tests.rs"]
+mod agent_peer_tests;
+
+#[cfg(all(test, any(target_os = "linux", target_vendor = "apple")))]
+#[path = "unix_deadline_tests.rs"]
+mod deadline_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "unix_lifetime_tests.rs"]
+mod lifetime_tests;

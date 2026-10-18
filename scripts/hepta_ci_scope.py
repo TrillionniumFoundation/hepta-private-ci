@@ -101,9 +101,12 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             derived = True
             continue
 
-        if path in {"README.md", "CONTRIBUTING.md"} or (
-            path.startswith("docs/") and path.endswith(".md")
-        ):
+        if path in {
+            "README.md",
+            "CONTRIBUTING.md",
+            ".github/workflows/README.md",
+            "scripts/ENTRYPOINTS.md",
+        } or (path.startswith("docs/") and path.endswith(".md")):
             continue
 
         if path in CANONICAL_DOC_GROUPS:

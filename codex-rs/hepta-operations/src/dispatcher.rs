@@ -75,7 +75,9 @@ impl<'a> DurableDispatcher<'a> {
     }
 
     /// Process one already-fenced claim. The signed grant must be resolved for
-    /// this exact claim by the host immediately before this call.
+    /// this exact claim by the host immediately before this call. The effect
+    /// callback must obey `DurableOperationStore::execute_authorized`'s bounded,
+    /// nonblocking entry contract.
     pub async fn dispatch_claim<T>(
         &self,
         authority: &FinalUseAuthority,

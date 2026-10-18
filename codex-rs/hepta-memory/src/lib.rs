@@ -4,6 +4,7 @@ pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 
 mod cognitive_compact;
+mod cognitive_durability;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;
 mod cognitive_kg_store;

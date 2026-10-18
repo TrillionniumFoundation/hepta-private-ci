@@ -99,6 +99,21 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    // Windows discovers sandbox helpers beside the running executable. Bazel
+    // runfiles and restored nextest helpers can live in separate directories.
+    #[cfg(windows)]
+    let app_binary_dir = TempDir::new()?;
+    #[cfg(windows)]
+    let codex = {
+        let app_binary = app_binary_dir.path().join("codex.exe");
+        std::fs::copy(&codex, &app_binary).context("stage the Windows Codex test executable")?;
+        for helper in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(&source, app_binary_dir.path().join(format!("{helper}.exe")))
+                .with_context(|| format!("stage Windows sandbox helper {helper}"))?;
+        }
+        app_binary
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())

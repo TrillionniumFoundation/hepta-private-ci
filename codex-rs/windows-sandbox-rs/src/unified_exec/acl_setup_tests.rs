@@ -1,12 +1,12 @@
+// Test the direct backend's ACL failure boundary; public adapters select a backend first.
 use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
 use super::legacy_process_test_guard;
 use super::sandbox_cwd;
-use super::spawn_windows_sandbox_session_legacy;
 use super::workspace_roots_for;
-use crate::run_windows_sandbox_capture_with_filesystem_overrides;
 use crate::token::LocalSid;
-use crate::winutil::to_wide;
+use crate::unified_exec::backends::legacy::spawn_windows_sandbox_session_legacy;
+use crate::windows_impl::run_windows_sandbox_capture_legacy;
 use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
@@ -30,6 +30,7 @@ use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Security::ACL;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
@@ -37,7 +38,6 @@ use windows_sys::Win32::Security::Authorization::EXPLICIT_ACCESS_W;
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::Authorization::SetEntriesInAclW;
-use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
 use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
 use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_SID;
 use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_UNKNOWN;
@@ -50,7 +50,14 @@ use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TOKEN_DUPLICATE;
 use windows_sys::Win32::Security::TOKEN_IMPERSONATE;
 use windows_sys::Win32::Security::TOKEN_QUERY;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
+use windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION;
+use windows_sys::Win32::Storage::FileSystem::SECURITY_SQOS_PRESENT;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
@@ -265,8 +272,8 @@ impl AclSetupFailureFixture {
             "build fixture ACL that rejects setup",
         );
         // SAFETY: the restoration handle and allocated DACL remain live through
-        // both calls; the pathname buffer lives for its complete API call.
-        let (result, named_result) = unsafe {
+        // the setter. The returned allocation is freed after the call.
+        let result = unsafe {
             let result = SetSecurityInfo(
                 acl_restore.file.as_raw_handle() as HANDLE,
                 SE_FILE_OBJECT,
@@ -276,27 +283,31 @@ impl AclSetupFailureFixture {
                 updated_dacl,
                 ptr::null_mut(),
             );
-            // Exercise the same pathname-based native API as sandbox setup.
-            // Reapplying this DACL cannot expand access on unexpected success.
-            let named_result = (result == ERROR_SUCCESS).then(|| {
-                SetNamedSecurityInfoW(
-                    to_wide(&protected_path).as_ptr() as *mut u16,
-                    SE_FILE_OBJECT,
-                    DACL_SECURITY_INFORMATION,
-                    ptr::null_mut(),
-                    ptr::null_mut(),
-                    updated_dacl,
-                    ptr::null_mut(),
-                )
-            });
             LocalFree(updated_dacl as HLOCAL);
-            (result, named_result)
+            result
         };
         assert_eq!(result, ERROR_SUCCESS, "install fixture ACL");
+        // Exercise the same object-based WRITE_DAC acquisition as deny repair.
+        // The original restoration handle remains usable regardless of the DACL.
+        let reopened = unsafe {
+            ReOpenFile(
+                acl_restore.file.as_raw_handle() as HANDLE,
+                WRITE_DAC,
+                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                FILE_FLAG_BACKUP_SEMANTICS | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
+            )
+        };
+        let reopen_error = if reopened == INVALID_HANDLE_VALUE {
+            std::io::Error::last_os_error().raw_os_error()
+        } else {
+            // SAFETY: successful ReOpenFile returns an owned, valid handle.
+            drop(unsafe { OwnedHandle::from_raw_handle(reopened as *mut c_void) });
+            None
+        };
         assert_eq!(
-            named_result,
-            Some(ERROR_ACCESS_DENIED),
-            "fixture must reject the named ACL setter before testing spawn",
+            reopen_error,
+            Some(ERROR_ACCESS_DENIED as i32),
+            "fixture must reject reopening for WRITE_DAC before testing spawn",
         );
         let write_dac_error = match OpenOptions::new()
             .access_mode(WRITE_DAC)
@@ -355,7 +366,7 @@ impl AclSetupFailureFixture {
                     self.protected_file.display()
                 ),
                 format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+                    "ReOpenFile failed for {}: {ERROR_ACCESS_DENIED}",
                     self.protected_file.display(),
                 ),
                 false,
@@ -404,7 +415,7 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
-    let result = run_windows_sandbox_capture_with_filesystem_overrides(
+    let result = run_windows_sandbox_capture_legacy(
         &PermissionProfile::workspace_write(),
         &workspace_roots_for(&fixture.workspace),
         &fixture.codex_home,
