@@ -77,9 +77,16 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_executable: PathBuf,
     ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
+        // A libtest process is not the Codex CLI. Require a caller-supplied,
+        // physically built executable instead of falling back to current_exe.
+        let codex_executable = codex_executable.canonicalize()?;
+        if !codex_executable.is_file() {
+            return Err("test Codex executable must be an existing regular file".into());
+        }
         std::fs::create_dir_all(&root)?;
         let root = root.canonicalize()?;
         let fleet_path = root.join("fleet");
@@ -116,6 +123,10 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the production Agentd bootstrap prerequisite seal before
+        // publishing App Server readiness. Without this the real control
+        // socket correctly denies ready=true regardless of its transport.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +144,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_executable),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
