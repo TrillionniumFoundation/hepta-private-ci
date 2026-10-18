@@ -7,12 +7,12 @@
 use std::collections::BTreeMap;
 
 use crate::composition::{
-    CompositionDriver, CompositionError, CompositionKey, CompositionManifestV1,
-    CompositionRequest, CompositionWorker,
+    CompositionDriver, CompositionError, CompositionKey, CompositionManifestV1, CompositionRequest,
+    CompositionWorker,
 };
 use crate::model_worker::{
-    DriverModelHandle, DriverRunObservation, Error, ModelDriver, ModelManifest,
-    ResourceGrant, WorkerRequest,
+    DriverModelHandle, DriverRunObservation, Error, ModelDriver, ModelManifest, ResourceGrant,
+    WorkerRequest,
 };
 
 #[derive(Clone)]
@@ -114,16 +114,15 @@ impl<D: CompositionDriver> CompositionModelDriverAdapter<D> {
             return Err(Error::ModelMismatch);
         }
         if self.registered.contains_key(&model.model_id)
-            || self.registered.values().any(|existing| {
-                existing.composition.cell_id == composition.cell_id
-            })
+            || self
+                .registered
+                .values()
+                .any(|existing| existing.composition.cell_id == composition.cell_id)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
-        self.registered.insert(
-            model.model_id.clone(),
-            Binding { model, composition },
-        );
+        self.registered
+            .insert(model.model_id.clone(), Binding { model, composition });
         Ok(())
     }
 
@@ -201,11 +200,17 @@ impl<D: CompositionDriver> ModelDriver for CompositionModelDriverAdapter<D> {
         if projected > self.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
-        let next = self.next_handle.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+        let next = self
+            .next_handle
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
         self.worker
             .attach_manifest(binding.composition.clone())
             .map_err(map_error)?;
-        let actual = self.worker.total_resident_memory_bytes().map_err(map_error)?;
+        let actual = self
+            .worker
+            .total_resident_memory_bytes()
+            .map_err(map_error)?;
         if actual != projected {
             self.worker
                 .detach_cell(&binding.composition.cell_id)
@@ -293,7 +298,11 @@ impl<D: CompositionDriver> ModelDriver for CompositionModelDriverAdapter<D> {
             .find(|(_, entry)| entry.handle.opaque_id == handle.opaque_id)
             .map(|(id, _)| id.clone())
             .ok_or(Error::ModelNotLoaded)?;
-        let active = self.active.get(&model_id).ok_or(Error::ModelNotLoaded)?.clone();
+        let active = self
+            .active
+            .get(&model_id)
+            .ok_or(Error::ModelNotLoaded)?
+            .clone();
         if active.handle != handle {
             return Err(Error::ModelMismatch);
         }
