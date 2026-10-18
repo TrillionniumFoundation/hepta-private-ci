@@ -373,6 +373,10 @@ pub struct SupervisordHealth {
 #[serde(deny_unknown_fields)]
 pub struct SupervisordAgentStatus {
     pub agent_id: AgentId,
+    /// Exact original owner revision for an external production grant signer.
+    /// Legacy responses omit this value; absence cannot be interpreted as zero.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub control_revision: Option<u64>,
     pub lifecycle: AgentLifecycle,
     pub lifecycle_generation: u64,
     pub active: bool,
@@ -666,9 +670,29 @@ mod tests {
         assert!(serde_json::from_value::<SupervisordRequest>(bad_release).is_err());
     }
 
+    #[test]
+    fn legacy_status_omission_does_not_fabricate_control_revision() {
+        let legacy = status();
+        let wire = serde_json::to_value(&legacy).expect("serialize legacy status");
+        assert!(wire.get("control_revision").is_none());
+        assert_eq!(
+            serde_json::from_value::<SupervisordAgentStatus>(wire).expect("decode legacy status"),
+            legacy,
+        );
+        let mut current = legacy;
+        current.control_revision = Some(8);
+        assert_eq!(
+            serde_json::from_value::<SupervisordAgentStatus>(
+                serde_json::to_value(&current).expect("serialize current status"),
+            ).expect("decode exact owner revision"),
+            current,
+        );
+    }
+
     fn status() -> SupervisordAgentStatus {
         SupervisordAgentStatus {
             agent_id: fence().agent_id,
+            control_revision: None,
             lifecycle: AgentLifecycle::Running,
             lifecycle_generation: 7,
             active: true,

@@ -1579,6 +1579,7 @@ fn supervisor_status() -> Result<SupervisordAgentStatus> {
     let fence = supervisor_fence()?;
     Ok(SupervisordAgentStatus {
         agent_id: fence.agent_id.clone(),
+        control_revision: None,
         lifecycle: fence.lifecycle,
         lifecycle_generation: fence.lifecycle_generation,
         active: true,
@@ -2169,6 +2170,7 @@ fn common_supervisor_definitions() -> BTreeMap<String, Value> {
                 strict_object(
                     json!({
                         "agent_id": {"$ref": "#/$defs/AgentId"},
+                        "control_revision": nullable_integer(),
                         "lifecycle": {"$ref": "#/$defs/AgentLifecycle"},
                         "lifecycle_generation": {"type": "integer", "minimum": 0},
                         "active": {"type": "boolean"},

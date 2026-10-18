@@ -969,6 +969,7 @@ fn status_from(
         .transpose()?;
     let mut status = SupervisordAgentStatus {
         agent_id: agent_id.clone(),
+        control_revision: Some(snapshot.control_revision),
         lifecycle: record.lifecycle.lifecycle,
         lifecycle_generation: record.lifecycle.generation,
         active: snapshot.active,

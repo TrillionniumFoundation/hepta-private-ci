@@ -191,6 +191,17 @@
             "control_fence": {
               "$ref": "#/$defs/SupervisordControlFence"
             },
+            "control_revision": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              ]
+            },
             "current_release": {
               "oneOf": [
                 {
@@ -426,6 +437,17 @@
         },
         "control_fence": {
           "$ref": "#/$defs/SupervisordControlFence"
+        },
+        "control_revision": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ]
         },
         "current_release": {
           "oneOf": [
