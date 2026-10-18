@@ -30,6 +30,7 @@ from typing import Any
 
 SCHEMA = "hepta.cell-split.target-matrix.v1"
 AUTHORITY = "DENY_ALL"
+OBSERVER_SCHEMA = "hepta.cell-split.observer.ed25519.v1"
 CELL_COUNTS: tuple[int, ...] = (64, 256, 1024, 4096)
 FACTORS: tuple[tuple[str, tuple[str, str]], ...] = (
     ("encoder_topology", ("shared", "replicated")),
@@ -162,6 +163,47 @@ def _command(argv: str, case: dict[str, Any]) -> list[str]:
     return [token.format(**case) for token in tokens]
 
 
+def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
+    """Canonical signed observer claim; independent of caller-supplied digest."""
+    fields = (
+        "schema", "verified", "sourceCommit", "workloadDigest",
+        "reportDigest", "metricsDigest", "observerId",
+    )
+    return b"hepta.cell-split.observer.ed25519.v1\\0" + canonical_bytes(
+        {field: receipt.get(field) for field in fields}
+    )
+
+
+def verify_observer_signature(
+    receipt: dict[str, Any],
+    trusted_public_key_hex: str | None,
+) -> None:
+    """Verify a separately pinned operator trust root, never a receipt-provided key."""
+    if not isinstance(trusted_public_key_hex, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", trusted_public_key_hex
+    ):
+        raise ValueError("trusted independent Ed25519 observer public key is required")
+    signature = receipt.get("signatureHex")
+    if not isinstance(signature, str) or not re.fullmatch(r"[0-9a-f]{128}", signature):
+        raise ValueError("independent observer signature is missing or malformed")
+    if (
+        receipt.get("schema") != OBSERVER_SCHEMA
+        or receipt.get("verified") is not True
+        or not isinstance(receipt.get("observerId"), str)
+        or not receipt["observerId"].strip()
+    ):
+        raise ValueError("invalid signed observer claim")
+    try:
+        from cryptography.exceptions import InvalidSignature
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
+        Ed25519PublicKey.from_public_bytes(
+            bytes.fromhex(trusted_public_key_hex)
+        ).verify(bytes.fromhex(signature), observer_signing_bytes(receipt))
+    except (ImportError, InvalidSignature, ValueError) as error:
+        raise ValueError("independent observer Ed25519 signature invalid") from error
+
+
 def run_matrix(
     *,
     workload_command: str | None,
@@ -173,6 +215,7 @@ def run_matrix(
     host_id: str | None = None,
     timeout_seconds: int = 1800,
     cell_count: int | None = None,
+    trusted_observer_public_key: str | None = None,
 ) -> dict[str, Any]:
     if len(workload_digest) != 64 or any(char not in "0123456789abcdef" for char in workload_digest):
         raise ValueError("workload digest must be a lowercase sha256")
@@ -304,6 +347,7 @@ def run_matrix(
                 or not observer_receipt["observerId"].strip()
             ):
                 raise ValueError("observer receipt binding mismatch")
+            verify_observer_signature(observer_receipt, trusted_observer_public_key)
             observer_receipt["receiptDigest"] = digest({key: value for key, value in observer_receipt.items() if key != "receiptDigest"})
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             blocked.append("independent-observer")
@@ -320,7 +364,10 @@ def run_matrix(
     return report
 
 
-def validate_report(report: dict[str, Any]) -> None:
+def validate_report(
+    report: dict[str, Any],
+    trusted_observer_public_key: str | None = None,
+) -> None:
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
     cases = report.get("cases")
@@ -391,6 +438,11 @@ def validate_report(report: dict[str, Any]) -> None:
         ])
         if observer.get("metricsDigest") != metrics_digest or not isinstance(observer.get("observerId"), str) or not observer["observerId"].strip():
             raise ValueError("observer metrics or identity binding mismatch")
+        verify_observer_signature(observer, trusted_observer_public_key)
+        if observer.get("receiptDigest") != digest({
+            key: value for key, value in observer.items() if key != "receiptDigest"
+        }):
+            raise ValueError("observer receipt digest mismatch")
 
 
 def main() -> int:
@@ -404,10 +456,14 @@ def main() -> int:
     parser.add_argument("--host-id")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     parser.add_argument("--cell-count", type=int, choices=CELL_COUNTS, help="single-count diagnostic only")
+    parser.add_argument("--trusted-observer-public-key", help="out-of-band trusted Ed25519 key in lowercase hex")
     parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
     if args.validate:
-        validate_report(json.loads(args.output.read_text(encoding="utf-8")))
+        validate_report(
+            json.loads(args.output.read_text(encoding="utf-8")),
+            trusted_observer_public_key=args.trusted_observer_public_key,
+        )
         return 0
     report = run_matrix(
         workload_command=args.workload_command,
@@ -419,6 +475,7 @@ def main() -> int:
         host_id=args.host_id,
         timeout_seconds=args.timeout_seconds,
         cell_count=args.cell_count,
+        trusted_observer_public_key=args.trusted_observer_public_key,
     )
     print(json.dumps({"status": report["status"], "blockingCases": report["blockingCases"]}, sort_keys=True))
     return 0 if report["status"] == "qualified" else 2
