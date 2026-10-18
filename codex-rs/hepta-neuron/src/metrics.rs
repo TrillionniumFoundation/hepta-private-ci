@@ -7,11 +7,19 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
-use std::fs::{File, OpenOptions, TryLockError};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
 use std::path::Path;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 const MAGIC: &[u8; 8] = b"HNMETW01";
 const HEADER_BYTES: u64 = 8 + 32 + 8;
@@ -132,7 +140,11 @@ impl NeuronMetricsGroupCommitWriterV1 {
             return Err(MetricsError::InvalidScope);
         }
         let path = path.as_ref();
-        let file = OpenOptions::new().read(true).write(true).create(true).open(path)?;
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path)?;
         let mut locked = LockedMetricFile::acquire(file)?;
         let header = header(scope_digest, generation);
         let file_len = locked.0.metadata()?.len();
@@ -184,10 +196,14 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 return Err(MetricsError::CorruptFrame);
             }
             let event = decode_event(&body)?;
-            event.validate(generation).map_err(|_| MetricsError::CorruptFrame)?;
+            event
+                .validate(generation)
+                .map_err(|_| MetricsError::CorruptFrame)?;
             let event_digest = Digest32::of_bytes(&body);
             let sequence = u64::try_from(entries.len() + 1).map_err(|_| MetricsError::Capacity)?;
-            if entries.insert(event.event_id, (event_digest, sequence)).is_some()
+            if entries
+                .insert(event.event_id, (event_digest, sequence))
+                .is_some()
                 || entries.len() > MAX_EVENTS
             {
                 return Err(MetricsError::CorruptFrame);
@@ -240,7 +256,9 @@ impl NeuronMetricsGroupCommitWriterV1 {
                 return Err(MetricsError::InvalidEvent("frame too large"));
             }
             let event_digest = Digest32::of_bytes(&body);
-            let old = pending.get(&event.event_id).or_else(|| self.entries.get(&event.event_id));
+            let old = pending
+                .get(&event.event_id)
+                .or_else(|| self.entries.get(&event.event_id));
             let sequence = if let Some((recorded_digest, sequence)) = old {
                 if *recorded_digest != event_digest {
                     return Err(MetricsError::DuplicateConflict);
@@ -303,8 +321,12 @@ fn encode_event(event: &NeuronMetricEventV1) -> Vec<u8> {
     bytes.extend_from_slice(event.execution_digest.as_array());
     bytes.extend_from_slice(&event.request_count.to_be_bytes());
     for value in [
-        event.elapsed_micros, event.cpu_micros, event.rss_bytes,
-        event.p95_micros, event.p99_micros, event.lock_wait_micros,
+        event.elapsed_micros,
+        event.cpu_micros,
+        event.rss_bytes,
+        event.p95_micros,
+        event.p99_micros,
+        event.lock_wait_micros,
     ] {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
@@ -320,10 +342,11 @@ fn decode_event(bytes: &[u8]) -> Result<NeuronMetricEventV1, MetricsError> {
     }
     let id_bytes = read_slice(bytes, &mut position, id_len)?;
     let event_id = std::str::from_utf8(id_bytes)
-        .ok().and_then(|name| StableId::new(name).ok())
+        .ok()
+        .and_then(|name| StableId::new(name).ok())
         .ok_or(MetricsError::CorruptFrame)?;
-    let generation = Generation::new(read_u64(bytes, &mut position)?)
-        .map_err(|_| MetricsError::CorruptFrame)?;
+    let generation =
+        Generation::new(read_u64(bytes, &mut position)?).map_err(|_| MetricsError::CorruptFrame)?;
     let plan_digest = read_digest(bytes, &mut position)?;
     let execution_digest = read_digest(bytes, &mut position)?;
     let request_count = read_u32(bytes, &mut position)?;
@@ -342,9 +365,18 @@ fn decode_event(bytes: &[u8]) -> Result<NeuronMetricEventV1, MetricsError> {
         return Err(MetricsError::CorruptFrame);
     }
     Ok(NeuronMetricEventV1 {
-        event_id, generation, plan_digest, execution_digest, request_count,
-        elapsed_micros, cpu_micros, rss_bytes, p95_micros, p99_micros,
-        lock_wait_micros, recovered,
+        event_id,
+        generation,
+        plan_digest,
+        execution_digest,
+        request_count,
+        elapsed_micros,
+        cpu_micros,
+        rss_bytes,
+        p95_micros,
+        p99_micros,
+        lock_wait_micros,
+        recovered,
     })
 }
 
@@ -353,26 +385,36 @@ fn read_slice<'a>(
     position: &mut usize,
     count: usize,
 ) -> Result<&'a [u8], MetricsError> {
-    let end = position.checked_add(count).ok_or(MetricsError::CorruptFrame)?;
+    let end = position
+        .checked_add(count)
+        .ok_or(MetricsError::CorruptFrame)?;
     let result = data.get(*position..end).ok_or(MetricsError::CorruptFrame)?;
     *position = end;
     Ok(result)
 }
 
 fn read_u16(data: &[u8], pos: &mut usize) -> Result<u16, MetricsError> {
-    let bytes: [u8; 2] = read_slice(data, pos, 2)?.try_into().map_err(|_| MetricsError::CorruptFrame)?;
+    let bytes: [u8; 2] = read_slice(data, pos, 2)?
+        .try_into()
+        .map_err(|_| MetricsError::CorruptFrame)?;
     Ok(u16::from_be_bytes(bytes))
 }
 fn read_u32(data: &[u8], pos: &mut usize) -> Result<u32, MetricsError> {
-    let bytes: [u8; 4] = read_slice(data, pos, 4)?.try_into().map_err(|_| MetricsError::CorruptFrame)?;
+    let bytes: [u8; 4] = read_slice(data, pos, 4)?
+        .try_into()
+        .map_err(|_| MetricsError::CorruptFrame)?;
     Ok(u32::from_be_bytes(bytes))
 }
 fn read_u64(data: &[u8], pos: &mut usize) -> Result<u64, MetricsError> {
-    let bytes: [u8; 8] = read_slice(data, pos, 8)?.try_into().map_err(|_| MetricsError::CorruptFrame)?;
+    let bytes: [u8; 8] = read_slice(data, pos, 8)?
+        .try_into()
+        .map_err(|_| MetricsError::CorruptFrame)?;
     Ok(u64::from_be_bytes(bytes))
 }
 fn read_digest(data: &[u8], pos: &mut usize) -> Result<Digest32, MetricsError> {
-    let bytes: [u8; 32] = read_slice(data, pos, 32)?.try_into().map_err(|_| MetricsError::CorruptFrame)?;
+    let bytes: [u8; 32] = read_slice(data, pos, 32)?
+        .try_into()
+        .map_err(|_| MetricsError::CorruptFrame)?;
     Ok(Digest32::from_array(bytes))
 }
 

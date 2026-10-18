@@ -5,7 +5,8 @@
 //! actual deterministic head computation; it is intentionally authority-free
 //! and therefore cannot select, promote, release or invoke a provider.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;

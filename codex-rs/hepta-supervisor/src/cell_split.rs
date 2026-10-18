@@ -27,7 +27,8 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use codex_hepta_types::AuthorityPosture;
@@ -1437,7 +1438,9 @@ impl CellSplitExecutionOwnerV1 {
         }
         let snapshot_digest = snapshot.validate_for(&self.plan)?;
         if self.last_receipt_digest != migration_intent_digest(self.plan_digest, snapshot_digest) {
-            return Err(CellSplitExecutionErrorV1::InvalidReceipt("migration intent snapshot"));
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "migration intent snapshot",
+            ));
         }
         let receipt_digest = migration.validate_for(&self.plan, snapshot)?;
         self.advance(CellSplitPhaseV1::StateMigrated, receipt_digest)?;
@@ -1461,7 +1464,9 @@ impl CellSplitExecutionOwnerV1 {
         }
         let snapshot_digest = snapshot.validate_for(&self.plan)?;
         if self.last_receipt_digest != migration_intent_digest(self.plan_digest, snapshot_digest) {
-            return Err(CellSplitExecutionErrorV1::InvalidReceipt("migration intent snapshot"));
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "migration intent snapshot",
+            ));
         }
         let receipt_digest = rollback.validate_for(&self.plan, snapshot)?;
         self.advance(CellSplitPhaseV1::Quarantined, receipt_digest)?;
@@ -1584,7 +1589,8 @@ impl CellSplitMigrationReceiptV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
     fn id(value: &str) -> StableId {
@@ -2218,5 +2224,4 @@ mod tests {
             .unwrap_or_else(|error| panic!("recover: {error:?}"));
         assert_eq!(recovered.phase(), CellSplitPhaseV1::Quarantined);
     }
-
 }
