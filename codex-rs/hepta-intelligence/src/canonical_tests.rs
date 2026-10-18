@@ -257,6 +257,11 @@ fn canonical_selected_path_has_first_class_ndu_and_all_seven_owners() {
     assert!(!envelope.utility_receipt_digest.is_zero());
     assert!(!envelope.envelope_digest.is_zero());
     assert!(!envelope.authority.grants_any());
+    assert!(
+        std::mem::size_of::<CanonicalRunOutcomeV1>()
+            < std::mem::size_of::<IntelligenceHostEnvelopeV1>(),
+        "canonical outcome must stay smaller than the ready envelope"
+    );
 }
 
 #[test]

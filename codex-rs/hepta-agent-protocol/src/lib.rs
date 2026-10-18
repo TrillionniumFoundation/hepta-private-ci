@@ -1223,6 +1223,21 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        // Box indirection may shrink the Rust enum, but must never add a
+        // wrapper, modify the wire object or alter the signed grant bytes.
+        let signed = match &request.method {
+            AgentdMethod::AutomationExecuteEffect { signed_grant, .. } => signed_grant.as_ref(),
+            _ => panic!("expected automation effect request"),
+        };
+        let json: serde_json::Value = serde_json::from_slice(&bytes).expect("JSON request");
+        assert_eq!(
+            json["method"]["signed_grant"],
+            serde_json::to_value(signed).expect("original signed grant JSON"),
+        );
+        assert!(
+            std::mem::size_of::<AgentdMethod>() < 512,
+            "control envelope variant must not inline giant signed grants"
+        );
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
