@@ -23,6 +23,85 @@ SIGNATURE_DOMAIN = "hepta.cell-split.target-matrix.observer.ed25519.v1"
 SIGNATURE_ALGORITHM = "Ed25519"
 
 
+_ED25519_P = 2**255 - 19
+_ED25519_L = 2**252 + 27742317777372353535851937790883648493
+_ED25519_D = (-121665 * pow(121666, _ED25519_P - 2, _ED25519_P)) % _ED25519_P
+_ED25519_SQRT_M1 = pow(2, (_ED25519_P - 1) // 4, _ED25519_P)
+_ED25519_SPKI_PREFIX = bytes.fromhex("302a300506032b6570032100")
+
+
+def _require_prime_order_ed25519_pem(key_bytes: bytes) -> None:
+    """Reject noncanonical and torsion-containing public keys before OpenSSL.
+
+    OpenSSL can accept trivial Ed25519 signatures for low-order public keys.
+    A separately pinned fingerprint is not a sufficient subgroup check.
+    Only the canonical 32-byte Ed25519 SubjectPublicKeyInfo PEM is accepted.
+    """
+    try:
+        pem = key_bytes.decode("ascii")
+    except UnicodeDecodeError as error:
+        raise ValueError("observer pinned Ed25519 key is not canonical PEM") from error
+    match = re.fullmatch(
+        r"-----BEGIN PUBLIC KEY-----\s+([A-Za-z0-9+/=\r\n]+)\s+-----END PUBLIC KEY-----\s*",
+        pem,
+    )
+    if match is None:
+        raise ValueError("observer pinned Ed25519 key is not canonical PEM")
+    try:
+        der = base64.b64decode("".join(match.group(1).split()), validate=True)
+    except binascii.Error as error:
+        raise ValueError("observer pinned Ed25519 key is not canonical PEM") from error
+    if len(der) != len(_ED25519_SPKI_PREFIX) + 32 or not der.startswith(
+        _ED25519_SPKI_PREFIX
+    ):
+        raise ValueError("observer pinned Ed25519 key is not canonical SPKI")
+
+    encoded = int.from_bytes(der[len(_ED25519_SPKI_PREFIX) :], "little")
+    sign = encoded >> 255
+    y = encoded & ((1 << 255) - 1)
+    p = _ED25519_P
+    if y >= p:
+        raise ValueError("observer pinned Ed25519 key is not prime-order")
+    y_sq = y * y % p
+    denominator = (_ED25519_D * y_sq + 1) % p
+    if denominator == 0:
+        raise ValueError("observer pinned Ed25519 key is not prime-order")
+    x_sq = (y_sq - 1) * pow(denominator, p - 2, p) % p
+    x = pow(x_sq, (p + 3) // 8, p)
+    if (x * x - x_sq) % p:
+        x = x * _ED25519_SQRT_M1 % p
+    if (x * x - x_sq) % p:
+        raise ValueError("observer pinned Ed25519 key is not prime-order")
+    if x & 1 != sign:
+        x = (-x) % p
+    if (x == 0 and sign) or (x == 0 and y == 1):
+        raise ValueError("observer pinned Ed25519 key is not prime-order")
+
+    def add(
+        left: tuple[int, int, int, int], right: tuple[int, int, int, int]
+    ) -> tuple[int, int, int, int]:
+        x1, y1, z1, t1 = left
+        x2, y2, z2, t2 = right
+        a = (y1 - x1) * (y2 - x2) % p
+        b = (y1 + x1) * (y2 + x2) % p
+        c = 2 * _ED25519_D * t1 * t2 % p
+        dv = 2 * z1 * z2 % p
+        e, f, g, h = (b - a) % p, (dv - c) % p, (dv + c) % p, (b + a) % p
+        return e * f % p, g * h % p, f * g % p, e * h % p
+
+    point = (x, y, 1, x * y % p)
+    acc = (0, 1, 1, 0)
+    scalar = _ED25519_L
+    while scalar:
+        if scalar & 1:
+            acc = add(acc, point)
+        point = add(point, point)
+        scalar >>= 1
+    ax, ay, az, _ = acc
+    if ax % p != 0 or (ay - az) % p != 0:
+        raise ValueError("observer pinned Ed25519 key is not prime-order")
+
+
 def signed_observer_payload(observer: dict[str, Any]) -> bytes:
     """Canonical signed envelope; binds every case through the report digest."""
     required = ("observerId", "sourceCommit", "workloadDigest", "reportDigest", "metricsDigest")
@@ -72,6 +151,7 @@ def verify_observer_receipt_signature(
         raise ValueError("unable to read pinned observer public key") from error
     if hashlib.sha256(key_bytes).hexdigest() != trusted_key_sha256:
         raise ValueError("observer public key does not match independently pinned SHA256")
+    _require_prime_order_ed25519_pem(key_bytes)
     encoded = observer.get("signatureBase64")
     if not isinstance(encoded, str):
         raise ValueError("observer signature missing")
