@@ -47,6 +47,14 @@ jobs:
           uv run --frozen --project scripts ruff format --check \
             scripts/hepta-cell-split-target-matrix.py \
             scripts/test_hepta_cell_split_target_matrix.py
+      - name: Show non-mutating Ruff diff when formatting fails
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py
       - name: Verify runner did not modify checkout
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
