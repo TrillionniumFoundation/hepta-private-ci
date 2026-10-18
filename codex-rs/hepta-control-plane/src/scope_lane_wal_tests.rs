@@ -177,3 +177,38 @@ fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
     must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
     assert_eq!(recovered.wal().record_count(), 2);
 }
+
+#[cfg(unix)]
+#[test]
+fn file_wal_rejects_symlink_and_hardlink_before_writing_header() {
+    use std::os::unix::fs::symlink;
+
+    let directory = must(tempdir());
+    let target = directory.path().join("unrelated-target");
+    must(std::fs::write(&target, []));
+    let symlink_path = directory.path().join("scope-symlink.wal");
+    must(symlink(&target, &symlink_path));
+
+    assert!(ScopeLaneFileWalV1::open(&symlink_path).is_err());
+    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
+
+    let hardlink_path = directory.path().join("scope-hardlink.wal");
+    must(std::fs::hard_link(&target, &hardlink_path));
+    assert!(matches!(
+        ScopeLaneFileWalV1::open(&hardlink_path),
+        Err(ScopeLaneWalError::NotRegular)
+    ));
+    assert_eq!(must(std::fs::read(&target)), Vec::<u8>::new());
+}
+
+#[cfg(unix)]
+#[test]
+fn newly_created_scope_wal_is_owner_only_on_unix() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = must(tempdir());
+    let path = directory.path().join("secure-scope.wal");
+    let wal = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(wal.wal().record_count(), 0);
+    assert_eq!(must(std::fs::metadata(path)).permissions().mode() & 0o077, 0);
+}

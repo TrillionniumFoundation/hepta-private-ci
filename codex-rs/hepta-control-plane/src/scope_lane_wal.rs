@@ -296,13 +296,28 @@ pub struct ScopeLaneFileWalV1 {
 
 impl ScopeLaneFileWalV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ScopeLaneWalError> {
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .append(true)
-            .open(path.as_ref())
-            .map_err(ScopeLaneWalError::from)?;
+        let mut options = OpenOptions::new();
+        options.create(true).read(true).append(true);
+        // Never follow an attacker-swapped final component into an unrelated
+        // file. This is defense in depth: callers still must own a trusted
+        // parent directory and validate their run-root lineage.
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_NOFOLLOW);
+            options.mode(0o600);
+        }
+        let file = options.open(path.as_ref()).map_err(ScopeLaneWalError::from)?;
         let mut file = LockedFile::acquire(file)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            // A hard-linked inode has aliases even with O_NOFOLLOW; do not
+            // append a WAL header or frame through an aliased inode.
+            if file.0.metadata().map_err(ScopeLaneWalError::from)?.nlink() != 1 {
+                return Err(ScopeLaneWalError::NotRegular);
+            }
+        }
         let physical_len = file.0.metadata().map_err(ScopeLaneWalError::from)?.len();
         if physical_len == 0 {
             file.0.write_all(MAGIC).map_err(ScopeLaneWalError::from)?;
