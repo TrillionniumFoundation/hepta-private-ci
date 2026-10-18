@@ -469,6 +469,26 @@ crate.annotation(
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+http_archive(
+    name = "dbus",
+    build_file = "//third_party/dbus:dbus.BUILD.bazel",
+    patch_args = ["-p1"],
+    patches = ["//third_party/dbus:close_range.patch"],
+    sha256 = "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2",
+    strip_prefix = "dbus-1.16.2",
+    urls = ["https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz"],
+)
+
+crate.annotation(
+    # Build the pinned client library with the Bazel C toolchain. The upstream
+    # build script only discovers libdbus via host pkg-config or builds 1.14.4.
+    crate = "libdbus-sys",
+    gen_build_script = "off",
+    deps = ["@dbus//:dbus-1"],
+)
+
+inject_repo(crate, "dbus")
+
 http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 new_local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "new_local_repository")
