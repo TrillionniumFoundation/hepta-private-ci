@@ -564,8 +564,7 @@ impl FileCellSplitArtifactCasV1 {
                                 }
                                 Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                                     let _ = fs::remove_file(temporary);
-                                    let (existing_file, existing) =
-                                        read_existing_cas_object(path)?;
+                                    let (existing_file, existing) = read_existing_cas_object(path)?;
                                     if existing != bytes {
                                         return Err(
                                             CellSplitExecutionErrorV1::ArtifactDigestMismatch,

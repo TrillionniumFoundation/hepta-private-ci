@@ -50,7 +50,9 @@ REQUIRED_METRICS = (
 
 
 def canonical_bytes(value: Any) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    ).encode()
 
 
 def digest(value: Any) -> str:
@@ -84,8 +86,12 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
         raise ValueError(f"missing metrics: {','.join(missing)}")
     normalized: dict[str, int | float] = {}
     for name in REQUIRED_METRICS:
-        normalized[name] = _number(metrics[name], name, integer=name in {"fsyncCount", "rssBytes"})
-    if not (normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]):
+        normalized[name] = _number(
+            metrics[name], name, integer=name in {"fsyncCount", "rssBytes"}
+        )
+    if not (
+        normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]
+    ):
         raise ValueError("latency quantiles are not monotonic")
     if normalized["throughputPerSecond"] <= 0:
         raise ValueError("throughput must be positive")
@@ -130,7 +136,9 @@ def run_matrix(
     host_id: str | None = None,
     timeout_seconds: int = 1800,
 ) -> dict[str, Any]:
-    if len(workload_digest) != 64 or any(char not in "0123456789abcdef" for char in workload_digest):
+    if len(workload_digest) != 64 or any(
+        char not in "0123456789abcdef" for char in workload_digest
+    ):
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
@@ -149,7 +157,11 @@ def run_matrix(
     blocked: list[str] = []
     for case in cases:
         started = time.monotonic_ns()
-        row: dict[str, Any] = {**case, "workloadDigest": workload_digest, "status": "blocked"}
+        row: dict[str, Any] = {
+            **case,
+            "workloadDigest": workload_digest,
+            "status": "blocked",
+        }
         if workload_command is None:
             row["reason"] = "workload command not supplied"
             blocked.append(case["caseId"])
@@ -161,13 +173,19 @@ def run_matrix(
             rows.append(row)
             continue
         env = os.environ.copy()
-        env.update({
-            "HEPTA_MATRIX_CASE_ID": case["caseId"],
-            "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
-            "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
-            "HEPTA_MATRIX_WORKLOAD_PATH": str(workload_path),
-            **{f"HEPTA_MATRIX_{key.upper()}": value for key, value in case.items() if key != "caseId"},
-        })
+        env.update(
+            {
+                "HEPTA_MATRIX_CASE_ID": case["caseId"],
+                "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
+                "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
+                "HEPTA_MATRIX_WORKLOAD_PATH": str(workload_path),
+                **{
+                    f"HEPTA_MATRIX_{key.upper()}": value
+                    for key, value in case.items()
+                    if key != "caseId"
+                },
+            }
+        )
         try:
             result = subprocess.run(
                 _command(
@@ -185,7 +203,9 @@ def run_matrix(
                 env=env,
             )
             if result.returncode != 0:
-                raise ValueError(f"workload exited {result.returncode}: {result.stderr[-512:]}")
+                raise ValueError(
+                    f"workload exited {result.returncode}: {result.stderr[-512:]}"
+                )
             emitted = parse_workload_output(result.stdout)
             if (
                 emitted.get("caseId") != case["caseId"]
@@ -194,7 +214,13 @@ def run_matrix(
             ):
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
-            row.update({"metrics": metrics, "status": "measured", "metricsDigest": digest(metrics)})
+            row.update(
+                {
+                    "metrics": metrics,
+                    "status": "measured",
+                    "metricsDigest": digest(metrics),
+                }
+            )
         except (KeyError, OSError, subprocess.SubprocessError, ValueError) as error:
             row["reason"] = str(error)
             blocked.append(case["caseId"])
@@ -211,25 +237,31 @@ def run_matrix(
         "cases": rows,
     }
     provisional_digest = digest(provisional)
-    metrics_digest = digest([
-        {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
-        for row in rows
-    ])
+    metrics_digest = digest(
+        [
+            {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
+            for row in rows
+        ]
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(provisional, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(provisional, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
 
     observer_receipt: dict[str, Any] | None = None
     if observer_command is None:
         blocked.append("independent-observer")
     else:
         env = os.environ.copy()
-        env.update({
-            "HEPTA_MATRIX_REPORT": str(output),
-            "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
-            "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
-            "HEPTA_MATRIX_PROVISIONAL_DIGEST": provisional_digest,
-            "HEPTA_MATRIX_METRICS_DIGEST": metrics_digest,
-        })
+        env.update(
+            {
+                "HEPTA_MATRIX_REPORT": str(output),
+                "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
+                "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
+                "HEPTA_MATRIX_PROVISIONAL_DIGEST": provisional_digest,
+                "HEPTA_MATRIX_METRICS_DIGEST": metrics_digest,
+            }
+        )
         try:
             result = subprocess.run(
                 shlex.split(observer_command),
@@ -240,7 +272,9 @@ def run_matrix(
                 env=env,
             )
             if result.returncode != 0:
-                raise ValueError(f"observer exited {result.returncode}: {result.stderr[-512:]}")
+                raise ValueError(
+                    f"observer exited {result.returncode}: {result.stderr[-512:]}"
+                )
             observer_receipt = parse_json_object(result.stdout)
             if observer_receipt.get("verified") is not True:
                 raise ValueError("observer did not return verified=true")
@@ -253,7 +287,13 @@ def run_matrix(
                 or not observer_receipt["observerId"].strip()
             ):
                 raise ValueError("observer receipt binding mismatch")
-            observer_receipt["receiptDigest"] = digest({key: value for key, value in observer_receipt.items() if key != "receiptDigest"})
+            observer_receipt["receiptDigest"] = digest(
+                {
+                    key: value
+                    for key, value in observer_receipt.items()
+                    if key != "receiptDigest"
+                }
+            )
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             blocked.append("independent-observer")
             observer_receipt = {"verified": False, "reason": str(error)}
@@ -265,7 +305,9 @@ def run_matrix(
         "status": "qualified" if not blocked else "blocked",
         "reportDigest": digest({**provisional, "observer": observer_receipt}),
     }
-    output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return report
 
 
@@ -274,7 +316,10 @@ def validate_report(report: dict[str, Any]) -> None:
         raise ValueError("invalid report schema or authority posture")
     cases = report.get("cases")
     expected = {case["caseId"] for case in matrix_cases()}
-    if not isinstance(cases, list) or {case.get("caseId") for case in cases} != expected:
+    if (
+        not isinstance(cases, list)
+        or {case.get("caseId") for case in cases} != expected
+    ):
         raise ValueError("report must contain exactly the sixteen matrix cases")
     workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
@@ -291,29 +336,50 @@ def validate_report(report: dict[str, Any]) -> None:
         observer = report.get("observer")
         if not isinstance(observer, dict) or observer.get("verified") is not True:
             raise ValueError("qualified report lacks an independent observer receipt")
-        if observer.get("sourceCommit") != source or observer.get("workloadDigest") != workload:
+        if (
+            observer.get("sourceCommit") != source
+            or observer.get("workloadDigest") != workload
+        ):
             raise ValueError("observer binding mismatch")
         provisional = {
             key: report[key]
-            for key in ("schema", "authority", "sourceCommit", "workloadDigest", "workloadSourceDigest", "host", "cases")
+            for key in (
+                "schema",
+                "authority",
+                "sourceCommit",
+                "workloadDigest",
+                "workloadSourceDigest",
+                "host",
+                "cases",
+            )
         }
         if observer.get("reportDigest") != digest(provisional):
             raise ValueError("observer report digest mismatch")
-        metrics_digest = digest([
-            {"caseId": case["caseId"], "metricsDigest": case.get("metricsDigest")}
-            for case in cases
-        ])
-        if observer.get("metricsDigest") != metrics_digest or not isinstance(observer.get("observerId"), str) or not observer["observerId"].strip():
+        metrics_digest = digest(
+            [
+                {"caseId": case["caseId"], "metricsDigest": case.get("metricsDigest")}
+                for case in cases
+            ]
+        )
+        if (
+            observer.get("metricsDigest") != metrics_digest
+            or not isinstance(observer.get("observerId"), str)
+            or not observer["observerId"].strip()
+        ):
             raise ValueError("observer metrics or identity binding mismatch")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workload-command", help="argv template; {caseId} may be interpolated")
+    parser.add_argument(
+        "--workload-command", help="argv template; {caseId} may be interpolated"
+    )
     parser.add_argument("--observer-command", help="independent observer argv")
     parser.add_argument("--workload-digest", required=True)
     parser.add_argument("--source-commit", required=True)
-    parser.add_argument("--workload-path", type=Path, help="path to the frozen workload bytes")
+    parser.add_argument(
+        "--workload-path", type=Path, help="path to the frozen workload bytes"
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--host-id")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
@@ -332,7 +398,12 @@ def main() -> int:
         host_id=args.host_id,
         timeout_seconds=args.timeout_seconds,
     )
-    print(json.dumps({"status": report["status"], "blockingCases": report["blockingCases"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {"status": report["status"], "blockingCases": report["blockingCases"]},
+            sort_keys=True,
+        )
+    )
     return 0 if report["status"] == "qualified" else 2
 
 
