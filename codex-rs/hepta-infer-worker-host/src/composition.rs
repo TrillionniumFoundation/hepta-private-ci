@@ -40,7 +40,6 @@ impl CompositionKey {
     }
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompositionManifestV1 {
     pub cell_id: String,
@@ -63,7 +62,6 @@ impl CompositionManifestV1 {
         self.key().validate()?;
         self.head().validate()
     }
-
 
     pub fn from_model_manifest(
         manifest: &crate::model_worker::ModelManifest,
@@ -126,7 +124,10 @@ impl CellHeadManifest {
         if self.cell_id.is_empty() || self.cell_id.len() > 128 || self.cell_id.contains('\n') {
             return Err(CompositionError::InvalidIdentity("cell_id"));
         }
-        if self.head_digest.is_empty() || self.head_digest.len() > 256 || self.head_digest.contains('\n') {
+        if self.head_digest.is_empty()
+            || self.head_digest.len() > 256
+            || self.head_digest.contains('\n')
+        {
             return Err(CompositionError::InvalidIdentity("head_digest"));
         }
         if self.private_memory_bytes == 0 {
@@ -137,7 +138,6 @@ impl CellHeadManifest {
         }
         Ok(())
     }
-
 
     pub fn private_memory_bytes(&self) -> u64 {
         self.private_memory_bytes
@@ -214,7 +214,6 @@ impl SharedEncoderPool {
             cells: BTreeMap::new(),
         })
     }
-
 
     pub fn attach_manifest(
         &mut self,
@@ -305,7 +304,10 @@ impl SharedEncoderPool {
             Some(_) => return Err(CompositionError::ArithmeticOverflow),
             None => return Err(CompositionError::CellKeyMismatch),
         };
-        let cell = self.cells.remove(cell_id).ok_or(CompositionError::CellNotBound)?;
+        let cell = self
+            .cells
+            .remove(cell_id)
+            .ok_or(CompositionError::CellNotBound)?;
         if references == 1 {
             self.encoders.remove(&key);
         } else {
@@ -334,14 +336,20 @@ impl SharedEncoderPool {
         if cell_ids.is_empty() {
             return Err(CompositionError::CellCapacity);
         }
-        let encoder = self.encoders.get(key).ok_or(CompositionError::CellKeyMismatch)?;
+        let encoder = self
+            .encoders
+            .get(key)
+            .ok_or(CompositionError::CellKeyMismatch)?;
         let mut seen = std::collections::BTreeSet::new();
         let mut private_head_memory_bytes = 0_u64;
         for cell_id in cell_ids {
             if !seen.insert(cell_id) {
                 return Err(CompositionError::DuplicateCellInFanout);
             }
-            let cell = self.cells.get(cell_id).ok_or(CompositionError::CellNotBound)?;
+            let cell = self
+                .cells
+                .get(cell_id)
+                .ok_or(CompositionError::CellNotBound)?;
             if &cell.key != key {
                 return Err(CompositionError::CellKeyMismatch);
             }
@@ -380,7 +388,6 @@ impl SharedEncoderPool {
         })
     }
 
-
     pub fn key_for_cell(&self, cell_id: &str) -> Result<CompositionKey, CompositionError> {
         self.cells
             .get(cell_id)
@@ -408,8 +415,14 @@ impl SharedEncoderPool {
         cell_id: &str,
         encoder_loaded: bool,
     ) -> Result<CompositionReceipt, CompositionError> {
-        let encoder = self.encoders.get(key).ok_or(CompositionError::CellKeyMismatch)?;
-        let head = self.cells.get(cell_id).ok_or(CompositionError::CellNotBound)?;
+        let encoder = self
+            .encoders
+            .get(key)
+            .ok_or(CompositionError::CellKeyMismatch)?;
+        let head = self
+            .cells
+            .get(cell_id)
+            .ok_or(CompositionError::CellNotBound)?;
         Ok(CompositionReceipt {
             cell_id: cell_id.to_owned(),
             encoder_loaded,
@@ -420,7 +433,6 @@ impl SharedEncoderPool {
         })
     }
 }
-
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompositionRequest {
@@ -515,7 +527,9 @@ impl<D: CompositionDriver> CompositionWorker<D> {
         shared_memory_bytes: u64,
     ) -> Result<CompositionReceipt, CompositionError> {
         let cell_id = head.cell_id.clone();
-        let receipt = self.pool.attach_cell(key.clone(), head, shared_memory_bytes)?;
+        let receipt = self
+            .pool
+            .attach_cell(key.clone(), head, shared_memory_bytes)?;
         if receipt.encoder_loaded {
             match self.driver.load_encoder(&key) {
                 Ok(handle) => {
