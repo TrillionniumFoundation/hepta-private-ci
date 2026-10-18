@@ -9,7 +9,6 @@ use codex_hepta_learning_ledger as ledger;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::{Digest32, FixedQ32, StableId};
 use ed25519_dalek::{Signer, SigningKey};
-use pretty_assertions::assert_eq;
 
 use crate::cognitive_process_evaluation::*;
 use crate::cognitive_process_evidence::*;

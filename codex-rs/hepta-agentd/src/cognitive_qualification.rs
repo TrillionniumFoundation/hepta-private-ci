@@ -162,6 +162,7 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     let mut provider = CollectedInputsProviderV1 {
         material: input.holdout_material, collection, reservation,
         plan_digest: product_plan.frozen_plan.plan_digest, observed: None,
+        frozen_plan: product_plan.frozen_plan.clone(), not_before_unix_micros: host.future_not_before_unix_micros,
     };
     let mut runner = eval::ProductEvaluationRunnerV1::new(owner);
     let temporal = runner.evaluate_temporal_comparison(&product_plan, &candidate_plan, &baseline_plan, &mut provider)?;
@@ -200,11 +201,13 @@ pub async fn qualify_cognitive_upgrade_v1(fleet: &FleetRegistry, input: Cognitiv
     let path = evidence_path.context("qualification publication path is required")?;
     let mut sink = eval::FileProductQualificationEvidenceSinkV1::new(&path)?;
     let evidence = eval::SignedEvaluationEvidenceV1 { generator_plan: generator, evaluator_bundle: evaluator.into() };
+    let publication_now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?;
+    verifier.verify(LearningEvidenceRoleV1::Observer, &acknowledgement, &ack_payload, publication_now)?;
     let qualification = runner.qualify_and_persist(
         &temporal, &observed.context,
         &evidence,
         eval::ProductTimingEvidenceV1::SystemLongitudinal { timing: &timing, minimum_window_micros: policy.minimum_future_window_micros },
-        &verifier, u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros())?, &mut sink,
+        &verifier, publication_now, &mut sink,
     )?;
     let decision = &qualification.decision.decision;
     let bootstrap_inputs_path = path.with_extension("released-inputs.json");

@@ -14,6 +14,8 @@ pub(super) struct CollectedInputsProviderV1 {
     pub collection: PinnedProductFileV1,
     pub reservation: CognitiveHoldoutReservationV1,
     pub plan_digest: Digest32,
+    pub frozen_plan: eval::CrossFoldPlanReceiptV1,
+    pub not_before_unix_micros: u64,
     pub observed: Option<CollectedObservationV1>,
 }
 
@@ -56,8 +58,11 @@ impl eval::FinalHoldoutProviderV1 for CollectedInputsProviderV1 {
         let inputs: eval::TemporalComparisonInputsV1 = raw.inputs.into();
         let bootstrap_inputs = serde_json::to_vec(&crate::cognitive_process_product_wire::TemporalComparisonInputsV1Raw::from(inputs.clone()))
             .map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
+        let windows: Vec<_> = raw.windows.into_iter().map(Into::into).collect();
+        crate::cognitive_timed_cohort::validate(&inputs, &self.frozen_plan, &windows, self.not_before_unix_micros)
+            .map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
         self.observed = Some(CollectedObservationV1 {
-            context: raw.context.into(), windows: raw.windows.into_iter().map(Into::into).collect(),
+            context: raw.context.into(), windows,
             offered_rows: inputs.targets.len(),
             candidate_terminal_rows: inputs.candidate_observations.iter().filter(|row| row.finalized_outcome.is_some()).count(),
             candidate_pending_rows: inputs.candidate_observations.iter().filter(|row| row.finalized_outcome.is_none()).count(),

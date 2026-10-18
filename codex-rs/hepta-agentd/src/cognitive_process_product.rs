@@ -157,6 +157,7 @@ pub(super) fn replay_product_qualification_v1(
         inputs: descriptor.released_inputs,
         expected_plan_digest: product_plan.frozen_plan.plan_digest,
         released: false,
+        timed_cohort: timed_reservation.map(|time| (product_plan.frozen_plan.clone(), timing.windows.clone(), time.window_not_before_unix_micros())),
     };
     let mut runner = eval::ProductEvaluationRunnerV1::new(owner);
     let temporal = runner
@@ -208,6 +209,7 @@ struct PinnedReplayProviderV1 {
     inputs: PinnedProductFileV1,
     expected_plan_digest: Digest32,
     released: bool,
+    timed_cohort: Option<(eval::CrossFoldPlanReceiptV1, Vec<eval::ObservedFutureWindowV1>, u64)>,
 }
 
 impl eval::FinalHoldoutProviderV1 for PinnedReplayProviderV1 {
@@ -231,7 +233,12 @@ impl eval::FinalHoldoutProviderV1 for PinnedReplayProviderV1 {
         let bytes = read_pinned(&self.inputs, 32 * 1024 * 1024)?;
         let inputs: TemporalComparisonInputsV1Raw =
             serde_json::from_slice(&bytes).map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
-        Ok(inputs.into())
+        let inputs = inputs.into();
+        if let Some((plan, windows, not_before)) = &self.timed_cohort {
+            crate::cognitive_timed_cohort::validate(&inputs, plan, windows, *not_before)
+                .map_err(|_| eval::ProductProviderErrorV1::Rejected)?;
+        }
+        Ok(inputs)
     }
 }
 

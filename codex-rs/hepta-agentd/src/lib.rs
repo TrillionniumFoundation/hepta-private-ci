@@ -34,6 +34,7 @@ mod cognitive_upgrade_plan;
 mod cognitive_qualification;
 mod cognitive_qualification_provider;
 mod cognitive_qualification_selection;
+mod cognitive_timed_cohort;
 mod cognitive_qualification_wire;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
