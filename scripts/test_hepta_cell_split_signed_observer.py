@@ -142,7 +142,9 @@ class SignedObserverProtocolTests(unittest.TestCase):
     def test_observer_command_without_pinned_key_is_not_invoked(self) -> None:
         with tempfile.TemporaryDirectory() as root:
             output = Path(root) / "blocked.json"
-            with patch.object(MATRIX.subprocess, "run") as runner:
+            with patch.object(MATRIX.platform, "platform", return_value="synthetic-test-host"), patch.object(
+                MATRIX.subprocess, "run"
+            ) as runner:
                 report = MATRIX.run_matrix(
                     workload_command=None,
                     observer_command="untrusted-observer",
