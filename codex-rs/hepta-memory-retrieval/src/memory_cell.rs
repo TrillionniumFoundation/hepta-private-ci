@@ -200,6 +200,7 @@ fn shadow_checkpoint_digest(
     );
     bytes.extend_from_slice(cell_id);
     bytes.extend_from_slice(&input.logical_sequence.to_be_bytes());
+    bytes.extend_from_slice(&input.resource_budget_units.to_be_bytes());
     bytes.extend_from_slice(&input.graph_generation.get().to_be_bytes());
     bytes.extend_from_slice(&input.model_generation.get().to_be_bytes());
     for digest in [
@@ -228,3 +229,7 @@ fn probability_ppm(value: ProbabilityQ32) -> u32 {
         .unwrap_or(1_000_000);
     u32::try_from(scaled.min(1_000_000)).unwrap_or(1_000_000)
 }
+
+#[cfg(test)]
+#[path = "memory_cell_tests.rs"]
+mod tests;
