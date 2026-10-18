@@ -196,19 +196,18 @@ mod tests {
 
     fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
-            })?;
+        ledger.admit_host(HostObservation {
+            host_id: "host-one".into(),
+            failure_domain_id: "rack-one".into(),
+            generation: 1,
+            observed_at_ms: 1_000,
+            valid_until_ms: 10_000,
+            capacity: Resources {
+                cpu_millis: 1_000,
+                memory_bytes: 1 << 20,
+                accelerator_millis: 1_000,
+            },
+        })?;
         Ok(ledger)
     }
 
@@ -224,23 +223,22 @@ mod tests {
         )?;
         let grant = grant();
         let binding = FleetAuthorityPort::binding_for_issue(&grant)?;
-        registry
-            .put_lease(
-                AuthorityLease {
-                    schema_version: 1,
-                    lease_id: "fleet-issue-one".into(),
-                    authority_epoch: 7,
-                    revision: 1,
-                    binding,
-                    issued_at_unix_ms: 1_000,
-                    expires_at_unix_ms: 8_000,
-                },
-                0,
-            )?;
+        registry.put_lease(
+            AuthorityLease {
+                schema_version: 1,
+                lease_id: "fleet-issue-one".into(),
+                authority_epoch: 7,
+                revision: 1,
+                binding,
+                issued_at_unix_ms: 1_000,
+                expires_at_unix_ms: 8_000,
+            },
+            0,
+        )?;
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger()?;
-        let (receipt, witness) = port
-            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())?;
+        let (receipt, witness) =
+            port.issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())?;
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
@@ -254,8 +252,7 @@ mod tests {
             other => panic!("unexpected authority witness: {other:?}"),
         }
 
-        registry
-            .revoke("fleet-issue-one", 1, [9; 32])?;
+        registry.revoke("fleet-issue-one", 1, [9; 32])?;
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
                 .err(),
