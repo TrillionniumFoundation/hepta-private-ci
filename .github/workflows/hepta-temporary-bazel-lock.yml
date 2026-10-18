@@ -1,0 +1,166 @@
+name: hepta temporary Bazel lock candidate
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-temporary-bazel-lock.yml
+      - codex-rs/Cargo.lock
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-temporary-bazel-lock-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  HEPTA_LOCK_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact pull-request source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable source and original inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-lock-candidate"
+          evidence.mkdir(parents=True, exist_ok=True)
+          expected = os.environ["HEPTA_LOCK_SOURCE_SHA"]
+          paths = ["MODULE.bazel", "MODULE.bazel.lock", "codex-rs/Cargo.lock", ".bazelversion"]
+          before = {
+              "expected_source_sha": expected,
+              "source_sha": git("rev-parse", "HEAD"),
+              "source_tree": git("rev-parse", "HEAD^{tree}"),
+              "expected_source_tree": git("rev-parse", expected + "^{tree}"),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "git_status": git("status", "--porcelain", "--untracked-files=all"),
+              "input_sha256": {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
+          }
+          (evidence / "source-before.json").write_text(json.dumps(before, indent=2) + "\n")
+          if before["source_sha"] != expected or before["source_tree"] != before["expected_source_tree"] or before["git_status"]:
+              raise SystemExit("source identity or clean-checkout verification failed")
+          PY
+
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: temporary-lock-candidate
+
+      - name: Generate and verify exact MODULE.bazel.lock candidate
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/hepta-lock-candidate"
+          just --version > "$evidence/just-version.txt"
+          bazel --version > "$evidence/bazel-version.txt"
+          test "$(cat "$evidence/bazel-version.txt")" = "bazel $(tr -d '\r\n' < .bazelversion)"
+          set +e
+          just bazel-lock-update > "$evidence/bazel-lock-update.log" 2>&1
+          update_exit=$?
+          set -e
+          printf '%s\n' "$update_exit" > "$evidence/bazel-lock-update.exit"
+          test "$update_exit" -eq 0
+          sha256sum MODULE.bazel.lock > "$evidence/generated-lock.sha256"
+          set +e
+          just bazel-lock-check > "$evidence/bazel-lock-check.log" 2>&1
+          check_exit=$?
+          set -e
+          printf '%s\n' "$check_exit" > "$evidence/bazel-lock-check.exit"
+          test "$check_exit" -eq 0
+          sha256sum --check "$evidence/generated-lock.sha256"
+
+      - name: Retain source-bound result and enforce lock-only changes
+        if: always() && steps.checkout.outcome == 'success'
+        shell: bash
+        env:
+          CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import shutil
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True)
+
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-lock-candidate"
+          evidence.mkdir(parents=True, exist_ok=True)
+          before_path = evidence / "source-before.json"
+          before = json.loads(before_path.read_text()) if before_path.exists() else {}
+          changed = [path for path in git("diff", "--name-only", "-z", "HEAD").split("\0") if path]
+          untracked = [path for path in git("ls-files", "--others", "--exclude-standard", "-z").split("\0") if path]
+          expected = os.environ["HEPTA_LOCK_SOURCE_SHA"]
+          after = {
+              "expected_source_sha": expected,
+              "source_sha": git("rev-parse", "HEAD").strip(),
+              "source_tree": git("rev-parse", "HEAD^{tree}").strip(),
+              "changed_tracked_paths": changed,
+              "untracked_paths": untracked,
+              "candidate_outcome": os.environ["CANDIDATE_OUTCOME"],
+              "input_sha256": {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in before.get("input_sha256", {}) if pathlib.Path(path).is_file()},
+          }
+          errors = []
+          if before.get("source_sha") != expected or after["source_sha"] != expected or after["source_tree"] != before.get("source_tree"):
+              errors.append("source commit/tree changed or baseline is missing")
+          if any(path != "MODULE.bazel.lock" for path in changed) or untracked:
+              errors.append("changes exceed the MODULE.bazel.lock allowlist")
+          for path, digest in before.get("input_sha256", {}).items():
+              if path != "MODULE.bazel.lock" and after["input_sha256"].get(path) != digest:
+                  errors.append("immutable input changed: " + path)
+          for command in ["bazel-lock-update", "bazel-lock-check"]:
+              exit_path = evidence / (command + ".exit")
+              result = exit_path.read_text().strip() if exit_path.exists() else None
+              after[command + "_exit"] = result
+              if result != "0":
+                  errors.append(command + " did not complete successfully")
+          if after["candidate_outcome"] != "success":
+              errors.append("generation/verification step did not succeed")
+          after["errors"] = errors
+          after["accepted_candidate"] = not errors
+          (evidence / "source-after.json").write_text(json.dumps(after, indent=2) + "\n")
+          (evidence / "MODULE.bazel.lock.patch").write_text(git("diff", "--binary", "--full-index", "HEAD", "--", "MODULE.bazel.lock"))
+          (evidence / "tracked-diff.stat").write_text(git("diff", "--stat", "HEAD"))
+          if pathlib.Path("MODULE.bazel.lock").is_file():
+              shutil.copy2("MODULE.bazel.lock", evidence / "MODULE.bazel.lock")
+          if errors:
+              raise SystemExit("; ".join(errors))
+          PY
+
+      - name: Retain exact lock candidate and failure receipts
+        if: always() && steps.checkout.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-temporary-bazel-lock-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-lock-candidate
+          if-no-files-found: error
+          retention-days: 14
