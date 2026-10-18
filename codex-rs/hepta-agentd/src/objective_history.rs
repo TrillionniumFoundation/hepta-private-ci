@@ -23,7 +23,9 @@ impl ObjectiveRuntimeHost {
             .map_err(|_| ObjectiveAdmissionUnknownReason::JournalUnavailable)
             .and_then(|state| state.read_publication(identity, self.profile_digest, query));
         match result {
-            Ok(publication) => ObjectiveAdmissionOutcome::Published { publication },
+            Ok(publication) => ObjectiveAdmissionOutcome::Published {
+                publication: Box::new(publication),
+            },
             Err(reason) => ObjectiveAdmissionOutcome::Unknown { reason },
         }
     }

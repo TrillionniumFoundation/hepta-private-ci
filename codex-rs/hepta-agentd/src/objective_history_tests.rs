@@ -24,7 +24,11 @@ fn identity(root: &Path) -> AgentdIdentity {
 }
 
 fn retained(owner: &AgentdIdentity, name: &str) -> (ObjectiveAdmissionQuery, RunStartRecordV1) {
-    let mut record = record(name, 7, RunStartObjectiveDispositionV1::Compiled);
+    let mut record = record(
+        name,
+        /*sequence*/ 7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
     let request = AuthBusObjectiveIngress {
         issuer_id: "issuer.objective".into(),
         key_epoch: 1,
@@ -89,7 +93,7 @@ fn expired_historical_request_matches_after_reopen_without_changing_journal() {
             .open(&path)
             .expect("journal"),
         digest("binding"),
-        16,
+        /*max_records*/ 16,
         RunStartRecovery::Unacknowledged,
     )
     .expect("reopen");

@@ -131,8 +131,12 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                     capabilities.push(
-                        crate::AgentdCapability::new("objective.admission.read", 1, 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "objective.admission.read",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {

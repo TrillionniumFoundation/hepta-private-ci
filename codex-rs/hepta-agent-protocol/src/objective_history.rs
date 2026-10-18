@@ -79,7 +79,7 @@ pub struct ObjectiveAdmissionPublication {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ObjectiveAdmissionOutcome {
     Published {
-        publication: ObjectiveAdmissionPublication,
+        publication: Box<ObjectiveAdmissionPublication>,
     },
     Unknown {
         reason: ObjectiveAdmissionUnknownReason,
