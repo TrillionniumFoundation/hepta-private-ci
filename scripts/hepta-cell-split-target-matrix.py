@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Run and validate the target-host Cell Split qualification matrix.
 
-The matrix is deliberately four-dimensional and therefore has exactly sixteen
-rows.  Every row receives the same frozen workload digest.  A row is accepted
+The matrix evaluates a four-dimensional factor grid at 64, 256, 1024, and
+4096 Cells (64 unique cases). Single-count runs are diagnostics only.
+Every row receives the same frozen workload digest.  A row is accepted
 only after the workload emits measured metrics and an independent observer
 returns a receipt binding the case, source commit, workload and metric digest.
 This harness never grants execution authority; the report is DENY_ALL evidence
@@ -29,6 +30,8 @@ from typing import Any
 
 SCHEMA = "hepta.cell-split.target-matrix.v1"
 AUTHORITY = "DENY_ALL"
+OBSERVER_SCHEMA = "hepta.cell-split.observer.ed25519.v1"
+CELL_COUNTS: tuple[int, ...] = (64, 256, 1024, 4096)
 FACTORS: tuple[tuple[str, tuple[str, str]], ...] = (
     ("encoder_topology", ("shared", "replicated")),
     ("execution", ("scalar", "batch")),
@@ -42,8 +45,13 @@ REQUIRED_METRICS = (
     "throughputPerSecond",
     "cpuMicros",
     "rssBytes",
+    "gpuObserved",
+    "gpuMicros",
+    "gpuBytes",
     "communicationBytes",
     "fsyncCount",
+    "walBytes",
+    "walFsyncCount",
     "lockWaitMicros",
     "recoveryMicros",
     "negativeMigrationQ32",
@@ -51,21 +59,30 @@ REQUIRED_METRICS = (
 
 
 def canonical_bytes(value: Any) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    ).encode()
 
 
 def digest(value: Any) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
 
 
-def matrix_cases() -> list[dict[str, str]]:
+def matrix_cases(cell_count: int | None = None) -> list[dict[str, Any]]:
+    if cell_count is not None and cell_count not in CELL_COUNTS:
+        raise ValueError("unsupported Cell count")
     names = [name for name, _ in FACTORS]
     choices = [values for _, values in FACTORS]
-    cases: list[dict[str, str]] = []
-    for index, values in enumerate(itertools.product(*choices), start=1):
-        case = {"caseId": f"cell-split-{index:02d}"}
-        case.update(dict(zip(names, values, strict=True)))
-        cases.append(case)
+    counts = CELL_COUNTS if cell_count is None else (cell_count,)
+    cases: list[dict[str, Any]] = []
+    for count in counts:
+        for index, values in enumerate(itertools.product(*choices), start=1):
+            case: dict[str, Any] = {
+                "caseId": f"cell-split-c{count:04d}-{index:02d}",
+                "cellCount": count,
+            }
+            case.update(dict(zip(names, values, strict=True)))
+            cases.append(case)
     return cases
 
 
@@ -83,14 +100,36 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
     return value
 
 
-def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
+def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | None]:
     missing = [name for name in REQUIRED_METRICS if name not in metrics]
     if missing:
         raise ValueError(f"missing metrics: {','.join(missing)}")
-    normalized: dict[str, int | float] = {}
+    normalized: dict[str, int | float | bool | None] = {}
     for name in REQUIRED_METRICS:
-        normalized[name] = _number(metrics[name], name, integer=name in {"fsyncCount", "rssBytes"})
-    if not (normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]):
+        if name in {"gpuObserved", "gpuMicros", "gpuBytes"}:
+            continue
+        normalized[name] = _number(
+            metrics[name],
+            name,
+            integer=name in {"fsyncCount", "rssBytes", "walBytes", "walFsyncCount"},
+        )
+    observed = metrics["gpuObserved"]
+    if not isinstance(observed, bool):
+        raise ValueError("gpuObserved must be a boolean")
+    normalized["gpuObserved"] = observed
+    if observed:
+        normalized["gpuMicros"] = _number(
+            metrics["gpuMicros"], "gpuMicros", integer=True
+        )
+        normalized["gpuBytes"] = _number(metrics["gpuBytes"], "gpuBytes", integer=True)
+    else:
+        if metrics["gpuMicros"] is not None or metrics["gpuBytes"] is not None:
+            raise ValueError("unobserved GPU metrics must be null, not zero")
+        normalized["gpuMicros"] = None
+        normalized["gpuBytes"] = None
+    if not (
+        normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]
+    ):
         raise ValueError("latency quantiles are not monotonic")
     if normalized["throughputPerSecond"] <= 0:
         raise ValueError("throughput must be positive")
@@ -99,6 +138,12 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
 
 def parse_json_object(stdout: str) -> dict[str, Any]:
     """Read the final JSON object emitted by a worker."""
+    try:
+        complete = json.loads(stdout.strip())
+        if isinstance(complete, dict):
+            return complete
+    except json.JSONDecodeError:
+        pass
     for line in reversed(stdout.splitlines()):
         line = line.strip()
         if not line:
@@ -119,9 +164,123 @@ def parse_workload_output(stdout: str) -> dict[str, Any]:
     return value
 
 
-def _command(argv: str, case: dict[str, str]) -> list[str]:
+def _command(argv: str, case: dict[str, Any]) -> list[str]:
     tokens = shlex.split(argv)
     return [token.format(**case) for token in tokens]
+
+
+def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
+    """Canonical signed observer claim; independent of caller-supplied digest."""
+    fields = (
+        "schema",
+        "verified",
+        "sourceCommit",
+        "workloadDigest",
+        "reportDigest",
+        "metricsDigest",
+        "observerId",
+    )
+    return b"hepta.cell-split.observer.ed25519.v1\0" + canonical_bytes(
+        {field: receipt.get(field) for field in fields}
+    )
+
+
+def _strict_ed25519_public_key(raw: bytes) -> bool:
+    """Accept only canonical, nonidentity Ed25519 prime-subgroup public keys.
+
+    Some verifiers accept trivial signatures against low-order public keys.
+    Check the independently pinned *public* point; cryptography still performs
+    the actual signature verification. No secret scalar is handled here.
+    """
+    if len(raw) != 32:
+        return False
+    prime = 2**255 - 19
+    order = 2**252 + 27742317777372353535851937790883648493
+    d = (-121665 * pow(121666, prime - 2, prime)) % prime
+    sqrt_minus_one = pow(2, (prime - 1) // 4, prime)
+    encoded = int.from_bytes(raw, "little")
+    parity = encoded >> 255
+    y = encoded & ((1 << 255) - 1)
+    if y >= prime:
+        return False
+    y_squared = y * y % prime
+    denominator = (d * y_squared + 1) % prime
+    if denominator == 0:
+        return False
+    x_squared = (y_squared - 1) * pow(denominator, prime - 2, prime) % prime
+    x = pow(x_squared, (prime + 3) // 8, prime)
+    if (x * x - x_squared) % prime:
+        x = x * sqrt_minus_one % prime
+    if (x * x - x_squared) % prime:
+        return False
+    if x & 1 != parity:
+        x = (-x) % prime
+    if x == 0 and parity:
+        return False
+    if x == 0 and y == 1:
+        return False
+
+    def add(
+        left: tuple[int, int, int, int], right: tuple[int, int, int, int]
+    ) -> tuple[int, int, int, int]:
+        x1, y1, z1, t1 = left
+        x2, y2, z2, t2 = right
+        a = (y1 - x1) * (y2 - x2) % prime
+        b = (y1 + x1) * (y2 + x2) % prime
+        c = 2 * d * t1 * t2 % prime
+        dv = 2 * z1 * z2 % prime
+        e, f, g, h = (
+            (b - a) % prime,
+            (dv - c) % prime,
+            (dv + c) % prime,
+            (b + a) % prime,
+        )
+        return e * f % prime, g * h % prime, f * g % prime, e * h % prime
+
+    point = (x, y, 1, x * y % prime)
+    acc = (0, 1, 1, 0)
+    while order:
+        if order & 1:
+            acc = add(acc, point)
+        point = add(point, point)
+        order >>= 1
+    ax, ay, az, _ = acc
+    return ax % prime == 0 and (ay - az) % prime == 0
+
+
+def verify_observer_signature(
+    receipt: dict[str, Any],
+    trusted_public_key_hex: str | None,
+) -> None:
+    """Verify a separately pinned operator trust root, never a receipt-provided key."""
+    if not isinstance(trusted_public_key_hex, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", trusted_public_key_hex
+    ):
+        raise ValueError("trusted independent Ed25519 observer public key is required")
+    signature = receipt.get("signatureHex")
+    if not isinstance(signature, str) or not re.fullmatch(r"[0-9a-f]{128}", signature):
+        raise ValueError("independent observer signature is missing or malformed")
+    if (
+        receipt.get("schema") != OBSERVER_SCHEMA
+        or receipt.get("verified") is not True
+        or not isinstance(receipt.get("observerId"), str)
+        or not receipt["observerId"].strip()
+    ):
+        raise ValueError("invalid signed observer claim")
+    try:
+        from cryptography.exceptions import InvalidSignature
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    except ImportError as error:
+        raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
+    public_key = bytes.fromhex(trusted_public_key_hex)
+    if not _strict_ed25519_public_key(public_key):
+        raise ValueError("trusted Ed25519 observer public key is not prime-order")
+    try:
+        Ed25519PublicKey.from_public_bytes(public_key).verify(
+            bytes.fromhex(signature), observer_signing_bytes(receipt)
+        )
+    except (InvalidSignature, ValueError) as error:
+        raise ValueError("independent observer Ed25519 signature invalid") from error
 
 
 def run_matrix(
@@ -134,11 +293,31 @@ def run_matrix(
     workload_path: Path | None = None,
     host_id: str | None = None,
     timeout_seconds: int = 1800,
+    cell_count: int | None = None,
+    trusted_observer_public_key: str | None = None,
 ) -> dict[str, Any]:
-    if len(workload_digest) != 64 or any(char not in "0123456789abcdef" for char in workload_digest):
+    if len(workload_digest) != 64 or any(
+        char not in "0123456789abcdef" for char in workload_digest
+    ):
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
+    if workload_command is not None:
+        # A caller-supplied SHA is not proof of the code used by the worker.
+        # A dry run without a worker remains possible outside a Git checkout.
+        repo_root = Path(__file__).resolve().parent.parent
+        try:
+            checkout = subprocess.run(
+                ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ValueError("cannot verify measured repository HEAD") from error
+        if checkout.stdout.strip() != source_commit:
+            raise ValueError("measured source commit does not match repository HEAD")
     if workload_path is not None:
         actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
         if actual_workload_digest != workload_digest:
@@ -149,12 +328,17 @@ def run_matrix(
         "platform": platform.platform(),
         "python": sys.version.split()[0],
     }
-    cases = matrix_cases()
+    cases = matrix_cases(cell_count)
+    selected_counts = list(CELL_COUNTS if cell_count is None else (cell_count,))
     rows: list[dict[str, Any]] = []
     blocked: list[str] = []
     for case in cases:
         started = time.monotonic_ns()
-        row: dict[str, Any] = {**case, "workloadDigest": workload_digest, "status": "blocked"}
+        row: dict[str, Any] = {
+            **case,
+            "workloadDigest": workload_digest,
+            "status": "blocked",
+        }
         if workload_command is None:
             row["reason"] = "workload command not supplied"
             blocked.append(case["caseId"])
@@ -166,14 +350,27 @@ def run_matrix(
             rows.append(row)
             continue
         env = os.environ.copy()
-        env.update({
-            "HEPTA_MATRIX_CASE_ID": case["caseId"],
-            "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
-            "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
-            "HEPTA_MATRIX_WORKLOAD_PATH": str(workload_path),
-            **{f"HEPTA_MATRIX_{key.upper()}": value for key, value in case.items() if key != "caseId"},
-        })
+        env.update(
+            {
+                "HEPTA_MATRIX_CASE_ID": case["caseId"],
+                "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
+                "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
+                "HEPTA_MATRIX_WORKLOAD_PATH": str(workload_path),
+                "HEPTA_MATRIX_CELL_COUNT": str(case["cellCount"]),
+                **{
+                    f"HEPTA_MATRIX_{key.upper()}": str(value)
+                    for key, value in case.items()
+                    if key != "caseId"
+                },
+            }
+        )
         try:
+            # Recheck the actual frozen bytes for every case, not only at entry.
+            if (
+                hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                != workload_digest
+            ):
+                raise ValueError("frozen workload changed before case execution")
             result = subprocess.run(
                 _command(
                     workload_command,
@@ -189,26 +386,45 @@ def run_matrix(
                 timeout=timeout_seconds,
                 env=env,
             )
+            if (
+                hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                != workload_digest
+            ):
+                raise ValueError("frozen workload changed during case execution")
             if result.returncode != 0:
-                raise ValueError(f"workload exited {result.returncode}: {result.stderr[-512:]}")
+                raise ValueError(
+                    f"workload exited {result.returncode}: {result.stderr[-512:]}"
+                )
             emitted = parse_workload_output(result.stdout)
             if (
                 emitted.get("caseId") != case["caseId"]
+                or emitted.get("cellCount") != case["cellCount"]
+                or emitted.get("sourceCommit") != source_commit
                 or emitted.get("workloadDigest") != workload_digest
                 or emitted.get("workloadSourceDigest") != workload_digest
+                or any(emitted.get(name) != case[name] for name, _ in FACTORS)
             ):
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
-            row.update({"metrics": metrics, "status": "measured", "metricsDigest": digest(metrics)})
+            row.update(
+                {
+                    "metrics": metrics,
+                    "status": "measured",
+                    "metricsDigest": digest(metrics),
+                }
+            )
         except (KeyError, OSError, subprocess.SubprocessError, ValueError) as error:
             row["reason"] = str(error)
             blocked.append(case["caseId"])
         row["elapsedMicros"] = (time.monotonic_ns() - started) // 1_000
         rows.append(row)
 
+    if cell_count is not None:
+        blocked.append("full-scale-matrix")
     provisional = {
         "schema": SCHEMA,
         "authority": AUTHORITY,
+        "cellCounts": selected_counts,
         "sourceCommit": source_commit,
         "workloadDigest": workload_digest,
         "workloadSourceDigest": workload_digest,
@@ -216,25 +432,31 @@ def run_matrix(
         "cases": rows,
     }
     provisional_digest = digest(provisional)
-    metrics_digest = digest([
-        {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
-        for row in rows
-    ])
+    metrics_digest = digest(
+        [
+            {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
+            for row in rows
+        ]
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(provisional, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(provisional, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
 
     observer_receipt: dict[str, Any] | None = None
     if observer_command is None:
         blocked.append("independent-observer")
     else:
         env = os.environ.copy()
-        env.update({
-            "HEPTA_MATRIX_REPORT": str(output),
-            "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
-            "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
-            "HEPTA_MATRIX_PROVISIONAL_DIGEST": provisional_digest,
-            "HEPTA_MATRIX_METRICS_DIGEST": metrics_digest,
-        })
+        env.update(
+            {
+                "HEPTA_MATRIX_REPORT": str(output),
+                "HEPTA_MATRIX_WORKLOAD_DIGEST": workload_digest,
+                "HEPTA_MATRIX_SOURCE_COMMIT": source_commit,
+                "HEPTA_MATRIX_PROVISIONAL_DIGEST": provisional_digest,
+                "HEPTA_MATRIX_METRICS_DIGEST": metrics_digest,
+            }
+        )
         try:
             result = subprocess.run(
                 shlex.split(observer_command),
@@ -245,7 +467,9 @@ def run_matrix(
                 env=env,
             )
             if result.returncode != 0:
-                raise ValueError(f"observer exited {result.returncode}: {result.stderr[-512:]}")
+                raise ValueError(
+                    f"observer exited {result.returncode}: {result.stderr[-512:]}"
+                )
             observer_receipt = parse_json_object(result.stdout)
             if observer_receipt.get("verified") is not True:
                 raise ValueError("observer did not return verified=true")
@@ -258,7 +482,14 @@ def run_matrix(
                 or not observer_receipt["observerId"].strip()
             ):
                 raise ValueError("observer receipt binding mismatch")
-            observer_receipt["receiptDigest"] = digest({key: value for key, value in observer_receipt.items() if key != "receiptDigest"})
+            verify_observer_signature(observer_receipt, trusted_observer_public_key)
+            observer_receipt["receiptDigest"] = digest(
+                {
+                    key: value
+                    for key, value in observer_receipt.items()
+                    if key != "receiptDigest"
+                }
+            )
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             blocked.append("independent-observer")
             observer_receipt = {"verified": False, "reason": str(error)}
@@ -270,19 +501,67 @@ def run_matrix(
         "status": "qualified" if not blocked else "blocked",
         "reportDigest": digest({**provisional, "observer": observer_receipt}),
     }
-    output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return report
 
 
-def validate_report(report: dict[str, Any]) -> None:
+def validate_report(
+    report: dict[str, Any],
+    trusted_observer_public_key: str | None = None,
+) -> None:
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
     cases = report.get("cases")
-    expected = {case["caseId"] for case in matrix_cases()}
-    if not isinstance(cases, list) or {case.get("caseId") for case in cases} != expected:
-        raise ValueError("report must contain exactly the sixteen matrix cases")
+    counts = report.get("cellCounts")
+    if counts != list(CELL_COUNTS) and (
+        not isinstance(counts, list) or len(counts) != 1 or counts[0] not in CELL_COUNTS
+    ):
+        raise ValueError("invalid matrix Cell-count coverage")
+    expected = {
+        case["caseId"]: case
+        for case in matrix_cases(counts[0] if len(counts) == 1 else None)
+    }
+    if (
+        not isinstance(cases, list)
+        or len(cases) != len(expected)
+        or any(not isinstance(case, dict) for case in cases)
+        or {case.get("caseId") for case in cases} != set(expected)
+    ):
+        raise ValueError("report must contain unique and complete matrix cases")
+    for case in cases:
+        if any(
+            case.get(name) != value for name, value in expected[case["caseId"]].items()
+        ):
+            raise ValueError("matrix factor or Cell-count identity mismatch")
     workload = report.get("workloadDigest")
     source = report.get("sourceCommit")
+    if (
+        not isinstance(workload, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", workload)
+        or report.get("workloadSourceDigest") != workload
+        or not isinstance(source, str)
+        or not re.fullmatch(r"[0-9a-f]{40}", source)
+    ):
+        raise ValueError("invalid source/workload identity")
+    provisional = {
+        key: report[key]
+        for key in (
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
+        )
+    }
+    if report.get("reportDigest") != digest(
+        {**provisional, "observer": report.get("observer")}
+    ):
+        raise ValueError("report digest mismatch")
     for case in cases:
         if case.get("workloadDigest") != workload:
             raise ValueError("case workload binding mismatch")
@@ -291,41 +570,83 @@ def validate_report(report: dict[str, Any]) -> None:
             if case.get("metricsDigest") != digest(metrics):
                 raise ValueError("metric digest mismatch")
     if report.get("status") == "qualified":
+        if counts != list(CELL_COUNTS) or report.get("blockingCases") != []:
+            raise ValueError("qualified report needs full scale and zero blockers")
         if any(case.get("status") != "measured" for case in cases):
             raise ValueError("qualified report contains an unmeasured case")
         observer = report.get("observer")
         if not isinstance(observer, dict) or observer.get("verified") is not True:
             raise ValueError("qualified report lacks an independent observer receipt")
-        if observer.get("sourceCommit") != source or observer.get("workloadDigest") != workload:
+        if (
+            observer.get("sourceCommit") != source
+            or observer.get("workloadDigest") != workload
+        ):
             raise ValueError("observer binding mismatch")
         provisional = {
             key: report[key]
-            for key in ("schema", "authority", "sourceCommit", "workloadDigest", "workloadSourceDigest", "host", "cases")
+            for key in (
+                "schema",
+                "authority",
+                "cellCounts",
+                "sourceCommit",
+                "workloadDigest",
+                "workloadSourceDigest",
+                "host",
+                "cases",
+            )
         }
         if observer.get("reportDigest") != digest(provisional):
             raise ValueError("observer report digest mismatch")
-        metrics_digest = digest([
-            {"caseId": case["caseId"], "metricsDigest": case.get("metricsDigest")}
-            for case in cases
-        ])
-        if observer.get("metricsDigest") != metrics_digest or not isinstance(observer.get("observerId"), str) or not observer["observerId"].strip():
+        metrics_digest = digest(
+            [
+                {"caseId": case["caseId"], "metricsDigest": case.get("metricsDigest")}
+                for case in cases
+            ]
+        )
+        if (
+            observer.get("metricsDigest") != metrics_digest
+            or not isinstance(observer.get("observerId"), str)
+            or not observer["observerId"].strip()
+        ):
             raise ValueError("observer metrics or identity binding mismatch")
+        verify_observer_signature(observer, trusted_observer_public_key)
+        if observer.get("receiptDigest") != digest(
+            {key: value for key, value in observer.items() if key != "receiptDigest"}
+        ):
+            raise ValueError("observer receipt digest mismatch")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workload-command", help="argv template; {caseId} may be interpolated")
+    parser.add_argument(
+        "--workload-command", help="argv template; {caseId} may be interpolated"
+    )
     parser.add_argument("--observer-command", help="independent observer argv")
     parser.add_argument("--workload-digest", required=True)
     parser.add_argument("--source-commit", required=True)
-    parser.add_argument("--workload-path", type=Path, help="path to the frozen workload bytes")
+    parser.add_argument(
+        "--workload-path", type=Path, help="path to the frozen workload bytes"
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--host-id")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
+    parser.add_argument(
+        "--cell-count",
+        type=int,
+        choices=CELL_COUNTS,
+        help="single-count diagnostic only",
+    )
+    parser.add_argument(
+        "--trusted-observer-public-key",
+        help="out-of-band trusted Ed25519 key in lowercase hex",
+    )
     parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
     if args.validate:
-        validate_report(json.loads(args.output.read_text(encoding="utf-8")))
+        validate_report(
+            json.loads(args.output.read_text(encoding="utf-8")),
+            trusted_observer_public_key=args.trusted_observer_public_key,
+        )
         return 0
     report = run_matrix(
         workload_command=args.workload_command,
@@ -336,8 +657,15 @@ def main() -> int:
         workload_path=args.workload_path,
         host_id=args.host_id,
         timeout_seconds=args.timeout_seconds,
+        cell_count=args.cell_count,
+        trusted_observer_public_key=args.trusted_observer_public_key,
     )
-    print(json.dumps({"status": report["status"], "blockingCases": report["blockingCases"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {"status": report["status"], "blockingCases": report["blockingCases"]},
+            sort_keys=True,
+        )
+    )
     return 0 if report["status"] == "qualified" else 2
 
 
