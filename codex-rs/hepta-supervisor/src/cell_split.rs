@@ -107,6 +107,7 @@ impl CellSplitPlanV1 {
         if self.source_cell == self.child_cell
             || self.source_generation.next().ok() != Some(self.child_generation)
             || self.authority_epoch == 0
+            || self.baseline_route_digest == self.candidate_route_digest
         {
             return Err(CellSplitExecutionErrorV1::InvalidPlan);
         }
@@ -280,10 +281,7 @@ pub struct CellSplitRouteCutoverReceiptV1 {
 }
 
 impl CellSplitRouteCutoverReceiptV1 {
-    fn validate_for(
-        &self,
-        plan: &CellSplitPlanV1,
-    ) -> Result<Digest32, CellSplitExecutionErrorV1> {
+    fn validate_for(&self, plan: &CellSplitPlanV1) -> Result<Digest32, CellSplitExecutionErrorV1> {
         if self.operation_id != plan.operation_id
             || self.source_generation != plan.source_generation
             || self.child_generation != plan.child_generation
@@ -292,7 +290,9 @@ impl CellSplitRouteCutoverReceiptV1 {
             || !self.published
             || self.authority != AuthorityPosture::DENY_ALL
         {
-            return Err(CellSplitExecutionErrorV1::InvalidReceipt("CNS route cutover"));
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "CNS route cutover",
+            ));
         }
         Ok(self.digest())
     }
@@ -321,10 +321,7 @@ pub struct CellSplitGenerationFenceReceiptV1 {
 }
 
 impl CellSplitGenerationFenceReceiptV1 {
-    fn validate_for(
-        &self,
-        plan: &CellSplitPlanV1,
-    ) -> Result<Digest32, CellSplitExecutionErrorV1> {
+    fn validate_for(&self, plan: &CellSplitPlanV1) -> Result<Digest32, CellSplitExecutionErrorV1> {
         if self.operation_id != plan.operation_id
             || self.predecessor_generation != plan.source_generation
             || self.fenced_generation != plan.child_generation
@@ -332,7 +329,9 @@ impl CellSplitGenerationFenceReceiptV1 {
             || !self.admitted
             || self.authority != AuthorityPosture::DENY_ALL
         {
-            return Err(CellSplitExecutionErrorV1::InvalidReceipt("generation fence"));
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "generation fence",
+            ));
         }
         Ok(self.digest())
     }
@@ -423,6 +422,7 @@ impl FileCellSplitArtifactCasV1 {
         plan: &CellSplitPlanV1,
         bytes: &[u8],
     ) -> Result<CellSplitArtifactCasReceiptV1, CellSplitExecutionErrorV1> {
+        plan.validate()?;
         if bytes.len() > MAX_ARTIFACT_BYTES {
             return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
         }
@@ -430,48 +430,23 @@ impl FileCellSplitArtifactCasV1 {
             return Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch);
         }
         let path = self.root.join(plan.artifact_digest.to_string());
-        match OpenOptions::new()
-            .create_new(true)
-            .read(true)
-            .write(true)
-            .open(&path)
-        {
-            Ok(mut file) => {
-                let write_result = file.write_all(bytes).and_then(|()| file.sync_all());
-                if let Err(error) = write_result {
-                    drop(file);
-                    let _ = fs::remove_file(&path);
-                    return Err(error.into());
-                }
-                if let Err(error) = self
-                    .root_file()
-                    .and_then(|root| root.sync_all().map_err(CellSplitExecutionErrorV1::from))
-                {
-                    drop(file);
-                    let _ = fs::remove_file(&path);
-                    return Err(error);
-                }
+        let temporary = self.root.join(format!(
+            ".{}.{}.tmp",
+            plan.artifact_digest, plan.operation_id
+        ));
+        match fs::symlink_metadata(&path) {
+            Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                // The final digest name is occupied by this process only
+                // after an atomic rename. A crash during the write therefore
+                // cannot leave a partial object at the CAS name.
+                return self.install_new_artifact(&path, &temporary, bytes, plan);
             }
-            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+            Ok(_) => {
                 // `create_new` treats an existing symlink as an occupied
-                // name.  Never follow that symlink on the idempotent retry
+                // name. Never follow that symlink on the idempotent retry
                 // path: a mutable CAS directory must not redirect a
                 // content-addressed read to an arbitrary host file.
-                let metadata = fs::symlink_metadata(&path)?;
-                if !metadata.file_type().is_file() {
-                    return Err(CellSplitExecutionErrorV1::Io(io::ErrorKind::InvalidData));
-                }
-                if metadata.len() > MAX_ARTIFACT_BYTES as u64 {
-                    return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
-                }
-                let mut existing = Vec::new();
-                let mut file = open_existing_cas_object(&path)?;
-                (&mut file)
-                    .take((MAX_ARTIFACT_BYTES as u64).saturating_add(1))
-                    .read_to_end(&mut existing)?;
-                if existing.len() > MAX_ARTIFACT_BYTES {
-                    return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
-                }
+                let (mut file, existing) = read_existing_cas_object(&path)?;
                 if existing != bytes {
                     return Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch);
                 }
@@ -479,6 +454,7 @@ impl FileCellSplitArtifactCasV1 {
                 // durable object. Syncing here makes retries explicit even
                 // if another process created the object.
                 file.sync_all()?;
+                self.root_file()?.sync_all()?;
             }
             Err(error) => return Err(error.into()),
         }
@@ -495,10 +471,8 @@ impl FileCellSplitArtifactCasV1 {
     /// Recovery uses this when a process stopped after the CAS write but
     /// before it could append the `ArtifactDurable` ledger frame and therefore
     /// no longer has the original artifact bytes in memory.
-    pub fn get(
-        &self,
-        plan: &CellSplitPlanV1,
-    ) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
+    pub fn get(&self, plan: &CellSplitPlanV1) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
+        plan.validate()?;
         let path = self.root.join(plan.artifact_digest.to_string());
         let metadata = fs::symlink_metadata(&path)?;
         if !metadata.file_type().is_file() {
@@ -509,7 +483,8 @@ impl FileCellSplitArtifactCasV1 {
         }
         let mut file = open_existing_cas_object(&path)?;
         let mut bytes = Vec::with_capacity(metadata.len() as usize);
-        file.take((MAX_ARTIFACT_BYTES as u64).saturating_add(1))
+        (&mut file)
+            .take((MAX_ARTIFACT_BYTES as u64).saturating_add(1))
             .read_to_end(&mut bytes)?;
         if bytes.len() > MAX_ARTIFACT_BYTES {
             return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
@@ -526,6 +501,95 @@ impl FileCellSplitArtifactCasV1 {
             .read(true)
             .open(&self.root)
             .map_err(CellSplitExecutionErrorV1::from)
+    }
+
+    fn install_new_artifact(
+        &self,
+        path: &Path,
+        temporary: &Path,
+        bytes: &[u8],
+        _plan: &CellSplitPlanV1,
+    ) -> Result<(), CellSplitExecutionErrorV1> {
+        // The operation ledger lock makes the deterministic staging name safe
+        // for one operation. A bounded retry also handles a stale staging file
+        // left by a process that crashed before rename.
+        for _ in 0..2 {
+            match OpenOptions::new()
+                .create_new(true)
+                .read(true)
+                .write(true)
+                .open(temporary)
+            {
+                Ok(mut file) => {
+                    if let Err(error) = file.write_all(bytes).and_then(|()| file.sync_all()) {
+                        drop(file);
+                        let _ = fs::remove_file(temporary);
+                        return Err(error.into());
+                    }
+                    drop(file);
+                    // Persist the staging directory entry before exposing it
+                    // under the final content-addressed name.
+                    self.root_file()?.sync_all()?;
+                    match fs::rename(temporary, path) {
+                        Ok(()) => {
+                            self.root_file()?.sync_all()?;
+                            return Ok(());
+                        }
+                        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                            let _ = fs::remove_file(temporary);
+                            let (mut existing_file, existing) = read_existing_cas_object(path)?;
+                            if existing != bytes {
+                                return Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch);
+                            }
+                            existing_file.sync_all()?;
+                            self.root_file()?.sync_all()?;
+                            return Ok(());
+                        }
+                        Err(error) => {
+                            let _ = fs::remove_file(temporary);
+                            return Err(error.into());
+                        }
+                    }
+                }
+                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                    match read_existing_cas_object(temporary) {
+                        Ok((mut temporary_file, existing)) if existing == bytes => {
+                            temporary_file.sync_all()?;
+                            drop(temporary_file);
+                            match fs::rename(temporary, path) {
+                                Ok(()) => {
+                                    self.root_file()?.sync_all()?;
+                                    return Ok(());
+                                }
+                                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                                    let _ = fs::remove_file(temporary);
+                                    let (mut existing_file, existing) =
+                                        read_existing_cas_object(path)?;
+                                    if existing != bytes {
+                                        return Err(
+                                            CellSplitExecutionErrorV1::ArtifactDigestMismatch,
+                                        );
+                                    }
+                                    existing_file.sync_all()?;
+                                    self.root_file()?.sync_all()?;
+                                    return Ok(());
+                                }
+                                Err(error) => return Err(error.into()),
+                            }
+                        }
+                        Ok((_, _)) | Err(CellSplitExecutionErrorV1::ArtifactDigestMismatch) => {
+                            let _ = fs::remove_file(temporary);
+                        }
+                        Err(CellSplitExecutionErrorV1::ArtifactTooLarge) => {
+                            let _ = fs::remove_file(temporary);
+                        }
+                        Err(error) => return Err(error),
+                    }
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
+        Err(CellSplitExecutionErrorV1::Busy)
     }
 }
 
@@ -553,6 +617,25 @@ fn open_existing_cas_object(path: &Path) -> Result<File, CellSplitExecutionError
         }
         File::open(path).map_err(CellSplitExecutionErrorV1::from)
     }
+}
+
+fn read_existing_cas_object(path: &Path) -> Result<(File, Vec<u8>), CellSplitExecutionErrorV1> {
+    let metadata = fs::symlink_metadata(path)?;
+    if !metadata.file_type().is_file() {
+        return Err(CellSplitExecutionErrorV1::Io(io::ErrorKind::InvalidData));
+    }
+    if metadata.len() > MAX_ARTIFACT_BYTES as u64 {
+        return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
+    }
+    let mut file = open_existing_cas_object(path)?;
+    let mut bytes = Vec::with_capacity(metadata.len() as usize);
+    (&mut file)
+        .take((MAX_ARTIFACT_BYTES as u64).saturating_add(1))
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > MAX_ARTIFACT_BYTES {
+        return Err(CellSplitExecutionErrorV1::ArtifactTooLarge);
+    }
+    Ok((file, bytes))
 }
 
 /// Domain owner for child-state snapshot and migration.
@@ -652,7 +735,10 @@ impl CellSplitLedgerV1 {
         if file.metadata()?.len() != 0 {
             return Err(CellSplitExecutionErrorV1::CorruptJournal);
         }
-        let header = format!("{JOURNAL_MAGIC}\t{JOURNAL_SCHEMA_VERSION}\t{}\t{}\n", plan.operation_id, plan_digest);
+        let header = format!(
+            "{JOURNAL_MAGIC}\t{JOURNAL_SCHEMA_VERSION}\t{}\t{}\n",
+            plan.operation_id, plan_digest
+        );
         file.write_all(header.as_bytes())?;
         file.sync_all()?;
         if let Some(parent) = path.parent().filter(|path| !path.as_os_str().is_empty()) {
@@ -699,16 +785,15 @@ impl CellSplitLedgerV1 {
             bytes.truncate(complete_length);
         }
         let mut lines = bytes.split(|byte| *byte == b'\n');
-        let header = lines.next().ok_or(CellSplitExecutionErrorV1::CorruptJournal)?;
-        let header = std::str::from_utf8(header)
-            .map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
+        let header = lines
+            .next()
+            .ok_or(CellSplitExecutionErrorV1::CorruptJournal)?;
+        let header =
+            std::str::from_utf8(header).map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
         let fields = header.split('\t').collect::<Vec<_>>();
         if fields.len() != 4
             || fields[0] != JOURNAL_MAGIC
-            || fields[1]
-                .parse::<u16>()
-                .ok()
-                != Some(JOURNAL_SCHEMA_VERSION)
+            || fields[1].parse::<u16>().ok() != Some(JOURNAL_SCHEMA_VERSION)
             || fields[2] != plan.operation_id.as_str()
             || Digest32::from_str(fields[3]).ok() != Some(plan_digest)
         {
@@ -723,14 +808,18 @@ impl CellSplitLedgerV1 {
             if line.is_empty() {
                 continue;
             }
-            let persisted: PersistedLedgerRecordV1 =
-                serde_json::from_slice(line).map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
+            if line.len() > MAX_RECORD_BYTES {
+                return Err(CellSplitExecutionErrorV1::RecordTooLarge);
+            }
+            let persisted: PersistedLedgerRecordV1 = serde_json::from_slice(line)
+                .map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
             let record = decode_record(persisted)?;
             if record.sequence != sequence + 1
                 || record.operation_id != plan.operation_id
                 || record.plan_digest != plan_digest
                 || record.previous_record_digest != head_digest
                 || record.record_digest != record_digest(&record)
+                || !valid_transition(phase, record.phase)
             {
                 return Err(CellSplitExecutionErrorV1::CorruptJournal);
             }
@@ -777,7 +866,10 @@ impl CellSplitLedgerV1 {
             });
         }
         let record = LedgerRecordV1 {
-            sequence: self.sequence.checked_add(1).ok_or(CellSplitExecutionErrorV1::CorruptJournal)?,
+            sequence: self
+                .sequence
+                .checked_add(1)
+                .ok_or(CellSplitExecutionErrorV1::CorruptJournal)?,
             operation_id: self.plan.operation_id.clone(),
             plan_digest: self.plan_digest,
             phase,
@@ -788,7 +880,8 @@ impl CellSplitLedgerV1 {
         let mut record = record;
         record.record_digest = record_digest(&record);
         let persisted = PersistedLedgerRecordV1::from(&record);
-        let bytes = serde_json::to_vec(&persisted).map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
+        let bytes = serde_json::to_vec(&persisted)
+            .map_err(|_| CellSplitExecutionErrorV1::CorruptJournal)?;
         if bytes.len() > MAX_RECORD_BYTES {
             return Err(CellSplitExecutionErrorV1::RecordTooLarge);
         }
@@ -805,7 +898,9 @@ impl CellSplitLedgerV1 {
         }
         self.file.write_all(&bytes)?;
         self.file.write_all(b"\n")?;
-        self.file.sync_all().map_err(|_| CellSplitExecutionErrorV1::Io(io::ErrorKind::Other))?;
+        self.file
+            .sync_all()
+            .map_err(|_| CellSplitExecutionErrorV1::Io(io::ErrorKind::Other))?;
         self.sequence = record.sequence;
         self.head_digest = record.record_digest;
         self.phase = phase;
@@ -925,13 +1020,28 @@ fn valid_transition(from: CellSplitPhaseV1, to: CellSplitPhaseV1) -> bool {
     }
     matches!(
         (from, to),
-        (CellSplitPhaseV1::Prepared, CellSplitPhaseV1::ArtifactDurable)
-            | (CellSplitPhaseV1::ArtifactDurable, CellSplitPhaseV1::StateSnapshotted)
-            | (CellSplitPhaseV1::StateSnapshotted, CellSplitPhaseV1::StateMigrated)
-            | (CellSplitPhaseV1::StateMigrated, CellSplitPhaseV1::RoutePublished)
-            | (CellSplitPhaseV1::RoutePublished, CellSplitPhaseV1::GenerationFenced)
-            | (CellSplitPhaseV1::GenerationFenced, CellSplitPhaseV1::LedgerCommitted)
-            | (CellSplitPhaseV1::LedgerCommitted, CellSplitPhaseV1::Completed)
+        (
+            CellSplitPhaseV1::Prepared,
+            CellSplitPhaseV1::ArtifactDurable
+        ) | (
+            CellSplitPhaseV1::ArtifactDurable,
+            CellSplitPhaseV1::StateSnapshotted
+        ) | (
+            CellSplitPhaseV1::StateSnapshotted,
+            CellSplitPhaseV1::StateMigrated
+        ) | (
+            CellSplitPhaseV1::StateMigrated,
+            CellSplitPhaseV1::RoutePublished
+        ) | (
+            CellSplitPhaseV1::RoutePublished,
+            CellSplitPhaseV1::GenerationFenced
+        ) | (
+            CellSplitPhaseV1::GenerationFenced,
+            CellSplitPhaseV1::LedgerCommitted
+        ) | (
+            CellSplitPhaseV1::LedgerCommitted,
+            CellSplitPhaseV1::Completed
+        )
     )
 }
 
@@ -1183,20 +1293,52 @@ impl CellSplitExecutionOwnerV1 {
         let receipt = match migration.migrate(&self.plan, &snapshot) {
             Ok(receipt) => receipt,
             Err(error) => {
-                let rollback = migration.rollback(&self.plan, &snapshot);
-                if let Ok(rollback) = rollback {
-                    let rollback_digest = rollback.validate_for(&self.plan, &snapshot)?;
-                    self.advance(CellSplitPhaseV1::Quarantined, rollback_digest)?;
-                } else {
-                    self.advance(CellSplitPhaseV1::Quarantined, snapshot_digest)?;
-                }
-                return Err(error);
+                return self.quarantine_after_migration_failure(
+                    migration,
+                    &snapshot,
+                    snapshot_digest,
+                    error,
+                );
             }
         };
-        let receipt_digest = receipt.validate_for(&self.plan, &snapshot)?;
+        let receipt_digest = match receipt.validate_for(&self.plan, &snapshot) {
+            Ok(receipt_digest) => receipt_digest,
+            Err(error) => {
+                return self.quarantine_after_migration_failure(
+                    migration,
+                    &snapshot,
+                    snapshot_digest,
+                    error,
+                );
+            }
+        };
         self.last_migration = Some(receipt);
         self.advance(CellSplitPhaseV1::StateMigrated, receipt_digest)?;
         Ok(self.phase)
+    }
+
+    fn quarantine_after_migration_failure<M>(
+        &mut self,
+        migration: &mut M,
+        snapshot: &CellSplitSnapshotReceiptV1,
+        snapshot_digest: Digest32,
+        error: CellSplitExecutionErrorV1,
+    ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1>
+    where
+        M: CellSplitStateMigrationOwnerV1,
+    {
+        // An invalid receipt can mean that the child state was committed but
+        // its response was torn or malformed.  Treat that ambiguity like a
+        // callback failure: ask the state owner for a real rollback receipt
+        // and quarantine the operation before returning the original error.
+        let rollback_digest = match migration.rollback(&self.plan, snapshot) {
+            Ok(rollback) => rollback
+                .validate_for(&self.plan, snapshot)
+                .unwrap_or(snapshot_digest),
+            Err(_) => snapshot_digest,
+        };
+        self.advance(CellSplitPhaseV1::Quarantined, rollback_digest)?;
+        Err(error)
     }
 
     /// Advance the route, fence and terminal ledger phases from concrete
@@ -1300,7 +1442,9 @@ impl CellSplitMigrationReceiptV1 {
             || !self.committed
             || self.authority != AuthorityPosture::DENY_ALL
         {
-            return Err(CellSplitExecutionErrorV1::InvalidReceipt("replayed state migration"));
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "replayed state migration",
+            ));
         }
         Ok(self.digest())
     }
@@ -1325,8 +1469,10 @@ mod tests {
             operation_id: id("split:op:1"),
             source_cell: id("cell:source"),
             child_cell: id("cell:child"),
-            source_generation: Generation::new(1).unwrap_or_else(|error| panic!("generation: {error}")),
-            child_generation: Generation::new(2).unwrap_or_else(|error| panic!("generation: {error}")),
+            source_generation: Generation::new(1)
+                .unwrap_or_else(|error| panic!("generation: {error}")),
+            child_generation: Generation::new(2)
+                .unwrap_or_else(|error| panic!("generation: {error}")),
             artifact_digest: digest(bytes),
             state_schema_digest: digest(b"schema"),
             state_partition_digest: digest(b"partition"),
@@ -1457,7 +1603,8 @@ mod tests {
         let mut route = Route;
         let mut fence = Fence;
         while !matches!(owner.phase(), CellSplitPhaseV1::Completed) {
-            owner.execute_next(&cas, bytes, &mut migration, &mut route, &mut fence)
+            owner
+                .execute_next(&cas, bytes, &mut migration, &mut route, &mut fence)
                 .unwrap_or_else(|error| panic!("execute: {error:?}"));
         }
         assert_eq!(owner.phase(), CellSplitPhaseV1::Completed);
@@ -1489,13 +1636,7 @@ mod tests {
         let mut fence = Fence;
         for _ in 0..3 {
             owner
-                .execute_next(
-                    &cas,
-                    bytes,
-                    &mut migration_owner,
-                    &mut route,
-                    &mut fence,
-                )
+                .execute_next(&cas, bytes, &mut migration_owner, &mut route, &mut fence)
                 .unwrap_or_else(|error| panic!("execute: {error:?}"));
         }
         assert_eq!(owner.phase(), CellSplitPhaseV1::StateMigrated);
@@ -1516,7 +1657,9 @@ mod tests {
         };
         assert!(matches!(
             recovered.advance_with_receipts(&wrong, &mut route, &mut fence),
-            Err(CellSplitExecutionErrorV1::InvalidReceipt("replayed state migration"))
+            Err(CellSplitExecutionErrorV1::InvalidReceipt(
+                "replayed state migration"
+            ))
         ));
         wrong.child_state_digest = digest(b"migrated-state");
         assert_eq!(
@@ -1600,6 +1743,67 @@ mod tests {
     }
 
     #[test]
+    fn cas_recovers_a_torn_staging_object_before_publish() {
+        let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
+        let bytes = b"candidate-artifact";
+        let plan = plan(bytes);
+        let cas_root = directory.path().join("cas");
+        let cas = FileCellSplitArtifactCasV1::open(&cas_root)
+            .unwrap_or_else(|error| panic!("cas: {error:?}"));
+        let temporary = cas_root.join(format!(
+            ".{}.{}.tmp",
+            plan.artifact_digest, plan.operation_id
+        ));
+        fs::write(&temporary, b"torn-before-rename")
+            .unwrap_or_else(|error| panic!("temporary: {error}"));
+        cas.put(&plan, bytes)
+            .unwrap_or_else(|error| panic!("put after torn staging: {error:?}"));
+        assert_eq!(
+            cas.get(&plan)
+                .unwrap_or_else(|error| panic!("get: {error:?}")),
+            bytes.to_vec()
+        );
+        assert!(!temporary.exists());
+    }
+
+    #[test]
+    fn recovery_rejects_a_validly_hashed_but_out_of_order_phase() {
+        let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
+        let plan = plan(b"candidate-artifact");
+        let path = directory.path().join("split.ledger");
+        let ledger = CellSplitLedgerV1::create(&path, plan.clone())
+            .unwrap_or_else(|error| panic!("create: {error:?}"));
+        drop(ledger);
+        let plan_digest = plan
+            .validate()
+            .unwrap_or_else(|error| panic!("plan: {error:?}"));
+        let mut record = LedgerRecordV1 {
+            sequence: 1,
+            operation_id: plan.operation_id.clone(),
+            plan_digest,
+            phase: CellSplitPhaseV1::Completed,
+            receipt_digest: digest(b"receipt"),
+            previous_record_digest: Digest32::ZERO,
+            record_digest: Digest32::ZERO,
+        };
+        record.record_digest = record_digest(&record);
+        let encoded = serde_json::to_vec(&PersistedLedgerRecordV1::from(&record))
+            .unwrap_or_else(|error| panic!("encode: {error}"));
+        let mut file = OpenOptions::new()
+            .append(true)
+            .open(&path)
+            .unwrap_or_else(|error| panic!("open: {error}"));
+        file.write_all(&encoded)
+            .and_then(|()| file.write_all(b"\n"))
+            .unwrap_or_else(|error| panic!("append: {error}"));
+        drop(file);
+        assert!(matches!(
+            CellSplitLedgerV1::recover(&path, plan),
+            Err(CellSplitExecutionErrorV1::CorruptJournal)
+        ));
+    }
+
+    #[test]
     fn torn_tail_is_truncated_but_bad_complete_record_is_rejected() {
         let directory = TempDir::new().unwrap_or_else(|error| panic!("tempdir: {error}"));
         let bytes = b"candidate-artifact";
@@ -1611,15 +1815,23 @@ mod tests {
             .append(CellSplitPhaseV1::ArtifactDurable, digest(b"cas-receipt"))
             .unwrap_or_else(|error| panic!("append: {error:?}"));
         drop(ledger);
-        let mut file = OpenOptions::new().append(true).open(&path).unwrap_or_else(|error| panic!("open: {error}"));
-        file.write_all(b"{\"truncated\":true}").unwrap_or_else(|error| panic!("tail: {error}"));
+        let mut file = OpenOptions::new()
+            .append(true)
+            .open(&path)
+            .unwrap_or_else(|error| panic!("open: {error}"));
+        file.write_all(b"{\"truncated\":true}")
+            .unwrap_or_else(|error| panic!("tail: {error}"));
         drop(file);
         let recovered = CellSplitLedgerV1::recover(&path, plan.clone())
             .unwrap_or_else(|error| panic!("recover: {error:?}"));
         assert_eq!(recovered.sequence(), 1);
         drop(recovered);
-        let mut file = OpenOptions::new().append(true).open(&path).unwrap_or_else(|error| panic!("open: {error}"));
-        file.write_all(b"{}\n").unwrap_or_else(|error| panic!("record: {error}"));
+        let mut file = OpenOptions::new()
+            .append(true)
+            .open(&path)
+            .unwrap_or_else(|error| panic!("open: {error}"));
+        file.write_all(b"{}\n")
+            .unwrap_or_else(|error| panic!("record: {error}"));
         drop(file);
         assert!(matches!(
             CellSplitLedgerV1::recover(&path, plan),

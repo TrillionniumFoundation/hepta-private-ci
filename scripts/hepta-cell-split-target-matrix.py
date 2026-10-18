@@ -170,7 +170,14 @@ def run_matrix(
         })
         try:
             result = subprocess.run(
-                _command(workload_command, case),
+                _command(
+                    workload_command,
+                    {
+                        **case,
+                        "workloadDigest": workload_digest,
+                        "sourceCommit": source_commit,
+                    },
+                ),
                 check=False,
                 capture_output=True,
                 text=True,
@@ -188,7 +195,7 @@ def run_matrix(
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
             row.update({"metrics": metrics, "status": "measured", "metricsDigest": digest(metrics)})
-        except (OSError, subprocess.SubprocessError, ValueError) as error:
+        except (KeyError, OSError, subprocess.SubprocessError, ValueError) as error:
             row["reason"] = str(error)
             blocked.append(case["caseId"])
         row["elapsedMicros"] = (time.monotonic_ns() - started) // 1_000

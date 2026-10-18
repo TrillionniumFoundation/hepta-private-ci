@@ -88,11 +88,8 @@ fn export_reopen_roundtrip_and_bad_frame_rejection() {
 
     let mut bad_chain = wal.export_bytes();
     let first_body_start = 16 + 4;
-    let first_body_len = u32::from_be_bytes(
-        bad_chain[16..20]
-            .try_into()
-            .expect("frame length bytes"),
-    ) as usize;
+    let first_body_len =
+        u32::from_be_bytes(bad_chain[16..20].try_into().expect("frame length bytes")) as usize;
     let first_entry_digest = first_body_start + first_body_len - 32;
     bad_chain[first_entry_digest] ^= 0x01;
     let first_checksum = first_body_start + first_body_len;
@@ -121,7 +118,9 @@ fn file_wal_syncs_frames_and_repairs_torn_tail() {
     let complete_len = must(std::fs::metadata(&path)).len();
     {
         let mut append = must(OpenOptions::new().append(true).open(&path));
-        append.write_all(&[0, 0, 0, 64, 0xaa, 0xbb]).expect("torn tail");
+        append
+            .write_all(&[0, 0, 0, 64, 0xaa, 0xbb])
+            .expect("torn tail");
         append.flush().expect("flush torn tail");
     }
     {
@@ -130,4 +129,3 @@ fn file_wal_syncs_frames_and_repairs_torn_tail() {
     }
     assert_eq!(must(std::fs::metadata(&path)).len(), complete_len);
 }
-

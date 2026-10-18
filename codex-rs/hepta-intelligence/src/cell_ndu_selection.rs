@@ -12,6 +12,7 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_ndu::CandidateRejectionReason;
+use codex_hepta_ndu::CandidateUtility;
 use codex_hepta_ndu::NduEvaluationReceiptV2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -166,6 +167,7 @@ pub fn evaluate_cell_ndu_v1(
         return Err(CellNduSelectionErrorV1::CandidateLimit);
     }
     if request.ndu.base.objective_digest.is_zero()
+        || request.ndu.base.utility_profile_digest.is_zero()
         || request.ndu.base.evaluation_digest.is_zero()
         || request.ndu.evaluation_policy_digest.is_zero()
         || request.ndu.evaluation_digest_v2.is_zero()
@@ -189,7 +191,10 @@ pub fn evaluate_cell_ndu_v1(
                 CellNduSelectionErrorV1::NegativeMigration
             });
         }
-        if by_id.insert(candidate.candidate_id.clone(), candidate).is_some() {
+        if by_id
+            .insert(candidate.candidate_id.clone(), candidate)
+            .is_some()
+        {
             return Err(CellNduSelectionErrorV1::DuplicateCandidate(
                 candidate.candidate_id.to_string(),
             ));
@@ -222,14 +227,13 @@ pub fn evaluate_cell_ndu_v1(
     {
         return Err(CellNduSelectionErrorV1::NduBinding);
     }
-    if ndu_ids.len() != request.ndu.base.evaluated_candidates.len()
-        || by_id.keys().any(|candidate_id| !ndu_ids.contains_key(candidate_id))
-    {
+    if ndu_ids.len() != request.ndu.base.evaluated_candidates.len() {
         return Err(CellNduSelectionErrorV1::NduBinding);
     }
     let mut ndu_rejected_ids = BTreeSet::new();
     for rejected in &request.ndu.base.rejected_candidates {
-        if !ndu_rejected_ids.insert(rejected.candidate_id.clone())
+        if rejected.reasons.is_empty()
+            || !ndu_rejected_ids.insert(rejected.candidate_id.clone())
             || ndu_ids.contains_key(&rejected.candidate_id)
             || !by_id.contains_key(&rejected.candidate_id)
         {
@@ -242,6 +246,9 @@ pub fn evaluate_cell_ndu_v1(
         })
     {
         return Err(CellNduSelectionErrorV1::NduBinding);
+    }
+    if ndu_rejected_ids.contains(&request.baseline_id) {
+        return Err(CellNduSelectionErrorV1::BaselineBinding);
     }
     if request
         .ndu
@@ -292,11 +299,12 @@ pub fn evaluate_cell_ndu_v1(
         &eligible_candidate_ids,
         &rejected_candidate_ids,
     );
+    let baseline_id = request.baseline_id.clone();
     Ok(CellNduEvaluationReceiptV1 {
         evaluator_id: request.evaluator_id,
         selector_id: request.selector_id,
         executor_id: request.executor_id,
-        baseline_id: request.baseline_id,
+        baseline_id,
         baseline_artifact_digest: request.baseline_artifact_digest,
         generation: request.generation,
         ndu_evaluation_digest: request.ndu.evaluation_digest_v2,
@@ -325,9 +333,7 @@ pub fn select_cell_ndu_v1(
     require_digest(candidate_artifact_digest, "selected artifact")?;
     validate_selector_binding(receipt, ndu)?;
     let Some(candidate_id) = ndu.base.advisory_recommendation.as_ref() else {
-        if receipt
-            .candidate_artifact_digests
-            .get(&receipt.baseline_id)
+        if receipt.candidate_artifact_digests.get(&receipt.baseline_id)
             != Some(&candidate_artifact_digest)
         {
             return Err(CellNduSelectionErrorV1::TokenBinding);
@@ -336,11 +342,7 @@ pub fn select_cell_ndu_v1(
             reason_digest: Digest32::of_bytes(b"ndu-no-recommendation"),
         });
     };
-    if receipt
-        .candidate_artifact_digests
-        .get(candidate_id)
-        != Some(&candidate_artifact_digest)
-    {
+    if receipt.candidate_artifact_digests.get(candidate_id) != Some(&candidate_artifact_digest) {
         return Err(CellNduSelectionErrorV1::TokenBinding);
     }
     if candidate_id == &receipt.baseline_id {
@@ -361,16 +363,18 @@ pub fn select_cell_ndu_v1(
         candidate_id.as_str().as_bytes(),
         candidate_artifact_digest.as_array(),
     ]);
-    Ok(CellNduSelectionDecisionV1::Candidate(CellSelectionTokenV1 {
-        selector_id: receipt.selector_id.clone(),
-        executor_id: receipt.executor_id.clone(),
-        baseline_id: receipt.baseline_id.clone(),
-        candidate_id: candidate_id.clone(),
-        generation: receipt.generation,
-        candidate_artifact_digest,
-        evaluation_digest: receipt.ndu_evaluation_digest,
-        selection_digest,
-    }))
+    Ok(CellNduSelectionDecisionV1::Candidate(
+        CellSelectionTokenV1 {
+            selector_id: receipt.selector_id.clone(),
+            executor_id: receipt.executor_id.clone(),
+            baseline_id: receipt.baseline_id.clone(),
+            candidate_id: candidate_id.clone(),
+            generation: receipt.generation,
+            candidate_artifact_digest,
+            evaluation_digest: receipt.ndu_evaluation_digest,
+            selection_digest,
+        },
+    ))
 }
 
 /// Executor-owned final step. The token is consumed by value and cannot be
@@ -435,6 +439,7 @@ fn validate_selector_binding(
     }
     if receipt.ndu_evaluation_digest.is_zero()
         || ndu.base.objective_digest.is_zero()
+        || ndu.base.utility_profile_digest.is_zero()
         || ndu.base.evaluation_digest.is_zero()
         || ndu.evaluation_policy_digest.is_zero()
         || ndu.evaluation_digest_v2.is_zero()
@@ -461,7 +466,8 @@ fn validate_selector_binding(
     }
     let mut ndu_rejected_ids = BTreeSet::new();
     for rejected in &ndu.base.rejected_candidates {
-        if !ndu_rejected_ids.insert(rejected.candidate_id.clone())
+        if rejected.reasons.is_empty()
+            || !ndu_rejected_ids.insert(rejected.candidate_id.clone())
             || ndu_ids.contains(&rejected.candidate_id)
         {
             return Err(CellNduSelectionErrorV1::NduBinding);
@@ -474,12 +480,12 @@ fn validate_selector_binding(
     if ndu_ids.len() != ndu.base.evaluated_candidates.len()
         || receipt.candidate_artifact_digests.len() != all_ndu_ids.len()
         || receipt.candidate_evidence.len() != all_ndu_ids.len()
-        || all_ndu_ids
-            .iter()
-            .any(|candidate_id| {
-                !receipt.candidate_artifact_digests.contains_key(candidate_id)
-                    || !receipt.candidate_evidence.contains_key(candidate_id)
-            })
+        || all_ndu_ids.iter().any(|candidate_id| {
+            !receipt
+                .candidate_artifact_digests
+                .contains_key(candidate_id)
+                || !receipt.candidate_evidence.contains_key(candidate_id)
+        })
     {
         return Err(CellNduSelectionErrorV1::NduBinding);
     }
@@ -490,9 +496,7 @@ fn validate_selector_binding(
     {
         return Err(CellNduSelectionErrorV1::NduBinding);
     }
-    if receipt
-        .candidate_artifact_digests
-        .get(&receipt.baseline_id)
+    if receipt.candidate_artifact_digests.get(&receipt.baseline_id)
         != Some(&receipt.baseline_artifact_digest)
         || ndu_rejected_ids.contains(&receipt.baseline_id)
     {
@@ -563,6 +567,15 @@ fn canonical_candidate_set_digest(
     push_id(&mut bytes, baseline_id);
     bytes.extend_from_slice(baseline_artifact_digest.as_array());
     bytes.extend_from_slice(ndu.base.objective_digest.as_array());
+    bytes.extend_from_slice(&ndu.base.generation.get().to_be_bytes());
+    bytes.extend_from_slice(ndu.base.utility_profile_digest.as_array());
+    match ndu.base.scalarization_profile_digest {
+        Some(digest) => {
+            bytes.push(1);
+            bytes.extend_from_slice(digest.as_array());
+        }
+        None => bytes.push(0),
+    }
     bytes.extend_from_slice(ndu.base.evaluation_digest.as_array());
     bytes.extend_from_slice(ndu.evaluation_policy_digest.as_array());
     bytes.extend_from_slice(ndu.evaluation_digest_v2.as_array());
@@ -573,23 +586,24 @@ fn canonical_candidate_set_digest(
         }
         None => bytes.push(0),
     }
+    bytes.push(match ndu.base.disposition {
+        codex_hepta_ndu::EvaluationDisposition::InfeasibleExplicitAbstain => 0,
+        codex_hepta_ndu::EvaluationDisposition::UniqueParetoRecommendation => 1,
+        codex_hepta_ndu::EvaluationDisposition::ParetoSetRequiresSlowPath => 2,
+        codex_hepta_ndu::EvaluationDisposition::ScalarizedRecommendation => 3,
+        codex_hepta_ndu::EvaluationDisposition::ScalarizationTieRequiresSlowPath => 4,
+    });
     let mut evaluated = ndu.base.evaluated_candidates.iter().collect::<Vec<_>>();
     evaluated.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     bytes.extend_from_slice(&(evaluated.len() as u32).to_be_bytes());
     for candidate in evaluated {
-        push_id(&mut bytes, &candidate.candidate_id);
-        bytes.extend_from_slice(candidate.support_digest.as_array());
-        push_axis_values(&mut bytes, &candidate.utility);
-        push_axis_values(&mut bytes, &candidate.risk);
-        push_axis_values(&mut bytes, &candidate.resource);
-        push_axis_values(&mut bytes, &candidate.uncertainty);
-        match candidate.scalar_score {
-            Some(value) => {
-                bytes.push(1);
-                bytes.extend_from_slice(&value.raw().to_be_bytes());
-            }
-            None => bytes.push(0),
-        }
+        push_candidate_utility(&mut bytes, candidate);
+    }
+    let mut pareto = ndu.base.pareto_frontier.iter().collect::<Vec<_>>();
+    pareto.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+    bytes.extend_from_slice(&(pareto.len() as u32).to_be_bytes());
+    for candidate in pareto {
+        push_candidate_utility(&mut bytes, candidate);
     }
     let mut ndu_rejected = ndu.base.rejected_candidates.iter().collect::<Vec<_>>();
     ndu_rejected.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
@@ -637,6 +651,22 @@ fn push_axis_values(bytes: &mut Vec<u8>, values: &[codex_hepta_ndu::AxisValue]) 
     for value in values {
         push_id(bytes, &value.axis);
         bytes.extend_from_slice(&value.value.raw().to_be_bytes());
+    }
+}
+
+fn push_candidate_utility(bytes: &mut Vec<u8>, candidate: &CandidateUtility) {
+    push_id(bytes, &candidate.candidate_id);
+    bytes.extend_from_slice(candidate.support_digest.as_array());
+    push_axis_values(bytes, &candidate.utility);
+    push_axis_values(bytes, &candidate.risk);
+    push_axis_values(bytes, &candidate.resource);
+    push_axis_values(bytes, &candidate.uncertainty);
+    match candidate.scalar_score {
+        Some(value) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&value.raw().to_be_bytes());
+        }
+        None => bytes.push(0),
     }
 }
 

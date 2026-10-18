@@ -139,13 +139,9 @@ impl FeatureSnapshotIdentityV1 {
     }
 
     /// Deterministic identity used by the retained legacy constructor.
-    fn legacy(
-        encoder_digest: Digest32,
-        input_digest: Digest32,
-    ) -> Result<Self, DataPlaneError> {
-        let stable = |value: &str| {
-            StableId::new(value).map_err(|_| DataPlaneError::InvalidIdentifier)
-        };
+    fn legacy(encoder_digest: Digest32, input_digest: Digest32) -> Result<Self, DataPlaneError> {
+        let stable =
+            |value: &str| StableId::new(value).map_err(|_| DataPlaneError::InvalidIdentifier);
         Ok(Self {
             scope: stable("legacy.scope")?,
             workspace: stable("legacy.workspace")?,
@@ -364,7 +360,8 @@ struct ModelDescriptor {
     head: LightweightHeadV1,
 }
 
-/// Secondary index for finding all heads that can consume one encoder output.
+/// Secondary index for finding all heads that can consume one encoder output
+/// from the exact encoder generation and shape.
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct CompatibleModelIndexV1 {
     by_id: BTreeMap<StableId, ModelDescriptor>,
@@ -446,6 +443,7 @@ impl CompatibleModelIndexV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct RetiredModelRecord {
+    retired_generation: Generation,
     replacement_id: StableId,
     replacement_generation: Generation,
     retirement_digest: Digest32,
@@ -492,13 +490,15 @@ impl RetiredIdRegistryV1 {
         self.records.insert(
             retired_id,
             RetiredModelRecord {
+                retired_generation,
                 replacement_id,
                 replacement_generation,
                 retirement_digest,
             },
         );
         Ok(BatchReceiptV1 {
-            operation: StableId::new("retire-model").map_err(|_| DataPlaneError::InvalidIdentifier)?,
+            operation: StableId::new("retire-model")
+                .map_err(|_| DataPlaneError::InvalidIdentifier)?,
             digest: retirement_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -518,7 +518,36 @@ impl RetiredIdRegistryV1 {
 
     #[must_use]
     pub fn retirement_digest(&self, model_id: &StableId) -> Option<Digest32> {
-        self.records.get(model_id).map(|record| record.retirement_digest)
+        self.records
+            .get(model_id)
+            .map(|record| record.retirement_digest)
+    }
+
+    /// Verifies that every rollover is bound to the model generations that
+    /// are actually loaded in the execution index.  The retired model may
+    /// already have been removed from the index, but if it is still present
+    /// its generation must match the durable retirement record.  A rollover
+    /// target is required to exist at exactly the recorded generation and may
+    /// not itself be retired; otherwise a route could silently terminate in a
+    /// missing or stale model.
+    pub fn validate_against(&self, models: &CompatibleModelIndexV1) -> Result<(), DataPlaneError> {
+        for (retired_id, record) in &self.records {
+            if models
+                .get(retired_id)
+                .is_some_and(|retired| retired.generation != record.retired_generation)
+            {
+                return Err(DataPlaneError::InvalidRollover);
+            }
+            let Some(replacement) = models.get(&record.replacement_id) else {
+                return Err(DataPlaneError::InvalidRollover);
+            };
+            if replacement.generation != record.replacement_generation
+                || self.is_retired(&record.replacement_id)
+            {
+                return Err(DataPlaneError::InvalidRollover);
+            }
+        }
+        Ok(())
     }
 }
 
@@ -556,7 +585,10 @@ impl FeatureSnapshotCacheV1 {
         self.generation
     }
 
-    pub fn insert(&mut self, snapshot: FeatureSnapshotV1) -> Result<BatchReceiptV1, DataPlaneError> {
+    pub fn insert(
+        &mut self,
+        snapshot: FeatureSnapshotV1,
+    ) -> Result<BatchReceiptV1, DataPlaneError> {
         if snapshot.encoder_generation != self.generation {
             return Err(DataPlaneError::StaleCacheGeneration);
         }
@@ -571,10 +603,7 @@ impl FeatureSnapshotCacheV1 {
         }
         let snapshot_digest = snapshot.semantic_digest();
         self.entries.insert(key, snapshot);
-        BatchReceiptV1::new(
-            "cache-insert",
-            &[snapshot_digest.as_array()],
-        )
+        BatchReceiptV1::new("cache-insert", &[snapshot_digest.as_array()])
     }
 
     #[must_use]
@@ -625,10 +654,7 @@ impl FeatureSnapshotCacheV1 {
         }
         self.entries.clear();
         self.generation = next_generation;
-        BatchReceiptV1::new(
-            "cache-invalidate",
-            &[&next_generation.get().to_be_bytes()],
-        )
+        BatchReceiptV1::new("cache-invalidate", &[&next_generation.get().to_be_bytes()])
     }
 }
 
@@ -798,7 +824,25 @@ pub struct ReferenceBackendBatchV1 {
 impl ReferenceBackendBatchV1 {
     #[must_use]
     pub fn new(models: CompatibleModelIndexV1, retired_ids: RetiredIdRegistryV1) -> Self {
-        Self { models, retired_ids }
+        Self {
+            models,
+            retired_ids,
+        }
+    }
+
+    /// Constructs a backend only when every retired-ID rollover is bound to a
+    /// loaded replacement at the recorded generation.  [`Self::new`] remains
+    /// available for callers that assemble state incrementally; execution
+    /// still repeats this validation before touching a head.
+    pub fn try_new(
+        models: CompatibleModelIndexV1,
+        retired_ids: RetiredIdRegistryV1,
+    ) -> Result<Self, DataPlaneError> {
+        retired_ids.validate_against(&models)?;
+        Ok(Self {
+            models,
+            retired_ids,
+        })
     }
 
     pub fn execute(
@@ -808,6 +852,7 @@ impl ReferenceBackendBatchV1 {
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS {
             return Err(DataPlaneError::InvalidBatchSize);
         }
+        self.retired_ids.validate_against(&self.models)?;
         let mut seen = BTreeSet::new();
         let mut outputs = Vec::with_capacity(requests.len());
         for request in requests {
@@ -885,12 +930,17 @@ impl BatchReceiptV1 {
     fn new(operation: &str, binding: &[&[u8]]) -> Result<Self, DataPlaneError> {
         let mut bytes = b"hepta.neuron.data-plane-receipt.v1\0".to_vec();
         bytes.extend_from_slice(operation.as_bytes());
+        bytes.extend_from_slice(
+            &u32::try_from(binding.len())
+                .unwrap_or(u32::MAX)
+                .to_be_bytes(),
+        );
         for part in binding {
+            bytes.extend_from_slice(&u64::try_from(part.len()).unwrap_or(u64::MAX).to_be_bytes());
             bytes.extend_from_slice(part);
         }
         Ok(Self {
-            operation: StableId::new(operation)
-                .map_err(|_| DataPlaneError::InvalidIdentifier)?,
+            operation: StableId::new(operation).map_err(|_| DataPlaneError::InvalidIdentifier)?,
             digest: Digest32::of_bytes(&bytes),
             authority: AuthorityPosture::DENY_ALL,
         })

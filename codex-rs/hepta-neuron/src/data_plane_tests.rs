@@ -84,22 +84,50 @@ fn snapshots_are_immutable_and_clones_share_feature_storage() {
 #[test]
 fn compatibility_secondary_index_finds_only_exact_encoder_and_shape() {
     let shared = snapshot(1);
+    let next_generation = snapshot(2);
     let mut index = CompatibleModelIndexV1::new();
     index
-        .register(id("head-a"), generation(1), digest("shared-encoder"), head("a", 0))
+        .register(
+            id("head-a"),
+            generation(1),
+            digest("shared-encoder"),
+            head("a", 0),
+        )
         .expect("register a");
     index
-        .register(id("head-b"), generation(1), digest("shared-encoder"), head("b", 1))
+        .register(
+            id("head-b"),
+            generation(1),
+            digest("shared-encoder"),
+            head("b", 1),
+        )
         .expect("register b");
     index
-        .register(id("head-c"), generation(1), digest("other-encoder"), head("c", 0))
+        .register(
+            id("head-c"),
+            generation(1),
+            digest("other-encoder"),
+            head("c", 0),
+        )
         .expect("register c");
+    index
+        .register(
+            id("head-next"),
+            generation(2),
+            digest("shared-encoder"),
+            head("next", 0),
+        )
+        .expect("register next");
 
     assert_eq!(
         index.compatible_models(&shared, 2),
         vec![id("head-a"), id("head-b")]
     );
     assert!(index.compatible_models(&shared, 1).is_empty());
+    assert_eq!(
+        index.compatible_models(&next_generation, 2),
+        vec![id("head-next")]
+    );
 }
 
 #[test]
@@ -119,14 +147,16 @@ fn cache_generation_invalidation_makes_old_snapshot_unservable() {
     cache
         .invalidate_generation(generation(2))
         .expect("invalidate");
-    assert!(cache
-        .get_with_identity(
-            old.encoder_digest(),
-            old.input_digest(),
-            generation(1),
-            old.identity(),
-        )
-        .is_none());
+    assert!(
+        cache
+            .get_with_identity(
+                old.encoder_digest(),
+                old.input_digest(),
+                generation(1),
+                old.identity(),
+            )
+            .is_none()
+    );
     assert!(cache.insert(old).is_err());
     let fresh = snapshot_with_identity(2, "fresh");
     cache.insert(fresh.clone()).expect("fresh insert");
@@ -176,7 +206,11 @@ fn legacy_snapshot_constructor_and_cache_lookup_remain_compatible() {
     let legacy = snapshot(1);
     cache.insert(legacy.clone()).expect("insert");
     assert_eq!(
-        cache.get(legacy.encoder_digest(), legacy.input_digest(), generation(1)),
+        cache.get(
+            legacy.encoder_digest(),
+            legacy.input_digest(),
+            generation(1)
+        ),
         Some(legacy)
     );
 }
@@ -186,10 +220,20 @@ fn reference_backend_executes_shared_snapshot_for_multiple_heads() {
     let shared = snapshot(1);
     let mut index = CompatibleModelIndexV1::new();
     index
-        .register(id("head-a"), generation(1), digest("shared-encoder"), head("a", 0))
+        .register(
+            id("head-a"),
+            generation(1),
+            digest("shared-encoder"),
+            head("a", 0),
+        )
         .expect("register a");
     index
-        .register(id("head-b"), generation(1), digest("shared-encoder"), head("b", Q / 8))
+        .register(
+            id("head-b"),
+            generation(1),
+            digest("shared-encoder"),
+            head("b", Q / 8),
+        )
         .expect("register b");
     let backend = ReferenceBackendBatchV1::new(index, RetiredIdRegistryV1::new());
     let requests = vec![
@@ -216,37 +260,81 @@ fn reference_backend_executes_shared_snapshot_for_multiple_heads() {
 
 #[test]
 fn retired_id_rollover_rejects_old_route_and_reuse() {
-    let shared = snapshot(1);
+    let shared = snapshot(2);
     let mut index = CompatibleModelIndexV1::new();
     index
-        .register(id("old-head"), generation(1), digest("shared-encoder"), head("old", 0))
+        .register(
+            id("old-head"),
+            generation(1),
+            digest("shared-encoder"),
+            head("old", 0),
+        )
         .expect("register old");
     index
-        .register(id("new-head"), generation(2), digest("shared-encoder"), head("new", 0))
+        .register(
+            id("new-head"),
+            generation(2),
+            digest("shared-encoder"),
+            head("new", 0),
+        )
         .expect("register new");
     let mut retired = RetiredIdRegistryV1::new();
     let receipt = retired
         .retire(id("old-head"), generation(1), id("new-head"), generation(2))
         .expect("retire");
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
-    assert_eq!(retired.replacement(&id("old-head")), Some((&id("new-head"), generation(2))));
     assert_eq!(
-        retired.retire(id("old-head"), generation(1), id("other-head"), generation(3)),
+        retired.replacement(&id("old-head")),
+        Some((&id("new-head"), generation(2)))
+    );
+    assert_eq!(
+        retired.retire(
+            id("old-head"),
+            generation(1),
+            id("other-head"),
+            generation(3)
+        ),
         Err(DataPlaneError::InvalidRollover)
     );
 
     let backend = ReferenceBackendBatchV1::new(index, retired);
-    assert_eq!(
-        backend.compatible_models(&shared, 2),
-        vec![id("new-head")]
-    );
+    assert_eq!(backend.compatible_models(&shared, 2), vec![id("new-head")]);
     let request = HeadExecutionRequestV1 {
         request_id: id("request-old"),
         model_id: id("old-head"),
         generation: generation(1),
         snapshot: shared,
     };
-    assert_eq!(backend.execute(&[request]), Err(DataPlaneError::ModelRetired));
+    assert_eq!(
+        backend.execute(&[request]),
+        Err(DataPlaneError::ModelRetired)
+    );
+}
+
+#[test]
+fn retired_id_rollover_requires_a_loaded_replacement_generation() {
+    let mut index = CompatibleModelIndexV1::new();
+    index
+        .register(
+            id("old-head"),
+            generation(1),
+            digest("shared-encoder"),
+            head("old", 0),
+        )
+        .expect("register old");
+    let mut retired = RetiredIdRegistryV1::new();
+    retired
+        .retire(
+            id("old-head"),
+            generation(1),
+            id("missing-head"),
+            generation(2),
+        )
+        .expect("retire");
+    assert_eq!(
+        ReferenceBackendBatchV1::try_new(index, retired),
+        Err(DataPlaneError::InvalidRollover)
+    );
 }
 
 #[test]
@@ -263,14 +351,22 @@ fn feature_digest_and_generation_fences_reject_bad_input() {
     );
     let stale = snapshot(1);
     let mut cache = FeatureSnapshotCacheV1::new(generation(2), 1).expect("cache");
-    assert_eq!(cache.insert(stale), Err(DataPlaneError::StaleCacheGeneration));
+    assert_eq!(
+        cache.insert(stale),
+        Err(DataPlaneError::StaleCacheGeneration)
+    );
 }
 
 #[test]
 fn reference_backend_rejects_snapshot_generation_drift() {
     let mut index = CompatibleModelIndexV1::new();
     index
-        .register(id("head"), generation(1), digest("shared-encoder"), head("head", 0))
+        .register(
+            id("head"),
+            generation(1),
+            digest("shared-encoder"),
+            head("head", 0),
+        )
         .expect("register");
     let backend = ReferenceBackendBatchV1::new(index, RetiredIdRegistryV1::new());
     let request = HeadExecutionRequestV1 {
@@ -279,7 +375,10 @@ fn reference_backend_rejects_snapshot_generation_drift() {
         generation: generation(1),
         snapshot: snapshot(2),
     };
-    assert_eq!(backend.execute(&[request]), Err(DataPlaneError::ModelGenerationMismatch));
+    assert_eq!(
+        backend.execute(&[request]),
+        Err(DataPlaneError::ModelGenerationMismatch)
+    );
 }
 
 #[test]
@@ -288,7 +387,12 @@ fn reference_backend_rejects_head_output_outside_neuron_q24_range() {
     oversized.weights_q24 = vec![vec![8 * Q, 8 * Q], vec![8 * Q, 8 * Q]];
     let mut index = CompatibleModelIndexV1::new();
     index
-        .register(id("oversized"), generation(1), digest("shared-encoder"), oversized)
+        .register(
+            id("oversized"),
+            generation(1),
+            digest("shared-encoder"),
+            oversized,
+        )
         .expect("register");
     let backend = ReferenceBackendBatchV1::new(index, RetiredIdRegistryV1::new());
     let request = HeadExecutionRequestV1 {
@@ -297,7 +401,10 @@ fn reference_backend_rejects_head_output_outside_neuron_q24_range() {
         generation: generation(1),
         snapshot: snapshot(1),
     };
-    assert_eq!(backend.execute(&[request]), Err(DataPlaneError::OutputOutOfRange));
+    assert_eq!(
+        backend.execute(&[request]),
+        Err(DataPlaneError::OutputOutOfRange)
+    );
 }
 
 #[test]
@@ -318,7 +425,10 @@ fn microbatch_plan_freezes_shared_snapshot_and_rejects_empty_or_mixed_batches() 
         generation(1),
         10,
         100,
-        vec![request("request-a", "head-a"), request("request-b", "head-b")],
+        vec![
+            request("request-a", "head-a"),
+            request("request-b", "head-b"),
+        ],
     )
     .expect("plan");
     assert_eq!(plan.requests().len(), 2);
@@ -335,7 +445,13 @@ fn microbatch_plan_freezes_shared_snapshot_and_rejects_empty_or_mixed_batches() 
         snapshot: snapshot_with_identity(1, "different-scope"),
     };
     assert_eq!(
-        plan_microbatch_v1(id("worker"), generation(1), 10, 100, vec![request("request-a", "head-a"), mixed]),
+        plan_microbatch_v1(
+            id("worker"),
+            generation(1),
+            10,
+            100,
+            vec![request("request-a", "head-a"), mixed]
+        ),
         Err(DataPlaneError::InvalidMicrobatchPlan)
     );
 }
@@ -399,12 +515,14 @@ fn microbatch_plan_freezes_shared_snapshot_and_deadline() {
             snapshot: shared,
         },
     ];
-    let plan = plan_microbatch_v1(id("worker"), generation(1), 10, 20, requests)
-        .expect("plan");
+    let plan = plan_microbatch_v1(id("worker"), generation(1), 10, 20, requests).expect("plan");
     assert_eq!(plan.requests().len(), 2);
     assert_ne!(plan.plan_digest(), Digest32::ZERO);
     plan.validate(19).expect("before deadline");
-    assert_eq!(plan.validate(20), Err(DataPlaneError::InvalidMicrobatchPlan));
+    assert_eq!(
+        plan.validate(20),
+        Err(DataPlaneError::InvalidMicrobatchPlan)
+    );
 }
 
 #[test]

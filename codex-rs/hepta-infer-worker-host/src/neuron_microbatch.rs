@@ -10,10 +10,17 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::time::Instant;
 
 use codex_hepta_neuron::DataPlaneError;
 use codex_hepta_neuron::HeadExecutionOutputV1;
+use codex_hepta_neuron::MetricsError;
 use codex_hepta_neuron::MicrobatchPlanV1;
+use codex_hepta_neuron::NeuronMetricEventV1;
+use codex_hepta_neuron::NeuronMetricsGroupCommitWriterV1;
 use codex_hepta_neuron::ReferenceBackendBatchV1;
 use codex_hepta_neuron::plan_microbatch_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -31,9 +38,11 @@ pub struct NeuronMicrobatchExecutionV1 {
     pub authority: AuthorityPosture,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum NeuronMicrobatchWorkerError {
     DataPlane(DataPlaneError),
+    Metrics(MetricsError),
+    MetricsLock,
     WorkerMismatch,
     GenerationMismatch,
 }
@@ -52,12 +61,19 @@ impl From<DataPlaneError> for NeuronMicrobatchWorkerError {
     }
 }
 
+impl From<MetricsError> for NeuronMicrobatchWorkerError {
+    fn from(value: MetricsError) -> Self {
+        Self::Metrics(value)
+    }
+}
+
 /// The production owner that crosses the planner/backend boundary.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone)]
 pub struct NeuronMicrobatchWorkerV1 {
     worker_id: StableId,
     generation: Generation,
     backend: ReferenceBackendBatchV1,
+    metrics: Option<Arc<Mutex<NeuronMetricsGroupCommitWriterV1>>>,
 }
 
 impl NeuronMicrobatchWorkerV1 {
@@ -70,7 +86,20 @@ impl NeuronMicrobatchWorkerV1 {
             worker_id,
             generation,
             backend,
+            metrics: None,
         }
+    }
+
+    /// Attach the host-owned durable metrics writer.  The writer is shared by
+    /// clones of this worker so retries serialize through one file lock and
+    /// one generation fence.
+    #[must_use]
+    pub fn with_metrics_writer(
+        mut self,
+        writer: Arc<Mutex<NeuronMetricsGroupCommitWriterV1>>,
+    ) -> Self {
+        self.metrics = Some(writer);
+        self
     }
 
     #[must_use]
@@ -113,6 +142,8 @@ impl NeuronMicrobatchWorkerV1 {
         now_micros: u64,
         plan: &MicrobatchPlanV1,
     ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchWorkerError> {
+        let started = Instant::now();
+        let cpu_before = process_cpu_micros();
         if plan.worker_id() != &self.worker_id {
             return Err(NeuronMicrobatchWorkerError::WorkerMismatch);
         }
@@ -122,6 +153,41 @@ impl NeuronMicrobatchWorkerV1 {
         plan.validate(now_micros)?;
         let outputs = self.backend.execute(plan.requests())?;
         let execution_digest = digest_execution(plan.plan_digest(), &outputs);
+        if let Some(metrics) = &self.metrics {
+            let lock_started = Instant::now();
+            let mut writer = metrics
+                .lock()
+                .map_err(|_| NeuronMicrobatchWorkerError::MetricsLock)?;
+            let lock_wait_micros =
+                u64::try_from(lock_started.elapsed().as_micros()).unwrap_or(u64::MAX);
+            let elapsed_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+            let cpu_micros = process_cpu_micros()
+                .zip(cpu_before)
+                .map(|(after, before)| after.saturating_sub(before))
+                .unwrap_or(elapsed_micros);
+            let event_id =
+                StableId::new(format!("microbatch:{}", plan.plan_digest())).map_err(|_| {
+                    NeuronMicrobatchWorkerError::Metrics(MetricsError::InvalidEvent("event id"))
+                })?;
+            writer.append(NeuronMetricEventV1 {
+                event_id,
+                generation: self.generation,
+                plan_digest: plan.plan_digest(),
+                execution_digest,
+                request_count: u32::try_from(outputs.len()).map_err(|_| {
+                    NeuronMicrobatchWorkerError::Metrics(MetricsError::InvalidEvent(
+                        "request count",
+                    ))
+                })?,
+                elapsed_micros,
+                cpu_micros,
+                rss_bytes: process_rss_bytes().unwrap_or(0),
+                p95_micros: elapsed_micros,
+                p99_micros: elapsed_micros,
+                lock_wait_micros,
+                recovered: false,
+            })?;
+        }
         Ok(NeuronMicrobatchExecutionV1 {
             worker_id: self.worker_id.clone(),
             generation: self.generation,
@@ -130,6 +196,44 @@ impl NeuronMicrobatchWorkerV1 {
             execution_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
+    }
+}
+
+/// Read process CPU time without introducing an unsafe syscall dependency into
+/// the authority boundary. Linux exposes aggregate user/system ticks in
+/// `/proc/self/stat`; Linux production hosts conventionally use a 100 Hz
+/// scheduler tick, so this is converted to microseconds at the sampling edge.
+/// Hosts without procfs still receive a wall-time sample, while the durable
+/// record keeps RSS explicitly zero to make that limitation auditable.
+fn process_cpu_micros() -> Option<u64> {
+    #[cfg(target_os = "linux")]
+    {
+        let stat = fs::read_to_string("/proc/self/stat").ok()?;
+        let end = stat.rfind(')')?;
+        let fields = stat.get(end + 2..)?.split_whitespace().collect::<Vec<_>>();
+        let user = fields.get(11)?.parse::<u64>().ok()?;
+        let system = fields.get(12)?.parse::<u64>().ok()?;
+        user.checked_add(system)?.checked_mul(10_000)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        None
+    }
+}
+
+fn process_rss_bytes() -> Option<u64> {
+    #[cfg(target_os = "linux")]
+    {
+        let status = fs::read_to_string("/proc/self/status").ok()?;
+        let kib = status.lines().find_map(|line| {
+            let rest = line.strip_prefix("VmRSS:")?;
+            rest.split_whitespace().next()?.parse::<u64>().ok()
+        })?;
+        kib.checked_mul(1024)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        None
     }
 }
 

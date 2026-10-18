@@ -1,8 +1,10 @@
 use super::*;
 use codex_hepta_ndu::AxisValue;
+use codex_hepta_ndu::CandidateRejectionReason;
 use codex_hepta_ndu::CandidateUtility;
 use codex_hepta_ndu::EvaluationDisposition;
 use codex_hepta_ndu::NduEvaluationReceipt;
+use codex_hepta_ndu::RejectedCandidate;
 use codex_hepta_types::FixedQ32;
 
 fn id(value: &str) -> StableId {
@@ -92,8 +94,8 @@ fn evaluator_freezes_baseline_and_selector_follows_ndu_recommendation() {
     let request = request(Some("cell-1"));
     let receipt = evaluate_cell_ndu_v1(request.clone()).expect("evaluation");
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
-    let decision = select_cell_ndu_v1(&receipt, &request.ndu, digest("artifact-1"))
-        .expect("selection");
+    let decision =
+        select_cell_ndu_v1(&receipt, &request.ndu, digest("artifact-1")).expect("selection");
     let CellNduSelectionDecisionV1::Candidate(token) = decision else {
         panic!("candidate should be selected")
     };
@@ -128,16 +130,16 @@ fn no_recommendation_is_a_durable_no_change_decision() {
 
 #[test]
 fn roles_and_negative_migration_are_independent_and_fail_closed() {
-    let mut request = request(Some("cell-1"));
-    request.selector_id = request.evaluator_id.clone();
+    let mut role_request = request(Some("cell-1"));
+    role_request.selector_id = role_request.evaluator_id.clone();
     assert_eq!(
-        evaluate_cell_ndu_v1(request),
+        evaluate_cell_ndu_v1(role_request),
         Err(CellNduSelectionErrorV1::RoleCollision)
     );
-    let mut request = request(Some("cell-1"));
-    request.candidates[1].negative_migration_q32 = -1;
+    let mut migration_request = request(Some("cell-1"));
+    migration_request.candidates[1].negative_migration_q32 = -1;
     assert_eq!(
-        evaluate_cell_ndu_v1(request),
+        evaluate_cell_ndu_v1(migration_request),
         Err(CellNduSelectionErrorV1::NegativeMigration)
     );
 }
@@ -194,4 +196,69 @@ fn evaluator_rejects_generation_mismatch_without_dropping_evidence() {
         evaluate_cell_ndu_v1(request),
         Err(CellNduSelectionErrorV1::GenerationMismatch)
     );
+}
+
+#[test]
+fn selector_rejects_recommendation_rewrite_even_when_v2_digest_is_reused() {
+    let request = request(Some("cell-1"));
+    let receipt = evaluate_cell_ndu_v1(request.clone()).expect("evaluation");
+    let mut rewritten = request.ndu.clone();
+    // Keep evaluation_digest_v2 unchanged while changing only the recommendation.
+    // The selector must bind the complete NDU projection, not trust that digest
+    // as if it authenticated the recommendation by itself.
+    rewritten.base.advisory_recommendation = Some(id("cell-0"));
+    assert_eq!(
+        select_cell_ndu_v1(&receipt, &rewritten, digest("artifact-0")),
+        Err(CellNduSelectionErrorV1::NduBinding)
+    );
+}
+
+#[test]
+fn selector_rejects_future_window_or_utility_evidence_drift() {
+    let request = request(Some("cell-1"));
+    let receipt = evaluate_cell_ndu_v1(request.clone()).expect("evaluation");
+    let mut drifted = receipt.clone();
+    drifted
+        .candidate_evidence
+        .get_mut(&id("cell-1"))
+        .expect("candidate evidence")
+        .future_window_digest = digest("future-window-drift");
+    assert_eq!(
+        select_cell_ndu_v1(&drifted, &request.ndu, digest("artifact-1")),
+        Err(CellNduSelectionErrorV1::NduBinding)
+    );
+
+    let mut utility_drift = receipt;
+    utility_drift
+        .candidate_evidence
+        .get_mut(&id("cell-1"))
+        .expect("candidate evidence")
+        .utility_delta_q32 = 99;
+    assert_eq!(
+        select_cell_ndu_v1(&utility_drift, &request.ndu, digest("artifact-1")),
+        Err(CellNduSelectionErrorV1::NduBinding)
+    );
+}
+
+#[test]
+fn evaluator_requires_ndu_support_evidence() {
+    let mut request = request(Some("cell-1"));
+    request.ndu.base.evaluated_candidates[1].support_digest = Digest32::ZERO;
+    assert_eq!(
+        evaluate_cell_ndu_v1(request),
+        Err(CellNduSelectionErrorV1::NduBinding)
+    );
+}
+
+#[test]
+fn evaluator_keeps_ndu_rejected_candidate_in_complete_partition() {
+    let mut request = request(None);
+    request.ndu.base.evaluated_candidates.pop();
+    request.ndu.base.rejected_candidates = vec![RejectedCandidate {
+        candidate_id: id("cell-1"),
+        reasons: vec![CandidateRejectionReason::ResourceCeilingExceeded],
+    }];
+    let receipt = evaluate_cell_ndu_v1(request).expect("complete rejected partition");
+    assert_eq!(receipt.eligible_candidate_ids, vec![id("cell-0")]);
+    assert_eq!(receipt.rejected_candidate_ids, vec![id("cell-1")]);
 }

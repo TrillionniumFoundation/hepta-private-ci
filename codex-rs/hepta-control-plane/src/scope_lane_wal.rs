@@ -172,11 +172,7 @@ impl ScopeLaneWalV1 {
         let predecessor_entry_digest = entries
             .last()
             .map_or(Digest32::ZERO, |entry| entry.entry_digest);
-        let entry_digest = digest_entry(
-            sequence,
-            &envelope,
-            predecessor_entry_digest,
-        );
+        let entry_digest = digest_entry(sequence, &envelope, predecessor_entry_digest);
         let entry = ScopeLaneEntryV1 {
             sequence,
             envelope,
@@ -206,9 +202,7 @@ impl ScopeLaneWalV1 {
             for entry in entries {
                 let body = encode_entry_body(entry);
                 bytes.extend_from_slice(
-                    &u32::try_from(body.len())
-                        .unwrap_or(u32::MAX)
-                        .to_be_bytes(),
+                    &u32::try_from(body.len()).unwrap_or(u32::MAX).to_be_bytes(),
                 );
                 bytes.extend_from_slice(&body);
                 bytes.extend_from_slice(Digest32::of_bytes(&body).as_array());
@@ -249,7 +243,10 @@ impl ScopeLaneWalV1 {
             }
             let (entry, encoded_sequence, encoded_predecessor, encoded_entry_digest) =
                 decode_entry_body(body)?;
-            if wal.identities.contains_key(&(entry.envelope.scope_digest, entry.envelope.envelope_digest())) {
+            if wal.identities.contains_key(&(
+                entry.envelope.scope_digest,
+                entry.envelope.envelope_digest(),
+            )) {
                 return Err(ScopeLaneWalError::DuplicateSerializedEnvelope);
             }
             let receipt = wal.append(entry.envelope)?;
@@ -346,7 +343,10 @@ impl ScopeLaneFileWalV1 {
             }
             let (entry, encoded_sequence, encoded_predecessor, encoded_entry_digest) =
                 decode_entry_body(&body)?;
-            if wal.identities.contains_key(&(entry.envelope.scope_digest, entry.envelope.envelope_digest())) {
+            if wal.identities.contains_key(&(
+                entry.envelope.scope_digest,
+                entry.envelope.envelope_digest(),
+            )) {
                 return Err(ScopeLaneWalError::DuplicateSerializedEnvelope);
             }
             let receipt = wal.append(entry.envelope)?;
@@ -426,9 +426,7 @@ fn validate_envelope(envelope: &ScopeOwnerEnvelopeV1) -> Result<(), ScopeLaneWal
     if envelope.payload_digest.is_zero() {
         return Err(ScopeLaneWalError::EmptyDigest("payload"));
     }
-    if envelope.owner_id.as_str().is_empty()
-        || envelope.owner_id.as_str().len() > MAX_OWNER_BYTES
-    {
+    if envelope.owner_id.as_str().is_empty() || envelope.owner_id.as_str().len() > MAX_OWNER_BYTES {
         return Err(ScopeLaneWalError::InvalidOwner);
     }
     Ok(())
@@ -501,7 +499,8 @@ fn decode_entry_body(
         return Err(ScopeLaneWalError::InvalidOwner);
     }
     let owner_bytes = read_slice(body, &mut offset, owner_len)?;
-    let owner_text = std::str::from_utf8(owner_bytes).map_err(|_| ScopeLaneWalError::InvalidOwner)?;
+    let owner_text =
+        std::str::from_utf8(owner_bytes).map_err(|_| ScopeLaneWalError::InvalidOwner)?;
     let owner_id = StableId::new(owner_text).map_err(|_| ScopeLaneWalError::InvalidOwner)?;
     let message_digest = read_digest(body, &mut offset)?;
     let payload_digest = read_digest(body, &mut offset)?;
@@ -539,7 +538,8 @@ fn append_frame(file: &mut File, body: &[u8]) -> Result<(), ScopeLaneWalError> {
         return Err(ScopeLaneWalError::FrameTooLarge);
     }
     let body_len = u32::try_from(body.len()).map_err(|_| ScopeLaneWalError::FrameTooLarge)?;
-    file.seek(SeekFrom::End(0)).map_err(ScopeLaneWalError::from)?;
+    file.seek(SeekFrom::End(0))
+        .map_err(ScopeLaneWalError::from)?;
     file.write_all(&body_len.to_be_bytes())
         .and_then(|_| file.write_all(body))
         .and_then(|_| file.write_all(Digest32::of_bytes(body).as_array()))

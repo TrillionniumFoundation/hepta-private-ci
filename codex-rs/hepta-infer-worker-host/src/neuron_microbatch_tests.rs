@@ -7,6 +7,8 @@ use codex_hepta_neuron::RetiredIdRegistryV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use super::*;
 
@@ -66,7 +68,10 @@ fn worker_executes_only_its_frozen_plan() {
     let execution = worker.execute(99, &plan).expect("execution");
     assert_eq!(execution.worker_id, id("worker"));
     assert_eq!(execution.outputs.len(), 1);
-    assert_eq!(execution.authority, codex_hepta_types::AuthorityPosture::DENY_ALL);
+    assert_eq!(
+        execution.authority,
+        codex_hepta_types::AuthorityPosture::DENY_ALL
+    );
     assert_ne!(execution.execution_digest, Digest32::ZERO);
 }
 
@@ -95,6 +100,33 @@ fn worker_rejects_plan_owner_generation_and_deadline_drift() {
 }
 
 #[test]
+fn worker_persists_a_durable_metric_for_each_production_batch() {
+    let path = std::env::temp_dir().join(format!(
+        "hepta-worker-metrics-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos()
+    ));
+    let writer = codex_hepta_neuron::NeuronMetricsGroupCommitWriterV1::open(
+        &path,
+        digest("scope"),
+        generation(1),
+    )
+    .expect("metrics writer");
+    let writer = Arc::new(Mutex::new(writer));
+    let worker = NeuronMicrobatchWorkerV1::new(id("worker"), generation(1), backend())
+        .with_metrics_writer(Arc::clone(&writer));
+    let plan = worker.plan(10, 100, requests()).expect("plan");
+    worker.execute(99, &plan).expect("execute");
+    assert_eq!(writer.lock().expect("lock").event_count(), 1);
+    drop(worker);
+    drop(writer);
+    std::fs::remove_file(path).expect("cleanup");
+}
+
+#[test]
 fn planner_rejects_empty_and_mixed_snapshot_batches() {
     let worker = NeuronMicrobatchWorkerV1::new(id("worker"), generation(1), backend());
     assert_eq!(
@@ -119,6 +151,22 @@ fn planner_rejects_empty_and_mixed_snapshot_batches() {
     });
     assert_eq!(
         worker.plan(10, 100, mixed),
+        Err(NeuronMicrobatchWorkerError::DataPlane(
+            DataPlaneError::InvalidMicrobatchPlan
+        ))
+    );
+
+    let shared = snapshot();
+    let oversized = (0..=codex_hepta_neuron::MAX_MICROBATCH_REQUESTS_V1)
+        .map(|index| HeadExecutionRequestV1 {
+            request_id: id(&format!("request-{index}")),
+            model_id: id("head"),
+            generation: generation(1),
+            snapshot: shared.clone(),
+        })
+        .collect();
+    assert_eq!(
+        worker.plan(10, 100, oversized),
         Err(NeuronMicrobatchWorkerError::DataPlane(
             DataPlaneError::InvalidMicrobatchPlan
         ))
