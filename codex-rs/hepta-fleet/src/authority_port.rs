@@ -192,7 +192,7 @@ mod tests {
         }
     }
 
-    fn ledger() -> LeaseLedger {
+    fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
         let mut ledger = LeaseLedger::new();
         ledger
             .admit_host(HostObservation {
@@ -207,8 +207,8 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("test fixture should succeed");
-        ledger
+            ?;
+        Ok(ledger)
     }
 
     #[test]
@@ -241,7 +241,7 @@ mod tests {
             )
             .expect("test fixture should succeed");
         let port = FleetAuthorityPort::new(registry.verifier());
-        let mut ledger = ledger();
+        let mut ledger = ledger().expect("test fixture should succeed");
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
             .expect("test fixture should succeed");
