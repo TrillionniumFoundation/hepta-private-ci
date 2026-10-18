@@ -28,6 +28,7 @@ class AnalyticReferenceTests(unittest.TestCase):
     def test_independent_gaussian_heldout_matches_analytic_value_with_error_bars(self):
         observed = evaluate_analytic_reference()
         self.assertTrue(observed.heldout_pass)
+        self.assertEqual((observed.samples, observed.train_seed, observed.heldout_seed), (8192, 1729, 1931))
         self.assertLess(
             abs(observed.heldout_estimate - observed.exact_global_value),
             4.0 * observed.heldout_standard_error,
@@ -66,6 +67,8 @@ class AnalyticReferenceTests(unittest.TestCase):
             evaluate_analytic_reference(steps=11)
         with self.assertRaises(ValueError):
             evaluate_analytic_reference(samples=1)
+        with self.assertRaises(ValueError):
+            evaluate_analytic_reference(samples=65537)
         with self.assertRaises(ValueError):
             evaluate_analytic_reference(train_seed=4, heldout_seed=4)
 
