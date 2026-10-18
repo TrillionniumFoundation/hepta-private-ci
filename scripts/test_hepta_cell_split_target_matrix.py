@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shlex
 import subprocess
 import sys
@@ -114,6 +115,40 @@ def test_measurement_rejects_nonfinite_or_unbounded_counters() -> None:
 def test_pretty_json_workload_receipt_is_parsed() -> None:
     receipt = {"caseId": "case-1", "metrics": example_metrics()}
     assert MODULE.parse_workload_output(json.dumps(receipt, indent=2)) == receipt
+
+
+def test_isolated_process_rejects_timeouts_and_leftover_descendants(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    healthy = MODULE.run_isolated_command(
+        [sys.executable, "-c", "print('healthy')"],
+        env=env,
+        timeout_seconds=5,
+    )
+    assert healthy.returncode == 0
+    assert healthy.stdout.strip() == "healthy"
+
+    with pytest.raises(ValueError, match="deadline; process group terminated"):
+        MODULE.run_isolated_command(
+            [sys.executable, "-c", "import time; time.sleep(30)"],
+            env=env,
+            timeout_seconds=0.2,
+        )
+
+    leaky = tmp_path / "leaky-worker.py"
+    leaky.write_text(
+        "import subprocess, sys\n"
+        "subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'],"
+        " stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,"
+        " stderr=subprocess.DEVNULL)\n"
+        "print('launcher finished')\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="descendant processes"):
+        MODULE.run_isolated_command(
+            [sys.executable, str(leaky)],
+            env=env,
+            timeout_seconds=5,
+        )
 
 
 def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) -> None:
