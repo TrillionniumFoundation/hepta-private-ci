@@ -57,6 +57,9 @@ pub enum CellSplitPhaseV1 {
     LedgerCommitted,
     Completed,
     Quarantined,
+    /// Durable intent written before executing a potentially non-idempotent
+    /// migration. Recovery must reconcile the original native effect.
+    MigrationInFlight,
 }
 
 impl CellSplitPhaseV1 {
@@ -71,6 +74,7 @@ impl CellSplitPhaseV1 {
             Self::LedgerCommitted => 6,
             Self::Completed => 7,
             Self::Quarantined => 8,
+            Self::MigrationInFlight => 9,
         }
     }
 
@@ -268,6 +272,49 @@ impl CellSplitMigrationReceiptV1 {
     }
 }
 
+/// A separate durable rollback receipt. A migration-commit receipt must not
+/// masquerade as proof that the original state was restored.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellSplitRollbackReceiptV1 {
+    pub operation_id: StableId,
+    pub source_generation: Generation,
+    pub child_generation: Generation,
+    pub snapshot_digest: Digest32,
+    pub restored_state_digest: Digest32,
+    pub durable: bool,
+    pub verified: bool,
+    pub authority: AuthorityPosture,
+}
+
+impl CellSplitRollbackReceiptV1 {
+    fn validate_for(
+        &self,
+        plan: &CellSplitPlanV1,
+        snapshot: &CellSplitSnapshotReceiptV1,
+    ) -> Result<Digest32, CellSplitExecutionErrorV1> {
+        if self.operation_id != plan.operation_id
+            || self.source_generation != plan.source_generation
+            || self.child_generation != plan.child_generation
+            || self.snapshot_digest != snapshot.snapshot_digest
+            || self.restored_state_digest.is_zero()
+            || !self.durable
+            || !self.verified
+            || self.authority != AuthorityPosture::DENY_ALL
+        {
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt("state rollback"));
+        }
+        let mut bytes = b"hepta.cell-split.rollback-receipt.v1\0".to_vec();
+        push_id(&mut bytes, &self.operation_id);
+        bytes.extend_from_slice(&self.source_generation.get().to_be_bytes());
+        bytes.extend_from_slice(&self.child_generation.get().to_be_bytes());
+        bytes.extend_from_slice(self.snapshot_digest.as_array());
+        bytes.extend_from_slice(self.restored_state_digest.as_array());
+        bytes.push(u8::from(self.durable));
+        bytes.push(u8::from(self.verified));
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
 /// Receipt returned only after the CNS route is published for the child.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitRouteCutoverReceiptV1 {
@@ -376,6 +423,8 @@ pub enum CellSplitExecutionErrorV1 {
     InvalidReceipt(&'static str),
     ArtifactDigestMismatch,
     ArtifactTooLarge,
+    /// Native migration outcome cannot be proven; do not invoke Execute again.
+    MigrationReconciliationRequired,
     Callback {
         stage: &'static str,
         message: String,
@@ -657,7 +706,7 @@ pub trait CellSplitStateMigrationOwnerV1 {
         &mut self,
         plan: &CellSplitPlanV1,
         snapshot: &CellSplitSnapshotReceiptV1,
-    ) -> Result<CellSplitMigrationReceiptV1, CellSplitExecutionErrorV1>;
+    ) -> Result<CellSplitRollbackReceiptV1, CellSplitExecutionErrorV1>;
 }
 
 /// CNS route owner. The callback must return only after the successor route is
@@ -1032,6 +1081,12 @@ fn valid_transition(from: CellSplitPhaseV1, to: CellSplitPhaseV1) -> bool {
             CellSplitPhaseV1::StateSnapshotted,
             CellSplitPhaseV1::StateMigrated
         ) | (
+            CellSplitPhaseV1::StateSnapshotted,
+            CellSplitPhaseV1::MigrationInFlight
+        ) | (
+            CellSplitPhaseV1::MigrationInFlight,
+            CellSplitPhaseV1::StateMigrated
+        ) | (
             CellSplitPhaseV1::StateMigrated,
             CellSplitPhaseV1::RoutePublished
         ) | (
@@ -1076,6 +1131,15 @@ fn sync_directory(path: &Path) -> Result<(), CellSplitExecutionErrorV1> {
 #[cfg(not(unix))]
 fn sync_directory(_path: &Path) -> Result<(), CellSplitExecutionErrorV1> {
     Ok(())
+}
+
+/// Only a frozen intent digest, NEVER an external operation receipt.
+fn migration_intent_digest(plan_digest: Digest32, snapshot_receipt: Digest32) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.cell-split.migration-in-flight.v1\0",
+        plan_digest.as_array(),
+        snapshot_receipt.as_array(),
+    ])
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
@@ -1230,6 +1294,9 @@ impl CellSplitExecutionOwnerV1 {
                 ]);
                 self.advance(CellSplitPhaseV1::Completed, completion_digest)?;
             }
+            CellSplitPhaseV1::MigrationInFlight => {
+                return Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired);
+            }
             CellSplitPhaseV1::RoutePublished
             | CellSplitPhaseV1::GenerationFenced
             | CellSplitPhaseV1::LedgerCommitted => {
@@ -1292,26 +1359,22 @@ impl CellSplitExecutionOwnerV1 {
                 "replayed state snapshot",
             ));
         }
+        // The native effect may commit even if its reply is lost. Persist
+        // the intent BEFORE the callback. On recovery require native readback.
+        self.advance(
+            CellSplitPhaseV1::MigrationInFlight,
+            migration_intent_digest(self.plan_digest, snapshot_digest),
+        )?;
         let receipt = match migration.migrate(&self.plan, &snapshot) {
             Ok(receipt) => receipt,
             Err(error) => {
-                return self.quarantine_after_migration_failure(
-                    migration,
-                    &snapshot,
-                    snapshot_digest,
-                    error,
-                );
+                return self.quarantine_after_migration_failure(migration, &snapshot, error);
             }
         };
         let receipt_digest = match receipt.validate_for(&self.plan, &snapshot) {
             Ok(receipt_digest) => receipt_digest,
             Err(error) => {
-                return self.quarantine_after_migration_failure(
-                    migration,
-                    &snapshot,
-                    snapshot_digest,
-                    error,
-                );
+                return self.quarantine_after_migration_failure(migration, &snapshot, error);
             }
         };
         self.last_migration = Some(receipt);
@@ -1323,24 +1386,67 @@ impl CellSplitExecutionOwnerV1 {
         &mut self,
         migration: &mut M,
         snapshot: &CellSplitSnapshotReceiptV1,
-        snapshot_digest: Digest32,
         error: CellSplitExecutionErrorV1,
     ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1>
     where
         M: CellSplitStateMigrationOwnerV1,
     {
-        // An invalid receipt can mean that the child state was committed but
-        // its response was torn or malformed.  Treat that ambiguity like a
-        // callback failure: ask the state owner for a real rollback receipt
-        // and quarantine the operation before returning the original error.
-        let rollback_digest = match migration.rollback(&self.plan, snapshot) {
-            Ok(rollback) => rollback
-                .validate_for(&self.plan, snapshot)
-                .unwrap_or(snapshot_digest),
-            Err(_) => snapshot_digest,
-        };
+        // A failed/malformed rollback is NOT evidence of rollback. Leave
+        // the fsynced MigrationInFlight intent unresolved and non-executable.
+        let rollback = migration
+            .rollback(&self.plan, snapshot)
+            .map_err(|_| CellSplitExecutionErrorV1::MigrationReconciliationRequired)?;
+        let rollback_digest = rollback
+            .validate_for(&self.plan, snapshot)
+            .map_err(|_| CellSplitExecutionErrorV1::MigrationReconciliationRequired)?;
         self.advance(CellSplitPhaseV1::Quarantined, rollback_digest)?;
         Err(error)
+    }
+
+    /// Reconcile the original native migration using an independently held
+    /// state-owner readback without issuing a second migration Execute.
+    /// This reference API does not verify production signatures or enable split.
+    pub fn reconcile_migration_with_receipt(
+        &mut self,
+        snapshot: &CellSplitSnapshotReceiptV1,
+        migration: &CellSplitMigrationReceiptV1,
+    ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1> {
+        if self.phase != CellSplitPhaseV1::MigrationInFlight {
+            return Err(CellSplitExecutionErrorV1::InvalidTransition {
+                from: self.phase,
+                to: CellSplitPhaseV1::StateMigrated,
+            });
+        }
+        let snapshot_digest = snapshot.validate_for(&self.plan)?;
+        if self.last_receipt_digest != migration_intent_digest(self.plan_digest, snapshot_digest) {
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt("migration intent snapshot"));
+        }
+        let receipt_digest = migration.validate_for(&self.plan, snapshot)?;
+        self.advance(CellSplitPhaseV1::StateMigrated, receipt_digest)?;
+        self.last_migration = Some(migration.clone());
+        Ok(self.phase)
+    }
+
+    /// Require a durable native rollback receipt to reconcile a pending
+    /// migration as quarantined. A snapshot digest cannot substitute.
+    pub fn reconcile_rollback_with_receipt(
+        &mut self,
+        snapshot: &CellSplitSnapshotReceiptV1,
+        rollback: &CellSplitRollbackReceiptV1,
+    ) -> Result<CellSplitPhaseV1, CellSplitExecutionErrorV1> {
+        if self.phase != CellSplitPhaseV1::MigrationInFlight {
+            return Err(CellSplitExecutionErrorV1::InvalidTransition {
+                from: self.phase,
+                to: CellSplitPhaseV1::Quarantined,
+            });
+        }
+        let snapshot_digest = snapshot.validate_for(&self.plan)?;
+        if self.last_receipt_digest != migration_intent_digest(self.plan_digest, snapshot_digest) {
+            return Err(CellSplitExecutionErrorV1::InvalidReceipt("migration intent snapshot"));
+        }
+        let receipt_digest = rollback.validate_for(&self.plan, snapshot)?;
+        self.advance(CellSplitPhaseV1::Quarantined, receipt_digest)?;
+        Ok(self.phase)
     }
 
     /// Advance the route, fence and terminal ledger phases from concrete
@@ -1356,6 +1462,9 @@ impl CellSplitExecutionOwnerV1 {
         F: CellSplitGenerationFenceOwnerV1,
     {
         let migration_digest = migration.validate_for_replayed(&self.plan)?;
+        if self.phase == CellSplitPhaseV1::MigrationInFlight {
+            return Err(CellSplitExecutionErrorV1::MigrationReconciliationRequired);
+        }
         if self.phase == CellSplitPhaseV1::StateSnapshotted {
             return Err(CellSplitExecutionErrorV1::InvalidTransition {
                 from: self.phase,
@@ -1532,17 +1641,16 @@ mod tests {
             &mut self,
             plan: &CellSplitPlanV1,
             snapshot: &CellSplitSnapshotReceiptV1,
-        ) -> Result<CellSplitMigrationReceiptV1, CellSplitExecutionErrorV1> {
+        ) -> Result<CellSplitRollbackReceiptV1, CellSplitExecutionErrorV1> {
             self.rollbacks.fetch_add(1, Ordering::SeqCst);
-            Ok(CellSplitMigrationReceiptV1 {
+            Ok(CellSplitRollbackReceiptV1 {
                 operation_id: plan.operation_id.clone(),
                 source_generation: plan.source_generation,
                 child_generation: plan.child_generation,
                 snapshot_digest: snapshot.snapshot_digest,
-                state_partition_digest: plan.state_partition_digest,
-                verification_digest: plan.migration_verification_digest,
-                child_state_digest: digest(b"rolled-back-state"),
-                committed: true,
+                restored_state_digest: digest(b"rolled-back-state"),
+                durable: true,
+                verified: true,
                 authority: AuthorityPosture::DENY_ALL,
             })
         }
