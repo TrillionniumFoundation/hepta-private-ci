@@ -383,7 +383,20 @@ impl NeuronMicrobatchWorkerV1 {
         let token = claim_final_use(authority, signed, &expected)?;
         authority
             .with_verified_effect(token, &expected, || {
-                self.execute(effective_now_ms, plan, backend, resources)
+                self.preflight(effective_now_ms, plan)?;
+                if !self.attempted.insert(plan.digest) {
+                    return Err(NeuronMicrobatchErrorV1::PlanReplayed);
+                }
+                // Fsync the intent before physical/custom backend invocation.
+                // Uncertain fsync poisons this worker: never invoke the backend.
+                if let Err(error) = self.metrics.record_dispatch_intent(
+                    plan.digest,
+                    plan.heads.len() as u32,
+                ) {
+                    self.poisoned = true;
+                    return Err(error.into());
+                }
+                self.execute_after_admission(plan, backend, resources)
             })
             .map_err(NeuronMicrobatchErrorV1::FinalUse)?
     }
@@ -409,7 +422,7 @@ impl NeuronMicrobatchWorkerV1 {
             return Err(NeuronMicrobatchErrorV1::DeadlineExpired);
         }
         if self.attempted.contains(&plan.digest)
-            || self.metrics.contains_committed_plan(plan.digest)
+            || self.metrics.contains_recorded_plan(plan.digest)
         {
             return Err(NeuronMicrobatchErrorV1::PlanReplayed);
         }
@@ -427,6 +440,15 @@ impl NeuronMicrobatchWorkerV1 {
         if !self.attempted.insert(plan.digest) {
             return Err(NeuronMicrobatchErrorV1::PlanReplayed);
         }
+        self.execute_after_admission(plan, backend, resources)
+    }
+
+    fn execute_after_admission<B: NeuronMicrobatchBackendV1>(
+        &mut self,
+        plan: &NeuronMicrobatchPlanV1,
+        backend: &mut B,
+        resources: NeuronHostResourceSampleV1,
+    ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
         let began = Instant::now();
         let observed = backend.execute_batch(&plan.snapshot, &plan.heads)?;
         if observed.len() != plan.heads.len() {

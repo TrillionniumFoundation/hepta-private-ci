@@ -258,7 +258,7 @@ fn native_batch_authority_claims_exact_ndu_and_prevents_unauthorized_backend_use
         NeuronHostResourceSampleV1::default()
     ).expect("signed final-use");
     assert_eq!(backend.batch_invocations, 1);
-    assert_eq!(output.metric_sequence, 1);
+    assert_eq!(output.metric_sequence, 2);
     assert!(!output.authority.grants_any());
 
     assert!(owner.run_authorized(
@@ -311,6 +311,30 @@ fn signed_batch_expiry_must_not_outlive_plan_deadline() {
             NeuronHostResourceSampleV1::default()
         ),
         Err(NeuronMicrobatchErrorV1::InvalidPlan)
+    ));
+    assert_eq!(backend.batch_invocations, 0);
+}
+
+#[test]
+fn fsynced_dispatch_intent_rejects_replay_after_worker_restart() {
+    let fixture = Fixture::new();
+    let pending = plan();
+    let mut metrics = NeuronMetricsGroupCommitWriterV1::open(
+        fixture.open(), scope(), generation()
+    ).expect("metrics");
+    let receipt = metrics.record_dispatch_intent(
+        pending.digest(), pending.size() as u32
+    ).expect("durable pre-dispatch intent");
+    assert_eq!(receipt.final_sequence, 1);
+    drop(metrics);
+
+    let mut restarted = make_worker(&fixture);
+    let mut backend = ReferenceNeuronBatchBackendV1::default();
+    assert!(matches!(
+        restarted.run_reference(
+            1_000, &pending, &mut backend, NeuronHostResourceSampleV1::default()
+        ),
+        Err(NeuronMicrobatchErrorV1::PlanReplayed)
     ));
     assert_eq!(backend.batch_invocations, 0);
 }
