@@ -32,3 +32,9 @@ model runtime receipt plus calibrated/OOD evidence. That receipt path must
 remain independent from the shared feature artifact so one physical Encoder
 forward is reused without sharing Cell state, private replay, or optimizer
 state.
+
+`MultimodalStemProjectionV1` is the deterministic input seam for the same
+owner: modality-specific Q24 projectors emit one ordered vector plus an
+explicit missing-modality mask, and source, manifest, and stem digests remain
+available for a future evidence version. The stem does not execute the model;
+its output is simply the one input vector supplied to the shared Encoder.
