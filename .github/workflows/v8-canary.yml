@@ -289,6 +289,9 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # codex-rs/rust-toolchain.toml selects 1.91.0; match the pinned Cargo
+          # 1.95.0 binary to avoid mixed-rustc build-script artifacts (E0514).
+          RUSTUP_TOOLCHAIN: "1.95.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
