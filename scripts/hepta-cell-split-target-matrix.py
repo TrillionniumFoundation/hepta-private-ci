@@ -817,8 +817,7 @@ def validate_report(
         "workloadDigest",
         "status",
         "elapsedMicros",
-        *(name for name, _ in FACTORS),
-    }
+    } | {name for name, _ in FACTORS}
     for case in cases:
         expected_case_keys = common_case_keys | (
             {"metrics", "metricsDigest"}
