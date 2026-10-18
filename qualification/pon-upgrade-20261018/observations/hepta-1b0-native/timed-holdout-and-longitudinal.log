@@ -1,0 +1,34 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+   Compiling serde_core v1.0.229
+   Compiling syn v3.0.3
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling memchr v2.8.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling codex-hepta-intuition v0.0.0 (/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-root-native/codex-rs/hepta-intuition)
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+   Compiling serde_derive v1.0.229
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-root-native/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-root-native/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-root-native/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-root-native/codex-rs/hepta-intelligence-eval)
+    Finished `test` profile [unoptimized] target(s) in 14.77s
+────────────
+ Nextest run ID a344fb73-4e91-4de8-b579-d77dd94e4f35 with nextest profile: local
+    Starting 8 tests across 1 binary (116 tests skipped)
+        PASS [   0.062s] (1/8) codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::time_policy_observer_and_future_collection_cannot_be_substituted
+        PASS [   0.065s] (2/8) codex-hepta-intelligence-eval fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit
+        PASS [   0.073s] (3/8) codex-hepta-intelligence-eval fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback
+        PASS [   0.086s] (4/8) codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::evaluator_and_observer_cannot_share_identity_key_credential_or_controller
+        PASS [   0.049s] (5/8) codex-hepta-intelligence-eval fenced_holdout_file::tests::timed_reservation_reopens_exactly_and_cannot_promote_untimed_or_late_plans
+        PASS [   0.056s] (6/8) codex-hepta-intelligence-eval fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix
+        PASS [   0.127s] (7/8) codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::signed_observed_windows_pass_only_with_full_statistical_bundle
+        PASS [   0.419s] (8/8) codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows
+────────────
+     Summary [   0.423s] 8 tests run: 8 passed, 116 skipped

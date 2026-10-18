@@ -1,0 +1,63 @@
+{
+  "head": "1b0d03ed01ddd62015da7312303ef7013e568ed1",
+  "tree": "20a8a29dc7743a9ef7317d438e42936150bc481e",
+  "binaries": [
+    {
+      "target": "hepta-cognitive-upgrade",
+      "path": "/home/qian-qi/work/pon-upgrade-implementation-20261018/target-hepta/debug/hepta-cognitive-upgrade",
+      "bytes": 75823992,
+      "sha256": "3920b25c101b6d997229916648e70bbd732b6595d7be3568dde101b94c1c8fe4",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-cognitive-upgrade",
+        "--bin",
+        "codex-hepta-agentd",
+        "--message-format",
+        "json"
+      ]
+    },
+    {
+      "target": "codex-hepta-agentd",
+      "path": "/home/qian-qi/work/pon-upgrade-implementation-20261018/target-hepta/debug/codex-hepta-agentd",
+      "bytes": 483837904,
+      "sha256": "ee1cf67226aea59a9d50b4c1ed878aa7551e250ae44f056146627ab2c2cd5eae",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-cognitive-upgrade",
+        "--bin",
+        "codex-hepta-agentd",
+        "--message-format",
+        "json"
+      ]
+    },
+    {
+      "target": "hepta-supervisord",
+      "path": "/home/qian-qi/work/pon-upgrade-implementation-20261018/target-hepta/debug/hepta-supervisord",
+      "bytes": 50433392,
+      "sha256": "e0d0b0aec411d57028fea08f8bbc993c259ac685073e34ba411d0106c2839bda",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--bin",
+        "hepta-supervisord",
+        "--features",
+        "production-authority",
+        "--message-format",
+        "json"
+      ]
+    }
+  ]
+}

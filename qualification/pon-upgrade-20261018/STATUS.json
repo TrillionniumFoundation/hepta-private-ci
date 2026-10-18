@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.pon-upgrade-retained-observations.v1",
+  "packaging_base_commit": "544b976462a7a32fc1a73ce52cda03e20e72bc9c",
+  "packaging_base_tree": "225cec2795b810d6c39f423f225dfc8072ce350f",
+  "scope": "Byte-preserving retention of already retrieved historical native observations; no rerun or qualification of the packaging source.",
+  "source_identities": [
+    {
+      "observation": "hepta-eb86-native",
+      "commit": "eb86cece3d4c2c7abedfa6a229377bb21827c614",
+      "tree": "9982a24fd1571692f2a8f3151d55bb1d8d396acd",
+      "local_commit_tree_verified": true,
+      "result_file": "observations/hepta-eb86-native/results.json"
+    },
+    {
+      "observation": "hepta-1b0-native",
+      "commit": "1b0d03ed01ddd62015da7312303ef7013e568ed1",
+      "tree": "20a8a29dc7743a9ef7317d438e42936150bc481e",
+      "local_commit_tree_verified": true,
+      "result_file": "observations/hepta-1b0-native/results.json"
+    },
+    {
+      "observation": "hepta-1b0-bazel-lock",
+      "commit": "1b0d03ed01ddd62015da7312303ef7013e568ed1",
+      "tree": "20a8a29dc7743a9ef7317d438e42936150bc481e",
+      "local_commit_tree_verified": true,
+      "result_file": "observations/hepta-1b0-bazel-lock/results.json"
+    },
+    {
+      "observation": "hepta-2c4-explicit-study",
+      "commit": "2c4f21bfb309f92e110facdfd1732b838e8e21de",
+      "tree": "f2133b983f4a73ad9627ac43290ab3bc9d4c5613",
+      "local_commit_tree_verified": true,
+      "result_file": "observations/hepta-2c4-explicit-study/results.json"
+    }
+  ],
+  "remote_full_study": {
+    "source_commit": "2c4f21bfb309f92e110facdfd1732b838e8e21de",
+    "source_tree": "f2133b983f4a73ad9627ac43290ab3bc9d4c5613",
+    "original_files": 1830,
+    "original_bytes": 231521771,
+    "archive_name": "learning-generations-2c4-full-study.tar.gz",
+    "archive_bytes": 58497445,
+    "archive_sha256_reported_by_retained_manifest": "be390d0b0d986ea40c1d67f843de6add53aff20d54a4e01c49023b2c0bfc5232",
+    "retained_manifest": "observations/hepta-2c4-explicit-study/learning-generations-2c4-full-study.manifest.json",
+    "archive_present_in_this_bundle": false,
+    "all_original_files_present_in_this_bundle": false,
+    "current_access": "Still on main native host; cannot retrieve while runtime tunnel is disconnected. The retained manifest is present; its remote archive/content hashes have not been independently recomputed in this packaging step."
+  },
+  "implementation_map_renewal": {
+    "status": "blocked_missing_complete_git_history",
+    "maps_repaired": 0,
+    "affected_maps": 19,
+    "original_checker_changed": false,
+    "ancestry_failure_inferred_from_missing_objects": false,
+    "three_history_fetch_failures_retained": true,
+    "repair_tool": "scripts/qualification/implementation-map-renewal-20261018/prepare_navigation_observation.py",
+    "prior_isolated_tool_test_report": {
+      "reported_tests_passed": 5,
+      "executed_in_this_packaging_step": false,
+      "raw_execution_log_retained": false,
+      "scope": "Earlier five isolated real-Git controls were reported as passed for the byte-identical retained tool/test sources. This statement is not a fabricated test log or a successful run of the real 19-map renewal."
+    }
+  },
+  "native_availability": {
+    "current_runtime": "tunnel_client_not_connected",
+    "new_native_execution_in_this_packaging_step": false,
+    "final_ordinary_upgrade_study_result_retained": false,
+    "final_packaging_source_native_qualification_claimed": false
+  }
+}

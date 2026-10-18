@@ -1,0 +1,87 @@
+{
+  "head": "1b0d03ed01ddd62015da7312303ef7013e568ed1",
+  "tree": "20a8a29dc7743a9ef7317d438e42936150bc481e",
+  "steps": [
+    {
+      "name": "check",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets",
+        "--features",
+        "qualification-legacy-learning-write"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 31.149649414001033
+    },
+    {
+      "name": "ordinary-qualification-and-recovery",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--features",
+        "qualification-legacy-learning-write",
+        "-E",
+        "test(ordinary_qualification) or test(ordinary_effect)"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 62.989011341007426
+    },
+    {
+      "name": "timed-holdout-and-longitudinal",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "-E",
+        "test(fenced_holdout_file) or test(longitudinal_time)"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 15.71874487400055
+    },
+    {
+      "name": "native-upgrade-and-agentd-binaries",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-cognitive-upgrade",
+        "--bin",
+        "codex-hepta-agentd",
+        "--message-format",
+        "json"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 212.02473558601923
+    },
+    {
+      "name": "native-private-supervisor-binary",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--bin",
+        "hepta-supervisord",
+        "--features",
+        "production-authority",
+        "--message-format",
+        "json"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 24.5614402309875
+    }
+  ]
+}

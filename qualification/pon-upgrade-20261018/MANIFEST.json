@@ -1,0 +1,244 @@
+{
+  "schema": "hepta.pon-upgrade-byte-retention-manifest.v1",
+  "base_commit": "544b976462a7a32fc1a73ce52cda03e20e72bc9c",
+  "copied_original_files": 32,
+  "files": [
+    {
+      "path": "qualification/pon-upgrade-20261018/README.md",
+      "bytes": 3926,
+      "sha256": "807f02dde8194b4d3d6506bad6cd43a4a20319f1e93dbbbef88369225bf2e943",
+      "role": "new packaging metadata; not a native execution receipt"
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/STATUS.json",
+      "bytes": 3480,
+      "sha256": "022c49ad3dce048f3dd8c9bff736b3a256d2c7a45056652dc7e1092765f2c72c",
+      "role": "new packaging metadata; not a native execution receipt"
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-bazel-lock/lock.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-bazel-lock/lock.patch",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-bazel-lock/results.json",
+      "bytes": 580,
+      "sha256": "6762775066d38ecd967b2ead6fcd29e03601c1f77ed89e309b0501126baff44f",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-bazel-lock/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-bazel-lock/update.log",
+      "bytes": 3186,
+      "sha256": "fe63ed79075cbb51c2e6244dd35927aeafdc9d28e3bf6ca942b507999287b8b7",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-bazel-lock/update.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/binaries.json",
+      "bytes": 1831,
+      "sha256": "cd9b09f160c4c130c2e9efd8305b45dae5a890e9c67afe201be4fe99d7dea195",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/binaries.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/check.log",
+      "bytes": 12988,
+      "sha256": "258db23faf5906450dbdb0e80281e72c6538cfa45d45ad15ebbe0171938e92a5",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/check.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/native-private-supervisor-binary.log",
+      "bytes": 761742,
+      "sha256": "4efb99c4626e740cf0a00c9308ceed14711f865b2f0f5acb185aaef9e127844c",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/native-private-supervisor-binary.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/native-upgrade-and-agentd-binaries.log",
+      "bytes": 1205375,
+      "sha256": "e03668254a6d724dba1912941127f47b30f0211c39d98ffa58e5604b0c681af4",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/native-upgrade-and-agentd-binaries.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/ordinary-qualification-and-recovery.log",
+      "bytes": 27439,
+      "sha256": "d4cedbd2095116881fe61fd806f3d0312bedff81a0a2beda10eb378c13ab278c",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/ordinary-qualification-and-recovery.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/results.json",
+      "bytes": 2113,
+      "sha256": "4d031dc6a75a98875c092a452a892e36b169ae40799c7084fd4c2e9777db08d9",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-1b0-native/timed-holdout-and-longitudinal.log",
+      "bytes": 3839,
+      "sha256": "3bc4520797c138512c684f8c658b32054f16f48d3b2ce5de00cc4d6fd64a3e8c",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-1b0-native/timed-holdout-and-longitudinal.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/learning-generations-2c4-full-study.manifest.json",
+      "bytes": 303524,
+      "sha256": "02e3129418b6f5629ceeb01f963451530b0b91361412efecde2c63ed5c6e3729",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-2c4-explicit-study/learning-generations-2c4-full-study.manifest.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/list.stderr.log",
+      "bytes": 12244,
+      "sha256": "89849d37ff3ecbf7e53f0590aba0399a7a1847022336bd001ad0d9dbe3d38ff4",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/list.stderr.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/results.json",
+      "bytes": 601,
+      "sha256": "05da51e09627bd650a701c9cf13505710a8f7d295f5f124397021432b6085019",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/run.log",
+      "bytes": 2011,
+      "sha256": "2cb99f79fa8938158322a8740e479afdfc745b4501714284c73295146be47f13",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/run.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study.custodian.py",
+      "bytes": 18265,
+      "sha256": "70d75885ced0126f2137dfb4ee85246bf39170dafc4f6639bf2e047d721bf938",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/study.custodian.py",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study.execution.json",
+      "bytes": 1539,
+      "sha256": "94ce52237f2bff2baeb78f49d10e5882a03e9fec3438b315e7f81ac5872ac9fb",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/study.execution.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study.native.log",
+      "bytes": 254,
+      "sha256": "bd640f8b1df8dc6450228e8d2c0fd4f6b93694c6086d1a745d195c373e6c3082",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/study.native.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-2c4-explicit-study/study/summary.json",
+      "bytes": 5611,
+      "sha256": "ad87e64ae3c2e63ae6ef3bde8cee3a98fb0239629d646b7ed3f27b00327451fd",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/hepta-2c4-explicit-study/study/summary.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-eb86-native/check.log",
+      "bytes": 13613,
+      "sha256": "8b01dcbd8894a83f3975b1288cc4ecd337c7517dd13f6bc755f69e3b4e6f0e51",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-eb86-native/check.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-eb86-native/results.json",
+      "bytes": 476,
+      "sha256": "44394b7a43694d407135f0a9694d0b9f9a523d89143c5b0246e0d6651989deff",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-eb86-native/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-commit-graph/0.log",
+      "bytes": 258,
+      "sha256": "1a1ea3cb6de6867c00ba39e34cbbde912c254d3c692bb55fb8a3e36b3c831c87",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-commit-graph/0.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-commit-graph/results.json",
+      "bytes": 266,
+      "sha256": "ecf306dbb17ce4f33031661c42747f47d0068fef04fb00115bdf56c12e6a460c",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-commit-graph/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-filtered-history/0.log",
+      "bytes": 258,
+      "sha256": "c9166a10640b24c491065185a88d64b6297f6376371fd8358a82d670e8b6f01d",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-filtered-history/0.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-filtered-history/results.json",
+      "bytes": 270,
+      "sha256": "a99bd0288e57c862c072e04fbfb7b3b00c99fbf17edce33113b2f3994149611c",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-filtered-history/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-full-history/0.log",
+      "bytes": 267,
+      "sha256": "07f3398b7be9784aecb244aef7c8e6c304cb4613d4f682022d7549807c2998a8",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-full-history/0.log",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/observations/hepta-provenance-full-history/results.json",
+      "bytes": 198,
+      "sha256": "6d476eff95d6c5ab0f58dc6c20ed1ef3812c9b103379733bef457ac9a130e705",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/hepta-provenance-full-history/results.json",
+      "original_transport_manifest_verified": true
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/transport/round1-TRANSPORT_MANIFEST.json",
+      "bytes": 9285,
+      "sha256": "2c49fdde07d064081bcbf5aa889ea3d2561970f0babeb9e5c205680b8348f742",
+      "original_local_path": "/tmp/root-upgrade-observations-20261018/TRANSPORT_MANIFEST.json",
+      "original_transport_manifest_verified": false
+    },
+    {
+      "path": "qualification/pon-upgrade-20261018/transport/round2-TRANSPORT_MANIFEST.json",
+      "bytes": 72900,
+      "sha256": "8c5d6484a50cc60589f4a20a28c20d0b5e3554a01787671329bc3e62a6e5fb75",
+      "original_local_path": "/tmp/root-upgrade-round2-observations-20261018/TRANSPORT_MANIFEST.json",
+      "original_transport_manifest_verified": false
+    },
+    {
+      "path": "scripts/qualification/implementation-map-renewal-20261018/README.md",
+      "bytes": 12010,
+      "sha256": "4808bbe75cf363c54f240d28bac27dd92714e109500916a1a66d75c179e4e498",
+      "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/README.md",
+      "original_transport_manifest_verified": false
+    },
+    {
+      "path": "scripts/qualification/implementation-map-renewal-20261018/lane_d_fixture.patch",
+      "bytes": 1061,
+      "sha256": "e1452a8a88f4eac262127a61b8b32c179eca5e5c3f03ed7c6552459f2347157b",
+      "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/lane_d_fixture.patch",
+      "original_transport_manifest_verified": false
+    },
+    {
+      "path": "scripts/qualification/implementation-map-renewal-20261018/prepare_navigation_observation.py",
+      "bytes": 12354,
+      "sha256": "048ccc44cb1a2f960a750ebe753171b37bd59a9920e076d40407f90e25f05ebf",
+      "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/prepare_navigation_observation.py",
+      "original_transport_manifest_verified": false
+    },
+    {
+      "path": "scripts/qualification/implementation-map-renewal-20261018/test_prepare_navigation_observation.py",
+      "bytes": 5598,
+      "sha256": "d934e9939f7e829ee6ae1da3b3e4fdb5cdf6a4e950f85e6faf472d0b51489c8a",
+      "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/test_prepare_navigation_observation.py",
+      "original_transport_manifest_verified": false
+    }
+  ],
+  "verification": "Copied input bytes were independently reread and SHA-256 checked; native observations also matched their original transport manifest. This verifies local retention, not the absent remote archive or source execution."
+}

@@ -1,0 +1,21 @@
+{
+  "head": "eb86cece3d4c2c7abedfa6a229377bb21827c614",
+  "tree": "9982a24fd1571692f2a8f3151d55bb1d8d396acd",
+  "steps": [
+    {
+      "name": "check",
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets",
+        "--features",
+        "qualification-legacy-learning-write"
+      ],
+      "returncode": 101,
+      "elapsed_seconds": 37.96903719799593
+    }
+  ]
+}

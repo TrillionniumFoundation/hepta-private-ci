@@ -1,0 +1,17 @@
+[
+  {
+    "command": [
+      "/usr/bin/git",
+      "-c",
+      "http.version=HTTP/1.1",
+      "fetch",
+      "--filter=tree:0",
+      "--unshallow",
+      "--no-tags",
+      "origin",
+      "main"
+    ],
+    "returncode": 128,
+    "seconds": 847.2460714059998
+  }
+]

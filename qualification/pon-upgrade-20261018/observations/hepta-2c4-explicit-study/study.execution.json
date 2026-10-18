@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.local-learning-whole-process-cost.v1",
+  "command": [
+    "/home/qian-qi/work/pon-upgrade-implementation-20261018/target-hepta/debug/deps/codex_hepta_agentd-2452ceb39ba4af04",
+    "--exact",
+    "cognitive_ranker::tests::three_generation_learning::three_actual_fits_installations_future_instances_no_update_and_revocation",
+    "--ignored",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "binary_sha256": "7da0701539e129ca22f2353f48e027bd42c974e79deff16d97983e49ac625f5c",
+  "binary_unchanged": true,
+  "native_exit_code": 0,
+  "custodian_source": "/home/qian-qi/work/pon-upgrade-implementation-20261018/hepta-2c4-explicit-study/study.custodian.py",
+  "custodian_sha256": "70d75885ced0126f2137dfb4ee85246bf39170dafc4f6639bf2e047d721bf938",
+  "wall_ns": 224900739052,
+  "observer_cpu_ns": 1578443929,
+  "child_user_seconds": 137.94774,
+  "child_system_seconds": 21.613,
+  "waited_child_peak_rss_bytes": 275132416,
+  "sampled_native_peak_rss_bytes": null,
+  "rss_sampling_status": "unavailable: numeric child pid is not authenticated in the mounted proc namespace",
+  "memory_scope": "maximum waited process high-water; simultaneous whole-tree RSS not measured",
+  "retained_files": 1830,
+  "retained_bytes": 231521771,
+  "log_sha256": "bd640f8b1df8dc6450228e8d2c0fd4f6b93694c6086d1a745d195c373e6c3082",
+  "compilation_included": false,
+  "energy_cost": null,
+  "monetary_cost": null,
+  "scope": "entire native process including role child CPU via waited descendants; role costs overlap and must not be added again"
+}
