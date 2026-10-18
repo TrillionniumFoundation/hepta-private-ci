@@ -1,0 +1,74 @@
+name: Runner500 Windows directory contract
+
+on:
+  push:
+    branches: [ci/runner500-windows-probe-20261018]
+    paths:
+      - .github/workflows/runner500-windows-probe.yml
+      - .github/scripts/windows_directory_handle_probe.rs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner500-windows-native-probe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  directory-contract:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: .github/scripts/windows_directory_handle_probe.rs
+
+      - name: Set up pinned Rust compiler
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Compile and verify native directory operations
+        shell: pwsh
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $source = ".github/scripts/windows_directory_handle_probe.rs"
+          $output = Join-Path $env:RUNNER_TEMP "runner500-directory-contract"
+          New-Item -ItemType Directory -Path $output -ErrorAction Stop | Out-Null
+          $head = (git rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0 -or $head -ne $env:EXPECTED_SOURCE_SHA) { throw "Source identity mismatch" }
+          $compiler = rustc --version
+          if ($LASTEXITCODE -ne 0 -or $compiler -notmatch "^rustc 1\.95\.0 ") { throw "Unexpected Rust compiler" }
+          [ordered]@{
+            source_sha = $head
+            source_file_sha256 = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
+            compiler = $compiler
+            runner_os = $env:RUNNER_OS
+            runner_arch = $env:RUNNER_ARCH
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            started_at = [DateTime]::UtcNow.ToString('o')
+          } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'source.json') -Encoding utf8
+          $binary = Join-Path $output 'directory-probe.exe'
+          rustc --edition=2021 $source -o $binary
+          $compileExit = $LASTEXITCODE
+          if ($compileExit -ne 0) { exit $compileExit }
+          & $binary | Tee-Object -FilePath (Join-Path $output 'operations.ndjson')
+          $probeExit = $LASTEXITCODE
+          [ordered]@{ exit_code = $probeExit; completed_at = [DateTime]::UtcNow.ToString('o') } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'exit.json') -Encoding utf8
+          exit $probeExit
+
+      - name: Retain native qualification result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: runner500-windows-directory-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/runner500-directory-contract/*.json
+            ${{ runner.temp }}/runner500-directory-contract/*.ndjson
+          if-no-files-found: error
+          retention-days: 7
