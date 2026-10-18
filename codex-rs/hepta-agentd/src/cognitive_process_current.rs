@@ -124,7 +124,7 @@ pub(crate) fn load_current_cognitive_owner_v1(
 }
 
 impl ArtifactTrustDescriptorV1 {
-    fn native(self) -> Result<artifacts::ArtifactOwnerTrustV1, AgentdError> {
+    pub(crate) fn native(self) -> Result<artifacts::ArtifactOwnerTrustV1, AgentdError> {
         if self.writer_signers.len() > 32 || self.head_signers.len() > 32 {
             return Err(AgentdError::Invalid(
                 "artifact trust exceeds signer bound".to_owned(),
@@ -165,7 +165,7 @@ impl ArtifactSignerDescriptorV1 {
 }
 
 impl CurrentHeadDescriptorV1 {
-    fn native(self) -> Result<artifacts::SignedCurrentArtifactHeadV1, AgentdError> {
+    pub(crate) fn native(self) -> Result<artifacts::SignedCurrentArtifactHeadV1, AgentdError> {
         Ok(artifacts::SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: parse(&self.withdrawal_scope_digest)?,
             binding: parse(&self.binding)?,
@@ -185,7 +185,7 @@ impl CurrentHeadDescriptorV1 {
     }
 }
 
-fn require_external_canonical_path(
+pub(crate) fn require_external_canonical_path(
     path: &Path,
     home: &Path,
     directory: bool,
