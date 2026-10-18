@@ -55,6 +55,30 @@ jobs:
           rustc --version
           cargo --version
 
+      # Ubuntu 24.04's AppArmor denies Bubblewrap a user namespace without
+      # an explicit executable-scoped profile. Keep global restriction ON.
+      # This profile additionally forbids sandboxed children from nesting
+      # another user namespace: it does not disable read-only sandboxing.
+      - name: Qualify distro AppArmor Bubblewrap userns profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          sudo apt-get install -y apparmor-profiles apparmor-utils
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          # Real user and network namespace operations, no mock or elevation
+          # of the E2E process. Fail closed before any expensive compilation.
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'AppArmor userns restriction remains %s; confined bwrap smoke passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-owner-evidence/bwrap-apparmor.log"
+
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
