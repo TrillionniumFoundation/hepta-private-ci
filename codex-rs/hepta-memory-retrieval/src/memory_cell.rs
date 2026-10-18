@@ -159,7 +159,7 @@ pub fn run_memory_cell_tick(
         .unwrap_or((0, 0));
     let ood_ppm = input_ood_ppm;
 
-    let mut receipt = MemoryCellTickReceiptV1 {
+    let receipt = MemoryCellTickReceiptV1 {
         schema_version: 1,
         cell_id: input.cell_id.clone(),
         graph_generation: input.graph_generation,
