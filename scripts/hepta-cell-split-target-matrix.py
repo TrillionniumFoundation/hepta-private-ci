@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import time
@@ -185,67 +186,75 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     )
 
 
-def _strict_ed25519_public_key(raw: bytes) -> bool:
-    """Accept only canonical, nonidentity Ed25519 prime-subgroup public keys.
+def _ed25519_prime_order_public_key(encoded: bytes) -> bool:
+    """Reject identity, torsion, mixed-order and noncanonical observer keys.
 
-    Some verifiers accept trivial signatures against low-order public keys.
-    Check the independently pinned *public* point; cryptography still performs
-    the actual signature verification. No secret scalar is handled here.
+    A 32-byte Ed25519 key can decode to a small-order point even when the
+    underlying signature library accepts its encoding. Verify that [L]P is
+    the neutral point, and that P itself is not neutral, before trusting it.
+    All arithmetic here handles public input, never a secret scalar.
     """
-    if len(raw) != 32:
-        return False
     prime = 2**255 - 19
     order = 2**252 + 27742317777372353535851937790883648493
-    d = (-121665 * pow(121666, prime - 2, prime)) % prime
+    d = -121665 * pow(121666, -1, prime) % prime
     sqrt_minus_one = pow(2, (prime - 1) // 4, prime)
-    encoded = int.from_bytes(raw, "little")
-    parity = encoded >> 255
-    y = encoded & ((1 << 255) - 1)
+    if len(encoded) != 32:
+        return False
+    value = int.from_bytes(encoded, "little")
+    y = value & ((1 << 255) - 1)
+    sign = value >> 255
     if y >= prime:
         return False
-    y_squared = y * y % prime
-    denominator = (d * y_squared + 1) % prime
+    yy = y * y % prime
+    denominator = (d * yy + 1) % prime
     if denominator == 0:
         return False
-    x_squared = (y_squared - 1) * pow(denominator, prime - 2, prime) % prime
-    x = pow(x_squared, (prime + 3) // 8, prime)
-    if (x * x - x_squared) % prime:
+    xx = (yy - 1) * pow(denominator, -1, prime) % prime
+    x = pow(xx, (prime + 3) // 8, prime)
+    if x * x % prime != xx:
         x = x * sqrt_minus_one % prime
-    if (x * x - x_squared) % prime:
+    if x * x % prime != xx or (x == 0 and sign):
         return False
-    if x & 1 != parity:
-        x = (-x) % prime
-    if x == 0 and parity:
-        return False
+    if (x & 1) != sign:
+        x = -x % prime
     if x == 0 and y == 1:
         return False
 
     def add(
-        left: tuple[int, int, int, int], right: tuple[int, int, int, int]
+        a: tuple[int, int, int, int], b: tuple[int, int, int, int]
     ) -> tuple[int, int, int, int]:
-        x1, y1, z1, t1 = left
-        x2, y2, z2, t2 = right
-        a = (y1 - x1) * (y2 - x2) % prime
-        b = (y1 + x1) * (y2 + x2) % prime
-        c = 2 * d * t1 * t2 % prime
-        dv = 2 * z1 * z2 % prime
-        e, f, g, h = (
-            (b - a) % prime,
-            (dv - c) % prime,
-            (dv + c) % prime,
-            (b + a) % prime,
-        )
-        return e * f % prime, g * h % prime, f * g % prime, e * h % prime
+        x1, y1, z1, t1 = a
+        x2, y2, z2, t2 = b
+        aa = (y1 - x1) * (y2 - x2) % prime
+        bb = (y1 + x1) * (y2 + x2) % prime
+        cc = 2 * d * t1 * t2 % prime
+        dd = 2 * z1 * z2 % prime
+        ee = (bb - aa) % prime
+        ff = (dd - cc) % prime
+        gg = (dd + cc) % prime
+        hh = (bb + aa) % prime
+        return ee * ff % prime, gg * hh % prime, ff * gg % prime, ee * hh % prime
+
+    def double(a: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+        x, yy, z, _ = a
+        aa = x * x % prime
+        bb = yy * yy % prime
+        cc = 2 * z * z % prime
+        dd = -aa % prime
+        ee = ((x + yy) ** 2 - aa - bb) % prime
+        gg = (dd + bb) % prime
+        ff = (gg - cc) % prime
+        hh = (dd - bb) % prime
+        return ee * ff % prime, gg * hh % prime, ff * gg % prime, ee * hh % prime
 
     point = (x, y, 1, x * y % prime)
-    acc = (0, 1, 1, 0)
-    while order:
-        if order & 1:
-            acc = add(acc, point)
-        point = add(point, point)
-        order >>= 1
-    ax, ay, az, _ = acc
-    return ax % prime == 0 and (ay - az) % prime == 0
+    result = (0, 1, 1, 0)
+    for bit in range(order.bit_length() - 1, -1, -1):
+        result = double(result)
+        if (order >> bit) & 1:
+            result = add(result, point)
+    result_x, result_y, result_z, _ = result
+    return result_z != 0 and result_x == 0 and (result_y - result_z) % prime == 0
 
 
 def verify_observer_signature(
@@ -272,15 +281,91 @@ def verify_observer_signature(
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     except ImportError as error:
         raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
-    public_key = bytes.fromhex(trusted_public_key_hex)
-    if not _strict_ed25519_public_key(public_key):
-        raise ValueError("trusted Ed25519 observer public key is not prime-order")
+    trusted_public_key = bytes.fromhex(trusted_public_key_hex)
+    if not _ed25519_prime_order_public_key(trusted_public_key):
+        raise ValueError(
+            "independent observer Ed25519 signature invalid: "
+            "non-prime-order trusted key"
+        )
     try:
-        Ed25519PublicKey.from_public_bytes(public_key).verify(
+        Ed25519PublicKey.from_public_bytes(trusted_public_key).verify(
             bytes.fromhex(signature), observer_signing_bytes(receipt)
         )
     except (InvalidSignature, ValueError) as error:
         raise ValueError("independent observer Ed25519 signature invalid") from error
+
+
+def _terminate_process_group(pid: int) -> bool:
+    """Kill the entire isolated process group; refuse unsafe cleanup."""
+    try:
+        os.killpg(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return False
+    except OSError as error:
+        raise RuntimeError("cannot safely terminate isolated process group") from error
+    return True
+
+
+def run_isolated_command(
+    argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+) -> subprocess.CompletedProcess[str]:
+    """Prevent timed-out or orphaned workers from contaminating later cases."""
+    if os.name != "posix" or timeout_seconds <= 0:
+        raise ValueError("POSIX process-group isolation and positive timeout required")
+    with subprocess.Popen(
+        argv,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        start_new_session=True,
+    ) as child:
+        try:
+            stdout, stderr = child.communicate(timeout=timeout_seconds)
+        except subprocess.TimeoutExpired as error:
+            _terminate_process_group(child.pid)
+            try:
+                child.communicate(timeout=5)
+            except subprocess.TimeoutExpired as stuck:
+                raise RuntimeError(
+                    "process descendants escaped cleanup; stop matrix"
+                ) from stuck
+            raise ValueError(
+                "subprocess exceeded deadline; process group terminated"
+            ) from error
+        if _terminate_process_group(child.pid):
+            raise ValueError("subprocess left descendant processes")
+    return subprocess.CompletedProcess(
+        argv, child.returncode, stdout.decode("utf-8"), stderr.decode("utf-8")
+    )
+
+
+def assert_exact_source_checkout(repo_root: Path, source_commit: str) -> None:
+    """Reject uncommitted source changes as well as a mismatched Git HEAD."""
+    command = ["git", "-C", str(repo_root)]
+    try:
+        head = subprocess.run(
+            [*command, "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError("cannot verify measured repository HEAD") from error
+    if head.stdout.strip() != source_commit:
+        raise ValueError("measured source commit does not match repository HEAD")
+    try:
+        status = subprocess.run(
+            [*command, "status", "--porcelain=v1", "--untracked-files=all"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError("cannot verify measured repository cleanliness") from error
+    if status.stdout:
+        raise ValueError("measured repository checkout is dirty")
 
 
 def run_matrix(
@@ -302,22 +387,10 @@ def run_matrix(
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
+    # This is source-tree hygiene, not a signed worker-binary provenance claim.
+    repo_root = Path(__file__).resolve().parent.parent
     if workload_command is not None:
-        # A caller-supplied SHA is not proof of the code used by the worker.
-        # A dry run without a worker remains possible outside a Git checkout.
-        repo_root = Path(__file__).resolve().parent.parent
-        try:
-            checkout = subprocess.run(
-                ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-        except (OSError, subprocess.SubprocessError) as error:
-            raise ValueError("cannot verify measured repository HEAD") from error
-        if checkout.stdout.strip() != source_commit:
-            raise ValueError("measured source commit does not match repository HEAD")
+        assert_exact_source_checkout(repo_root, source_commit)
     if workload_path is not None:
         actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
         if actual_workload_digest != workload_digest:
@@ -365,13 +438,14 @@ def run_matrix(
             }
         )
         try:
+            assert_exact_source_checkout(repo_root, source_commit)
             # Recheck the actual frozen bytes for every case, not only at entry.
             if (
                 hashlib.sha256(workload_path.read_bytes()).hexdigest()
                 != workload_digest
             ):
                 raise ValueError("frozen workload changed before case execution")
-            result = subprocess.run(
+            result = run_isolated_command(
                 _command(
                     workload_command,
                     {
@@ -380,12 +454,10 @@ def run_matrix(
                         "sourceCommit": source_commit,
                     },
                 ),
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
+                timeout_seconds=timeout_seconds,
                 env=env,
             )
+            assert_exact_source_checkout(repo_root, source_commit)
             if (
                 hashlib.sha256(workload_path.read_bytes()).hexdigest()
                 != workload_digest
@@ -458,12 +530,9 @@ def run_matrix(
             }
         )
         try:
-            result = subprocess.run(
+            result = run_isolated_command(
                 shlex.split(observer_command),
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
+                timeout_seconds=timeout_seconds,
                 env=env,
             )
             if result.returncode != 0:
@@ -493,6 +562,35 @@ def run_matrix(
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             blocked.append("independent-observer")
             observer_receipt = {"verified": False, "reason": str(error)}
+
+    if workload_command is not None:
+        try:
+            assert_exact_source_checkout(repo_root, source_commit)
+        except ValueError as error:
+            blocked.append("source-checkout")
+            # This failure happened after the signer saw the provisional
+            # report. Its otherwise-valid signature must never survive as
+            # attachable proof that the now-dirty execution was qualified.
+            observer_receipt = {
+                "verified": False,
+                "reason": f"post-observer source checkout violation: {error}",
+            }
+        if workload_path is not None:
+            try:
+                still_frozen = (
+                    hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                    == workload_digest
+                )
+            except OSError:
+                still_frozen = False
+            if not still_frozen:
+                blocked.append("frozen-workload")
+                # A previous signed claim cannot certify bytes that changed
+                # after the observer ran, even if its signature was valid.
+                observer_receipt = {
+                    "verified": False,
+                    "reason": "post-observer frozen workload changed or is missing",
+                }
 
     report = {
         **provisional,
