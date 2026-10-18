@@ -1,0 +1,445 @@
+{
+  "schema_version": 1,
+  "agent": "/root/ci_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "observed_start_utc": "2026-10-18 16:24:26 UTC",
+  "observed_jobs_end_utc": "2026-10-18T16:25:06.721Z",
+  "generated_at_utc": "2026-10-18T16:27:50.237Z",
+  "classification": "BLOCKED_EXTERNAL_QUEUE_AND_INCOMPLETE_REQUIRED_CI",
+  "total_jobs": 17,
+  "job_pass": 2,
+  "job_fail": 0,
+  "job_skipped": 0,
+  "job_queued": 14,
+  "job_in_progress": 1,
+  "subjects": [
+    {
+      "pr": 2599,
+      "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "base_ref": "main",
+      "merge_sha": "97574fb8d77c75294494a0b0598008bf1a1efd36",
+      "state": "open",
+      "draft": false,
+      "expected_head_matches": true,
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "pages_complete": true,
+      "totals": {
+        "runs": 4,
+        "checks": 12,
+        "statuses": 0,
+        "jobs": 11
+      },
+      "all_returned_source_shas_match": true,
+      "job_statuses": {
+        "queued": 10,
+        "completed": 1
+      },
+      "job_conclusions": {
+        "null": 10,
+        "success": 1
+      },
+      "check_statuses": {
+        "completed": 2,
+        "queued": 10
+      },
+      "check_conclusions": {
+        "neutral": 1,
+        "null": 10,
+        "success": 1
+      },
+      "required": [
+        {
+          "context": "CI required",
+          "state": "ABSENT",
+          "required_on_target": "main branch GET verified",
+          "owning_run_id": 39140469581
+        },
+        {
+          "context": "Architecture required",
+          "state": "ABSENT",
+          "required_on_target": "main branch GET verified",
+          "owning_run_id": 39140469435
+        }
+      ],
+      "jobs": [
+        {
+          "id": 117713682804,
+          "run_id": 39140469322,
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:14Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713683546,
+          "run_id": 39140469435,
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:14Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 117713683668,
+          "run_id": 39140469435,
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:14Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 117713683969,
+          "run_id": 39140469581,
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:14Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 117713684150,
+          "run_id": 39140469581,
+          "name": "Codespell / Check for spelling errors",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:14Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713684250,
+          "run_id": 39140469581,
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:15Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 117713672496,
+          "run_id": 39140464867,
+          "name": "Analyze (c-cpp)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:11Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713672511,
+          "run_id": 39140464867,
+          "name": "Analyze (javascript-typescript)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:11Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713672553,
+          "run_id": 39140464867,
+          "name": "Analyze (python)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:11Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713672557,
+          "run_id": 39140464867,
+          "name": "Analyze (actions)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000168240",
+          "started_at": "2026-10-18T16:21:49Z",
+          "completed_at": "2026-10-18T16:22:49Z",
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713672992,
+          "run_id": 39140464867,
+          "name": "Analyze (rust)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:26:12Z",
+          "completed_at": null,
+          "head_sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        }
+      ],
+      "non_actions_checks": [
+        {
+          "id": 117726100554,
+          "name": "CodeQL",
+          "status": "completed",
+          "conclusion": "neutral",
+          "app": "GitHub Advanced Security",
+          "output": {
+            "title": "4 configurations not found",
+            "summary": "**Warning**: Code scanning cannot determine the alerts introduced by this pull request, because 4 configurations present on `refs/heads/main` were not found:\n\n### Default setup\n\n* :question:&nbsp;&nbsp;`/language:c-cpp`\n* :question:&nbsp;&nbsp;`/language:javascript-typescript`\n* :question:&nbsp;&nbsp;`/language:python`\n* :question:&nbsp;&nbsp;`/language:rust`\n\n\n[View all branch alerts](/TrillionniumFoundation/hepta-private-ci/security/code-scanning?query=pr%3A2599+tool%3ACodeQL+is%3Aopen).",
+            "text": null,
+            "annotations_count": 0,
+            "annotations_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/117726100554/annotations"
+          }
+        }
+      ]
+    },
+    {
+      "pr": 2714,
+      "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+      "base_ref": "research/checkpoint-resource-binding-p3-20261017",
+      "merge_sha": "6c9912bc5ebd702ab6f279f4cac3b76dda124817",
+      "state": "open",
+      "draft": true,
+      "expected_head_matches": true,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "pages_complete": true,
+      "totals": {
+        "runs": 5,
+        "checks": 6,
+        "statuses": 0,
+        "jobs": 6
+      },
+      "all_returned_source_shas_match": true,
+      "job_statuses": {
+        "queued": 4,
+        "in_progress": 1,
+        "completed": 1
+      },
+      "job_conclusions": {
+        "null": 5,
+        "success": 1
+      },
+      "check_statuses": {
+        "queued": 4,
+        "completed": 1,
+        "in_progress": 1
+      },
+      "check_conclusions": {
+        "null": 5,
+        "success": 1
+      },
+      "required": [
+        {
+          "context": "CI required",
+          "state": "ABSENT",
+          "required_on_target": "research base protection NOT_ACCESSIBLE",
+          "owning_run_id": 39140341708
+        },
+        {
+          "context": "Architecture required",
+          "state": "ABSENT",
+          "required_on_target": "research base protection NOT_ACCESSIBLE",
+          "owning_run_id": 39140341635
+        }
+      ],
+      "jobs": [
+        {
+          "id": 117713314444,
+          "run_id": 39140341710,
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:24:33Z",
+          "completed_at": null,
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-latest"
+          ]
+        },
+        {
+          "id": 117713314446,
+          "run_id": 39140341757,
+          "name": "laya-reader-intake",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000168266",
+          "started_at": "2026-10-18T16:24:39Z",
+          "completed_at": null,
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 117713314606,
+          "run_id": 39140341757,
+          "name": "contract",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:24:33Z",
+          "completed_at": null,
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 117713314591,
+          "run_id": 39140341736,
+          "name": "Stem/Reader bridge contract",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000168255",
+          "started_at": "2026-10-18T16:23:00Z",
+          "completed_at": "2026-10-18T16:23:09Z",
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 117713314144,
+          "run_id": 39140341635,
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:24:33Z",
+          "completed_at": null,
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 117713314267,
+          "run_id": 39140341635,
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "started_at": "2026-10-18T15:24:33Z",
+          "completed_at": null,
+          "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        }
+      ],
+      "non_actions_checks": []
+    }
+  ],
+  "remote_python_evidence": {
+    "pr": 2714,
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "run_id": 39140341736,
+    "job_id": 117713314591,
+    "source_checkout_log_lines": [
+      35,
+      101,
+      122
+    ],
+    "suites": [
+      {
+        "command": "python3 -m unittest discover -v -s qualification/stem-transfer-cell-artifact-p0 -p 'test_*.py'",
+        "pass": 27,
+        "summary_lines": [
+          156,
+          158
+        ]
+      },
+      {
+        "command": "python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'",
+        "pass": 109,
+        "summary_lines": [
+          274,
+          276
+        ]
+      }
+    ],
+    "scope": "Actual new-head contract regression tests; no new model calls, native Rust qualification or production promotion."
+  },
+  "remote_codeql_evidence": {
+    "pr": 2599,
+    "source_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "run_id": 39140464867,
+    "job_id": 117713672557,
+    "source_log_lines": [
+      110,
+      140
+    ],
+    "result_log_lines": [
+      1465,
+      1469
+    ],
+    "scope": "Actions-language analysis completed and uploaded only; four other language analyses remain queued; aggregated CodeQL check is neutral."
+  },
+  "snapshot_consistency_note": "Endpoints were read once each with explicit full pagination. Workflow runs and jobs are not transactionally sampled; Future OOD run was queued when read, while its laya-reader-intake job was in_progress at the later job read. Each raw page retains observed UTC. No optional repeat poll was performed.",
+  "upload_state": {
+    "ci_agent_create_blob_calls_stopped": true,
+    "whole_request_aborted_after_seconds": 1174.6,
+    "part180000_request_aborted_after_seconds": 552.2,
+    "part49152_request_aborted_after_seconds": 291.3,
+    "no_success_response_received_by_ci_agent": true,
+    "no_resumable_cell_id": true,
+    "no_approval_rejection_received": true,
+    "root_owns_archive_upload": true,
+    "background_upload_claim": false
+  },
+  "frozen_archive": {
+    "size_bytes": 2353920,
+    "sha256": "809b6e2427b2daa6543c44daeaba8869bed5a09ed458cd9cef5b4a11eb554fbd",
+    "unmodified": true,
+    "addendum_separate": true
+  },
+  "new_model_calls": 0,
+  "production_activation_allowed": false,
+  "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO"
+}
