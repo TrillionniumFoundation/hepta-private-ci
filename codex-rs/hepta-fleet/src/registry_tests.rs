@@ -272,7 +272,10 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
-            WorkspaceBinding::new(&path, &fleet.root)
+            // Windows temp paths can use a noncanonical drive prefix.
+            // Keep the production canonical-path and symlink fence intact.
+            let canonical = path.canonicalize()?;
+            WorkspaceBinding::new(&canonical, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,
