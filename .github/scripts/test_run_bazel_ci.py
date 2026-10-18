@@ -411,6 +411,16 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn('if [[ "${RUNNER_OS}" == "Linux" ]]; then', workflow)
         self.assertIn("v8_transport_args+=(--noremote_cache_async)", workflow)
         self.assertIn('"${v8_transport_args[@]}"', workflow)
+        # Bazel accepts this as a build option only after the command.
+        self.assertLess(
+            workflow.index('"${bazel_args[0]}"'),
+            workflow.index('"${v8_transport_args[@]}"'),
+        )
+        self.assertLess(
+            workflow.index('"${v8_transport_args[@]}"'),
+            workflow.index('"${bazel_args[@]:1}"'),
+        )
+        self.assertNotIn('"${bazel_args[@]}"', workflow)
         self.assertNotIn(
             "common:ci-linux --noremote_cache_async",
             (SCRIPTS.parent.parent / ".bazelrc").read_text(encoding="utf-8"),
