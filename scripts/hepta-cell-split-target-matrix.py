@@ -132,9 +132,13 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
 
 
 def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float | bool | None]:
+    if not isinstance(metrics, dict):
+        raise ValueError("metrics must be a JSON object")
     missing = [name for name in REQUIRED_METRICS if name not in metrics]
     if missing:
         raise ValueError(f"missing metrics: {','.join(missing)}")
+    if set(metrics) != set(REQUIRED_METRICS):
+        raise ValueError("metrics contain unrecognized fields")
     normalized: dict[str, int | float | bool | None] = {}
     for name in REQUIRED_METRICS:
         if name in {"gpuObserved", "gpuMicros", "gpuBytes"}:
@@ -670,6 +674,7 @@ def validate_report(
         not isinstance(cases, list)
         or len(cases) != len(expected)
         or any(not isinstance(case, dict) for case in cases)
+        or any(not isinstance(case.get("caseId"), str) for case in cases)
         or {case.get("caseId") for case in cases} != set(expected)
     ):
         raise ValueError("report must contain unique and complete matrix cases")
