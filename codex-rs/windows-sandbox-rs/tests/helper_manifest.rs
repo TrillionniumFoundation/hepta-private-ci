@@ -87,7 +87,10 @@ fn manifest_only_runfiles_resolve_the_exact_helper_with_spaces_in_physical_path(
     let directory = scratch.path().join("with spaces");
     std::fs::create_dir_all(&directory)?;
     let physical = directory.join("codex-windows-sandbox-setup.exe");
-    std::fs::write(&physical, b"test fixture (never used as a production binary)")?;
+    std::fs::write(
+        &physical,
+        b"test fixture (never used as a production binary)",
+    )?;
     let manifest = scratch.path().join("MANIFEST");
     let logical = "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe";
     std::fs::write(
@@ -102,11 +105,13 @@ fn manifest_only_runfiles_resolve_the_exact_helper_with_spaces_in_physical_path(
         find_exact_manifest_runfile(&manifest, std::path::Path::new(logical))?,
         Some(physical),
     );
-    assert!(find_exact_manifest_runfile(
-        &manifest,
-        std::path::Path::new("_main/codex-rs/windows-sandbox-rs/nonexistent.exe"),
-    )?
-    .is_none());
+    assert!(
+        find_exact_manifest_runfile(
+            &manifest,
+            std::path::Path::new("_main/codex-rs/windows-sandbox-rs/nonexistent.exe"),
+        )?
+        .is_none()
+    );
     Ok(())
 }
 
