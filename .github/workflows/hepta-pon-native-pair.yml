@@ -4,6 +4,7 @@ on:
     paths:
       - codex-rs/**
       - scripts/**
+      - qualification/learning-generations/**
       - justfile
       - AGENTS.md
       - .github/workflows/hepta-pon-native-pair.yml
@@ -83,8 +84,13 @@ jobs:
             "$CHAIN_SOURCE_SHA" "$CHAIN_BASE_SHA" "$HEPTA_PON_CHAIN_SOURCE" \
             > "$RUNNER_TEMP/pon-pair/tuple.txt"
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libcap-dev
+          sudo apt-get install -y build-essential pkg-config libcap-dev bubblewrap
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
+          rustc +1.95.0 -vV > "$RUNNER_TEMP/pon-pair/chain-rustc.txt"
+          cargo +1.95.0 -V > "$RUNNER_TEMP/pon-pair/chain-cargo.txt"
+          rustc +1.96.0 -vV > "$RUNNER_TEMP/pon-pair/hepta-rustc.txt"
+          cargo +1.96.0 -V > "$RUNNER_TEMP/pon-pair/hepta-cargo.txt"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -104,6 +110,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-sequence.json" --minimum-tests 7 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-context.json" --minimum-tests 8 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence_context.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-parent.json" --minimum-tests 10 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence_parent.py -v
+      - name: Require the independent quorum oracle and exact profile navigation controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-reference.json" --minimum-tests 4 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_native_evaluation_quorum_oracle.py -v
+          # The original oracle compares all 17 vectors; these are not 17 unittest cases.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-vectors.json" -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/native_evaluation_quorum_oracle.py
+          PYTHONPATH=../chain/scripts/ci python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-applicability.json" --minimum-tests 4 -- "$RUNNER_TEMP/pon-model-env/bin/python" -m unittest -v test_applicability.EvaluationQuorumApplicabilityTests test_applicability.ApplicabilityTests.test_native_authenticated_profile_is_explicit_local_source_navigation
       - name: Require complete bounded native input and original pipe controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
@@ -255,9 +268,20 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-packet-codec.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib packet_encoding_tests -- --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-packet-history.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page::tests::packet_reservation_history_keeps_cancel_errors_and_reopen -- --exact --show-output --test-threads=1
+      - name: Require exact quorum owners, factor membership and original observation compatibility
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-native.json" --minimum-tests 2 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-mvcc-fee --test evaluation_quorum_v2 -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-cli.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test evaluation_quorum_cli -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-factor-membership.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::evaluation_observation::tests::factor_candidate_membership_is_exact_for_evidence_and_composition -- --exact --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-v3-owner.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test model_evidence_v3 explicit_quorum_native_release_survives_one_absence_and_hash_appeal_with_durable_reorg -- --exact --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-quorum-v4-owner.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test model_composition_v4 quorum_profile_replays_two_composition_generations_and_zero_score_components -- --exact --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-evaluation-observation-compat.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test evaluation_observation -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-evaluation-round-compat.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test evaluation_round_observation first_round_matches_v1_and_local_window_never_constructs_a_global_prefix -- --exact --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-exact-accepted-task.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test accepted_task_observation -- --show-output --test-threads=1
       - name: Require complete native model composition and no-update recovery
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-models.json" --minimum-tests 8 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test model_composition_v4 --test model_evidence_v3 -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-models.json" --minimum-tests 10 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test model_composition_v4 --test model_evidence_v3 -- --show-output --test-threads=1
       - name: Require network-only hostile load and native consumer confirmations
         env:
           TRNM_CI_RECEIPT_DIR: ${{ runner.temp }}/pon-pair
@@ -290,6 +314,33 @@ jobs:
           echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
           echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
           printf '%s\n' "$digest" > "$RUNNER_TEMP/pon-pair/chain-binary.sha256"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-task-fixture-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --example hepta_task_fixture
+          python3 - <<'PYPINS'
+          import hashlib, json, os
+          from pathlib import Path
+          directory = Path(os.environ['RUNNER_TEMP']) / 'pon-pair'
+          pins = []
+          bindings = {}
+          for role, prefix, relative in (
+              ('chain-node', 'HEPTA_PON_NODE', '../chain/trillionnium/target/release/trnm-pon-node'),
+              ('chain-task-fixture', 'HEPTA_PON_TASK_FIXTURE', '../chain/trillionnium/target/release/examples/hepta_task_fixture'),
+          ):
+              executable = Path(relative).resolve(strict=True)
+              if not executable.is_file() or not os.access(executable, os.X_OK):
+                  raise ValueError('actual native Chain executable required')
+              if any(c in str(executable) for c in '\r\n\0'):
+                  raise ValueError('invalid executable environment path')
+              with executable.open('rb') as stream:
+                  digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+              pins.append({'role': role, 'path': str(executable), 'sha256': digest})
+              bindings[prefix + '_BINARY'] = str(executable)
+              bindings[prefix + '_BINARY_SHA256'] = digest
+          with (directory / 'chain-executable-pins.json').open('x') as stream:
+              json.dump(pins, stream, indent=2)
+              stream.write('\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as environment:
+              environment.write(''.join(f'{name}={value}\n' for name, value in sorted(bindings.items())))
+          PYPINS
       - name: Prefetch locked Hepta dependencies before offline test execution
         timeout-minutes: 12
         env:
@@ -331,6 +382,38 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/independent-selection.json" --minimum-tests 117 -- just test --locked -p codex-hepta-intelligence-eval --lib --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/evaluated-ranker.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests)' --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/selection-ranker-composition.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests::evaluated_selection)' --no-capture
+      - name: Require timed reservation and ordinary qualification through the original owners
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-timed-reservation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence-eval --lib -E 'test(=fenced_holdout_file::tests::timed_reservation_reopens_exactly_and_cannot_promote_untimed_or_late_plans)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ordinary-reservation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=cognitive_qualification::tests::ordinary_qualification_reserves_once_and_missing_release_preserves_original_history)' --retries 0 --no-tests fail --no-capture
+      - name: Require CURRENT readers, durable withdrawal frontiers and all original revoke controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-withdrawal-frontier.json" --minimum-tests 6 -- just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(owner_service::withdrawal_frontier_tests::)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-current-reader.json" --minimum-tests 4 -- just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(owner_service::reader_tests::)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-current-revocation.json" --minimum-tests 7 -- just test --locked -p codex-hepta-learning-artifacts --lib -E 'test(owner_service::revocation_tests::)' --retries 0 --no-tests fail --no-capture
+      - name: Require ordinary effect recovery, terminal reopen and exact settled-task binding
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-effect-resume.json" --minimum-tests 3 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_effect_host::resume_tests::)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-task-observation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=automation_effect_host::task_observation_tests::accepted_task_requires_the_exact_active_settled_observation)' --retries 0 --no-tests fail --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-effect-terminal-reopen.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=automation_effect_host::tests::host_dispatches_exact_wire_payload_once)' --retries 0 --no-tests fail --no-capture
+      - name: Require exact Supervisor revision readback without fabricating legacy authority
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-supervisor-revision.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor --lib -E 'test(=daemon_protocol::tests::legacy_status_omission_does_not_fabricate_control_revision)' --retries 0 --no-tests fail --no-capture
       - name: Require signed-intent recovery and exact local abort controls
         env:
           CARGO_NET_OFFLINE: "true"
@@ -355,11 +438,115 @@ jobs:
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture || failed=1
           done
           exit "$failed"
+      - name: Build and pin the actual ordinary binaries and explicit learning study library
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          # Product CLI and Agentd keep their defaults. The library feature only
+          # supplies the original qualification fixture write seam.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-product-binaries-build.json" -- cargo +1.96.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --bin hepta-cognitive-upgrade --bin codex-hepta-agentd
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-study-build.json" -- just test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write --no-run
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-study-inventory.json" -- bash -c 'cargo +1.96.0 nextest list --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib --features qualification-legacy-learning-write --list-type binaries-only --message-format json > "$RUNNER_TEMP/pon-pair/hepta-study-binaries.json"'
+          # Only this separately built private-study daemon enables the original
+          # signed grant gate. Default Supervisor builds and controls remain unchanged.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-private-supervisor-build.json" -- cargo +1.96.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --bin hepta-supervisord --features production-authority
+          python3 - <<'PYSTUDYPINS'
+          import hashlib, json, os
+          from pathlib import Path
+          directory = Path(os.environ['RUNNER_TEMP']) / 'pon-pair'
+          listing = json.loads((directory / 'hepta-study-binaries.json').read_text())
+          rows = [row for row in listing['rust-binaries'].values()
+                  if row['kind'] == 'lib' and row['binary-name'] == 'codex_hepta_agentd']
+          if len(rows) != 1:
+              raise ValueError('one exact compiled Agentd library artifact required')
+          native = Path(rows[0]['binary-path']).resolve(strict=True)
+          target = Path(listing['rust-build-meta']['target-directory']).resolve(strict=True)
+          if not native.is_relative_to(target) or native.parent.name != 'deps' or native.parent.parent.name != 'debug':
+              raise ValueError('native study must use the actual selected debug artifact')
+          cli = (native.parent.parent / 'hepta-cognitive-upgrade').resolve(strict=True)
+          agentd = (native.parent.parent / 'codex-hepta-agentd').resolve(strict=True)
+          supervisor = (native.parent.parent / 'hepta-supervisord').resolve(strict=True)
+          pins = []
+          for role, executable in (('study-test-library', native), ('ordinary-cognitive-cli', cli),
+                                   ('ordinary-agentd', agentd), ('private-signed-supervisor', supervisor)):
+              if not executable.is_file() or not os.access(executable, os.X_OK):
+                  raise ValueError('actual executable required')
+              if any(c in str(executable) for c in '\r\n\0'):
+                  raise ValueError('invalid executable environment path')
+              with executable.open('rb') as stream:
+                  digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+              pins.append({'role': role, 'path': str(executable), 'sha256': digest})
+          with (directory / 'hepta-study-executable-pins.json').open('x') as stream:
+              json.dump(pins, stream, indent=2)
+              stream.write('\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as environment:
+              environment.write(f'HEPTA_LEARNING_NATIVE_BINARY={native}\n')
+              environment.write(f'CARGO_BIN_EXE_hepta_cognitive_upgrade={cli}\n')
+              environment.write(f'CARGO_BIN_EXE_codex_hepta_agentd={agentd}\n')
+              environment.write(f'HEPTA_SUPERVISORD_BINARY={supervisor}\n')
+              supervisor_pin = next(row for row in pins if row['role'] == 'private-signed-supervisor')
+              environment.write(f'HEPTA_SUPERVISORD_BINARY_SHA256={supervisor_pin["sha256"]}\n')
+          PYSTUDYPINS
       - name: Execute the actual Chain pair including the explicitly ignored selector
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Execute all three fresh generations and every retained-artifact reader control
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-learning-generations.json" --minimum-tests 1 --timeout-seconds 900 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/run_study.py --binary "$HEPTA_LEARNING_NATIVE_BINARY" --scenario generations --output "$RUNNER_TEMP/pon-pair/learning-generations"
+          # No --control restriction: retain 10 unittests and all 21 actual artifact mutations.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-learning-generations-reader.json" --minimum-tests 10 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/test_verify_study.py --study "$RUNNER_TEMP/pon-pair/learning-generations"
+      - name: Execute ordinary future qualification, selection and original process replay
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ordinary-future.json" --minimum-tests 1 --timeout-seconds 900 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/run_study.py --binary "$HEPTA_LEARNING_NATIVE_BINARY" --scenario ordinary-future --output "$RUNNER_TEMP/pon-pair/ordinary-future"
+      - name: Execute the ordinary upgrade through actual Chain and signed Supervisor owners
+        env:
+          CARGO_NET_OFFLINE: "true"
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ordinary-upgrade.json" --minimum-tests 1 --timeout-seconds 900 -- "$RUNNER_TEMP/pon-model-env/bin/python" qualification/learning-generations/run_study.py --binary "$HEPTA_LEARNING_NATIVE_BINARY" --scenario ordinary-upgrade --output "$RUNNER_TEMP/pon-pair/ordinary-upgrade"
+      - name: Retain the exact executable hashes after the requested native studies
+        if: always()
+        run: |
+          python3 - <<'PYRECHECK'
+          import hashlib, json, os
+          from pathlib import Path
+          directory = Path(os.environ['RUNNER_TEMP']) / 'pon-pair'
+          observations = []
+          errors = []
+          for name, expected_roles in (
+              ('chain-executable-pins.json', {'chain-node', 'chain-task-fixture'}),
+              ('hepta-study-executable-pins.json', {'study-test-library', 'ordinary-cognitive-cli', 'ordinary-agentd', 'private-signed-supervisor'}),
+          ):
+              try:
+                  pins = json.loads((directory / name).read_text())
+                  if len(pins) != len(expected_roles) or {row['role'] for row in pins} != expected_roles:
+                      raise ValueError('incomplete or duplicate executable roles')
+                  for row in pins:
+                      with Path(row['path']).open('rb') as stream:
+                          observed = hashlib.file_digest(stream, 'sha256').hexdigest()
+                      observations.append({**row, 'observed_sha256': observed, 'unchanged': observed == row['sha256']})
+              except (OSError, ValueError, KeyError, TypeError) as error:
+                  errors.append({'manifest': name, 'error': str(error)})
+          unchanged = len(observations) == 6 and not errors and all(row['unchanged'] for row in observations)
+          report = {'schema': 'hepta.paired-executable-integrity.v1', 'observations': observations,
+                    'errors': errors, 'all_unchanged': unchanged, 'execution_acceptance_granted': False}
+          with (directory / 'executable-recheck.json').open('w') as stream:
+              json.dump(report, stream, indent=2)
+              stream.write('\n')
+          if not unchanged:
+              raise SystemExit('missing or changed pinned executable; no native execution credit')
+          PYRECHECK
       - name: Retain read-only source and prior Windows failure diagnostics
         if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
         env:
@@ -387,7 +574,7 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/pon-pair"
-          printf 'Exact paired local native %s observation only. No TaskFlow model installation, future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+          printf 'Requested paired native %s gates cover Chain quorum and exact task settlement, durable Hepta owners, synthetic generations/ordinary-future studies, and a separate ordinary-upgrade study through actual signed Supervisor/Agentd owners. Outcomes require their retained native receipts; this scope file grants no pass. Installation, selection, consumer behavior and subsequent future cohort results apply only to the executed fixed arithmetic instruction-ranker fixture. Historical source preparation is not counted as a service upgrade. No independent operators, general neural efficacy, WAN, physical power loss or production acceptance is asserted. Chain r15 remains the fixed25-row native V3/V4 model profile and grants no arbitrary Hepta installation authority. Running/missing/failed receipts grant no credit.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
           failed=0
           test "$(git rev-parse HEAD)" = "$TESTED_SHA" || failed=1
           test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE" || failed=1
