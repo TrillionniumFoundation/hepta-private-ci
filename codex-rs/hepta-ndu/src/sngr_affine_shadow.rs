@@ -225,7 +225,12 @@ pub fn solve_sngr_affine_shadow(
         });
         x = x_next;
     }
-    receipt(request, slices, max_interface, /*reset_terminal*/ false)
+    receipt(
+        request,
+        slices,
+        max_interface,
+        /*reset_terminal*/ false,
+    )
 }
 
 /// Deliberately incorrect negative control: resetting g at each short horizon.
