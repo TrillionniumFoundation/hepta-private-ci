@@ -89,6 +89,34 @@ class SignedObserverProtocolTests(unittest.TestCase):
         params.update(overrides)
         MATRIX.validate_report(self.report, **params)
 
+    def test_low_order_trusted_ed25519_public_keys_cannot_forge_observer(self) -> None:
+        # OpenSSL 3.x may accept a zero signature with some low-order public
+        # keys and attacker-chosen messages. Pinned SHA256 alone is NOT proof
+        # that a public key belongs to the prime-order Ed25519 subgroup.
+        for label, raw_public_key in (
+            ("low-order-zero", bytes(32)),
+            ("identity", bytes([1]) + bytes(31)),
+        ):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as root:
+                # Canonical RFC 8410 Ed25519 SubjectPublicKeyInfo.
+                der = bytes.fromhex("302a300506032b6570032100") + raw_public_key
+                pem = (
+                    b"-----BEGIN PUBLIC KEY-----\n"
+                    + base64.b64encode(der)
+                    + b"\n-----END PUBLIC KEY-----\n"
+                )
+                key_path = Path(root) / "weak-public.pem"
+                key_path.write_bytes(pem)
+                fingerprint = hashlib.sha256(pem).hexdigest()
+                self.observer["publicKeySha256"] = fingerprint
+                self.observer["signatureBase64"] = base64.b64encode(bytes(64)).decode()
+                self.reseal_digests_only()
+                with self.assertRaisesRegex(ValueError, "prime-order"):
+                    self.verify(
+                        observer_public_key=key_path,
+                        observer_key_sha256=fingerprint,
+                    )
+
     def test_valid_test_signature_can_only_qualify_synthetic_schema(self) -> None:
         self.verify()
         self.assertEqual(self.report["authority"], "DENY_ALL")
