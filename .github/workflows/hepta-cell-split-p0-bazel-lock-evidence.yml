@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-p0-bazel-lock-\${{ github.event.pull_request.number }}
+  group: hepta-p0-bazel-lock-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -29,13 +29,13 @@ jobs:
       - name: Checkout frozen original PR source HEAD
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: \${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Bind original source and lock bytes before setup
         shell: bash
         env:
-          EXPECTED_SHA: \${{ github.event.pull_request.head.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/actions/prepare-bazel-ci
         with:
           target: x86_64-unknown-linux-gnu
-          cache-scope: hepta-p0-lock-proposal-\${{ github.run_id }}
+          cache-scope: hepta-p0-lock-proposal-${{ github.run_id }}
 
       - name: Compute candidate from actual locked Cargo and Bazel graph
         shell: bash
@@ -100,7 +100,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: hepta-p0-original-bazel-lock-\${{ github.run_id }}-\${{ github.run_attempt }}
-          path: \${{ runner.temp }}/hepta-p0-original-bazel-lock/
+          name: hepta-p0-original-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/MODULE.original.bazel.lock
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/SOURCE_HEAD_SHA
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/frozen-input.sha256
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/verification.status
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/MODULE.candidate.bazel.lock
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/original-lock.patch
+            ${{ runner.temp }}/hepta-p0-original-bazel-lock/candidate.sha256
           if-no-files-found: error
           retention-days: 30
