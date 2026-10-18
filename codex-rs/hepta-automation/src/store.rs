@@ -1334,7 +1334,7 @@ fn windows_canonical_root_without_reparse(
 
 #[cfg(all(test, windows))]
 #[test]
-fn automation_private_root_accepts_windows_namespace_spelling_without_redirection() -> std::io::Result<()> {
+fn windows_private_root_rejects_redirect_but_accepts_verbatim() -> std::io::Result<()> {
     let temporary = tempfile::tempdir()?;
     let root = temporary.path().join("owner");
     fs::create_dir(&root)?;
