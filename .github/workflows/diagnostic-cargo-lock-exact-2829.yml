@@ -1,0 +1,76 @@
+# Evidence-only workflow for the exact security integration candidate.
+# This PR must stay Draft and must never be merged to production branches.
+name: Diagnostic exact Cargo.lock resolver 2829
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - fix/security-zip-vendored-sync-integration-20261018
+    paths:
+      - .github/workflows/diagnostic-cargo-lock-exact-2829.yml
+
+permissions:
+  contents: read
+
+jobs:
+  generate-lock-evidence:
+    if: ${{ github.event.pull_request.head.ref == 'diagnostics/security-2829-exact-cargo-lock-resolver-20261018' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact diagnostic head, never a synthetic merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact candidate, base and additive-only scope
+        shell: bash
+        env:
+          EXPECTED_BASE_SHA: 3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EVENT_HEAD_SHA"
+          test "$EVENT_BASE_SHA" = "$EXPECTED_BASE_SHA"
+          git merge-base --is-ancestor "$EXPECTED_BASE_SHA" HEAD
+          changed="$(git diff --name-only "$EXPECTED_BASE_SHA" HEAD)"
+          test "$changed" = ".github/workflows/diagnostic-cargo-lock-exact-2829.yml"
+          printf 'Exact candidate: %s\nDiagnostic head: %s\n' "$EXPECTED_BASE_SHA" "$EVENT_HEAD_SHA"
+
+      - name: Resolve from exact Cargo manifests and check locked reproducibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lock-evidence"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/lock-evidence/Cargo.lock.before"
+          (cd codex-rs && cargo --version)
+          set +e
+          (cd codex-rs && cargo metadata --format-version=1 > /dev/null)
+          resolution_status=$?
+          set -e
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/lock-evidence/Cargo.lock.resolved"
+          git diff -- codex-rs/Cargo.lock > "$RUNNER_TEMP/lock-evidence/Cargo.lock.patch"
+          sha256sum codex-rs/Cargo.lock | tee "$RUNNER_TEMP/lock-evidence/Cargo.lock.sha256"
+          printf 'resolver_status=%s\nbase_sha=3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03\n' "$resolution_status" > "$RUNNER_TEMP/lock-evidence/result.txt"
+          if [ "$resolution_status" -ne 0 ]; then exit "$resolution_status"; fi
+          (cd codex-rs && cargo metadata --locked --format-version=1 > /dev/null)
+          git diff --check
+          changed="$(git diff --name-only)"
+          if [ -n "$changed" ] && [ "$changed" != "codex-rs/Cargo.lock" ]; then
+            echo "::error::Unexpected post-resolution changes: $changed"
+            exit 1
+          fi
+          echo "Exact candidate Cargo resolver completed; artifact is diagnostic, not approved for adoption."
+
+      - name: Preserve complete lockfile and exact diff, even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: exact-cargo-lock-2829-${{ github.run_id }}
+          path: ${{ runner.temp }}/lock-evidence/
+          if-no-files-found: error
+          retention-days: 7
