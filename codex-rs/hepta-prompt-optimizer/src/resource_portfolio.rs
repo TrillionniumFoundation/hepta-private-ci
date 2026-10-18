@@ -6,7 +6,8 @@
 //! the registered Prompt V1 receipts, authenticate an evaluator, dispatch a
 //! model, or grant activation authority.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -86,7 +87,10 @@ pub struct ResourceVectorV1 {
 impl ResourceVectorV1 {
     fn checked_add(self, other: Self) -> Result<Self, ResourcePortfolioError> {
         Ok(Self {
-            tokens: self.tokens.checked_add(other.tokens).ok_or(ResourcePortfolioError::Arithmetic)?,
+            tokens: self
+                .tokens
+                .checked_add(other.tokens)
+                .ok_or(ResourcePortfolioError::Arithmetic)?,
             latency_micros: self
                 .latency_micros
                 .checked_add(other.latency_micros)
@@ -301,10 +305,12 @@ pub fn validate_action_risk_profile_v1(
         if edge.left_action_id >= edge.right_action_id {
             return Err(ResourcePortfolioError::NonCanonicalCovariance);
         }
-        if !action_ids.contains(&edge.left_action_id) || !action_ids.contains(&edge.right_action_id) {
-            return Err(ResourcePortfolioError::UnknownAction(
-                format!("{}:{}", edge.left_action_id, edge.right_action_id),
-            ));
+        if !action_ids.contains(&edge.left_action_id) || !action_ids.contains(&edge.right_action_id)
+        {
+            return Err(ResourcePortfolioError::UnknownAction(format!(
+                "{}:{}",
+                edge.left_action_id, edge.right_action_id
+            )));
         }
         let pair = (&edge.left_action_id, &edge.right_action_id);
         if previous_edge.is_some_and(|prior| prior >= pair) {
@@ -357,7 +363,8 @@ pub fn select_resource_portfolio_shadow_v1(
     if input.candidate_set_digest != input.profile.candidate_set_digest
         || input.pricing_batch_digest != input.profile.pricing_batch_digest
         || input.priced_candidates.pricing_set_digest != input.profile.pricing_batch_digest
-        || input.priced_candidates.candidates.candidates_digest != input.profile.candidate_set_digest
+        || input.priced_candidates.candidates.candidates_digest
+            != input.profile.candidate_set_digest
         || input.priced_candidates.candidates.receipt.state_digest != input.state_digest
         || input.priced_candidates.candidates.model_tuple.digest() != input.model_tuple_digest
     {
@@ -374,7 +381,9 @@ pub fn select_resource_portfolio_shadow_v1(
         }
         let action_id = action.action_id.clone();
         if actions.insert(action_id.clone(), action).is_some() {
-            return Err(ResourcePortfolioError::DuplicateAction(action_id.to_string()));
+            return Err(ResourcePortfolioError::DuplicateAction(
+                action_id.to_string(),
+            ));
         }
     }
     let mut prices = BTreeMap::new();
@@ -390,7 +399,9 @@ pub fn select_resource_portfolio_shadow_v1(
         }
     }
     if prices.len() != actions.len()
-        || actions.values().any(|action| !prices.contains_key(&action.factor_id))
+        || actions
+            .values()
+            .any(|action| !prices.contains_key(&action.factor_id))
     {
         return Err(ResourcePortfolioError::PricingBatchMismatch);
     }
@@ -447,9 +458,9 @@ pub fn select_resource_portfolio_shadow_v1(
         let price = prices
             .get(&action.factor_id)
             .ok_or_else(|| ResourcePortfolioError::UnknownFactor(action.factor_id.to_string()))?;
-        let variance = *variances
-            .get(&action.action_id)
-            .ok_or_else(|| ResourcePortfolioError::MissingRiskEntry(action.action_id.to_string()))?;
+        let variance = *variances.get(&action.action_id).ok_or_else(|| {
+            ResourcePortfolioError::MissingRiskEntry(action.action_id.to_string())
+        })?;
         let downside = downside_weight
             .checked_mul(price.downside_q32)
             .map_err(|_| ResourcePortfolioError::Arithmetic)?;
@@ -490,13 +501,9 @@ pub fn select_resource_portfolio_shadow_v1(
             } else {
                 (action_id.clone(), selected_id.clone())
             };
-            let pair_value = covariance
-                .get(&pair)
-                .copied()
-                .ok_or_else(|| ResourcePortfolioError::MissingCovariance(
-                    pair.0.to_string(),
-                    pair.1.to_string(),
-                ))?;
+            let pair_value = covariance.get(&pair).copied().ok_or_else(|| {
+                ResourcePortfolioError::MissingCovariance(pair.0.to_string(), pair.1.to_string())
+            })?;
             pair_covariance = pair_covariance
                 .checked_add(pair_value)
                 .map_err(|_| ResourcePortfolioError::Arithmetic)?;
@@ -516,12 +523,13 @@ pub fn select_resource_portfolio_shadow_v1(
         let covariance_increment = pair_covariance
             .checked_mul(FixedQ32::from_raw(2_i64 << 32))
             .map_err(|_| ResourcePortfolioError::Arithmetic)?;
-        variance_risk = variance_risk
-            .checked_add(*variances.get(&action_id).ok_or_else(|| {
-                ResourcePortfolioError::MissingRiskEntry(action_id.to_string())
-            })?)
-            .and_then(|value| value.checked_add(covariance_increment))
-            .map_err(|_| ResourcePortfolioError::Arithmetic)?;
+        variance_risk =
+            variance_risk
+                .checked_add(*variances.get(&action_id).ok_or_else(|| {
+                    ResourcePortfolioError::MissingRiskEntry(action_id.to_string())
+                })?)
+                .and_then(|value| value.checked_add(covariance_increment))
+                .map_err(|_| ResourcePortfolioError::Arithmetic)?;
         utility = utility
             .checked_add(incremental)
             .map_err(|_| ResourcePortfolioError::Arithmetic)?;
@@ -603,10 +611,12 @@ fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::canonical::{
-        EnumeratedPromptCandidatesV1, PricedPromptCandidateV1, PromptCandidateBindingV1,
-        PromptCandidateSetReceiptV1, PromptConfidenceIntervalV1, PromptPricingReceiptV1,
-    };
+    use crate::canonical::EnumeratedPromptCandidatesV1;
+    use crate::canonical::PricedPromptCandidateV1;
+    use crate::canonical::PromptCandidateBindingV1;
+    use crate::canonical::PromptCandidateSetReceiptV1;
+    use crate::canonical::PromptConfidenceIntervalV1;
+    use crate::canonical::PromptPricingReceiptV1;
     use codex_hepta_prompt_registry::PromptModelTupleV2;
     use codex_hepta_prompt_registry::PromptRealizationBindingV2;
     use codex_hepta_prompt_registry::PromptRoleV2;
@@ -689,7 +699,8 @@ mod tests {
         };
         let candidate_set = EnumeratedPromptCandidatesV1 {
             registry_snapshot: codex_hepta_prompt_registry::PromptRegistrySnapshotV2 {
-                revision: codex_hepta_types::Revision::new(1).unwrap_or_else(|_| panic!("revision")),
+                revision: codex_hepta_types::Revision::new(1)
+                    .unwrap_or_else(|_| panic!("revision")),
                 registry_digest: digest("registry"),
                 lifecycle_frontier: 1,
                 revocation_frontier: 0,
@@ -880,7 +891,8 @@ mod tests {
 
     #[test]
     fn selects_one_action_under_incremental_budget_and_denies_authority() {
-        let result = select_resource_portfolio_shadow_v1(input()).unwrap_or_else(|error| panic!("selection: {error}"));
+        let result = select_resource_portfolio_shadow_v1(input())
+            .unwrap_or_else(|error| panic!("selection: {error}"));
         assert_eq!(result.selected_action_ids, vec![id("action:a")]);
         assert_eq!(result.aggregate_resources.tokens, 4);
         assert_eq!(result.disposition, ResourcePortfolioDispositionV1::Selected);
@@ -893,16 +905,22 @@ mod tests {
         request.budget.limits.tokens = 8;
         request.profile.covariance[0].covariance_q32 = FixedQ32::from_raw(8_i64 << 32);
         request.profile.profile_digest = canonical_action_risk_profile_digest(&request.profile);
-        let result = select_resource_portfolio_shadow_v1(request).unwrap_or_else(|error| panic!("selection: {error}"));
+        let result = select_resource_portfolio_shadow_v1(request)
+            .unwrap_or_else(|error| panic!("selection: {error}"));
         assert_eq!(result.selected_action_ids, vec![id("action:a")]);
     }
 
     #[test]
     fn no_change_is_explicit_when_all_candidates_are_non_positive() {
         let mut request = input();
-        request.priced_candidates.rows[0].pricing.expected_utility_q32 = FixedQ32::ZERO;
-        request.priced_candidates.rows[1].pricing.expected_utility_q32 = FixedQ32::ZERO;
-        let result = select_resource_portfolio_shadow_v1(request).unwrap_or_else(|error| panic!("selection: {error}"));
+        request.priced_candidates.rows[0]
+            .pricing
+            .expected_utility_q32 = FixedQ32::ZERO;
+        request.priced_candidates.rows[1]
+            .pricing
+            .expected_utility_q32 = FixedQ32::ZERO;
+        let result = select_resource_portfolio_shadow_v1(request)
+            .unwrap_or_else(|error| panic!("selection: {error}"));
         assert!(result.selected_action_ids.is_empty());
         assert_eq!(result.disposition, ResourcePortfolioDispositionV1::NoChange);
         assert_eq!(result.baseline_id, id("no-change"));
