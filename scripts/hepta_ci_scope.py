@@ -55,6 +55,24 @@ DERIVED_ONLY_DOCS = frozenset(
     }
 )
 
+# These standalone Actions diagnostics are self-tested by their own
+# path-filtered workflows. They neither change the Rust build graph nor
+# consume application execution authority; keep heavy native CI for unknown
+# workflows and all shared build/dependency configuration.
+FLEET_SELFTEST_PATHS = frozenset(
+    {
+        ".github/workflows/github-actions-fleet-500.yml",
+        ".github/workflows/github-actions-fleet-packed.yml",
+        "scripts/github_actions_fleet_500.py",
+        "scripts/github_actions_org_capacity.py",
+        "scripts/github_actions_packed_ci.py",
+        "scripts/github_actions_runner_audit.py",
+        "scripts/test_github_actions_fleet_500.py",
+        "scripts/test_github_actions_org_capacity.py",
+        "scripts/test_github_actions_packed_ci.py",
+    }
+)
+
 FILE_GROUPS = {
     # Stable typed contracts with a single architecture concern should not
     # expand to every Hepta lane merely because they live in a shared crate.
@@ -109,6 +127,10 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or (len(parts) >= 3 and parts[0] == "codex-rs" and parts[-1] == "Cargo.toml")
         ):
             cargo_audit = True
+
+        if path in FLEET_SELFTEST_PATHS:
+            derived = True
+            continue
 
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
