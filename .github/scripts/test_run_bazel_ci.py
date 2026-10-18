@@ -43,6 +43,14 @@ elif command == 'query':
         sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
     else:
         print('//codex-rs/fake:library')
+elif os.environ.get('BAZEL_PROBE_JVM_CRASH') in ('once', 'always') and command in ('test', 'build'):
+    state = Path(os.environ['BAZEL_PROBE_JVM_STATE'])
+    attempts = int(state.read_text(encoding='utf-8')) if state.exists() else 0
+    state.write_text(str(attempts + 1), encoding='utf-8')
+    if os.environ['BAZEL_PROBE_JVM_CRASH'] == 'always' or attempts == 0:
+        print('FATAL: bazel crashed due to an internal error. Printing stack trace:')
+        print('java.lang.NullPointerException: ActionInputMap.getIndex')
+        sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -376,6 +384,51 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn(f"--test_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertNotIn("--host_platform=//:local_windows", args)
         self.assertNotIn("--jobs=8", args)
+
+    def test_macos_bazel_jvm_crash_repeats_exact_command_once(self) -> None:
+        state = self.root / "jvm-crash-attempts"
+        self.env.update(
+            RUNNER_OS="macOS",
+            BAZEL_PROBE_JVM_CRASH="once",
+            BAZEL_PROBE_JVM_STATE=str(state),
+        )
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[0], calls[2])
+        self.assertIn("shutdown", calls[1])
+        self.assertEqual(state.read_text(encoding="utf-8"), "2")
+
+    def test_macos_bazel_jvm_crash_second_failure_stays_fatal(self) -> None:
+        state = self.root / "jvm-crash-attempts"
+        self.env.update(
+            RUNNER_OS="macOS",
+            BAZEL_PROBE_JVM_CRASH="always",
+            BAZEL_PROBE_JVM_STATE=str(state),
+        )
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[0], calls[2])
+        self.assertIn("shutdown", calls[1])
+        self.assertEqual(state.read_text(encoding="utf-8"), "2")
+
+    def test_macos_bazel_exit37_linker_error_does_not_retry(self) -> None:
+        self.env.update(RUNNER_OS="macOS", BAZEL_PROBE_FAIL="1")
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
+
+    def test_linux_bazel_jvm_crash_does_not_retry(self) -> None:
+        self.env.update(
+            RUNNER_OS="Linux",
+            BAZEL_PROBE_JVM_CRASH="always",
+            BAZEL_PROBE_JVM_STATE=str(self.root / "jvm-crash-attempts"),
+        )
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
 
     def test_failure_preserves_status_linker_diagnostics_and_test_log_configuration(
         self,
