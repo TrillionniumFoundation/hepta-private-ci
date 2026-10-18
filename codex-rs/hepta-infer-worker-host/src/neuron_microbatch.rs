@@ -378,7 +378,10 @@ impl NeuronMicrobatchWorkerV1 {
         backend: &mut B,
         resources: NeuronHostResourceSampleV1,
     ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
-        let authority = self.authority.clone().ok_or(NeuronMicrobatchErrorV1::MissingAuthority)?;
+        let authority = self
+            .authority
+            .clone()
+            .ok_or(NeuronMicrobatchErrorV1::MissingAuthority)?;
         // Reject an expired plan even if a caller supplied an old timestamp.
         // The signed grant must expire no later than the batch deadline;
         // FinalUseAuthority independently verifies its own protected clock.

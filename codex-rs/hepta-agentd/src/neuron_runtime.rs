@@ -59,7 +59,6 @@ where
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }
-
 }
 
 #[cfg(test)]

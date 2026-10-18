@@ -110,12 +110,8 @@ fn make_authorized_worker(
         id("worker.1"),
         generation(),
         scope(),
-        NeuronMetricsGroupCommitWriterV1::open(
-            fixture.open(),
-            scope(),
-            generation(),
-        )
-        .expect("metrics"),
+        NeuronMetricsGroupCommitWriterV1::open(fixture.open(), scope(), generation())
+            .expect("metrics"),
         authority,
     )
     .expect("trusted worker construction")
@@ -477,7 +473,10 @@ fn reference_worker_rejects_native_dispatch_without_pinned_verifier() {
         &mut custom_backend,
         NeuronHostResourceSampleV1::default(),
     );
-    assert!(matches!(error, Err(NeuronMicrobatchErrorV1::MissingAuthority)));
+    assert!(matches!(
+        error,
+        Err(NeuronMicrobatchErrorV1::MissingAuthority)
+    ));
     assert_eq!(custom_backend.invocations, 0);
 }
 
@@ -504,13 +503,8 @@ fn failed_signed_native_batch_leaves_durable_pending_intent_and_poisoned_owner()
             .as_millis(),
     )
     .expect("millis");
-    let frozen = NeuronMicrobatchPlanV1::freeze(
-        id("worker.1"),
-        snapshot(),
-        now + 60_000,
-        heads(),
-    )
-    .expect("plan");
+    let frozen = NeuronMicrobatchPlanV1::freeze(id("worker.1"), snapshot(), now + 60_000, heads())
+        .expect("plan");
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "neuron.batch.issuer".into(),
