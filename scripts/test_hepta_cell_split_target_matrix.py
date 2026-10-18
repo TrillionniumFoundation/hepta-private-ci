@@ -16,7 +16,9 @@ def test_matrix_is_exactly_sixteen_cases_with_unique_factor_tuples() -> None:
     cases = MODULE.matrix_cases()
     assert len(cases) == 16
     assert len({case["caseId"] for case in cases}) == 16
-    assert len({tuple(case[name] for name, _ in MODULE.FACTORS) for case in cases}) == 16
+    assert (
+        len({tuple(case[name] for name, _ in MODULE.FACTORS) for case in cases}) == 16
+    )
 
 
 def test_measurement_receipt_requires_all_metrics_and_monotonic_quantiles() -> None:
@@ -42,7 +44,9 @@ def test_measurement_receipt_requires_all_metrics_and_monotonic_quantiles() -> N
         raise AssertionError("non-monotonic quantiles were accepted")
 
 
-def test_dry_run_is_blocked_until_workload_and_observer_receipts_exist(tmp_path: Path) -> None:
+def test_dry_run_is_blocked_until_workload_and_observer_receipts_exist(
+    tmp_path: Path,
+) -> None:
     output = tmp_path / "matrix.json"
     report = MODULE.run_matrix(
         workload_command=None,
