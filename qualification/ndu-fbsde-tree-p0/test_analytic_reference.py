@@ -19,7 +19,11 @@ class AnalyticReferenceTests(unittest.TestCase):
             observed = evaluate_analytic_reference(steps=steps, samples=256)
             self.assertLessEqual(observed.maximum_z_covariance_error, 1e-12)
             self.assertAlmostEqual(observed.root_value, 1.0, places=12)
-            self.assertGreater(observed.single_branch_global_gap, 0.1)
+            if steps > 1:
+                self.assertGreater(observed.single_branch_global_gap, 0.1)
+            else:
+                # Accidental scalar equality of one endpoint is not global-path proof.
+                self.assertAlmostEqual(observed.single_branch_global_gap, 0.0)
 
     def test_independent_gaussian_heldout_matches_analytic_value_with_error_bars(self):
         observed = evaluate_analytic_reference()
