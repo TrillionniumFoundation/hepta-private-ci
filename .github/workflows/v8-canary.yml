@@ -246,8 +246,9 @@ jobs:
             fi
             ./.github/scripts/run_bazel_with_buildbuddy.py \
               --noexperimental_remote_repo_contents_cache \
+              "${bazel_args[0]}" \
               "${v8_transport_args[@]}" \
-              "${bazel_args[@]}" \
+              "${bazel_args[@]:1}" \
               "--config=${{ matrix.bazel_config }}"
           }
 
