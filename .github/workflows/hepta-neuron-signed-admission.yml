@@ -5,6 +5,8 @@ on:
     paths:
       - "CALLERS.toml"
       - "scripts/verify_hepta_callers.py"
+      - "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+      - "qa/b4-no-bypass/test_kernel_authority_closed_world.py"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-agentd/**"
