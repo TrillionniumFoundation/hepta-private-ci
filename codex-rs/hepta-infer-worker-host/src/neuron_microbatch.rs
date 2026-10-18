@@ -43,6 +43,7 @@ pub enum NeuronMicrobatchErrorV1 {
     FinalUse(FinalUseError),
     Metrics(NeuronMetricsErrorV1),
     ClockUnavailable,
+    MissingAuthority,
     Poisoned,
 }
 
@@ -314,6 +315,7 @@ pub struct NeuronMicrobatchWorkerV1 {
     generation: Generation,
     scope_digest: Digest32,
     metrics: NeuronMetricsGroupCommitWriterV1,
+    authority: Option<FinalUseAuthority>,
     attempted: BTreeSet<Digest32>,
     poisoned: bool,
 }
@@ -333,9 +335,25 @@ impl NeuronMicrobatchWorkerV1 {
             generation,
             scope_digest,
             metrics,
+            authority: None,
             attempted: BTreeSet::new(),
             poisoned: false,
         })
+    }
+
+    /// Trusted product composition supplies and pins the independently
+    /// configured verifier at worker construction, not per request. This
+    /// constructor does not itself establish protected key custody or release.
+    pub fn new_authorized(
+        worker_id: StableId,
+        generation: Generation,
+        scope_digest: Digest32,
+        metrics: NeuronMetricsGroupCommitWriterV1,
+        authority: FinalUseAuthority,
+    ) -> Result<Self, NeuronMicrobatchErrorV1> {
+        let mut worker = Self::new(worker_id, generation, scope_digest, metrics)?;
+        worker.authority = Some(authority);
+        Ok(worker)
     }
 
     /// Safe unsigned seam: its backend type is a fixed, explicit reference
@@ -356,11 +374,11 @@ impl NeuronMicrobatchWorkerV1 {
         &mut self,
         now_unix_ms: u64,
         plan: &NeuronMicrobatchPlanV1,
-        authority: &FinalUseAuthority,
         signed: &SignedFinalUseGrant,
         backend: &mut B,
         resources: NeuronHostResourceSampleV1,
     ) -> Result<NeuronMicrobatchExecutionV1, NeuronMicrobatchErrorV1> {
+        let authority = self.authority.clone().ok_or(NeuronMicrobatchErrorV1::MissingAuthority)?;
         // Reject an expired plan even if a caller supplied an old timestamp.
         // The signed grant must expire no later than the batch deadline;
         // FinalUseAuthority independently verifies its own protected clock.
@@ -379,7 +397,7 @@ impl NeuronMicrobatchWorkerV1 {
             return Err(NeuronMicrobatchErrorV1::InvalidPlan);
         }
         let expected = plan.final_use_binding();
-        let token = claim_final_use(authority, signed, &expected)?;
+        let token = claim_final_use(&authority, signed, &expected)?;
         authority
             .with_verified_effect(token, &expected, || {
                 self.preflight(effective_now_ms, plan)?;
