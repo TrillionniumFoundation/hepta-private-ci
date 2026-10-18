@@ -11,8 +11,8 @@
 pub mod model_worker;
 
 pub mod final_use_authorizer;
-pub mod neuron_microbatch;
 pub mod native_app_server;
+pub mod neuron_microbatch;
 
 use std::error::Error as StdError;
 use std::fmt;
