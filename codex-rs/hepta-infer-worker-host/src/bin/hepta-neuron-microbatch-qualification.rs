@@ -88,9 +88,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         std::process::id(),
         now_ms()?
     ));
-    let mut file = OpenOptions::new().create_new(true).read(true).write(true).open(&filename)?;
     let metadata_path = filename.clone();
     let report = (|| -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let file = OpenOptions::new().create_new(true).read(true).write(true).open(&metadata_path)?;
         let metrics = NeuronMetricsGroupCommitWriterV1::open(file, scope, generation)?;
         let mut worker = NeuronMicrobatchWorkerV1::new(
             id("worker.reference.qualification".into())?,
@@ -150,7 +150,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
         // Simulate an interrupted append and verify that a fresh owner accepts
         // only the intact, previously fsynced chain.
-        file = OpenOptions::new().read(true).write(true).open(&metadata_path)?;
+        let mut file = OpenOptions::new().read(true).write(true).open(&metadata_path)?;
         file.seek(SeekFrom::End(0))?;
         file.write_all(&[0_u8, 0_u8])?;
         file.sync_data()?;
@@ -172,6 +172,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             observed_batch_us[(observed_batch_us.len() * percent)
                 .div_ceil(100).saturating_sub(1)]
         };
+        let reference_rate = if elapsed_micros == 0 {
+            None
+        } else {
+            Some((accepted_rows as f64) * 1_000_000.0 / (elapsed_micros as f64))
+        };
         Ok(json!({
             "schema": "hepta.neuron.microbatch-reference-qualification.v1",
             "productionClaim": false,
@@ -186,9 +191,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             "crashTailRecovered": tail_recovered,
             "recoveredCompleteRecords": recovered_count,
             "elapsedMicros": elapsed_micros,
-            "referenceCellsPerSecond": if elapsed_micros == 0 { null } else {
-                Some((accepted_rows as f64) * 1_000_000.0 / (elapsed_micros as f64))
-            },
+            "referenceCellsPerSecond": reference_rate,
             "batchWallP95Micros": percentile(95),
             "batchWallP99Micros": percentile(99),
             "hostCpuSource": "linux_proc_task_schedstat_cumulative_ns",
