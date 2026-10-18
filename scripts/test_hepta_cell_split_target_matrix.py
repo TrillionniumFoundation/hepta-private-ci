@@ -216,8 +216,15 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
     MODULE.verify_observer_signature(receipt, trusted_key)
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.verify_observer_signature(receipt, None)
-    with pytest.raises(ValueError, match="signature invalid"):
+    # A low-order key must fail at trust-root validation, not signature comparison.
+    with pytest.raises(ValueError, match="not prime-order"):
         MODULE.verify_observer_signature(receipt, "00" * 32)
+    wrong_key = Ed25519PrivateKey.generate().public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+    with pytest.raises(ValueError, match="signature invalid"):
+        MODULE.verify_observer_signature(receipt, wrong_key)
     tampered = {**receipt, "metricsDigest": "e" * 64}
     with pytest.raises(ValueError, match="signature invalid"):
         MODULE.verify_observer_signature(tampered, trusted_key)
