@@ -8,10 +8,11 @@ use super::*;
 // The actual file-backed state shim is required even for migration test seeds.
 // Hold each temporary root alive through pool.close() in every caller.
 async fn historical_pool(displaced: bool, scratch: &Path) -> SqlitePool {
-    let home = AbsolutePathBuf::try_from(scratch.to_path_buf())
+    let canonical_root = scratch.canonicalize().expect("canonical historical fixture root");
+    let home = AbsolutePathBuf::try_from(canonical_root.clone())
         .expect("absolute historical fixture root");
     let pool = SqliteConfig::from_sqlite_home(home)
-        .open_durable_evidence_pool(&scratch.join("historical.sqlite3"))
+        .open_durable_evidence_pool(&canonical_root.join("historical.sqlite3"))
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -136,6 +137,8 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    // Reopen with the OS-resolved owner path on Windows as well as Unix.
+    let root = root.canonicalize().expect("canonical owner directory");
     let pool = historical_pool(displaced, temp.path()).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
