@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          uv run --no-project --with pytest==8.4.2 \
+          uv run --no-project --with pytest==8.4.2 --with cryptography==46.0.4 \
             python -m pytest -q -p no:cacheprovider scripts/test_hepta_cell_split_target_matrix.py
       - name: Check Python format without mutation
         shell: bash
