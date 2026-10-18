@@ -129,3 +129,51 @@ fn file_wal_syncs_frames_and_repairs_torn_tail() {
     }
     assert_eq!(must(std::fs::metadata(&path)).len(), complete_len);
 }
+
+#[test]
+fn incremental_scope_lanes_replay_many_distinct_committed_frames() {
+    let directory = must(tempdir());
+    let path = directory.path().join("incremental-scope-lanes.wal");
+    {
+        let mut writer = must(ScopeLaneFileWalV1::open(&path));
+        for index in 0..64 {
+            let scope = if index % 2 == 0 { "scope-a" } else { "scope-b" };
+            let owner = if index % 2 == 0 { "owner-a" } else { "owner-b" };
+            let candidate = envelope(scope, owner, 1, &format!("entry-{index}"));
+            let receipt = must(writer.append(candidate.clone()));
+            assert_eq!(receipt.sequence, index / 2 + 1);
+            assert_eq!(must(writer.append(candidate)), receipt);
+        }
+        assert_eq!(writer.wal().lane_count(), 2);
+        assert_eq!(writer.wal().record_count(), 64);
+    }
+    let reopened = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(reopened.wal().lane_count(), 2);
+    assert_eq!(reopened.wal().record_count(), 64);
+}
+
+#[test]
+fn poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate() {
+    let directory = must(tempdir());
+    let path = directory.path().join("poisoned-scope-lanes.wal");
+    let first = envelope("scope-a", "owner-a", 1, "first");
+    let mut writer = must(ScopeLaneFileWalV1::open(&path));
+    must(writer.append(first.clone()));
+    let durable_len = must(std::fs::metadata(&path)).len();
+
+    // Model an incomplete write/fsync: the live handle must be permanently
+    // fenced until the locked file is reopened and validated.
+    writer.poisoned = true;
+    assert_eq!(
+        writer.append(envelope("scope-a", "owner-a", 1, "second")),
+        Err(ScopeLaneWalError::Poisoned)
+    );
+    assert_eq!(writer.append(first.clone()), Err(ScopeLaneWalError::Poisoned));
+    assert_eq!(must(std::fs::metadata(&path)).len(), durable_len);
+    drop(writer);
+
+    let mut recovered = must(ScopeLaneFileWalV1::open(&path));
+    assert_eq!(recovered.wal().record_count(), 1);
+    must(recovered.append(envelope("scope-a", "owner-a", 1, "second")));
+    assert_eq!(recovered.wal().record_count(), 2);
+}
