@@ -389,6 +389,76 @@ def test_live_worker_cannot_mutate_frozen_workload(tmp_path: Path) -> None:
     MODULE.validate_report(report)
 
 
+@pytest.mark.parametrize("mutation", ("overwrite", "unlink"))
+def test_signed_observer_cannot_change_frozen_workload(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
+) -> None:
+    workload = tmp_path / "frozen-workload"
+    workload.write_bytes(b"frozen source tasks")
+    frozen_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
+    private_key = Ed25519PrivateKey.generate()
+    trusted_key = private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+
+    def signed_fixture_process(
+        argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
+    ) -> subprocess.CompletedProcess[str]:
+        assert timeout_seconds > 0
+        if argv == ["fixture-worker"]:
+            receipt = {
+                "caseId": env["HEPTA_MATRIX_CASE_ID"],
+                "cellCount": int(env["HEPTA_MATRIX_CELL_COUNT"]),
+                "sourceCommit": env["HEPTA_MATRIX_SOURCE_COMMIT"],
+                "workloadDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+                "workloadSourceDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+                "encoder_topology": env["HEPTA_MATRIX_ENCODER_TOPOLOGY"],
+                "execution": env["HEPTA_MATRIX_EXECUTION"],
+                "feature_materialization": env["HEPTA_MATRIX_FEATURE_MATERIALIZATION"],
+                "persistence": env["HEPTA_MATRIX_PERSISTENCE"],
+                "metrics": example_metrics(),
+            }
+            return subprocess.CompletedProcess(argv, 0, json.dumps(receipt), "")
+        assert argv == ["fixture-observer"]
+        receipt = {
+            "schema": MODULE.OBSERVER_SCHEMA,
+            "verified": True,
+            "sourceCommit": env["HEPTA_MATRIX_SOURCE_COMMIT"],
+            "workloadDigest": env["HEPTA_MATRIX_WORKLOAD_DIGEST"],
+            "reportDigest": env["HEPTA_MATRIX_PROVISIONAL_DIGEST"],
+            "metricsDigest": env["HEPTA_MATRIX_METRICS_DIGEST"],
+            "observerId": "fixture-independent-signer",
+        }
+        receipt["signatureHex"] = private_key.sign(
+            MODULE.observer_signing_bytes(receipt)
+        ).hex()
+        if mutation == "overwrite":
+            workload.write_bytes(b"observer changed the frozen workload")
+        else:
+            workload.unlink()
+        return subprocess.CompletedProcess(argv, 0, json.dumps(receipt), "")
+
+    monkeypatch.setattr(MODULE, "run_isolated_command", signed_fixture_process)
+    report = MODULE.run_matrix(
+        workload_command="fixture-worker",
+        observer_command="fixture-observer",
+        workload_digest=frozen_digest,
+        source_commit=current_checkout_sha(),
+        output=tmp_path / "observer-mutation.json",
+        workload_path=workload,
+        cell_count=64,
+        trusted_observer_public_key=trusted_key,
+    )
+    assert len(report["cases"]) == 16
+    assert all(case["status"] == "measured" for case in report["cases"])
+    assert report["observer"]["verified"] is True
+    assert "independent-observer" not in report["blockingCases"]
+    assert "frozen-workload" in report["blockingCases"]
+    assert report["status"] == "blocked"
+    MODULE.validate_report(report, trusted_observer_public_key=trusted_key)
+
+
 def test_report_rejects_duplicate_or_swapped_case_factors(tmp_path: Path) -> None:
     report = MODULE.run_matrix(
         workload_command=None,
