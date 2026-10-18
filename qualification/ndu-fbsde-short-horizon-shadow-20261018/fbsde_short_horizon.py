@@ -283,6 +283,17 @@ def append_verified_step(
     else:
         if prior.problem_digest != problem.problem_digest:
             raise ValueError("FBSDE_PRIOR_PROBLEM_MISMATCH")
+        if canonical_digest(
+            _trajectory_payload(
+                prior.problem_digest,
+                prior.trajectory_id,
+                prior.step_receipt_digests,
+                prior.completed_steps,
+                prior.terminal_state_digest,
+                prior.status,
+            )
+        ) != prior.trajectory_digest:
+            raise ValueError("FBSDE_PRIOR_TRAJECTORY_DIGEST_MISMATCH")
         if prior.trajectory_id != step.trajectory_id:
             raise ValueError("FBSDE_TRAJECTORY_ID_MISMATCH")
         if prior.status not in ("indeterminate", "succeeded"):
