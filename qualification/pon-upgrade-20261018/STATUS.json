@@ -44,7 +44,7 @@
     "retained_manifest": "observations/hepta-2c4-explicit-study/learning-generations-2c4-full-study.manifest.json",
     "archive_present_in_this_bundle": false,
     "all_original_files_present_in_this_bundle": false,
-    "current_access": "Still on main native host; cannot retrieve while runtime tunnel is disconnected. The retained manifest is present; its remote archive/content hashes have not been independently recomputed in this packaging step."
+    "access_as_of_initial_packaging": "At initial packaging, the full archive was reported retained on the main native host and the runtime tunnel was disconnected. This is not a current availability claim. The retained manifest is present; its remote archive/content hashes were not independently recomputed in that packaging step."
   },
   "implementation_map_renewal": {
     "status": "blocked_missing_complete_git_history",
@@ -58,13 +58,19 @@
       "reported_tests_passed": 5,
       "executed_in_this_packaging_step": false,
       "raw_execution_log_retained": false,
-      "scope": "Earlier five isolated real-Git controls were reported as passed for the byte-identical retained tool/test sources. This statement is not a fabricated test log or a successful run of the real 19-map renewal."
-    }
+      "scope": "Earlier five isolated real-Git controls were reported as passed for the exact received tool/test sources listed here and hashed in MANIFEST.json. Working scripts may be formatted independently. This report grants no new execution credit to the working scripts and is not a fabricated test log or a successful run of the real 19-map renewal.",
+      "received_source_paths": [
+        "qualification/pon-upgrade-20261018/received-tools/prepare_navigation_observation.py",
+        "qualification/pon-upgrade-20261018/received-tools/test_prepare_navigation_observation.py"
+      ]
+    },
+    "status_scope": "As of the initial evidence packaging; this archive-boundary increment does not perform map renewal."
   },
   "native_availability": {
-    "current_runtime": "tunnel_client_not_connected",
     "new_native_execution_in_this_packaging_step": false,
     "final_ordinary_upgrade_study_result_retained": false,
-    "final_packaging_source_native_qualification_claimed": false
+    "final_packaging_source_native_qualification_claimed": false,
+    "runtime_as_of_initial_packaging": "tunnel_client_not_connected",
+    "scope": "Historical availability when the initial evidence package was assembled, not a current runtime-status claim."
   }
 }

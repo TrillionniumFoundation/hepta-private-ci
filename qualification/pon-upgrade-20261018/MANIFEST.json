@@ -5,14 +5,14 @@
   "files": [
     {
       "path": "qualification/pon-upgrade-20261018/README.md",
-      "bytes": 3926,
-      "sha256": "807f02dde8194b4d3d6506bad6cd43a4a20319f1e93dbbbef88369225bf2e943",
+      "bytes": 4318,
+      "sha256": "3438cbe94b40c884b2cc98ddfffd0ce89a485bf3e4b8208b9607e3e96c4138fa",
       "role": "new packaging metadata; not a native execution receipt"
     },
     {
       "path": "qualification/pon-upgrade-20261018/STATUS.json",
-      "bytes": 3480,
-      "sha256": "022c49ad3dce048f3dd8c9bff736b3a256d2c7a45056652dc7e1092765f2c72c",
+      "bytes": 4212,
+      "sha256": "3a86050596e5421048159b048be905736048d3999f572b08daf5ef482c122167",
       "role": "new packaging metadata; not a native execution receipt"
     },
     {
@@ -226,18 +226,20 @@
       "original_transport_manifest_verified": false
     },
     {
-      "path": "scripts/qualification/implementation-map-renewal-20261018/prepare_navigation_observation.py",
+      "path": "qualification/pon-upgrade-20261018/received-tools/prepare_navigation_observation.py",
       "bytes": 12354,
       "sha256": "048ccc44cb1a2f960a750ebe753171b37bd59a9920e076d40407f90e25f05ebf",
       "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/prepare_navigation_observation.py",
-      "original_transport_manifest_verified": false
+      "original_transport_manifest_verified": false,
+      "working_script_path": "scripts/qualification/implementation-map-renewal-20261018/prepare_navigation_observation.py"
     },
     {
-      "path": "scripts/qualification/implementation-map-renewal-20261018/test_prepare_navigation_observation.py",
+      "path": "qualification/pon-upgrade-20261018/received-tools/test_prepare_navigation_observation.py",
       "bytes": 5598,
       "sha256": "d934e9939f7e829ee6ae1da3b3e4fdb5cdf6a4e950f85e6faf472d0b51489c8a",
       "original_local_path": "/tmp/chain-security-hepta-map-renewal-20261018/test_prepare_navigation_observation.py",
-      "original_transport_manifest_verified": false
+      "original_transport_manifest_verified": false,
+      "working_script_path": "scripts/qualification/implementation-map-renewal-20261018/test_prepare_navigation_observation.py"
     }
   ],
   "verification": "Copied input bytes were independently reread and SHA-256 checked; native observations also matched their original transport manifest. This verifies local retention, not the absent remote archive or source execution."

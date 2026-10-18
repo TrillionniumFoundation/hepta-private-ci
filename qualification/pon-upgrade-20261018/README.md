@@ -29,9 +29,11 @@ of the subsequently added ordinary Supervisor upgrade study.
 The remote manifest describes **1,830 files / 231,521,771 uncompressed bytes**.
 The archive `learning-generations-2c4-full-study.tar.gz` is **58,497,445 bytes**,
 with its reported SHA-256 in `STATUS.json` and the byte-preserved remote manifest.
-The archive and full original file set remain on the main native host and are
-not included here. The runtime tunnel is disconnected. Retaining the manifest
-neither transfers those files nor independently verifies the remote archive.
+At initial packaging, the archive and full original file set were reported
+retained on the main native host and the runtime tunnel was disconnected. They
+are not included here. That historical observation is not a current availability
+claim. Retaining the manifest neither transfers those files nor independently
+verifies the remote archive.
 
 ## Provenance repair remains blocked
 
@@ -41,9 +43,12 @@ local history cannot be treated as nonancestry. The reusable preparatory tool,
 its original README, existing isolated test source and Lane D fixture patch are
 retained under `scripts/qualification/implementation-map-renewal-20261018/`.
 Its original README remains a historical review note; paths and then-current
-source identities in that note have not been rewritten. The earlier report of
-five isolated real-Git tests is source-bound in the manifest, with no retained
-execution log; it is not promoted into a new test receipt or real-map success.
+source identities in that note have not been rewritten. Byte-exact received
+Python tool/test copies are preserved separately under `received-tools/`; their
+manifest entries retain the original `working_script_path`. The earlier report
+of five isolated real-Git tests is bound to those received bytes, with no retained
+execution log. The scripts under `scripts/` may be formatted as working tools;
+that does not create a new test receipt, execution credit or real-map success.
 
 ## Byte verification
 
@@ -58,6 +63,6 @@ Each observed native file was checked against its original transport manifest
 before copying and then reread byte-for-byte. The two original transport
 manifests are themselves preserved unchanged; they also enumerate unrelated
 Chain/earlier observations that are outside this deliberately selected bundle.
-`SHA256SUMS` covers the selected original files, reusable tool sources, new status
-and README, and the independent manifest. No native tests or format/build jobs
-were run to package this evidence.
+`SHA256SUMS` covers the selected original files, received tool sources (separate
+from the working Python scripts), new status and README, and the independent
+manifest. No native tests or format/build jobs were run to package this evidence.
