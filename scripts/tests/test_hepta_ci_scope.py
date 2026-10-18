@@ -237,7 +237,6 @@ class ScopeTests(unittest.TestCase):
             owner_line,
         )
 
-
     def test_neuron_original_effect_non_test_denial_gate(self):
         # A public callback cannot be an independent Control/Evidence owner.
         # Scope must run an external test linked against the normal library.
