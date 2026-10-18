@@ -434,7 +434,7 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
         .topology_snapshot()
         .map_err(|error| anyhow::anyhow!("{error}"))?;
 
-    let next = build_host_generation(root, state, Generation::new(2)?)?;
+    let next = build_host_generation(root.clone(), Arc::clone(&state), Generation::new(2)?)?;
     let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let successor_snapshot = successor.snapshot();
@@ -470,6 +470,26 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
     assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
 
+    let native = organs
+        .observe_governed_topology_cutover(&receipt)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(native.observed_generation, Generation::new(2)?);
+    assert_eq!(
+        native.successor_hierarchy_digest,
+        successor_snapshot.hierarchy_digest()
+    );
+    assert_eq!(native.handoff_plan_digest, receipt.handoff_plan_digest);
+    assert!(!native.native_ack_digest.is_zero());
+    assert_eq!(native.authority, AuthorityPosture::DENY_ALL);
+    // A fabricated receipt that happens to name the current graph is not
+    // proof that this owner actually consumed that exact final-use grant.
+    let mut forged = receipt.clone();
+    forged.final_use_request_digest = Digest32::of_bytes(b"other-grant");
+    assert!(matches!(
+        organs.observe_governed_topology_cutover(&forged),
+        Err(crate::RuntimeTopologyExecutionError::Binding)
+    ));
+
     let after = organs
         .topology_snapshot()
         .map_err(|error| anyhow::anyhow!("{error}"))?;
@@ -481,6 +501,14 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let report: serde_json::Value = serde_json::from_slice(&organs.status_json()?)?;
     assert_eq!(report["status"], "ready");
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+
+    // An in-memory cutover must NOT be accepted as a durable CNS receipt
+    // after process replacement. The newly initialized host has no prior ACK.
+    let reopened = RuntimeOrgans::new(root, state);
+    assert!(matches!(
+        reopened.observe_governed_topology_cutover(&receipt),
+        Err(crate::RuntimeTopologyExecutionError::Binding)
+    ));
     Ok(())
 }
 
