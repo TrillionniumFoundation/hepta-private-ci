@@ -76,12 +76,15 @@ jobs:
           from pathlib import Path
           source = Path(sys.argv[1])
           original = source.read_text(encoding="utf-8")
-          old = '''                entry.name()
-            ));'''
-          replacement = '''                entry.name().map_err(|err| {
-                    format!("failed to read curated plugins zip entry name: {err}")
-                })?
-            ));'''
+          # Use explicit newline escapes: YAML's block indentation otherwise
+          # strips the leading spaces inside Python multiline literals.
+          old = '                entry.name()\n            ));'
+          replacement = (
+              '                entry.name().map_err(|err| {\n'
+              '                    format!("failed to read curated plugins zip entry name: {err}")\n'
+              '                })?\n'
+              '            ));'
+          )
           if original.count(old) != 1:
               raise SystemExit("ZIP9 ZipFile::name API site drifted; aborting candidate")
           source.write_text(original.replace(old, replacement), encoding="utf-8")

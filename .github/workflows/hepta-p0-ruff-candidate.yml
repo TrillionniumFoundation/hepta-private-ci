@@ -1,0 +1,111 @@
+name: Hepta P0 Ruff exact-source formatter candidate (diagnostic only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-p0-ruff-candidate.yml"
+      - ".github/scripts/test_run_bazel_ci.py"
+      - "scripts/test_hepta_candidate_transport_workflow.py"
+      - "scripts/test_windows_proxy_bazel_leaf.py"
+      - "scripts/uv.lock"
+      - "scripts/pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-ruff-candidate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-ruff:
+    name: Produce pinned Ruff patch with AST equivalence (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact immutable PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Install repository-pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Format a detached exact-source worktree, not the PR checkout
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          evidence="$RUNNER_TEMP/ruff-candidate-evidence"
+          mkdir -p "$evidence"
+          printf '%s\n' "$EXPECTED_SHA" > "$evidence/source-sha.txt"
+          candidate="$(mktemp -d "$RUNNER_TEMP/ruff-candidate.XXXXXXXX")"
+          git worktree add --detach "$candidate" "$EXPECTED_SHA"
+          cd "$candidate"
+          files=(
+            .github/scripts/test_run_bazel_ci.py
+            scripts/test_hepta_candidate_transport_workflow.py
+            scripts/test_windows_proxy_bazel_leaf.py
+          )
+          uv run --frozen --project scripts ruff --version > "$evidence/ruff-version.txt"
+          set +e
+          uv run --frozen --project scripts ruff format --diff "${files[@]}" > "$evidence/ruff-diff.txt" 2>&1
+          diff_status=$?
+          set -e
+          printf '%s\n' "$diff_status" > "$evidence/ruff-diff.exit"
+          if (( diff_status > 1 )); then
+            cat "$evidence/ruff-diff.txt" >&2
+            exit "$diff_status"
+          fi
+          uv run --frozen --project scripts ruff format "${files[@]}" | tee "$evidence/ruff-apply.log"
+          uv run --frozen --project scripts ruff format --check "${files[@]}" | tee "$evidence/ruff-check.log"
+          python3 - "$EXPECTED_SHA" "${files[@]}" <<'PY'
+          import ast
+          import subprocess
+          import sys
+          from pathlib import Path
+          commit = sys.argv[1]
+          for path in sys.argv[2:]:
+              before = subprocess.check_output(["git", "show", f"{commit}:{path}"]).decode()
+              after = Path(path).read_text(encoding="utf-8")
+              if ast.dump(ast.parse(before), include_attributes=False) != ast.dump(
+                  ast.parse(after), include_attributes=False
+              ):
+                  raise SystemExit(f"formatter changed Python syntax tree: {path}")
+              print(f"AST preserved: {path}")
+          PY
+          git diff --check
+          python3 - "${files[@]}" <<'PY'
+          import subprocess
+          import sys
+          allowed = set(sys.argv[1:])
+          actual = set(subprocess.check_output(["git", "diff", "--name-only"]).decode().splitlines())
+          if not actual.issubset(allowed):
+              raise SystemExit(f"formatter touched unexpected files: {sorted(actual - allowed)}")
+          print(f"formatter touched {len(actual)} controlled file(s)")
+          PY
+          git diff --binary -- "${files[@]}" > "$evidence/actual-ruff.patch"
+          git diff --stat -- "${files[@]}" > "$evidence/ruff-stat.txt"
+          for file in "${files[@]}"; do
+            install -D -m 0644 "$file" "$evidence/formatted/$file"
+            sha256sum "$file" >> "$evidence/formatted-sha256.txt"
+          done
+          cd "$GITHUB_WORKSPACE"
+          git diff --check
+          git diff --exit-code
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Retain exact formatter diff and formatted sources
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p0-ruff-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/ruff-candidate-evidence/
+          if-no-files-found: error
+          retention-days: 14
