@@ -16,6 +16,10 @@ class T(unittest.TestCase):
   r=adapt_calibration_receipt(None,candidate_id="shared_head",source_split="future"); self.assertFalse(r.complete); self.assertEqual(r.evidence_class,INCOMPLETE); self.assertIn("sample_count",r.missing_fields)
   r=adapt_calibration_receipt({"calibration_id":"cal.shared","heldout":True,"sample_count":0,"probability_digest":d("p"),"metric_digest":d("m"),"brier":float("nan"),"ece":.2,"evidence_class":REAL_MODEL_LOCAL_QUALIFICATION},candidate_id="shared_head",source_split="future")
   self.assertFalse(r.complete); self.assertEqual(r.evidence_class,INCOMPLETE); self.assertEqual(r.raw_evidence_class,REAL_MODEL_LOCAL_QUALIFICATION)
+ def test_invalid_runtime_digest_is_rejected_without_zero_fill(self):
+  with self.assertRaises(ReaderRuntimeReceiptError):
+   adapt_runtime_receipt({"receipt_id":"runtime.bad","runtime_digest":"0"*63+"g"}, candidate_id="shared_head", source_split="future")
+
  def test_complete_calibration_is_held_out_and_denied(self):
   r=adapt_calibration_receipt({"calibration_id":"cal.shared","heldout":True,"sample_count":16,"probability_digest":d("p"),"metric_digest":d("m"),"brier":.2,"ece":.1,"evidence_class":REAL_MODEL_LOCAL_QUALIFICATION},candidate_id="shared_head",source_split="ood")
   self.assertTrue(r.complete); self.assertEqual(r.authority,"DENY_ALL")
