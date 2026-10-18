@@ -20,6 +20,7 @@ import math
 import os
 import platform
 import re
+import selectors
 import shlex
 import signal
 import subprocess
@@ -32,6 +33,7 @@ from typing import Any
 SCHEMA = "hepta.cell-split.target-matrix.v1"
 AUTHORITY = "DENY_ALL"
 OBSERVER_SCHEMA = "hepta.cell-split.observer.ed25519.v1"
+MAX_CHILD_CAPTURE_BYTES = 1 << 20
 OBSERVER_RECEIPT_KEYS = frozenset(
     {
         "schema",
@@ -352,7 +354,7 @@ def _terminate_process_group(pid: int) -> bool:
 def run_isolated_command(
     argv: list[str], *, env: dict[str, str], timeout_seconds: int | float
 ) -> subprocess.CompletedProcess[str]:
-    """Prevent timed-out or orphaned workers from contaminating later cases."""
+    """Bound output and kill whole process groups on timeout, flood or orphan."""
     if os.name != "posix" or timeout_seconds <= 0:
         raise ValueError("POSIX process-group isolation and positive timeout required")
     with subprocess.Popen(
@@ -362,19 +364,57 @@ def run_isolated_command(
         env=env,
         start_new_session=True,
     ) as child:
+        assert child.stdout is not None and child.stderr is not None
+        stdout = bytearray()
+        stderr = bytearray()
+        deadline = time.monotonic() + timeout_seconds
         try:
-            stdout, stderr = child.communicate(timeout=timeout_seconds)
-        except subprocess.TimeoutExpired as error:
+            # communicate() is unbounded: a defective or adversarial producer
+            # could exhaust the host before its deadline. Read at most the
+            # fixed receipt/log budget from each pipe, with nonblocking I/O.
+            with selectors.DefaultSelector() as selector:
+                for stream, buffer in ((child.stdout, stdout), (child.stderr, stderr)):
+                    os.set_blocking(stream.fileno(), False)
+                    selector.register(stream, selectors.EVENT_READ, buffer)
+                while selector.get_map():
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise ValueError(
+                            "subprocess exceeded deadline; process group terminated"
+                        )
+                    for key, _ in selector.select(remaining):
+                        try:
+                            chunk = os.read(key.fileobj.fileno(), 65536)
+                        except BlockingIOError:
+                            continue
+                        if not chunk:
+                            selector.unregister(key.fileobj)
+                            continue
+                        buffer = key.data
+                        if len(buffer) + len(chunk) > MAX_CHILD_CAPTURE_BYTES:
+                            raise ValueError("subprocess output exceeds bounded capture")
+                        buffer.extend(chunk)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise ValueError(
+                    "subprocess exceeded deadline; process group terminated"
+                )
+            try:
+                child.wait(timeout=remaining)
+            except subprocess.TimeoutExpired as error:
+                raise ValueError(
+                    "subprocess exceeded deadline; process group terminated"
+                ) from error
+        except BaseException:
+            # Never leave an output-flooding or interrupted group running.
             _terminate_process_group(child.pid)
             try:
-                child.communicate(timeout=5)
+                child.wait(timeout=5)
             except subprocess.TimeoutExpired as stuck:
                 raise RuntimeError(
                     "process descendants escaped cleanup; stop matrix"
                 ) from stuck
-            raise ValueError(
-                "subprocess exceeded deadline; process group terminated"
-            ) from error
+            raise
         if _terminate_process_group(child.pid):
             raise ValueError("subprocess left descendant processes")
     return subprocess.CompletedProcess(

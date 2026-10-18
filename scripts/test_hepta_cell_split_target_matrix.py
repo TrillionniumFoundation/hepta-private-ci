@@ -162,6 +162,42 @@ def test_isolated_process_rejects_timeouts_and_leftover_descendants(
         )
 
 
+
+@pytest.mark.parametrize("target_fd", (1, 2))
+def test_isolated_process_output_is_bounded_and_flood_group_is_killed(
+    target_fd: int,
+) -> None:
+    # Produce more bytes than the one-MiB bounded capture without closing the
+    # stream. This must fail before the five-second deadline expires.
+    source = (
+        "import os\n"
+        "chunk = b'x' * 65536\n"
+        "while True:\n"
+        f"    os.write({target_fd}, chunk)\n"
+    )
+    with pytest.raises(ValueError, match="output exceeds bounded capture"):
+        MODULE.run_isolated_command(
+            [sys.executable, "-c", source],
+            env=os.environ.copy(),
+            timeout_seconds=5,
+        )
+
+
+def test_isolated_process_preserves_both_small_output_streams() -> None:
+    output = MODULE.run_isolated_command(
+        [
+            sys.executable,
+            "-c",
+            "import sys; print('receipt'); print('diagnostic', file=sys.stderr)",
+        ],
+        env=os.environ.copy(),
+        timeout_seconds=5,
+    )
+    assert output.returncode == 0
+    assert output.stdout.strip() == "receipt"
+    assert output.stderr.strip() == "diagnostic"
+
+
 def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) -> None:
     output = tmp_path / "matrix.json"
     report = MODULE.run_matrix(
