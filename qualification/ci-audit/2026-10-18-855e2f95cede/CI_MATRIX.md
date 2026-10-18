@@ -1,5 +1,7 @@
 # CI matrix: latest repair heads and earlier failure evidence
 
+Latest later observation: see [FINAL_CI_ADDENDUM.md](FINAL_CI_ADDENDUM.md) and [final-ci-checkpoint.json](final-ci-checkpoint.json) for 16:24-16:25 UTC exact-source results. Earlier rows below retain their original head and observation time.
+
 ## Pushed source heads, second observation
 
 Observed 2026-10-18 15:37-15:38 UTC. Source identity, pagination totals and latest attempt 1 were checked.
@@ -120,3 +122,7 @@ Raw subject metadata/checks live in SUBJECT.json; jobs in jobs-RUN.json; decoded
 ## Raw-log storage update
 
 At 2026-10-18 15:13 UTC, twelve audit-owned large job logs were losslessly gzip-compressed and their original copies removed after full decompression/SHA-256 verification. For a missing `job-ID.log`, read `job-ID.log.gz`; `compressed-logs-manifest.json` maps exact names, lengths and hashes. No remote evidence or unique log bytes were discarded.
+
+## Final published-head observation
+
+At 16:24:26-16:25:06 UTC, the same two repair heads have 17 jobs: 2 success, 14 queued, 1 in_progress, 0 failure and 0 skipped. The f191cd08 Stem/Reader contract job actually ran 27 + 109 Python contract tests successfully. The 19c5cd41 Actions CodeQL analysis completed; the other four languages are queued and the additional CodeQL summary is neutral. Both expected workflow aggregator checks remain absent. Main's required context names were verified; complete protection for the research target was not accessible. No merge qualification or model experiment completion is inferred.

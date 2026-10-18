@@ -17,7 +17,7 @@
 
 可访问主机是 2313cba36518。15:30:22 UTC 快照观察到 16 个 worktree 和 11 个可见进程；进程、cwd、dirty 文件、输出位置及遮蔽后的 argv 在 RUNNING_TASKS.md 和 host_snapshot.json。该主机未被独立识别为用户指定的 Dot/Hepta 专用工作机；没有已验证的项目 SSH 路径，因此其他主机状态为 NOT_ACCESSIBLE。
 
-本会话已实际验证 GitHub 读、创建 Git 对象和按 expected SHA 快进更新既有分支的能力。完整 branch protection 读取返回 403，runner 管理端点不在插件允许范围内；无法据此统计 org 的 online/busy、runner groups、并发配额或利用率。
+本会话已实际验证 GitHub 读、创建 Git 对象和按 expected SHA 快进更新既有分支的能力。完整 branch protection 读取返回 403，#2714 研究目标分支的完整保护不可访问；main 的规则不能直接转作研究目标分支的保护证明。runner 管理端点不在插件允许范围内；无法据此统计 org 的 online/busy、runner groups、并发配额或利用率。
 
 主机可见 9 CPU、cgroup 配额 8 核、内存上限 8 GiB。overlay 可用空间为 0。原生构建预检在 Cargo 启动前拒绝，因此没有把“未执行”计为通过。独占 tmpfs 完整 checkout 用于真实提交与源码映射验证；未删除并行 owner 的工作区、模型权重或缓存。该临时目录易失，唯一证据已归档入仓。
 
@@ -46,7 +46,7 @@ PON 对比实际确认 #1504 的 wrapper 通过 4/4 故障注入单元测试，#
 
 ## 模型实验和 OS 联动
 
-本轮没有启动本地真实模型推理，新增完成的模型 receipts 为 0。历史档案确有 40 calibration + 72 nine-arm 行，但属于 10 月 13-14 日运行；不能替代新 HEAD 的新实验。另一 owner 的 10 月 18 日 fresh attempt 完成 6 个 calibration 答案、0 evaluation，第七次没有返回后 watchdog 终止。两个批次不得拼接。本轮推送触发的既有远端 Reader workflow 仍处于排队观测，后续须按其实际 receipts 单独核验。
+本轮没有启动本地真实模型推理，新增完成的模型 receipts 为 0。历史档案确有 40 calibration + 72 nine-arm 行，但属于 10 月 13-14 日运行；不能替代新 HEAD 的新实验。另一 owner 的 10 月 18 日 fresh attempt 完成 6 个 calibration 答案、0 evaluation，第七次没有返回后 watchdog 终止。两个批次不得拼接。本轮推送触发的既有远端 Reader intake 在 16:24-16:25 UTC 末次 job 读取时已进入运行，尚无本轮独立复核的完整物理 receipts；后续须按实际产物单独核验。
 
 64 次 Laya Reader / 四臂指标保留为历史局部证据。缺独立 heldout calibration、完整设备/概率/FLOPs/内存/能源 join，继续 HOLD_NO_GO。共享 Encoder、NDU/System2 和多模态方向仍需真实受控消融与预算测量，不能用这 109 项契约测试证明能力提升。
 
@@ -76,3 +76,9 @@ BLOCKERS.md/BLOCKERS.json 为未闭合清单，REPRODUCE.md 为固定 SHA 的可
 15:57:09 UTC 再次读取发现 #2688 和 #2695 的并行分支已经前进；完整新 HEAD 与检查记录见 [LATEST_HEADS.md](LATEST_HEADS.md) / [LATEST_HEADS.jsonl](LATEST_HEADS.jsonl)。以上较早快照仍保留原始观测时间，不能转作新 HEAD 的通过证明。
 
 三个较大归档以有序二进制分片保存，避免未获确认的大请求被误报成功。`ARCHIVES.json` 列出每片实际 Git blob、字节数、SHA-256，以及完整归档的身份。先运行 `python3 reassemble_archives.py --verify-only` 校验全部片与串联结果，再运行 `python3 reassemble_archives.py` 在本目录恢复原始 `.tar.gz`。脚本不解包、不执行归档内容，已有不同内容的目标文件会被拒绝覆盖。`runtime-evidence.tar.gz` 已作为完整文件保存。
+
+## 末次执行进展（16:24-16:37 UTC）
+
+[FINAL_CI_ADDENDUM.md](FINAL_CI_ADDENDUM.md) / [final-ci-checkpoint.json](final-ci-checkpoint.json) 保留随后一次完整分页快照：两个已推送 HEAD 未变，17 个 jobs 中 2 success、14 queued、1 in_progress，0 failure、0 skipped。#2714 的 Stem/Reader bridge 在精确 `f191cd08…` 上实际完成 27 + 109 项 Python 契约测试；#2599 只完成 Actions 语言 CodeQL，其他四种语言仍 queued，额外 CodeQL 汇总为 neutral。两个工作流汇总均未生成，不能计作完整 required CI 通过。新增完整 raw JSON 与两份执行日志在 `final-ci-addendum.tar.gz`。
+
+16:37:01 UTC 对同一主机再次只读采样，观察到 12 个可见进程，工作区磁盘可用字节仍为 0；见 [FINAL_EXECUTOR_STATE.json](FINAL_EXECUTOR_STATE.json)。16 个 worktree 和完整 dirty-path 清单仍明确标注为 15:30:22 UTC 的较早快照，没有用新的进程时间覆盖它们。三个协作审查任务已完成，未遗留本审计启动的原生构建或本地模型任务。

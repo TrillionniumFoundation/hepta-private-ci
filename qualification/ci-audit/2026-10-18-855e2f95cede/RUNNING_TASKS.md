@@ -71,3 +71,7 @@ All existing trees were inspected read-only. Unix UID and directory names do not
 ## Reproduce
 
 `python /workspace/scratch/855e2f95cede/audit/environment/capture_environment.py`
+
+## Final process/resource probe
+
+At 2026-10-18T16:37:01.282680+00:00, the same accessible host had 12 visible processes and 0 workspace disk bytes available. See `FINAL_EXECUTOR_STATE.json` for redacted argv, sampled CPU, RSS and output destinations. This refresh covers process/resource state only; the full 16-worktree/dirty-path snapshot above retains its original 15:30:22 UTC timestamp. The three delegated audit tasks have completed; this audit started no local native build or model run. Remote Reader intake is recorded as in_progress in the separately timestamped final CI snapshot.

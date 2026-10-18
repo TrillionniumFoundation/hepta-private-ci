@@ -187,26 +187,86 @@
   ],
   "latest_postpush_ci": {
     "observed_interval_utc": [
-      "2026-10-18T15:37:00Z",
-      "2026-10-18T15:38:59Z"
+      "2026-10-18 16:24:26 UTC",
+      "2026-10-18T16:25:06.721Z"
     ],
-    "pr2599": {
-      "runs": 4,
-      "checks": 11,
-      "jobs": 11
-    },
-    "pr2714": {
-      "runs": 5,
-      "checks": 6,
-      "jobs": 6
-    },
-    "jobs_queued": 17,
-    "run_statuses": {
-      "queued": 8,
-      "pending": 1
-    },
-    "required_aggregators": "ABSENT; no success inferred",
-    "source": "ci-evidence.tar.gz"
+    "subjects": [
+      {
+        "pr": 2599,
+        "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+        "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+        "totals": {
+          "runs": 4,
+          "checks": 12,
+          "statuses": 0,
+          "jobs": 11
+        },
+        "job_statuses": {
+          "queued": 10,
+          "completed": 1
+        },
+        "job_conclusions": {
+          "null": 10,
+          "success": 1
+        },
+        "aggregator_observations": [
+          {
+            "context": "CI required",
+            "state": "ABSENT",
+            "required_on_target": "main branch GET verified",
+            "owning_run_id": 39140469581
+          },
+          {
+            "context": "Architecture required",
+            "state": "ABSENT",
+            "required_on_target": "main branch GET verified",
+            "owning_run_id": 39140469435
+          }
+        ]
+      },
+      {
+        "pr": 2714,
+        "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+        "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+        "totals": {
+          "runs": 5,
+          "checks": 6,
+          "statuses": 0,
+          "jobs": 6
+        },
+        "job_statuses": {
+          "queued": 4,
+          "in_progress": 1,
+          "completed": 1
+        },
+        "job_conclusions": {
+          "null": 5,
+          "success": 1
+        },
+        "aggregator_observations": [
+          {
+            "context": "CI required",
+            "state": "ABSENT",
+            "required_on_target": "research base protection NOT_ACCESSIBLE",
+            "owning_run_id": 39140341708
+          },
+          {
+            "context": "Architecture required",
+            "state": "ABSENT",
+            "required_on_target": "research base protection NOT_ACCESSIBLE",
+            "owning_run_id": 39140341635
+          }
+        ]
+      }
+    ],
+    "total_jobs": 17,
+    "job_pass": 2,
+    "job_fail": 0,
+    "job_skipped": 0,
+    "job_queued": 14,
+    "job_in_progress": 1,
+    "note": "Non-atomic endpoint observations. Main required context names were verified; the research target branch's complete protection was not accessible.",
+    "source": "final-ci-checkpoint.json and final-ci-addendum.tar.gz"
   },
   "queue_snapshot": {
     "observed_utc": "2026-10-18T14:32:35.155Z",
@@ -306,7 +366,7 @@
     "local_inference_calls": 0,
     "local_tokens": 0,
     "local_inference_seconds": 0,
-    "scope": "No local model run. The pushed existing remote Reader workflow remains queued at the recorded snapshot; future receipts require separate verification."
+    "scope": "Zero local inference calls. The existing remote Laya Reader intake job was in_progress at the final CI observation; completed physical receipts and their costs were not yet independently verified."
   },
   "research_posture": "SHADOW_ONLY / DENY_ALL / NO_GO",
   "merge_count": 0,
@@ -733,5 +793,79 @@
     }
   ],
   "latest_subject_evidence": "LATEST_HEADS.jsonl",
-  "snapshot_policy": "Every fact retains its observation time and exact source SHA. Later heads do not inherit earlier CI or test results."
+  "snapshot_policy": "Every fact retains its observation time and exact source SHA. Later heads do not inherit earlier CI or test results.",
+  "updated_utc": "2026-10-18 16:40:32 UTC",
+  "earlier_postpush_ci_snapshots": [
+    {
+      "observed_interval_utc": [
+        "2026-10-18T15:37:00Z",
+        "2026-10-18T15:38:59Z"
+      ],
+      "pr2599": {
+        "runs": 4,
+        "checks": 11,
+        "jobs": 11
+      },
+      "pr2714": {
+        "runs": 5,
+        "checks": 6,
+        "jobs": 6
+      },
+      "jobs_queued": 17,
+      "run_statuses": {
+        "queued": 8,
+        "pending": 1
+      },
+      "required_aggregators": "ABSENT; no success inferred",
+      "source": "ci-evidence.tar.gz"
+    }
+  ],
+  "latest_executor_observation": {
+    "utc": "2026-10-18T16:37:01.282680+00:00",
+    "host": "2313cba36518",
+    "visible_processes": 12,
+    "workspace_free_bytes": 0,
+    "native_build_blocker": "BLOCKED_EXTERNAL_ENOSPC",
+    "source": "FINAL_EXECUTOR_STATE.json",
+    "worktree_scope": "The full 15:30:22 UTC git/worktree/dirty-path snapshot is preserved in runtime-evidence.tar.gz; this final probe refreshes process/resource state only."
+  },
+  "remote_contract_evidence": {
+    "pr": 2714,
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "run_id": 39140341736,
+    "job_id": 117713314591,
+    "source_checkout_log_lines": [
+      35,
+      101,
+      122
+    ],
+    "suites": [
+      {
+        "command": "python3 -m unittest discover -v -s qualification/stem-transfer-cell-artifact-p0 -p 'test_*.py'",
+        "pass": 27,
+        "summary_lines": [
+          156,
+          158
+        ]
+      },
+      {
+        "command": "python3 -m unittest discover -v -s qualification/neuron-shared-encoder/tests -p 'test_*.py'",
+        "pass": 109,
+        "summary_lines": [
+          274,
+          276
+        ]
+      }
+    ],
+    "scope": "Actual new-head contract regression tests; no new model calls, native Rust qualification or production promotion."
+  },
+  "remote_model_intake": {
+    "run_id": 39140341757,
+    "job_id": 117713314446,
+    "observed_status": "in_progress",
+    "started_at": "2026-10-18T16:24:39Z",
+    "completed_receipts_verified": 0,
+    "physical_call_count": "UNKNOWN_PENDING_RECEIPTS",
+    "promotion_allowed": false
+  }
 }
