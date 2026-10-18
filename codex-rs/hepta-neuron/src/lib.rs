@@ -35,6 +35,8 @@ pub use data_plane::CompatibleModelIndexV1;
 pub use data_plane::DataPlaneError;
 pub use data_plane::FeatureSnapshotCacheV1;
 pub use data_plane::FeatureSnapshotIdentityV1;
+pub use data_plane::FeatureSnapshotLineageV1;
+pub use data_plane::FeatureSnapshotScopeV1;
 pub use data_plane::FeatureSnapshotV1;
 pub use data_plane::HeadExecutionOutputV1;
 pub use data_plane::HeadExecutionRequestV1;
