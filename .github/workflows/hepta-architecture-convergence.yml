@@ -252,6 +252,26 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ledger-failure.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_effect_committed_frame_collision_is_ambiguous_and_never_reexecuted -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-final-negative-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib final_negative_rpc_cannot_return_healthy_incomplete_after_local_frame_mutation -- --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-final-selector-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib final_admission_callback_cannot_mutate_frozen_or_committed_state_before_prepare -- --nocapture --test-threads=1
+      - name: Early canonical CellSplit post-effect NDU revocation and final status gates
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # The exact current source must run each adversarial fixture. A
+          # generic owner minimum test count cannot prove these gates executed.
+          # All four stages retain the original fsynced intent if selection is
+          # withdrawn after an independently signed native effect.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-four-owners.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_effect_selector_revocation_keeps_every_original_owner_reconcile_only -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-native-readback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib selector_withdrawal_during_post_effect_owner_readback_blocks_commit -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-ndu-local-ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_effect_admission_callback_cannot_replace_frozen_owner_identity -- --nocapture --test-threads=1
+          # The original effect itself can be withdrawn during a slow NDU
+          # callback, or the NDU candidate during the second native readback.
+          # Both must leave the same fsynced Prepared key unresolved.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-native-withdrawal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib original_effect_withdrawn_during_post_effect_admission_cannot_be_committed -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-posteffect-second-native-revoke.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib selector_revoked_during_second_native_readback_denies_local_commit -- --nocapture --test-threads=1
+          # Final positive CLI completion status must re-read current NDU
+          # selection after four original owner readbacks. This is a status
+          # denial, never an effect or a production Final-use grant.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-final-completion-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib post_readback_selection_withdrawal_cannot_report_completed_split -- --nocapture --test-threads=1
       - name: Early original Control WAL canonical path native regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |

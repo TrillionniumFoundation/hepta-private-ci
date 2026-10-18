@@ -120,7 +120,6 @@ for the unmaintained `anymap2` crate. Matrix SDK 0.19.1 still depends on
 `anymap2`, so bumping the SDK without migrating that dependency cannot
 make the security gate green. Neither advisory may be ignored for release.
 
-
 ## Execute causality versus read-only recovery (additional P0 gate)
 
 The signed effect service now refuses a **new Execute** if its original real
@@ -136,7 +135,7 @@ coordinator has written a one-shot prepared intent, it never repeats Execute.
 If its acknowledgement was lost, it queries the original owner by ReadBack.
 
 **Remaining strict production gate:** a successful signed ReadBack does not,
-by itself, prove that the effect happened *after* this coordinator's prepared
+by itself, prove that the effect happened _after_ this coordinator's prepared
 intent, only that the original owner durably committed these exact bytes and
 that its state is still current. Deployments must enforce a single authoritative
 writer per scope/intent, bind the preparation and current independently issued
@@ -184,7 +183,6 @@ observer_join tests, including valid binding, refused revoked CNS owner,
 false host/owner combinations, tampered Observer signature and host/owner
 key reuse. These tests use synthetic signing keys and do not claim
 production evidence. Their exact-HEAD CI status is not yet verified.
-
 
 ### Exact Artifact/CNS owner-event linkage and original-runtime signer separation
 
@@ -237,7 +235,6 @@ atomic four-owner snapshot, issue NDU/Selector final-use authorization,
 supply target-host measured CPU/RSS/p99/negative-transfer evidence or
 prove power-loss recovery on deployed machines. Its corresponding
 cross-language and native exact-HEAD CI qualification must still be obtained.
-
 
 ### Independent Observer-signed Supervisor minimum (source gate)
 
@@ -337,7 +334,7 @@ transmitted. It rejects symlinked endpoints, malformed or contradictory
 responses, wrong signer/domain/nonce and slow or incomplete frames with
 a bounded whole-frame deadline. The six associated socket regressions are
 wired to the exact-source architecture CI. This is client-side authentication
-of an *existing external service*, not a hosted monotonic service or
+of an _existing external service_, not a hosted monotonic service or
 deployment proof.
 
 The separate high-water port intentionally has **no local filesystem
@@ -449,7 +446,7 @@ The read-only Monotonic RPC service also denies an otherwise signed
 frontier if its independent registry/custody checks exceed the configured
 request wall-clock budget. Socket frame timeouts do not cover those external
 calls. Source failure injection introduces an intentionally slow custody
-read and requires refusal *before* any positive RPC frame is sent. This
+read and requires refusal _before_ any positive RPC frame is sent. This
 limit does not interrupt indefinitely blocked backend I/O; production
 workers must enforce separate deadlines/cancellation and supervisor health
 fences.
@@ -458,7 +455,7 @@ fences.
 
 The signed target-host lifecycle also includes rollback, tombstone and
 no-resurrection checks. After a genuine route rollback the current CNS
-may correctly serve the parent, so a fresh read of the *current* child
+may correctly serve the parent, so a fresh read of the _current_ child
 route will no longer verify the former successor cutover. Neither
 \`CellSplitObserverJoinReceiptV1\` nor the deep-origin verifier may turn
 that legitimate historical transition into a positive live-serving
@@ -477,7 +474,6 @@ and independent anti-rollback witness are required before an end-to-end
 post-rollback target-host acceptance can be granted. Do NOT relax the
 current-owner check or substitute the locally reconstructed transcript.
 
-
 ### Signed target-host evidence is write-once, not a replaceable cache
 
 `CellSplitTargetHostEvidenceStoreV1::persist` now creates the original
@@ -494,7 +490,6 @@ the current CNS/Supervisor state still requires a separately held monotonic
 anti-rollback witness and live owner attestation. The historical
 `productionGatePassed` receipt is **not** a production-activation grant,
 and this source change is not target-host qualification.
-
 
 ### External policy pin for host/Observer evidence verification
 

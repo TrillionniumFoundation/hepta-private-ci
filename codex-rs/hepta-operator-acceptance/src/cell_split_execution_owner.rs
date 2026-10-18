@@ -1109,6 +1109,44 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // local final readback, receipt serialization or fsynced Commit fails.
         self.verify_committed_prefix()
             .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // An independently selected split can be withdrawn while the real
+        // CAS/migration/CNS/Supervisor owner performs its physical effect and
+        // signed readback. Recheck CURRENT Selector/NDU admission *after* the
+        // original effect, before sealing a local success. Do not translate a
+        // post-effect denial into an ordinary preflight failure: execution may
+        // already be durable. The fsynced prepared intent must remain the sole
+        // idempotency key and recovery must reconcile, never execute again.
+        revalidate().map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // A slow or compromised admission callback could also replace the
+        // original frozen plan, trust pins, pending intent or predecessor
+        // frames. Check the write-once local history after that callback.
+        // This cannot make Final-use atomic with an external effect; the
+        // native owner must still fence its own commit and generation.
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // The native effect's first authenticated readback preceded a
+        // potentially slow NDU/Selector callback. While that callback ran,
+        // the original effect owner might have withdrawn the commit. Re-query
+        // the SAME original native owner by the SAME intent key, never Execute.
+        // Its absence, timeout or changed receipt leaves Prepared ambiguous.
+        self.port
+            .verify_committed(&intent, &receipt)
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
+        // The last native readback may itself race with Selector withdrawal.
+        // Revalidate current selection again before local acknowledgment.
+        // These alternating owner checks narrow but cannot eliminate a
+        // cross-service race: only the original native Final-use/CAS fence
+        // can enforce atomic mutation authorization.
+        revalidate().map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+        self.verify_local_prefix_after_callback()
+            .map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
+
         let committed_bytes =
             canonical_json(&receipt).map_err(|_| CellSplitExecutionErrorV1::Ambiguous)?;
         let committed_path = frame_path(&self.root, self.cursor, "committed");

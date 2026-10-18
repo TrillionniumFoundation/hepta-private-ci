@@ -194,6 +194,16 @@ where
     } else {
         transcript.is_some()
     };
+    // A verified four-owner readback can itself be slow. Do not return a
+    // currently admitted completed split if the independent Selector/NDU
+    // revoked this plan while the final owner proof was being collected.
+    // This remains a status fence, never a Final-use or deployment grant.
+    let verified_complete = require_fresh_completion_admission_v1(
+        selected_action,
+        verified_complete,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
@@ -203,6 +213,25 @@ where
         transcript,
         production_activation_authorized: false,
     })
+}
+
+/// Final independent selection check for an effectful completion response.
+/// Transcript-only export is historical and always non-authorizing; it
+/// does not silently claim that an existing candidate is still selectable.
+fn require_fresh_completion_admission_v1<F>(
+    action: &str,
+    verified_complete: bool,
+    frozen_plan: Option<&CellSplitExecutionPlanV1>,
+    admit_selected_plan: &mut F,
+) -> Result<bool, String>
+where
+    F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+{
+    if action == "advance" && verified_complete {
+        let plan = frozen_plan.ok_or_else(|| "missing frozen admission plan".to_string())?;
+        admit_selected_plan(plan)?;
+    }
+    Ok(verified_complete)
 }
 
 fn canonical_hex(value: &str) -> bool {
@@ -287,6 +316,53 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn post_readback_selection_withdrawal_cannot_report_completed_split() {
+        // A successful signed original-owner transcript is historical:
+        // selection may have been revoked while the final live read ran.
+        let plan = CellSplitExecutionPlanV1 {
+            split_id: "frozen-completion".into(),
+            scope_digest: "11".repeat(32),
+            parent_generation: 3,
+            child_generation: 4,
+            parent_artifact_digest: "22".repeat(32),
+            child_artifact_digest: "33".repeat(32),
+            ndu_snapshot_digest: "44".repeat(32),
+            route_fence_digest: "55".repeat(32),
+            owner_ids: [
+                "artifact-owner".into(),
+                "migration-owner".into(),
+                "cns-owner".into(),
+                "supervisor-owner".into(),
+            ],
+        };
+        let mut checks = 0_u8;
+        let mut revoked = |candidate: &CellSplitExecutionPlanV1| {
+            checks += 1;
+            assert_eq!(candidate.split_id, "frozen-completion");
+            Err("independent NDU/Selector revoked after owner readback".to_string())
+        };
+        let denied =
+            require_fresh_completion_admission_v1("advance", true, Some(&plan), &mut revoked);
+        assert!(denied.expect_err("withdrawn selection").contains("revoked"));
+        assert_eq!(checks, 1);
+        let mut unexpected = |_: &CellSplitExecutionPlanV1| -> Result<(), String> {
+            panic!("incomplete or transcript-only status cannot re-admit")
+        };
+        let incomplete =
+            require_fresh_completion_admission_v1("advance", false, Some(&plan), &mut unexpected)
+                .expect("incomplete remains incomplete");
+        assert!(!incomplete);
+        let historical =
+            require_fresh_completion_admission_v1("transcript", true, None, &mut unexpected)
+                .expect("historical transcript is never a final-use grant");
+        assert!(historical);
+        assert!(
+            require_fresh_completion_admission_v1("advance", true, None, &mut unexpected).is_err(),
+            "no current plan means no positive completion"
+        );
+    }
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
