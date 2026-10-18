@@ -161,9 +161,9 @@ class TreePlanV1:
 
     def __post_init__(self) -> None:
         _require(self.nodes, "tree requires a root")
-        _require(isinstance(self.branching_factor, int) and 1 <= self.branching_factor <= 64, "branching factor is invalid")
-        _require(isinstance(self.horizon_steps, int) and 0 <= self.horizon_steps <= 64, "horizon is invalid")
-        _require(isinstance(self.max_nodes, int) and 1 <= self.max_nodes <= 4096, "max_nodes is invalid")
+        _require(type(self.branching_factor) is int and 1 <= self.branching_factor <= 64, "branching factor is invalid")
+        _require(type(self.horizon_steps) is int and 0 <= self.horizon_steps <= 64, "horizon is invalid")
+        _require(type(self.max_nodes) is int and 1 <= self.max_nodes <= 4096, "max_nodes is invalid")
         by_id = {node.node_id: node for node in self.nodes}
         _require(len(by_id) == len(self.nodes), "node ids must be unique")
         roots = [node for node in self.nodes if node.parent_id is None]
@@ -176,6 +176,7 @@ class TreePlanV1:
         _require(len({node.objective_digest for node in self.nodes}) == 1, "all nodes must share the fixed objective")
         _require(len({node.prompt_digest for node in self.nodes}) == 1, "all nodes must share the admitted prompt digest")
         seen_edges: set[tuple[str, str]] = set()
+        children_per_parent: dict[str, int] = {}
         for edge in self.edges:
             _require(edge.parent_id in by_id and edge.child_id in by_id, "edge references an unknown node")
             key = (edge.parent_id, edge.child_id)
@@ -185,6 +186,9 @@ class TreePlanV1:
             child = by_id[edge.child_id]
             _require(child.parent_id == parent.node_id, "child parent link does not match edge")
             _require(child.depth == parent.depth + 1, "tree edges must advance one depth")
+            children_per_parent[edge.parent_id] = children_per_parent.get(edge.parent_id, 0) + 1
+            _require(children_per_parent[edge.parent_id] <= self.branching_factor, "parent exceeds local branching factor")
+            _require(child.budget <= parent.budget, "branch cannot increase resource budget")
         for node in self.nodes:
             if node.parent_id is not None:
                 _require(any(edge.child_id == node.node_id for edge in self.edges), "non-root node needs an incoming edge")
