@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       # The original signed Worker also compiles these real owner dependencies.
       - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
       - "codex-rs/core/src/client.rs"
       - "codex-rs/core/src/client_tests.rs"
       - "codex-rs/core/src/client_provider_policy_tests.rs"
@@ -59,7 +61,7 @@ jobs:
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Require original Core, Worker and transitive strict-Clippy source formatting
-        run: cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-intelligence-eval -p codex-core -- --check
+        run: cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-core -- --check
       - name: Check full typed V1 Core regression suite
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-all.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib -- --nocapture
       - name: Require both owned-versus-borrowed V1 digest and receipt cases
@@ -74,6 +76,8 @@ jobs:
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-cell-split-eval.json" --minimum-tests 5 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib cell_split_ -- --nocapture
       - name: Verify owned provider terminal handoff and redaction tests
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-core-provider-policy.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-core --lib provider_policy_tests -- --nocapture
+      - name: Execute genuine canonical outcome tests after boxing the payload
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/borrowed-canonical-intelligence.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib canonical -- --nocapture
       - name: Verify non-test Worker library and strict all-target Clippy
         shell: bash
         run: |
