@@ -40,6 +40,9 @@ mod ordinary_native;
 #[path = "cognitive_ordinary_upgrade_tests.rs"]
 #[cfg(unix)]
 mod ordinary_upgrade;
+#[path = "cognitive_ordinary_runtime_observation_tests.rs"]
+#[cfg(unix)]
+mod ordinary_runtime;
 use support::Roles;
 use support::fit;
 use support::save;

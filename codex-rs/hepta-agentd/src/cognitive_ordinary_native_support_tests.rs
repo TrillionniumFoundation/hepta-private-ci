@@ -146,7 +146,7 @@ impl Daemon {
         Ok(result)
     }
 
-    pub async fn cleanup(&self, root: &std::path::Path) {
+    pub async fn cleanup(&self, root: &std::path::Path) -> Result<()> {
         let result:Result<Value>=async {
             for _ in 0..3 {
                 let status=self.client.snapshot(owner()).await?;
@@ -158,7 +158,8 @@ impl Daemon {
             }
             anyhow::bail!("original Supervisor did not stop the owned study Agent")
         }.await;
-        save(&root.join("native-cleanup.json"),&match result {Ok(value)=>value,Err(error)=>json!({"state":"failed","reason":format!("{error:#}")})});
+        save(&root.join("native-cleanup.json"),&match &result {Ok(value)=>value.clone(),Err(error)=>json!({"state":"failed","reason":format!("{error:#}")})});
+        result.map(|_|())
     }
 }
 

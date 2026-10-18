@@ -1,5 +1,11 @@
 # Bounded, executed three-generation learning study
 
+The original `generations` scenario below remains available. The additional
+ordinary operator entry, timed first reservation, actual service/Chain scenario,
+and the limits of its installed-update counter are documented in
+[ordinary-upgrade.md](ordinary-upgrade.md). A scenario's source is not evidence
+that its native run passed; retain its exact binary, source and execution receipt.
+
 This qualification exercises real native fitting, publication, independent role
 signatures, selection, process-input reconstruction and cognitive consumption.
 It is a synthetic arithmetic instruction-retrieval task, not an LLM benchmark or

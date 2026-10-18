@@ -65,6 +65,7 @@ class Custodian:
         self.key = Ed25519PrivateKey.generate()
         self.public = self.key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
         self.used, self.released, self.prepared = set(), set(), {}
+        self.runtime_observed = set()
         self.sequence = 0
         self.operations = OPERATIONS
         self.configured = False
@@ -153,6 +154,49 @@ class Custodian:
                 raise ValueError('generation bounds')
             rows = self.tasks(generation, 8, f'training-{generation}')
             return self.record('training-release', dict(generation=generation, tasks=rows, operand_stratum=STRATA[self.role]))
+        if command == 'offer_runtime':
+            if self.role != 'future-custodian' or not self.configured:
+                raise ValueError('runtime task source role')
+            name = request['name']
+            if (not isinstance(name, str) or not 1 <= len(name) <= 80
+                    or not all(c.isascii() and (c.isalnum() or c == '-') for c in name)
+                    or name in self.released or name in self.prepared):
+                raise ValueError('new bounded runtime task cohort required')
+            raw = Path(request['candidate']).read_bytes()
+            if (not 8 <= len(raw) <= 1048576
+                    or hashlib.sha256(raw).hexdigest() != request['model']['model']['payload_sha256']):
+                raise ValueError('runtime observation must pin the installed candidate bytes')
+            self.released.add(name)
+            rows = self.tasks(3, 8, name)
+            # These are offered application tasks, not another final holdout
+            # or a qualification certificate. Outcomes follow native decisions.
+            return self.record('runtime-offer', dict(name=name, tasks=rows,
+                model=request['model'], offered_count=len(rows), operand_stratum=STRATA[self.role]))
+        if command == 'observe_runtime':
+            if self.role != 'observer':
+                raise ValueError('runtime outcome observer role')
+            offered = request['offered']
+            if offered['role'] != 'future-custodian' or offered['kind'] != 'runtime-offer':
+                raise ValueError('original runtime task source statement required')
+            Ed25519PublicKey.from_public_bytes(bytes.fromhex(self.material_keys['future-custodian'])).verify(
+                bytes.fromhex(offered['signature']), canonical({k:v for k,v in offered.items() if k != 'signature'}))
+            rows = [row for row in offered['body']['tasks'] if row['id'] == request['task_id']]
+            key = digest(offered), request['task_id']
+            if len(rows) != 1 or key in self.runtime_observed:
+                raise ValueError('exact first observed offered runtime task required')
+            row = rows[0]
+            family = QUERIES.index(row['query'])
+            expected = result(self.operations[family], row['a'], row['b'])
+            if row['expected'] != expected or row['a'] % 4 != 2:
+                raise ValueError('runtime source stratum or independent arithmetic differs')
+            decision = bytes.fromhex(request['decision_evidence_sha256'])
+            if len(decision) != 32 or not any(decision):
+                raise ValueError('original durable decision evidence required')
+            actual = result(request['operation'], row['a'], row['b'])
+            self.runtime_observed.add(key)
+            return self.record('actual-runtime-observation', dict(task=row['id'],
+                source_sha256=digest(offered), decision_evidence_sha256=request['decision_evidence_sha256'],
+                operation=request['operation'], actual=actual, expected=expected, correct=actual == expected))
         if command == 'observe':
             if self.role != 'observer':
                 raise ValueError('training observation role')

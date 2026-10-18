@@ -174,6 +174,8 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
         }
         let actual_choices=Value::Object(actual_choices);
         ensure!(actual_choices==target_choices,"actual installed execution differs from frozen candidate");
+        let runtime_observation=ordinary_runtime::collect(&owned_root.join("runtime-observations"),&target_agent,
+            &actual_target,&target.payload,&actions,&mut roles).await?;
         let followup=owned_root.join("post-install-future");std::fs::create_dir(&followup)?;
         std::fs::copy(&target.payload,followup.join("payload"))?;
         std::fs::create_dir(followup.join("withdrawal-control"))?;
@@ -200,16 +202,20 @@ async fn actual_ordinary_cli_chain_task_supervisor_upgrade_and_no_update() -> Re
         let costs:Vec<_>=roles.processes.into_iter().map(support::Role::close).collect();
         Ok::<_,anyhow::Error>(json!({"schema":"hepta.ordinary-native-upgrade-study.v1","full_service_startup":true,
             "installed_service_generations":1,"source_spawn_generation":5,"target_spawn_generation":9,
-            "installed":installed,"subsequent_future_qualification":observed["qualification_evidence_sha256"],
+            "installed":installed,"runtime_tasks":runtime_observation,"subsequent_future_qualification":observed["qualification_evidence_sha256"],
             "observed_qualified_update_count":1,"count_scope":"one installed fixed arithmetic instruction ranker; later fresh final cohort passed original qualification",
             "no_update":no_update,"chain_reorg_observed":true,"unavailable_data_refused":true,"installed_current_and_final_use_revocation_refused":true,
             "independent_operators":false,"general_neural_model_efficacy":false,"role_process_costs":costs}))
     })).await;
-    daemon.cleanup(&root).await;
+    let cleanup=daemon.cleanup(&root).await;
     daemon.binary.verify()?;
     let result=match outcome {
         Ok(result)=>result,
         Err(error)=>Err(anyhow::anyhow!("actual ordinary study child task failed: {error}")),
+    };
+    let result=match (result,cleanup) {
+        (Ok(_),Err(error))=>Err(error.context("actual owned service cleanup failed")),
+        (result,_)=>result,
     };
     match result {
         Ok(summary)=>{save(&root.join("summary.json"),&summary);Ok(())},
