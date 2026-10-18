@@ -474,7 +474,11 @@ def run_matrix(
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
             row.update(
-                {"metrics": metrics, "status": "measured", "metricsDigest": digest(metrics)}
+                {
+                    "metrics": metrics,
+                    "status": "measured",
+                    "metricsDigest": digest(metrics),
+                }
             )
         except (KeyError, OSError, subprocess.SubprocessError, ValueError) as error:
             row["reason"] = str(error)
@@ -691,7 +695,10 @@ def main() -> int:
     parser.add_argument("--host-id")
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     parser.add_argument(
-        "--cell-count", type=int, choices=CELL_COUNTS, help="single-count diagnostic only"
+        "--cell-count",
+        type=int,
+        choices=CELL_COUNTS,
+        help="single-count diagnostic only",
     )
     parser.add_argument(
         "--trusted-observer-public-key",
