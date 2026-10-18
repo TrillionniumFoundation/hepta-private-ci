@@ -17,7 +17,9 @@ permissions:
 jobs:
   offline-evidence-integrity:
     name: Validate exact-source matrix fail-closed protocol
-    runs-on: ubuntu-24.04
+    # Lightweight security protocol tests: no Cargo/Bazel or model run.
+    # Use the independent slim pool to avoid consuming scarce native runners.
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout exact source head, not a guessed main branch
