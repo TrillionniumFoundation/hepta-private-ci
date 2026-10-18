@@ -1300,6 +1300,47 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[test]
+fn curated_zipball_rejects_symlink_metadata_before_publication() {
+    let tmp = tempdir().expect("tempdir");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .add_symlink(
+            "plugins/link",
+            "../../outside",
+            SimpleFileOptions::default(),
+        )
+        .expect("write symlink entry");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    let error = extract_zipball_to_dir(&bytes, tmp.path())
+        .expect_err("a curated ZIP must not materialize a symlink");
+    assert!(error.contains("symlink") || error.contains("not a regular file"));
+    assert!(!tmp.path().join("link").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_zip_permissions_strip_privileged_and_untrusted_write_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    assert_eq!(sanitized_curated_zip_mode(0o104755), 0o755);
+    assert_eq!(sanitized_curated_zip_mode(0o106777), 0o755);
+    assert_eq!(sanitized_curated_zip_mode(0o100600), 0o600);
+
+    let tmp = tempdir().expect("tempdir");
+    let output = tmp.path().join("script");
+    std::fs::write(&output, b"script").expect("write output");
+    apply_zip_permissions(Some(0o104755), &output).expect("set safe permissions");
+    assert_eq!(
+        std::fs::metadata(output)
+            .expect("metadata")
+            .permissions()
+            .mode()
+            & 0o7777,
+        0o755
+    );
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
