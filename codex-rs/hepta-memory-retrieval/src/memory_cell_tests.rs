@@ -47,7 +47,6 @@ use crate::RetrievalPolicyV1;
 use crate::RetrievalSourceCompletenessV1;
 use crate::compile_cue;
 
-
 fn id(value: &str) -> ContractIdV1 {
     ContractIdV1::new(value).unwrap_or_else(|error| panic!("id: {error:?}"))
 }
