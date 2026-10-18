@@ -1,5 +1,5 @@
-use sqlx::migrate::Migrate;
 use super::*;
+use sqlx::migrate::Migrate;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
     let directory = tempfile::tempdir().expect("SQLite fixture directory");
