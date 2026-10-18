@@ -206,6 +206,35 @@ def verify_observer_signature(
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
 
+def assert_exact_source_checkout(repo_root: Path, source_commit: str) -> None:
+    """Reject uncommitted source changes as well as a mismatched Git HEAD."""
+    command = ["git", "-C", str(repo_root)]
+    try:
+        head = subprocess.run(
+            [*command, "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError("cannot verify measured repository HEAD") from error
+    if head.stdout.strip() != source_commit:
+        raise ValueError("measured source commit does not match repository HEAD")
+    try:
+        status = subprocess.run(
+            [*command, "status", "--porcelain=v1", "--untracked-files=all"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError("cannot verify measured repository cleanliness") from error
+    if status.stdout:
+        raise ValueError("measured repository checkout is dirty")
+
+
 def run_matrix(
     *,
     workload_command: str | None,
@@ -223,22 +252,10 @@ def run_matrix(
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
+    # This is source-tree hygiene, not a signed worker-binary provenance claim.
+    repo_root = Path(__file__).resolve().parent.parent
     if workload_command is not None:
-        # A caller-supplied SHA is not proof of the code used by the worker.
-        # A dry run without a worker remains possible outside a Git checkout.
-        repo_root = Path(__file__).resolve().parent.parent
-        try:
-            checkout = subprocess.run(
-                ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-        except (OSError, subprocess.SubprocessError) as error:
-            raise ValueError("cannot verify measured repository HEAD") from error
-        if checkout.stdout.strip() != source_commit:
-            raise ValueError("measured source commit does not match repository HEAD")
+        assert_exact_source_checkout(repo_root, source_commit)
     if workload_path is not None:
         actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
         if actual_workload_digest != workload_digest:
@@ -276,6 +293,7 @@ def run_matrix(
             **{f"HEPTA_MATRIX_{key.upper()}": str(value) for key, value in case.items() if key != "caseId"},
         })
         try:
+            assert_exact_source_checkout(repo_root, source_commit)
             # Recheck the actual frozen bytes for every case, not only at entry.
             if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
                 raise ValueError("frozen workload changed before case execution")
@@ -294,6 +312,7 @@ def run_matrix(
                 timeout=timeout_seconds,
                 env=env,
             )
+            assert_exact_source_checkout(repo_root, source_commit)
             if hashlib.sha256(workload_path.read_bytes()).hexdigest() != workload_digest:
                 raise ValueError("frozen workload changed during case execution")
             if result.returncode != 0:
@@ -376,6 +395,12 @@ def run_matrix(
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             blocked.append("independent-observer")
             observer_receipt = {"verified": False, "reason": str(error)}
+
+    if workload_command is not None:
+        try:
+            assert_exact_source_checkout(repo_root, source_commit)
+        except ValueError:
+            blocked.append("source-checkout")
 
     report = {
         **provisional,
