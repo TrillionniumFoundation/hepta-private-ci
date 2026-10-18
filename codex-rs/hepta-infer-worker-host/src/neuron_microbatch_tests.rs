@@ -369,7 +369,7 @@ impl NeuronMicrobatchBackendV1 for ExtremeOutputBackend {
 }
 
 #[test]
-fn signed_backend_output_extremes_fail_closed_without_metrics_ack() {
+fn backend_output_extremes_fail_closed_without_metrics_ack() {
     for (value, prediction) in [
         (i64::MIN, false),
         (-Q24_STATE_LIMIT - 1, true),
