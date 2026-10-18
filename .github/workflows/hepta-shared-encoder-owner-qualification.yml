@@ -73,6 +73,16 @@ jobs:
           set -euo pipefail
           cargo fmt --package codex-hepta-infer-worker-host -- --check 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/fmt.log"
 
+      - name: Build exact-source Codex executable for real Agentd integration
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-cli --bin codex 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/codex-cli-build.log"
+          test -x target/debug/codex
+          target/debug/codex --version 2>&1 | tee "$RUNNER_TEMP/hepta-owner-evidence/codex-cli-version.log"
+          printf 'HEPTA_TEST_CODEX_BIN=%s\n' "$GITHUB_WORKSPACE/codex-rs/target/debug/codex" >> "$GITHUB_ENV"
+
       - name: Run actual owner Rust unit and integration tests
         working-directory: codex-rs
         shell: bash
