@@ -853,9 +853,7 @@ def validate_report(
     if not isinstance(host, dict) or set(host) != {"hostId", "platform", "python"}:
         raise ValueError("matrix host has unknown or missing fields")
     if any(
-        not isinstance(host[key], str)
-        or not host[key].strip()
-        or len(host[key]) > 512
+        not isinstance(host[key], str) or not host[key].strip() or len(host[key]) > 512
         for key in ("hostId", "platform", "python")
     ):
         raise ValueError("matrix host has invalid descriptive values")
