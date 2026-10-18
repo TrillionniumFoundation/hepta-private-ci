@@ -447,7 +447,8 @@ jobs:
           # Product CLI and Agentd keep their defaults. The library feature only
           # supplies the original qualification fixture write seam.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-product-binaries-build.json" -- cargo +1.96.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --bin hepta-cognitive-upgrade --bin codex-hepta-agentd
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-study-build.json" -- just test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write --no-run
+          # The original nextest list command builds and discovers the selected
+          # library. Do not pass --no-run through the run-only just test wrapper.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-study-inventory.json" -- bash -c 'cargo +1.96.0 nextest list --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib --features qualification-legacy-learning-write --list-type binaries-only --message-format json > "$RUNNER_TEMP/pon-pair/hepta-study-binaries.json"'
           # Only this separately built private-study daemon enables the original
           # signed grant gate. Default Supervisor builds and controls remain unchanged.
