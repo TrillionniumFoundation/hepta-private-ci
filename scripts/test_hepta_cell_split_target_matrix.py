@@ -162,7 +162,6 @@ def test_isolated_process_rejects_timeouts_and_leftover_descendants(
         )
 
 
-
 @pytest.mark.parametrize("target_fd", (1, 2))
 def test_isolated_process_output_is_bounded_and_flood_group_is_killed(
     target_fd: int,

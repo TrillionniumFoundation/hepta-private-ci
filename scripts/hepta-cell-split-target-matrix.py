@@ -392,7 +392,9 @@ def run_isolated_command(
                             continue
                         buffer = key.data
                         if len(buffer) + len(chunk) > MAX_CHILD_CAPTURE_BYTES:
-                            raise ValueError("subprocess output exceeds bounded capture")
+                            raise ValueError(
+                                "subprocess output exceeds bounded capture"
+                            )
                         buffer.extend(chunk)
             remaining = deadline - time.monotonic()
             if remaining <= 0:
