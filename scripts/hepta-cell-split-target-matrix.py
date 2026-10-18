@@ -92,9 +92,8 @@ def _number(value: Any, name: str, *, integer: bool = False) -> int | float:
         raise ValueError(f"metric {name} must be numeric")
     if isinstance(value, float) and not math.isfinite(value):
         raise ValueError(f"metric {name} must be finite")
-    if (
-        (isinstance(value, int) and value.bit_length() > 64)
-        or (isinstance(value, float) and value > (1 << 64) - 1)
+    if (isinstance(value, int) and value.bit_length() > 64) or (
+        isinstance(value, float) and value > (1 << 64) - 1
     ):
         raise ValueError(f"metric {name} exceeds the bounded counter range")
     if value < 0:
@@ -725,7 +724,6 @@ def validate_report(
             {key: value for key, value in observer.items() if key != "receiptDigest"}
         ):
             raise ValueError("observer receipt digest mismatch")
-
 
     status = report.get("status")
     if status not in ("blocked", "qualified"):
