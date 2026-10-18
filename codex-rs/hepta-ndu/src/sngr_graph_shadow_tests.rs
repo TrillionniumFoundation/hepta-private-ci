@@ -81,15 +81,9 @@ fn tie_breaks_by_name_even_when_edge_order_reverses() {
     let mut graph = SngrGraphShadowV1 {
         root: "root".to_owned(),
         nodes: BTreeMap::from([
-            (
-                "root".to_owned(),
-                SngrGraphNodeShadowV1::Decision {
-                    actions: vec![
-                        action("b", "b", /*cost*/ 0.0),
-                        action("a", "a", /*cost*/ 0.0),
-                    ],
-                },
-            ),
+            ("root".to_owned(), SngrGraphNodeShadowV1::Decision {
+                actions: vec![action("b", "b", /*cost*/ 0.0), action("a", "a", /*cost*/ 0.0)],
+            }),
             ("a".to_owned(), terminal(2.0)),
             ("b".to_owned(), terminal(2.0)),
         ]),
@@ -109,27 +103,18 @@ fn exact_dag_sharing_memoizes_one_descendant() {
     let graph = SngrGraphShadowV1 {
         root: "root".to_owned(),
         nodes: BTreeMap::from([
-            (
-                "root".to_owned(),
-                SngrGraphNodeShadowV1::Chance {
-                    outcomes: vec![
-                        chance("left", /*probability*/ 0.5),
-                        chance("right", /*probability*/ 0.5),
-                    ],
-                },
-            ),
-            (
-                "left".to_owned(),
-                SngrGraphNodeShadowV1::Decision {
-                    actions: vec![action("a", "shared", /*cost*/ 0.2)],
-                },
-            ),
-            (
-                "right".to_owned(),
-                SngrGraphNodeShadowV1::Decision {
-                    actions: vec![action("a", "shared", /*cost*/ 0.4)],
-                },
-            ),
+            ("root".to_owned(), SngrGraphNodeShadowV1::Chance {
+                outcomes: vec![
+                    chance("left", /*probability*/ 0.5),
+                    chance("right", /*probability*/ 0.5),
+                ],
+            }),
+            ("left".to_owned(), SngrGraphNodeShadowV1::Decision {
+                actions: vec![action("a", "shared", /*cost*/ 0.2)],
+            }),
+            ("right".to_owned(), SngrGraphNodeShadowV1::Decision {
+                actions: vec![action("a", "shared", /*cost*/ 0.4)],
+            }),
             ("shared".to_owned(), terminal(3.0)),
         ]),
         legal_actions: BTreeSet::from(["a".to_owned()]),
@@ -143,25 +128,15 @@ fn exact_dag_sharing_memoizes_one_descendant() {
 #[test]
 fn rejects_malformed_chance_even_for_zero_probability_missing_target() {
     for invalid in [
-        vec![
-            chance("good", /*probability*/ 0.3),
-            chance("bad", /*probability*/ 0.3),
-        ],
-        vec![
-            chance("good", /*probability*/ -0.1),
-            chance("bad", /*probability*/ 1.1),
-        ],
+        vec![chance("good", /*probability*/ 0.3), chance("bad", /*probability*/ 0.3)],
+        vec![chance("good", /*probability*/ -0.1), chance("bad", /*probability*/ 1.1)],
         vec![chance("good", f64::NAN), chance("bad", /*probability*/ 1.0)],
-        vec![
-            chance("good", /*probability*/ 1.0),
-            chance("missing", /*probability*/ 0.0),
-        ],
+        vec![chance("good", /*probability*/ 1.0), chance("missing", /*probability*/ 0.0)],
     ] {
         let mut graph = test_graph();
-        graph.nodes.insert(
-            "chance".to_owned(),
-            SngrGraphNodeShadowV1::Chance { outcomes: invalid },
-        );
+        graph.nodes.insert("chance".to_owned(), SngrGraphNodeShadowV1::Chance {
+            outcomes: invalid,
+        });
         assert!(evaluate_sngr_graph_shadow(&graph).is_err());
     }
 }
@@ -169,12 +144,9 @@ fn rejects_malformed_chance_even_for_zero_probability_missing_target() {
 #[test]
 fn rejects_cycle_even_through_ignored_branch() {
     let mut graph = test_graph();
-    graph.nodes.insert(
-        "bad".to_owned(),
-        SngrGraphNodeShadowV1::Decision {
-            actions: vec![action("cycle", "root", /*cost*/ 0.0)],
-        },
-    );
+    graph.nodes.insert("bad".to_owned(), SngrGraphNodeShadowV1::Decision {
+        actions: vec![action("cycle", "root", /*cost*/ 0.0)],
+    });
     graph.legal_actions.remove("cycle");
     assert_eq!(
         evaluate_sngr_graph_shadow(&graph),
@@ -207,10 +179,7 @@ fn malformed_illegal_actions_are_rejected_before_scoring() {
 fn reject_missing_root_broken_edges_and_node_limit() {
     let mut graph = test_graph();
     graph.root = "missing".to_owned();
-    assert_eq!(
-        evaluate_sngr_graph_shadow(&graph),
-        Err(SngrGraphShadowError::MissingRoot)
-    );
+    assert_eq!(evaluate_sngr_graph_shadow(&graph), Err(SngrGraphShadowError::MissingRoot));
     let mut graph = test_graph();
     graph.nodes.remove("bad");
     assert_eq!(
@@ -221,10 +190,7 @@ fn reject_missing_root_broken_edges_and_node_limit() {
     for i in 0..257 {
         graph.nodes.insert(format!("extra-{i}"), terminal(0.0));
     }
-    assert_eq!(
-        evaluate_sngr_graph_shadow(&graph),
-        Err(SngrGraphShadowError::GraphSize)
-    );
+    assert_eq!(evaluate_sngr_graph_shadow(&graph), Err(SngrGraphShadowError::GraphSize));
 }
 
 #[test]
@@ -258,8 +224,5 @@ fn value_graph_depth_is_explicitly_bounded() {
         nodes,
         legal_actions: BTreeSet::new(),
     };
-    assert_eq!(
-        evaluate_sngr_graph_shadow(&graph),
-        Err(SngrGraphShadowError::Depth)
-    );
+    assert_eq!(evaluate_sngr_graph_shadow(&graph), Err(SngrGraphShadowError::Depth));
 }

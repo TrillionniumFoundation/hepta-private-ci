@@ -135,14 +135,8 @@ def solve_chain(
             _finite(value, label)
         reports.append(
             SliceEvidence(
-                i,
-                duration,
-                x,
-                x_next,
-                y,
-                y_next,
-                abs(y_next - y),
-                abs(x_next - x - duration * y),
+                i, duration, x, x_next, y, y_next,
+                abs(y_next - y), abs(x_next - x - duration * y),
             )
         )
         x = x_next
@@ -178,25 +172,15 @@ def naive_reset_baseline(
         if previous_y is not None:
             max_jump = max(max_jump, abs(y - previous_y))
         reports.append(
-            SliceEvidence(
-                i,
-                duration,
-                x,
-                x_next,
-                y,
-                y,
-                abs(y - previous_y) if previous_y is not None else 0.0,
-                abs(x_next - x - duration * y),
-            )
+            SliceEvidence(i, duration, x, x_next, y, y,
+                          abs(y - previous_y) if previous_y is not None else 0.0,
+                          abs(x_next - x - duration * y))
         )
         x = x_next
         previous_y = y
     terminal_residual = abs(reports[-1].final_utility - terminal.evaluate(x))
     return ChainEvidence(
-        reports[0].initial_utility,
-        x,
-        terminal_residual,
-        max_jump,
+        reports[0].initial_utility, x, terminal_residual, max_jump,
         max(r.forward_residual for r in reports),
         max(max_jump, terminal_residual) <= _RESIDUAL_TOL,
         tuple(reports),
@@ -246,9 +230,7 @@ def stochastic_manufactured_fixture(
         dt = duration / steps_per_slice
         for step in range(steps_per_slice):
             before = continuation_at_left(fields[i + 1], dt * (steps_per_slice - step))
-            after = continuation_at_left(
-                fields[i + 1], dt * (steps_per_slice - step - 1)
-            )
+            after = continuation_at_left(fields[i + 1], dt * (steps_per_slice - step - 1))
             y = before.evaluate(x)
             z = before.slope * diffusion
             increment = random_stream.gauss(0.0, math.sqrt(dt))
@@ -321,11 +303,7 @@ def backup_dag(
     This is an ADDITIVE reference comparator, not arbitrary nonlinear NDU, and
     terminal utilities are fixture inputs rather than observed model success.
     """
-    if (
-        not isinstance(root, str)
-        or root not in nodes
-        or not 1 <= len(nodes) <= MAX_GRAPH_NODES
-    ):
+    if not isinstance(root, str) or root not in nodes or not 1 <= len(nodes) <= MAX_GRAPH_NODES:
         raise ShadowError("missing root or graph size exceeds bound")
     if not isinstance(legal_actions, frozenset):
         raise ShadowError("legal actions must be a frozen set")
@@ -353,10 +331,8 @@ def backup_dag(
             probs = [_finite(edge.probability, "probability") for edge in node.outcomes]
             if any(prob < 0 for prob in probs) or abs(sum(probs) - 1.0) > 1e-10:
                 raise ShadowError("chance probabilities must sum to one")
-            value = sum(
-                prob * evaluate(edge.destination)
-                for prob, edge in zip(probs, node.outcomes)
-            )
+            value = sum(prob * evaluate(edge.destination)
+                        for prob, edge in zip(probs, node.outcomes))
         elif isinstance(node, DecisionNode):
             if len({edge.name for edge in node.actions}) != len(node.actions):
                 raise ShadowError("duplicate decision action")
@@ -391,9 +367,8 @@ def demonstration() -> dict[str, object]:
     correct = solve_chain(1.0, durations, terminal)
     reset = naive_reset_baseline(1.0, durations, terminal)
     graph = {
-        "root": DecisionNode(
-            (ActionEdge("guess", "guess", 0.0), ActionEdge("inspect", "chance", 0.5))
-        ),
+        "root": DecisionNode((ActionEdge("guess", "guess", 0.0),
+                              ActionEdge("inspect", "chance", 0.5))),
         "guess": TerminalNode(1.0),
         "chance": ChanceNode((ChanceEdge("good", 0.5), ChanceEdge("bad", 0.5))),
         "good": TerminalNode(5.0),
@@ -404,17 +379,15 @@ def demonstration() -> dict[str, object]:
         "correct": asdict(correct),
         "naive_reset": asdict(reset),
         "graph": asdict(backup_dag(graph, "root", frozenset({"guess", "inspect"}))),
-        "stochastic": asdict(
-            stochastic_manufactured_fixture(1.0, durations, terminal, 0.2, 32, 17)
-        ),
+        "stochastic": asdict(stochastic_manufactured_fixture(
+            1.0, durations, terminal, 0.2, 32, 17
+        )),
     }
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--demo", action="store_true", help="emit synthetic reference evidence"
-    )
+    parser.add_argument("--demo", action="store_true", help="emit synthetic reference evidence")
     arguments = parser.parse_args()
     if not arguments.demo:
         parser.error("no execution requested (use --demo)")
