@@ -410,7 +410,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     // the now-obsolete direct request_typed path. Check the actual call site
     // and the wrapper's real observed TurnStart request separately.
     let turn_start = source
-        .find("send_authorized_turn_start(\n")
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
         .expect("physical turn start call");
     let wrapper = source
         .find("async fn send_authorized_turn_start(")
