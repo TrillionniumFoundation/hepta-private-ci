@@ -16,7 +16,12 @@ def child(name, tag):
 
 
 def ledger(child_id, *, gain=100, regression=5, calibration=3, ood=0, latency=10, memory=10, safety=0, rollback=True):
-    payload = {"child": child_id, "gain": gain, "regression": regression, "calibration": calibration, "ood": ood, "latency": latency, "memory": memory, "safety": safety, "rollback": rollback}
+    payload = {
+        "schema": "hepta.cell-evaluation-ledger.v1", "parent_cell_id": "cell.parent", "child_cell_id": child_id,
+        "benchmark_digest": F, "task_gain_lcb_ppm": gain, "global_regression_ppm": regression,
+        "calibration_regression_ppm": calibration, "ood_delta_ppm": ood, "latency_delta_ns": latency,
+        "memory_delta_bytes": memory, "safety_violations": safety, "rollback_ready": rollback,
+    }
     return CellEvaluationLedgerV1("cell.parent", child_id, F, gain, regression, calibration, ood, latency, memory, safety, rollback, canonical_digest(payload))
 
 
@@ -48,6 +53,17 @@ class CellSplitLineageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "PARENT"):
             bad = CellEvaluationLedgerV1("wrong", "child.a", F, 100, 1, 1, 0, 1, 1, 0, True, I)
             decide_cell_split(parent(), "split-5", (child("child.a", "vision"), child("child.b", "audio")), (bad, ledger("child.b")), policy())
+
+    def test_ledger_digest_drift_is_rejected(self):
+        original = ledger("child.a")
+        drifted = CellEvaluationLedgerV1(
+            original.parent_cell_id, original.child_cell_id, original.benchmark_digest, original.task_gain_lcb_ppm + 1,
+            original.global_regression_ppm, original.calibration_regression_ppm, original.ood_delta_ppm,
+            original.latency_delta_ns, original.memory_delta_bytes, original.safety_violations,
+            original.rollback_ready, original.ledger_digest,
+        )
+        with self.assertRaisesRegex(ValueError, "LEDGER_DIGEST"):
+            decide_cell_split(parent(), "split-5b", (child("child.a", "vision"), child("child.b", "audio")), (drifted, ledger("child.b")), policy())
 
     def test_split_requires_two_children_and_unique_ids(self):
         with self.assertRaisesRegex(ValueError, "TWO_CHILDREN"):
