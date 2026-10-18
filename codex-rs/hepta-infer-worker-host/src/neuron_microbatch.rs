@@ -396,7 +396,14 @@ impl NeuronMicrobatchWorkerV1 {
                     self.poisoned = true;
                     return Err(error.into());
                 }
-                self.execute_after_admission(plan, backend, resources)
+                let result = self.execute_after_admission(plan, backend, resources);
+                // Any failed/indeterminate native execution requires operator
+                // reconciliation; do not admit another physical plan in this
+                // worker generation after an uncertain effect boundary.
+                if result.is_err() {
+                    self.poisoned = true;
+                }
+                result
             })
             .map_err(NeuronMicrobatchErrorV1::FinalUse)?
     }
