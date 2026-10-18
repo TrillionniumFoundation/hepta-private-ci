@@ -163,11 +163,15 @@ pub fn suggest_ndu_shadow_v1(
         request
             .uncertainty_q32
             .saturating_sub(policy.uncertainty_decay_q32)
+            .max(0)
     } else {
         request.uncertainty_q32
     };
     let proposed_risk_q32 = if proposed_deepen {
-        request.risk_q32.saturating_sub(policy.risk_decay_q32)
+        request
+            .risk_q32
+            .saturating_sub(policy.risk_decay_q32)
+            .max(0)
     } else {
         request.risk_q32
     };
