@@ -17,7 +17,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.hepta_cell_split_observer_crypto import signed_observer_payload
-from scripts.test_hepta_cell_split_matrix_integrity import MATRIX, synthetic_complete_report
+from scripts.test_hepta_cell_split_matrix_integrity import (
+    MATRIX,
+    synthetic_complete_report,
+)
 
 
 PROVISIONAL_KEYS = (
@@ -40,11 +43,21 @@ class SignedObserverProtocolTests(unittest.TestCase):
         cls.public = cls.directory / "test-only-public.pem"
         subprocess.run(
             ["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(cls.private)],
-            check=True, capture_output=True,
+            check=True,
+            capture_output=True,
         )
         subprocess.run(
-            ["openssl", "pkey", "-in", str(cls.private), "-pubout", "-out", str(cls.public)],
-            check=True, capture_output=True,
+            [
+                "openssl",
+                "pkey",
+                "-in",
+                str(cls.private),
+                "-pubout",
+                "-out",
+                str(cls.public),
+            ],
+            check=True,
+            capture_output=True,
         )
         cls.key_digest = hashlib.sha256(cls.public.read_bytes()).hexdigest()
         cls.observer_id = "synthetic-test-only-observer"
@@ -66,19 +79,38 @@ class SignedObserverProtocolTests(unittest.TestCase):
         sig_path = self.directory / "test-only-sig"
         payload_path.write_bytes(signed_observer_payload(self.observer))
         subprocess.run(
-            ["openssl", "pkeyutl", "-sign", "-rawin", "-inkey", str(self.private),
-             "-in", str(payload_path), "-out", str(sig_path)],
-            check=True, capture_output=True,
+            [
+                "openssl",
+                "pkeyutl",
+                "-sign",
+                "-rawin",
+                "-inkey",
+                str(self.private),
+                "-in",
+                str(payload_path),
+                "-out",
+                str(sig_path),
+            ],
+            check=True,
+            capture_output=True,
         )
-        self.observer["signatureBase64"] = base64.b64encode(sig_path.read_bytes()).decode()
+        self.observer["signatureBase64"] = base64.b64encode(
+            sig_path.read_bytes()
+        ).decode()
         self.reseal_digests_only()
 
     def reseal_digests_only(self) -> None:
-        self.observer["receiptDigest"] = MATRIX.digest({
-            key: value for key, value in self.observer.items() if key != "receiptDigest"
-        })
+        self.observer["receiptDigest"] = MATRIX.digest(
+            {
+                key: value
+                for key, value in self.observer.items()
+                if key != "receiptDigest"
+            }
+        )
         provisional = {key: self.report[key] for key in PROVISIONAL_KEYS}
-        self.report["reportDigest"] = MATRIX.digest({**provisional, "observer": self.observer})
+        self.report["reportDigest"] = MATRIX.digest(
+            {**provisional, "observer": self.observer}
+        )
 
     def verify(self, **overrides: object) -> None:
         params = {
@@ -88,6 +120,34 @@ class SignedObserverProtocolTests(unittest.TestCase):
         }
         params.update(overrides)
         MATRIX.validate_report(self.report, **params)
+
+    def test_low_order_trusted_ed25519_public_keys_cannot_forge_observer(self) -> None:
+        # OpenSSL 3.x may accept a zero signature with some low-order public
+        # keys and attacker-chosen messages. Pinned SHA256 alone is NOT proof
+        # that a public key belongs to the prime-order Ed25519 subgroup.
+        for label, raw_public_key in (
+            ("low-order-zero", bytes(32)),
+            ("identity", bytes([1]) + bytes(31)),
+        ):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as root:
+                # Canonical RFC 8410 Ed25519 SubjectPublicKeyInfo.
+                der = bytes.fromhex("302a300506032b6570032100") + raw_public_key
+                pem = (
+                    b"-----BEGIN PUBLIC KEY-----\n"
+                    + base64.b64encode(der)
+                    + b"\n-----END PUBLIC KEY-----\n"
+                )
+                key_path = Path(root) / "weak-public.pem"
+                key_path.write_bytes(pem)
+                fingerprint = hashlib.sha256(pem).hexdigest()
+                self.observer["publicKeySha256"] = fingerprint
+                self.observer["signatureBase64"] = base64.b64encode(bytes(64)).decode()
+                self.reseal_digests_only()
+                with self.assertRaisesRegex(ValueError, "prime-order"):
+                    self.verify(
+                        observer_public_key=key_path,
+                        observer_key_sha256=fingerprint,
+                    )
 
     def test_valid_test_signature_can_only_qualify_synthetic_schema(self) -> None:
         self.verify()
@@ -106,6 +166,37 @@ class SignedObserverProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "principal"):
             self.verify(expected_observer_id="wrong-principal")
 
+    def test_hash_pinned_low_order_keys_cannot_forge_observer(self) -> None:
+        spki_prefix = bytes.fromhex("302a300506032b6570032100")
+        bad_points = {
+            "all-zero": bytes(32),
+            "identity": b"\x01" + bytes(31),
+            "noncanonical": (2**255 - 19).to_bytes(32, "little"),
+            "invalid": b"\xff" * 32,
+        }
+        for name, encoded_point in bad_points.items():
+            with self.subTest(key=name):
+                pem = (
+                    b"-----BEGIN PUBLIC KEY-----\n"
+                    + base64.encodebytes(spki_prefix + encoded_point)
+                    + b"-----END PUBLIC KEY-----\n"
+                )
+                bad_public = self.directory / f"{name}-attacker-public.pem"
+                bad_public.write_bytes(pem)
+                fingerprint = hashlib.sha256(pem).hexdigest()
+                self.observer["publicKeySha256"] = fingerprint
+                self.observer["signatureBase64"] = base64.b64encode(bytes(64)).decode()
+                self.reseal_digests_only()
+                with patch(
+                    "scripts.hepta_cell_split_observer_crypto.subprocess.run"
+                ) as backend:
+                    with self.assertRaisesRegex(ValueError, "prime-order"):
+                        self.verify(
+                            observer_public_key=bad_public,
+                            observer_key_sha256=fingerprint,
+                        )
+                    backend.assert_not_called()
+
     def test_bad_signature_with_resealed_digests_fails(self) -> None:
         self.observer["signatureBase64"] = base64.b64encode(b"\x01" * 64).decode()
         self.reseal_digests_only()
@@ -122,13 +213,15 @@ class SignedObserverProtocolTests(unittest.TestCase):
         self.report["cases"].reverse()
         # Hashes re-sealed to avoid accepting a forged report merely because
         # its weak structural SHA256 hashes agree. Original signature unchanged.
-        self.observer["reportDigest"] = MATRIX.digest({
-            key: self.report[key] for key in PROVISIONAL_KEYS
-        })
-        self.observer["metricsDigest"] = MATRIX.digest([
-            {"caseId": case["caseId"], "metricsDigest": case["metricsDigest"]}
-            for case in self.report["cases"]
-        ])
+        self.observer["reportDigest"] = MATRIX.digest(
+            {key: self.report[key] for key in PROVISIONAL_KEYS}
+        )
+        self.observer["metricsDigest"] = MATRIX.digest(
+            [
+                {"caseId": case["caseId"], "metricsDigest": case["metricsDigest"]}
+                for case in self.report["cases"]
+            ]
+        )
         self.reseal_digests_only()
         with self.assertRaisesRegex(ValueError, "signature verification failed"):
             self.verify()
@@ -142,9 +235,12 @@ class SignedObserverProtocolTests(unittest.TestCase):
     def test_observer_command_without_pinned_key_is_not_invoked(self) -> None:
         with tempfile.TemporaryDirectory() as root:
             output = Path(root) / "blocked.json"
-            with patch.object(MATRIX.platform, "platform", return_value="synthetic-test-host"), patch.object(
-                MATRIX.subprocess, "run"
-            ) as runner:
+            with (
+                patch.object(
+                    MATRIX.platform, "platform", return_value="synthetic-test-host"
+                ),
+                patch.object(MATRIX.subprocess, "run") as runner,
+            ):
                 report = MATRIX.run_matrix(
                     workload_command=None,
                     observer_command="untrusted-observer",
