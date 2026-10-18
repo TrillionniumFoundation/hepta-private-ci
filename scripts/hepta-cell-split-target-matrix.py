@@ -173,8 +173,13 @@ def _command(argv: str, case: dict[str, Any]) -> list[str]:
 def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     """Canonical signed observer claim; independent of caller-supplied digest."""
     fields = (
-        "schema", "verified", "sourceCommit", "workloadDigest",
-        "reportDigest", "metricsDigest", "observerId",
+        "schema",
+        "verified",
+        "sourceCommit",
+        "workloadDigest",
+        "reportDigest",
+        "metricsDigest",
+        "observerId",
     )
     return b"hepta.cell-split.observer.ed25519.v1\0" + canonical_bytes(
         {field: receipt.get(field) for field in fields}
@@ -625,8 +630,14 @@ def validate_report(
     provisional = {
         key: report[key]
         for key in (
-            "schema", "authority", "cellCounts", "sourceCommit",
-            "workloadDigest", "workloadSourceDigest", "host", "cases",
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
         )
     }
     if report.get("reportDigest") != digest(
