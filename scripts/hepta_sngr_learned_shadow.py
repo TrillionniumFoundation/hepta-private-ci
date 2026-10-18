@@ -14,14 +14,20 @@ import math
 import time
 
 
-def analytic_field(x, t, *, slope: float, intercept: float, diffusion: float, horizon: float):
+def analytic_field(
+    x, t, *, slope: float, intercept: float, diffusion: float, horizon: float
+):
     """Vectorized torch-only manufactured affine field and Z sensitivity."""
     denominator = 1.0 - slope * (horizon - t)
     return (slope * x + intercept) / denominator, diffusion * slope / denominator
 
 
-def experiment(seed: int = 17, train_steps: int = 400, train_count: int = 1024,
-               test_count: int = 512) -> dict[str, object]:
+def experiment(
+    seed: int = 17,
+    train_steps: int = 400,
+    train_count: int = 1024,
+    test_count: int = 512,
+) -> dict[str, object]:
     """Compare held-out neural approximation to a closed-form linear baseline.
 
     The splits are independently seeded continuous draws, not future-observed
@@ -38,7 +44,9 @@ def experiment(seed: int = 17, train_steps: int = 400, train_count: int = 1024,
     try:
         import torch
     except ImportError as exc:
-        raise RuntimeError("opt-in PyTorch is unavailable; no synthetic training occurred") from exc
+        raise RuntimeError(
+            "opt-in PyTorch is unavailable; no synthetic training occurred"
+        ) from exc
 
     torch.set_num_threads(1)
     torch.manual_seed(seed)
@@ -49,8 +57,14 @@ def experiment(seed: int = 17, train_steps: int = 400, train_count: int = 1024,
         generator = torch.Generator(device="cpu").manual_seed(data_seed)
         state = 4 * torch.rand((count, 1), generator=generator) - 2
         t = torch.rand((count, 1), generator=generator)
-        value, z = analytic_field(state, t, slope=slope, intercept=intercept,
-                                  diffusion=diffusion, horizon=horizon)
+        value, z = analytic_field(
+            state,
+            t,
+            slope=slope,
+            intercept=intercept,
+            diffusion=diffusion,
+            horizon=horizon,
+        )
         features = torch.cat((state, t), dim=1)
         targets = torch.cat((value, z), dim=1)
         return features, targets
@@ -58,13 +72,17 @@ def experiment(seed: int = 17, train_steps: int = 400, train_count: int = 1024,
     train_x, train_y = make_data(train_count, seed + 101)
     test_x, test_y = make_data(test_count, seed + 707)
     # Exact feature and target samples never cross train/test boundaries.
-    overlap = set(map(tuple, train_x.tolist())).intersection(map(tuple, test_x.tolist()))
+    overlap = set(map(tuple, train_x.tolist())).intersection(
+        map(tuple, test_x.tolist())
+    )
     if overlap:
         raise RuntimeError("disjoint random draws unexpectedly overlapped")
     torch.manual_seed(seed + 202)
     model = torch.nn.Sequential(
-        torch.nn.Linear(2, 32), torch.nn.Tanh(),
-        torch.nn.Linear(32, 32), torch.nn.Tanh(),
+        torch.nn.Linear(2, 32),
+        torch.nn.Tanh(),
+        torch.nn.Linear(32, 32),
+        torch.nn.Tanh(),
         torch.nn.Linear(32, 2),
     )
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.009, weight_decay=0.0001)
@@ -96,9 +114,14 @@ def experiment(seed: int = 17, train_steps: int = 400, train_count: int = 1024,
         ood_generator = torch.Generator(device="cpu").manual_seed(seed + 909)
         ood_state = 2.5 + torch.rand((test_count, 1), generator=ood_generator)
         ood_time = torch.rand((test_count, 1), generator=ood_generator)
-        ood_value, ood_z = analytic_field(ood_state, ood_time, slope=slope,
-                                          intercept=intercept, diffusion=diffusion,
-                                          horizon=horizon)
+        ood_value, ood_z = analytic_field(
+            ood_state,
+            ood_time,
+            slope=slope,
+            intercept=intercept,
+            diffusion=diffusion,
+            horizon=horizon,
+        )
         ood_features = torch.cat((ood_state, ood_time), dim=1)
         ood_targets = torch.cat((ood_value, ood_z), dim=1)
         ood_mae = (model(ood_features) - ood_targets).abs().mean(dim=0)
@@ -138,5 +161,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not args.demo:
         parser.error("opt-in only: use --demo")
-    print(json.dumps(experiment(seed=args.seed, train_steps=args.train_steps),
-                     sort_keys=True, indent=2, allow_nan=False))
+    print(
+        json.dumps(
+            experiment(seed=args.seed, train_steps=args.train_steps),
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
+    )

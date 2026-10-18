@@ -61,7 +61,7 @@ jobs:
       - name: Install pinned CPU runtime
         run: |
           set -euo pipefail
-          python3 -m pip install --disable-pip-version-check --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.11.0
           python3 -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.2.6 safetensors==0.8.0 transformers==4.57.6 huggingface_hub==0.36.0
           python3 -m pip install --disable-pip-version-check --no-deps laya==0.3.20
           python3 -m pip check
@@ -107,8 +107,7 @@ jobs:
           if [ "$status" -eq 0 ]; then
             echo "reader_status=evaluated"
           elif [ "$status" -eq 2 ]; then
-            printf '%s
-' '{"status":"unavailable","production_selection_authority":false,"evidence_class":"INCOMPLETE","reason":"registered evaluator could not produce a real model result"}' > "$REPORT_PATH"
+            printf '%s\n' '{"status":"unavailable","production_selection_authority":false,"evidence_class":"INCOMPLETE","reason":"registered evaluator could not produce a real model result"}' > "$REPORT_PATH"
             echo "reader_status=unavailable"
           else
             cat "$SUMMARY_PATH" >&2
