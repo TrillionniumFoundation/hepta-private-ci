@@ -175,6 +175,75 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     )
 
 
+def _ed25519_prime_order_public_key(encoded: bytes) -> bool:
+    """Reject identity, torsion, mixed-order and noncanonical observer keys.
+
+    A 32-byte Ed25519 key can decode to a small-order point even when the
+    underlying signature library accepts its encoding. Verify that [L]P is
+    the neutral point, and that P itself is not neutral, before trusting it.
+    All arithmetic here handles public input, never a secret scalar.
+    """
+    prime = 2**255 - 19
+    order = 2**252 + 27742317777372353535851937790883648493
+    d = -121665 * pow(121666, -1, prime) % prime
+    sqrt_minus_one = pow(2, (prime - 1) // 4, prime)
+    if len(encoded) != 32:
+        return False
+    value = int.from_bytes(encoded, "little")
+    y = value & ((1 << 255) - 1)
+    sign = value >> 255
+    if y >= prime:
+        return False
+    yy = y * y % prime
+    denominator = (d * yy + 1) % prime
+    if denominator == 0:
+        return False
+    xx = (yy - 1) * pow(denominator, -1, prime) % prime
+    x = pow(xx, (prime + 3) // 8, prime)
+    if x * x % prime != xx:
+        x = x * sqrt_minus_one % prime
+    if x * x % prime != xx or (x == 0 and sign):
+        return False
+    if (x & 1) != sign:
+        x = -x % prime
+    if x == 0 and y == 1:
+        return False
+
+    def add(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+        x1, y1, z1, t1 = a
+        x2, y2, z2, t2 = b
+        aa = (y1 - x1) * (y2 - x2) % prime
+        bb = (y1 + x1) * (y2 + x2) % prime
+        cc = 2 * d * t1 * t2 % prime
+        dd = 2 * z1 * z2 % prime
+        ee = (bb - aa) % prime
+        ff = (dd - cc) % prime
+        gg = (dd + cc) % prime
+        hh = (bb + aa) % prime
+        return ee * ff % prime, gg * hh % prime, ff * gg % prime, ee * hh % prime
+
+    def double(a: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+        x, yy, z, _ = a
+        aa = x * x % prime
+        bb = yy * yy % prime
+        cc = 2 * z * z % prime
+        dd = -aa % prime
+        ee = ((x + yy) ** 2 - aa - bb) % prime
+        gg = (dd + bb) % prime
+        ff = (gg - cc) % prime
+        hh = (dd - bb) % prime
+        return ee * ff % prime, gg * hh % prime, ff * gg % prime, ee * hh % prime
+
+    point = (x, y, 1, x * y % prime)
+    result = (0, 1, 1, 0)
+    for bit in range(order.bit_length() - 1, -1, -1):
+        result = double(result)
+        if (order >> bit) & 1:
+            result = add(result, point)
+    result_x, result_y, result_z, _ = result
+    return result_z != 0 and result_x == 0 and (result_y - result_z) % prime == 0
+
+
 def verify_observer_signature(
     receipt: dict[str, Any],
     trusted_public_key_hex: str | None,
@@ -199,10 +268,15 @@ def verify_observer_signature(
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     except ImportError as error:
         raise ValueError("trusted Ed25519 verifier dependency unavailable") from error
+    trusted_public_key = bytes.fromhex(trusted_public_key_hex)
+    if not _ed25519_prime_order_public_key(trusted_public_key):
+        raise ValueError(
+            "independent observer Ed25519 signature invalid: non-prime-order trusted key"
+        )
     try:
-        Ed25519PublicKey.from_public_bytes(
-            bytes.fromhex(trusted_public_key_hex)
-        ).verify(bytes.fromhex(signature), observer_signing_bytes(receipt))
+        Ed25519PublicKey.from_public_bytes(trusted_public_key).verify(
+            bytes.fromhex(signature), observer_signing_bytes(receipt)
+        )
     except (InvalidSignature, ValueError) as error:
         raise ValueError("independent observer Ed25519 signature invalid") from error
 
