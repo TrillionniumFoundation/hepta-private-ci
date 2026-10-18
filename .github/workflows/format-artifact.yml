@@ -1,10 +1,8 @@
-name: format-artifact
+name: shared-cell-format-diagnostic
 on:
   push:
     branches:
-      - maintenance/format-artifact-20261018
-  pull_request:
-    types: [opened, synchronize, reopened]
+      - maintenance/shared-cell-format-diagnostic-20261018
 permissions:
   contents: read
 jobs:
@@ -12,31 +10,32 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Checkout candidate
+      - name: Checkout pinned research candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: 33a3e1ca2457449ce4a6949b21e27666f3a3f077
           persist-credentials: false
+      - name: Bind exact source identity
+        run: test "$(git rev-parse HEAD)" = "33a3e1ca2457449ce4a6949b21e27666f3a3f077"
       - name: Setup uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           activate-environment: false
           working-directory: ${{ github.workspace }}
-      - name: Format Python
-        run: uv run --frozen --project scripts ruff format scripts .github
-      - name: Format Rust
-        working-directory: codex-rs
-        run: cargo fmt -- --config imports_granularity=Item
-      - name: Capture patch
+      - name: Ruff format only branch-owned matrix scripts
+        run: uv run --frozen --project scripts ruff format scripts/hepta-cell-split-target-matrix.py scripts/test_hepta_cell_split_target_matrix.py
+      - name: Print and retain exact patch
         shell: bash
         run: |
           set -euo pipefail
-          git diff --binary > "${RUNNER_TEMP}/format.patch"
-          git diff --name-only > "${RUNNER_TEMP}/format.files"
+          git diff --binary -- scripts/hepta-cell-split-target-matrix.py scripts/test_hepta_cell_split_target_matrix.py > "${RUNNER_TEMP}/format.patch"
           test -s "${RUNNER_TEMP}/format.patch"
-      - name: Upload format patch
+          cat "${RUNNER_TEMP}/format.patch"
+          git diff --name-only > "${RUNNER_TEMP}/format.files"
+      - name: Upload formatter evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: format-artifact
+          name: shared-cell-format-patch
           path: |
             ${{ runner.temp }}/format.patch
             ${{ runner.temp }}/format.files
