@@ -1,0 +1,71 @@
+name: Hepta Neuron reference-output identity v2
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/src/data_plane.rs"
+      - "codex-rs/hepta-neuron/src/data_plane_tests.rs"
+      - ".github/workflows/hepta-neuron-output-identity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-output-identity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  exact-source:
+    name: Canonical output identity and locked Rust conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+      - name: Pin and record exact candidate
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          rustc --version --verbose
+          git diff --check
+      - name: Frozen Cargo graph and exact regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > /dev/null
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-neuron \
+            reference_output_digest_v2_fences_ambiguous_request_model_pairs \
+            -- --test-threads=1
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-neuron -- --test-threads=1
+      - name: Rustfmt and strict Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron -- --check
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-neuron --all-targets -- -D warnings
+      - name: No mutated source or untracked evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"
