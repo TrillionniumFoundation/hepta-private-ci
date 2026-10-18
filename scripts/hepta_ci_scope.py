@@ -99,15 +99,12 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         # Cargo advisory checks are independent of CI infrastructure and
         # application changes. Preserve auditing on main pushes (force_full)
         # and on any workspace manifest, lockfile, or audit policy change.
-        if (
-            path in {
-                "codex-rs/Cargo.toml",
-                "codex-rs/Cargo.lock",
-                "codex-rs/deny.toml",
-                ".github/workflows/cargo-deny.yml",
-            }
-            or (len(parts) >= 3 and parts[0] == "codex-rs" and parts[-1] == "Cargo.toml")
-        ):
+        if path in {
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/deny.toml",
+            ".github/workflows/cargo-deny.yml",
+        } or (len(parts) >= 3 and parts[0] == "codex-rs" and parts[-1] == "Cargo.toml"):
             cargo_audit = True
 
         if path in DERIVED_ONLY_DOCS or path.startswith(

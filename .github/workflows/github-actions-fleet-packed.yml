@@ -15,7 +15,7 @@ on:
         default: A
         options: [A, B, ALL]
       workers:
-        description: Real hosted workers to share this 250-test cohort
+        description: Real hosted workers to share the selected test cohort
         type: choice
         required: true
         default: "16"
@@ -25,7 +25,7 @@ on:
         type: choice
         required: true
         default: ubuntu-24.04-arm
-        options: [ubuntu-24.04-arm, ubuntu-24.04]
+        options: [ubuntu-24.04-arm, ubuntu-24.04, ubuntu-slim]
       source_sha:
         description: Exact full 40-hex immutable source commit
         type: string
@@ -35,14 +35,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: packed-realtests-${{ github.ref }}-${{ github.event_name }}-${{ inputs.cohort || 'selftest' }}-${{ inputs.workers || 'none' }}-${{ inputs.source_sha || github.sha }}
+  group: packed-realtests-${{ github.ref }}-${{ github.event_name }}-${{ inputs.cohort || 'selftest' }}-${{ inputs.workers || 'none' }}-${{ inputs.source_sha || github.sha }}-${{ inputs.runner || 'selftest' }}
   cancel-in-progress: false
   queue: max
 
 jobs:
   selftest:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -55,7 +55,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     name: packed-${{ inputs.cohort }}-worker-${{ matrix.worker }}
     runs-on: ${{ inputs.runner }}
-    timeout-minutes: 90
+    timeout-minutes: ${{ inputs.runner == 'ubuntu-slim' && 15 || 90 }}
     strategy:
       fail-fast: false
       max-parallel: 32

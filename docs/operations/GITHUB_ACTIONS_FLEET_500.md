@@ -149,9 +149,14 @@ is counted only when it has a real assigned runner, a trustworthy
 \`started_at\`, and either \`completed_at\` or an in-progress observation
 whose conservative end is the **start** of its job GET request.
 
-The maximum overlap of those intervals is a **provable lower bound** for
-simultaneous running jobs, even when REST queries occur at different
-times. It is never computed by summing non-atomic "in_progress" counters.
+The terminal-only interval peak is the proof used for the 500-runner verdict.
+Each contributing job must have a positive integer runner ID and an actual
+completion timestamp. A runner contributes at most one simultaneous slot.
+In-progress observations remain an estimate because API state can be stale;
+they cannot make `verified_500_running` true. The legacy
+`peak_provable_concurrent_jobs_lower_bound` field remains for compatibility,
+but the current proof is `peak_terminal_concurrent_jobs_lower_bound`.
+Neither peak is computed by summing non-atomic "in_progress" counters.
 Missing repos/pages/permissions or API errors are recorded as incomplete.
 With `--include-queued`, the collector scans both `in_progress` and `queued`
 parent workflow runs, because a queued parent can already contain assigned,
@@ -162,8 +167,9 @@ reported explicitly; provider run counts must not be summed as distinct runs.
 The compatibility default scans only in-progress parents and records that
 queued-parent children are outside that scope. Increase the explicit sampling
 limits only when a report identifies truncation.
-The collector cannot claim that **500 was actually reached** unless at least
-500 such intervals overlap. It does not register, create, cancel, retry or
+The collector cannot claim that **500 was actually reached** unless completed
+intervals on at least 500 distinct runner IDs overlap. It does not register,
+create, cancel, retry or
 dispatch workflows. GitHub org-level metrics can provide corroborating
 historical performance and queue-delay trends.
 
@@ -174,14 +180,15 @@ than one day. A bounded 103-run sample found 58 zero-job records and
 443 queued workflows as runnable Jobs or platform capacity demand.
 The sampled historical zero-job records were left untouched.
 
-## Verified lower bound from live Pocket4 org measurement
+## Historical live Pocket4 org estimate
 
 A separate authenticated read-only organization snapshot from
 2026-10-17T04:33:10Z through 04:33:32Z covered 30 visible active
 repositories, 18 in-progress workflow runs and 224 Job records.
-Seventy-nine in-progress Job records were seen non-atomically; execution
-interval overlap *proved at least 80 genuinely concurrent Jobs*
-at 04:33:10Z. All read paths returned complete without API errors.
+Seventy-nine in-progress Job records were seen non-atomically; the original
+collector estimated an 80-job overlap at 04:33:10Z. This live-state estimate
+requires terminal reconciliation under the current proof rules. All read
+paths returned complete without API errors.
 This does **not** establish a maximum available concurrent capacity,
 does **not** establish a 500-job peak, and does **not** include every
 recently completed workflow.
@@ -392,8 +399,8 @@ and 2,997 unique job records, with no missing job pages or read errors in that
 declared scope. Parent status counts are non-atomic and can overlap during
 pagination; deduplicated IDs define the sampled set.
 
-An independent interval sweep proved **177 jobs on 177 different runner IDs
-simultaneously running at 11:16:34.675 UTC**: Linux 90, Windows 37 and macOS 50.
+An independent live-interval sweep estimated **177 jobs on 177 different
+runner IDs at 11:16:34.675 UTC**: Linux 90, Windows 37 and macOS 50.
 Of the 177 assigned in-progress job records observed during the scan, 157 were
 under parents returned by the queued-run query. A separately closed job
 interval also contains the entire request/response window in which its parent
@@ -402,11 +409,66 @@ timestamp comparison.
 
 Completed jobs use their actual completion time. In-progress jobs contribute
 only until the start of their job-list request, and interval ends are processed
-before starts at an equal timestamp. This is a proved lower bound within the
-declared scan scope, not the configured maximum, a full historical peak, or
+before starts at an equal timestamp. This historical live-state estimate
+needs terminal reconciliation under the current proof rules. It is not the
+configured maximum, a full historical peak, or
 evidence that the separate 500-job test fleet reached 500-way overlap.
 
 A later supplemental scan of the other nonterminal parent statuses found no
 assigned running children; it is a separate observation, not an atomic part of
 the earlier interval proof. Private repository names and job inventories are
 retained in the operator's audit evidence, not in this public document.
+
+## Admission review and packed slim qualification (2026-10-18)
+
+The strict direct A/B runs
+[39026346010](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39026346010)
+and
+[39026349331](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39026349331)
+completed 500 distinct strict test cases at source
+`1233fcff06a57901d80c3bbffefd6fec6b94496b`. Their combined completed-job
+overlap peak was **7**. Case success and simultaneous runner capacity remain
+separate results.
+
+A fresh, fixed-attempt, complete-page review of six later pilots found all
+114 execution jobs assigned and successful, including their strict test and
+artifact-retention steps. These step conclusions do not constitute a fresh
+download or digest check of those 114 artifact ZIPs.
+
+| Run | Pool | Jobs | Completed interval peak | Median job queue wait | Run elapsed |
+| --- | --- | ---: | ---: | ---: | ---: |
+| [39092063202](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39092063202) | Ubuntu x64 | 16 | 2 | 3,836 s | 4,326 s |
+| [39092067486](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39092067486) | Ubuntu ARM | 16 | 1 | 1,819.5 s | 2,457 s |
+| [39092538398](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39092538398) | Ubuntu slim | 16 | 4 | 1,379 s | 1,995 s |
+| [39092618348](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39092618348) | Ubuntu slim | 50 | 3 | 3,397.5 s | 4,101 s |
+| [39099796658](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39099796658) | Ubuntu slim | 8 | 1 | 246 s | 599 s |
+| [39099823808](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39099823808) | Ubuntu x64 | 8 | 2 | 2,252 s | 3,689 s |
+
+Queue wait is `job.started_at - job.created_at`; elapsed is
+`run.updated_at - run.created_at`. Each run is attempt 1. Peaks use half-open
+completed intervals with ends released before starts at the same timestamp.
+The six runs used different pinned revisions and admission windows, so the
+table does not isolate runner label as the sole cause of the differences.
+The long queue waits and 10–12 second median job durations motivate reducing
+the number of runner allocations per complete 500-case execution.
+
+The packed workflow now accepts opt-in `runner=ubuntu-slim`, keeping the
+existing ARM default. It allows 15 minutes on slim and 90 minutes on the VM
+pools. Its concurrency key includes the runner label so separate pool
+comparisons do not serialize each other. The packed selftest and the blocking
+workflow's Python/Bash scope and verdict jobs use slim; their checks, dependency
+relationships and failure conditions remain intact.
+
+To qualify packed slim throughput, dispatch one source-pinned `cohort=ALL`,
+`workers=8`, `runner=ubuntu-slim` run. Require all eight receipts to cover the
+same exact 500-case source set once, with no skipped or missing results.
+Measure its actual elapsed time and completed interval peak. A packed success
+still does not establish 500 simultaneous runners; do not pad execution with
+sleeps or barriers to raise occupancy.
+
+The organization collector now deduplicates job IDs before sweeping intervals,
+retains the largest observed pagination total, and permanently excludes
+conflicting IDs across parent runs. Duplicate API pages cannot satisfy read
+completeness or inflate the peak. Terminal proof requires positive integer
+runner IDs; name-only observations cannot manufacture capacity. Reconcile
+live witnesses after completion before accepting a new 500-runner verdict.

@@ -2,8 +2,9 @@
 """Read-only organization GitHub Actions concurrency evidence.
 
 A workflow run != a job, and a queued job's started_at is not runner admission.
-This tool reconstructs a conservative *provable* concurrency peak from real
-job execution intervals. It does not create, rerun, cancel or dispatch jobs.
+This tool observes concurrency from assigned-runner job intervals and verifies
+the target only with completed jobs. It does not create, rerun, cancel or
+dispatch jobs.
 """
 
 import argparse
@@ -57,9 +58,9 @@ def job_intervals(
 ) -> list[tuple[datetime, datetime]]:
     """Only intervals backed by actual runner assignment and job timestamps.
 
-    In-progress jobs are proven running at response time. Use the request
-    *start* as a conservative right endpoint rather than network response
-    completion, which could be later than the job's actual completion.
+    For in-progress jobs, use request start instead of response completion as
+    the observed right endpoint. Stale API status can still overstate these
+    intervals, so only completed job intervals support final verification.
     """
     results: list[tuple[datetime, datetime]] = []
     for job in jobs:
@@ -70,8 +71,8 @@ def job_intervals(
             continue
         status = job.get("status")
         if status == "in_progress":
-            # If it started after the HTTP request began, no safe pre-request
-            # execution interval can be established.
+            # A job starting after the request began has no observed interval
+            # before this request's right endpoint.
             if started > requested_at:
                 continue
             ended = requested_at
@@ -107,6 +108,70 @@ def provable_peak(
         if active > peak:
             peak, at = active, point
     return peak, at
+
+
+def merge_job_observations(previous: dict, current: dict) -> dict | None:
+    """Accept pagination refreshes, but never combine contradictory executions."""
+    for field in ("run_id", "run_attempt"):
+        if previous.get(field) is not None and current.get(field) is not None:
+            if previous[field] != current[field]:
+                return None
+
+    def executing(job):
+        return job.get("status") in {"in_progress", "completed"} and (
+            job.get("runner_id") or job.get("runner_name")
+        )
+
+    if executing(previous) and executing(current):
+        if previous.get("runner_id") and current.get("runner_id"):
+            if previous["runner_id"] != current["runner_id"]:
+                return None
+        elif previous.get("runner_name") != current.get("runner_name"):
+            return None
+        if parse_time(previous.get("started_at")) != parse_time(
+            current.get("started_at")
+        ):
+            return None
+    if previous.get("status") == current.get("status") == "completed":
+        for field in ("completed_at", "conclusion"):
+            if previous.get(field) != current.get(field):
+                return None
+
+    # A queued started_at is not an execution timestamp. A later terminal
+    # observation supersedes it; a stale queued/in-progress page must not
+    # overwrite a terminal observation of the same immutable job ID.
+    order = {"queued": 0, "waiting": 0, "in_progress": 1, "completed": 2}
+    if order.get(previous.get("status"), -1) > order.get(current.get("status"), -1):
+        return previous
+    return current
+
+
+def runner_intervals(
+    observations: list[tuple[dict, datetime]], window_start: datetime
+) -> tuple[list[tuple[datetime, datetime]], list[dict]]:
+    """A reused runner contributes at most one job at any instant."""
+    by_runner: dict[tuple, list[tuple[datetime, datetime]]] = {}
+    for job, requested_at in observations:
+        runner_id = job.get("runner_id")
+        runner = ("id", runner_id) if runner_id else ("name", job.get("runner_name"))
+        by_runner.setdefault(runner, []).extend(
+            job_intervals([job], requested_at, window_start)
+        )
+    intervals = []
+    overlaps = []
+    for runner, periods in by_runner.items():
+        merged = []
+        overlap = False
+        for started, ended in sorted(periods):
+            if merged and started < merged[-1][1]:
+                overlap = True
+                merged[-1] = (merged[-1][0], max(merged[-1][1], ended))
+            else:
+                merged.append((started, ended))
+        intervals.extend(merged)
+        if overlap:
+            overlaps.append({"runner_identity_type": runner[0], "runner": runner[1]})
+    return intervals, overlaps
 
 
 def collect(
@@ -167,16 +232,18 @@ def collect(
         path = f"/repos/{quote(org)}/{quote(repo)}/actions/runs"
         runs: set[int] = set()
         total = None
+        highest_total = 0
         truncated = False
         try:
             for page in range(1, max_run_pages + 1):
                 answer = query(path, {"status": status, "per_page": 100, "page": page})
                 total = int(answer["total_count"])
+                highest_total = max(highest_total, total)
                 records = answer["workflow_runs"]
                 runs.update(int(run["id"]) for run in records)
-                if len(runs) >= total or len(records) < 100:
+                if len(runs) >= highest_total or len(records) < 100:
                     break
-            if total is not None and len(runs) < total:
+            if len(runs) < highest_total:
                 truncated = True
             return repo, status, runs, total, truncated, None
         except Exception as exc:
@@ -224,50 +291,151 @@ def collect(
 
     states: Counter[str] = Counter()
     labels: Counter[str] = Counter()
-    intervals: list[tuple[datetime, datetime]] = []
+    observations: dict[int, tuple[dict, datetime]] = {}
+    conflicting_ids: set[int] = set()
     collected_jobs = 0
+    duplicate_jobs = 0
     sampled_runs = 0
 
     def run_jobs(task: tuple[str, int]):
         repo, run_id = task
         path = f"/repos/{quote(org)}/{quote(repo)}/actions/runs/{run_id}/jobs"
         started_request = clock()
-        jobs: list[dict] = []
+        jobs: dict[int, dict] = {}
+        seen_ids: set[int] = set()
+        conflicts: set[int] = set()
+        problems: list[dict] = []
+        raw_count = duplicate_count = total = 0
+        exhausted = False
         try:
             for page in range(1, max_job_pages + 1):
                 answer = query(path, {"per_page": 100, "page": page})
-                jobs.extend(answer["jobs"])
-                if len(jobs) >= int(answer["total_count"]):
-                    return task, jobs, started_request, False, None
-            return task, jobs, started_request, True, None
+                records = answer["jobs"]
+                total = max(total, int(answer["total_count"]))
+                raw_count += len(records)
+                for job in records:
+                    job_id = job.get("id")
+                    if type(job_id) is not int or job_id <= 0:
+                        problems.append({"reason": "invalid_job_id", "page": page})
+                        continue
+                    if job_id in seen_ids:
+                        duplicate_count += 1
+                    seen_ids.add(job_id)
+                    if job_id in conflicts:
+                        continue
+                    reported_run_id = job.get("run_id")
+                    if reported_run_id is not None and (
+                        type(reported_run_id) is not int or reported_run_id != run_id
+                    ):
+                        conflicts.add(job_id)
+                        jobs.pop(job_id, None)
+                        problems.append(
+                            {"reason": "job_parent_mismatch", "job_id": job_id}
+                        )
+                        continue
+                    if job_id in jobs:
+                        merged = merge_job_observations(jobs[job_id], job)
+                        if merged is None:
+                            conflicts.add(job_id)
+                            del jobs[job_id]
+                            problems.append(
+                                {
+                                    "reason": "conflicting_job_observations",
+                                    "job_id": job_id,
+                                }
+                            )
+                            continue
+                        job = merged
+                    jobs[job_id] = job
+                # Raw record count can reach total_count while repeated IDs
+                # hide a missing page. Use distinct IDs against every total
+                # observed in this read, without requiring an extra empty page.
+                if len(seen_ids) >= total:
+                    exhausted = True
+                    break
+                if len(records) < 100:
+                    break
+            if not exhausted or len(seen_ids) < total:
+                problems.append({"reason": "truncated"})
         except Exception as exc:
-            return task, jobs, started_request, True, type(exc).__name__
+            problems.append({"reason": type(exc).__name__})
+        return (
+            task,
+            jobs,
+            conflicts,
+            started_request,
+            raw_count,
+            duplicate_count,
+            problems,
+        )
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = [pool.submit(run_jobs, task) for task in active_runs]
         for future in as_completed(futures):
-            task, jobs, request_start, truncated, failure = future.result()
-            if truncated or failure:
-                error.append(
+            task, jobs, conflicts, request_start, raw_count, duplicates, problems = (
+                future.result()
+            )
+            if problems:
+                error.extend(
                     {
                         "stage": "run_jobs",
                         "repo": task[0],
                         "run_id": task[1],
-                        "reason": failure or "truncated",
+                        **problem,
                     }
+                    for problem in problems
                 )
             else:
                 sampled_runs += 1
-            collected_jobs += len(jobs)
-            states.update(job.get("status", "unknown") for job in jobs)
-            for job in jobs:
-                if job.get("status") == "in_progress" and (
-                    job.get("runner_name") or job.get("runner_id")
-                ):
-                    labels[",".join(job.get("labels") or []) or "unknown"] += 1
-            intervals.extend(job_intervals(jobs, request_start, began))
+            collected_jobs += raw_count
+            duplicate_jobs += duplicates
+            # A locally excluded ID remains excluded across all parents,
+            # regardless of which future's observations arrive first.
+            conflicting_ids.update(conflicts)
+            for job_id in conflicts:
+                observations.pop(job_id, None)
+            for job_id, job in jobs.items():
+                # Parent IDs were already deduplicated. The same job appearing
+                # under distinct parents is inconsistent, not extra capacity.
+                if job_id in observations or job_id in conflicting_ids:
+                    duplicate_jobs += 1
+                    if job_id not in conflicting_ids:
+                        error.append(
+                            {
+                                "stage": "run_jobs",
+                                "reason": "job_in_multiple_runs",
+                                "job_id": job_id,
+                            }
+                        )
+                    conflicting_ids.add(job_id)
+                    observations.pop(job_id, None)
+                else:
+                    observations[job_id] = (job, request_start)
+
+    for job, _ in observations.values():
+        states[job.get("status", "unknown")] += 1
+        if job.get("status") == "in_progress" and (
+            job.get("runner_name") or job.get("runner_id")
+        ):
+            labels[",".join(job.get("labels") or []) or "unknown"] += 1
+    intervals, overlaps = runner_intervals(list(observations.values()), began)
+    error.extend(
+        {"stage": "job_intervals", "reason": "overlapping_runner_jobs", **overlap}
+        for overlap in overlaps
+    )
 
     maximum, at = provable_peak(intervals)
+    terminal_intervals, _ = runner_intervals(
+        [
+            observation
+            for observation in observations.values()
+            if observation[0].get("status") == "completed"
+            and type(observation[0].get("runner_id")) is int
+            and observation[0]["runner_id"] > 0
+        ],
+        began,
+    )
+    terminal_maximum, terminal_at = provable_peak(terminal_intervals)
     finished = clock()
     return {
         "org": org,
@@ -290,12 +458,18 @@ def collect(
         "workflow_runs_sampled": len(active_runs),
         "complete_job_pages": sampled_runs,
         "sampled_job_records": collected_jobs,
+        "unique_sampled_job_records": len(observations),
+        "duplicate_job_records": duplicate_jobs,
         "job_states_seen_nonatomic": dict(states),
         "in_progress_runner_labels_nonatomic": dict(labels),
         "peak_provable_concurrent_jobs_lower_bound": maximum,
         "peak_proof_timestamp": at.isoformat() if at else None,
+        "peak_terminal_concurrent_jobs_lower_bound": terminal_maximum,
+        "peak_terminal_proof_timestamp": terminal_at.isoformat()
+        if terminal_at
+        else None,
         "target": 500,
-        "verified_500_running": maximum >= 500,
+        "verified_500_running": terminal_maximum >= 500,
         "all_read_paths_complete": listing_complete and not error,
         "limitations": (
             "Parent status filters: "
@@ -308,10 +482,18 @@ def collect(
             )
             + "Parent queries and job reads are bounded by sampling_limits. "
             "Provider status totals come from separate reads and may overlap; "
-            "job reads are deduplicated by parent run ID. Jobs from completed "
-            "parents are not comprehensively enumerated; the peak is a proven "
-            "lower bound from intersecting assigned-runner intervals, not "
-            "organization entitlement or a complete global peak."
+            "job reads are deduplicated by parent run ID and job ID. "
+            "Conflicting jobs and parent mismatches are excluded across all "
+            "parents; overlapping intervals "
+            "on one runner count once and are reported. The legacy "
+            "peak_provable_concurrent_jobs_lower_bound and peak_proof_timestamp "
+            "fields are observed estimates: in-progress status may be stale "
+            "even when its interval ends at request start. Only the terminal "
+            "peak, from completed jobs with positive integer runner IDs, "
+            "determines verified_500_running. Name-only runner identities "
+            "contribute only to the observed estimate. Jobs from completed parents are not "
+            "comprehensively enumerated; the terminal peak is a lower bound, "
+            "not organization entitlement or a complete global peak."
         ),
         "errors": error,
     }
@@ -351,8 +533,11 @@ def main(argv=None) -> int:
                     "running_job_records_nonatomic": result[
                         "job_states_seen_nonatomic"
                     ].get("in_progress", 0),
-                    "proven_peak_lower_bound": result[
+                    "observed_peak": result[
                         "peak_provable_concurrent_jobs_lower_bound"
+                    ],
+                    "terminal_peak_lower_bound": result[
+                        "peak_terminal_concurrent_jobs_lower_bound"
                     ],
                     "verified_500": result["verified_500_running"],
                     "all_read_paths_complete": result["all_read_paths_complete"],
