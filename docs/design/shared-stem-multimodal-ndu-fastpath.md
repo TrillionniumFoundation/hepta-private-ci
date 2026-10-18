@@ -302,3 +302,51 @@ Only after the prior gates pass should a narrow effectful capability be consider
 - CUDA Graphs: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#cuda-graphs
 - WebAssembly security: https://webassembly.org/docs/security/
 - Linux eBPF verifier model: https://www.kernel.org/doc/html/latest/bpf/verifier.html
+
+
+## Short-horizon FBSDE/System2 recursion
+
+A short-horizon FBSDE can be used as a bounded trajectory mechanism for System2, provided the mathematical problem and the neural approximation are kept separate.
+
+For a local interval, define a forward state (X_k), backward value (Y_k), control (Z_k), driver (f), diffusion (sigma), terminal condition (g), and step size (Delta t). The qualification contract in `qualification/ndu-fbsde-short-horizon-shadow-20261018` requires a local contraction load
+
+[
+H cdot ho_{mathrm{step}} < 1
+]
+
+where (H) is the number of bounded steps and (ho_{mathrm{step}}) is the certified per-step contraction bound. This is a sufficient local certificate shape, not a proof that a trained encoder approximates the adapted solution.
+
+Each step binds:
+
+- problem, Stem, Cell, snapshot, and generation digests;
+- trajectory and sequential step index;
+- exact parent and next state digests;
+- (Y), (Z), and noise digests;
+- interval utility;
+- numerical residual;
+- memory and latency observations.
+
+Forward propagation can feed the next Cell/encoder only through the exact next-state digest. A failed, stale, over-budget, replayed, or residual-violating step stops the trajectory. The trajectory receives success only after the bounded horizon is complete.
+
+The theoretical existence/uniqueness argument should remain a separate evaluation gate based on a contraction or monotonicity hypothesis; published FBSDE work uses contraction mappings and related assumptions for adapted-solution results, while deep FBSDE work supplies numerical approximation methods for high-dimensional problems. These are complementary evidence layers, not interchangeable claims.
+
+## Split lineage and rollback
+
+The contract in `qualification/cell-split-lineage-shadow-20261018` treats differentiation as an immutable lineage operation:
+
+- parent artifact and snapshot are frozen;
+- at least two child identities are proposed;
+- each child has a benchmark-matched evaluation ledger;
+- task gain is lower-confidence-bound based;
+- global regression, calibration, OOD, latency, memory, safety, and rollback readiness are hard gates;
+- only children passing every gate are accepted;
+- revocation produces a digest-bound receipt.
+
+This allows Cell population growth without silently changing a parent's behavior. Split count is not a reasoning metric. A child must improve a declared task slice under held-out evaluation and preserve global calibration and safety.
+
+The current shadow sequence is:
+
+`P0 ActionIR -> P1 qualification -> P2 owner evidence -> P3 Rust receipt -> P4 Stem bakeoff -> FBSDE trajectory -> Cell lineage`.
+
+All stages remain non-effectful and retain `authority=DENY_ALL`.
+
