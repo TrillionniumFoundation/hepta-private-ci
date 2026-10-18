@@ -209,7 +209,9 @@ def _ed25519_prime_order_public_key(encoded: bytes) -> bool:
     if x == 0 and y == 1:
         return False
 
-    def add(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    def add(
+        a: tuple[int, int, int, int], b: tuple[int, int, int, int]
+    ) -> tuple[int, int, int, int]:
         x1, y1, z1, t1 = a
         x2, y2, z2, t2 = b
         aa = (y1 - x1) * (y2 - x2) % prime
@@ -271,7 +273,8 @@ def verify_observer_signature(
     trusted_public_key = bytes.fromhex(trusted_public_key_hex)
     if not _ed25519_prime_order_public_key(trusted_public_key):
         raise ValueError(
-            "independent observer Ed25519 signature invalid: non-prime-order trusted key"
+            "independent observer Ed25519 signature invalid: "
+            "non-prime-order trusted key"
         )
     try:
         Ed25519PublicKey.from_public_bytes(trusted_public_key).verify(
