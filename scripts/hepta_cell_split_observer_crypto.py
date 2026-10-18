@@ -72,12 +72,12 @@ def verify_observer_receipt_signature(
         raise ValueError("unable to read pinned observer public key") from error
     if hashlib.sha256(key_bytes).hexdigest() != trusted_key_sha256:
         raise ValueError("observer public key does not match independently pinned SHA256")
+    encoded = observer.get("signatureBase64")
+    if not isinstance(encoded, str):
+        raise ValueError("observer signature missing")
     try:
-        encoded = observer.get("signatureBase64")
-        if not isinstance(encoded, str):
-            raise ValueError("observer signature missing")
         signature = base64.b64decode(encoded, validate=True)
-    except (binascii.Error, ValueError) as error:
+    except binascii.Error as error:
         raise ValueError("observer signature is malformed") from error
     if len(signature) != 64:
         raise ValueError("observer Ed25519 signature must contain 64 bytes")
