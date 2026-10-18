@@ -143,3 +143,23 @@ fn exhausted_depth_abstains_without_budget_mutation() {
     assert_eq!(result.recommended_depth, policy.max_depth);
     assert_eq!(result.remaining_budget_micros, input.remaining_budget_micros);
 }
+
+#[test]
+fn depth_projection_never_emits_negative_risk_or_uncertainty() {
+    let policy = policy();
+    let mut risk_only = request(&policy);
+    risk_only.risk_q32 = 20;
+    risk_only.uncertainty_q32 = 1;
+    let projected = must(suggest_ndu_shadow_v1(&policy, &risk_only));
+    assert_eq!(projected.action, NduShadowActionV1::Deepen);
+    assert_eq!(projected.projected_uncertainty_q32, 0);
+    assert_eq!(projected.projected_risk_q32, 10);
+
+    let mut uncertainty_only = request(&policy);
+    uncertainty_only.risk_q32 = 1;
+    uncertainty_only.uncertainty_q32 = 20;
+    let projected = must(suggest_ndu_shadow_v1(&policy, &uncertainty_only));
+    assert_eq!(projected.action, NduShadowActionV1::Deepen);
+    assert_eq!(projected.projected_risk_q32, 0);
+    assert_eq!(projected.projected_uncertainty_q32, 5);
+}
