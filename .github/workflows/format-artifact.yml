@@ -1,0 +1,42 @@
+name: format-artifact
+on:
+  push:
+    branches:
+      - maintenance/format-artifact-20261018
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Setup uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          activate-environment: false
+          working-directory: ${{ github.workspace }}
+      - name: Format Python
+        run: uv run --frozen --project scripts ruff format scripts .github
+      - name: Format Rust
+        working-directory: codex-rs
+        run: cargo fmt -- --config imports_granularity=Item
+      - name: Capture patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --binary > "${RUNNER_TEMP}/format.patch"
+          git diff --name-only > "${RUNNER_TEMP}/format.files"
+          test -s "${RUNNER_TEMP}/format.patch"
+      - name: Upload format patch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: format-artifact
+          path: |
+            ${{ runner.temp }}/format.patch
+            ${{ runner.temp }}/format.files
+          if-no-files-found: error
+          retention-days: 7
