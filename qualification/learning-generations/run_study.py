@@ -10,6 +10,8 @@ import subprocess
 import sys
 import time
 
+from ordinary_start_observation import StartObservationError, verify_start_observation
+
 SELECTOR = ('cognitive_ranker::tests::three_generation_learning::'
             'three_actual_fits_installations_future_instances_no_update_and_revocation')
 SELECTORS = {'generations': SELECTOR,
@@ -81,6 +83,15 @@ def main():
         retained_files=len(files), retained_bytes=sum(path.stat().st_size for path in files),
         log_sha256=sha(log), compilation_included=False, energy_cost=None, monetary_cost=None,
         scope='entire native process including role child CPU via waited descendants; role costs overlap and must not be added again')
+    start_observation_error = None
+    if args.scenario == 'ordinary-upgrade':
+        try:
+            receipt['source_start_observation'] = verify_start_observation(output)
+        except Exception as error:
+            # Reader failures also retain the already completed native run.
+            start_observation_error = str(error)
+            receipt['source_start_observation'] = dict(state='failed', reason=str(error),
+                artifact_sha256=error.hashes if isinstance(error, StartObservationError) else {})
     receipt_path = output.with_suffix('.execution.json')
     with receipt_path.open('x') as handle:
         json.dump(receipt, handle, indent=2)
@@ -96,6 +107,8 @@ def main():
     print(json.dumps(receipt), flush=True)
     if code or not receipt['binary_unchanged'] or not (output/'summary.json').is_file():
         raise SystemExit('native study failed; exact failure and partial artifacts retained')
+    if start_observation_error is not None:
+        raise SystemExit('ordinary source Start evidence failed: ' + start_observation_error)
     if args.scenario == 'generations':
         subprocess.run([sys.executable, str(source.with_name('verify_study.py')), str(output)], check=True)
 
