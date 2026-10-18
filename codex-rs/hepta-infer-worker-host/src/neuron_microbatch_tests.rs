@@ -136,7 +136,9 @@ fn planner_rejects_empty_and_mixed_snapshot_batches() {
         ))
     );
     let mut mixed = requests();
-    let features = vec![Q24 / 2, -Q24 / 4];
+    // A distinct feature vector yields a different snapshot semantic digest.
+    // Merely changing request_id still forms a valid homogeneous microbatch.
+    let features = vec![Q24 / 2, -Q24 / 8];
     mixed.push(HeadExecutionRequestV1 {
         request_id: id("request-2"),
         model_id: id("head"),
