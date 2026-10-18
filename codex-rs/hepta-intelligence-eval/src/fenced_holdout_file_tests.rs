@@ -188,6 +188,50 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
 }
 
 #[test]
+fn timed_reservation_reopens_exactly_and_cannot_promote_untimed_or_late_plans() {
+    let temp = TempFile::new();
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")).unwrap();
+    let mut current = owner(store, None);
+    let now = u64::try_from(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_micros()).unwrap();
+    let boundary = now + 60_000_000;
+    let legacy = plan("legacy-plan");
+    let untimed = current.consume(&legacy).unwrap();
+    let before = fs::read(&temp.path).unwrap();
+    assert!(untimed.reservation_time.is_none());
+    assert!(current.reserve_before_window(&legacy, boundary).is_err());
+    assert!(current.reserve_before_window(&plan("late-plan"), now).is_err());
+    assert_eq!(fs::read(&temp.path).unwrap(), before);
+    let candidate = plan("timed-plan");
+    let reserved = current.reserve_before_window(&candidate, boundary).unwrap();
+    let time = reserved.reservation_time.unwrap();
+    assert!(time.reserved_at_unix_micros() >= now);
+    assert_eq!(time.window_not_before_unix_micros(), boundary);
+    let received_at = u64::try_from(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_micros()).unwrap();
+    let ack = crate::holdout_reservation_acknowledgement_payload_v1(
+        digest("binding"), current.fence(), &candidate, &reserved, received_at,
+    ).unwrap();
+    assert!(crate::holdout_reservation_acknowledgement_payload_v1(
+        digest("binding"), current.fence(), &candidate, &reserved, boundary,
+    ).is_err());
+    let anchor = current.anchor();
+    let fence = current.fence().clone();
+    drop(current);
+    let saved = fs::read(&temp.path).unwrap();
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor)).unwrap();
+    let mut current = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence).unwrap();
+    let replay = current.reserve_before_window(&candidate, boundary).unwrap();
+    assert_eq!(replay.reservation_time, reserved.reservation_time);
+    assert_eq!((replay.sequence, replay.record_digest, replay.head_digest),
+        (reserved.sequence, reserved.record_digest, reserved.head_digest));
+    assert_eq!(crate::holdout_reservation_acknowledgement_payload_v1(
+        digest("binding"), current.fence(), &candidate, &replay, received_at,
+    ).unwrap(), ack);
+    assert!(current.reserve_before_window(&candidate, boundary + 1).is_err());
+    assert!(current.reserve_before_window(&legacy, boundary).is_err());
+    assert_eq!(fs::read(&temp.path).unwrap(), saved);
+}
+
+#[test]
 fn child_process_observes_lock_then_recovers_after_owner_exit() {
     if let Ok(path) = std::env::var("HEPTA_FENCED_CAS_CHILD") {
         let file = match OpenOptions::new().read(true).write(true).open(path) {

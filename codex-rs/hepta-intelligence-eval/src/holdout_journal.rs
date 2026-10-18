@@ -19,6 +19,22 @@ use crate::HoldoutUseReceiptV1;
 
 const MAX_JOURNAL_RECORDS: usize = 1_000_000;
 
+/// The original owner records its clock when admitting a preregistered future
+/// reservation. This is host-clock evidence, not an external time authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FinalHoldoutReservationTimeV1 {
+    pub(crate) reserved_at_unix_micros: u64,
+    pub(crate) window_not_before_unix_micros: u64,
+}
+
+impl FinalHoldoutReservationTimeV1 {
+    #[must_use]
+    pub fn reserved_at_unix_micros(self) -> u64 { self.reserved_at_unix_micros }
+
+    #[must_use]
+    pub fn window_not_before_unix_micros(self) -> u64 { self.window_not_before_unix_micros }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FinalHoldoutJournalRecordV1 {
     pub sequence: u64,
@@ -26,6 +42,7 @@ pub struct FinalHoldoutJournalRecordV1 {
     pub record_digest: Digest32,
     pub plan: CrossFoldPlanReceiptV1,
     pub use_receipt: HoldoutUseReceiptV1,
+    pub reservation_time: Option<FinalHoldoutReservationTimeV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -41,6 +58,7 @@ pub struct FinalHoldoutJournalReceiptV1 {
     pub record_digest: Digest32,
     pub head_digest: Digest32,
     pub use_receipt: HoldoutUseReceiptV1,
+    pub reservation_time: Option<FinalHoldoutReservationTimeV1>,
     pub authority: AuthorityPosture,
 }
 
@@ -96,8 +114,22 @@ impl FinalHoldoutJournalV1 {
         expected_head_digest: Digest32,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, FinalHoldoutJournalError> {
+        self.consume_with_time(expected_head_digest, plan, None)
+    }
+
+    pub(crate) fn consume_with_time(
+        &mut self,
+        expected_head_digest: Digest32,
+        plan: &CrossFoldPlanReceiptV1,
+        reservation_time: Option<FinalHoldoutReservationTimeV1>,
+    ) -> Result<FinalHoldoutJournalReceiptV1, FinalHoldoutJournalError> {
         if expected_head_digest != self.head_digest {
             return Err(FinalHoldoutJournalError::HeadMismatch);
+        }
+        if reservation_time.is_some_and(|time| time.reserved_at_unix_micros == 0
+            || time.reserved_at_unix_micros >= time.window_not_before_unix_micros)
+        {
+            return Err(FinalHoldoutJournalError::SnapshotMismatch);
         }
         // Check every fallible admission condition before mutating the registry.
         // Existing plans may still be retried when the journal is full.
@@ -131,6 +163,7 @@ impl FinalHoldoutJournalV1 {
                 record_digest: existing.record_digest,
                 head_digest: self.head_digest,
                 use_receipt,
+                reservation_time: existing.reservation_time,
                 authority: AuthorityPosture::DENY_ALL,
             });
         }
@@ -140,6 +173,7 @@ impl FinalHoldoutJournalV1 {
             predecessor_head_digest,
             plan.plan_digest,
             use_receipt.use_digest,
+            reservation_time,
         );
         let record = FinalHoldoutJournalRecordV1 {
             sequence,
@@ -147,6 +181,7 @@ impl FinalHoldoutJournalV1 {
             record_digest,
             plan: plan.clone(),
             use_receipt: use_receipt.clone(),
+            reservation_time,
         };
         self.records.push(record);
         self.head_digest = record_digest;
@@ -156,6 +191,7 @@ impl FinalHoldoutJournalV1 {
             record_digest,
             head_digest: self.head_digest,
             use_receipt,
+            reservation_time,
             authority: AuthorityPosture::DENY_ALL,
         })
     }
@@ -193,7 +229,7 @@ impl FinalHoldoutJournalV1 {
             {
                 return Err(FinalHoldoutJournalError::SnapshotMismatch);
             }
-            let receipt = journal.consume(journal.head_digest, &expected.plan)?;
+            let receipt = journal.consume_with_time(journal.head_digest, &expected.plan, expected.reservation_time)?;
             let actual = journal
                 .records
                 .last()
@@ -214,12 +250,20 @@ fn digest_record(
     predecessor_head_digest: Digest32,
     plan_digest: Digest32,
     use_digest: Digest32,
+    reservation_time: Option<FinalHoldoutReservationTimeV1>,
 ) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.final-holdout-journal.v1".to_vec();
+    let mut bytes = match reservation_time {
+        None => b"hepta.intelligence-eval.final-holdout-journal.v1".to_vec(),
+        Some(_) => b"hepta.intelligence-eval.final-holdout-journal-timed.v1".to_vec(),
+    };
     bytes.extend_from_slice(&sequence.to_be_bytes());
     bytes.extend_from_slice(predecessor_head_digest.as_array());
     bytes.extend_from_slice(plan_digest.as_array());
     bytes.extend_from_slice(use_digest.as_array());
+    if let Some(time) = reservation_time {
+        bytes.extend_from_slice(&time.reserved_at_unix_micros.to_be_bytes());
+        bytes.extend_from_slice(&time.window_not_before_unix_micros.to_be_bytes());
+    }
     Digest32::of_bytes(&bytes)
 }
 

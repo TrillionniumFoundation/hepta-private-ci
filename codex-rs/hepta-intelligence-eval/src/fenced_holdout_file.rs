@@ -23,6 +23,7 @@ use crate::FinalHoldoutCasRecordV1;
 use crate::FinalHoldoutCasStoreError;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutJournalV1;
+use crate::FinalHoldoutReservationTimeV1;
 use crate::HoldoutWriterFenceV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
@@ -34,6 +35,7 @@ const MAX_FRAME: usize = 4096;
 const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
+const EVENT_TIMED_PLAN: u8 = 2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
@@ -285,7 +287,15 @@ fn transition_payload(
                 .ok_or(LockedFileCasErrorV1::Corrupt)?;
             let encoded =
                 encode_holdout_plan(&record.plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
-            let mut payload = vec![EVENT_PLAN];
+            let mut payload = match record.reservation_time {
+                None => vec![EVENT_PLAN],
+                Some(time) => {
+                    let mut bytes = vec![EVENT_TIMED_PLAN];
+                    bytes.extend_from_slice(&time.reserved_at_unix_micros.to_be_bytes());
+                    bytes.extend_from_slice(&time.window_not_before_unix_micros.to_be_bytes());
+                    bytes
+                }
+            };
             payload.extend_from_slice(&encoded);
             Ok(payload)
         }
@@ -318,17 +328,23 @@ fn replay_event(
             FinalHoldoutCasRecordV1::new(binding, fence, journal.snapshot())
                 .map_err(|_| LockedFileCasErrorV1::Corrupt)
         }
-        EVENT_PLAN => {
+        EVENT_PLAN | EVENT_TIMED_PLAN => {
             let current = current.ok_or(LockedFileCasErrorV1::Corrupt)?;
+            let (encoded_plan, reservation_time) = if tag == EVENT_TIMED_PLAN {
+                let time = payload.get(1..17).ok_or(LockedFileCasErrorV1::Corrupt)?;
+                let reserved_at_unix_micros = u64::from_be_bytes(time[..8].try_into().map_err(|_| LockedFileCasErrorV1::Corrupt)?);
+                let window_not_before_unix_micros = u64::from_be_bytes(time[8..].try_into().map_err(|_| LockedFileCasErrorV1::Corrupt)?);
+                (&payload[17..], Some(FinalHoldoutReservationTimeV1 { reserved_at_unix_micros, window_not_before_unix_micros }))
+            } else { (&payload[1..], None) };
             let plan =
-                decode_holdout_plan(&payload[1..]).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
+                decode_holdout_plan(encoded_plan).map_err(|_| LockedFileCasErrorV1::Corrupt)?;
             let mut journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
                 current.journal.clone(),
                 MAX_RECORDS,
             )
             .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
             let receipt = journal
-                .consume(journal.head_digest(), &plan)
+                .consume_with_time(journal.head_digest(), &plan, reservation_time)
                 .map_err(|_| LockedFileCasErrorV1::Corrupt)?;
             if receipt.disposition != crate::HoldoutUseDispositionV1::Recorded {
                 return Err(LockedFileCasErrorV1::Corrupt);

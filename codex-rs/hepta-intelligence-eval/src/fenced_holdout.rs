@@ -17,6 +17,7 @@ use crate::FinalHoldoutJournalError;
 use crate::FinalHoldoutJournalReceiptV1;
 use crate::FinalHoldoutJournalSnapshotV1;
 use crate::FinalHoldoutJournalV1;
+use crate::FinalHoldoutReservationTimeV1;
 
 const MAX_RECORDS: usize = 1_000_000;
 
@@ -250,12 +251,48 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         &mut self,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutError> {
+        self.consume_with_time(plan, None)
+    }
+
+    /// Commit the complete plan and this owner's actual clock before a pinned
+    /// future boundary. The caller supplies no current-time claim. Exact replay
+    /// preserves the first clock, and historical untimed plans cannot acquire
+    /// future-window standing by being replayed through this entry.
+    pub fn reserve_before_window(
+        &mut self,
+        plan: &CrossFoldPlanReceiptV1,
+        window_not_before_unix_micros: u64,
+    ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutError> {
+        let time = if let Some(existing) = self.journal.records().iter()
+            .find(|record| record.plan.plan_id == plan.plan_id)
+        {
+            let time = existing.reservation_time.ok_or(FencedHoldoutError::Binding)?;
+            if existing.plan != *plan || time.window_not_before_unix_micros != window_not_before_unix_micros {
+                return Err(FencedHoldoutError::Binding);
+            }
+            time
+        } else {
+            let reserved_at_unix_micros = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok().and_then(|value| u64::try_from(value.as_micros()).ok())
+                .filter(|value| *value > 0 && *value < window_not_before_unix_micros)
+                .ok_or(FencedHoldoutError::Binding)?;
+            FinalHoldoutReservationTimeV1 { reserved_at_unix_micros, window_not_before_unix_micros }
+        };
+        self.consume_with_time(plan, Some(time))
+    }
+
+    fn consume_with_time(
+        &mut self,
+        plan: &CrossFoldPlanReceiptV1,
+        reservation_time: Option<FinalHoldoutReservationTimeV1>,
+    ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutError> {
         if self.poisoned {
             return Err(FencedHoldoutError::Poisoned);
         }
         let mut candidate = self.journal.clone();
         let receipt = candidate
-            .consume(candidate.head_digest(), plan)
+            .consume_with_time(candidate.head_digest(), plan, reservation_time)
             .map_err(FencedHoldoutError::Journal)?;
         let next =
             FinalHoldoutCasRecordV1::new(self.binding, self.fence.clone(), candidate.snapshot())?;
