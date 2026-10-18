@@ -1,18 +1,17 @@
 {
   "schema": "hepta.audit-delivery-verification.v1",
-  "verified_utc": "2026-10-18 17:02:00 UTC",
+  "verified_utc": "2026-10-18 18:15:06 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "intended_branch": "codex/hepta-audit-checkpoint-20261018-855e2f95cede",
   "repository_path": "qualification/ci-audit/2026-10-18-855e2f95cede",
   "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
-  "capture_scope": "Content and object verification before creating the checkpoint branch ref. The delivered Git commit and tree identify the final published snapshot without a circular self-hash.",
+  "capture_scope": "Content and object verification before the final fast-forward of the checkpoint branch. Initial 85-file publication is separately recorded in INITIAL_PUBLICATION_RECEIPT.json; the delivered commit/tree identify the final snapshot without a circular self-hash.",
   "archives": {
-    "count": 6,
-    "total_bytes": 10456601,
-    "split_archives": 3,
-    "fragments": 55,
-    "complete_file_archives": 3,
-    "all_58_blob_uploads_returned_matching_expected_git_sha": true,
+    "count": 8,
+    "total_bytes": 10783019,
+    "split_archives": 4,
+    "fragments": 57,
+    "complete_file_archives": 4,
     "unconfirmed_subagent_transfers_used_as_success": false,
     "verify_only_command": "python3 -B reassemble_archives.py --verify-only",
     "verify_only_exit_code": 0,
@@ -70,6 +69,24 @@
         "reconstructed": false,
         "sha256": "8c0ed97608b7dca3fc8388a26e815acf9e2ccf9dee4ae0b04283c8f55a097746",
         "status": "VERIFIED"
+      },
+      {
+        "archive": "final-ci-pre-repair-evidence.tar.gz",
+        "bytes": 293382,
+        "git_blob_sha": "d11e23daff1cf08c43e50afeab7505b84766daa8",
+        "parts": 2,
+        "reconstructed": false,
+        "sha256": "fef58f0df70315b4eb0ead466f5663294cf9fae23e3c9f16f985787678f1f8c0",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "pr2599-context-repair-evidence.tar.gz",
+        "bytes": 33036,
+        "git_blob_sha": "59b3c8efabf323f13ac0f0b4a85bea8fae33b06e",
+        "parts": 1,
+        "reconstructed": false,
+        "sha256": "1559786ba90dfd3e3b3b810ccc466809c7e8d91209cc5a23568d04aa490572fb",
+        "status": "VERIFIED"
       }
     ],
     "reassembly_command": "python3 -B reassemble_archives.py",
@@ -113,6 +130,21 @@
       "bounded_scan_is_not_perfect_secret_proof": true,
       "model_weights_in_member_list": false,
       "original_zip_and_three_receipts_included": true
+    },
+    "all_61_binary_blob_uploads_returned_matching_expected_git_sha": true,
+    "later_context_repair_member_verification": {
+      "name": "pr2599-context-repair-evidence.tar.gz",
+      "bytes": 33036,
+      "sha256": "1559786ba90dfd3e3b3b810ccc466809c7e8d91209cc5a23568d04aa490572fb",
+      "git_blob_sha": "59b3c8efabf323f13ac0f0b4a85bea8fae33b06e",
+      "members": 34,
+      "manifest_covered": 33,
+      "all_member_roundtrip_bytes_pass": true,
+      "pre_repair_archive_verification": {
+        "members": 15,
+        "manifest_covered": 14,
+        "all_sizes_and_hashes_pass": true
+      }
     }
   },
   "recovery_helper": {
@@ -149,8 +181,8 @@
     "does_not_establish_full_semantic_or_ci_coverage": true
   },
   "code_repairs": {
-    "pushed_commits": 7,
-    "pr2599_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "pushed_commits": 9,
+    "pr2599_head": "a4728553d2f09242640400719d82257bc9c63c73",
     "pr2714_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
     "local_python_contract_tests": {
       "pass": 109,
@@ -164,11 +196,29 @@
       "total": 136
     },
     "independent_full_final_109_test_rerun_claimed": false,
-    "native_cargo_or_clippy_launched": false,
     "native_preflight_blocker": "Workspace overlay free bytes 0",
     "full_required_ci_pass_claimed": false,
     "strict_global_map_qualification_failed_modules": 26,
-    "strict_identity_validator_modified": false
+    "strict_identity_validator_modified": false,
+    "workspace_native_cargo_or_clippy_launched": false,
+    "isolated_locked_compiler_reproducer": {
+      "anyhow": "1.0.103",
+      "before_errors": 2,
+      "after_exit_code": 0,
+      "cached_package_files_verified": 54,
+      "scope": "Reduced type-bound proof, not complete workspace native qualification"
+    },
+    "introduced_context_regression_corrected_in": [
+      "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+      "a4728553d2f09242640400719d82257bc9c63c73"
+    ],
+    "correction_receipt": "PR2599_CONTEXT_REPAIR.json",
+    "latest_head_ci": {
+      "source": "POST_REPAIR_CI_CHECKPOINT.json",
+      "jobs": 6,
+      "queued": 6,
+      "required_contexts_absent": true
+    }
   },
   "new_reader_execution": {
     "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
@@ -197,6 +247,7 @@
     "security_or_platform_gates_weakened": false,
     "production_activation_allowed": false,
     "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO",
-    "local_background_native_build_or_model_processes_launched": 0
+    "local_background_native_build_or_model_processes_launched": 0,
+    "blocker_rows": 22
   }
 }

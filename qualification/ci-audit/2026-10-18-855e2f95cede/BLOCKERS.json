@@ -9,11 +9,13 @@
     "run": 38827238622,
     "job": 117315617267,
     "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
-    "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
-    "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "next": "Run canonical just test plus required Clippy/platform checks at a4728553 with enough disk; no merge until genuine required success.",
+    "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
     "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
     "repair_owner": "PR #2599 / root",
-    "historical_owner_note": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation"
+    "historical_owner_note": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation",
+    "followup_type_fix_source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+    "repair_receipt": "PR2599_CONTEXT_REPAIR.json"
   },
   {
     "id": "CI-002",
@@ -43,11 +45,13 @@
       117680668585
     ],
     "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
-    "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
-    "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "next": "Run canonical just test plus required Clippy/platform checks at a4728553 with enough disk; no merge until genuine required success.",
+    "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
     "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
     "repair_owner": "PR #2599 / root",
-    "historical_owner_note": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification"
+    "historical_owner_note": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification",
+    "followup_type_fix_source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+    "repair_receipt": "PR2599_CONTEXT_REPAIR.json"
   },
   {
     "id": "CI-004",
@@ -292,5 +296,24 @@
     "owner": "Feature and integration owners",
     "root": "All Hepta branch/PR metadata and branch git graph relations were enumerated; not every diff/review/historical job/scientific artifact was audited.",
     "next": "Continue by owner DAG. Verify semantic superiority and exact current gates before closing, deleting or merging."
+  },
+  {
+    "id": "CI-015",
+    "evidence_label": "VERIFIED_NOW",
+    "scope": "PR #2599 fixture type-bound correction",
+    "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "status": "FIX_PUSHED_EXACT_HEAD_NATIVE_CI_PENDING",
+    "root": "This audit's earlier e214 fixture patch called anyhow::Context on ProviderEffectBindingError and String, which lack StdError. Source-head CI compiled the tests and reported two E0599 errors.",
+    "owner": "PR #2599 / root",
+    "run": 39140469435,
+    "job": 117713683668,
+    "fix_commits": [
+      "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+      "a4728553d2f09242640400719d82257bc9c63c73"
+    ],
+    "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
+    "local_verification": "Exact locked anyhow 1.0.103 reduced compiler reproducer: before two E0599, after exit0. Just fmt, diff and strict runtime.agentd migration pass; workspace/native gate not complete.",
+    "next": "On an adequate worker run canonical just test for agentd browser_servo and host_dispatches_exact_wire_payload_once, then require all exact a472 blocking/architecture/platform checks. Inspect runs 39151714945 and 39151714876.",
+    "evidence": "PR2599_CONTEXT_REPAIR.json; final-ci-pre-repair-evidence.tar.gz; pr2599-context-repair-evidence.tar.gz"
   }
 ]

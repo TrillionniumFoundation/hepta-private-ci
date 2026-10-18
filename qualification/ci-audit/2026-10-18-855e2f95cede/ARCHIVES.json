@@ -3,9 +3,9 @@
   "created_utc": "2026-10-18 16:40:32 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "repository_path": "qualification/ci-audit/2026-10-18-855e2f95cede",
-  "archive_count": 6,
-  "total_archive_bytes": 10456601,
-  "fragment_count": 55,
+  "archive_count": 8,
+  "total_archive_bytes": 10783019,
+  "fragment_count": 57,
   "transport_note": "All referenced fragment and complete-file blobs returned matching Git SHA through the authorized root GitHub connection. Unconfirmed earlier subagent calls were interrupted; no approval rejection was reported. No branch protection or permission settings changed.",
   "recovery": {
     "verify": "python3 reassemble_archives.py --verify-only",
@@ -154,7 +154,38 @@
           "returned_utc": "2026-10-18 16:59:23 UTC"
         }
       }
+    },
+    {
+      "name": "final-ci-pre-repair-evidence.tar.gz",
+      "bytes": 293382,
+      "sha256": "fef58f0df70315b4eb0ead466f5663294cf9fae23e3c9f16f985787678f1f8c0",
+      "git_blob_sha": "d11e23daff1cf08c43e50afeab7505b84766daa8",
+      "whole_git_blob_is_content_identity_only": true,
+      "storage": {
+        "kind": "parts",
+        "parts": [
+          {"index":0,"path":"archive-parts/final-ci-pre-repair-evidence.tar.gz.part-0000","offset":0,"bytes":190000,"sha256":"926c29d2389d7c64d01baa82d96834092f076a6dbabd8fda14b78739d52aa708","git_blob_sha":"980349c2a47e477a9c5b70dd5521afb35d640ea2","remote_blob_confirmed":true,"returned_utc":"2026-10-18 18:04:21 UTC"},
+          {"index":1,"path":"archive-parts/final-ci-pre-repair-evidence.tar.gz.part-0001","offset":190000,"bytes":103382,"sha256":"bd45a3022d9514719ea168591ec73d4fb2268567514b7900e5c54989f9afd1df","git_blob_sha":"7c2a22e954b48ee5605240a6e6af453c9f86f768","remote_blob_confirmed":true,"returned_utc":"2026-10-18 18:04:25 UTC"}
+        ]
+      }
+    },
+    {
+      "name": "pr2599-context-repair-evidence.tar.gz",
+      "bytes": 33036,
+      "sha256": "1559786ba90dfd3e3b3b810ccc466809c7e8d91209cc5a23568d04aa490572fb",
+      "git_blob_sha": "59b3c8efabf323f13ac0f0b4a85bea8fae33b06e",
+      "storage": {
+        "kind": "blob",
+        "file": {
+          "path": "pr2599-context-repair-evidence.tar.gz",
+          "bytes": 33036,
+          "sha256": "1559786ba90dfd3e3b3b810ccc466809c7e8d91209cc5a23568d04aa490572fb",
+          "git_blob_sha": "59b3c8efabf323f13ac0f0b4a85bea8fae33b06e",
+          "remote_blob_confirmed": true,
+          "returned_utc": "2026-10-18 18:04:30 UTC"
+        }
+      }
     }
   ],
-  "updated_utc": "2026-10-18 17:00:25 UTC"
+  "updated_utc": "2026-10-18 18:11:28 UTC"
 }

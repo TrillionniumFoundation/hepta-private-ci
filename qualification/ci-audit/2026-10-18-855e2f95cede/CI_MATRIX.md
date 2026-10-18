@@ -130,3 +130,9 @@ At 16:24:26-16:25:06 UTC, the same two repair heads have 17 jobs: 2 success, 14 
 ## Later terminal Reader observation (separate from the full matrix snapshot)
 
 At 2026-10-18 16:46 UTC, exact-source run 39140341757 attempt 1 and both jobs were completed/success. Reader job 117713314446 actually executed 64 frozen Laya typed-choice calls from 16:24:39 to 16:27:02 UTC on f191cd081ba16fed8827a18093b5a5b39e9a36cd. Artifact 12143240868 and its three JSON receipts were hash-verified; root independently recomputed row counts/scores/tokens. No full required-check matrix refresh was performed, so earlier 17-job snapshot totals retain their original observation time. See LAYA_TERMINAL_CHECKPOINT.json / ROOT_LAYA_VERIFICATION.json. The 40+72 nine-arm qualification and all production gates remain open.
+
+## Final pre-repair snapshot and subsequent a472 correction
+
+[PRE_REPAIR_CI_SNAPSHOT.md](PRE_REPAIR_CI_SNAPSHOT.md) covers 17:36:53-17:37:42 UTC, 9 runs / 53 checks / 52 jobs on 19c5 and f191. Totals: 15 success, 1 failure, 1 cancelled, 7 skipped, 27 queued, 1 in_progress. Source job 117713683668 failed with two E0599 errors introduced in the fixture patch. Base-merge planning success and metadata-only v8 success do not replace that native failure.
+
+The two-line correction and original strict map refresh are pushed as e69455587d2709c34b6b1832ed1aa4fca9025aeb and a4728553d2f09242640400719d82257bc9c63c73. [POST_REPAIR_CI_CHECKPOINT.json](POST_REPAIR_CI_CHECKPOINT.json) binds the new head: at 18:00 UTC, 6 checks / 6 jobs, all queued, 0 legacy statuses, CI required / Architecture required absent. Run collection was read at 17:56 UTC; the snapshot is explicitly non-atomic. New blocking run 39151714945 and architecture run 39151714876 remain incomplete. Full native tests were not run locally; the locked-version reduced compiler reproducer is separately scoped in PR2599_CONTEXT_REPAIR.json.

@@ -37,3 +37,7 @@ Strict source-map qualification remains independently open. The observed blockin
 ## Later Reader observation — 16:46 UTC
 
 Run 39140341757 completed 64 fresh frozen Laya four-arm calls on f191cd081ba16fed8827a18093b5a5b39e9a36cd. Three artifact receipts and their per-row arithmetic were verified. MEMORY-FRESH-112 remains open: this run contains neither the required 40 independent calibration calls nor the 72 nine-arm evaluation calls. See LAYA_TERMINAL_CHECKPOINT.json and ROOT_LAYA_VERIFICATION.json.
+
+## CI-015 — 本轮新增类型约束回归已修正，等待新 HEAD CI
+
+17:37 UTC 的真实 source-head 编译发现 e214 fixture patch 的两处 E0599。追加源码提交 e69455587d2709c34b6b1832ed1aa4fca9025aeb 与严格 map child a4728553d2f09242640400719d82257bc9c63c73，已快进推到 #2599。锁定 anyhow 1.0.103 的小型编译复现前两错、后通过；完整 workspace/native 与 required CI 尚未闭合。CI-001、CI-003 的后续验证头也更新为 a472。见 PR2599_CONTEXT_REPAIR.json / POST_REPAIR_CI_CHECKPOINT.json；原失败保持在 PRE_REPAIR_CI_SNAPSHOT.md 和归档。

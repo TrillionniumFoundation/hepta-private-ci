@@ -89,12 +89,12 @@
   "published_repairs": [
     {
       "schema_version": 1,
-      "observed_utc": "2026-10-18 15:28:37 UTC",
+      "observed_utc": "2026-10-18 17:56:13 UTC",
       "repository": "TrillionniumFoundation/hepta-private-ci",
       "pr": 2599,
       "branch": "fix/ci-clippy-expect-unwrap-20261017",
       "old_head": "1ebb9b8a9313e6504d2ebf9597412f3fe9c49d9e",
-      "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "head": "a4728553d2f09242640400719d82257bc9c63c73",
       "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
       "commits": [
         {
@@ -106,6 +106,16 @@
           "sha": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
           "tree": "4c8ad58586a50f678396dbac4df3623b8dc6f314",
           "purpose": "Four strict source-map updates"
+        },
+        {
+          "sha": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+          "tree": "9823647309a471e44d695744536ef0090584d705",
+          "purpose": "Correct two E0599 fixture error conversions"
+        },
+        {
+          "sha": "a4728553d2f09242640400719d82257bc9c63c73",
+          "tree": "1f12d27a969695123fdc14ad33fd0422e9facf2a",
+          "purpose": "Strict runtime.agentd source-map refresh"
         }
       ],
       "branch_updated": true,
@@ -116,12 +126,17 @@
         "diff_check": "PASS",
         "derived_check": "PASS",
         "four_map_source_identity": "PASS",
-        "global_map_qualification": "FAIL_26_MODULES"
+        "global_map_qualification": "FAIL_26_MODULES",
+        "locked_anyhow_type_reproducer": "PASS_REDUCED_COMPILER_SCOPE_NOT_WORKSPACE_GATE",
+        "global_map_failure_set_unchanged": true
       },
       "required_checks": "PENDING_NOT_CLOSED",
       "merge_performed": false,
       "source_gate_unchanged": true,
-      "detail": "github_inventory/FINAL_PR2599_MAP_RECEIPT.json"
+      "detail": "github_inventory/FINAL_PR2599_MAP_RECEIPT.json",
+      "initial_published_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "initial_published_observed_utc": "2026-10-18 15:28:37 UTC",
+      "followup_regression_receipt": "PR2599_CONTEXT_REPAIR.json"
     },
     {
       "schema_version": 1,
@@ -187,87 +202,65 @@
     }
   ],
   "latest_postpush_ci": {
-    "observed_interval_utc": [
-      "2026-10-18 16:24:26 UTC",
-      "2026-10-18T16:25:06.721Z"
-    ],
-    "subjects": [
+    "observation_start_utc": "2026-10-18 17:56:13 UTC",
+    "observation_end_utc": "2026-10-18 18:00:30 UTC",
+    "scope": "PR2599 newly repaired HEAD only",
+    "head": "a4728553d2f09242640400719d82257bc9c63c73",
+    "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "runs": [
       {
-        "pr": 2599,
-        "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
-        "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
-        "totals": {
-          "runs": 4,
-          "checks": 12,
-          "statuses": 0,
-          "jobs": 11
-        },
-        "job_statuses": {
-          "queued": 10,
-          "completed": 1
-        },
-        "job_conclusions": {
-          "null": 10,
-          "success": 1
-        },
-        "aggregator_observations": [
-          {
-            "context": "CI required",
-            "state": "ABSENT",
-            "required_on_target": "main branch GET verified",
-            "owning_run_id": 39140469581
-          },
-          {
-            "context": "Architecture required",
-            "state": "ABSENT",
-            "required_on_target": "main branch GET verified",
-            "owning_run_id": 39140469435
-          }
-        ]
+        "id": 39151714945,
+        "name": "blocking-ci",
+        "status": "pending",
+        "conclusion": null,
+        "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+        "run_attempt": 1
       },
       {
-        "pr": 2714,
-        "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
-        "base": "e08323af4805ed9a8d14afabf2212923195f2156",
-        "totals": {
-          "runs": 5,
-          "checks": 6,
-          "statuses": 0,
-          "jobs": 6
-        },
-        "job_statuses": {
-          "queued": 4,
-          "in_progress": 1,
-          "completed": 1
-        },
-        "job_conclusions": {
-          "null": 5,
-          "success": 1
-        },
-        "aggregator_observations": [
-          {
-            "context": "CI required",
-            "state": "ABSENT",
-            "required_on_target": "research base protection NOT_ACCESSIBLE",
-            "owning_run_id": 39140341708
-          },
-          {
-            "context": "Architecture required",
-            "state": "ABSENT",
-            "required_on_target": "research base protection NOT_ACCESSIBLE",
-            "owning_run_id": 39140341635
-          }
-        ]
+        "id": 39151714876,
+        "name": "Hepta architecture convergence",
+        "status": "pending",
+        "conclusion": null,
+        "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+        "run_attempt": 1
+      },
+      {
+        "id": 39151715018,
+        "name": "v8-canary",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+        "run_attempt": 1
+      },
+      {
+        "id": 39151711639,
+        "name": "PR #2599",
+        "status": "queued",
+        "conclusion": null,
+        "head_sha": "a4728553d2f09242640400719d82257bc9c63c73",
+        "run_attempt": 1
       }
     ],
-    "total_jobs": 17,
-    "job_pass": 2,
-    "job_fail": 0,
-    "job_skipped": 0,
-    "job_queued": 14,
-    "job_in_progress": 1,
-    "note": "Non-atomic endpoint observations. Main required context names were verified; the research target branch's complete protection was not accessible.",
-    "source": "final-ci-checkpoint.json and final-ci-addendum.tar.gz"
+    "checks": 6,
+    "jobs": 6,
+    "legacy_statuses": 0,
+    "job_states": {
+      "queued": 6
+    },
+    "required_contexts": [
+      {
+        "name": "CI required",
+        "matches": []
+      },
+      {
+        "name": "Architecture required",
+        "matches": []
+      }
+    ],
+    "required_ci_complete": false,
+    "report": "POST_REPAIR_CI_CHECKPOINT.json",
+    "raw_archive": "pr2599-context-repair-evidence.tar.gz",
+    "note": "Non-atomic snapshot: run collection at 17:56 UTC; source checks/jobs and PR lease at 18:00 UTC. Every collected endpoint is individually complete; no old-source success is credited."
   },
   "queue_snapshot": {
     "observed_utc": "2026-10-18T14:32:35.155Z",
@@ -396,11 +389,13 @@
       "run": 38827238622,
       "job": 117315617267,
       "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
-      "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
-      "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "next": "Run canonical just test plus required Clippy/platform checks at a4728553 with enough disk; no merge until genuine required success.",
+      "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
       "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
       "repair_owner": "PR #2599 / root",
-      "historical_owner_note": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation"
+      "historical_owner_note": "Existing PR #1350 Result propagation owner; inventory agent reviewing to avoid duplicate implementation",
+      "followup_type_fix_source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+      "repair_receipt": "PR2599_CONTEXT_REPAIR.json"
     },
     {
       "id": "CI-002",
@@ -430,11 +425,13 @@
         117680668585
       ],
       "owner": "PR #2599 typed fixture maintenance; original donor source preserved",
-      "next": "Run canonical just test plus required Clippy/platform checks at 19c5cd41 with enough disk; no merge until genuine required success.",
-      "repair_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "next": "Run canonical just test plus required Clippy/platform checks at a4728553 with enough disk; no merge until genuine required success.",
+      "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
       "repair_source_commit": "e21417abcedda77d73a08b1417522966dc2d1c0a",
       "repair_owner": "PR #2599 / root",
-      "historical_owner_note": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification"
+      "historical_owner_note": "Fleet authority fixture owner; historical #2746/#2735 overlap needs verification",
+      "followup_type_fix_source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+      "repair_receipt": "PR2599_CONTEXT_REPAIR.json"
     },
     {
       "id": "CI-004",
@@ -679,6 +676,25 @@
       "owner": "Feature and integration owners",
       "root": "All Hepta branch/PR metadata and branch git graph relations were enumerated; not every diff/review/historical job/scientific artifact was audited.",
       "next": "Continue by owner DAG. Verify semantic superiority and exact current gates before closing, deleting or merging."
+    },
+    {
+      "id": "CI-015",
+      "evidence_label": "VERIFIED_NOW",
+      "scope": "PR #2599 fixture type-bound correction",
+      "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "status": "FIX_PUSHED_EXACT_HEAD_NATIVE_CI_PENDING",
+      "root": "This audit's earlier e214 fixture patch called anyhow::Context on ProviderEffectBindingError and String, which lack StdError. Source-head CI compiled the tests and reported two E0599 errors.",
+      "owner": "PR #2599 / root",
+      "run": 39140469435,
+      "job": 117713683668,
+      "fix_commits": [
+        "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+        "a4728553d2f09242640400719d82257bc9c63c73"
+      ],
+      "repair_head": "a4728553d2f09242640400719d82257bc9c63c73",
+      "local_verification": "Exact locked anyhow 1.0.103 reduced compiler reproducer: before two E0599, after exit0. Just fmt, diff and strict runtime.agentd migration pass; workspace/native gate not complete.",
+      "next": "On an adequate worker run canonical just test for agentd browser_servo and host_dispatches_exact_wire_payload_once, then require all exact a472 blocking/architecture/platform checks. Inspect runs 39151714945 and 39151714876.",
+      "evidence": "PR2599_CONTEXT_REPAIR.json; final-ci-pre-repair-evidence.tar.gz; pr2599-context-repair-evidence.tar.gz"
     }
   ],
   "next_commands": "REPRODUCE.md",
@@ -805,7 +821,7 @@
   ],
   "latest_subject_evidence": "LATEST_HEADS.jsonl",
   "snapshot_policy": "Every fact retains its observation time and exact source SHA. Later heads do not inherit earlier CI or test results.",
-  "updated_utc": "2026-10-18 16:55:56 UTC",
+  "updated_utc": "2026-10-18 18:11:28 UTC",
   "earlier_postpush_ci_snapshots": [
     {
       "observed_interval_utc": [
@@ -829,6 +845,89 @@
       },
       "required_aggregators": "ABSENT; no success inferred",
       "source": "ci-evidence.tar.gz"
+    },
+    {
+      "observed_interval_utc": [
+        "2026-10-18 16:24:26 UTC",
+        "2026-10-18T16:25:06.721Z"
+      ],
+      "subjects": [
+        {
+          "pr": 2599,
+          "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+          "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "totals": {
+            "runs": 4,
+            "checks": 12,
+            "statuses": 0,
+            "jobs": 11
+          },
+          "job_statuses": {
+            "queued": 10,
+            "completed": 1
+          },
+          "job_conclusions": {
+            "null": 10,
+            "success": 1
+          },
+          "aggregator_observations": [
+            {
+              "context": "CI required",
+              "state": "ABSENT",
+              "required_on_target": "main branch GET verified",
+              "owning_run_id": 39140469581
+            },
+            {
+              "context": "Architecture required",
+              "state": "ABSENT",
+              "required_on_target": "main branch GET verified",
+              "owning_run_id": 39140469435
+            }
+          ]
+        },
+        {
+          "pr": 2714,
+          "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+          "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+          "totals": {
+            "runs": 5,
+            "checks": 6,
+            "statuses": 0,
+            "jobs": 6
+          },
+          "job_statuses": {
+            "queued": 4,
+            "in_progress": 1,
+            "completed": 1
+          },
+          "job_conclusions": {
+            "null": 5,
+            "success": 1
+          },
+          "aggregator_observations": [
+            {
+              "context": "CI required",
+              "state": "ABSENT",
+              "required_on_target": "research base protection NOT_ACCESSIBLE",
+              "owning_run_id": 39140341708
+            },
+            {
+              "context": "Architecture required",
+              "state": "ABSENT",
+              "required_on_target": "research base protection NOT_ACCESSIBLE",
+              "owning_run_id": 39140341635
+            }
+          ]
+        }
+      ],
+      "total_jobs": 17,
+      "job_pass": 2,
+      "job_fail": 0,
+      "job_skipped": 0,
+      "job_queued": 14,
+      "job_in_progress": 1,
+      "note": "Non-atomic endpoint observations. Main required context names were verified; the research target branch's complete protection was not accessible.",
+      "source": "final-ci-checkpoint.json and final-ci-addendum.tar.gz"
     }
   ],
   "latest_executor_observation": {
@@ -936,5 +1035,55 @@
         "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2714"
       }
     ]
+  },
+  "code_repair_commits_pushed_total": 9,
+  "initial_code_repair_commits_pushed": 7,
+  "initial_audit_publication": {
+    "receipt": "INITIAL_PUBLICATION_RECEIPT.json",
+    "commit": "699c86fef7d145a52587e1317d693b16ab755e2d",
+    "file_count": 85
+  },
+  "pre_repair_complete_two_pr_ci": {
+    "observation_start_utc": "2026-10-18T17:36:53.874Z",
+    "observation_end_utc": "2026-10-18T17:37:42.653Z",
+    "heads": {
+      "pr2599": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "pr2714": "f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+    },
+    "runs": 9,
+    "checks": 53,
+    "jobs": 52,
+    "job_states": {
+      "success": 15,
+      "failure": 1,
+      "cancelled": 1,
+      "skipped": 7,
+      "queued": 27,
+      "in_progress": 1
+    },
+    "report": "PRE_REPAIR_CI_SNAPSHOT.md",
+    "raw_archive": "final-ci-pre-repair-evidence.tar.gz",
+    "note": "PR2599's source compilation failure led to the subsequent a472 correction. This snapshot remains tied to 19c5 and cannot qualify a472."
+  },
+  "latest_repair": {
+    "source_commit": "e69455587d2709c34b6b1832ed1aa4fca9025aeb",
+    "head": "a4728553d2f09242640400719d82257bc9c63c73",
+    "tree": "1f12d27a969695123fdc14ad33fd0422e9facf2a",
+    "status": "FIX_PUSHED_EXACT_HEAD_CI_PENDING",
+    "receipt": "PR2599_CONTEXT_REPAIR.json",
+    "workspace_native_tests_executed": 0,
+    "reduced_locked_compiler_probe": {
+      "before_e0599": 2,
+      "after_exit_code": 0,
+      "anyhow": "1.0.103",
+      "cached_source_file_hashes_checked": 54
+    },
+    "scope": "Known fixture type-bound regression corrected and pushed; full native/required CI remains pending."
+  },
+  "latest_resource_observation": {
+    "utc": "2026-10-18T17:53:15.536857+00:00",
+    "workspace_free_bytes": 0,
+    "shm_free_bytes": 782688256,
+    "source": "pr2599-context-repair-evidence.tar.gz / STRICT_FINAL_CHECKS.json"
   }
 }
