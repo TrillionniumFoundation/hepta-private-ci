@@ -54,7 +54,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_workspace.py
-          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-neuron-metadata.json"
+          mkdir -p "$RUNNER_TEMP/hepta-neuron-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-neuron-evidence/tested-source-sha.txt"
+          rustc --version --verbose > "$RUNNER_TEMP/hepta-neuron-evidence/toolchain.txt"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-neuron-evidence/cargo-metadata.json"
       - name: Check source formatting (no mutation)
         shell: bash
         run: |
@@ -76,7 +79,24 @@ jobs:
           set -euo pipefail
           cargo test --manifest-path codex-rs/Cargo.toml --locked --lib -p codex-hepta-infer-worker-host neuron_microbatch
           for cells in 64 256 1024 4096; do
-            cargo run --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-worker-host --bin hepta-neuron-microbatch-qualification -- --cells "$cells"
+            cargo run --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-infer-worker-host --bin hepta-neuron-microbatch-qualification -- --cells "$cells" > "$RUNNER_TEMP/hepta-neuron-evidence/reference-${cells}.json"
+            python3 - "$RUNNER_TEMP/hepta-neuron-evidence/reference-${cells}.json" "$cells" <<'PY'
+          import json
+          import sys
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              receipt = json.load(handle)
+          cells = int(sys.argv[2])
+          assert receipt["cells"] == cells
+          assert receipt["acceptedCells"] == cells
+          assert receipt["executedBatchCalls"] == (cells + 255) // 256
+          assert receipt["durableMetricRecords"] == (cells + 255) // 256
+          assert receipt["recoveredCompleteRecords"] == (cells + 255) // 256
+          assert receipt["crashTailRecovered"] is True
+          assert receipt["productionClaim"] is False
+          assert receipt["targetHostProductAcceptance"] is False
+          assert receipt["authority"] == "DENY_ALL"
+          print("reference qualification verified:", cells)
+          PY
           done
       - name: Strict focused Clippy
         shell: bash
@@ -95,6 +115,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: hepta-neuron-signed-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/hepta-neuron-metadata.json
+          path: ${{ runner.temp }}/hepta-neuron-evidence/*
           if-no-files-found: warn
           retention-days: 14
