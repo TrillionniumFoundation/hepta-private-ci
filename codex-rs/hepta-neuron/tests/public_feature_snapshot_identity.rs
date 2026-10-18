@@ -6,20 +6,16 @@ use codex_hepta_neuron::{
 };
 use codex_hepta_types::{Digest32, StableId};
 
-fn stable(value: &str) -> StableId {
-    StableId::new(value).expect("valid fixture identifier")
-}
-
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
 #[test]
-fn external_consumer_can_build_valid_explicit_identity() {
+fn external_consumer_can_build_valid_explicit_identity() -> Result<(), Box<dyn std::error::Error>> {
     let scope = FeatureSnapshotScopeV1 {
-        scope: stable("public.scope"),
-        workspace: stable("public.workspace"),
-        purpose: stable("public.purpose"),
+        scope: StableId::new("public.scope")?,
+        workspace: StableId::new("public.workspace")?,
+        purpose: StableId::new("public.purpose")?,
     };
     let lineage = FeatureSnapshotLineageV1 {
         source_frontier: digest("frontier"),
@@ -29,16 +25,15 @@ fn external_consumer_can_build_valid_explicit_identity() {
         normalizer: digest("normalizer"),
         calibration: digest("calibration"),
     };
-    let implicit = FeatureSnapshotIdentityV1::new(scope.clone(), lineage)
-        .expect("valid legacy-tagged public identity");
+    let implicit = FeatureSnapshotIdentityV1::new(scope.clone(), lineage)?;
     let explicit = FeatureSnapshotIdentityV1::new_with_question_options(
         scope,
         digest("question"),
         digest("options"),
         lineage,
-    )
-    .expect("valid explicit public identity");
+    )?;
     assert!(!implicit.semantic_digest().is_zero());
     assert!(!explicit.semantic_digest().is_zero());
     assert_ne!(implicit.semantic_digest(), explicit.semantic_digest());
+    Ok(())
 }
