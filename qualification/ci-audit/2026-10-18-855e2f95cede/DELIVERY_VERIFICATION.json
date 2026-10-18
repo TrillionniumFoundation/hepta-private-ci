@@ -1,0 +1,202 @@
+{
+  "schema": "hepta.audit-delivery-verification.v1",
+  "verified_utc": "2026-10-18 17:02:00 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "intended_branch": "codex/hepta-audit-checkpoint-20261018-855e2f95cede",
+  "repository_path": "qualification/ci-audit/2026-10-18-855e2f95cede",
+  "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "capture_scope": "Content and object verification before creating the checkpoint branch ref. The delivered Git commit and tree identify the final published snapshot without a circular self-hash.",
+  "archives": {
+    "count": 6,
+    "total_bytes": 10456601,
+    "split_archives": 3,
+    "fragments": 55,
+    "complete_file_archives": 3,
+    "all_58_blob_uploads_returned_matching_expected_git_sha": true,
+    "unconfirmed_subagent_transfers_used_as_success": false,
+    "verify_only_command": "python3 -B reassemble_archives.py --verify-only",
+    "verify_only_exit_code": 0,
+    "verify_only_results": [
+      {
+        "archive": "inventory-evidence.tar.gz",
+        "bytes": 6652337,
+        "git_blob_sha": "e25daf43151d1c7d6e6d8aabd1932a55eefd280f",
+        "parts": 36,
+        "reconstructed": false,
+        "sha256": "da5ca85baa0a0e82a3276342aa974439ede4d6b78f6872fe35f819a0eaa0ef10",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "ci-evidence.tar.gz",
+        "bytes": 2353920,
+        "git_blob_sha": "73f8b3691f47686b7a10c1d0be126515fe3f2392",
+        "parts": 13,
+        "reconstructed": false,
+        "sha256": "809b6e2427b2daa6543c44daeaba8869bed5a09ed458cd9cef5b4a11eb554fbd",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "research-os-evidence.tar.gz",
+        "bytes": 1057348,
+        "git_blob_sha": "74898ca6a11473058de2f84e576ed9e732e39c9f",
+        "parts": 6,
+        "reconstructed": false,
+        "sha256": "408062202e34ff3c37cc053add045f5ae3386d9a5ce7a1700a3c9de79144cf8b",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "runtime-evidence.tar.gz",
+        "bytes": 192787,
+        "git_blob_sha": "86036ae995bcc6b59db48aeb11d8e197e5bc056f",
+        "parts": 1,
+        "reconstructed": false,
+        "sha256": "b9653696123d8adddc489def43317b752ba6a70df13ee4bb753c83e1237ba40a",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "final-ci-addendum.tar.gz",
+        "bytes": 61757,
+        "git_blob_sha": "b81bd46209b00a09024dc3e4d194b1a17cdd9d05",
+        "parts": 1,
+        "reconstructed": false,
+        "sha256": "3eb74e7687f3e3b52aa2f296f24ae2c8431e363c0e00f6382d366e1d1d54cb2d",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "laya-terminal-evidence.tar.gz",
+        "bytes": 138452,
+        "git_blob_sha": "604ec5eaf35098e67717247c21e6503666e2ddab",
+        "parts": 1,
+        "reconstructed": false,
+        "sha256": "8c0ed97608b7dca3fc8388a26e815acf9e2ccf9dee4ae0b04283c8f55a097746",
+        "status": "VERIFIED"
+      }
+    ],
+    "reassembly_command": "python3 -B reassemble_archives.py",
+    "actual_prior_reassembly_exit_code": 0,
+    "actual_reassembled_split_archives": [
+      {
+        "archive": "inventory-evidence.tar.gz",
+        "bytes": 6652337,
+        "git_blob_sha": "e25daf43151d1c7d6e6d8aabd1932a55eefd280f",
+        "parts": 36,
+        "reconstructed": true,
+        "sha256": "da5ca85baa0a0e82a3276342aa974439ede4d6b78f6872fe35f819a0eaa0ef10",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "ci-evidence.tar.gz",
+        "bytes": 2353920,
+        "git_blob_sha": "73f8b3691f47686b7a10c1d0be126515fe3f2392",
+        "parts": 13,
+        "reconstructed": true,
+        "sha256": "809b6e2427b2daa6543c44daeaba8869bed5a09ed458cd9cef5b4a11eb554fbd",
+        "status": "VERIFIED"
+      },
+      {
+        "archive": "research-os-evidence.tar.gz",
+        "bytes": 1057348,
+        "git_blob_sha": "74898ca6a11473058de2f84e576ed9e732e39c9f",
+        "parts": 6,
+        "reconstructed": true,
+        "sha256": "408062202e34ff3c37cc053add045f5ae3386d9a5ce7a1700a3c9de79144cf8b",
+        "status": "VERIFIED"
+      }
+    ],
+    "later_laya_archive_member_verification": {
+      "verified_utc": "2026-10-18T16:59:16.873356+00:00",
+      "archive": "laya-terminal-evidence.tar.gz",
+      "members": 13,
+      "manifest_covered": 12,
+      "all_member_size_sha256_gitsha_pass": true,
+      "bounded_known_credential_pattern_hits": 0,
+      "bounded_scan_is_not_perfect_secret_proof": true,
+      "model_weights_in_member_list": false,
+      "original_zip_and_three_receipts_included": true
+    }
+  },
+  "recovery_helper": {
+    "path": "reassemble_archives.py",
+    "sha256": "3fb7ca3e48bee8c5f64bd40db4db3658d382f30d9826ff67725f8cac87a96bd1",
+    "actual_dynamic_cases": [
+      "PASS exact part and whole hash roundtrip; verify-only writes no output",
+      "PASS refuses different existing output",
+      "PASS refuses symlink output",
+      "PASS rejects corrupt piece",
+      "PASS rejects reordered pieces",
+      "PASS rejects mismatched whole identity"
+    ],
+    "independent_static_review": {
+      "reviewer": "/root/github_inventory",
+      "observed_utc": "2026-10-18 16:25:39 UTC",
+      "result": "PASS",
+      "independent_dynamic_rerun_claimed": false
+    },
+    "archive_members_extracted_or_executed_by_helper": false
+  },
+  "independent_inventory_archive_recheck": {
+    "observed_utc": "2026-10-18 16:25:39 UTC",
+    "archive_members": 92,
+    "manifest_covered_files": 91,
+    "all_files_exact_bytes_and_sha256": true,
+    "all_30_gzip_pages_readable": true,
+    "external_existing_validator_result": "PASS",
+    "verified_branches": 2519,
+    "verified_prs": 2846,
+    "verified_branch_graphs": 2519,
+    "branches_terminal_empty_page": 27,
+    "prs_terminal_empty_page": 30,
+    "does_not_establish_full_semantic_or_ci_coverage": true
+  },
+  "code_repairs": {
+    "pushed_commits": 7,
+    "pr2599_head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+    "pr2714_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "local_python_contract_tests": {
+      "pass": 109,
+      "fail": 0,
+      "error": 0,
+      "skip": 0
+    },
+    "remote_exact_source_python_contract_tests": {
+      "stem_bridge": 27,
+      "shared_encoder": 109,
+      "total": 136
+    },
+    "independent_full_final_109_test_rerun_claimed": false,
+    "native_cargo_or_clippy_launched": false,
+    "native_preflight_blocker": "Workspace overlay free bytes 0",
+    "full_required_ci_pass_claimed": false,
+    "strict_global_map_qualification_failed_modules": 26,
+    "strict_identity_validator_modified": false
+  },
+  "new_reader_execution": {
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "run_id": 39140341757,
+    "job_id": 117713314446,
+    "artifact_id": 12143240868,
+    "fresh_remote_typed_reader_calls": 64,
+    "local_model_calls": 0,
+    "row_arithmetic_independently_checked_by": [
+      "/root/ci_audit",
+      "/root"
+    ],
+    "independent_factual_gold_and_citation_review_performed": false,
+    "reader_receipt_source": "LAYA_TERMINAL_CHECKPOINT.json",
+    "root_recount_source": "ROOT_LAYA_VERIFICATION.json",
+    "calibration_40_and_nine_arm_72_complete": false
+  },
+  "boundaries": {
+    "all_blockers_closed": false,
+    "full_branch_diff_review_complete": false,
+    "organization_runner_administration_accessible": false,
+    "complete_target_protection_accessible": false,
+    "merge_count": 0,
+    "forced_ref_updates": 0,
+    "workflow_cancellations": 0,
+    "security_or_platform_gates_weakened": false,
+    "production_activation_allowed": false,
+    "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO",
+    "local_background_native_build_or_model_processes_launched": 0
+  }
+}

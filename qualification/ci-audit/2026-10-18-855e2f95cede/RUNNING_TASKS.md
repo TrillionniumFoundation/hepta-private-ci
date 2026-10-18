@@ -65,7 +65,7 @@ All existing trees were inspected read-only. Unix UID and directory names do not
 | Other worktree owners | UNKNOWN | Preserve their dirty files and metadata; use independent clones and remote compare-and-swap before publication. |
 | Dedicated host / organization runners | BLOCKED_EXTERNAL | Supply an accessible configured project endpoint or runner-admin capability; no credential or protection workaround. |
 | Disk for full native builds | BLOCKED_EXTERNAL | Current free disk is insufficient for a fresh full Hepta workspace build. Preserve other owners' caches; scoped Python/static validation can proceed. |
-| Fresh 112-call attempt-03 by another owner | FAILED | Six calibration answers and zero evaluation answers completed before the watchdog failure. The separate historical 40+72 archive is not a fresh run. This audit made zero new model calls. |
+| Fresh 112-call attempt-03 by another owner | FAILED | Six calibration answers and zero evaluation answers completed before the watchdog failure. The separate historical 40+72 archive is not a fresh run. This auditor made zero local model calls; the later remote Reader execution is recorded separately below. |
 | Exact HEAD required CI | QUEUED / FAILED | See CI_MATRIX.md and BLOCKERS.md; remote required checks remain mandatory. |
 
 ## Reproduce
