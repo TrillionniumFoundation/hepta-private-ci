@@ -57,12 +57,15 @@ def test_default_matrix_is_64_unique_cases_across_four_cell_counts() -> None:
     assert len(cases) == 64
     assert [count for count in MODULE.CELL_COUNTS] == [64, 256, 1024, 4096]
     assert len({case["caseId"] for case in cases}) == 64
-    assert len(
-        {
-            (case["cellCount"], *(case[name] for name, _ in MODULE.FACTORS))
-            for case in cases
-        }
-    ) == 64
+    assert (
+        len(
+            {
+                (case["cellCount"], *(case[name] for name, _ in MODULE.FACTORS))
+                for case in cases
+            }
+        )
+        == 64
+    )
     for count in MODULE.CELL_COUNTS:
         one = MODULE.matrix_cases(count)
         assert len(one) == 16
@@ -312,18 +315,23 @@ def test_worker_source_mutation_blocks_every_case(
     MODULE.validate_report(report)
 
 
-def test_post_observer_source_drift_revokes_signed_receipt(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("mutation", ("source", "overwrite", "unlink"))
+def test_post_observer_mutation_revokes_signed_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
 ) -> None:
     root, head = isolated_checkout(tmp_path, monkeypatch)
     workload = tmp_path / "frozen-workload"
     workload.write_bytes(b"fixture only, no production measurements")
     workload_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
     private = Ed25519PrivateKey.generate()
-    public_key = private.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw,
-    ).hex()
+    public_key = (
+        private.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        .hex()
+    )
     observer_was_signed = False
 
     def fixture_runner(
@@ -344,7 +352,12 @@ def test_post_observer_source_drift_revokes_signed_receipt(
                 MODULE.observer_signing_bytes(claim)
             ).hex()
             observer_was_signed = True
-            (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
+            if mutation == "source":
+                (root / "tracked.py").write_text("VERSION = 9\n", encoding="utf-8")
+            elif mutation == "overwrite":
+                workload.write_bytes(b"observer overwrote frozen tasks")
+            else:
+                workload.unlink()
             return subprocess.CompletedProcess(argv, 0, json.dumps(claim), "")
         assert argv == ["fixture-worker"]
         case = {
@@ -373,7 +386,8 @@ def test_post_observer_source_drift_revokes_signed_receipt(
     assert len(report["cases"]) == 64
     assert all(case["status"] == "measured" for case in report["cases"])
     assert report["status"] == "blocked"
-    assert "source-checkout" in report["blockingCases"]
+    expected_blocker = "source-checkout" if mutation == "source" else "frozen-workload"
+    assert expected_blocker in report["blockingCases"]
     assert report["observer"]["verified"] is False
     assert "signatureHex" not in report["observer"]
     MODULE.validate_report(report)
@@ -507,10 +521,14 @@ def test_full_scale_cannot_be_forged_from_one_count(tmp_path: Path) -> None:
 
 def test_signed_observer_requires_out_of_band_trust_root() -> None:
     private = Ed25519PrivateKey.generate()
-    trusted_key = private.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw,
-    ).hex()
+    trusted_key = (
+        private.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        .hex()
+    )
     receipt = {
         "schema": MODULE.OBSERVER_SCHEMA,
         "verified": True,
@@ -520,9 +538,7 @@ def test_signed_observer_requires_out_of_band_trust_root() -> None:
         "metricsDigest": "d" * 64,
         "observerId": "independent-observer",
     }
-    receipt["signatureHex"] = private.sign(
-        MODULE.observer_signing_bytes(receipt)
-    ).hex()
+    receipt["signatureHex"] = private.sign(MODULE.observer_signing_bytes(receipt)).hex()
     MODULE.verify_observer_signature(receipt, trusted_key)
     with pytest.raises(ValueError, match="trusted independent"):
         MODULE.verify_observer_signature(receipt, None)
@@ -580,8 +596,14 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(
     provisional = {
         key: report[key]
         for key in (
-            "schema", "authority", "cellCounts", "sourceCommit",
-            "workloadDigest", "workloadSourceDigest", "host", "cases",
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
         )
     }
     observer = {
@@ -590,10 +612,12 @@ def test_forged_verified_observer_cannot_qualify_report_without_signature(
         "sourceCommit": report["sourceCommit"],
         "workloadDigest": report["workloadDigest"],
         "reportDigest": MODULE.digest(provisional),
-        "metricsDigest": MODULE.digest([
-            {"caseId": row["caseId"], "metricsDigest": row["metricsDigest"]}
-            for row in report["cases"]
-        ]),
+        "metricsDigest": MODULE.digest(
+            [
+                {"caseId": row["caseId"], "metricsDigest": row["metricsDigest"]}
+                for row in report["cases"]
+            ]
+        ),
         "observerId": "untrusted",
     }
     observer["signatureHex"] = "00" * 64

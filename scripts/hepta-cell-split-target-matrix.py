@@ -173,8 +173,13 @@ def _command(argv: str, case: dict[str, Any]) -> list[str]:
 def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
     """Canonical signed observer claim; independent of caller-supplied digest."""
     fields = (
-        "schema", "verified", "sourceCommit", "workloadDigest",
-        "reportDigest", "metricsDigest", "observerId",
+        "schema",
+        "verified",
+        "sourceCommit",
+        "workloadDigest",
+        "reportDigest",
+        "metricsDigest",
+        "observerId",
     )
     return b"hepta.cell-split.observer.ed25519.v1\0" + canonical_bytes(
         {field: receipt.get(field) for field in fields}
@@ -570,6 +575,22 @@ def run_matrix(
                 "verified": False,
                 "reason": f"post-observer source checkout violation: {error}",
             }
+        if workload_path is not None:
+            try:
+                still_frozen = (
+                    hashlib.sha256(workload_path.read_bytes()).hexdigest()
+                    == workload_digest
+                )
+            except OSError:
+                still_frozen = False
+            if not still_frozen:
+                blocked.append("frozen-workload")
+                # A previous signed claim cannot certify bytes that changed
+                # after the observer ran, even if its signature was valid.
+                observer_receipt = {
+                    "verified": False,
+                    "reason": "post-observer frozen workload changed or is missing",
+                }
 
     report = {
         **provisional,
@@ -625,8 +646,14 @@ def validate_report(
     provisional = {
         key: report[key]
         for key in (
-            "schema", "authority", "cellCounts", "sourceCommit",
-            "workloadDigest", "workloadSourceDigest", "host", "cases",
+            "schema",
+            "authority",
+            "cellCounts",
+            "sourceCommit",
+            "workloadDigest",
+            "workloadSourceDigest",
+            "host",
+            "cases",
         )
     }
     if report.get("reportDigest") != digest(
