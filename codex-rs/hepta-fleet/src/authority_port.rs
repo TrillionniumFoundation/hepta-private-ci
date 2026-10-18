@@ -194,8 +194,7 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
+        let admission = ledger.admit_host(HostObservation {
                 host_id: "host-one".into(),
                 failure_domain_id: "rack-one".into(),
                 generation: 1,
@@ -206,8 +205,8 @@ mod tests {
                     memory_bytes: 1 << 20,
                     accelerator_millis: 1_000,
                 },
-            })
-            .expect("test host observation must be admitted");
+            });
+        assert!(admission.is_ok(), "test host observation must be admitted");
         ledger
     }
 
