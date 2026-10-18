@@ -112,6 +112,64 @@ receipt and independently validated head-witness receipt. Acknowledgement before
 witness durability is rejected, and replayed crash snapshots preserve their last
 durable phase.
 
+The named `LearningArtifactOwnerService::revoke` now drives an explicit v2
+mutation in the **same** owner journal and writer fence. Its phases are
+`Prepared -> RegistryDurable -> WitnessDurable -> Acknowledged`: a denial has
+no new payload or fabricated admission. Original v1 publication checkpoint
+bytes retain their format. The v2 checkpoint retains the complete `StateChange`,
+signed-head digest, original writer-lease digest, scope and observed withdrawal
+head, predecessor, immutable receipts and phase digest.
+
+The writer lease must cover the original producer. The evaluator must equal
+the independently trusted CURRENT signer and differ from the producer. The
+request operation ID equals the signed registry event ID; CURRENT authenticates
+the complete resulting registry head, including artifact, evaluator and reason.
+The original registry enforces irreversible revocation and descendant
+ineligibility. Installing a newer in-memory dataset withdrawal frontier alone
+does not claim that a registry Revoke was published.
+
+Exact retries use the original checkpoint and reestablish ACK durability before
+returning its receipt. A failed write or sync after a checkpoint leaves the
+service recovery-required: authenticated CURRENT reads and unrelated mutations
+are blocked until exact reconciliation or a durable reopen. Restart should use
+the independently retained signed current-head floor; a restored older local
+snapshot cannot override that floor. Neither revocation nor an ACK permits
+physical erasure or restores an ancestor's eligibility.
+
+The service acquires `writer/current-observation.lock` after its writer fence
+and before reconciliation or publication. It releases that observation lock
+only after a known terminal result and retains it across an uncertain ACK and
+exact retries. Independent CURRENT observers use this same observation boundary
+without acquiring the writer lease; a live uncertain writer prevents them from
+turning readable bytes into an acknowledged observation.
+
+`ArtifactOwnerCurrentReaderV1` supports Linux and macOS, where regular-file opens
+use nonblocking/no-follow flags and verify the pinned file identity. It returns
+`UnsupportedObservationPlatform` before opening the store on Windows and other
+Unix ports. The original named writer retains its existing platform behavior;
+Windows writer behavior was not exercised in this campaign. The observation
+lock must remain the same inode. Older writer binaries that do not take this
+fence must not run alongside this reader against the same store. Public host
+mutation entrypoints are now crate-private: embedding publishers must use the
+named service, which owns the complete observation-lock transaction lifetime.
+Public host diagnostic reads authenticate signed head/snapshot bytes and do not
+establish service uncertainty clearance.
+
+The reader's 250 ms bound applies to lock acquisition. Complete ACK revalidation,
+file and directory synchronization and bounded history scanning occur while
+holding the lock and can take longer on slow storage. Reader failure or prolonged
+writer contention requires explicit consumer reload; an old view cannot restore
+a closed cache. This consistent-view protocol does not replace the runtime's
+separate final-use and external-effect fences.
+
+On Unix the named host now synchronizes parent directory entries for new
+directories and existing directory chains on reopen, checkpoints and signed
+heads, and synchronizes both file and parent for payload, registry and witness
+publication or exact-file retry. A sync error
+remains `Indeterminate`. This is an implemented filesystem protocol, not a
+power-loss qualification receipt. Windows directory-entry durability is still
+unqualified; file synchronization does not establish equivalent guarantees.
+
 This remains an ordered host durability protocol, not a cross-file atomic
 filesystem transaction. The host must durably persist each transaction snapshot
 under its writer fence before treating the phase as durable. A crash before
@@ -139,7 +197,8 @@ interference, payload integrity, revocation descendants and invalid binding.
 Exact source and actual-base synthetic-merge compilation, tests, lint and format
 remain mandatory.
 
-This specification alone does not claim source implementation, execution,
-independent acceptance or release. It adds no production caller,
-selection, promotion, merge, filesystem credential or runtime authority. All
-external evidence and release gates remain unchanged.
+The named service implements publication and denial through the existing owner;
+its receipts retain `DENY_ALL` authority. This documentation and local source
+tests do not establish independent acceptance or deployment qualification, and
+grant no selection, promotion, merge, filesystem credential or runtime authority.
+External evidence and release gates remain unchanged.
