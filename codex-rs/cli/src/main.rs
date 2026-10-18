@@ -1,3 +1,7 @@
+// The CLI dispatcher builds deeply nested async futures. The native-impact
+// test compilation on Rust 1.95 overflowed the default query-depth limit.
+#![recursion_limit = "256"]
+
 use clap::Args;
 use clap::CommandFactory;
 use clap::FromArgMatches;
