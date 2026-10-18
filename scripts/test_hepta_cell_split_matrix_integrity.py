@@ -66,7 +66,11 @@ def synthetic_complete_report() -> dict:
         "sourceCommit": SOURCE,
         "workloadDigest": WORKLOAD,
         "workloadSourceDigest": WORKLOAD,
-        "host": {"hostId": "synthetic-only", "platform": "fixture", "python": "fixture"},
+        "host": {
+            "hostId": "synthetic-only",
+            "platform": "fixture",
+            "python": "fixture",
+        },
         "cases": cases,
     }
     observer = {
@@ -75,10 +79,12 @@ def synthetic_complete_report() -> dict:
         "sourceCommit": SOURCE,
         "workloadDigest": WORKLOAD,
         "reportDigest": MATRIX.digest(provisional),
-        "metricsDigest": MATRIX.digest([
-            {"caseId": case["caseId"], "metricsDigest": case["metricsDigest"]}
-            for case in cases
-        ]),
+        "metricsDigest": MATRIX.digest(
+            [
+                {"caseId": case["caseId"], "metricsDigest": case["metricsDigest"]}
+                for case in cases
+            ]
+        ),
     }
     observer["receiptDigest"] = MATRIX.digest(observer)
     return {
@@ -95,13 +101,15 @@ def reseal_untrusted_fixture(report: dict) -> None:
     provisional = {key: report[key] for key in PROVISIONAL_KEYS}
     observer = report["observer"]
     observer["reportDigest"] = MATRIX.digest(provisional)
-    observer["metricsDigest"] = MATRIX.digest([
-        {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
-        for row in report["cases"]
-    ])
-    observer["receiptDigest"] = MATRIX.digest({
-        key: value for key, value in observer.items() if key != "receiptDigest"
-    })
+    observer["metricsDigest"] = MATRIX.digest(
+        [
+            {"caseId": row["caseId"], "metricsDigest": row.get("metricsDigest")}
+            for row in report["cases"]
+        ]
+    )
+    observer["receiptDigest"] = MATRIX.digest(
+        {key: value for key, value in observer.items() if key != "receiptDigest"}
+    )
     report["reportDigest"] = MATRIX.digest({**provisional, "observer": observer})
 
 
@@ -110,7 +118,9 @@ class MatrixIntegrityTests(unittest.TestCase):
         self.report = synthetic_complete_report()
         # platform.platform() may itself call subprocess.run(['uname', ...]).
         # Tests stub the matrix worker's subprocess.run, not platform probes.
-        platform_stub = patch.object(MATRIX.platform, "platform", return_value="synthetic-test-host")
+        platform_stub = patch.object(
+            MATRIX.platform, "platform", return_value="synthetic-test-host"
+        )
         platform_stub.start()
         self.addCleanup(platform_stub.stop)
 
@@ -128,7 +138,11 @@ class MatrixIntegrityTests(unittest.TestCase):
                 for _ in range(12):
                     stream.write(chunk)
                     expected.update(chunk)
-            with patch.object(Path, "read_bytes", side_effect=AssertionError("whole-file copy forbidden")):
+            with patch.object(
+                Path,
+                "read_bytes",
+                side_effect=AssertionError("whole-file copy forbidden"),
+            ):
                 self.assertEqual(MATRIX.sha256_file(path), expected.hexdigest())
 
     def test_repeated_case_with_same_sixteen_id_set_fails(self) -> None:
@@ -162,9 +176,9 @@ class MatrixIntegrityTests(unittest.TestCase):
     def test_observer_receipt_digest_tamper_fails(self) -> None:
         self.report["observer"]["receiptDigest"] = "0" * 64
         provisional = {key: self.report[key] for key in PROVISIONAL_KEYS}
-        self.report["reportDigest"] = MATRIX.digest({
-            **provisional, "observer": self.report["observer"]
-        })
+        self.report["reportDigest"] = MATRIX.digest(
+            {**provisional, "observer": self.report["observer"]}
+        )
         with self.assertRaisesRegex(ValueError, "observer receipt digest"):
             MATRIX.validate_report(self.report)
 
@@ -200,7 +214,9 @@ class MatrixIntegrityTests(unittest.TestCase):
             fake_git = CompletedProcess(
                 args=["git"], returncode=0, stdout="c" * 40 + "\n", stderr=""
             )
-            with patch.object(MATRIX.subprocess, "run", return_value=fake_git) as runner:
+            with patch.object(
+                MATRIX.subprocess, "run", return_value=fake_git
+            ) as runner:
                 with self.assertRaisesRegex(ValueError, "repository HEAD"):
                     MATRIX.run_matrix(
                         workload_command="fake-worker",
@@ -257,7 +273,9 @@ class MatrixIntegrityTests(unittest.TestCase):
                     "metrics": METRICS,
                     # Missing the four requested factor values must fail closed.
                 }
-                return CompletedProcess(argv, 0, stdout=json.dumps(emitted) + "\n", stderr="")
+                return CompletedProcess(
+                    argv, 0, stdout=json.dumps(emitted) + "\n", stderr=""
+                )
 
             with patch.object(MATRIX.subprocess, "run", side_effect=fake_exec):
                 report = MATRIX.run_matrix(
