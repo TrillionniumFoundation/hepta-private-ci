@@ -79,7 +79,9 @@ impl RawConPty {
     }
 
     pub fn pseudoconsole_handle(&self) -> RawHandle {
-        self.con.raw_handle()
+        // The winapi HPCON and std RawHandle use distinct c_void types.
+        // Only translate the opaque pointer type; never dereference the handle.
+        self.con.raw_handle().cast()
     }
 
     pub fn into_handles(self) -> (PsuedoCon, FileDescriptor, FileDescriptor) {
@@ -188,5 +190,19 @@ impl SlavePty for ConPtySlavePty {
         let inner = self.inner.lock().unwrap();
         let child = inner.con.spawn_command(cmd)?;
         Ok(Box::new(child))
+    }
+}
+
+#[cfg(test)]
+mod winapi_handle_type_tests {
+    use super::*;
+
+    #[test]
+    fn winapi_pseudoconsole_handle_can_bridge_std_raw_handle() {
+        let original = std::ptr::NonNull::<u8>::dangling().as_ptr();
+        let native: winapi::um::winnt::HANDLE = original.cast();
+        let bridged: RawHandle = native.cast();
+        assert_eq!(bridged.cast::<u8>(), original);
+        let _accessor: fn(&RawConPty) -> RawHandle = RawConPty::pseudoconsole_handle;
     }
 }

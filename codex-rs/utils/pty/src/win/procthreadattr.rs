@@ -21,7 +21,7 @@
 use super::psuedocon::HPCON;
 use anyhow::Error;
 use anyhow::ensure;
-use std::ffi::c_void;
+use winapi::ctypes::c_void;
 use std::io::Error as IoError;
 use std::mem;
 use std::ptr;
@@ -123,5 +123,19 @@ impl ProcThreadAttributeList {
 impl Drop for ProcThreadAttributeList {
     fn drop(&mut self) {
         unsafe { DeleteProcThreadAttributeList(self.as_mut_ptr()) };
+    }
+}
+
+#[cfg(test)]
+mod winapi_handle_type_tests {
+    use super::*;
+
+    #[test]
+    fn winapi_attribute_payload_signature() {
+        // Compile-only regression: the Win32 ABI expects winapi's c_void.
+        let _update: unsafe fn(&mut ProcThreadAttributeList, usize, *mut c_void, usize)
+            -> Result<(), Error> = ProcThreadAttributeList::update;
+        let _set_pty: fn(&mut ProcThreadAttributeList, HPCON) -> Result<(), Error> =
+            ProcThreadAttributeList::set_pty;
     }
 }
