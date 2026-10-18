@@ -9,8 +9,8 @@ async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejecte
     // The schema oracle must use the same centrally configured SQLite pool
     // boundary as its production owner, but stores no authority or user data.
     let root = tempfile::tempdir().expect("private schema oracle");
-    let sqlite_home = AbsolutePathBuf::try_from(root.path().to_path_buf())
-        .expect("absolute oracle root");
+    let sqlite_home =
+        AbsolutePathBuf::try_from(root.path().to_path_buf()).expect("absolute oracle root");
     let pool = SqliteConfig::new_for_testing(sqlite_home)
         .open_durable_evidence_pool(&root.path().join("reference.sqlite3"))
         .await
