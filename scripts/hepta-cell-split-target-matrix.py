@@ -555,6 +555,21 @@ def run_matrix(
     )
 
     observer_receipt: dict[str, Any] | None = None
+    # Fail closed *before* spawning a supplied observer executable: a command
+    # without an independently pinned, canonical prime-order trust root cannot
+    # produce admissible v1 observer evidence. Diagnostic worker rows remain.
+    if observer_command is not None and (
+        not isinstance(trusted_observer_public_key, str)
+        or re.fullmatch(r"[0-9a-f]{64}", trusted_observer_public_key) is None
+        or not _ed25519_prime_order_public_key(
+            bytes.fromhex(trusted_observer_public_key)
+        )
+    ):
+        observer_receipt = {
+            "verified": False,
+            "reason": "trusted independent Ed25519 observer public key is required",
+        }
+        observer_command = None
     if observer_command is None:
         blocked.append("independent-observer")
     else:
