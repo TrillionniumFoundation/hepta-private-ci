@@ -208,6 +208,59 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         self.assertEqual(observation["observation_status"], "unknown")
         self.assertIsNone(observation["write_transport_denied"])
 
+    def test_base_merge_guard_fails_closed_when_main_advances(self):
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        marker = (
+            "      - name: Verify GitHub prospective merge ref "
+            "matches this exact candidate\n"
+        )
+        shell = textwrap.dedent(
+            workflow.split(marker, 1)[1]
+            .split("      - name:", 1)[0]
+            .split("        run: |\n", 1)[1]
+        )
+        self.assertIn('git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA"', shell)
+        self.assertIn("Prospective merge identity drift", shell)
+        self.assertIn("Prospective merge tree mismatch", shell)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gh = root / "gh"
+            gh.write_text(
+                "#!/bin/sh\n"
+                'test "$1" = api || exit 91\n'
+                'test "$2" = '
+                "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/main "
+                "|| exit 92\n"
+                'printf "advanced-main\\n"\n'
+            )
+            gh.chmod(0o700)
+            env = dict(
+                os.environ,
+                PR_NUMBER="1498",
+                BASE_SHA="stale-event-base",
+                SOURCE_SHA="exact-source",
+                REPO="TrillionniumFoundation/hepta-private-ci",
+                GITHUB_BASE_REF="main",
+                GITHUB_ENV=str(root / "github_env"),
+                PATH=directory + os.pathsep + os.environ["PATH"],
+            )
+            result = subprocess.run(
+                ["bash", "-c", shell],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn("Stale PR event base", result.stderr)
+            self.assertIn("stale-event-base", result.stderr)
+            self.assertIn("advanced-main", result.stderr)
+            self.assertFalse((root / "github_env").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

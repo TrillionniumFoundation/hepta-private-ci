@@ -237,9 +237,18 @@ jobs:
           fi
 
           run_v8_bazel() {
+            # Bazel 9 can race background remote-cache uploads of late-discovered
+            # action outputs on Linux as well as macOS (ActionInputMap.getIndex).
+            # Scope synchronous uploads to this V8 canary, not global CI.
+            local -a v8_transport_args=()
+            if [[ "${RUNNER_OS}" == "Linux" ]]; then
+              v8_transport_args+=(--noremote_cache_async)
+            fi
             ./.github/scripts/run_bazel_with_buildbuddy.py \
               --noexperimental_remote_repo_contents_cache \
-              "${bazel_args[@]}" \
+              "${bazel_args[0]}" \
+              "${v8_transport_args[@]}" \
+              "${bazel_args[@]:1}" \
               "--config=${{ matrix.bazel_config }}"
           }
 
@@ -250,11 +259,18 @@ jobs:
           if [[ ${bazel_status} -eq 0 ]]; then
             exit 0
           fi
-          if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" || "${TARGET}" != "aarch64-apple-darwin" ]]; then
+          # Bazel 9 remote-output upload races have appeared on both macOS ABIs.
+          # Do not skip any target or accept the original failure: make only
+          # one identical retry after a macOS Bazel process exits with code 37.
+          if [[ ${bazel_status} -ne 37 || "${RUNNER_OS}" != "macOS" ]]; then
             exit "${bazel_status}"
           fi
+          case "${TARGET}" in
+            aarch64-apple-darwin|x86_64-apple-darwin) ;;
+            *) exit "${bazel_status}" ;;
+          esac
 
-          echo "Bazel exited 37 on macOS ARM; shutting down and retrying the identical V8 build once." >&2
+          echo "Bazel exited 37 on macOS ${TARGET}; shutting down and retrying the identical V8 build once." >&2
           ./.github/scripts/run_bazel_with_buildbuddy.py \
             --noexperimental_remote_repo_contents_cache \
             shutdown || true

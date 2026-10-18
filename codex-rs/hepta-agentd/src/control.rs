@@ -30,7 +30,9 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    // Deliberately do not own/unlink the pathname on Drop: a newer
+    // generation may have rebound it after this listener lost its name.
+    // Next startup validates liveness before reclaiming an abandoned socket.
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -49,7 +51,6 @@ impl AgentdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -76,19 +77,6 @@ impl AgentdControlServer {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
-    }
-}
-
-impl Drop for AgentdControlServer {
-    fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
-        {
-            eprintln!(
-                "failed to remove agentd control socket {}: {error}",
-                self.socket_path.display()
-            );
         }
     }
 }
@@ -195,9 +183,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         .await
         .map_err(|error| io_context("inspect stale agentd control socket", socket_path, error))?
     {
-        tokio::fs::remove_file(socket_path).await.map_err(|error| {
-            io_context("remove stale agentd control socket", socket_path, error)
-        })?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(io_context(
+                "remove stale agentd control socket",
+                socket_path,
+                error,
+            )),
+        }
+    } else if !tokio::fs::try_exists(socket_path)
+        .await
+        .map_err(|error| io_context("recheck agentd control socket", socket_path, error))?
+    {
+        // A disappeared rendezvous cannot be stolen; the next bind is exclusive.
         Ok(())
     } else {
         Err(AgentdError::Io(std::io::Error::new(
@@ -229,4 +228,62 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 #[cfg(not(unix))]
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::error::Error;
+
+    use super::*;
+
+    type TestResult = Result<(), Box<dyn Error>>;
+
+    #[tokio::test]
+    async fn preflight_rejects_live_control_listener() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let socket = temp.path().join("live-agentd-control");
+        let _live = UnixListener::bind(&socket).await?;
+
+        assert!(
+            matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+            "a running control listener must retain exclusive ownership"
+        );
+        assert!(
+            socket.exists(),
+            "preflight must preserve the active rendezvous"
+        );
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn preflight_preserves_unrelated_regular_file() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let socket = temp.path().join("reserved-agentd-control");
+        std::fs::write(&socket, b"not a control socket")?;
+
+        assert!(
+            matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+            "a regular file cannot be reclaimed as a stale control socket"
+        );
+        assert_eq!(std::fs::read(&socket)?, b"not a control socket");
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn preflight_reclaims_only_stale_socket_and_permits_exclusive_rebind() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let socket = temp.path().join("stale-agentd-control");
+        let retired = UnixListener::bind(&socket).await?;
+        drop(retired);
+
+        prepare_socket(&socket).await?;
+        assert!(
+            !socket.exists(),
+            "only the abandoned socket may be unlinked"
+        );
+        let _rebound = UnixListener::bind(&socket).await?;
+        Ok(())
+    }
 }
