@@ -125,8 +125,8 @@ impl NeuronMetricsGroupCommitWriterV1 {
             Err(TryLockError::Error(error)) => return Err(error.into()),
         }
 
-        let size = usize::try_from(file.metadata()?.len())
-            .map_err(|_| NeuronMetricsErrorV1::Capacity)?;
+        let size =
+            usize::try_from(file.metadata()?.len()).map_err(|_| NeuronMetricsErrorV1::Capacity)?;
         if size > MAX_LEDGER_BYTES {
             return Err(NeuronMetricsErrorV1::Capacity);
         }
@@ -153,7 +153,9 @@ impl NeuronMetricsGroupCommitWriterV1 {
         file.seek(SeekFrom::Start(0))?;
         let mut data = Vec::with_capacity(size);
         file.read_to_end(&mut data)?;
-        if data.len() != size || size < HEADER_LEN || &data[..8] != MAGIC
+        if data.len() != size
+            || size < HEADER_LEN
+            || &data[..8] != MAGIC
             || &data[8..40] != scope_digest.as_array()
             || &data[40..48] != generation.get().to_be_bytes().as_slice()
         {
@@ -181,13 +183,13 @@ impl NeuronMetricsGroupCommitWriterV1 {
             }
             let body = &data[offset + 4..offset + 4 + FRAME_BODY_LEN];
             let checksum = Digest32::of_parts(&[b"hepta.neuron.metrics.frame.v1\0", body]);
-            if &data[offset + 4 + FRAME_BODY_LEN..offset + FRAME_LEN]
-                != checksum.as_array()
-            {
+            if &data[offset + 4 + FRAME_BODY_LEN..offset + FRAME_LEN] != checksum.as_array() {
                 return Err(NeuronMetricsErrorV1::Corrupt);
             }
             let stored_sequence = u64::from_be_bytes(
-                body[..8].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[..8]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             if stored_sequence != sequence + 1 || &body[8..40] != head.as_array() {
                 return Err(NeuronMetricsErrorV1::Corrupt);
@@ -195,31 +197,48 @@ impl NeuronMetricsGroupCommitWriterV1 {
             // Complete durable frames must have unique batch identities and
             // valid shape, not merely a syntactically correct frame checksum.
             let plan_digest = Digest32::from_array(
-                body[40..72].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[40..72]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let execution_digest = Digest32::from_array(
-                body[72..104].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[72..104]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let requests = u32::from_be_bytes(
-                body[104..108].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[104..108]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let latency_p95 = u64::from_be_bytes(
-                body[132..140].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[132..140]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let latency_p99 = u64::from_be_bytes(
-                body[140..148].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[140..148]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let mask = body[156];
             let cpu = u64::from_be_bytes(
-                body[116..124].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[116..124]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let rss = u64::from_be_bytes(
-                body[124..132].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[124..132]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
             let lock_wait = u64::from_be_bytes(
-                body[148..156].try_into().map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
+                body[148..156]
+                    .try_into()
+                    .map_err(|_| NeuronMetricsErrorV1::Corrupt)?,
             );
-            if plan_digest.is_zero() || execution_digest.is_zero()
+            if plan_digest.is_zero()
+                || execution_digest.is_zero()
                 || !(1..=256).contains(&requests)
                 || latency_p95 > latency_p99
                 || mask & !0b111 != 0
@@ -282,11 +301,16 @@ impl NeuronMetricsGroupCommitWriterV1 {
             return Err(NeuronMetricsErrorV1::Capacity);
         }
         let mut buffer = Vec::with_capacity(events.len() * FRAME_LEN);
-        let first = self.sequence.checked_add(1).ok_or(NeuronMetricsErrorV1::Capacity)?;
+        let first = self
+            .sequence
+            .checked_add(1)
+            .ok_or(NeuronMetricsErrorV1::Capacity)?;
         let mut sequence = self.sequence;
         let mut previous = self.head;
         for event in events {
-            sequence = sequence.checked_add(1).ok_or(NeuronMetricsErrorV1::Capacity)?;
+            sequence = sequence
+                .checked_add(1)
+                .ok_or(NeuronMetricsErrorV1::Capacity)?;
             let mut body = Vec::with_capacity(FRAME_BODY_LEN);
             body.extend_from_slice(&sequence.to_be_bytes());
             body.extend_from_slice(previous.as_array());
