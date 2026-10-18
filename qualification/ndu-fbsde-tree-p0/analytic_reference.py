@@ -20,6 +20,9 @@ class AnalyticReceipt:
     schema: str
     driver: str
     steps: int
+    samples: int
+    train_seed: int
+    heldout_seed: int
     node_count: int
     root_value: float
     exact_global_value: float
@@ -59,8 +62,8 @@ def _grid(steps: int) -> tuple[dict[tuple[int, ...], float], float]:
 
 
 def _gaussian_paths(seed: int, samples: int, steps: int) -> tuple[float, float]:
-    if type(seed) is not int or type(samples) is not int or samples < 2:
-        raise ValueError("need seed and at least two independent samples")
+    if type(seed) is not int or type(samples) is not int or not 2 <= samples <= 65536:
+        raise ValueError("need integer seed and 2..65536 samples")
     generator = random.Random(seed)
     sigma = math.sqrt(1.0 / steps)
     terminal_payoffs = [
@@ -127,6 +130,9 @@ def evaluate_analytic_reference(
         schema="hepta.ndu.fbsde.analytic-reference.v1",
         driver="dX=dW; f=0; g(X_T)=X_T^2; T=1",
         steps=steps,
+        samples=samples,
+        train_seed=train_seed,
+        heldout_seed=heldout_seed,
         node_count=len(states),
         root_value=values[()],
         exact_global_value=exact_root,
