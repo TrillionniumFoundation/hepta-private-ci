@@ -285,8 +285,11 @@ impl Daemon {
         let mut accepted: Option<SupervisordAgentStatus> = None;
         let result = tokio::time::timeout_at(deadline, async {
             let epoch = self.epoch()?;
-            for round in 0..3 {
-                rounds.push(json!({"round":round + 1}));
+            loop {
+                let round = rounds.len();
+                rounds.push(json!({"observation_index":round + 1,
+                    "phase":if accepted.is_some() {"observe_accepted_kill_only"} else {"snapshot_before_kill"},
+                    "monotonic_elapsed_micros":started.elapsed().as_micros()}));
                 let status = match self.client.snapshot(owner()).await {
                     Ok(status) => status,
                     Err(error) => {
@@ -329,9 +332,14 @@ impl Daemon {
                     );
                     rounds[round]["action"] = json!("observe_accepted_kill_only");
                 } else {
+                    ensure!(
+                        kill_calls < 3,
+                        "original Supervisor rejected all three cleanup Kill CAS attempts; owned Agent remains active"
+                    );
                     let expected_revision = revision.checked_add(1).context("cleanup revision overflow")?;
                     rounds[round]["submitted_fence"] = serde_json::to_value(&status.control_fence)?;
                     kill_calls += 1;
+                    rounds[round]["kill_attempt"] = json!(kill_calls);
                     match self.client.kill(status.control_fence.clone()).await {
                         Ok(receipt) => {
                             rounds[round]["kill_response"] = mutation_observation(&receipt);
@@ -358,7 +366,6 @@ impl Daemon {
                 }
                 tokio::time::sleep(Duration::from_millis(100)).await;
             }
-            anyhow::bail!("original Supervisor did not stop the owned study Agent within three rounds")
         }).await;
         let result: Result<Value> = match result {
             Ok(result) => result,
@@ -368,7 +375,9 @@ impl Daemon {
             Ok(value) => value.clone(),
             Err(error) => json!({"state":"failed","reason":format!("{error:#}")}),
         };
+        observation["snapshot_observations"] = json!(rounds.len());
         observation["rounds"] = json!(rounds);
+        observation["kill_cas_attempt_limit"] = json!(3);
         observation["kill_calls"] = json!(kill_calls);
         observation["kill_accepted"] = json!(accepted.is_some());
         observation["started_at_unix_micros"] = json!(at);
@@ -444,7 +453,7 @@ pub(super) async fn start_once_and_running(
         );
         trace["request"] = json!({"fence":before.control_fence,"release_id":release});
         trace["start_calls"] = json!(1);
-        save(&path, &trace);
+        save(&root.join("source-start-request.json"), &trace);
         let mut revision_observed = false;
         // This is the only Start call. A read timeout is retained as Unknown;
         // neither it nor an unchanged snapshot authorizes another dispatch.
@@ -462,14 +471,14 @@ pub(super) async fn start_once_and_running(
                 revision_observed = true;
             }
             Err(error) => {
-                trace["start_result"] = json!({"state":if is_original_read_timeout(&error) {"unknown"} else {"rejected"},
+                trace["start_result"] = json!({"state":if is_original_read_timeout(&error) {"unknown"} else {"failed"},
                     "error":error.to_string()});
                 if !is_original_read_timeout(&error) {
                     return Err(error.into());
                 }
             }
         }
-        save(&path, &trace);
+        save(&root.join("source-start-response.json"), &trace);
         loop {
             let observed = client.snapshot(owner()).await;
             trace["readbacks"].as_array_mut().context("source readback observations")?.push(
