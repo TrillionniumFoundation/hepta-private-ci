@@ -14,8 +14,10 @@ permissions:
 jobs:
   exact-source-matrix:
     name: Validate 64-case matrix and fail-closed reports
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # Python/uv integrity contract only; heavy Rust/Bazel gates run elsewhere.
+    # The sibling Cell Split signed-observer tests already qualify on this pool.
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
