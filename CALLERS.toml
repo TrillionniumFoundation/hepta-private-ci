@@ -158,7 +158,7 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs", "codex-rs/hepta-neuron/src/runtime.rs"]
 caller_markers = ["claim_final_use"]
 
 [[boundary]]
