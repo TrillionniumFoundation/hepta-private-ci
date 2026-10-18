@@ -33,6 +33,18 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "0.11.3"
+      - name: Expose exact Ruff differences and enforce formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          # Diagnostics never mutate source or waive the next strict check.
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py || true
+          uv run --frozen --project scripts ruff format --check \
+            scripts/hepta-cell-split-target-matrix.py \
+            scripts/test_hepta_cell_split_target_matrix.py
       - name: Assert exact commit and exercise fixture-only P4 contract
         shell: bash
         run: |
