@@ -10,6 +10,10 @@ name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+composition-model-driver-qualification = []
+
 [lints]
 workspace = true
 
