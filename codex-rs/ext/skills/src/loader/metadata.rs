@@ -127,7 +127,7 @@ pub(super) async fn load_host_skill_metadata(
         }
     };
 
-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
+    let parsed: SkillMetadataFile = match noyalib_serde_yaml::from_str(&contents) {
         Ok(parsed) => parsed,
         Err(error) => {
             tracing::warn!(
