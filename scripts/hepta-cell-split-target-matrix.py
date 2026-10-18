@@ -169,7 +169,7 @@ def observer_signing_bytes(receipt: dict[str, Any]) -> bytes:
         "schema", "verified", "sourceCommit", "workloadDigest",
         "reportDigest", "metricsDigest", "observerId",
     )
-    return b"hepta.cell-split.observer.ed25519.v1\\0" + canonical_bytes(
+    return b"hepta.cell-split.observer.ed25519.v1\0" + canonical_bytes(
         {field: receipt.get(field) for field in fields}
     )
 
