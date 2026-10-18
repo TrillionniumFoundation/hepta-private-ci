@@ -599,7 +599,10 @@ def run_matrix(
     # after the post-observer source/workload fence has had the opportunity to
     # revoke a previously valid signature. A signed-but-revoked receipt is not
     # an independently observed qualification.
-    if not isinstance(observer_receipt, dict) or observer_receipt.get("verified") is not True:
+    if (
+        not isinstance(observer_receipt, dict)
+        or observer_receipt.get("verified") is not True
+    ):
         blocked.append("independent-observer")
 
     report = {
