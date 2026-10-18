@@ -1434,13 +1434,11 @@ fn extract_zipball_masks_special_permission_bits() {
     let bytes = writer.finish().expect("finish zip writer").into_inner();
 
     let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read zip fixture");
-    assert_eq!(
-        archive
-            .by_name("root/plugin")
-            .expect("read plugin entry")
-            .unix_mode(),
-        Some(archived_mode)
-    );
+    let entry = archive.by_name("root/plugin").expect("read plugin entry");
+    assert_eq!(entry.system(), zip::System::Unix);
+    assert_eq!(entry.external_attributes(), archived_mode << 16);
+    // Zip 9 normalizes special bits on read; the raw fixture must retain them.
+    assert_eq!(entry.unix_mode(), Some(0o100755));
 
     let destination = tempdir().expect("create destination");
     extract_zipball_to_dir(&bytes, destination.path()).expect("extract regular file");
