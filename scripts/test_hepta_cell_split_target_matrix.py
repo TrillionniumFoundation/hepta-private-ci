@@ -76,7 +76,13 @@ def test_measurement_requires_all_metrics_and_monotonic_quantiles() -> None:
     assert MODULE.validate_metrics(metrics) == metrics
     with pytest.raises(ValueError, match="quantiles"):
         MODULE.validate_metrics({**metrics, "p95Micros": 40})
-    for missing in ("walBytes", "walFsyncCount", "gpuObserved", "gpuMicros", "gpuBytes"):
+    for missing in (
+        "walBytes",
+        "walFsyncCount",
+        "gpuObserved",
+        "gpuMicros",
+        "gpuBytes",
+    ):
         incomplete = dict(metrics)
         del incomplete[missing]
         with pytest.raises(ValueError, match="missing metrics"):
@@ -171,7 +177,9 @@ def test_dry_run_is_blocked_until_workload_and_observer_exist(tmp_path: Path) ->
     MODULE.validate_report(json.loads(output.read_text(encoding="utf-8")))
 
 
-def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Path) -> None:
+def test_single_count_workload_passes_count_and_remains_diagnostic(
+    tmp_path: Path,
+) -> None:
     workload = tmp_path / "frozen-tasks"
     workload.write_bytes(b"fixture only: not a production task corpus")
     frozen_digest = hashlib.sha256(workload.read_bytes()).hexdigest()
@@ -195,7 +203,9 @@ def test_single_count_workload_passes_count_and_remains_diagnostic(tmp_path: Pat
         encoding="utf-8",
     )
     report = MODULE.run_matrix(
-        workload_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))} {{cellCount}}",
+        workload_command=(
+            f"{shlex.quote(sys.executable)} {shlex.quote(str(worker))} {{cellCount}}"
+        ),
         observer_command=None,
         workload_digest=frozen_digest,
         source_commit=current_checkout_sha(),
@@ -481,7 +491,9 @@ def test_ed25519_observer_key_must_have_prime_order() -> None:
     assert not MODULE._ed25519_prime_order_public_key(mixed)
 
 
-def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_path: Path) -> None:
+def test_forged_verified_observer_cannot_qualify_report_without_signature(
+    tmp_path: Path,
+) -> None:
     report = MODULE.run_matrix(
         workload_command=None,
         observer_command=None,
