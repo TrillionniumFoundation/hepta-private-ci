@@ -273,10 +273,9 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     );
     let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
     assert_eq!(reply["decision"].as_str(), Some("block"));
-    assert_eq!(
-        std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?,
-        "blocked\n"
-    );
+    let hook_log = std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?;
+    anyhow::ensure!(hook_log.ends_with('\n'), "queue hook log must end with a newline");
+    assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
     Ok(())
 }
 
