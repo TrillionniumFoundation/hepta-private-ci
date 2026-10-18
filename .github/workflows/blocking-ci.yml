@@ -123,9 +123,15 @@ jobs:
   hepta-scoped:
     name: Hepta scoped native checks
     needs: scope
-    if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    if: needs.scope.outputs.native == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    # Additional coverage on full_repo paths; retain all reverse consumers.
+    # These values reduce generated artifacts but do not alter test selection.
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -245,7 +251,7 @@ jobs:
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
-          if not (native and not full):
+          if not native:
               allowed.append("hepta-scoped")
           if not (not native and not full):
               allowed.append("lightweight")
