@@ -36,7 +36,7 @@ fn id(raw: &str) -> StableId {
     }
 }
 
-fn request() -> SharedEncoderRequestV1 {
+fn shared_encoder_request() -> SharedEncoderRequestV1 {
     let values = vec![1, 2, 3];
     SharedEncoderRequestV1 {
         request_id: id("execution:shared-encoder"),
@@ -61,7 +61,7 @@ fn owner() -> SharedEncoderOwnerV1<FakeDriver> {
 #[test]
 fn one_forward_is_shared_by_all_cells() {
     let mut owner = owner();
-    let request = request();
+    let request = shared_encoder_request();
     let cells = vec![id("cell:0"), id("cell:1"), id("cell:2")];
     let batch = must(owner.encode_for_cells(&request, &cells));
     assert_eq!(owner.driver.calls, 1);
@@ -77,14 +77,14 @@ fn one_forward_is_shared_by_all_cells() {
 #[test]
 fn generation_and_digest_fences_fail_closed() {
     let mut owner = owner();
-    let mut request = request();
+    let mut request = shared_encoder_request();
     request.generation = Generation::new(2).unwrap_or_else(|error| panic!("{error:?}"));
     assert_eq!(
         owner.encode_for_cells(&request, &[id("cell:0")]),
         Err(SharedEncoderError::GenerationMismatch)
     );
 
-    let mut request = request();
+    let mut request = shared_encoder_request();
     request.generation = Generation::new(1).unwrap_or_else(|error| panic!("{error:?}"));
     request.encoder_digest = Digest32::of_bytes(b"other");
     assert_eq!(
@@ -96,7 +96,7 @@ fn generation_and_digest_fences_fail_closed() {
 #[test]
 fn duplicate_cells_and_bad_output_are_rejected_before_sharing() {
     let mut owner = owner();
-    let request = request();
+    let request = shared_encoder_request();
     let cell = id("cell:0");
     assert_eq!(
         owner.encode_for_cells(&request, &[cell.clone(), cell]),
