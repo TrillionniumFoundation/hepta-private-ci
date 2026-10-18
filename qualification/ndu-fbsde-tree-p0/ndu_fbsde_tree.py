@@ -50,13 +50,17 @@ def _digest(name: str, value: str) -> None:
 
 
 def _identifier(name: str, value: str) -> None:
-    _require(isinstance(value, str) and 0 < len(value) <= 128 and "\n" not in value, f"{name} is invalid")
+    _require(
+        isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value) is not None,
+        f"{name} is invalid",
+    )
 
 
 def _vector(name: str, value: Sequence[float], maximum: int) -> None:
     _require(isinstance(value, (tuple, list)) and 0 < len(value) <= maximum, f"{name} has invalid dimension")
     for item in value:
-        _finite(f"{name} element", float(item))
+        _require(type(item) in (int, float), f"{name} element must be numeric")
+        _finite(f"{name} element", item)
 
 
 def digest_json(value: object) -> str:
@@ -277,13 +281,59 @@ class FbsdeShadowGateV1:
         }
 
 
+_ALLOWED_PROMPT_STATE_FIELDS = frozenset(
+    {
+        "state", "x", "h", "p", "budget",
+        "continuation_lcb", "continuation_ucb",
+        "uncertainty", "residual", "expiry_step",
+        "filtration_digest", "parent_id",
+    }
+)
+
+
 def validate_prompt_boundary(prompt_digest: str, objective_digest: str, boundary: Mapping[str, object]) -> None:
-    """Accept a prompt identity, never a prompt-authored objective or solver."""
+    """Admit typed bounded state only; no prompt-authored solver or grant payload.
+
+    Unknown keys, all nested objects, free-form text, nonfinite values and
+    malformed identities are rejected, including protected keys hidden below
+    a generic "state" wrapper. This validates a shadow *state interface*,
+    not the trustworthiness of upstream raw observations.
+    """
     _digest("prompt_digest", prompt_digest)
     _digest("objective_digest", objective_digest)
     _require(isinstance(boundary, Mapping), "boundary must be a mapping")
-    _require(not (_FORBIDDEN_BOUNDARY_KEYS & set(boundary)), "prompt boundary contains a protected field")
-    _require("prompt_text" not in boundary and "raw_prompt" not in boundary, "raw prompt cannot cross the solver boundary")
+    names = set(boundary)
+    _require(all(isinstance(key, str) for key in names), "boundary field names must be strings")
+    _require(not (_FORBIDDEN_BOUNDARY_KEYS & names), "prompt boundary contains a protected field")
+    _require("prompt_text" not in names and "raw_prompt" not in names, "raw prompt cannot cross the solver boundary")
+    _require(names <= _ALLOWED_PROMPT_STATE_FIELDS, "boundary contains an unknown field")
+    for name, value in boundary.items():
+        if name in ("x", "h", "state"):
+            _vector(name, value, 256)
+        elif name == "p":
+            _vector(name, value, 64)
+        elif name == "filtration_digest":
+            _digest(name, value)
+        elif name == "parent_id":
+            if value is not None:
+                _identifier(name, value)
+        elif name == "expiry_step":
+            _require(type(value) is int and value >= 0, "expiry_step is invalid")
+        else:
+            _require(type(value) in (int, float), f"{name} must be numeric")
+            if name in ("budget", "uncertainty", "residual"):
+                _nonnegative(name, value)
+            else:
+                _finite(name, value)
+    _require(
+        ("continuation_lcb" in names) == ("continuation_ucb" in names),
+        "continuation interval must have both bounds",
+    )
+    if "continuation_lcb" in names:
+        _require(
+            float(boundary["continuation_lcb"]) <= float(boundary["continuation_ucb"]),
+            "continuation interval is inverted",
+        )
 
 
 def branch_count_upper_bound(branching_factor: int, horizon_steps: int) -> int:
