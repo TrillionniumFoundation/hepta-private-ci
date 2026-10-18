@@ -547,7 +547,6 @@ fn microbatch_plan_rejects_mixed_snapshot_identity_or_generation() {
     );
 }
 
-
 /// The legacy v1 layout did not delimit consecutive request/model StableIds.
 /// This regression proves that distinct legal identities never share a v2
 /// evidence digest even when the head, feature input and output are identical.
