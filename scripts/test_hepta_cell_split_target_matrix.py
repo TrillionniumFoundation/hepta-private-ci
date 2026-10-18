@@ -388,6 +388,9 @@ def test_post_observer_mutation_revokes_signed_receipt(
     assert report["status"] == "blocked"
     expected_blocker = "source-checkout" if mutation == "source" else "frozen-workload"
     assert expected_blocker in report["blockingCases"]
+    # Post-observer tampering revokes the signature and must also bind the
+    # independent-observer blocker in the final report.
+    assert "independent-observer" in report["blockingCases"]
     assert report["observer"]["verified"] is False
     assert "signatureHex" not in report["observer"]
     MODULE.validate_report(report)
