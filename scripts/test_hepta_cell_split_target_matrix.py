@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
 SCRIPT = Path(__file__).with_name("hepta-cell-split-target-matrix.py")
@@ -191,3 +193,77 @@ def test_full_scale_cannot_be_forged_from_one_count(tmp_path: Path) -> None:
     forged = {**report, "status": "qualified", "blockingCases": []}
     with pytest.raises(ValueError, match="full scale"):
         MODULE.validate_report(forged)
+
+
+def test_signed_observer_requires_out_of_band_trust_root() -> None:
+    private = Ed25519PrivateKey.generate()
+    trusted_key = private.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+    receipt = {
+        "schema": MODULE.OBSERVER_SCHEMA,
+        "verified": True,
+        "sourceCommit": "a" * 40,
+        "workloadDigest": "b" * 64,
+        "reportDigest": "c" * 64,
+        "metricsDigest": "d" * 64,
+        "observerId": "independent-observer",
+    }
+    receipt["signatureHex"] = private.sign(
+        MODULE.observer_signing_bytes(receipt)
+    ).hex()
+    MODULE.verify_observer_signature(receipt, trusted_key)
+    with pytest.raises(ValueError, match="trusted independent"):
+        MODULE.verify_observer_signature(receipt, None)
+    with pytest.raises(ValueError, match="signature invalid"):
+        MODULE.verify_observer_signature(receipt, "00" * 32)
+    tampered = {**receipt, "metricsDigest": "e" * 64}
+    with pytest.raises(ValueError, match="signature invalid"):
+        MODULE.verify_observer_signature(tampered, trusted_key)
+    with pytest.raises(ValueError, match="missing or malformed"):
+        MODULE.verify_observer_signature({**receipt, "signatureHex": None}, trusted_key)
+
+
+def test_forged_verified_observer_cannot_qualify_report_without_signature(tmp_path: Path) -> None:
+    report = MODULE.run_matrix(
+        workload_command=None,
+        observer_command=None,
+        workload_digest="a" * 64,
+        source_commit="f" * 40,
+        output=tmp_path / "matrix.json",
+    )
+    for row in report["cases"]:
+        row["status"] = "measured"
+        row["metrics"] = example_metrics()
+        row["metricsDigest"] = MODULE.digest(row["metrics"])
+        row.pop("reason", None)
+    provisional = {
+        key: report[key]
+        for key in (
+            "schema", "authority", "cellCounts", "sourceCommit",
+            "workloadDigest", "workloadSourceDigest", "host", "cases",
+        )
+    }
+    observer = {
+        "schema": MODULE.OBSERVER_SCHEMA,
+        "verified": True,
+        "sourceCommit": report["sourceCommit"],
+        "workloadDigest": report["workloadDigest"],
+        "reportDigest": MODULE.digest(provisional),
+        "metricsDigest": MODULE.digest([
+            {"caseId": row["caseId"], "metricsDigest": row["metricsDigest"]}
+            for row in report["cases"]
+        ]),
+        "observerId": "untrusted",
+    }
+    observer["signatureHex"] = "00" * 64
+    observer["receiptDigest"] = MODULE.digest(observer)
+    report["observer"] = observer
+    report["blockingCases"] = []
+    report["status"] = "qualified"
+    report["reportDigest"] = MODULE.digest({**provisional, "observer": observer})
+    with pytest.raises(ValueError, match="trusted independent"):
+        MODULE.validate_report(report)
+    with pytest.raises(ValueError, match="signature invalid"):
+        MODULE.validate_report(report, trusted_observer_public_key="00" * 32)
