@@ -595,6 +595,13 @@ def run_matrix(
                     "reason": "post-observer frozen workload changed or is missing",
                 }
 
+    # The independent-observer blocker is derived from the FINAL receipt,
+    # after the post-observer source/workload fence has had the opportunity to
+    # revoke a previously valid signature. A signed-but-revoked receipt is not
+    # an independently observed qualification.
+    if not isinstance(observer_receipt, dict) or observer_receipt.get("verified") is not True:
+        blocked.append("independent-observer")
+
     report = {
         **provisional,
         "observer": observer_receipt,
