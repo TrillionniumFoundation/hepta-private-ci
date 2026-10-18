@@ -230,6 +230,19 @@ jobs:
             -- \
             "${selected_targets[@]}"
 
+      # A large failed test can exceed Bazel's 1 MiB console limit. Keep
+      # source test.log files for review: the compact execution trace does
+      # not preserve their assertion/snapshot stdout (see shard-1 on #2734).
+      # Diagnostic-only: no test selection, command, or gate is changed.
+      - name: Upload raw Windows Bazel test logs on failure
+        if: failure() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-testlogs-windows-shard-${{ matrix.shard }}-attempt-${{ github.run_attempt }}
+          path: ${{ env.BAZEL_OUTPUT_BASE }}/execroot/_main/bazel-out/**/testlogs/**/test.log
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
         continue-on-error: true
