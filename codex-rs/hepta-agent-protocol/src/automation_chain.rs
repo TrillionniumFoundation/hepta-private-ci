@@ -9,7 +9,9 @@ pub const AUTOMATION_EFFECT_RESUME_CAPABILITY: &str = "automation.effect.resume"
 impl crate::AgentdMethod {
     /// Two provider operations, each bounded by the host's 30-second maximum,
     /// plus five seconds for the original durable owners. Frame I/O has its
-    /// separate existing bound. Expiry never proves provider absence.
+    /// separate existing bound. This is a cooperative operation budget, not an
+    /// OS preemption guarantee. Queued dispatch must retain the configured
+    /// provider duration before contact. Expiry never proves provider absence.
     pub fn effect_control_timeout_ms(&self) -> Option<u64> {
         matches!(self, Self::AutomationResumeEffect { .. } | Self::AutomationObserveEffect { .. })
             .then_some(2 * 30_000 + 5_000)

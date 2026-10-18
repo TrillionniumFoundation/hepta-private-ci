@@ -118,6 +118,43 @@ impl RunningOwner {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn ordinary_effect_queue_budget_refuses_before_prepare_and_can_retry() -> anyhow::Result<()> {
+    let fixture = EffectFixture::new().await?;
+    Mock::given(method("POST")).and(path("/dispatch")).and(body_bytes(WIRE.to_vec()))
+        .respond_with(ResponseTemplate::new(503)).expect(1).mount(&fixture.provider).await;
+    fixture.fleet()?.compare_and_transition(&fixture.base.identity.agent_id, 0, AgentLifecycle::Starting)?;
+    let owner = fixture.start(1).await?;
+    let serial = owner.host.resume_serial.lock().await;
+    // The original provider is bounded at five seconds. The server-private
+    // budget initially covers it and the one-second cleanup reserve; queueing
+    // then removes that reserve before any preparation, nonce or contact.
+    let deadline = Instant::now() + Duration::from_millis(6_050);
+    let resume = owner.host.resume_effect(&fixture.base.store, &owner.state, AgentdEffectResumeInput {
+        intent: &fixture.intent, wire_payload: WIRE, signed_grant: &fixture.grant,
+        command_id: "dispatch", deadline,
+    });
+    let release = async {
+        tokio::time::sleep(Duration::from_millis(100)).await;
+        drop(serial);
+    };
+    let (result, ()) = tokio::join!(resume, release);
+    assert!(result.is_err());
+    assert!(fixture.base.store.taskflow_run(&fixture.intent.run_id).await?.is_none());
+    assert!(fixture.base.store.authorized_taskflow_effect_attempt(&fixture.intent.run_id, "effect", 1).await?.is_none());
+    assert_eq!(owner.host.authority.capacity()?.used_nonces, 0);
+    assert!(fixture.provider.received_requests().await.context("provider observations")?.is_empty());
+    let result = owner.client.automation_resume_effect(
+        fixture.intent.clone(), WIRE, fixture.grant.clone(), "dispatch".to_owned(),
+    ).await?;
+    assert_eq!(result, crate::AutomationEffectReconcileSnapshot {
+        state: crate::AutomationEffectReconcileState::Indeterminate, effect: None, chain: None,
+    });
+    assert_eq!(owner.host.authority.capacity()?.used_nonces, 1);
+    owner.stop().await?;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn ordinary_effect_rpc_prepares_once_and_recovers_unknown_after_reopen() -> anyhow::Result<()> {
     let fixture = EffectFixture::new().await?;
     Mock::given(method("POST")).and(path("/dispatch")).and(body_bytes(WIRE.to_vec()))

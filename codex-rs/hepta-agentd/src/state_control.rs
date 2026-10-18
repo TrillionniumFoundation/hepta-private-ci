@@ -53,6 +53,10 @@ impl AgentdState {
         spawn_generation: u64,
         method: crate::AgentdMethod,
     ) -> Result<AgentdResponse, AgentdError> {
+        // This monotonic deadline is made by the server, never transported in
+        // a caller's intent or grant. It includes subsequent owner queueing.
+        let effect_deadline = method.effect_control_timeout_ms()
+            .map(|milliseconds| std::time::Instant::now() + std::time::Duration::from_millis(milliseconds));
         if spawn_generation != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
                 "request spawn generation {spawn_generation} does not match {}",
@@ -659,6 +663,7 @@ impl AgentdState {
             crate::AgentdMethod::AutomationResumeEffect { intent, wire_payload_hex, signed_grant, command_id } => {
                 AgentdPayload::AutomationEffectReconcile(self.resume_automation_effect(
                     &intent, &decode_effect_wire_hex(&wire_payload_hex)?, &signed_grant, &command_id,
+                    effect_deadline.ok_or_else(|| AgentdError::Protocol("missing effect control budget".to_owned()))?,
                 ).await?)
             }
             crate::AgentdMethod::AutomationReconcileEffect {

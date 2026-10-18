@@ -20,6 +20,7 @@ pub(crate) struct AgentdEffectResumeInput<'a> {
     pub wire_payload: &'a [u8],
     pub signed_grant: &'a SignedFinalUseGrant,
     pub command_id: &'a str,
+    pub deadline: Instant,
 }
 
 impl AgentdAutomationEffectHost {
@@ -30,7 +31,7 @@ impl AgentdAutomationEffectHost {
         input: AgentdEffectResumeInput<'_>,
     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         let _serial = self.resume_serial.lock().await;
-        let AgentdEffectResumeInput { intent, wire_payload, signed_grant, command_id } = input;
+        let AgentdEffectResumeInput { intent, wire_payload, signed_grant, command_id, deadline } = input;
         let now_ms = crate::state::control_time_ms()?;
         state.require_effect_ready()?;
         let identity = state.identity();
@@ -102,6 +103,10 @@ impl AgentdAutomationEffectHost {
         }
 
         let fence = identity_fence(&self.agent_id, identity.spawn_generation)?;
+        let dispatch_budget = ProviderDispatchBudget::ControlDeadline(deadline);
+        dispatch_budget.require_remaining(&self.adapter).map_err(|_| AgentdError::Protocol(
+            "effect control budget cannot cover provider dispatch; no new attempt was prepared; retry the exact original input".to_owned(),
+        ))?;
         if let Some(run) = &existing_run
             && run.generation.is_some_and(|generation| generation != identity.spawn_generation)
         {
@@ -154,7 +159,12 @@ impl AgentdAutomationEffectHost {
         }
         state.require_effect_ready()?;
         let dispatch_time_ms = crate::state::control_time_ms()?;
-        let receipt = self.execute(store, intent, wire_payload, signed_grant, command_id, dispatch_time_ms).await?;
+        dispatch_budget.require_remaining(&self.adapter).map_err(|_| AgentdError::Protocol(
+            "effect control budget expired before dispatch; original prepared step remains recoverable".to_owned(),
+        ))?;
+        let receipt = self.execute_with_budget(store, AgentdEffectExecution {
+            intent, wire_payload, signed_grant, command_id, now_ms: dispatch_time_ms, dispatch_budget,
+        }).await?;
         if receipt.observation == Some(TaskFlowStepObservation::Indeterminate) {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         }

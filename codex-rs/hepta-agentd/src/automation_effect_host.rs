@@ -70,6 +70,10 @@ mod reconciliation;
 #[path = "automation_effect_resume.rs"]
 mod resume;
 pub(crate) use resume::AgentdEffectResumeInput;
+#[path = "automation_effect_budget.rs"]
+mod budget;
+use budget::AgentdEffectExecution;
+use budget::ProviderDispatchBudget;
 #[path = "automation_effect_terminal_observation.rs"]
 mod terminal_observation;
 #[cfg(all(test, unix))]
@@ -1119,6 +1123,18 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        self.execute_with_budget(store, AgentdEffectExecution {
+            intent, wire_payload, signed_grant, command_id, now_ms,
+            dispatch_budget: ProviderDispatchBudget::ConfiguredProvider,
+        }).await
+    }
+
+    async fn execute_with_budget(
+        &self,
+        store: &AutomationStore,
+        input: AgentdEffectExecution<'_>,
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        let AgentdEffectExecution { intent, wire_payload, signed_grant, command_id, now_ms, dispatch_budget } = input;
         self.validate_intent(intent, wire_payload)?;
         self.refresh_revocations()?;
         if let Some(receipt) = store
@@ -1145,6 +1161,7 @@ impl AgentdAutomationEffectHost {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            dispatch_budget,
         };
         store
             .execute_authorized_taskflow_effect(
@@ -1321,6 +1338,7 @@ struct AgentdAuthorizedEffectDriver {
     adapter: AgentdProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
+    dispatch_budget: ProviderDispatchBudget,
 }
 
 impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
@@ -1352,6 +1370,8 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         );
         let adapter = self.adapter.clone();
         let wire_payload = request.wire_payload.to_vec();
+        self.dispatch_budget.require_remaining(&adapter)?;
+        let dispatch_budget = self.dispatch_budget;
         let spawn = thread::Builder::new()
             .name("hepta-automation-provider-effect".to_string())
             .spawn(move || {
@@ -1362,6 +1382,13 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
+                // The original durable attempt already exists. A refusal at
+                // this exact boundary is genuinely before provider contact;
+                // it is settled by the original owner, never inferred from a
+                // control timeout or from absence of an acknowledgement.
+                if dispatch_budget.require_remaining(&adapter).is_err() {
+                    return ProviderThreadOutcome::BeforeContact;
+                }
                 ProviderThreadOutcome::Dispatch(
                     runtime
                         .block_on(adapter.dispatch_with_payload(&provider_intent, &wire_payload)),

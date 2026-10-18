@@ -17,6 +17,7 @@ impl AgentdState {
         wire_payload: &[u8],
         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
         command_id: &str,
+        deadline: std::time::Instant,
     ) -> Result<crate::AutomationEffectReconcileSnapshot, AgentdError> {
         self.require_effect_ready()?;
         let store = self.automation.lock().map_err(poisoned_state)?.clone()
@@ -24,7 +25,7 @@ impl AgentdState {
         let host = self.automation_effect_host()
             .ok_or_else(|| AgentdError::Protocol(AUTOMATION_EFFECT_UNAVAILABLE_MESSAGE.to_owned()))?;
         let result = host.resume_effect(&store, self, crate::automation_effect_host::AgentdEffectResumeInput {
-            intent, wire_payload, signed_grant, command_id,
+            intent, wire_payload, signed_grant, command_id, deadline,
         }).await?;
         self.require_effect_ready()?;
         use crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome as Outcome;
